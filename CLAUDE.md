@@ -18,3 +18,9 @@ In the cloud:
 
 - Put source workbooks (`.xlsx` etc.) in `data/`. Large or private workbooks should not be committed. Describe their structure in `docs/` instead.
 - Keep commits small and descriptive.
+
+## Project docs
+
+- `docs/PLAN.md` is the product and execution plan. It's a draft under review: don't start building until the owner approves it, and record settled decisions as ADRs in `docs/decisions/`.
+- `docs/book/` holds paraphrased reference notes on the source workbook (one file per chapter, plus `exercises.md` and `glossary.md`). Read these instead of re-reading the epub.
+- The source book is copyrighted. Never commit the epub, extracted text, or verbatim passages. If you need to re-extract it, put the epub in `data/` (git-ignored) and run `python3 -I scripts/epub_to_text.py data/<book>.epub <scratch-dir>`.
