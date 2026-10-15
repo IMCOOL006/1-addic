@@ -2,8 +2,8 @@
 // Renders the lightweight Markdown in content.md into docx-js elements via the Builder.
 // Supported: # ## ### headings · "> " brief directly after a heading · paragraphs · "- " bullets
 // (indent 2 spaces for a sub-level) · "1. " numbered lists · "- [ ] " checkboxes · pipe tables with
-// optional "@widths 2,1,1", "@size 18" and "@caption ..." lines before them · "::: kind ... :::" callouts
-// (inshort, safety, decision, tip, moment) · "**Label**" alone on a line · "~ small note" ·
+// optional "@widths 2,1,1", "@size 18" and "@caption ..." lines before them · "::: kind [Lead text:] ... :::" callouts
+// (inshort, safety, decision, tip, moment; an optional lead replaces the default bold opener) · "**Label**" alone on a line · "~ small note" ·
 // "```text" prompt boxes · "@directive" lines handled by the generated-section hooks.
 
 function smartQuotes(s) {
@@ -72,8 +72,9 @@ function render(md, b, hooks) {
       if (!fn) throw new Error(`Unknown directive @${m[1]} at line ${i + 1}`);
       fn(b, m[2]); i++; continue;
     }
-    if ((m = l.match(/^::: (\w+)\s*$/))) {
+    if ((m = l.match(/^::: (\w+)(?:\s+(.*?))?\s*$/))) {
       const kind = m[1];
+      const lead = m[2] ? q(m[2].trim()) + ' ' : undefined;
       const paras = [];
       let buf = [];
       i++;
@@ -84,7 +85,7 @@ function render(md, b, hooks) {
       }
       if (buf.length) paras.push(buf.join(' '));
       i++;
-      b.callout(kind, paras.map(q));
+      b.callout(kind, paras.map(q), lead ? { lead } : {});
       continue;
     }
     if (l.startsWith('```')) {
