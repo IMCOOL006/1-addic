@@ -7,7 +7,7 @@
 
 module.exports = {
   '0.1': {
-    brief: 'Turn your answers to the 18 decisions into short written records that every later step follows.',
+    brief: 'Turn your answers to the decisions (D1 to D19) into short written records that every later step follows.',
     after: 'A `docs/decisions/` folder with one short decision record (ADR) per decision, and a plan whose decisions section shows every decision as settled. No app code yet.',
   },
   '0.2': {
@@ -391,5 +391,29 @@ module.exports = {
       'The proposal covers backend proxy design, prompts, crisis routing, data minimisation, an eval set (including crisis and manipulation attempts) and costs.',
       'Nothing has been built yet; the proposal is a document for you to decide on.',
     ],
+  },
+  '0.6': {
+    brief: 'Find out with numbers, on your own computer, whether Unity can deliver this app inside the performance budget.',
+    after: '`docs/unity-spike.md` with install steps for a non-developer, a throwaway Unity spike app (harbor scene, SOS wave timer, a long text form with dictation, encrypted storage, a notification, screen-reader labels), every measurement from the plan\'s budget filled in (cold start, size, memory, battery, VoiceOver and TalkBack, font scaling, dictation, startup network calls), a go / no-go recommendation, and an updated D3 decision record.',
+  },
+  '0.7': {
+    brief: 'Only if Unity won the spike: rewrite the rest of the guide for Unity without changing any goal, order, checklist or safety rule.',
+    after: 'A build guide whose steps 0.2 to 5.4 name Unity tooling (Unity Test Framework in batch mode on CI, a device-build pipeline, SQLite with SQLCipher, the Accessibility module, Mobile Notifications, Unity IAP, a native widget and shortcut), with the steps that must run on your own computer marked, PLAN.md §10 and CLAUDE.md updated, and an ADR. No app code.',
+  },
+  '2.11': {
+    brief: 'Show people where every technique comes from, with real sources, so the content is clearly derived from research and not made up.',
+    after: 'The reference list turned into content, the About & evidence screen in Settings (intro crediting the workbook and stating the app is not clinically tested, then one card per technique with the claim, primary sources with links, an evidence-strength label, the review date and the features that use it), a small "Why this works" link on Today and in every lesson wrap and Training drill, validation that every lesson cites a reference and every reference has a link, plus a tutorial and help entry.',
+  },
+  '4.4': {
+    brief: 'Make the progress map a living scene, polish the small moments, and enforce the performance budget in CI.',
+    after: 'A progress map with time-of-day light, gentle ambient motion, places that light up with practice and a calm forecast look, all with static equivalents for reduced motion; quiet acknowledgements under 300 ms for every log, check-in and "wave surfed" moment; the plan\'s performance budget enforced in CI (size, cold start to SOS, frame time, memory, battery, zero startup network calls) with anything over budget fixed; and screenshot tests for the main screens in light and dark.',
+  },
+  '5.4': {
+    brief: 'Add the paid plan: a store purchase, a device-bound licence for up to three devices, and the safety floor that never locks anyone out of help.',
+    after: 'Store in-app purchase with restore, a device-bound key pair in the Secure Enclave or Android Keystore, an offline-tolerant licence check with a cached signed token and a grace period, a "Your devices and plan" screen for up to three devices with removal, the safety floor (urgent help, SOS, the person\'s own artifacts, logs, export and delete work with no licence, offline and after a lapse), `docs/licence-server.md`, and end-to-end tests for the lapse and offline cases.',
+  },
+  '6.5': {
+    brief: 'Let up to three devices on one plan share the same data, encrypted end to end, with a server that cannot read it.',
+    after: 'A sync service storing only ciphertext, device public keys and plan ids; a pairing flow that moves the sync key by QR code or short code; conflict handling for the event log and edited artifacts; a "last synced" status in Settings; removal of a lost device; `docs/sync-design.md` with threat notes; and a test of two devices syncing offline edits.',
   },
 };

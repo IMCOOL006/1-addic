@@ -7,33 +7,33 @@ const { smartQuotes: q } = require('./render_md');
 
 const PHASE_GOALS = {
   // From PLAN.md §12 (goal · exit criteria), in the plan's words.
-  '0': { goal: 'Settle the decisions, set up the repo', exit: 'A deployed preview build; CI green' },
+  '0': { goal: 'Settle the decisions, set up the repo', exit: 'A deployed preview build; CI green; D3 decided with measurements' },
   '1': { goal: 'Useful from day 1', exit: 'E2E offline SOS test passes; the owner dogfoods it for 7 days' },
   '2': { goal: 'The tutorial layer', exit: 'All M0–M5 exercises validated, with tutorial mode for each; every shipped feature has its tutorial and help entry' },
   '3': { goal: 'The tracker and actions layer', exit: 'Every row in docs/book/exercises.md implemented or explicitly deferred' },
   '4': { goal: 'Delight, without harm', exit: 'Game state recomputes deterministically from events; guardrail checklist (§6.1) passes review' },
-  '5': { goal: 'Real phone app', exit: 'Store-ready builds; WCAG AA audit fixed' },
+  '5': { goal: 'Real phone app', exit: 'Store-ready builds; WCAG AA audit fixed; purchases and the device licence verified in the store sandboxes' },
   '6': { goal: 'Safe public release (if D1 = public)', exit: 'Sign-offs from the clinical advisor and counsel' },
 };
 
 const PHASE_BRIEFS = {
-  '0': 'One week to answer the open questions, create the empty app, and get a preview link and automatic checks working. Nothing user-facing yet, but everything after this depends on it.',
+  '0': 'One to two weeks to answer the open questions, create the empty app, get a preview link and automatic checks working, and run the Unity feasibility spike that settles the platform decision with real measurements. Nothing user-facing yet, but everything after this depends on it.',
   '1': 'Two to three weeks to build the part of the app that earns its place: private storage, onboarding, urgent help, the SOS craving flow, quick logs, a first Today screen, the tour and drill, and data export. At the end you use it yourself for a week.',
-  '2': 'Four to six weeks for the learning layer: the exercise engine, the lesson player, the self-teaching guidance engine, the Learning Roadmap, the first six modules (M0 to M5) with their artifacts, the Workbook tab, and the first insights and XP.',
+  '2': 'Four to six weeks for the learning layer: the exercise engine, the lesson player, the self-teaching guidance engine, the Learning Roadmap, the first six modules (M0 to M5) with their artifacts, the Workbook tab, the first insights and XP, and the About & evidence screen.',
   '3': 'Four to six weeks to finish the book: the Planner, Battle Plans, modules M6 to M10, audio practices, the "I\'m feeling…" branch, Lapse Recovery, the Warning Sign Radar, My Recovery Plan and the Weekly Review, then an audit of every exercise.',
-  '4': 'Three to four weeks (which can overlap Phase 3) for the full game layer: the progress map (Brain Map or Harbor), ranks, badges, a quest log with the last mini-games, Calm mode, and a written review against the guardrails.',
-  '5': 'Three to four weeks to turn the web app into a real phone app with native notifications, biometric lock, secure key storage, an SOS shortcut, recorded audio and final audits. Some of this needs a Mac or Android Studio on your own computer.',
-  '6': 'Ongoing work before any public release: a clinical review packet, a usability study kit, privacy policy and store listing drafts, and, if you want it later, a written proposal for the optional AI coach.',
+  '4': 'Four to five weeks (which can overlap Phase 3) for the full game layer: the progress map (Brain Map or Harbor), ranks, badges, a quest log with the last mini-games, Calm mode, a written review against the guardrails, and a polish pass that makes the map a living scene and enforces the performance budget.',
+  '5': 'Four to five weeks to turn the app into a real phone app with native notifications, biometric lock, secure key storage, an SOS shortcut, recorded audio, final audits, and the paid plan with its device licence and safety floor. Some of this needs a Mac or Android Studio on your own computer.',
+  '6': 'Ongoing work before any public release: a clinical review packet, a usability study kit, privacy policy and store listing drafts, the sync service for up to three devices, and, if you want it later, a written proposal for the optional AI coach.',
 };
 
 const PHASE_SHOW = {
-  '0': 'A preview link that opens the empty app on a phone, with the five tabs and the SOS button in place.',
+  '0': 'A preview link that opens the empty app on a phone, with the five tabs and the SOS button in place, plus the Unity spike\'s measurements and a go / no-go on the platform.',
   '1': 'A working SOS session in airplane mode, onboarding, urgent help, quick logs and Today. Good enough to show a clinician the safety flows and to start dogfooding.',
   '2': 'Lessons M0 to M5 with tutorial-mode exercises, the Learning Roadmap, the Workbook tab, first insights and visible XP. Good for a first round of design and tone feedback.',
   '3': 'The whole book covered: planner, Battle Plans, audio practices, hard-feelings tools, Lapse Recovery, the Warning Sign Radar and My Recovery Plan with PDF export. Ready for usability testing with people in recovery.',
   '4': 'The progress map (Brain Map or Harbor), quests, badges and Calm mode, plus the guardrail review document for the clinical reviewer.',
-  '5': 'Store-ready iOS and Android builds on a real phone, with native notifications and biometric lock.',
-  '6': 'Review packets and policy drafts for the clinician, testers and counsel.',
+  '5': 'Store-ready iOS and Android builds on a real phone, with native notifications, biometric lock, and purchases and the device licence working in the store sandboxes.',
+  '6': 'Review packets and policy drafts for the clinician, testers and counsel, and two phones syncing one plan.',
 };
 
 function phaseEstimate(phase) { return phase.estimate ? phase.estimate.replace(/^about /, '~') : 'ongoing'; }
@@ -141,6 +141,14 @@ function renderExercises(b, sources) {
   });
 }
 
+function renderReferences(b, sources) {
+  b.table({
+    columns: [{ header: 'ID', w: 0.45 }, { header: 'What the app may say', w: 2.3 }, { header: 'Source', w: 2.9 }, { header: 'Type', w: 0.85 }],
+    size: 17,
+    rows: sources.references.map((r) => [r.id, q(r.claim), q(r.source), q(r.type)]),
+  });
+}
+
 function renderWireframe(b) {
   b.phoneFigure([
     { title: 'TODAY', items: [
@@ -169,4 +177,4 @@ function renderWireframe(b) {
   ], 'The Today and SOS screens, redrawn from the low-fi wireframe in the plan (PLAN.md §4).');
 }
 
-module.exports = { renderSteps, renderHowTo, renderHouseRules, renderReusable, renderDod, renderExercises, renderWireframe };
+module.exports = { renderSteps, renderHowTo, renderHouseRules, renderReusable, renderDod, renderExercises, renderReferences, renderWireframe };

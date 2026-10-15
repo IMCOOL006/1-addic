@@ -5,6 +5,7 @@
     - scripts/execution_plan/content.md   (the prose, in lightweight Markdown)
     - docs/BUILD-GUIDE.md                  (every build step and prompt, parsed verbatim)
     - docs/book/exercises.md               (the exercise → feature map)
+    - docs/evidence-references.md          (the evidence list for Appendix F)
     - scripts/execution_plan/steps.js      (plain-English notes per build step)
 
   Usage:  node scripts/build_execution_plan_doc.js [--out docs/1-addic-execution-plan.docx] [--no-pdf] [--work <tmp dir>]
@@ -89,6 +90,7 @@ async function buildDocx(pageMap) {
     reusable: (bb) => gen.renderReusable(bb, sources),
     dod: (bb) => gen.renderDod(bb, sources),
     exercises: (bb) => gen.renderExercises(bb, sources),
+    references: (bb) => gen.renderReferences(bb, sources),
     wireframe: (bb) => gen.renderWireframe(bb),
     pagebreak: (bb) => bb.pageBreak(),
   };

@@ -1,6 +1,6 @@
 # 1-addic Build Guide: step by step, with prompts
 
-This guide turns [`docs/PLAN.md`](PLAN.md) into 44 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
+This guide turns [`docs/PLAN.md`](PLAN.md) into 50 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
 
 > **Before you start:** the plan is still a draft. Settle the decisions in PLAN §15 first (step 0.1). Until then, the steps assume the recommended defaults.
 
@@ -49,7 +49,7 @@ Every prompt below says "Follow the house rules in docs/BUILD-GUIDE.md." These a
 
 ---
 
-## Phase 0: Decide & scaffold (about 1 week)
+## Phase 0: Decide & scaffold (about 1–2 weeks)
 
 ### Step 0.1: Record the decisions
 
@@ -60,7 +60,7 @@ I've reviewed docs/PLAN.md. Here are my answers to the decisions in §15
 (write "default" to accept the recommended default):
 D1: … D2: … D3: … D4: … D5: … D6: … D7: … D8: … D9: …
 D10 (region/language): … D11: … D12: … D13 (app name): … D14: … D15: …
-D16 (clinical advisor): … D17: … D18: …
+D16 (clinical advisor): … D17: … D18: … D19: …
 
 Create one short ADR per decision in docs/decisions/ (0001-<slug>.md: context,
 decision, consequences). Update PLAN.md so §15 shows each decision as settled
@@ -68,7 +68,7 @@ and any section affected by a non-default answer matches it. Don't write app
 code. Push and summarize what changed in the plan.
 ```
 
-**Done when:** `docs/decisions/` has 18 ADRs, and PLAN §15 shows every decision as settled.
+**Done when:** `docs/decisions/` has 19 ADRs, and PLAN §15 shows every decision as settled.
 
 ### Step 0.2: Scaffold the app
 
@@ -122,13 +122,16 @@ Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §10.3, §10.4 and
 §5.10, and docs/book/exercises.md.
 
 Define Zod schemas for: exercise (fields, tutorial examples/hints, events,
-bookRef), lesson (cards, checks, linked exercise), tutorial (steps with
-target, one line of copy, completing action), tip, resource (by region),
-cast character, and UI copy strings. Write `npm run validate:content` that
-loads everything in content/ and fails with clear messages. Add one sample of
-each type (use the Urge Planner example from §10.3). Create docs/COVERAGE.md:
-one row per exercise in docs/book/exercises.md with columns
-implemented / tutorial / tested, all unchecked. Push.
+bookRef), lesson (cards, checks, linked exercise, cited reference ids),
+tutorial (steps with target, one line of copy, completing action), tip,
+resource (by region), cast character, reference (an evidence citation:
+authors, year, title, source, DOI or URL, evidence type, plain-language
+claim, reviewedOn, usedBy; see docs/evidence-references.md), and UI copy
+strings. Write `npm run validate:content` that loads everything in content/
+and fails with clear messages, including a lesson that cites no reference.
+Add one sample of each type (use the Urge Planner example from §10.3).
+Create docs/COVERAGE.md: one row per exercise in docs/book/exercises.md with
+columns implemented / tutorial / tested, all unchecked. Push.
 ```
 
 **Done when:** `validate:content` passes, and it fails with a readable error if you break a sample file.
@@ -143,8 +146,11 @@ and the ADRs for the app name and game theme.
 
 Create the design system in src/ui: color tokens for light and dark themes
 (calm and adult; no childish colors), a type scale with a highly readable body
-font, spacing, radii, and accessible base components (Button, Card, Slider,
-Chip, Sheet, Dialog, ProgressRing, EmptyState). Build the app shell: bottom
+font, spacing, radii, motion tokens (durations, easings, reduced-motion
+rules), and accessible base components (Button, Card, Slider, Chip, Sheet,
+Dialog, ProgressRing, EmptyState). Write docs/design/style-guide.md: the
+illustration style, the progress-map scene, and visual do/don'ts from
+PLAN.md §10.8. Build the app shell: bottom
 navigation (Today, Learn, Workbook, Track, Actions) and a floating SOS button
 on every screen that respects safe areas. Create empty routed screens for each
 area in §4, with friendly empty states. Add docs/design/wireframes.md with
@@ -152,6 +158,48 @@ low-fi sketches of Today, SOS and a lesson. Test navigation e2e. Push.
 ```
 
 **Done when:** you can tap through every tab on your phone, the SOS button is everywhere, and both light and dark themes look right.
+
+### Step 0.6: Unity feasibility spike (go/no-go for D3)
+
+**Goal:** find out, with numbers, whether Unity can deliver this app within the §10.8 budget. Runs on your own computer.
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §10.1, §10.8 and
+docs/design/game-concept-review.md (the Unity section).
+
+This step runs on my own computer with Unity 6 installed. First write
+docs/unity-spike.md: exact steps for a non-developer to install Unity Hub,
+Unity 6 with the 2D URP template, the Unity MCP server for Claude Code, and
+the iOS and Android build tools. Then build a throwaway spike app with: a
+Today screen with a calm animated harbor scene, an SOS screen with a
+15-minute wave timer, a long text form using the phone keyboard and
+dictation, encrypted local storage (SQLite + SQLCipher), one local
+notification, and screen-reader labels on every control. Measure and record
+in the same file: cold-start time to the SOS screen on a mid-range Android
+phone and a recent iPhone, download and installed size, memory on Today,
+battery over 30 minutes idle, VoiceOver and TalkBack walkthroughs, font
+scaling, dictation, and whether any network call happens at startup.
+Compare each number with the pass marks in PLAN.md §10.8 and end with a
+clear go / no-go recommendation for D3. Update the D3 ADR. Push.
+```
+
+**Done when:** `docs/unity-spike.md` has every measurement filled in and a go / no-go recommendation, and the D3 ADR records the decision.
+
+### Step 0.7 (only if Unity wins): re-plan the guide for Unity
+
+```text
+I've decided D3 = Unity (see the ADR). Rewrite docs/BUILD-GUIDE.md steps 0.2
+to 5.4 for a Unity 2D (URP) C# app: keep every step's goal, order and
+"done when", and keep the SOS, safety, privacy, tutorial and accessibility
+rules unchanged; replace the web tooling (Vite, React, Dexie, Playwright,
+GitHub Pages) with the Unity equivalents (Unity Test Framework in batch
+mode on CI, a device-build pipeline, SQLite + SQLCipher, the Accessibility
+module, Mobile Notifications, Unity IAP, native widget and shortcut). Mark
+which steps must run on my own computer. Update PLAN.md §10 and CLAUDE.md to
+match, and add an ADR. Don't write app code. Push.
+```
+
+**Done when:** every step from 0.2 onward names Unity tooling, and `CLAUDE.md` says how to build and test.
 
 ---
 
@@ -477,6 +525,27 @@ that recomputing from events gives the same result, and that a slip never
 removes anything. Push.
 ```
 
+### Step 2.11: About & evidence screen
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §5.12 and §7, and
+docs/evidence-references.md.
+
+Turn docs/evidence-references.md into content/references/ (one entry per
+reference, using the schema from step 0.4) and build the "About & evidence"
+screen in Settings: a plain-language intro that credits the source workbook
+and says the app itself is not clinically tested, then one card per
+technique with the claim in one or two sentences, the primary sources with
+DOI or URL links, an evidence-strength label (meta-analysis, randomized
+trial, review, guideline, theory, book), the date last reviewed, and which
+app features use it. Add a small "Why this works" link on Today and in
+every lesson wrap and Training drill that opens the matching card. Make
+every lesson cite at least one reference; validation fails otherwise, and
+also if a reference has no link. Tutorial and help entry. Push.
+```
+
+**Done when:** every lesson shows at least one real reference, and About & evidence opens offline with links that work when online.
+
 **Phase 2 done when:** M0–M5 are complete with tutorials, the Roadmap and Explorer checklist work, and COVERAGE.md is ticked for Ch 1–5.
 
 ---
@@ -611,7 +680,7 @@ COVERAGE.md and a short report.
 
 ---
 
-## Phase 4: Full game layer (about 3–4 weeks, can overlap Phase 3)
+## Phase 4: Full game layer (about 4–5 weeks, can overlap Phase 3)
 
 ### Step 4.1: Progress map, ranks and badges
 
@@ -650,9 +719,28 @@ safety house rules, fix any violation, and write docs/guardrail-review.md with
 each rule and how the app meets it. Push.
 ```
 
+### Step 4.4: Living progress map, motion polish and the performance budget
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §10.8,
+docs/design/style-guide.md and the game-theme ADR.
+
+Make the progress map a living scene: time-of-day light, gentle water or
+ambient motion, lanterns or regions that light up with practice, and a calm
+forecast look for planned rough weather, all with a static equivalent when
+reduced motion is on. Polish micro-interactions: every log, check-in and
+"wave surfed" moment gets a short, quiet acknowledgement under 300 ms. Then
+enforce the §10.8 performance budget in CI (download and installed size,
+cold start to SOS, frame time, memory, battery, zero startup network calls),
+fix anything over budget, and add screenshot tests for the main screens in
+light and dark themes. Push.
+```
+
+**Done when:** the budget checks pass in CI, and the scene looks right with reduced motion on.
+
 ---
 
-## Phase 5: Native app & polish (about 3–4 weeks)
+## Phase 5: Native app & polish (about 4–5 weeks)
 
 > Parts of this phase need a Mac with Xcode (iOS) or Android Studio, so some steps run on your own computer. Each prompt asks Claude to tell you exactly what to run locally.
 
@@ -689,6 +777,26 @@ if I've provided files in content/audio, and run a full accessibility and
 performance audit on the native builds. Fix what you can and report the rest.
 Push.
 ```
+
+### Step 5.4: Purchases and the device licence
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §9.1 and the
+ADRs for D4, D15 and D19.
+
+Add purchases and the device licence to the native builds: the store in-app
+purchase (one-time or subscription per the D15 ADR) with restore; a
+device-bound key pair created in the Secure Enclave or Android Keystore on
+first run; a licence check that caches a signed token and works offline with
+a grace period; a "Your devices and plan" screen that lists up to three
+devices and lets me remove one; and the D19 safety floor: urgent help, SOS,
+my own artifacts, logs, export and delete must work with no licence,
+offline, and after a lapse. Write docs/licence-server.md describing the tiny
+server the app talks to, what it stores and what it must never store. Test
+the lapse and offline cases end to end. Push.
+```
+
+**Done when:** sandbox purchases work on both stores, and SOS opens with no network and an expired licence.
 
 ---
 
@@ -733,6 +841,24 @@ opt-in AI rehearsal partner: backend proxy design, prompts, crisis routing,
 data minimization, an eval set of scenarios (including crisis and
 manipulation attempts) and costs. Write docs/ai-coach-proposal.md and push.
 ```
+
+### Step 6.5: Sync service for up to three devices
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §9 and §9.1 and
+the D4 ADR.
+
+Build the sync service for up to three devices on one plan: end-to-end
+encrypted (the server stores only ciphertext, device public keys and plan
+ids); a pairing flow that moves the sync key from one device to another by
+QR code or short code; conflict handling for the append-only event log and
+for edited artifacts; a "last synced" status in Settings; and removal of a
+lost device. Nothing health-related ever leaves the device unencrypted, and
+the server keeps no logs of content. Write docs/sync-design.md with threat
+notes. Test two devices syncing offline edits. Push.
+```
+
+**Done when:** two phones on one plan show the same data within a minute of coming online, and the server cannot read any of it.
 
 ---
 

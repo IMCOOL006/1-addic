@@ -90,12 +90,25 @@ function parseExercises(md) {
   return rows;
 }
 
+// ---- evidence-references.md ---------------------------------------------------
+function parseReferences(md) {
+  const rows = [];
+  for (const l of md.split('\n')) {
+    if (!l.startsWith('| R')) continue;
+    const cells = l.split('|').slice(1, -1).map((c) => c.trim());
+    if (cells.length < 5) continue;
+    rows.push({ id: cells[0], claim: cells[1], source: cells[2], type: cells[3], usedBy: cells[4] });
+  }
+  return rows;
+}
+
 function loadSources(root) {
   const guideMd = readDoc(root, 'docs/BUILD-GUIDE.md');
   const guide = parseBuildGuide(guideMd);
   const exercises = parseExercises(readDoc(root, 'docs/book/exercises.md'));
+  const references = parseReferences(readDoc(root, 'docs/evidence-references.md'));
   const allPrompts = [...guideMd.matchAll(/^```text\n([\s\S]*?)\n```/gm)].map((m) => m[1]);
-  return { guide, exercises, allPrompts };
+  return { guide, exercises, references, allPrompts };
 }
 
-module.exports = { loadSources, parseBuildGuide, parseExercises };
+module.exports = { loadSources, parseBuildGuide, parseExercises, parseReferences };
