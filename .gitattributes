@@ -1,0 +1,8 @@
+# Cloud sessions run on Linux: keep LF endings so shell scripts/hooks execute.
+* text=auto eol=lf
+*.sh text eol=lf
+*.xlsx binary
+*.xlsm binary
+*.xls binary
+*.png binary
+*.jpg binary

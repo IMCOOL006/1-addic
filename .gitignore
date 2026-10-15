@@ -1,0 +1,26 @@
+# Dependencies / build output
+node_modules/
+dist/
+build/
+.next/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Environment & secrets (set secrets in the claude.ai environment instead)
+.env
+.env.*
+!.env.example
+
+# Claude Code local-only settings
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Office lock files
+~$*
