@@ -137,21 +137,21 @@ flowchart LR
 ### Wireframe sketches (low-fi, for discussion)
 
 ```
-┌───────── TODAY ─────────┐      ┌────────── SOS ──────────┐
-│ Good evening, Sam       │      │  You opened this.       │
-│ Day 15 · 9 urges surfed │      │  That's your rational   │
-│ ┌─────────────────────┐ │      │  brain at work.         │
-│ │ Evening check-in  ▶ │ │      │                         │
-│ └─────────────────────┘ │      │  How strong? 0 ──●── 10 │
-│ Tonight                 │      │  ~15:00  🌊 wave timer   │
-│  7:30 Free time ⚠ risky │      │                         │
-│   └ Battle plan: call   │      │ [ Ride the wave      ]  │
-│     Mia, then walk      │      │ [ Remind me why      ]  │
-│  8:00 Want-to: guitar 🎸│      │ [ Call someone       ]  │
-│ Continue: Step 3 · L2 ▶ │      │ [ Distract me        ]  │
-│ Quest: Build Your Crew  │      │ [ Talk back          ]  │
-│              (SOS) ●    │      │  Need urgent help? ☎    │
-└─────────────────────────┘      └─────────────────────────┘
+┌───────── TODAY ─────────┐   ┌────────── SOS ──────────┐
+│ Good evening, Sam       │   │ You opened this. That's │
+│ Day 15 · 9 urges surfed │   │ your rational brain at  │
+│ ┌─────────────────────┐ │   │ work.                   │
+│ │ Evening check-in  ▶ │ │   │                         │
+│ └─────────────────────┘ │   │ How strong?  0 ──●── 10 │
+│ Tonight                 │   │ 15:00  wave timer       │
+│  7:30 Free time  risky  │   │                         │
+│   └ Battle plan: call   │   │ [ Ride the wave       ] │
+│     Mia, then walk      │   │ [ Remind me why       ] │
+│  8:00 Want-to: guitar   │   │ [ Call someone        ] │
+│ Continue: Step 3 · L2 ▶ │   │ [ Distract me         ] │
+│ Quest: Build Your Crew  │   │ [ Talk back           ] │
+│                 [SOS]   │   │ Need urgent help?  →    │
+└─────────────────────────┘   └─────────────────────────┘
 ```
 
 ---
