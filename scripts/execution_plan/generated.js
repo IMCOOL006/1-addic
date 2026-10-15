@@ -21,7 +21,7 @@ const PHASE_BRIEFS = {
   '1': 'Two to three weeks to build the part of the app that earns its place: private storage, onboarding, urgent help, the SOS craving flow, quick logs, a first Today screen, the tour and drill, and data export. At the end you use it yourself for a week.',
   '2': 'Four to six weeks for the learning layer: the exercise engine, the lesson player, the self-teaching guidance engine, the Learning Roadmap, the first six modules (M0 to M5) with their artifacts, the Workbook tab, and the first insights and XP.',
   '3': 'Four to six weeks to finish the book: the Planner, Battle Plans, modules M6 to M10, audio practices, the "I\'m feeling…" branch, Lapse Recovery, the Warning Sign Radar, My Recovery Plan and the Weekly Review, then an audit of every exercise.',
-  '4': 'Three to four weeks (which can overlap Phase 3) for the full game layer: the Brain Map, ranks, badges, a quest log with the last mini-games, Calm mode, and a written review against the guardrails.',
+  '4': 'Three to four weeks (which can overlap Phase 3) for the full game layer: the progress map (Brain Map or Harbor), ranks, badges, a quest log with the last mini-games, Calm mode, and a written review against the guardrails.',
   '5': 'Three to four weeks to turn the web app into a real phone app with native notifications, biometric lock, secure key storage, an SOS shortcut, recorded audio and final audits. Some of this needs a Mac or Android Studio on your own computer.',
   '6': 'Ongoing work before any public release: a clinical review packet, a usability study kit, privacy policy and store listing drafts, and, if you want it later, a written proposal for the optional AI coach.',
 };
@@ -31,7 +31,7 @@ const PHASE_SHOW = {
   '1': 'A working SOS session in airplane mode, onboarding, urgent help, quick logs and Today. Good enough to show a clinician the safety flows and to start dogfooding.',
   '2': 'Lessons M0 to M5 with tutorial-mode exercises, the Learning Roadmap, the Workbook tab, first insights and visible XP. Good for a first round of design and tone feedback.',
   '3': 'The whole book covered: planner, Battle Plans, audio practices, hard-feelings tools, Lapse Recovery, the Warning Sign Radar and My Recovery Plan with PDF export. Ready for usability testing with people in recovery.',
-  '4': 'The Brain Map, quests, badges and Calm mode, plus the guardrail review document for the clinical reviewer.',
+  '4': 'The progress map (Brain Map or Harbor), quests, badges and Calm mode, plus the guardrail review document for the clinical reviewer.',
   '5': 'Store-ready iOS and Android builds on a real phone, with native notifications and biometric lock.',
   '6': 'Review packets and policy drafts for the clinician, testers and counsel.',
 };

@@ -1,6 +1,6 @@
 # 1-addic: Product & Execution Plan
 
-> **Status:** Draft v0.2 (adds the in-app tutorial and Learning Roadmap), for review and refinement (by the owner and a Fable review chat) **before any building starts.**
+> **Status:** Draft v0.3 (v0.2 added the in-app tutorial and Learning Roadmap; v0.3 adds the Harbor world as a game-theme option, reviewed in [`docs/design/game-concept-review.md`](design/game-concept-review.md)), for review and refinement (by the owner and a Fable review chat) **before any building starts.**
 > **Build steps and prompts:** [`docs/BUILD-GUIDE.md`](BUILD-GUIDE.md).
 > **Source material:** *The Addiction Recovery Skills Workbook* (Glasner-Edwards; New Harbinger). It is summarized in [`docs/book/`](book/README.md); every exercise is inventoried in [`docs/book/exercises.md`](book/exercises.md).
 > **Conventions:** 🟡 **DECISION** = needs an answer in review (all collected in §15). "Ex N.M" = an exercise from the book.
@@ -358,7 +358,7 @@ The app has many features. Showing them all on day 1 would overwhelm anyone, and
 The Learning Roadmap is the **home screen of the Learn tab**. It answers four questions at a glance: *Where am I? What's next? How long will this take? What do I get at each step?*
 
 **Two views**
-- **Map view:** the 11 modules (§5.3) as a path with milestones. Each stop shows its lessons (done and to do), the skills it teaches, and what it **unlocks** (tools, Workbook artifacts, features from §5.10). Finished stops light up the matching Brain Map region (§6.2).
+- **Map view:** the 11 modules (§5.3) as a path with milestones. Each stop shows its lessons (done and to do), the skills it teaches, and what it **unlocks** (tools, Workbook artifacts, features from §5.10). Finished stops light up the matching region of the progress map (§6.2: Brain Map or Harbor).
 - **Plan view:** the same journey as a calendar. Each week shows a target module, its practice goals ("Try SOBER 3 times this week"), and the next milestone date.
 
 **Three tracks on one roadmap**
@@ -404,19 +404,20 @@ The book itself argues for rewards. Ch 4 and Ch 8 say to *reward yourself for fo
 | **A. Two Brains** *(recommended)* | You train your **Rational Brain** (a companion the user can name) against the **Addicted Brain** (an antagonist voice that literally speaks the user's own red-flag thoughts in the Courtroom and the Distortion Sort). Meta-progress is a stylized **Brain Map** whose regions light up as related skills level up. | Native to the book (Ch 2 onward). Reinforces the science. Adult. Turns "noticing thoughts" into a game. | Brain imagery can feel clinical, so it needs warm illustration. Must avoid implying medical healing claims. |
 | B. The Road | The book's brakes/"go mode" metaphor as a road trip. Skills are car upgrades; high-risk situations are tricky intersections. | Intuitive "journey" framing | **Driving can be a trigger or trauma topic** (DUIs are mentioned in the book's intro). Weaker link to the content. |
 | C. Garden | A garden that grows with practice and never dies. A slip is a passing storm. | Very gentle and calming | Generic, weaker link to the book's ideas |
+| **D. The Harbor** *(world only; from the owner's concept note, Oct 2026)* | A small harbor seen from above instead of a brain map, with A's mechanics underneath. The six skill regions become places: the Lighthouse (thinking clearly), the Cove (calm), the Garden (joy), the Pier (people), the Compass Rose (motivation) and the Weather Station (self-awareness). Cravings are weather that passes; skills are anchors; SOS is safe harbor; a slip is a rough passage that leaves the harbor untouched. Reviewed in [`docs/design/game-concept-review.md`](design/game-concept-review.md). | Calm, adult, non-clinical; no healing claim. Fits the book's wave image and the plan's Compass, Radar, "Build Your Crew" quest and SOS. A discreet-name candidate (D13). | The harbor must never start neglected or decay. No storm visuals during SOS. Water or sailing can be a hard topic for some people; test it. Needs illustration, like A. |
 
-Recommendation: **A's structure with C's gentleness** (organic, calm visuals; nothing dies or decays).
+Recommendation: **A's structure in D's world, with C's gentleness**: keep the companion, the Courtroom and the Distortion Sort; draw progress as a harbor that only ever gains light and life (nothing dies or decays). The Brain Map stays the fallback if the harbor tests badly with people in recovery.
 
-**Brain Map regions (Theme A):**
+**Progress-map regions (Theme A: Brain Map region · Theme D: Harbor place):**
 
-| Region | Skills that grow it | Book |
-|---|---|---|
-| **Command Center** (frontal lobe) | Put It On Trial, spotting distortions, Battle Plans, scheduling | Ch 5, 6 |
-| **Calm Core** (stress system) | SOBER, breathing, body scan, acceptance, give it a beat | Ch 7, 9 |
-| **Joy Circuit** (reward system) | Pleasant activities, exercise, pleasure predicting, rewards | Ch 4, 8 |
-| **Connection Hub** | Safety Nets, assertive scripts, refusals, meetings | Ch 4 |
-| **Compass** (motivation) | Reasons Card, motivation check-ins, "+1" | Ch 3 |
-| **Radar** (self-awareness) | Trigger logging, craving and mood logs, warning signs | Ch 5, 9, 10 |
+| Region | Harbor place (D) | Skills that grow it | Book |
+|---|---|---|---|
+| **Command Center** (frontal lobe) | The Lighthouse (its beam cuts through fog and sweeps ahead) | Put It On Trial, spotting distortions, Battle Plans, scheduling | Ch 5, 6 |
+| **Calm Core** (stress system) | The Cove (still water inside the breakwater) | SOBER, breathing, body scan, acceptance, give it a beat | Ch 7, 9 |
+| **Joy Circuit** (reward system) | The Garden on the hill (grows only from real-world activity) | Pleasant activities, exercise, pleasure predicting, rewards | Ch 4, 8 |
+| **Connection Hub** | The Pier (a lantern per person in the crew) | Safety Nets, assertive scripts, refusals, meetings | Ch 4 |
+| **Compass** (motivation) | The Compass Rose (the reasons are the heading) | Reasons Card, motivation check-ins, "+1" | Ch 3 |
+| **Radar** (self-awareness) | The Weather Station (logbook and forecast; the Warning Sign Radar is its radar) | Trigger logging, craving and mood logs, warning signs | Ch 5, 9, 10 |
 
 ### 6.3 Core loops
 
@@ -425,7 +426,7 @@ Recommendation: **A's structure with C's gentleness** (organic, calm visuals; no
 | **Moment** | ~15 min | Craving or feeling → SOS tool → re-rate → "what helped?" | "Wave surfed," XP to that skill, the Rational Brain reflects the user's own words back |
 | **Daily** | 2× per day | Morning check-in → plan, risky blocks, one want-to → do a lesson *or* a practice → evening check-in | Daily wins summary, Momentum ring |
 | **Weekly** | 1× per week | Weekly Review → Battle Plans for the week → want-tos with rewards → recap | Weekly recap card, Battle Plan debriefs |
-| **Journey** | Weeks | Modules → artifacts → Brain Map regions → **Recovery Plan graduation** → Maintenance | Chapter completions, graduation |
+| **Journey** | Weeks | Modules → artifacts → progress-map regions → **Recovery Plan graduation** → Maintenance | Chapter completions, graduation |
 
 ### 6.4 Progression systems
 
@@ -480,7 +481,7 @@ Recommendation: **A's structure with C's gentleness** (organic, calm visuals; no
 
 ### 6.7 Slips inside the game
 
-Nothing is taken away. The companion's message is "This is data. Let's learn from it." The Slip Review earns XP (honesty is a skill). The Brain Map doesn't "un-heal." (We also avoid medical claims either way.) Total sober days are preserved. The current run restarts quietly.
+Nothing is taken away. The companion's message is "This is data. Let's learn from it." The Slip Review earns XP (honesty is a skill). The Brain Map doesn't "un-heal" and the Harbor never decays. (We also avoid medical claims either way.) Total sober days are preserved. The current run restarts quietly.
 
 ---
 
@@ -742,7 +743,7 @@ Rough sizing assumes one developer plus Claude Code. Every phase ends with a usa
 | **1. Safety core MVP: "help in the moment"** (~2–3 wks) | Useful from day 1 | Onboarding (safety check, lock, region) · **SOS craving flow** (timer, Reasons, call, distract, delay loop, outcome) · crisis screen · Reasons Card (quick + Ex 3.2) · basic Safety Nets · craving quick-log (Ex 5.4) · evening check-in · basic Today · encrypted local DB · export/delete · **domain event log** (the game's foundation) · **first-run tour + SOS practice drill** | E2E offline SOS test passes; the owner dogfoods it for 7 days |
 | **2. Learn + Workbook engine** (~4–6 wks) | The tutorial layer | Exercise engine (all field types) · lesson player · **guidance engine** (just-in-time tutorials, tips, Explorer checklist, Help & tutorials, progressive feature reveal) · **Learning Roadmap** (Map and Plan views, pace, checkpoints) · **M0–M5 content** (Start → Self-Expert) · artifacts: Trigger Profile, Red Flags, Signatures, Decisional Balance, Motivation Meter · Workbook tab · insights v1 · **visible XP and skill mastery** | All M0–M5 exercises validated, with tutorial mode for each; every shipped feature has its tutorial and help entry |
 | **3. Actions + full coverage** (~4–6 wks) | The tracker and actions layer | **M6–M10 content** · Planner · **Battle Plans** + .ics · **Weekly Review** · pleasant activities + rewards · Prediction Lab · mindfulness audio (TTS) · emotion logs + "I'm feeling…" · **Lapse Recovery** · **Warning Sign Radar** · **My Recovery Plan** + PDF | Every row in `docs/book/exercises.md` implemented or explicitly deferred |
-| **4. Full game layer** (~3–4 wks; can overlap with 3) | Delight, without harm | Brain Map · quests · mini-games (Distortion Sort, The Big Game, Refusal Rehearsal, Courtroom polish) · badges · ranks · Calm mode | Game state recomputes deterministically from events; guardrail checklist (§6.1) passes review |
+| **4. Full game layer** (~3–4 wks; can overlap with 3) | Delight, without harm | progress map (Brain Map or Harbor, per D6) · quests · mini-games (Distortion Sort, The Big Game, Refusal Rehearsal, Courtroom polish) · badges · ranks · Calm mode | Game state recomputes deterministically from events; guardrail checklist (§6.1) passes review |
 | **5. Native & polish** (~3–4 wks) | Real phone app | Capacitor iOS/Android · local notifications · biometric lock · secure key storage · SOS shortcut/widget · discreet icon · recorded audio · accessibility audit · performance | Store-ready builds; WCAG AA audit fixed |
 | **6. Validate & launch** (ongoing) | Safe public release (if D1 = public) | Clinical review · usability study with people in recovery · legal and privacy review · store listings · optional: AI coach beta, E2E sync, therapist share | Sign-offs from the clinical advisor and counsel |
 
@@ -797,7 +798,7 @@ Rough sizing assumes one developer plus Claude Code. Every phase ends with a usa
 | **D3** | Platform | PWA → Capacitor · React Native · Flutter | **PWA (React + TS) → Capacitor in Phase 5** |
 | **D4** | Accounts & sync | None · optional E2E sync later · accounts from start | **None in v1**; optional E2E sync later |
 | **D5** | Reminders before native | In-app + .ics · tiny push relay | **In-app + .ics** |
-| **D6** | Game theme & intensity | Two Brains · Road · Garden; on by default or opt-in | **Two Brains with gentle visuals; on by default, Calm mode available** |
+| **D6** | Game theme & intensity | Two Brains · Road · Garden · Harbor world with Two Brains mechanics; on by default or opt-in | **Two Brains mechanics in the Harbor world** (§6.2 option D), gentle visuals; on by default, Calm mode available. Brain Map as the fallback. |
 | **D7** | Goal framing | Abstinence (book) · also allow "cut down" | **Abstinence-focused**, with a contemplation path; safety info for everyone |
 | **D8** | Substance scope | Alcohol & drugs (book) · + nicotine · + behavioral | **Alcohol & drugs**; nicotine optional; behavioral addictions out |
 | **D9** | Age | 18+ · 13+ | **18+** |

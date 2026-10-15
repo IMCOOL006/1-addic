@@ -1,6 +1,6 @@
 # 1-addic Build Guide: step by step, with prompts
 
-This guide turns [`docs/PLAN.md`](PLAN.md) into about 45 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
+This guide turns [`docs/PLAN.md`](PLAN.md) into 44 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
 
 > **Before you start:** the plan is still a draft. Settle the decisions in PLAN §15 first (step 0.1). Until then, the steps assume the recommended defaults.
 
@@ -613,14 +613,15 @@ COVERAGE.md and a short report.
 
 ## Phase 4: Full game layer (about 3–4 weeks, can overlap Phase 3)
 
-### Step 4.1: Brain Map, ranks and badges
+### Step 4.1: Progress map, ranks and badges
 
 ```text
 Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §6 in full and
 the game-theme ADR.
 
-Build the Brain Map (six regions from §6.2 that light up from skill mastery;
-warm, organic illustration style, nothing ever decays), ranks (Explorer →
+Build the progress map chosen in the game-theme ADR (the Brain Map or the
+Harbor map from §6.2: six regions that light up from skill mastery; warm,
+organic illustration style, nothing ever decays), ranks (Explorer →
 Guide), the badges from §6.6 (deterministic, not farmable), sober-day
 milestone celebrations with no XP, and cosmetic unlocks earned by practice.
 Link roadmap milestones to the map. Tests prove nothing can be lost or

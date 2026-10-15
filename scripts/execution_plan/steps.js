@@ -302,10 +302,10 @@ module.exports = {
     ],
   },
   '4.1': {
-    brief: 'Build the Brain Map, ranks and badges, with tests proving nothing can be lost or randomised.',
-    after: 'The Brain Map (six regions from the plan that light up from skill mastery, in a warm, organic style where nothing ever decays), ranks from Explorer to Guide, the badges from the plan (deterministic, not farmable), sober-day milestone celebrations with no XP, cosmetic unlocks earned by practice, roadmap milestones linked to the map, and tests proving nothing can be lost or randomised.',
+    brief: 'Build the progress map chosen in the game-theme decision (the Brain Map or the Harbor), ranks and badges, with tests proving nothing can be lost or randomised.',
+    after: 'The progress map chosen in the game-theme ADR, either the Brain Map or the Harbor map (six regions from the plan that light up from skill mastery, in a warm, organic style where nothing ever decays), ranks from Explorer to Guide, the badges from the plan (deterministic, not farmable), sober-day milestone celebrations with no XP, cosmetic unlocks earned by practice, roadmap milestones linked to the map, and tests proving nothing can be lost or randomised.',
     done: [
-      'The six Brain Map regions light up from skill mastery, in a warm organic style, and nothing ever decays.',
+      'The six regions of the chosen progress map (Brain Map or Harbor) light up from skill mastery, in a warm organic style, and nothing ever decays.',
       'Ranks run from Explorer to Guide, and the badges from the plan are deterministic and not farmable.',
       'Sober-day milestones are celebrated without XP, and cosmetic unlocks come only from practice.',
       'Roadmap milestones are linked to the map, and tests prove nothing can be lost or randomised.',
