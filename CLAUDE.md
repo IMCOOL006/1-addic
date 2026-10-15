@@ -1,7 +1,7 @@
 # 1-addic
 
-Goal: turn a spreadsheet workbook into an app. The stack hasn't been chosen yet.
-Once it's picked, update this file with the build, test and run commands.
+Goal: turn an addiction-recovery skills workbook (a book) into a private, phone-first recovery app.
+The stack is proposed in `docs/PLAN.md` but not yet approved. Once it's set up, update this file with the build, test and run commands.
 
 ## Where this runs
 
@@ -22,5 +22,6 @@ In the cloud:
 ## Project docs
 
 - `docs/PLAN.md` is the product and execution plan. It's a draft under review: don't start building until the owner approves it, and record settled decisions as ADRs in `docs/decisions/`.
+- `docs/BUILD-GUIDE.md` is the step-by-step build guide, with a ready-to-paste prompt and a done-when checklist for every step. Its "house rules" apply to all build work.
 - `docs/book/` holds paraphrased reference notes on the source workbook (one file per chapter, plus `exercises.md` and `glossary.md`). Read these instead of re-reading the epub.
 - The source book is copyrighted. Never commit the epub, extracted text, or verbatim passages. If you need to re-extract it, put the epub in `data/` (git-ignored) and run `python3 -I scripts/epub_to_text.py data/<book>.epub <scratch-dir>`.
