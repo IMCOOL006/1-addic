@@ -19,3 +19,7 @@ The owner asked for an app that opens only on a registered device, with sync to 
 - Apple's App Review needs working demo invite codes to test gated purchases; `docs/licence-server.md` (Step 5.4) includes them.
 - Growth is deliberately slow and personal; the risk is accepted (PLAN §13).
 - Step 5.4 adds invite codes; PLAN §9.1 documents the design.
+
+## Addendum, 16 October 2026
+
+The owner confirmed three devices and the new-phone flow (C3) and asked for an optimal handling of lost and changed devices. See ADR 0020.

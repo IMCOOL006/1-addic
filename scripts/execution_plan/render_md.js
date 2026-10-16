@@ -35,7 +35,8 @@ function splitRow(line) {
 }
 
 function render(md, b, hooks) {
-  const lines = md.replace(/\r\n/g, '\n').split('\n');
+  md = md.replace(/\r\n/g, '\n').replace(/^---\n[\s\S]*?\n---\n/, '');
+  const lines = md.split('\n');
   let i = 0;
   let lastHeading = 0; // level of the heading just emitted (for briefs)
   let pendingWidths = null;
@@ -89,11 +90,15 @@ function render(md, b, hooks) {
       continue;
     }
     if (l.startsWith('```')) {
+      // ```text            → a "Copy this prompt" box (checked word for word against the guide)
+      // ```text Some label → a box with that label (not checked against the guide)
+      const info = l.slice(3).trim();
+      const label = info.startsWith('text ') ? info.slice(5).trim() : undefined;
       const buf = [];
       i++;
       while (i < lines.length && !lines[i].startsWith('```')) { buf.push(lines[i]); i++; }
       i++;
-      b.promptBox(buf.join('\n'));
+      b.promptBox(buf.join('\n'), label ? { label } : {});
       continue;
     }
     if (l.startsWith('|')) {

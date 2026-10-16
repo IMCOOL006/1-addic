@@ -17,3 +17,7 @@ The region drives crisis lines, resources, the store listing, pricing and the cu
 - **Localisation:** every piece of UI copy and content carries a locale from Step 0.4; Gujarati script rendering (font, line breaking) and the availability of Gujarati text-to-speech on each platform are checked; where the phone has no Gujarati voice, the practices show their text on screen and recorded voice is considered later. New Step 2.12 does this work.
 - **Market:** India is overwhelmingly Android, so the Android pass marks in ADR 0003 matter most; pricing in INR.
 - **Law:** India's Digital Personal Data Protection Act 2023 and its rules go on the counsel checklist (PLAN §8); the usability study recruits Gujarati speakers; the clinical advisor should be India-licensed.
+
+## Addendum, 16 October 2026 (owner input I6)
+
+The owner will verify the crisis numbers "before release". The planner reads this as before the public release at the latest, and will verify them before the friends build as well unless the owner says otherwise.

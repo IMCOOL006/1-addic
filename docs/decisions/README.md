@@ -23,3 +23,7 @@ One short record per decision from PLAN.md §15, answered by the owner on 16 Oct
 | [0017](0017-progressive-feature-reveal.md) | D17 Progressive feature reveal | Accepted |
 | [0018](0018-learning-pace-custom-and-free.md) | D18 Steady pace by default, plus Custom and Free | Accepted |
 | [0019](0019-safety-floor.md) | D19 The safety floor stays open | Accepted |
+| [0020](0020-device-transfer-and-recovery.md) | C3 Moving, losing and recovering devices | Accepted |
+| [0021](0021-forecast-check.md) | C5 The forecast check | Accepted |
+
+Owner inputs I1–I13 and confirmations C1–C5 are recorded in [owner-inputs.md](owner-inputs.md).

@@ -19,3 +19,9 @@ The owner prefers Unity if it can deliver. The plan's default was a PWA with Rea
 - With doubled marks, a Unity app may take up to 4 seconds to reach SOS from a cold start. That is a real cost in the craving moment; the mitigations are a native home-screen widget and shortcut (outside the engine) showing the crisis number and the Reasons Card, and Step 4.4 optimisation toward the 2-second target.
 - If Unity wins, Step 0.7 rewrites the build guide for Unity, building and device testing move to the owner's computer, and testers use TestFlight and Play internal testing.
 - The measured numbers are reported whatever the outcome.
+
+## Addendum, 16 October 2026 (owner inputs I3 and C2)
+
+- Unity and an Android phone are available; the iPhone version is deferred until needed. The spike and the Early Access build measure **Android only**; the iPhone pass marks apply when that version is built. No Mac, Apple account or TestFlight is needed now.
+- C2 confirms the doubled pass marks "for now": the owner will test on a real device and then decide.
+- The Early Access build (`docs/program/EARLY-ACCESS-AND-PROGRAM.md`) is built so that it doubles as the spike: if it passes, it is the foundation; if it fails, the measurements and the failure report are kept and the content moves to the web stack.
