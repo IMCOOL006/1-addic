@@ -51,7 +51,7 @@ function cover() {
       'Thirty-seven questions: the nineteen decisions in the plan, thirteen inputs only you can provide, and five confirmations of what was added this month. Each has a short brief, the options, a recommendation and a place for your answer.',
       '"Accept the recommendation" is always a valid answer. Part 4 is a one-page answer sheet if you want to go fast.',
     ]),
-    new Paragraph({ spacing: { before: 3200, after: 60 }, children: [new TextRun({ text: smartQuotes('Companion to the 1-addic Execution Plan (docs/1-addic-execution-plan.docx). Decisions follow PLAN.md §15, draft v0.4.'), size: TINY, color: C.grey })] }),
+    new Paragraph({ spacing: { before: 3200, after: 60 }, children: [new TextRun({ text: smartQuotes('Companion to the 1-addic Execution Plan (docs/1-addic-execution-plan.docx). Answered by the owner on 16 October 2026; see docs/decisions/.'), size: TINY, color: C.grey })] }),
     new Paragraph({ spacing: { after: 0 }, children: [new TextRun({ text: `Generated ${DATE}. Rebuild with: node scripts/build_decisions_doc.js`, size: TINY, color: C.grey })] }),
   ];
 }

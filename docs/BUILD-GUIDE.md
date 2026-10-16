@@ -1,8 +1,8 @@
 # 1-addic Build Guide: step by step, with prompts
 
-This guide turns [`docs/PLAN.md`](PLAN.md) into 50 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
+This guide turns [`docs/PLAN.md`](PLAN.md) into 51 small build steps. Each step has a goal, **a prompt you paste into a new Claude Code session**, and a "done when" checklist. Follow the steps in order. Each one builds on the last.
 
-> **Before you start:** the plan is still a draft. Settle the decisions in PLAN §15 first (step 0.1). Until then, the steps assume the recommended defaults.
+> **Before you start:** the decisions in PLAN §15 were settled on 16 October 2026 (step 0.1 is done; see `docs/decisions/`). Only D13, the name, is still open.
 
 ---
 
@@ -167,10 +167,12 @@ low-fi sketches of Today, SOS and a lesson. Test navigation e2e. Push.
 Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §10.1, §10.8 and
 docs/design/game-concept-review.md (the Unity section).
 
-This step runs on my own computer with Unity 6 installed. First write
-docs/unity-spike.md: exact steps for a non-developer to install Unity Hub,
-Unity 6 with the 2D URP template, the Unity MCP server for Claude Code, and
-the iOS and Android build tools. Then build a throwaway spike app with: a
+This step runs on my own computer (Unity 6.6 is installed; the Unity 7
+alpha may be used to exercise the official MCP, but measure size and
+start-up on a shippable Unity 6 release as well). First write
+docs/unity-spike.md: exact steps for a non-developer to set up the 2D URP
+template, the Unity MCP server for Claude Code, and the iOS and Android
+build tools. Then build a throwaway spike app with: a
 Today screen with a calm animated harbor scene, an SOS screen with a
 15-minute wave timer, a long text form using the phone keyboard and
 dictation, encrypted local storage (SQLite + SQLCipher), one local
@@ -179,8 +181,10 @@ in the same file: cold-start time to the SOS screen on a mid-range Android
 phone and a recent iPhone, download and installed size, memory on Today,
 battery over 30 minutes idle, VoiceOver and TalkBack walkthroughs, font
 scaling, dictation, and whether any network call happens at startup.
-Compare each number with the pass marks in PLAN.md §10.8 and end with a
-clear go / no-go recommendation for D3. Update the D3 ADR. Push.
+Compare each number with the spike pass marks in PLAN.md §10.8 (doubled per
+ADR 0003) and end with a clear go / no-go recommendation for D3. If any
+check fails, report exactly which ones, by how much, and what would have to
+change, so we are informed for later. Update the D3 ADR. Push.
 ```
 
 **Done when:** `docs/unity-spike.md` has every measurement filled in and a go / no-go recommendation, and the D3 ADR records the decision.
@@ -428,7 +432,8 @@ Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §5.11 in full and
 
 Build the Learning Roadmap as the Learn tab's home: Map view (11 modules as a
 path; each stop shows lessons, skills, and what it unlocks), Plan view
-(calendar of weekly targets based on the pace from onboarding), the three
+(calendar of weekly targets based on the pace from onboarding: Gentle,
+Steady, Focused, Custom, or Free with no dates at all), the three
 tracks (Learn, Practice via skill uses, Use via features revealed), the "this
 week's focus" card on Today, checkpoint reflections at module end (saved for
 the Recovery Plan), stage-based starting path, pace changes, and the
@@ -445,13 +450,14 @@ docs/book/00-front-matter.md, 01-how-addiction-happens.md and
 
 Write docs/content-style.md (tone guide, person-first language, reading level
 US grade 6–8, words to avoid) and content/cast/: 4–6 original composite
-characters (different substances, ages, backgrounds; not the book's
-characters). Then write modules M0 (Start Here), M1 (Understand Addiction,
-with Ex 1.1 and 1.2 adapted in our own words, the help-request script and the
-program checklist) and M2 (Your Brain Can Heal, quizzes only). All original
-text. Medical content stays educational and says "talk to a doctor." Mark
-safety-sensitive passages with a `clinicalReview: true` flag. Validate
-content; e2e one lesson. Tick COVERAGE.md. Push.
+characters (different substances, ages, backgrounds, rooted in Gujarat and
+India; not the book's characters). Then write modules M0 (Start Here),
+M1 (Understand Addiction, with Ex 1.1 and 1.2 adapted in our own words, the
+help-request script and the program checklist) and M2 (Your Brain Can Heal,
+quizzes only). All original text. Medical content stays educational and
+says "talk to a doctor." Mark safety-sensitive passages with a
+`clinicalReview: true` flag. Validate content; e2e one lesson. Tick
+COVERAGE.md. Push.
 ```
 
 ### Step 2.6: M3, Find Your Why
@@ -546,7 +552,28 @@ also if a reference has no link. Tutorial and help entry. Push.
 
 **Done when:** every lesson shows at least one real reference, and About & evidence opens offline with links that work when online.
 
-**Phase 2 done when:** M0–M5 are complete with tutorials, the Roadmap and Explorer checklist work, and COVERAGE.md is ticked for Ch 1–5.
+### Step 2.12: Gujarati, and the friends release
+
+```text
+Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §7 (languages),
+§12 (rollout) and the ADRs for D1 and D10.
+
+Add language support: every piece of UI copy and content carries a locale,
+English is the default, and the app follows the phone's language where
+supported. Translate the UI and modules M0 to M5 into friendly, everyday
+Gujarati the way locals speak, not formal or literary Gujarati, keeping the
+person-first tone. Check Gujarati script rendering (font, line breaking)
+and whether device text-to-speech offers Gujarati on each platform; where
+it does not, show the practice text on screen and note the gap. Then
+prepare the friends build: an invite-only test distribution (TestFlight and
+Play internal testing, or the installable web preview), a "not yet
+clinically reviewed" notice on first run, and docs/friends-release.md with
+what to tell friends and how to collect their feedback. Push.
+```
+
+**Done when:** the whole app runs in Gujarati, and a friend can install the build from an invite.
+
+**Phase 2 done when:** M0–M5 are complete with tutorials, the Roadmap and Explorer checklist work, COVERAGE.md is ticked for Ch 1–5, and the friends build is out.
 
 ---
 
@@ -785,15 +812,20 @@ Follow the house rules in docs/BUILD-GUIDE.md. Read PLAN.md §9.1 and the
 ADRs for D4, D15 and D19.
 
 Add purchases and the device licence to the native builds: the store in-app
-purchase (one-time or subscription per the D15 ADR) with restore; a
-device-bound key pair created in the Secure Enclave or Android Keystore on
-first run; a licence check that caches a signed token and works offline with
-a grace period; a "Your devices and plan" screen that lists up to three
-devices and lets me remove one; and the D19 safety floor: urgent help, SOS,
-my own artifacts, logs, export and delete must work with no licence,
-offline, and after a lapse. Write docs/licence-server.md describing the tiny
-server the app talks to, what it stores and what it must never store. Test
-the lapse and offline cases end to end. Push.
+purchase (one-time, per the D15 ADR) with restore, verified server-side
+against the store; a device-bound key pair in the Secure Enclave or Android
+Keystore, with App Attest or Play Integrity at purchase and renewal; a
+licence check that caches a signed token (public key pinned in the app) and
+works offline with a grace period; invite codes per ADR 0004: a plan can be
+bought only with a valid invite, each new plan gets five single-use codes,
+and the server stores only hashed codes and a per-plan count, never who
+invited whom; a "Your devices and plan" screen (up to three devices, remove
+one, your invite codes); and the D19 safety floor: urgent help, SOS, my own
+artifacts, logs, export and delete work with no licence, offline, and after
+a lapse. Harden the build (IL2CPP or R8, obfuscation, re-validation,
+revocation) without ever blocking the safety floor. Write
+docs/licence-server.md: what it stores, what it must never store, and the
+demo codes for App Review. Test lapse, offline and invite cases. Push.
 ```
 
 **Done when:** sandbox purchases work on both stores, and SOS opens with no network and an expired licence.

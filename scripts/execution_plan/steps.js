@@ -416,4 +416,8 @@ module.exports = {
     brief: 'Let up to three devices on one plan share the same data, encrypted end to end, with a server that cannot read it.',
     after: 'A sync service storing only ciphertext, device public keys and plan ids; a pairing flow that moves the sync key by QR code or short code; conflict handling for the event log and edited artifacts; a "last synced" status in Settings; removal of a lost device; `docs/sync-design.md` with threat notes; and a test of two devices syncing offline edits.',
   },
+  '2.12': {
+    brief: 'Make the app speak friendly, everyday Gujarati and put an invite-only build in friends\' hands.',
+    after: 'Locale support for every piece of UI copy and content with English as the default, the UI and modules M0 to M5 in friendly, everyday Gujarati, a check of Gujarati script rendering and text-to-speech availability on each platform (with on-screen text where no voice exists), an invite-only test distribution for friends with a "not yet clinically reviewed" notice on first run, and `docs/friends-release.md` with what to tell friends and how to collect feedback.',
+  },
 };

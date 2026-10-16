@@ -2,6 +2,10 @@
 
 > In short: This is the list of everything the project needs from you, written as questions. Each one explains why it matters, shows the options, and gives a recommendation. Where "accept the recommendation" is a good answer, say so and move on.
 
+::: tip Status:
+Answered by the owner on 16 October 2026. The answers are recorded in docs/decisions/ (records 0001 to 0019) and in PLAN.md §15, and the plan was updated to match. One question is still open: D13, the app's name (a shortlist is in record 0013). This document stays as the record of the questions, the options and the recommendations as they stood.
+:::
+
 The execution plan is ready, but it cannot start without your answers. Some are decisions only the owner can make (which platform, what the app is called, how it earns money). Some are inputs only you can provide (a clinical reviewer, a Mac, verified crisis numbers). This document collects all of them in one place.
 
 **How to answer**

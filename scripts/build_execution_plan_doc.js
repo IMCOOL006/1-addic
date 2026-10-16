@@ -57,8 +57,8 @@ function cover() {
       'A single, readable book for everyone helping to build 1-addic: the idea, the features, the game design, the safety and privacy rules, the technology in plain words, and the full build plan with a ready-to-paste prompt for every step.',
       'Written for the app owner, designers, a clinical reviewer and testers. No programming knowledge needed.',
     ]),
-    new Paragraph({ spacing: { before: 3200, after: 60 }, children: [new TextRun({ text: smartQuotes('Built from docs/PLAN.md (draft v0.4) and docs/BUILD-GUIDE.md in the IMCOOL006/1-addic repository.'), size: TINY, color: C.grey })] }),
-    new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: smartQuotes('The plan is a draft for review. Open decisions are marked "Proposed: decide in Part 10".'), size: TINY, color: C.grey })] }),
+    new Paragraph({ spacing: { before: 3200, after: 60 }, children: [new TextRun({ text: smartQuotes('Built from docs/PLAN.md (draft v0.5) and docs/BUILD-GUIDE.md in the IMCOOL006/1-addic repository.'), size: TINY, color: C.grey })] }),
+    new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: smartQuotes('Decisions settled on 16 October 2026 (records in docs/decisions/); only the app\'s name (D13) is still open.'), size: TINY, color: C.grey })] }),
     new Paragraph({ spacing: { after: 0 }, children: [new TextRun({ text: `Generated ${DATE}. Rebuild with: node scripts/build_execution_plan_doc.js`, size: TINY, color: C.grey })] }),
   ];
 }

@@ -1,9 +1,9 @@
 # 1-addic: Product & Execution Plan
 
-> **Status:** Draft v0.4 (v0.2 added the in-app tutorial and Learning Roadmap; v0.3 added the Harbor world as a game-theme option; v0.4 adds the Unity question to D3 with a feasibility spike (§10.1, §10.8), licensing and devices (§9.1), the Evidence & sources screen (§5.12) and the visual-quality budget (§10.8); see [`docs/design/game-concept-review.md`](design/game-concept-review.md)), for review and refinement (by the owner and a Fable review chat) **before any building starts.**
+> **Status:** Draft v0.5. The owner answered every decision on 16 October 2026 (Step 0.1); the answers are recorded as ADRs in [`docs/decisions/`](decisions/README.md) and applied below. One decision is still open: D13, the app's name. History: v0.2 added the in-app tutorial and Learning Roadmap; v0.3 the Harbor world; v0.4 the Unity spike, licensing, the Evidence & sources screen and the visual-quality budget; v0.5 applies the owner's answers: friends-first rollout, doubled spike pass marks, invite-only purchase, India (Gujarat) with friendly Gujarati, Custom and Free learning paces, and licence protection.
 > **Build steps and prompts:** [`docs/BUILD-GUIDE.md`](BUILD-GUIDE.md).
 > **Source material:** *The Addiction Recovery Skills Workbook* (Glasner-Edwards; New Harbinger). It is summarized in [`docs/book/`](book/README.md); every exercise is inventoried in [`docs/book/exercises.md`](book/exercises.md).
-> **Conventions:** 🟡 **DECISION** = needs an answer in review (all collected in §15). "Ex N.M" = an exercise from the book.
+> **Conventions:** 🟡 **DECISION** = a decision; all are settled in §15 and recorded in `docs/decisions/` (D13 is open). "Ex N.M" = an exercise from the book.
 
 ---
 
@@ -70,7 +70,7 @@ The app teaches *itself* the way good games and productivity apps do. A short **
 
 ### Non-goals (v1)
 
-Diagnosis or treatment claims. Replacing therapy or groups. A public community feed or social network. Behavioral addictions such as gambling (out of the book's scope). Moderation and harm-reduction *goals* (the book is abstinence-based; *safety* info is still included, §8). A clinician dashboard. User accounts (a purchase plan with device-bound keys is not an account: no email, password or profile; see §9.1).
+Diagnosis or treatment claims. Replacing therapy or groups. A public community feed or social network. Behavioral addictions such as gambling (out of the book's scope). Moderation and harm-reduction *goals* (the book is abstinence-based; *safety* info is still included, §8). A clinician dashboard. User accounts (a purchase plan with device-bound keys is not an account: no email, password or profile; see §9.1). The owner may add behavioural addictions and a "cut down" mode later as separate, dedicated modes (ADRs 0007, 0008).
 
 ### What "working" looks like (measured locally or by opt-in only)
 
@@ -170,7 +170,7 @@ flowchart LR
 4. **Where you are**: stage of change plus a 0–10 motivation slider (Ex 3.1). This sets the app's tone and recommended path.
 5. **Medical safety check** (not a diagnosis): "Do you drink heavily every day, or use benzodiazepines or opioids?" If yes, show a card: *stopping suddenly can be dangerous; talk to a doctor about safe withdrawal*. Link to resources.
 6. **Make SOS useful on day 1**: pick 3 quick reasons (chips taken from Ex 3.2 examples, editable), add 1 Safety Net contact (optional), choose region (for crisis lines).
-7. **Rhythm**: check-in times, the weekly review day, and a **learning pace** (gentle, steady or focused) that sets up the Learning Roadmap (§5.11).
+7. **Rhythm**: check-in times, the weekly review day, and a **learning pace** (gentle, steady, focused, custom or free; D18) that sets up the Learning Roadmap (§5.11).
 8. **First-run tour and SOS practice drill** (about 2 minutes, skippable, replayable; §5.10). Then land on **Today** with "Start Here" as the first suggested lesson.
 
 ### 5.2 SOS: the most important feature
@@ -307,6 +307,8 @@ Every artifact supports: **view · edit · version history** (each save is a sna
 
 Crisis lines · finding treatment (the Ch 1 "questions to ask" checklist) · medications (educational, dated, linked to authoritative sources) · mutual-help groups (AA, NA, SMART Recovery and others) and meeting finders · therapist finders · mindfulness audio. Kept in a **content file** so links can be updated without code changes. Region-aware.
 
+**First region: India, starting with Gujarat (D10).** `content/resources/in.yaml` holds candidates that the owner verifies personally in Step 1.3: the 112 emergency number, the Tele-MANAS mental-health helpline, the Kiran helpline, poison control, and Gujarat's government and NGO de-addiction (\"Nasha Mukti\") centres and meeting finders. Context the content must respect: Gujarat has alcohol prohibition, so drinking is illegal there and stigma is high; living is often family-centred, which makes the \"someone at home\" threat model (§9) even more important; the app never judges or moralises. India is overwhelmingly Android, so Android performance comes first. More regions are added as content files when someone can verify them.
+
 ### 5.9 Settings & privacy controls
 
 App lock (PIN, biometric later) · discreet mode · terminology · notifications (with quiet hours and a daily cap) · export (full JSON and PDF) · import · **delete everything** · backup reminder · accessibility (text size, dyslexia-friendly font, reduced motion, high contrast) · **Calm mode** (game layer off) · **Help & tutorials** · **About & evidence** (§5.12) · **Your devices and plan** (§9.1, native phase).
@@ -367,7 +369,7 @@ The Learning Roadmap is the **home screen of the Learn tab**. It answers four qu
 3. **Use:** app features introduced so far, and the Explorer checklist.
 
 **Personalized from onboarding**
-- **Pace:** *Gentle* (one module every 2 weeks), *Steady* (one a week, recommended) or *Focused* (two a week). Changeable any time.
+- **Pace:** *Gentle* (one module every 2 weeks), *Steady* (one a week, the default), *Focused* (two a week), *Custom* (your own number of modules per week) or *Free* (no weekly targets: the roadmap shows only the recommended order and your progress, with no dates; the weekly focus card adapts or hides). Changeable any time (D18).
 - **Starting path:** follows the stage of change. Contemplation-stage users get M0 → M1 → M3 (motivation) first, with a softer tone. Action-stage users get the standard order.
 - **Weekly focus card:** "This week: Step 3, Become a Self-Expert. 4 lessons, about 20 minutes, plus logging 3 cravings." Shown on Today and in the Weekly Review.
 
@@ -515,9 +517,11 @@ The book is © New Harbinger and the author. **This isn't legal advice. Consult 
 - Never moralize.
 - Copy the book's best phrases *in spirit* (urges are normal, a slip is a learning opportunity, be smart not strong), in our own words.
 
-**Original cast:** 4–6 composite characters across substances, ages and backgrounds. Their stories thread through the modules and provide the tutorial-mode examples.
+**Original cast:** 4–6 composite characters across substances, ages and backgrounds, rooted in Gujarat and India (D10). Their stories thread through the modules and provide the tutorial-mode examples.
 
 **Audio:** original guided scripts (body scan, breathing, SOBER, urge surfing, mindful walking). v1 uses device text-to-speech; recorded voice comes later. All offline.
+
+**Languages (D10):** English first. Gujarati before the friends release, written as friendly, everyday Gujarati the way locals speak, not formal or literary Gujarati, in the same person-first tone. From Step 0.4 every piece of UI copy and content carries a locale, so translation is data, not code. Gujarati script rendering (font, line breaking) and the availability of Gujarati text-to-speech on each platform are checked in Step 2.12; where a phone has no Gujarati voice, the practices show their text on screen and recorded voice is considered later. More languages when needed.
 
 ---
 
@@ -536,7 +540,7 @@ The book is © New Harbinger and the author. **This isn't legal advice. Consult 
 | **Clinical advisor** | A licensed addiction professional reviews all lessons, crisis and lapse copy, and medical-safety screens before any public release. |
 | **User research** | Paid, consented usability sessions with people in recovery, focused on tone, the SOS flow, and gamification reactions. |
 | **Ethical engagement** | No dark patterns. Notification cap. Easy pause. No ads. No selling data. |
-| **Regulatory** (to confirm with counsel) | US: FDA general-wellness positioning; FTC Health Breach Notification Rule; state consumer-health-privacy laws. EU/UK: GDPR special-category data. HIPAA / 42 CFR Part 2 only matter if partnering with covered entities or treatment programs. |
+| **Regulatory** (to confirm with counsel) | India (first region, D10): the Digital Personal Data Protection Act 2023 and its rules; the app stores' rules for invite-gated purchases (App Review needs demo invite codes). Later regions: US: FDA general-wellness positioning; FTC Health Breach Notification Rule; state consumer-health-privacy laws. EU/UK: GDPR special-category data. HIPAA / 42 CFR Part 2 only matter if partnering with covered entities or treatment programs. |
 
 ---
 
@@ -568,7 +572,9 @@ The owner wants a **paid app** (one-time fee or subscription) that opens only on
 - **What the server knows:** plan id, store receipt, device public keys, timestamps. Never health data, names, contacts or analytics. The discreet name matters more now, because store receipts show the app's name (D13).
 - **Pricing** (D15): recommended default is a **one-time purchase that includes 3-device sync** (the data is tiny, so sync is cheap to run). A subscription only if ongoing costs (clinical updates, resource verification, support) require it, and then with the safety floor and easy cancellation. Store fees (15–30%), consumer-subscription law and tax go on the counsel checklist (§8).
 - **Threat model additions.** The app-lock PIN remains the privacy protection; device binding is licensing, not security. Someone with access to the person's store account could install the app on another phone, but could not open it without the PIN.
-- **Where it lands:** purchases and the licence in Phase 5 (Step 5.4, ~1 wk); the sync service in Phase 6 (Step 6.5, ~2–3 wks).
+- **Invite-only purchase (D4, ADR 0004).** A plan can be bought only with a valid invite code. Each new paid plan receives **five single-use invite codes**; the owner's plan seeds the tree and can mint more. The server stores only a hash of each code, whether it was used, and a per-plan count: never who invited whom, and an inviter never learns whether or by whom a code was used. The free safety core (D15) needs no invite, so gating never stands between a person and crisis help. App Review gets working demo codes.
+- **Licence protection (D15, ADR 0015).** Store receipts verified server-side against Apple and Google; licence tokens signed by the server with the public key pinned in the app; device attestation (App Attest, Play Integrity) at purchase and renewal; periodic re-validation and revocation; hardened builds (IL2CPP or R8, obfuscation); rooted or jailbroken devices treated as a risk signal, never as a block on the safety floor. Honest limit: no offline app is uncrackable; the aim is to make cracking harder than paying, to detect it, and to keep what a cracked copy gains small, which the free safety core already does.
+- **Where it lands:** purchases, invite codes and the licence in Phase 5 (Step 5.4, ~1 wk); the sync service in Phase 6 (Step 6.5, ~2–3 wks).
 
 ---
 
@@ -585,7 +591,7 @@ The owner wants a **paid app** (one-time fee or subscription) that opens only on
 | **Unity 2D (URP) native app** *(owner's preference, Oct 2026; decided by the Step 0.6 spike)* | The richest tooling for a living, animated progress map (2D animation, particles, lighting, Timeline). Native builds for both stores from one project. Local notifications, in-app purchases, secure storage and biometrics via Unity packages and plugins. An official Unity MCP server (open beta, Unity 6+) lets Claude Code work inside the Editor. Screen readers supported by the Accessibility module (VoiceOver, TalkBack). Unity Personal is free under ~$200k revenue; the splash screen is optional in Unity 6. | A larger app (tens of MB) and a slower cold start than a web app, so the 1-second SOS budget becomes ~2 s unless the spike proves better. Every screen's accessibility hierarchy is built by hand. Text-heavy forms, dictation and voice input need native plugins. No cloud-session preview or browser tests: builds, device tests and MCP run on your own computer. Unity services must be absent, not just off. |
 | Hybrid: Unity shell + native WebView for text-heavy screens | Unity for the harbor, SOS animations and the game; lessons, exercises and logs as web pages inside the app, which keeps forms, text, dictation and accessibility easy | Two codebases and skills; WebView quirks; still a Unity-sized app. Only if the spike fails on text input or accessibility but passes on the rest. |
 
-**How D3 gets decided:** a one-week feasibility spike (Step 0.6) builds a throwaway Unity app and measures it against the pass marks in §10.8. Unity if it passes (the owner's preference), otherwise the PWA path. If Unity wins, Step 0.7 rewrites the guide's steps for Unity while keeping every goal, order, "done when" and every safety, privacy, tutorial and accessibility rule.
+**How D3 gets decided:** a one-week feasibility spike (Step 0.6) builds a throwaway Unity app and measures it against the pass marks in §10.8. Unity if it passes (the owner's preference), otherwise the PWA path. If Unity wins, Step 0.7 rewrites the guide's steps for Unity while keeping every goal, order, "done when" and every safety, privacy, tutorial and accessibility rule. **Settled (ADR 0003):** the spike's numeric pass marks are doubled from the §10.8 targets per the owner's answer; the owner has Unity 6.6 installed and may use the Unity 7 alpha to exercise the official MCP (size and start-up are also measured on a shippable Unity 6 release); if the spike fails it ends with a report naming each failed check, by how much, and what would have to change; the hybrid is used only if it fails on text input or accessibility alone; the harbor gets built either way.
 
 **Proposed libraries** (pin exact versions at scaffold time):
 - React + TypeScript (strict) + Vite
@@ -731,20 +737,20 @@ The owner's brief for the app is *super interesting, high quality and visually a
 
 **Shared rules:** one illustrator or one generated style reviewed by the designer; typography with generous spacing and 44-pt tap targets; dark mode; micro-interactions that acknowledge every log, check-in and "wave surfed" moment in under 300 ms, quietly; haptics in the native phase; screenshot tests for the main screens in light and dark; a low-end Android device in the test rotation.
 
-**Performance budget (proposed pass marks; the owner can adjust).** These are also the pass marks for the Unity spike (Step 0.6) and are enforced in CI from Step 4.4.
+**Performance budget.** Two columns: the *spike pass marks*, doubled from the targets per the owner's D3 answer (ADR 0003), decide D3 at Step 0.6; the *targets* are what Step 4.4 optimises toward and enforces in CI.
 
-| Check | Pass mark | Why |
-|---|---|---|
-| Cold start to a usable SOS screen, offline | ≤ 1 s web; ≤ 2.0 s on a mid-range Android and ≤ 1.5 s on a recent iPhone for Unity | The craving moment does not wait |
-| Download size | ≤ 60 MB per store (web/Capacitor is typically 5–15 MB) | Storage and cellular downloads; "lightweight" |
-| Installed size | ≤ 120 MB | Same |
-| Memory on Today | ≤ 250 MB | Background survival |
-| Battery, 30 minutes idle on Today | ≤ 2% | A recovery app sits open |
-| Screen readers | VoiceOver and TalkBack read every SOS and onboarding control with role and label; font scaling honoured | WCAG 2.2 AA target, house rule 6 |
-| Text input | Phone keyboard, autocorrect and dictation work in a long text field | Logs and exercises are text |
-| Startup network calls | Zero, verified with a proxy | Privacy house rule 3 |
-| Frame time | 60 fps for motion on a mid-range phone, no jank on scroll | Calm, not stuttering |
-| Workflow (Unity only) | Claude Code completes a build-test-change loop through MCP on the owner's computer | The whole guide depends on it |
+| Check | Spike pass mark (doubled, D3) | Target (Step 4.4, CI) | Why |
+|---|---|---|---|
+| Cold start to a usable SOS screen, offline | Unity: ≤ 4.0 s on a mid-range Android, ≤ 3.0 s on a recent iPhone | ≤ 1 s web; Unity ≤ 2.0 s Android, ≤ 1.5 s iPhone | The craving moment does not wait |
+| Download size | ≤ 120 MB per store | ≤ 60 MB (web/Capacitor is typically 5–15 MB) | Storage and cellular downloads; "lightweight" |
+| Installed size | ≤ 240 MB | ≤ 120 MB | Same |
+| Memory on Today | ≤ 500 MB | ≤ 250 MB | Background survival |
+| Battery, 30 minutes idle on Today | ≤ 4% | ≤ 2% | A recovery app sits open |
+| Screen readers | VoiceOver and TalkBack read every SOS and onboarding control with role and label; font scaling honoured | Same | WCAG 2.2 AA target, house rule 6 |
+| Text input | Phone keyboard, autocorrect and dictation work in a long text field | Same | Logs and exercises are text |
+| Startup network calls | Zero, verified with a proxy | Same | Privacy house rule 3 |
+| Frame time | 60 fps for motion on a mid-range phone, no jank on scroll | Same | Calm, not stuttering |
+| Workflow (Unity only) | Claude Code completes a build-test-change loop through MCP on the owner's computer | Same | The whole guide depends on it |
 
 ### 10.7 Repo layout & workflow
 
@@ -790,13 +796,15 @@ Rough sizing assumes one developer plus Claude Code. Every phase ends with a usa
 
 | Phase | Goal | Deliverables | Exit criteria |
 |---|---|---|---|
-| **0. Decide & scaffold** (~1–2 wks) | Settle the decisions, set up the repo | Answers to §15 → ADRs · name and theme · Vite+TS PWA scaffold · CI (lint, typecheck, test, content validation) · Playwright · content schema (incl. references) + 1 sample exercise · design tokens, motion tokens and style guide · low-fi wireframes (SOS, Today, Lesson) · `CLAUDE.md` commands · **Unity feasibility spike (Step 0.6)** and, if Unity wins, the re-planned guide (Step 0.7) | A deployed preview build; CI green; D3 decided with measurements |
+| **0. Decide & scaffold** (~1–2 wks) | Settle the decisions, set up the repo | Answers to §15 → ADRs (done 16 Oct 2026) · name and theme · Vite+TS PWA scaffold · CI (lint, typecheck, test, content validation) · Playwright · content schema (incl. references) + 1 sample exercise · design tokens, motion tokens and style guide · low-fi wireframes (SOS, Today, Lesson) · `CLAUDE.md` commands · **Unity feasibility spike (Step 0.6)** and, if Unity wins, the re-planned guide (Step 0.7) | A deployed preview build; CI green; D3 decided with measurements |
 | **1. Safety core MVP: "help in the moment"** (~2–3 wks) | Useful from day 1 | Onboarding (safety check, lock, region) · **SOS craving flow** (timer, Reasons, call, distract, delay loop, outcome) · crisis screen · Reasons Card (quick + Ex 3.2) · basic Safety Nets · craving quick-log (Ex 5.4) · evening check-in · basic Today · encrypted local DB · export/delete · **domain event log** (the game's foundation) · **first-run tour + SOS practice drill** | E2E offline SOS test passes; the owner dogfoods it for 7 days |
-| **2. Learn + Workbook engine** (~4–6 wks) | The tutorial layer | Exercise engine (all field types) · lesson player · **guidance engine** (just-in-time tutorials, tips, Explorer checklist, Help & tutorials, progressive feature reveal) · **Learning Roadmap** (Map and Plan views, pace, checkpoints) · **M0–M5 content** (Start → Self-Expert) · artifacts: Trigger Profile, Red Flags, Signatures, Decisional Balance, Motivation Meter · Workbook tab · insights v1 · **visible XP and skill mastery** · **About & evidence screen** (§5.12) | All M0–M5 exercises validated, with tutorial mode for each; every shipped feature has its tutorial and help entry |
+| **2. Learn + Workbook engine** (~5–7 wks) | The tutorial layer | Exercise engine (all field types) · lesson player · **guidance engine** (just-in-time tutorials, tips, Explorer checklist, Help & tutorials, progressive feature reveal) · **Learning Roadmap** (Map and Plan views, pace, checkpoints) · **M0–M5 content** (Start → Self-Expert) · artifacts: Trigger Profile, Red Flags, Signatures, Decisional Balance, Motivation Meter · Workbook tab · insights v1 · **visible XP and skill mastery** · **About & evidence screen** (§5.12) · **Gujarati and the friends build** (Step 2.12) | All M0–M5 exercises validated, with tutorial mode for each; every shipped feature has its tutorial and help entry; the friends build is out |
 | **3. Actions + full coverage** (~4–6 wks) | The tracker and actions layer | **M6–M10 content** · Planner · **Battle Plans** + .ics · **Weekly Review** · pleasant activities + rewards · Prediction Lab · mindfulness audio (TTS) · emotion logs + "I'm feeling…" · **Lapse Recovery** · **Warning Sign Radar** · **My Recovery Plan** + PDF | Every row in `docs/book/exercises.md` implemented or explicitly deferred |
 | **4. Full game layer** (~4–5 wks; can overlap with 3) | Delight, without harm | progress map (Brain Map or Harbor, per D6) · quests · mini-games (Distortion Sort, The Big Game, Refusal Rehearsal, Courtroom polish) · badges · ranks · Calm mode · **living progress map, motion polish and the §10.8 budget in CI** (Step 4.4) | Game state recomputes deterministically from events; guardrail checklist (§6.1) passes review |
-| **5. Native & polish** (~4–5 wks) | Real phone app | Capacitor iOS/Android (or the Unity builds, per D3) · local notifications · biometric lock · secure key storage · SOS shortcut/widget · discreet icon · recorded audio · accessibility audit · performance · **purchases and the device licence** (§9.1, Step 5.4) | Store-ready builds; WCAG AA audit fixed; purchases and the device licence verified in the store sandboxes |
-| **6. Validate & launch** (ongoing) | Safe public release (if D1 = public) | Clinical review · usability study with people in recovery · legal and privacy review · store listings · **sync service for up to 3 devices** (§9.1, Step 6.5, ~2–3 wks) · optional: AI coach beta, therapist share | Sign-offs from the clinical advisor and counsel |
+| **5. Native & polish** (~4–5 wks) | Real phone app | Capacitor iOS/Android (or the Unity builds, per D3) · local notifications · biometric lock · secure key storage · SOS shortcut/widget · discreet icon · recorded audio · accessibility audit · performance · **purchases, invite codes and the device licence** (§9.1, Step 5.4) | Store-ready builds; WCAG AA audit fixed; purchases and the device licence verified in the store sandboxes |
+| **6. Validate & launch** (ongoing) | Safe public release (D1: prepared once the core game is complete) | Clinical review · usability study with people in recovery · legal and privacy review · store listings · **sync service for up to 3 devices** (§9.1, Step 6.5, ~2–3 wks) · optional: AI coach beta, therapist share | Sign-offs from the clinical advisor and counsel |
+
+**Rollout (D1, ADR 0001):** owner (from the end of Phase 1) → friends (an invite-only build after Phase 2, in English and Gujarati, marked "not yet clinically reviewed") → public once the core game is complete (after Phase 4, through Phase 5 and the Phase 6 reviews).
 
 **MVP cut line** (if time is short): Phases 0–1, plus M3 and M5 from Phase 2 (motivation and self-expert), plus Battle Plans and Lapse Recovery from Phase 3.
 
@@ -818,6 +826,9 @@ Rough sizing assumes one developer plus Claude Code. Every phase ends with a usa
 | Licensing locks someone out of safety tools | High | The safety floor (D19): urgent help, SOS, the person's own data, export and delete never depend on a licence check (§9.1) |
 | Overclaiming the evidence | Medium | The evidence screen cites primary sources with their limits and never claims the app itself is clinically proven (§5.12) |
 | Unity app too heavy or slow for the SOS moment | Medium | The Step 0.6 spike with hard pass marks (§10.8) before committing; the web stack stays the fallback (§10.1) |
+| Invite gating slows growth; store review needs demo codes | Low–Med | The safety core is free for everyone; the owner seeds invites; demo codes for App Review (§9.1) |
+| Licence cracking | Low | Server-verified receipts, signed tokens, device attestation and hardened builds (§9.1); the free safety core limits what cracking gains |
+| Friends use builds that are not clinically reviewed | Medium | A visible notice, conservative safety copy, and the review before any public release (ADR 0016) |
 
 ---
 
@@ -843,29 +854,31 @@ Rough sizing assumes one developer plus Claude Code. Every phase ends with a usa
 
 ---
 
-## 15. Decisions for review
+## 15. Decisions (settled 16 October 2026)
 
-| # | Decision | Options | Recommended default |
+The owner answered every decision in the Step 0.1 review. Each answer is recorded as an ADR in [`docs/decisions/`](decisions/README.md), and the affected sections of this plan were updated to match. One decision is still open: D13, the app's name.
+
+| # | Decision | Settled answer | ADR |
 |---|---|---|---|
-| **D1** | Audience | Personal use only · public release | **Design for public** (original content) while dogfooding personally |
-| **D2** | Content approach | Private companion · original content · license | **Original content + book chapter references** |
-| **D3** | Platform | PWA → Capacitor · Unity 2D native · Unity + WebView hybrid · React Native · Flutter | **Decided by the Step 0.6 spike**: Unity if it meets the §10.8 pass marks (owner's preference), otherwise PWA (React + TS) → Capacitor |
-| **D4** | Accounts & sync | None · a purchase plan with device-bound keys and E2E sync for up to 3 devices · accounts from start | **A plan with device-bound keys, no profile** (owner direction); E2E sync for up to 3 devices, built in Phase 6 (§9.1) |
-| **D5** | Reminders before native | In-app + .ics · tiny push relay | **In-app + .ics** |
-| **D6** | Game theme & intensity | Two Brains · Road · Garden · Harbor world with Two Brains mechanics; on by default or opt-in | **Two Brains mechanics in the Harbor world** (§6.2 option D), gentle visuals; on by default, Calm mode available. Brain Map as the fallback. |
-| **D7** | Goal framing | Abstinence (book) · also allow "cut down" | **Abstinence-focused**, with a contemplation path; safety info for everyone |
-| **D8** | Substance scope | Alcohol & drugs (book) · + nicotine · + behavioral | **Alcohol & drugs**; nicotine optional; behavioral addictions out |
-| **D9** | Age | 18+ · 13+ | **18+** |
-| **D10** | Region & language | Which country first? English only? | *Owner to answer* (drives crisis lines and resources) |
-| **D11** | AI coach | No · later opt-in · core feature | **Later, opt-in (Phase 6)** |
-| **D12** | Sharing with therapist/sponsor | PDF export · live share | **PDF export in v1** |
-| **D13** | Name & branding | Working title "1-addic" | *Owner to pick*; must not use the book's title; consider a discreet name |
-| **D14** | Terminology default | sober · clean · substance-free · user choice | **User choice in onboarding** |
-| **D15** | Business model | Free · one-time purchase · subscription · one-time purchase plus a sync subscription | **Paid** (owner direction): a one-time purchase that includes 3-device sync as the default; a subscription only if ongoing costs require it, always with the D19 safety floor and easy cancellation; no ads, no data sales |
-| **D16** | Clinical advisor | Who reviews content & safety copy? | *Owner to identify* before Phase 6 (ideally early, for M1/M2 and the lapse flow) |
-| **D17** | Feature reveal | Progressive (as the Journey reaches it) · everything visible from day 1 | **Progressive**, with a "Show all features now" setting; SOS, crisis help, quick-log and check-ins always visible |
-| **D18** | Default learning pace | Gentle · Steady · Focused | **Steady** (one module a week), chosen in onboarding and changeable any time |
-| **D19** | What stays available without a valid licence (lapsed, offline, unverified, removed device) | Everything locks · the safety floor stays open | **The safety floor stays open forever**: urgent help, SOS, the person's own artifacts and logs, export and delete. Only new lesson content and sync pause (§9.1) |
+| **D1** | Audience | **Design for the public.** Roll out owner → friends (invite-only build after Phase 2) → public once the core game is complete (after Phase 4, through Phase 6) | [0001](decisions/0001-audience-public-friends-first.md) |
+| **D2** | Content approach | **Original content** built on the techniques, with original characters and stories, research cited, chapter references as metadata | [0002](decisions/0002-original-content.md) |
+| **D3** | Platform | **Decided by the Step 0.6 spike**, with the numeric pass marks doubled (§10.8): Unity if it passes, the web stack if not, the hybrid only if it fails on text input or accessibility alone; a failure report either way; the harbor gets built regardless. Unity 6.6 installed; Unity 7 alpha may be used for the official MCP | [0003](decisions/0003-platform-decided-by-unity-spike.md) |
+| **D4** | Devices, sync and invites | **Device-bound keys, no profile, three devices per plan, E2E sync in Phase 6. Purchase is invite-only; each new plan gets five single-use invite codes** (§9.1) | [0004](decisions/0004-devices-sync-and-invite-only-purchase.md) |
+| **D5** | Reminders before native | **In-app prompts + .ics** (moot if Unity) | [0005](decisions/0005-reminders-in-app-and-ics.md) |
+| **D6** | Game theme & intensity | **Two Brains mechanics in the Harbor world**, gentle visuals, on by default with Calm mode; Brain Map as the fallback | [0006](decisions/0006-game-theme-harbor-two-brains.md) |
+| **D7** | Goal framing | **Abstinence-focused** with a contemplation path; safety info for everyone; a dedicated "cut down" mode may be added later | [0007](decisions/0007-goal-framing-abstinence.md) |
+| **D8** | Substance scope | **Alcohol & drugs**; nicotine optional later; behavioural addictions out for now (possibly a separate mode later) | [0008](decisions/0008-substance-scope.md) |
+| **D9** | Age | **18+** | [0009](decisions/0009-age-18-plus.md) |
+| **D10** | Region & language | **India (Gujarat) first. English default; friendly, everyday Gujarati before the friends release; more languages when needed** | [0010](decisions/0010-region-india-gujarat-languages.md) |
+| **D11** | AI coach | **Later, opt-in**: the proposal comes after the friends release; a nice-to-have | [0011](decisions/0011-ai-coach-later-opt-in.md) |
+| **D12** | Sharing with therapist/sponsor | **PDF export in v1** | [0012](decisions/0012-therapist-sharing-pdf-export.md) |
+| **D13** | Name & branding | **OPEN.** The owner likes "1-addic"; a shortlist (Kinaro, Laher, Ek Din and others) and a recommendation are in the ADR; trademark and store check before the friends release | [0013](decisions/0013-app-name-open.md) |
+| **D14** | Terminology default | **User choice in onboarding** | [0014](decisions/0014-terminology-user-choice.md) |
+| **D15** | Business model | **Paid: a one-time purchase including 3-device sync; the safety core free for everyone; a subscription only if ongoing costs require it; no ads, no data sales; licence protection per §9.1** | [0015](decisions/0015-business-model-and-licence-protection.md) |
+| **D16** | Clinical advisor | **Identified before going public** (Phase 6); the owner's and friends' builds carry a "not yet clinically reviewed" notice | [0016](decisions/0016-clinical-advisor-before-public.md) |
+| **D17** | Feature reveal | **Progressive**, with "Show all features now" | [0017](decisions/0017-progressive-feature-reveal.md) |
+| **D18** | Default learning pace | **Steady**, plus Gentle, Focused, **Custom and Free (no limit)** | [0018](decisions/0018-learning-pace-custom-and-free.md) |
+| **D19** | Without a valid licence | **The safety floor stays open forever** | [0019](decisions/0019-safety-floor.md) |
 
 ---
 
