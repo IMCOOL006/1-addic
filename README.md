@@ -2,6 +2,7 @@
 
 Workbook to app: a recovery-skills app based on an addiction recovery workbook.
 
+- **Start here** (setup on your own computer, next steps, prompts): [`docs/START-HERE.md`](docs/START-HERE.md)
 - Plan (draft, under review): [`docs/PLAN.md`](docs/PLAN.md)
 - Step-by-step build guide with prompts: [`docs/BUILD-GUIDE.md`](docs/BUILD-GUIDE.md)
 - Source-book reference notes: [`docs/book/`](docs/book/README.md)

@@ -17,6 +17,19 @@ This guide turns [`docs/PLAN.md`](PLAN.md) into about 45 small build steps. Each
 
 One step usually means one session and one pull request. If a step feels too big, ask Claude to split it: *"Do only the first half of this step and tell me what's left."*
 
+### Running a step on your own computer instead
+
+The prompts work the same in Claude Code on your own machine. Setup is in [`docs/START-HERE.md`](START-HERE.md).
+
+1. Update `main` (`git switch main && git pull`), then make a branch for the step, for example `git switch -c step-0-2-scaffold`.
+2. Start Claude Code in the repo folder and paste the step's prompt.
+3. When it's done, try the app locally (`npm run dev`, from step 0.2 on).
+4. Push the branch and open a pull request on GitHub (or with `gh pr create`), then merge.
+
+Two differences from the cloud:
+- The session-start hook only runs in cloud sessions. Run `npm install` yourself after pulling changes.
+- Run `npx playwright install chromium` once, so end-to-end tests have a browser.
+
 ---
 
 ## Rules for every step
@@ -84,9 +97,10 @@ Zod, Zustand, Vitest + Testing Library, Playwright, ESLint + Prettier.
 Pin exact dependency versions. Create the folder layout from §10.7 with
 placeholder index files. Add npm scripts: dev, build, preview, lint,
 typecheck, test, e2e, validate:content, check (runs everything). Make sure
-.claude/hooks/session-start.sh still installs everything, and configure
-Playwright to use the preinstalled Chromium if needed. Update CLAUDE.md with
-the build/test/run commands.
+.claude/hooks/session-start.sh still installs everything in cloud sessions,
+and that Playwright works both in the cloud (preinstalled Chromium) and on my
+own computer (after `npx playwright install chromium`). Update CLAUDE.md with
+the build/test/run commands for both.
 One smoke unit test and one smoke e2e test. Everything green, then push.
 ```
 

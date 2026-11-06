@@ -21,6 +21,7 @@ In the cloud:
 
 ## Project docs
 
+- `docs/START-HERE.md` explains where the project stands, how to set up on a local machine (where the session-start hook doesn't run: use `npm install` and `npx playwright install chromium`), and the next steps with their prompts.
 - `docs/PLAN.md` is the product and execution plan. It's a draft under review: don't start building until the owner approves it, and record settled decisions as ADRs in `docs/decisions/`.
 - `docs/BUILD-GUIDE.md` is the step-by-step build guide, with a ready-to-paste prompt and a done-when checklist for every step. Its "house rules" apply to all build work.
 - `docs/book/` holds paraphrased reference notes on the source workbook (one file per chapter, plus `exercises.md` and `glossary.md`). Read these instead of re-reading the epub.
