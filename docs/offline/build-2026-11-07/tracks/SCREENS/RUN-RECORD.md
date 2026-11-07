@@ -191,25 +191,41 @@
 - HUB 9 (03:20): the run of days shown up does appear in 'Where you stand' from V-43 on (PLAN-V3 section 3 ruling, 1451806). HUB 9 handed over at 03:17; HUB 10 merges the READY-SLICE.
 - Handed over at a clean point: no SCREENS run is live, so the fresh chat owns V-01b's run and its notification.
 
+## 2026-11-08 03:42 IST · 0fd59f53 up; V-01b running; V-01a merged; V-43 annex scout
+
+- 0fd59f53 started at 03:26 from 1c2cf086's RESTART. 1c2cf086 is idle in claude agents, and no run of it was live.
+- V-01b was launched at 03:31 on slot 6 as wf_ccfdc4d0-2ae. It uses lane.js with args/v3_tt_v01b.json, with session and now restamped. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/0fd59f53-a9aa-480a-9878-1d10380b941a/subagents/workflows/wf_ccfdc4d0-2ae/journal.jsonl.
+- R-H-42 (03:32): the HUB thought 1c2cf086's three runs had died. They had finished: the V-01a check returned PASS, and the scouts' briefs are in 5bd7ba0 and 4e2d415. I replied at 03:35, and the HUB took the correction.
+- HUB 10 merged the V-01a slice 127509e at 37d1a53c (03:37, pushed). V-01b's merge base is 127509e.
+- R-C-50 (CORE, 03:27): the section 7 refinements (ObjectiveSwapped; steps with met, progress and claimable; current as the step object; run.holding and run.cameBack; swapTo and swapped; where in conditions). These bind content V-42, V-43 and V-44.
+- content V-10 slice args are drafted at args/v3_content_slice.json, with base, slot and now still to fill at the grant. The content worktree is clean at 680f850 and can fast-forward to c50ed705.
+- V-43 annex scout launched at 03:42 as wf_7392359a-5b6 (args/v3_scout3_today-track.json). It writes NEW files briefs/today-track-v3-annex.md and contracts/today-track-v3-annex.md, reads the code at 37d1a53c and never the worktree. Journal under the same workflows folder.
+
 ## Resume here
 
-- Chat 1c2cf086 (SCREENS) handed over with STATE RESTART at a clean point. NO SCREENS run is live.
+- Chat 0fd59f53 (SCREENS) is live.
+- Runs live:
+  - wf_ccfdc4d0-2ae: today-track V-01b, build then check, slot 6.
+  - wf_7392359a-5b6: the V-43 annex scout.
+  - Both journals are at C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/0fd59f53-a9aa-480a-9878-1d10380b941a/subagents/workflows/<run>/journal.jsonl.
+  - A fresh chat checks claude agents --json for 0fd59f53. If it is listed, wait for the notifications. If it is gone, relaunch from the branch's last commit and the progress notes (C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track__progress.md).
 - Board:
-  - today-track READY-SLICE 127509e (V-01a; HUB 10 merges it alone; merge base f69bc68a). Slot 6 stays granted for V-01b.
-  - content SCOUTED (V-10, V-42, V-23, V-10b) and game-tutorials SCOUTED (V-08b, V-28, V-44, V-21): they wait for their SLOTS lines.
+  - today-track: V-01a MERGED 37d1a53c; V-01b BUILDING (merge base 127509e).
+  - content SCOUTED; its V-10 slice args are at args/v3_content_slice.json (fill base, slot and now at the grant).
+  - game-tutorials SCOUTED.
   - SLOTS-ASKED 3.
 - NEXT, in order:
-  - (1) Launch V-01b now, on slot 6. It does not wait for the slice merge; the branch goes on from 127509e. Read tracks/SCREENS/args/v3_tt_v01b.json and pass its object as args to Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js'}), with now from date and session = your own session link. It holds: units [V-01a, V-01b], done = v1 + V-01a, diffFrom 127509e, priorNote, the -v3 brief and contract, and a laneNote that closes C1 and C2. First check: the worktree C:/Users/ruchi/1-addic-wt/today-track is clean at 127509e (or ahead, if the HUB fast-forwarded nothing there). When it returns READY <tip>: LANE: today-track READY <tip>.
-  - (2) V-43, the third batch (R-O-6): after V-01b. Append its section to the brief first, as briefs/today-track-v3-annex.md if the brief would pass 15 KB (a scout run like v3_scout2_*.json). It builds on the PLAN-V3 section 7 contracts before V-40, V-41 and V-42 merge. The run (current, best, total) appears in 'Where you stand' (ruling 1451806). Hooks are as in section 7.
-  - (3) content, when its SLOTS line appears: git -C <wt>/content merge --ff-only <BASE>. Then the V-10 slice with a builder laneNote like v3_tt_slice.json's (the -v3 brief and contract; data-test; reveal.m1 = ['status']; the route '/status'). Then V-42, where R-S-20 wins: no tool or game goes into reveal; the rewards are module-revealed features opened early plus new extras.
-  - (4) game-tutorials, when its SLOTS line appears (after today-track's slice merges): fast-forward the worktree, then V-08b (actions-sos V-08a contract: R-C-48 in outbox-CORE.md), then V-28, then V-44 (after engine V-40; R-S-20, R-S-21).
-  - (5) Answers: watch outbox-OWNER.md for V-Q9..V-Q13 (default at 04:00) and V-Q10 (R-S-20).
+  - (1) V-01b returns: LANE: today-track READY <tip>. Then add C2 to contracts/today-track-v3.md by hand: StatusUI PURE exports TEXT, model, diff, nextStep and placeLines; model.ticks {explorer, quests}.
+  - (2) V-43: a run with units [V-01a, V-01b, V-43], done v1 + V-01a + V-01b, diffFrom the V-01b tip, brief = briefs/today-track-v3-annex.md (it points to today-track-v3.md), contract = contracts/today-track-v3-annex.md. R-C-50 goes in its laneNote: Engine.unlocked behind typeof, run.holding, run.cameBack.
+  - (3) content: when its SLOTS line appears, git -C C:/Users/ruchi/1-addic-wt/content merge --ff-only <BASE>. Fill args/v3_content_slice.json: replace <BASE> in the laneNote, set base, diffFrom, slot and now. Launch with sliceRun true.
+  - (4) Then V-42 with R-C-50 (where in conditions; at least 6 objectives; feature ids for the unlockable set; Content.xp rows) and R-S-20.
+  - (5) game-tutorials: when its SLOTS line appears, fast-forward the worktree to BASE, then V-08b (after actions-sos V-08a, R-C-48), V-28, then V-44 (after engine V-40; R-S-20, R-S-21, R-C-50).
+  - (6) Watch outbox-OWNER.md for V-Q9..V-Q13 (default at 04:00) and I6.
 - Facts:
-  - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume> (tracks/SCREENS/args/).
-  - hub_commit.py runs from the repo root, with repo-relative paths.
+  - setlane.py takes "STATE:=STATE: ..."; rr.py takes <section> <resume> (tracks/SCREENS/args/).
+  - hub_commit.py runs from the repo root with repo-relative paths.
   - claude agents needs --json.
-  - The board's states: tools/board.py:65.
-  - lane.js's scout prompt is v1-shaped; the V3 runs override it through laneNote. Pass brief and contract at the -v3 paths on every V3 run.
-  - lane.js writes its report over tracks/SCREENS/lane-reports/<lane>.md (the v1 text is in git history).
-  - HUB messages arrive by cross-session message; reply to their from= address.
+  - lane.js's scout prompt is v1-shaped; the V3 runs override it through laneNote.
+  - lane.js writes its report over tracks/SCREENS/lane-reports/<lane>.md (the older text is in git history).
+  - HUB messages arrive by cross-session message; reply to their from= address (HUB 10 is uds ...61fc232d7d4c0109accb2e284a2456fd).
   - Do not run a wait loop.

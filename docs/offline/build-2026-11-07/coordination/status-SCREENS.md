@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 03:38 IST: today-track V-01a MERGED 37d1a53c (HUB 10, 03:37, pushed); V-01b runs on slot 6 as wf_ccfdc4d0-2ae (merge base 127509e). content V-10 waits for its SLOTS line (the first 7.0 GB row); its args are being prepared
+STATE: BUILDING   # 2026-11-08 03:42 IST: today-track V-01b wf_ccfdc4d0-2ae (slot 6) and the V-43 annex scout wf_7392359a-5b6 run; V-01a MERGED 37d1a53c; content V-10 args ready for its SLOTS line
 LANE: content SCOUTED 680f850   # V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2), V-10b (owner's I6); brief briefs/content-v3.md; slot asked (on a 7.0 GB row after engine V-40's start). v1: MERGED 680f850
 LANE: today-track BUILDING 127509e   # V3 V-01a MERGED 37d1a53c (03:37, HUB 10; slice 127509e). V-01b BUILDING wf_ccfdc4d0-2ae (03:31, slot 6, diffFrom and merge base 127509e; closes C1, C2); then V-43
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 03:38 IST
+UPDATED: 2026-11-08 03:42 IST
 
 # 2026-11-08 03:36 IST · from the HUB · today-track 127509e merged (trunk 37d1a53c); BASE 37d1a53c; R-H-42
 
