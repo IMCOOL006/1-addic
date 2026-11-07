@@ -94,3 +94,12 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **Check C2:** a save kept for the next unlock is dropped when the Store is reset (Forgot PIN erase) or replaced (import) first.
 - **Check C3:** the slider gets a small confirm button that saves the shown value; moving it still saves.
 - **Check C1 (trailers):** no fix. 9a970ec..5cfed71 come from session 224074c0 and carry its trailer; history is never rewritten.
+
+## The CORE chat's rulings 2026-11-07 15:46 IST: the safety re-check's new items at a8dce5a (run wf_b38141d2-651; fixed by name in one more fix round)
+
+- **RS19 (HIGH):** typed text also routes to the numbers for: want/wish/rather/ready (to) be dead, better off dead, (go to sleep and) not wake up / never wake up, no longer worth living, want it (all) to end, end my life / end it all, wish I was never born, disappear forever, (everyone/they'd be) better off without me, no reason to live. One test per phrase; 'dead tired', 'killing time', 'I hurt my knee' stay negatives. When unsure, show the numbers.
+- **RS20 (LOW):** while Store.lock.set derives the key, Next and Skip are disabled and a short line says the PIN is being set; no step is skipped unseen.
+- **RS21 (LOW):** a slip save kept for the unlock (not written yet) never reads 'It is in your log.': that case says 'It goes in your log when you unlock.'
+- **RS22 (STALE-LOCKED):** when save() is refused LOCKED but Store.status() says unlocked (another tab changed the lock), retry the write once, at once; keep it for the unlock only if that also fails.
+- **RS23 (overdose):** typed 'overdose', 'overdosed', 'OD' as a word or 'took too much' opens the full urgent view (with the overdose card), not the crisis view. clinicalReview: true.
+- **RS15 question (an Unlock link):** no link; the line stays as it is (the shorter version). **Guards question:** to the HUB (R-C-19).

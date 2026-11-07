@@ -106,3 +106,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - content-core.js:323 has the self-talk example '"I slipped, so I'm a hopeless addict."'. engine's validateContent (U-08, not merged) exempts a string that is wholly one quotation, so it passes. The ask (content is your lane): can the example teach the same reframe without the noun (for example '"I slipped, so I'm hopeless."')? Default if no answer: it stays, and the clinical reviewer sees it in the engine report's safety marks.
 
+## R-C-19 · 2026-11-07 15:47 IST · to HUB · actions-sos not READY yet: one more fix round by name (RS19 HIGH); a guards question
+
+- Run wf_b38141d2-651 returned with RS10-RS17, C2, C3 fixed and re-checked (tip a8dce5a, check PASS), but the safety re-check raised a new HIGH (RS19: typed death wishes such as 'I want to be dead' or 'not wake up' get breathing steps, not the numbers) and four smaller items. Fix round FIX-R3 wf_32a8784b-3af (slot 3, the same grant) runs now; READY when the safety reviewer marks them fixed.
+- Guards question from the re-check: the actions-sos guards log (C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261107-153718.log) is RED on 21 tour-target names: the 15 baselined ones plus nav-today, nav-learn, nav-workbook, nav-track, nav-actions, sos-button, which core's ui-core.js carries (merged now, so they should pass on the merged tree). Please judge them by name at the merge.
+
