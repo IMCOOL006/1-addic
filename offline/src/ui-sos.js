@@ -40,7 +40,7 @@
     feelRate: { title: 'How strong is the feeling now?', line: 'Optional. Tap 0 to 10, or skip.' },
     motivation: { title: 'How is your motivation?', line: 'Optional. 0 is none, 10 is strong.' },
     feelDone: { title: 'You stayed with it.', line: 'That takes skill. It gets easier.' },
-    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.', log: 'Log it and go on', read: 'Just reading' },
+    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.', log: 'Log it and go on', read: 'Just reading', logged: 'It is in your log. Everything you earned stays.', goOn: 'Go on' }, // RS16
     slipSafe: { title: 'Are you safe right now?', line: 'If not, get help now.' },
     reach: { title: 'Reach out', line: 'One call or text. You do not have to explain it all.' },
     slipNext: { title: 'Within a day', line: 'Look back at what happened, kindly. It helps next time.' },
@@ -769,6 +769,10 @@
         if (!logged && slipLogs(choice, mode.preview) && A && typeof A.logSlip === 'function') { logged = true; const day = dayNow(); save(() => A.logSlip({ date: day })); } // RC16: the day of the tap
         safety();
       };
+      if (logged) { // RS16: the slip is in the log already: one way on, nothing written again
+        show(screen(COPY.slipStart.title, COPY.slipStart.logged, btn(COPY.slipStart.goOn, go('log'), { primary: true, testid: 'sos-slip-continue' })));
+        return;
+      }
       show(screen(COPY.slipStart.title, COPY.slipStart.line,
         btn(COPY.slipStart.log, go('log'), { primary: true, testid: 'sos-slip-continue' }),
         btn(COPY.slipStart.read, go('read'), { ghost: true, testid: 'sos-slip-reading' })));

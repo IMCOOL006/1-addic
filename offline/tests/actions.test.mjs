@@ -2037,5 +2037,24 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
     assert.ok(!r3.textContent.includes(W.call.hidden), 'unlocked: the people show again');
     assert.match(r3.textContent, /Ravi/);
   });
+  test('RS16: #/sos/slip?logged=1 says It is in your log. and offers one Go on, never Just reading; nothing is logged twice', async () => {
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const root = d.open(['sos', 'slip'], { logged: '1' });
+    assert.ok(root.textContent.includes('It is in your log.'), 'it says the slip is in the log');
+    assert.ok(!root.querySelector('[data-testid="sos-slip-reading"]'), 'no Just reading');
+    assert.ok(!root.textContent.includes(W.slipStart.read));
+    assert.ok(!root.textContent.includes(W.slipStart.log), 'no Log it and go on');
+    const on = root.querySelector('[data-testid="sos-slip-continue"]');
+    assert.ok(on, 'one way on');
+    assert.equal(on.textContent.trim(), 'Go on');
+    d.tapId(root, 'sos-slip-continue');
+    await d.settle();
+    assert.ok(root.querySelector('[data-testid="sos-slip-safe"]'), 'then the safety step');
+    assert.equal(events('SlipLogged').length, 0, 'logged before: nothing written again');
+    const plain = d.open(['sos', 'slip']);
+    assert.ok(plain.querySelector('[data-testid="sos-slip-reading"]'), 'not logged: both choices stay');
+    assert.ok(!plain.textContent.includes('It is in your log.'));
+  });
   // -- FIX-R2-REST tests end --
 });
