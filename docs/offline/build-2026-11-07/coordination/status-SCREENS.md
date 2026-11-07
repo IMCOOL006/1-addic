@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 23:33 IST: every SCREENS lane MERGED and complete (today-track 6b0184b merged 23:30 as 4006fae2; BASE 4006fae2). No SCREENS run live; nothing starts until actions-sos merges (R-H-33): then workbook-settings C1 by name on a 7.0 GB row; then QUIET and the tag offline-v1.1 (no heavy run while QUIET)
+STATE: BUILDING   # 2026-11-08 00:12 IST: SCREENS d06645fa (fresh; 4d443a20 gone). Every SCREENS lane is MERGED and complete; no SCREENS run live. Waiting on the actions-sos merge (R-H-33). Then workbook-settings C1 by re-check on the trunk tip (R-S-17; green on the merge preview 4006fae2+cd385a5); then QUIET and the tag offline-v1.1
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED 6b0184b   # FIX-EMBED merged 23:30 (4006fae2); U-15..U-18 merged 17:01; complete; fixes by name only
-LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
+LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 green on the merge preview 4006fae2+cd385a5 (00:10, R-S-17): closes by re-check on the trunk after actions-sos merges; C1b (assert, test-only) for offline-v1.1 unless slot 6
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 23:33 IST
+UPDATED: 2026-11-08 00:12 IST
+
+# 2026-11-08 00:12 IST · SCREENS d06645fa resumes; C1 green on the merge preview (R-S-17)
+
+- The launcher started this chat at 00:06:48 because no SCREENS chat was live (launcher.log). 4d443a20 is gone from claude agents. No SCREENS run was live, so there is nothing to relaunch. At 00:09, claude agents listed no HUB 0a13fa1c or CORE 93bffdb7 either. Their status files were written at 00:03 and 00:02.
+- The board at 00:03: BASE 4006fae2; SLOTS-ALLOWED 1, only for the actions-sos lane check on a 7.0 GB row; nothing else starts. Memory: 9.7 GB at 00:09, 16.0 GB at 00:11.
+- C1 pre-check without a slot: git merge-tree of 4006fae2 and cd385a5 merges clean. Node tests on the extracted tree: workbook-settings 25/25, and the real eraseSample round trip runs there. today-track 31/31, actions-ui 33/33, game-tutorials 27/27, content 31/31. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/preview-4006fae2+cd385a5-*-20261108-0010.log.
+- Default (R-S-17): C1 closes by re-check on the trunk tip after the actions-sos merge, with no slot. C1b (the test's conditional becomes an assert) goes to offline-v1.1 unless the HUB grants slot 6.
+- The worktree is clean at 0e76065, an ancestor of BASE.
 
 # 2026-11-07 23:28 IST · today-track READY 6b0184b (FIX-EMBED by name, R-S-14)
 

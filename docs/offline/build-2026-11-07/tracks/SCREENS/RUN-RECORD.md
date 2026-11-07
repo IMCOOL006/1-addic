@@ -134,18 +134,20 @@
 - wf_1e226e2d-c2b returned READY 6b0184b (check PASS, no findings). The checker skipped the browser gate for memory, so I ran build and browser on 6b0184b myself: GREEN 13/0/6, the same names as at BASE. I read the ui-today.js diff against the five rules of the laneNote.
 - Context past 250k at 23:27: the hand-over is planned. Every SCREENS unit is built; the next chat has only fixes by name to wait for.
 
+## 2026-11-08 00:12 IST · SCREENS d06645fa resumes; C1 pre-checked on the merge preview
+
+- Launched by the launcher at 00:06:48 because no SCREENS chat was live (launcher.log). 4d443a20 is gone. No SCREENS run was live, so there is nothing to relaunch. At 00:09, claude agents --json listed no HUB 0a13fa1c and no CORE 93bffdb7. Their status files were written at 00:03 and 00:02 and the launcher has not relaunched them: I noted it and did nothing about it (not mine).
+- The board at 00:03: BASE 4006fae2; SLOTS-ALLOWED 1, only for the actions-sos lane check; nothing else starts.
+- With no slot, the C1 pre-check: git merge-tree --write-tree 4006fae2 cd385a5 gives tree 7c5f4004, merged clean. I extracted it with git archive to the job's scratch folder and ran Node tests only. workbook-settings 25/25, and the real round trip runs: a probe shows Actions.eraseSample is a function on the preview and undefined on 4006fae2. today-track 31/31, actions-ui 33/33, game-tutorials 27/27, content 31/31. Logs: _logs/gates/workbook-settings/preview-4006fae2+cd385a5-*-20261108-0010.log.
+- R-S-17 to HUB (cc CORE), the default: C1 closes by re-check on the trunk tip after the merge, with no slot. C1b (the conditional becomes an assert) goes to offline-v1.1 unless slot 6 is granted.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 2026-11-07 23:28 IST. Context past 250k: at 300k this chat writes STATE: RESTART and stops; the launcher starts a fresh SCREENS chat.
-- Per lane (merged tips are on origin; READY tips are local until the HUB pushes them):
-  - MERGED: content 680f850, workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254, 22:35).
-  - today-track 6b0184b MERGED 23:30 (4006fae2; BASE 4006fae2). Every SCREENS lane is merged and complete (R-H-33).
-  - Every SCREENS unit is built.
+- Chat d06645fa (SCREENS). STATE BUILDING. NO SCREENS run live at 2026-11-08 00:12 IST.
+- Lanes: all five are MERGED and complete. content 680f850, today-track 6b0184b (4006fae2), workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254).
 - NEXT, by name only:
-  - (1) A red the HUB sends back for today-track 6b0184b or game-tutorials: fix it on the branch within the hour, two rounds at most. The browser gate is not run by lane.js's checker unless the laneNote insists and memory allows: run it by hand with `python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser`, then `git checkout -- offline/1-addic.html`.
-  - (2) Nothing starts until actions-sos merges (R-H-33). Then, before QUIET: workbook-settings C1 (the sample round trip with the real Actions.loadSample, Content.sample and eraseSample), test-only, once actions-sos READY merges: ask the HUB for slot 6; base it on the then BASE by fast-forwarding build/workbook-settings (0e76065 is in the trunk) as done for today-track.
-  - (3) R-S-16 (CORE, tests-docs): the quick-log browser flow skips because its hook is on #/track. If CORE asks today-track to put the hook on Today too, do it by name.
-  - (4) LOWs for offline-v1.1: game-tutorials C1 (the below-target branch of place() untested), content C2-C4.
-- Args: tracks/SCREENS/args/ (args_tt_embed.json and _check.json for today-track; args_gt_fixtour.json for game-tutorials). Helpers setlane.py and rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>.
-- Memory: one reading with powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory. Claude Code stops background wait loops when memory is critically low, so do not restart one: the HUB's message about a row wakes the chat. Under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row, on the HUB's word.
-- Facts: `claude agents` needs `--json` here. A run named as running is alive only while its session is listed. The launcher once started duplicate chats (22:04); it keeps the one its state records. A lane already in the trunk can be re-based on BASE by `git merge --ff-only <BASE>` in its worktree when its tip is an ancestor of BASE (no rewrite, no merge commit; check that package-lock.json is unchanged or run npm ci).
+  - (1) When status-HUB.md shows actions-sos merged, re-check C1 by running node --test offline/tests/workbook-settings.test.mjs on the new trunk tip (git archive <tip> offline into scratch, or the _int worktree read-only). Read that the round trip ran (Actions.eraseSample is a function on that tree). Then write C1 CLOSED <trunk sha> in the status file and in lane-reports/workbook-settings.md, plus an outbox line. If the HUB grants slot 6 for C1b instead: git merge --ff-only <BASE> in <wt>/workbook-settings (check package-lock.json is unchanged), then lane.js test-only with batches [[C1b]].
+  - (2) A red the HUB sends back for any SCREENS lane: fix it on the branch within the hour, two rounds at most. Run the browser gate by hand with python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser, then git checkout -- offline/1-addic.html.
+  - (3) R-S-16 (CORE, tests-docs): if CORE asks today-track for the quick-log hook on Today, add it by name.
+  - (4) LOWs for offline-v1.1: game-tutorials C1, content C2-C4, workbook-settings C1b.
+- Facts: setlane.py takes "STATE:=STATE: ..." (its docstring is wrong about a bare STATE argument). The merge preview needs no worktree: git merge-tree --write-tree A B, then git archive <tree> offline package.json | tar -x -C <scratch>. Node tests need no node_modules. Memory is one reading of (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory. Do not run a wait loop.
