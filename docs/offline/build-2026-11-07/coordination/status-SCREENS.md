@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 17:44 IST: SCREENS chat d6887185 resumed (6721d28e gone, its runs died with it); actions check relaunched wf_954d557f-237, game-tutorials U-27 relaunched wf_270cb2ea-a72; content, workbook-settings, today-track MERGED (complete); owed by name: the Settings sample stop-gap, the today-track end marker
+STATE: BUILDING   # 2026-11-07 18:00 IST: two runs live: workbook-settings FIX-SAMPLE wf_232baea7-f07 (the Settings sample stop-gap, tier 1 fix by name, R-H-28), actions U-23..U-25 wf_6effec68-3fd; game-tutorials paused at READY-SLICE 5af6665, next batch on a 7.0 GB row; R-S-11 hooks to tests-docs
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
-LANE: workbook-settings MERGED 9cbf630   # READY 9cbf630 merged 17:39 (be0f806d); complete; owed by name: Load sample data only without an own profile (R-H-28, a tag condition); C1 open by name
-LANE: actions READY-SLICE 710502f   # U-22 planner; run wf_954d557f-237 check FIX -> C1, C2 FIXED, C3 accepted; test 13/13, validate GREEN; lifts planner-day, planner-gaps, planner-add; browser not run; next U-23..U-25 after the workbook-settings fix by name
+LANE: workbook-settings BUILDING   # fix by name FIX-SAMPLE (R-H-28, a tag condition): run wf_232baea7-f07 launched 17:58 on slot 6, over 9cbf630...HEAD; READY 9cbf630 merged 17:39 (be0f806d); C1 open by name
+LANE: actions BUILDING   # READY-SLICE 710502f (U-22); U-23+U-24 then U-25: run wf_6effec68-3fd launched 17:59 (done [U-22], diffFrom 710502f, slot 7)
 LANE: game-tutorials READY-SLICE 5af6665   # U-27 guidance engine; run wf_270cb2ea-a72 check PASS; test 14/14, validate GREEN, guards baselined/by-cut names only; browser not run; PAUSED for memory (3.3 GB 17:53): U-26, U-28 on a 7.0 GB row
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:58 IST
+UPDATED: 2026-11-07 18:00 IST
 
 # 2026-11-07 17:58 IST · actions READY-SLICE 710502f (U-22 the day planner); today-track a02f121 merged
 
