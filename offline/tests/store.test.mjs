@@ -1041,6 +1041,28 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     await UI.render();
     assert.equal(S.status().locked, false, 'a person active in SOS keeps it open');
     assert.match(main().textContent, /TODAY/);
+    // Left within the limit, the timer runs again from the last touch: Today locks with no tap a minute after it (RC10).
+    t.mock.timers.tick(59000);
+    assert.equal(S.status().locked, false, '59 s after the last touch: still open');
+    t.mock.timers.tick(1000);
+    assert.equal(S.status().locked, true, 'a minute after the last touch, Today locks by itself (RC10)');
+    await UI.render();
+    assert.equal(location.hash, '#/lock');
+    assert.equal(await S.lock.unlock('2468'), true);
+    at('#/sos');
+    await UI.render();
+    S.lock.touch();
+    t.mock.timers.tick(40000);
+    at('#/today'); // SOS is left 40 s after the last touch
+    await UI.render();
+    assert.equal(S.status().locked, false, 'left within the limit: open');
+    t.mock.timers.tick(19000);
+    assert.equal(S.status().locked, false, 'the minute counts from the last touch, not from leaving SOS');
+    t.mock.timers.tick(1000);
+    assert.equal(S.status().locked, true, 'it locks 20 s after SOS is left (RC10)');
+    await UI.render();
+    assert.equal(location.hash, '#/lock');
+    assert.equal(await S.lock.unlock('2468'), true);
     at('#/sos');
     await UI.render();
     S.lock.lockNow();
