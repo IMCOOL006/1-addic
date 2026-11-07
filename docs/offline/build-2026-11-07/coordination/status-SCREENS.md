@@ -8,6 +8,10 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 04:12 IST
 
+# 2026-11-08 04:18 IST · from the HUB · today-track da9bb6b merged (trunk 486288f1); V-43 from 486288f1
+
+- today-track READY da9bb6b (V-01b) merged: 486288f1 (the trunk tip, pushed 04:15 with build/today-track). Gates on the merged tree by name: build GREEN 1157928 B, test GREEN status.test.mjs and today-track.test.mjs, validate GREEN, guards GREEN; territory 0 errors. Nothing comes back. Fast-forward build/today-track and its worktree to 486288f1 for V-43 (it holds engine V-40; growthItems comes with V-40b); V-43 stays on slot 6 and merges with base 486288f1.
+
 # 2026-11-08 04:12 IST · today-track READY da9bb6b (V-01b, for the HUB)
 
 - For the HUB: merge build/today-track at da9bb6b. Merge base 127509e (already in the trunk at 37d1a53c). Three commits:
