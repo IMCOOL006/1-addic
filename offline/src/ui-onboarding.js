@@ -61,6 +61,8 @@
     return !!(medical && (medical.heavyDaily === true || medical.sedatives === true || medical.opioids === true));
   }
 
+  const PHONE_RE = /^[0-9+()\-.\s]{3,24}$/; // the same rule as Actions.checkContact (actions.js)
+
   // Answers -> the writes of the finish, keeping only what Actions accepts. Missing answers write nothing.
   function buildPatch(answers, C) {
     const a = answers || {};
@@ -91,9 +93,10 @@
       ? { stage: profile.stage, score: a.score, source: 'onboarding' } : null;
     const reasons = (Array.isArray(a.reasons) ? a.reasons : []).map((r) => str(r, 200)).filter(Boolean).slice(0, 3);
     const cname = a.contact && str(a.contact.name, 80);
-    const cphone = a.contact && str(a.contact.phone, 40);
+    const typed = a.contact && str(a.contact.phone, 40);
+    const cphone = typed && PHONE_RE.test(typed) ? typed : null; // a number Actions would refuse never costs the name
     const contact = cname ? Object.assign({ name: cname, role: 'safetyNet' }, cphone ? { phone: cphone } : {}) : null;
-    return { profile, settings, motivation, reasons: reasons.length ? reasons : null, contact };
+    return { profile, settings, motivation, reasons: reasons.length ? reasons : null, contact, phoneDropped: !!(contact && typed && !cphone) };
   }
 
   // The finish: Actions.onboard first (it creates the settings row), then the optional extras. A failed extra never
@@ -300,7 +303,7 @@
       if (id === 'sos') {
         const rs = [1, 2, 3].map(() => h('input', { type: 'text', maxlength: '200', autocomplete: 'off' }));
         const name = h('input', { type: 'text', maxlength: '80', autocomplete: 'off' });
-        const phone = h('input', { type: 'tel', maxlength: '40', autocomplete: 'off' });
+        const phone = h('input', { type: 'tel', maxlength: '24', autocomplete: 'off' });
         const reg = [choice('radio', 'region', 'in', 'India', true), choice('radio', 'region', 'intl', 'Somewhere else')];
         return {
           body: [h('div', { class: 'stack' }, ...rs.map((r, i) => field('Reason ' + (i + 1), r))),
@@ -336,6 +339,7 @@
       finishing = true;
       const r = await finishOnboarding(A, answers, C);
       if (!r.ok && r.errors.some((x) => x.step === 'onboard' && x.code !== 'no-actions')) toast('Not saved on this device. You can set this up later.', 'warn');
+      else if (r.patch.phoneDropped) toast('The phone number was not saved. You can add it later.', 'warn');
       if (r.patch.settings.discreet === true && typeof UI.applyDiscreet === 'function') safe(() => UI.applyDiscreet(true), null);
       UI.go(then === 'drill' ? '#/sos?drill=1' : '#/today');
       if (then === 'tour' && UI.tour && typeof UI.tour.start === 'function') setTimeout(() => safe(() => UI.tour.start('tour'), null), 0);

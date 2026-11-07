@@ -1156,6 +1156,22 @@ describe('lock screen and onboarding (U-11)', () => {
     assert.equal(S().status().hasLock, false, 'an import never installs a PIN');
   });
 
+  test('RC7: a Safety Net whose number Actions would refuse keeps the name, and the person is told', async () => {
+    for (const [phone, kept] of [['+91 98765 43210', true], ['(022) 2345-6789', true], ['call me at 5', false], ['1'.repeat(25), false]]) {
+      const p = O.buildPatch({ contact: { name: 'Ravi', phone } }, C());
+      assert.equal(p.contact.name, 'Ravi', phone);
+      assert.equal(p.phoneDropped, !kept, phone);
+      assert.equal(p.contact.phone === phone, kept, phone);
+      const accepted = await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone }).then(() => true, () => false);
+      assert.equal(accepted, kept, 'the same rule as Actions: ' + phone);
+    }
+    await S().resetAll();
+    const r = await O.finishOnboarding(Actions, { contact: { name: 'Ravi', phone: 'call me at 5' } }, C());
+    assert.deepEqual(r.errors, []);
+    assert.deepEqual(list('contacts').map((x) => [x.name, x.phone || '']), [['Ravi', '']]);
+    assert.match(ONB_SRC, /phoneDropped\) toast\(/, 'the finish says the number was not saved');
+  });
+
   test('lock and onboarding make no network call and never keep the PIN', () => {
     assert.doesNotMatch(ONB_SRC, /https?:\/\//);
     assert.doesNotMatch(ONB_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\.|localStorage\.setItem/);
