@@ -609,6 +609,10 @@ test('tools: every route renders a node or a stub', () => {
       }
       const idx = page('#/games');
       for (const g of T.GAMES) one(idx, 'tool-link-' + g.id);
+      const cards = byTest(idx, 'game-card');
+      assert.equal(cards.length, T.GAMES.length, 'one game-card per game on #/games');
+      assert.deepEqual(cards.map((x) => x.getAttribute('data-game')), T.GAMES.map((g) => g.id));
+      assert.equal(byTest(page('#/tools'), 'game-card').length, 0, 'no game-card on #/tools');
     } finally { w.restore(); }
   }
 });
@@ -654,7 +658,8 @@ test('tools: trial saves one Comeback', async () => {
     one(n, 'tl-save').click();
     await flush();
     assert.equal(w.calls.length, 0, 'no save without a closing statement');
-    type(one(n, 'tl-field-comeback'), 'One is never one for me.');
+    assert.equal(byTest(n, 'tl-field-comeback').length, 0, 'the closing field carries the contract hook');
+    type(one(n, 'trial-closing'), 'One is never one for me.');
     one(n, 'tl-save').click();
     one(n, 'tl-save').click();
     await flush();

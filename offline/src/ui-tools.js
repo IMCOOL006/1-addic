@@ -208,13 +208,14 @@ const ToolsUI = (function () {
   function stepsFor(toolId, ex) {
     const fields = arr(ex && ex.fields).filter(usable);
     const by = (id) => fields.find((f) => f.id === id);
+    const tagged = (f, test) => f && Object.assign({}, f, { test });
     if (toolId !== 'trial') return fields.map((f) => ({ title: f.label, fields: [f] }));
     const plan = [
       { title: 'The charge', fields: [by('mode'), by('thought')] },
       { title: 'The case for it', fields: [FOR_FIELD] },
       { title: 'The case against it', fields: [by('trap'), by('against')] },
       { title: 'The verdict', fields: [by('thenWhat'), VERDICT_FIELD] },
-      { title: 'Closing statement', fields: [by('comeback')] },
+      { title: 'Closing statement', fields: [tagged(by('comeback'), 'trial-closing')] },
     ].map((s) => ({ title: s.title, fields: s.fields.filter(Boolean) }));
     const used = new Set(plan.flatMap((s) => s.fields.map((f) => f.id)));
     const rest = fields.filter((f) => !used.has(f.id));
@@ -296,7 +297,7 @@ const ToolsUI = (function () {
       el('p', { class: 'muted', text: kind === 'tools' ? TEXT.toolsIntro : TEXT.gamesIntro }),
       el('ul', { class: 'tl-list' }, items.map((it) => {
         const ok = available(it, c);
-        return el('li', { class: 'card tl-item' },
+        return el('li', { class: 'card tl-item', 'data-test': kind === 'games' ? 'game-card' : null, 'data-game': kind === 'games' ? it.id : null },
           el('a', { class: 'tl-item-link', href: '#/' + kind + '/' + it.id, 'data-test': 'tool-link-' + it.id },
             el('strong', { text: it.name }), el('span', { class: 'muted', text: ok ? it.gist : it.gist + ' (' + TEXT.later + ')' })));
       })));
@@ -323,15 +324,16 @@ const ToolsUI = (function () {
 
   function fieldNode(f, values, c) {
     const fid = 'tl-f-' + f.id;
+    const tid = f.test || 'tl-field-' + f.id;
     const set = (v) => { values[f.id] = v; };
     const lab = el('label', { for: fid, class: 'tl-label', text: f.label + (f.optional ? ' (optional)' : '') });
     const onIn = (fn) => (e) => fn(e && e.target ? e.target.value : '');
-    if (f.type === 'text') return el('div', { class: 'tl-field' }, lab, el('input', { id: fid, type: 'text', class: 'tl-input', value: str(values[f.id]), 'data-test': 'tl-field-' + f.id, onInput: onIn(set) }));
-    if (f.type === 'textarea') return el('div', { class: 'tl-field' }, lab, el('textarea', { id: fid, rows: '3', class: 'tl-input', value: str(values[f.id]), 'data-test': 'tl-field-' + f.id, onInput: onIn(set) }));
+    if (f.type === 'text') return el('div', { class: 'tl-field' }, lab, el('input', { id: fid, type: 'text', class: 'tl-input', value: str(values[f.id]), 'data-test': tid, onInput: onIn(set) }));
+    if (f.type === 'textarea') return el('div', { class: 'tl-field' }, lab, el('textarea', { id: fid, rows: '3', class: 'tl-input', value: str(values[f.id]), 'data-test': tid, onInput: onIn(set) }));
     if (f.type === 'single' || f.type === 'check') {
       const multi = f.type === 'check';
       const opts = optionsOf(f, c);
-      const group = el('div', { class: 'tl-opts', role: 'group', 'aria-label': f.label, 'data-test': 'tl-field-' + f.id });
+      const group = el('div', { class: 'tl-opts', role: 'group', 'aria-label': f.label, 'data-test': tid });
       const paint = () => Array.from(group.children).forEach((b, i) => {
         const on = multi ? arr(values[f.id]).includes(opts[i].id) : values[f.id] === opts[i].id;
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -350,7 +352,7 @@ const ToolsUI = (function () {
       const box = el('div', { class: 'tl-field' }, el('p', { class: 'tl-label', text: f.label }));
       for (let i = 0; i < n; i++) {
         box.appendChild(el('input', { id: fid + '-' + i, type: 'text', class: 'tl-input', 'aria-label': f.label + ' ' + (i + 1), value: str(values[f.id][i]),
-          'data-test': 'tl-field-' + f.id + '-' + i, onInput: onIn((v) => { values[f.id][i] = v; }) }));
+          'data-test': tid + '-' + i, onInput: onIn((v) => { values[f.id][i] = v; }) }));
       }
       return box;
     }
@@ -364,7 +366,7 @@ const ToolsUI = (function () {
       for (const col of cols) {
         const id = fid + '-' + i + '-' + col.id;
         row.appendChild(el('label', { for: id, class: 'tl-label', text: str(col.label) }));
-        row.appendChild(el('input', { id, type: 'text', class: 'tl-input', value: str((values[f.id][i] || {})[col.id]), 'data-test': 'tl-field-' + f.id + '-' + i + '-' + col.id,
+        row.appendChild(el('input', { id, type: 'text', class: 'tl-input', value: str((values[f.id][i] || {})[col.id]), 'data-test': tid + '-' + i + '-' + col.id,
           onInput: onIn((v) => { values[f.id][i] = Object.assign({}, values[f.id][i] || {}, { [col.id]: v }); }) }));
       }
       box.appendChild(row);
