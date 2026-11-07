@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 17:07 IST: actions-sos FIX-R4 returned RED (2 PARTLY, 1 new MEDIUM); FIX-R5 ruled and its args ready (args_as_r5.json), launching at a 7.0 GB row or the HUB's word (6.1 GB free at 17:06; R-C-26); core FIX-V11 wf_37a1972d-79e live; engine READY 57153d3, learn READY 4f5832f
+STATE: BUILDING   # 2026-11-07 17:12 IST: two runs live: actions-sos FIX-R5 wf_fa0d78f5-b07 (launched 17:10 on the 17:09 row, 7.0 GB free), core FIX-V11 wf_37a1972d-79e
 LANE: core BUILDING 957f333   # 2026-11-07 16:42 IST: MERGED lane, fix round by name FIX-V11 (R-S-6 high contrast on every render; RC12, RS18 follow-ups) run wf_37a1972d-79e slot 1 (granted 16:42); checker and both reviewers over 957f333...HEAD; was MERGED 957f333 (15:29, d4eed2a)
 LANE: engine MERGED 57153d3   # FIX-RS4 READY 16:4x, merged by the HUB as 3720d119 (R-H-25, 17:03; the baselined names lifted); before: READY 227a07a merged 15:34; complete, fixes by name only (the crisisKeywords request of RS32/RS31 is offline-v1.1 by name)
-LANE: actions-sos REVIEWING 5c2e7a7   # 2026-11-07 17:07 IST: FIX-R4 run wf_157ff262-161 returned: RS25 fd40b5d, RS27 5c2e7a7, RS28 d81a461 FIXED; RS24 c7abff1 PARTLY (the intl lead has no number), RS26 bd75f79 PARTLY (lock identity: ruled offline-v1.1, needs core lockId); new RS29 MEDIUM (urgentItem ignores tel on the trunk content), RS30 LOW; 4 questions ruled (RS31, RS32, RS22T, RS27 copy); test GREEN 133/133 (_logs/gates/actions-sos/test-20261107-165035.log); guards the same 21 names as at 1131827; next FIX-R5 (rulings contracts/actions-sos.md last section; the phrase lists close with it); report lane-reports/actions-sos.md (19673 B, RED)
+LANE: actions-sos REVIEWING 5c2e7a7   #   2026-11-07 17:12 IST: FIX-R5 run wf_fa0d78f5-b07 (RS24 intl remainder, RS29 MEDIUM, RS30, RS31, RS32, RS22T; rulings contracts/actions-sos.md 17:04; then the safety re-check); FIX-R4 at 5c2e7a7: RS25, RS27, RS28 FIXED, RS26 remainder ruled offline-v1.1
 LANE: learn MERGED 4f5832f   # FIX-RS4 READY 16:4x, merged by the HUB as cb0b427 (R-H-25, 17:03); before: READY 19f373c merged 10:50; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
-SLOTS-ASKED: 2   # actions-sos slot 3 (held; FIX-R5 waits for a 7.0 GB row or the HUB's word, R-C-26), core slot 1 (FIX-V11 running)
-UPDATED: 2026-11-07 17:08 IST
+SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R5 running), core slot 1 (FIX-V11 running)
+UPDATED: 2026-11-07 17:12 IST
 
 # 2026-11-07 17:07 IST · actions-sos FIX-R4 returned RED; FIX-R5 ruled; waiting for memory
 
