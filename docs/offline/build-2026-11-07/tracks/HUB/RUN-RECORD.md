@@ -353,3 +353,5 @@
 - Memory: the rows fell to 2.0 GB (02:23) and 2.9 GB (02:25) with one lane running (the pharma program's tsc build): under the floor. CORE applied the rule itself: tests-docs PAUSED at dfc2703 at 02:25 (U-35 built: 74 screens, 37 slugs x 2 sizes, browser 16/0/3, docs GREEN). No V3 start until a row at or above 7.0 GB; tests-docs resumes at 4.0 GB.
 - The clinical-review pack (V-09): a read-only HUB sub-agent writes CLINICAL-REVIEW-PACK.md under <docs> (every clinicalReview passage by path with its current words) for the owner's reviewer; launched after this commit.
 - Owner's questions V-Q1 to V-Q8 on the board with defaults (the layer's shape V-Q2 to V-Q6 default at 03:30 IST; the tag's name, the India numbers and the clinical review at the tag).
+
+- 2026-11-08 02:34 IST: the row 02:33 8.8 GB (the pharma build done; CORE 10 idle before its stop): today-track slot=6 granted for V3 tier 1 (V-01a the slice); SLOTS-ALLOWED 2 with tests-docs. SCREENS 1c2cf086 (idle since 01:35) told by message to scout and start it; CORE 11 not yet launched (the launcher's next tick).
