@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 16:31 IST: three READY-SLICE lines for the HUB (today-track 13eba28, content 065699b, workbook-settings cc1f1ea); three runs live (today-track U-16..U-18, content U-31b..U-33, workbook-settings U-20a..U-21); actions, game-tutorials SCOUTED (tier 2, wait)
+STATE: BUILDING   # 2026-11-07 16:48 IST: today-track READY 3f3001e; READY-SLICE for the HUB: content 065699b, workbook-settings cc1f1ea; two runs live (content U-31b..U-33, workbook-settings U-20a..U-21); slot 5 frees on today-track's merge; actions, game-tutorials SCOUTED (tier 2, wait for a grant)
 LANE: content READY-SLICE 065699b   # U-31a (0bbb7e2, 065699b), check PASS, for the HUB to merge (mind the three neighbour test names, R-S-5); the lane continues on the branch: run wf_11307812-199 (U-31b+U-29, then U-30+U-32+U-33), launched 16:26
-LANE: today-track BUILDING   # slice READY-SLICE 13eba28 MERGED 16:24 (trunk ee33566f, per status-HUB.md); the lane continues on its branch (no rebase): run wf_f509ab5b-32d (C1, C2 by name, U-16, then U-17+U-18; diffFrom 13eba28)
+LANE: today-track READY 3f3001e   # U-15..U-18 complete; run wf_f509ab5b-32d check PASS over 13eba28..3f3001e, no findings; test 26/26; lifts 5 baselined tour targets; report tracks/SCREENS/lane-reports/today-track.md 14570 B; cut base 1ef2482e; slice 13eba28 merged 16:24
 LANE: workbook-settings READY-SLICE cc1f1ea   # U-19 Settings (83aa85b, e0af4fd, cc1f1ea), check PASS, for the HUB to merge; the lane continues on the branch: run wf_34a731b5-17f (C3, C4 by name, U-20a, then U-20b+U-21), launched 16:31
 LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
 LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 16:31 IST
+UPDATED: 2026-11-07 16:48 IST
+
+# 2026-11-07 16:48 IST · today-track READY 3f3001e (U-15..U-18 complete)
+
+- For the HUB: merge build/today-track at 3f3001e (cut base 1ef2482e; the slice 13eba28 is in the trunk; this READY adds 87c03f1 C1 check-in times from profile.checkin, e845599 C2 test by name, 2a77cfe + 9f76c9a U-16 Track, e7d248d + bd06841 U-17 Insights, c467fae + 3f3001e U-18 Harbor). Files: offline/src/ui-today.js, ui-track.js (new), ui-harbor.js (new), offline/tests/today-track.test.mjs, the today-track section at the end of styles.css.
+- Gates (run wf_f509ab5b-32d, check PASS over 13eba28..3f3001e, no findings): build GREEN, test GREEN 26/26 today-track.test.mjs, validate GREEN, guards RED by count on 10 names of other lanes, all baselined; this lane lifts its five baselined names quicklog-button, quicklog-intensity, quicklog-save, insights-triggers, insights-heatmap (they can leave baselines.md). Logs C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/*-20261107-1643*.log. Report tracks/SCREENS/lane-reports/today-track.md (14570 B).
+- Verified by me: the branch log (8 commits after 13eba28), the tip, the checker's gate lines. Assumed: the guard names as the checker read them (not re-run by me).
 
 # 2026-11-07 16:31 IST · workbook-settings READY-SLICE cc1f1ea (U-19 Settings)
 
