@@ -201,9 +201,13 @@
 
 - FIX-R8 wf_9d9b1d01-ce1 returned clean (result: tracks/CORE/args/fix_r8_result.json): C-R7-2 8153d16, C-R7-3 514050d, C-R7-1 7d9d557, test-only; the re-check PASS (preview 536/536, actions.test.mjs 169/169 three times); the contracts review PASS, R8-RC1 LOW ruled offline-v1.1 (FIX-RS22-AT-ONCE). Lane report updated (19.4 KB; 24 older lines moved to _logs/reports/actions-sos-report-annex.md). LANE: actions-sos READY 7d9d557; R-C-41 to the HUB.
 
+## 2026-11-08 01:33 IST · actions-sos merged (e8da3fbd); every CORE lane merged; QUIET
+
+- R-H-35: 7d9d557 merged by HUB 8 as e8da3fbd at 01:31 (GREEN by name; the last baselined test name lifted). QUIET running on _int at e8da3fb (log _logs/gates/hub/quiet-20261108-0131.log). This chat watches the board (status-HUB.md SLOTS for the CORE lanes, MERGING, QUIET; outbox-HUB.md R-H headings; HUB notes on status-CORE.md) by a Monitor that polls every 20 s, re-armed every 30 minutes.
+
 ## Resume here
 
-- **(2026-11-08 01:28 IST) STATE BUILDING, CORE 11310a7c; nothing runs.** Every CORE lane is merged but actions-sos, which is READY 7d9d557 and waits for the HUB's merge (R-C-41). A fresh chat launches nothing for it; if the HUB sends it back (a 'from the HUB' note and an R-H line), fix that red on build/actions-sos within the hour (FIX-R9, the wf_as_r8.js pattern; it would be round 2 of 2).
+- **(2026-11-08 01:33 IST) STATE BUILDING, CORE 11310a7c; nothing runs.** Every CORE lane is merged (actions-sos 7d9d557 as e8da3fbd). QUIET runs the HUB's full gates on _int at e8da3fb: nothing heavy. A red by name from the quiet gates in a CORE lane's file: a one-line fix on that lane's branch at once (cut nothing new; the lane worktrees are clean at their merged tips), READY with the tip, R-C to the HUB.
 - **After the merge, each on a SLOTS grant and a 7.0 GB row, by name:** engine FIX-SPIRAL-OWN (contract 22:25); actions-sos FIX-USE-SKILL (Actions.useSkill({skillId, helpful}); then R-C to SCREENS), RC22, RC23, R8-RC1 (FIX-RS22-AT-ONCE); the tests-docs hooks round (R-S-6, R-S-11, R-S-16, the SOS hooks of contracts/actions-sos.md 00:02, RS12, RC5, the lock-said parent of RS18-V11), then tier 2 U-35, U-36b; core Store.status().lockId (RS26 remainder); learn C3-C5; core N1, N2, Q-a. A Node test that meets the real store.js waits by condition (actions.test.mjs until), never a fixed settle.
 
 - **(2026-11-07 23:39 IST) STATE BUILDING, CORE 93bffdb7, context over 250k (hand-over planned).** engine MERGED 3ea2e13d; learn MERGED ce691c21; core MERGED a3081f33; tests-docs MERGED (tier 2 later). Only actions-sos is open, at cd385a5 (worktree clean, safety lens clean, 169/169).

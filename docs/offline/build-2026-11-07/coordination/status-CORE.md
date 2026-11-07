@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 01:28 IST: CORE 11310a7c: actions-sos READY 7d9d557 (FIX-R8 clean: re-check PASS on a fresh trunk merge preview 536/536, actions.test.mjs 169/169 three times; review PASS, one LOW); nothing runs; waiting for the HUB's merge; after it, the offline-v1.1 queue by name as the HUB grants slots
+STATE: BUILDING   # 2026-11-08 01:33 IST: CORE 11310a7c: every CORE lane is merged (actions-sos 7d9d557 as e8da3fbd, R-H-35); QUIET running on _int at e8da3fb: nothing heavy; a red by name from the quiet gates is fixed on its lane's branch at once; after the tag, the offline-v1.1 queue by name on granted slots
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
-LANE: actions-sos READY 7d9d557   # 2026-11-08 01:28 IST: FIX-R8 (8153d16 C-R7-2, 514050d C-R7-3, 7d9d557 C-R7-1; test-only) re-check PASS: the trunk with the four lane files 536/536, actions.test.mjs 169/169 three times on the real store.js; worktree gates GREEN by name (169/169; build, validate SKIP; the 21 other-lane tour targets); territory 0 errors; the round's contracts-and-tests review PASS (R8-RC1 LOW, offline-v1.1); both lenses clean at cd385a5; report tracks/CORE/lane-reports/actions-sos.md (19.4 KB); cut base 655516dc; lifts 'validation failures write nothing'; the RS-SAMPLE tag condition
+LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 0   # nothing runs; actions-sos slot 3 frees at its merge; the offline-v1.1 queue (tracks/CORE/RUN-RECORD.md) asks again by name after the merge
-UPDATED: 2026-11-08 01:28 IST
+SLOTS-ASKED: 0   # nothing runs (QUIET); the offline-v1.1 queue asks by name after the tag
+UPDATED: 2026-11-08 01:33 IST
+
+# 2026-11-08 01:33 IST · actions-sos merged; every CORE lane merged; QUIET
+
+- R-H-35: actions-sos READY 7d9d557 merged as e8da3fbd (01:31), GREEN by name on the merged tree; BASE e8da3fbd; slot 3 free; QUIET from 01:31 (the full gates on _int at e8da3fb, log C:/Users/ruchi/1-addic-wt/_logs/gates/hub/quiet-20261108-0131.log). CORE runs nothing until the quiet window names a red; then, after the tag, tests-docs' hooks round (R-S-6, R-S-11, R-S-16) and the LOWs by name on granted slots.
 
 # 2026-11-08 01:28 IST · actions-sos READY 7d9d557
 
