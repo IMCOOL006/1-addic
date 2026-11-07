@@ -305,3 +305,5 @@
 - 01:29-01:31 prepare MERGED-CLEAN (4 files; merge base 1cb96a3; the trunk tip was CORE's docs commit 070a188c), conflicts none, guards GREEN by name (build 1113578 B; test 169/169; validate; guards; territory 0), commit e8da3fbd, finish --hub --push: the trunk and build/actions-sos on origin. BASE e8da3fbd. baselines.md: no test name left. R-H-35.
 - 01:31 QUIET: `gates.py --wt _int --lane hub --full --timeout 1500 build test validate guards browser docs` detached (quiet-20261108-0131.log). Next: read every GATE and FAIL line by name; fixes by territory if any; `git tag -a offline-v1.1` on the trunk in the main folder, pushed; the hand-off note; the launcher paused; STATE HANDOVER.
 
+- 2026-11-08 01:39 IST: the quiet window's gates read by name: build, test 536/536, validate, guards, docs GREEN; browser RED on one name, "lesson to artifact shown in SOS" (the auto tour's popover over the exercise Save button; the harness gap). FIX-TOURMARK (test-only) asked of CORE for tests-docs (R-H-36); slot 5 granted; MERGE-QUEUE tests-docs READY; then the browser gate alone on the merged tree, then the tag. SCREENS R-S-18: C1 CLOSED on e8da3fbd.
+
