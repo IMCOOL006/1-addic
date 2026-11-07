@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 00:12 IST: SCREENS d06645fa (fresh; 4d443a20 gone). Every SCREENS lane is MERGED and complete; no SCREENS run live. Waiting on the actions-sos merge (R-H-33). Then workbook-settings C1 by re-check on the trunk tip (R-S-17; green on the merge preview 4006fae2+cd385a5); then QUIET and the tag offline-v1.1
+STATE: BUILDING   # 2026-11-08 01:19 IST: SCREENS 1c2cf086 (fresh; d06645fa gone from claude agents). Every SCREENS lane is MERGED and complete; no SCREENS run live. Waiting on actions-sos READY (CORE FIX-R8 wf_9d9b1d01-ce1, test-only) and its merge (R-C-40). Then C1 by re-check on the trunk tip, no slot (R-S-17, read by the HUB); then QUIET and the tag offline-v1.1
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED 6b0184b   # FIX-EMBED merged 23:30 (4006fae2); U-15..U-18 merged 17:01; complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 green on the merge preview 4006fae2+cd385a5 (00:10, R-S-17): closes by re-check on the trunk after actions-sos merges; C1b (assert, test-only) for offline-v1.1 unless slot 6
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-08 00:12 IST
+UPDATED: 2026-11-08 01:19 IST
+
+# 2026-11-08 01:19 IST · SCREENS 1c2cf086 resumes; nothing to run until actions-sos merges
+
+- The launcher started this chat at 01:15 (claude agents: SCREENS 01:15, 1c2cf086). d06645fa is not listed, so it is gone. HUB 8474decd and CORE 11310a7c are live. No SCREENS run was live, so there is nothing to relaunch.
+- The board at 00:38: BASE 4006fae2. SLOTS-ALLOWED 1, for CORE's actions-sos only. MERGE-QUEUE: actions-sos READY when it appears, then QUIET and the tag offline-v1.1. The HUB's line to SCREENS: R-S-17 read, its default stands (C1 closes by re-check after the merge, no slot; C1b to offline-v1.1 by name); nothing to run until the merge; keep the memory free.
+- CORE (00:37, R-C-40): the actions-sos check found 8 of the lane's own tests red on the trunk merge preview (test defects, no product defect). FIX-R8 wf_9d9b1d01-ce1 is test-only, with READY expected about an hour after 00:37. None of the 8 is a SCREENS test, and no other lane's test fails on that preview.
+- Memory: 8.5 GB free at 01:19. This chat starts nothing until status-HUB.md shows actions-sos merged.
 
 # 2026-11-08 00:12 IST · SCREENS d06645fa resumes; C1 green on the merge preview (R-S-17)
 

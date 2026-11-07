@@ -141,13 +141,24 @@
 - With no slot, the C1 pre-check: git merge-tree --write-tree 4006fae2 cd385a5 gives tree 7c5f4004, merged clean. I extracted it with git archive to the job's scratch folder and ran Node tests only. workbook-settings 25/25, and the real round trip runs: a probe shows Actions.eraseSample is a function on the preview and undefined on 4006fae2. today-track 31/31, actions-ui 33/33, game-tutorials 27/27, content 31/31. Logs: _logs/gates/workbook-settings/preview-4006fae2+cd385a5-*-20261108-0010.log.
 - R-S-17 to HUB (cc CORE), the default: C1 closes by re-check on the trunk tip after the merge, with no slot. C1b (the conditional becomes an assert) goes to offline-v1.1 unless slot 6 is granted.
 
+## 2026-11-08 01:19 IST · SCREENS 1c2cf086 resumes
+
+- Started by the launcher at 01:15 (NO CHAT: d06645fa is not listed by claude agents --json). HUB 8474decd and CORE 11310a7c are live. No SCREENS run was live, so nothing was relaunched.
+- The board (00:38): BASE 4006fae2; SLOTS-ALLOWED 1, for actions-sos only; the HUB has read R-S-17 and its default stands. CORE R-C-40 (00:37): FIX-R8 wf_9d9b1d01-ce1 (test-only) is running on actions-sos; 8 of that lane's own tests are red on the merge preview, and no SCREENS test is among them.
+- Memory 8.5 GB free at 01:19. Status file rewritten. Nothing started.
+
 ## Resume here
 
-- Chat d06645fa (SCREENS). STATE BUILDING. NO SCREENS run live at 2026-11-08 00:12 IST.
-- Lanes: all five are MERGED and complete. content 680f850, today-track 6b0184b (4006fae2), workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254).
+- Chat 1c2cf086 (SCREENS), STATE BUILDING. As of 2026-11-08 01:19 IST, NO SCREENS run is live.
+- Lanes: all five are MERGED and complete: content 680f850, today-track 6b0184b (4006fae2), workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254).
 - NEXT, by name only:
-  - (1) When status-HUB.md shows actions-sos merged, re-check C1 by running node --test offline/tests/workbook-settings.test.mjs on the new trunk tip (git archive <tip> offline into scratch, or the _int worktree read-only). Read that the round trip ran (Actions.eraseSample is a function on that tree). Then write C1 CLOSED <trunk sha> in the status file and in lane-reports/workbook-settings.md, plus an outbox line. If the HUB grants slot 6 for C1b instead: git merge --ff-only <BASE> in <wt>/workbook-settings (check package-lock.json is unchanged), then lane.js test-only with batches [[C1b]].
+  - (1) When status-HUB.md shows actions-sos merged (its MERGED line, and a new BASE), re-check C1. Run node --test offline/tests/workbook-settings.test.mjs on the new trunk tip: git archive <tip> offline package.json | tar -x -C <scratch>, with no worktree and no node_modules. Confirm that the round trip ran: Actions.eraseSample must be a function on that tree. Then write C1 CLOSED <trunk sha> in the status file and in lane-reports/workbook-settings.md, plus an outbox line. If the HUB grants slot 6 for C1b instead: git merge --ff-only <BASE> in <wt>/workbook-settings (check that package-lock.json is unchanged), then lane.js test-only with batches [[C1b]].
   - (2) A red the HUB sends back for any SCREENS lane: fix it on the branch within the hour, two rounds at most. Run the browser gate by hand with python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser, then git checkout -- offline/1-addic.html.
   - (3) R-S-16 (CORE, tests-docs): if CORE asks today-track for the quick-log hook on Today, add it by name.
   - (4) LOWs for offline-v1.1: game-tutorials C1, content C2-C4, workbook-settings C1b.
-- Facts: setlane.py takes "STATE:=STATE: ..." (its docstring is wrong about a bare STATE argument). The merge preview needs no worktree: git merge-tree --write-tree A B, then git archive <tree> offline package.json | tar -x -C <scratch>. Node tests need no node_modules. Memory is one reading of (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory. Do not run a wait loop.
+- Facts:
+  - setlane.py takes "STATE:=STATE: ..." (its docstring is wrong about a bare STATE argument). rr.py <section> <resume> appends to this file.
+  - The merge preview needs no worktree: git merge-tree --write-tree A B, then git archive <tree> offline package.json | tar -x -C <scratch>. Node tests need no node_modules.
+  - Memory is one reading of (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory.
+  - claude agents needs --json from a background chat.
+  - Do not run a wait loop.
