@@ -1,4 +1,4 @@
-STATE: BUILDING again from 22:04 IST (you ran --start; the launcher started HUB 7, CORE and SCREENS). 22:07 the twenty-fifth merge: learn's test fix (75eb8e5 -> ce691c21); 22:19 the twenty-sixth: the engine fix (84075b6 -> 3ea2e13d, the recovery-plan prefill reads a warning sign's text); 22:35 the twenty-seventh: game-tutorials complete (bd2e085 -> 7485e254: game surfaces, tools and mini-games, the tour fix); all green by name, the trunk pushed. The full browser suite on the merged trunk (22:37-22:39): GREEN, 13 pass, 0 fail, 6 skip by name (every skip waits for the SOS lane's routes #/onboarding and #/sos, and one quick-log hook). Live: the SOS lane's seventh safety round (CORE: the re-check passed the five fixes but raised RS35 HIGH, a crisis thought with no own reply getting a stock line, and two MEDIUM; the fixer is on them). Your R-O-3 and R-O-4 are filed; the order you named is the order followed. 23:07 report: the SOS lane is in its seventh fix round (started 22:56: the sample mark drops when a person edits a sample contact; SOS reads stage and region from the person's own profile only), then its safety re-check and the second reviewer's final read; the Today embed fix is built (6b0184b) and paused for memory before its check. Memory 3.9 GB (23:02), 2.6 GB (23:06): the pharma program's seven chats restarted at 22:33 hold it. The SOS round runs on alone; everything else waits for a 7.0 GB row. The fresh CORE relaunches the SOS safety re-check and the engine one-liner from their branches (their runs died at the park); the fresh SCREENS runs the game-tutorials re-check. Memory 12.5-14.2 GB free at 22:05. Earlier: PARKED 19:11 IST on your word (the usage limit), after offline-v1.0 (45473b2, 11:40) and twenty-four merges toward offline-v1.1 (BASE 49f1c1d4). In since the tag: the encrypted Store, the whole engine, every tier 1 screen, the whole validated content, the actions screens complete, the guidance engine. Ready and waiting for the next HUB: learn's test fix (READY 75eb8e5; its merge was prepared clean and aborted unfinished on the park order). Still in their lanes: the SOS screens with onboarding and lock (actions-sos: all five fixes of the sixth safety round committed, the safety re-check was running), the engine one-liner (FIX-RS9E, was running), game surfaces and tools (game-tutorials built, re-check not run). The launcher loop is stopped; every chat hands over; the trunk and every lane branch are pushed.
+STATE: BUILDING again from 22:04 IST (you ran --start; the launcher started HUB 7, CORE and SCREENS). 22:07 the twenty-fifth merge: learn's test fix (75eb8e5 -> ce691c21); 22:19 the twenty-sixth: the engine fix (84075b6 -> 3ea2e13d, the recovery-plan prefill reads a warning sign's text); 22:35 the twenty-seventh: game-tutorials complete (bd2e085 -> 7485e254: game surfaces, tools and mini-games, the tour fix); 23:30 the twenty-eighth: Today embeds the game panel and the guidance ring (6b0184b -> 4006fae2); all green by name, the trunk pushed. Every SCREENS lane is merged and complete. The full browser suite on the merged trunk (22:37-22:39): GREEN, 13 pass, 0 fail, 6 skip by name (every skip waits for the SOS lane's routes #/onboarding and #/sos, and one quick-log hook). Live: the SOS lane's seventh safety round (CORE: the re-check passed the five fixes but raised RS35 HIGH, a crisis thought with no own reply getting a stock line, and two MEDIUM; the fixer is on them). Your R-O-3 and R-O-4 are filed; the order you named is the order followed. 23:07 report: the SOS lane is in its seventh fix round (started 22:56: the sample mark drops when a person edits a sample contact; SOS reads stage and region from the person's own profile only), then its safety re-check and the second reviewer's final read; the Today embed fix is built (6b0184b) and paused for memory before its check. Memory 3.9 GB (23:02), 2.6 GB (23:06): the pharma program's seven chats restarted at 22:33 hold it. The SOS round runs on alone; everything else waits for a 7.0 GB row. The fresh CORE relaunches the SOS safety re-check and the engine one-liner from their branches (their runs died at the park); the fresh SCREENS runs the game-tutorials re-check. Memory 12.5-14.2 GB free at 22:05. Earlier: PARKED 19:11 IST on your word (the usage limit), after offline-v1.0 (45473b2, 11:40) and twenty-four merges toward offline-v1.1 (BASE 49f1c1d4). In since the tag: the encrypted Store, the whole engine, every tier 1 screen, the whole validated content, the actions screens complete, the guidance engine. Ready and waiting for the next HUB: learn's test fix (READY 75eb8e5; its merge was prepared clean and aborted unfinished on the park order). Still in their lanes: the SOS screens with onboarding and lock (actions-sos: all five fixes of the sixth safety round committed, the safety re-check was running), the engine one-liner (FIX-RS9E, was running), game surfaces and tools (game-tutorials built, re-check not run). The launcher loop is stopped; every chat hands over; the trunk and every lane branch are pushed.
 NEEDS YOU: nothing to run now (the launcher loop is up since 22:04). As before: open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; the India numbers (I6) remain yours; keep the machine awake.
 NEXT (the HUB, in order): merge actions-sos when its safety re-check passes (the tag condition); merge the engine fix and game-tutorials as they say READY; the full gates on the trunk; tag offline-v1.1. The guide with screenshots (tests-docs U-35, U-36b) follows and goes to offline-v1.2 if it does not land.
 
@@ -6,7 +6,7 @@ NEXT (the HUB, in order): merge actions-sos when its safety re-check passes (the
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 23:07 IST by `board.py`.
+Rewritten 2026-11-07 23:32 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -17,20 +17,20 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 ## The HUB
 
 - STATE: BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and SCREENS 4d443a20. CORE 60f08c84 and SCREENS d6887185 are gone from claude agents…
-- BASE: 7485e254 (the trunk after the game-tutorials bd2e085 merge, 2026-11-07 22:37 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- BASE: 4006fae2 (the trunk after the today-track 6b0184b merge, 2026-11-07 23:31 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 23:07 IST
+- UPDATED: 2026-11-07 23:31 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 187k | 2026-11-07 23:07 IST |
+| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 199k | 2026-11-07 23:31 IST |
 | CORE | 93bffdb7 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:58 IST: CORE 93bffdb7: actions-sos FIX-R7 wf_ea2586a6-02e running (launched 22:56 on the HUB's grant)… | 235k | 2026-11-07 22:58 IST |
-| SCREENS | 4d443a20 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 23:02 IST: PAUSED for memory (3.9 GB free at 23:02): today-track FIX-EMBED built at 6b0184b, worktree clean… | 233k | 2026-11-07 23:02 IST |
+| SCREENS | 4d443a20 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 23:28 IST: today-track READY 6b0184b for the HUB (FIX-EMBED; check PASS; browser GREEN 13/0/6 run and read… | 258k | 2026-11-07 23:28 IST |
 
 ## Lanes (10)
 
@@ -41,17 +41,17 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 | `actions-sos` | CORE | 1 | yes | slot 3 | BUILDING | GRANTED again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at 1131827 (16:18, pushed) RS19-RS23 FIXED on the safety re-check, test GREEN 119/119, but the… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
-| `today-track` | SCREENS | 1 |  | slot 5 | CHECKING | GRANTED again 2026-11-07 22:35 for FIX-EMBED by name (R-S-14; ui-today.js and its test only); PAUSE at its next commit from 2026-11-07 22:50 IST (the 22:50 row… |
+| `today-track` | SCREENS | 1 |  | slot ? | READY | GRANTED slot=5 free from 2026-11-07 23:31 IST: FIX-EMBED READY…; FIX-EMBED 6b0184b on BASE 7485e254 (fast-forwarded 22:38; base and diffFrom 7485e254… |
 | `workbook-settings` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met… |
 | `actions` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=7 free from 2026-11-07 18:50: READY 0977edd merged…; READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only… |
 | `game-tutorials` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged…; READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW… |
 | `content` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1… |
 
-Slots allowed: 1 (2026-11-07 23:07 IST: rows 23:02 3.9, 23:06 2.6 GB free with one run live, actions-sos FIX-R7, tier 1 and the tag condition: it runs on, as the R-C-32 default accepted 18:58 says, since pausing the only run gains nothing; today-track's check (6b0184b) and anything else wait for a 7.0 GB row; the HUB runs nothing heavy; the memory is held by the pharma program's seven chats restarted 22:33). Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot 5, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
+Slots allowed: 1 (2026-11-07 23:31 IST: actions-sos FIX-R7 (CORE, slot 3) is the one live run and the last tag condition; rows 23:16 9.4, 23:26 4.2 GB; nothing else starts (every other lane is complete; the SCREENS fixes by name, workbook-settings C1 and R-S-16, wait for actions-sos's merge); under 4.0 GB the one tier 1 run continues; the HUB runs nothing heavy until QUIET). Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
 
 ## Merges
 
-- the merge queue: as they appear: actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33, now RS35-RS37; lifts the actions.test.mjs name; both reviewers' answers read before the merge), today-track FIX-EMBED READY (R-S-14; cut base 9f3026c6 real merge base checked)
+- the merge queue: actions-sos READY when it appears (655516dc; flagged; RS-SAMPLE, RS33, RS35-RS38; lifts the actions.test.mjs name; both reviewers' answers read in lane-reports/actions-sos.md before the merge); then QUIET and the tag offline-v1.1
 
 - 07:41 core READY-SLICE 8bf7b5c (U-01) -> 7eaf7f4, trunk fde4bbbd. build GREEN 103409 B; guards GREEN by name (15 screen tour-target names baselined until the screens land).
 - 07:44 engine READY-SLICE 04fc0c1 (U-05) -> 6089dad, trunk 33d2a04f. build GREEN 127289 B; test GREEN (logic.test.mjs); validate SKIP until U-08.
@@ -78,7 +78,8 @@ Slots allowed: 1 (2026-11-07 23:07 IST: rows 23:02 3.9, 23:06 2.6 GB free with o
 - 22:07 learn READY 75eb8e5 (the two test names that assumed M4 and M7 were missing now read Content.modules) -> ce691c21. build, test 28/28, validate, guards GREEN by name; two baselined test names lifted (one remains: actions-sos's, lifted by its READY).
 - 22:19 engine READY 84075b6 (FIX-RS9E: the recovery-plan prefill and own warning plans read a warning sign as x.item; a new test file) -> 3ea2e13d. build, test 105/105 in 5 files, validate, guards GREEN by name; merged clean, 2 files.
 - 22:35 game-tutorials READY bd2e085 (U-26 game surfaces, U-28 tools and mini-games, the tour fix: UI.tour.start returns nothing, the coach keeps clear of the SOS button) -> 7485e254. build, test 27/27, validate, guards GREEN by name; merged clean, 5 files; the lane's browser gate 12 pass, 0 fail, 7 skip. The lane is complete; LOW C1 open by name.
-- Queue: actions-sos READY (when its seventh safety round passes); today-track FIX-EMBED by name (R-S-14) when SCREENS says READY.
+- 23:30 today-track READY 6b0184b (Today embeds the game panel, the Explorer ring, more tools and the dot, each behind a guard so Today renders without them) -> 4006fae2. build, test 31/31, validate, guards GREEN by name; 2 files; the lane's browser gate 13/0/6, the same names as the trunk.
+- Queue: actions-sos READY (when its seventh safety round and both reviewers' final reads pass): the last merge before the quiet window and the tag.
 
 ## Blockers and questions
 
@@ -100,7 +101,7 @@ Slots allowed: 1 (2026-11-07 23:07 IST: rows 23:02 3.9, 23:06 2.6 GB free with o
 
 ## Machine
 
-- Free memory 2.6 GB of 31.8 GB at 2026-11-07 23:06 IST; claude 27, node 49 processes; 0 slots by the rule (lane-widening.md).
+- Free memory 4.2 GB of 31.8 GB at 2026-11-07 23:26 IST; claude 27, node 62 processes; 0 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 25324); its last launch: SCREENS 4d443a20 at 2026-11-07 22:04.
 
 ## Files of the build
