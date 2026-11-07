@@ -174,8 +174,8 @@ const Content = {
     feelingTools: { name: 'Personal "I\'m feeling…" tools', gist: 'Your own anger and mood tools in SOS.', tab: 'sos' },
     recoveryPlan: { name: 'My Recovery Plan', gist: 'Your go-to skills, people and plans.', tab: 'workbook' },
     radar: { name: 'Warning Sign Radar', gist: 'Your top warning signs, watched from your own data.', tab: 'track' },
-    /* V-10: the status page (PLAN-V3 section 3). route without '#' while Engine's route table (engine.js:1378) lacks '#/status'; then '#/status' (ui-guidance.js routeOfFeature reads only '#/'). */
-    status: { name: 'Your Harbor status', gist: 'What grew in your Harbor from what you did, and one next step.', tab: 'today', route: '/status' },
+    /* V-10: the status page (PLAN-V3 section 3). V-10r: '#/status', now in Engine's route table (engine V-40c); ui-guidance.js routeOfFeature reads only '#/'. */
+    status: { name: 'Your Harbor status', gist: 'What grew in your Harbor from what you did, and one next step.', tab: 'today', route: '#/status' },
   },
   /* which module reveals which features; day-one features are always on */
   reveal: {
@@ -299,7 +299,7 @@ const Content = {
     { q: 'How do I use this on my phone?', a: 'Copy 1-addic.html to the phone and open it in Chrome. Export a backup here and import it there; the phone keeps its own data.', route: '#/settings/data' },
     { q: 'How do I set or remove the PIN?', a: 'Settings → Privacy → App lock. With a PIN, your data is encrypted in the browser. Forgetting it means starting over from a backup.', route: '#/settings/privacy' },
     { q: 'How do I turn the harbor and points off?', a: 'Settings → Look → Calm mode. Everything keeps working; the game layer disappears.', route: '#/settings/look' },
-    { q: 'What is the status page?', a: 'Open Your Harbor from Today. It shows which places in your Harbor grew from what you did, what to keep an eye on, and one next step. Every place keeps what it has grown. In Calm mode the scene is hidden and the words stay.', route: '#/today' }, /* V-10: '#/status' once Engine's route table (engine.js:1378) holds it; until then validateContent refuses it */
+    { q: 'What is the status page?', a: 'Open Your Harbor from Today. It shows which places in your Harbor grew from what you did, what to keep an eye on, and one next step. Every place keeps what it has grown. In Calm mode the scene is hidden and the words stay.', route: '#/status' }, /* V-10r: '#/status', in Engine's route table since engine V-40c */
     { q: 'How do I see what the techniques are based on?', a: 'Settings → About & evidence lists every technique with its sources, and every lesson wrap has a "Why this works" link.', route: '#/settings/about' },
     { q: 'How do I replay the tour or a tutorial?', a: 'Settings → Help & tutorials. Every tutorial and training drill can be replayed any time.', route: '#/settings/help' },
     { q: 'How do I share my plan with a therapist or sponsor?', a: 'Workbook → My Recovery Plan → Print / PDF. Or Settings → Your data → Print logs.', route: '#/workbook/plan' },
