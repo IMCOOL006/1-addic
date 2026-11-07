@@ -131,3 +131,7 @@ UPDATED: 2026-11-07 16:39 IST
 
 - engine READY 227a07a (U-06, U-07, U-08, the R-sample and R-outcome rulings) merged clean into the trunk as 1ef2482; trunk 1ef2482e pushed with build/engine (6cb722e..227a07a). Gates on the merged tree: build GREEN (451085 B), test GREEN (102/102, 4 files), validate GREEN (0 errors; its first run on the trunk), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. BASE is 1ef2482e for new cuts. core and engine are complete; actions-sos's READY is the next merge (its tests meet the real store.js and engine.js on the merged tree).
 
+
+# 2026-11-07 16:42 · from the HUB · core FIX-V11 granted; the test fixes read as granted
+
+- `SLOTS: core slot=1 granted again 16:42` (FIX-V11, flagged, both reviewers over the round's diff; READY with the tip; cut base 655516dc). engine slot 2 and learn slot 9 stand (R-H-21 was the grant); their READY lines lift the three baselined test names on merge. The 16:39 row: 13.8 GB free with six runs live; the pause rule stands (R-H-23).
