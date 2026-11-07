@@ -625,9 +625,11 @@ const GuidanceUI = (function () {
   }
 
   /* The browser suite drives UI.tour.start(id) (tests/browser.test.mjs "tour complete"/"tour skip"): attached from
-     this file at load, never by editing ui-core.js; it is the same coach() with a replay mark. */
+     this file at load, never by editing ui-core.js; it is the same coach() with a replay mark. UI.tour.start and
+     UI.tour.replay return nothing, so a caller is never kept waiting while the tour runs until it is closed; the end
+     is the TutorialCompleted event. GuidanceUI.coach and GuidanceUI.replayTour still return their Promise. */
   const U0 = ns('UI');
-  if (U0 && typeof U0 === 'object' && !own(U0, 'tour')) safe(() => { U0.tour = { start: (id) => coach(id || 'tour', { replay: true }), replay: replayTour }; }, null);
+  if (U0 && typeof U0 === 'object' && !own(U0, 'tour')) safe(() => { U0.tour = { start: (id) => { coach(id || 'tour', { replay: true }); }, replay: () => { replayTour(); } }; }, null);
 
   return {
     coach, replayTour, isOpen, maybeTour, featureOfRoute, training, tipCard, explorerRing, moreTools, dot,

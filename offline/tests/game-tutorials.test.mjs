@@ -749,3 +749,38 @@ test('tools: big game branches and ends on to: null; red flags score from Conten
     for (const i of fm.flags) assert.ok(C.catalogs.redFlags.includes(fm.lines[i].t));
   } finally { w2.restore(); }
 });
+
+/* ── FIX-TOUR: UI.tour.* never keeps a caller waiting ───────────────────────────────────── */
+
+test('guidance: UI.tour.start returns nothing and opens the coach', async () => {
+  const w = world({ hash: '#/today' });
+  const path = require.resolve(src('ui-guidance.js'));
+  const cached = require.cache[path];
+  globalThis.UI = {};
+  delete require.cache[path];
+  let G2 = null;
+  try {
+    G2 = require(path); // a fresh copy attaches UI.tour at load, as the page does
+    G2._reset();
+    assert.equal(typeof globalThis.UI.tour.start, 'function');
+    const tour = C.tutorials.find((t) => t.id === 'tour');
+    for (const s of tour.steps) target(w.doc, s.target);
+    const r = globalThis.UI.tour.start('tour');
+    assert.equal(r, undefined, 'not a thenable: page.evaluate does not wait for the tour to close');
+    const layer = w.doc.getElementById('coach');
+    assert.equal(layer.hasAttribute('hidden'), false, 'the coach layer is open');
+    assert.equal(byClass(layer, 'coach-layer').length, 1);
+    assert.deepEqual(w.calls[0], ['replay', 'tour']);
+    for (let i = 0; i < tour.steps.length; i++) byClass(layer, 'coach-next')[0].click();
+    await flush();
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'done'), [['done', 'tour', undefined]], 'the end is TutorialCompleted');
+    assert.equal(globalThis.UI.tour.replay(), undefined, 'replay returns nothing too');
+    assert.equal(byClass(layer, 'coach-layer').length, 1, 'replay opens the coach');
+    assert.equal(typeof G2.coach('tour', { replay: true }).then, 'function', 'GuidanceUI.coach still returns its Promise');
+  } finally {
+    if (G2) G2._reset();
+    if (cached) require.cache[path] = cached; else delete require.cache[path];
+    delete globalThis.UI;
+    cleanup();
+  }
+});
