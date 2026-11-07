@@ -5,7 +5,7 @@
 import { describe, test, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -634,3 +634,165 @@ function storeStandIn() {
     },
   };
 }
+
+// ── U-10: the SOS screens' pure parts (offline/src/ui-sos.js loads in Node without UI or a DOM) ──────────────────
+describe('sos screens (U-10)', () => {
+  const H = require(src('ui-sos.js'));
+  const SOS_SRC = readFileSync(src('ui-sos.js'), 'utf8');
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('urgent list: India first, every number a tel link with please verify, then the international list', () => {
+    const m = H.urgentList('in', C());
+    assert.equal(m.region, 'in');
+    assert.deepEqual(m.sections.map((s) => s.id), ['in', 'intl']);
+    const india = m.sections[0];
+    const want = [...C().resources.in.emergency, ...C().resources.in.crisis].map((x) => x.number);
+    assert.deepEqual(india.items.map((i) => i.number), want, 'emergency then crisis, all from Content.resources');
+    assert.equal(india.items[0].number, '112');
+    for (const i of india.items) {
+      assert.match(i.tel, /^tel:\+?[0-9]+$/, i.name);
+      assert.equal(i.verify, true, i.name + ' carries verify');
+    }
+    assert.equal(H.telHref('1800-891-4416'), 'tel:18008914416');
+    assert.equal(H.telHref('+91 9999 666 555'), 'tel:+919999666555');
+    assert.equal(india.verifyNote, C().resources.in.verifyNote);
+    assert.ok(m.sections[1].items.length >= 3 && m.sections[1].items.every((i) => i.verify === true));
+    assert.ok(m.overdose.length >= 3 && m.withdrawal.length >= 2, 'overdose and withdrawal steps from Content');
+  });
+
+  test('urgent list: intl region leads with the international list; anything else means India', () => {
+    assert.deepEqual(H.urgentList('intl', C()).sections.map((s) => s.id), ['intl', 'in']);
+    assert.equal(H.urgentList(undefined, C()).region, 'in');
+    assert.equal(H.urgentList('xx', C()).region, 'in');
+    const bare = H.urgentList('in', {});
+    assert.deepEqual(bare.sections, [], 'no Content: no invented numbers, no throw');
+  });
+
+  test('crisis routing: hopeless and crisis words go to the numbers at once', () => {
+    assert.equal(H.isCrisisEmotion('hopeless', C()), true);
+    for (const id of ['angry', 'sad', 'anxious', 'other', 'nope']) assert.equal(H.isCrisisEmotion(id, C()), false, id);
+    for (const t of ['I want to die', 'thinking about suicide', 'better off dead', 'I might kill myself']) assert.equal(H.isCrisisText(t, null), true, t);
+    for (const t of ['', 'tired and bored', 'I am angry at work']) assert.equal(H.isCrisisText(t, null), false, t);
+    assert.equal(H.isCrisisText('a quiet phrase', { crisisKeywords: (s) => s.includes('quiet') }), true, 'Engine.crisisKeywords is used when present');
+    assert.equal(H.isCrisisText('I want to die', { crisisKeywords: () => false }), true, 'the in-file list still applies: never fewer');
+  });
+
+  test('outcome and session payloads match Actions.sosSession', async () => {
+    assert.equal(H.outcomeFrom(7, 3, false), 'passed');
+    assert.equal(H.outcomeFrom(5, 6, false), 'still');
+    assert.equal(H.outcomeFrom(5, 0, false), 'passed');
+    assert.equal(H.outcomeFrom(null, null, false), 'passed');
+    assert.equal(H.outcomeFrom(2, 9, true), 'used');
+    const p = H.sessionFrom({ kind: 'craving', ratingBefore: 8, ratingAfter: 2, delays: 1, risky: true,
+      tools: [{ skillId: 'ride-wave', helpful: false }, { skillId: 'ride-wave', helpful: true }, { skillId: 'reasons', helpful: false }] });
+    assert.deepEqual(p.tools, [{ skillId: 'ride-wave', helpful: true }, { skillId: 'reasons', helpful: false }]);
+    assert.equal(p.outcome, 'passed');
+    const r = await Actions.sosSession(p);
+    assert.equal(r.log.sos.delays, 1);
+    assert.equal(events('SkillUsed').length, 2);
+    assert.equal(events('SosCompleted')[0].payload.outcome, 'passed');
+    const skills = new Set(C().skills.map((s) => s.id));
+    for (const t of H.TOOLS) assert.ok(skills.has(t.skillId), t.id + ' credits a known skill');
+    for (const k of Object.keys(H.FEEL_SKILLS)) assert.ok(skills.has(H.FEEL_SKILLS[k]), k);
+    const used = H.sessionFrom({ kind: 'craving', ratingBefore: 6, used: true });
+    assert.equal(used.outcome, 'used');
+    await Actions.sosSession(used);
+    assert.equal(events('SlipLogged').length, 1, 'used: the slip is logged by the session itself');
+  });
+
+  test('sos drill payload writes no log', async () => {
+    const p = H.sessionFrom({ kind: 'craving', ratingBefore: 6, ratingAfter: 2, drill: true, tools: [{ skillId: 'ride-wave', helpful: true }] });
+    assert.equal(p.drill, true);
+    await Actions.sosSession(p);
+    await Actions.sosSession(p);
+    assert.equal(list('logs').length, 0);
+    assert.equal(events('SkillUsed').length + events('SosCompleted').length + events('LogCreated').length, 0);
+    assert.equal(events('TutorialCompleted').length, 1);
+  });
+
+  test('routes: hub, flows, drill, preview', () => {
+    const r = (path, query) => H.parseSos({ parts: path.split('/').filter(Boolean), query: query || {} });
+    assert.deepEqual(r('sos'), { flow: 'hub', drill: false, preview: false, logged: false });
+    assert.equal(r('sos', { drill: '1' }).flow, 'craving');
+    assert.equal(r('sos', { drill: '1' }).drill, true);
+    assert.equal(r('sos/craving').drill, false);
+    assert.equal(r('sos/feeling').flow, 'feeling');
+    assert.equal(r('sos/slip', { preview: '1' }).preview, true);
+    assert.equal(r('sos/slip', { logged: '1' }).logged, true);
+    assert.equal(r('sos/urgent').flow, 'urgent');
+    assert.equal(r('sos/what').flow, 'hub');
+    assert.equal(H.parseSos(undefined).flow, 'hub');
+  });
+
+  test('the person’s lists: reasons, contacts, spiral replies, guide order, plan only when confirmed', async () => {
+    const view = S().view;
+    assert.deepEqual(H.reasonsFrom(view, null), []);
+    await Actions.saveResponse('quick-reasons', { reasons: ['my health', 'my kids'] });
+    assert.deepEqual(H.reasonsFrom(view, null), ['my health', 'my kids']);
+    const a = await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await Actions.contacts.add({ name: 'No phone', role: 'safetyNet' });
+    assert.deepEqual(H.activeContacts(view).map((x) => x.id), [a.id]);
+    await Actions.contacts.deactivate(a.id);
+    assert.equal(H.activeContacts(view).length, 0, 'an inactive contact is not offered');
+    const pairs = H.spiralPairs(view, null, C());
+    assert.equal(pairs.length, C().catalogs.spiral.length);
+    assert.ok(pairs.every((p) => p.thought && p.reply), 'every thought has a reply');
+    assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
+    assert.deepEqual(H.spiralPairs(view, { spiralThoughts: () => [{ thought: 'mine', reply: 'my answer' }] }, C()), [{ thought: 'mine', reply: 'my answer' }]);
+    assert.deepEqual(H.guideOrder(view, null), ['wave', 'why', 'distract']);
+    assert.deepEqual(H.guideOrder(view, { sos: { guideSequence: () => ['distract', 'bogus', 'wave'] } }), ['distract', 'wave']);
+    assert.equal(H.planFor(view), null);
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: false });
+    assert.equal(H.planFor(view), null, 'a draft plan is not shown in SOS');
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    assert.deepEqual(H.planSections(H.planFor(view)), [{ id: 'motivation', items: ['my kids'] }]);
+    assert.ok(H.soberSteps(C()).length === 5 && H.deckFrom(view, null, C()).length > 3 && H.comebacksFrom(view, null).length > 0);
+  });
+
+  test('wave timer counts 15 minutes down and never below zero', () => {
+    assert.equal(H.WAVE_MIN, 15);
+    assert.equal(H.clock(900), '15:00');
+    assert.equal(H.clock(61), '1:01');
+    assert.equal(H.remaining(0, 0), 900);
+    assert.equal(H.remaining(0, 65 * 1000), 835);
+    assert.equal(H.remaining(0, 3600 * 1000), 0);
+  });
+
+  test('sos copy: one title and at most one short line per screen, person-first', () => {
+    for (const [k, v] of Object.entries(H.COPY)) {
+      if (k === 'clinicalReview') continue;
+      if (typeof v === 'string') { assert.ok(v.length <= 60, k); continue; }
+      assert.ok(v.title && v.title.length <= 40, k + ' title');
+      for (const f of ['line', 'empty', 'none', 'drill']) if (v[f]) assert.ok(v[f].length <= 70, `${k}.${f} is short`);
+    }
+    assert.equal(H.COPY.clinicalReview, true);
+    assert.equal(H.FALLBACK.clinicalReview, true);
+    for (const t of [...H.FALLBACK.sober, ...H.FALLBACK.talkback, H.FALLBACK.spiralReply]) assert.ok(t.length <= 60, t);
+    assert.doesNotMatch(SOS_SRC, /\baddicts?\b/i);
+  });
+
+  test('sos is never gated and makes no network call', () => {
+    assert.doesNotMatch(SOS_SRC, /https?:\/\//, 'no web address in the file');
+    assert.doesNotMatch(SOS_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\.log/);
+    assert.doesNotMatch(SOS_SRC, /UI\.confirm|UI\.tour|lock\.(unlock|verify|set)|onboardedAt|markTipShown/, 'no PIN, tour, tip or confirm inside SOS');
+    assert.match(SOS_SRC, /data-tour': o\.tour|'data-tour'/);
+    for (const name of ['sos-urgent', 'sos-craving']) assert.match(SOS_SRC, new RegExp(`'data-tour': '${name}'`), name + ' tour target');
+  });
+});
+
+// ── U-10: in a browser each part is its own classic script, so Content and Engine are const globals, not globalThis properties ──
+describe('sos screens read const globals like a browser (U-10)', () => {
+  test('ui-sos finds Content and Engine declared by other scripts', () => {
+    const vm = require('node:vm');
+    const ctx = vm.createContext({});
+    vm.runInContext('var module = { exports: {} };', ctx);
+    vm.runInContext(readFileSync(src('content-core.js'), 'utf8').replace(/if \(typeof module[^\n]*\n?/g, ''), ctx, { filename: 'content-core.js' });
+    vm.runInContext('const Engine = { crisisKeywords: (s) => s === "only the engine knows" };', ctx);
+    vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
+    assert.equal(vm.runInContext('typeof globalThis.Content', ctx), 'undefined', 'the test scope is browser-like');
+    assert.equal(vm.runInContext('module.exports.isCrisisEmotion("hopeless")', ctx), true);
+    assert.equal(vm.runInContext('module.exports.isCrisisText("only the engine knows")', ctx), true);
+    assert.equal(vm.runInContext('module.exports.soberSteps(Content).length', ctx), 5);
+  });
+});
