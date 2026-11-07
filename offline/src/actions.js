@@ -876,8 +876,10 @@ const Actions = (() => {
     await S.resetAll();
     return { erased: true };
   }
-  /* O6: sample rows come from Content.sample.generate(now) as {stores:{name: rows}} (or the map itself); the meta
-     'sample' row marks them, and eraseAll removes them with everything else. */
+  /* O6: sample rows come from Content.sample.generate(now) as {stores:{name: rows}} (or the map itself). Sample rows
+     never overwrite the person's own rows: the keyed stores (profile, settings, meta, recoveryPlan) are never written
+     from a sample, and a row whose id already exists is skipped. Every row written carries `sample: true`, and the
+     meta 'sample' row marks the load; eraseSample removes those rows only, eraseAll removes everything. */
   async function loadSample() {
     const C = getContent();
     if (!C.sample || typeof C.sample.generate !== 'function') fail('no-sample', 'Sample data is not in this version yet.');
@@ -891,15 +893,34 @@ const Actions = (() => {
     const s = clone(stores);
     return write('load sample', at, (tx) => {
       let count = 0;
+      let skipped = 0;
       for (const [name, rows] of Object.entries(s)) {
+        const kp = map[name];
         for (const r of rows) {
-          if (name === 'meta' && r[map[name]] === 'lock') continue;
-          tx.put(name, r);
+          if (kp === 'key' || tx.get(name, r[kp]) != null) { skipped += 1; continue; }
+          tx.put(name, Object.assign(r, { sample: true }));
           count += 1;
         }
       }
       const meta = tx.put('meta', { key: 'sample', loadedAt: at });
-      return { sample: meta, count };
+      return { sample: meta, count, skipped };
+    });
+  }
+
+  /* Removes only the rows a sample load wrote (marked `sample: true`) and the meta 'sample' row; the person's own
+     rows stay exactly as they are. */
+  async function eraseSample() {
+    const map = storeMap();
+    return write('erase sample', stamp(), (tx) => {
+      let count = 0;
+      for (const name of Object.keys(map)) {
+        if (map[name] === 'key') continue;
+        for (const r of tx.list(name) || []) {
+          if (r && r.sample === true) { tx.del(name, r[map[name]]); count += 1; }
+        }
+      }
+      if (tx.get('meta', 'sample') != null) tx.del('meta', 'sample');
+      return { erased: count };
     });
   }
 
@@ -910,7 +931,7 @@ const Actions = (() => {
     contacts, plans, weeklyReview, todos,
     motivation, predictions, quests,
     tutorial, reveal, markTipShown,
-    recoveryPlan, scriptUsed, loadSample, eraseAll, importBackup,
+    recoveryPlan, scriptUsed, loadSample, eraseSample, eraseAll, importBackup,
   };
 })();
 

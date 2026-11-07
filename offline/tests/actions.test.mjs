@@ -465,6 +465,40 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       assert.equal(list('logs').length, 0);
     } finally { delete C().sample; }
   });
+
+  test('sample never overwrites the person\'s rows and erases only its own', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5), substances: ['Alcohol'] });
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    const mine = await Actions.logCraving({ intensity: 6, triggerIds: ['evening'], skills: [] });
+    const before = { profile: S().view.get('profile', 'me'), settings: S().view.get('settings', 'app'),
+      plan: S().view.get('recoveryPlan', 'plan'), log: S().view.get('logs', mine.log.id) };
+    const row = (id, n) => ({ id, type: 'craving', at: n, date: E().todayStr(n), hour: 9, intensity: 2, triggerIds: [], feelings: [], skills: [], drill: false });
+    C().sample = { generate: (now) => ({ stores: {
+      profile: [{ key: 'me', name: 'Sample person', startDate: daysAgo(90) }],
+      settings: [{ key: 'app', theme: 'light', showCurrentRun: true }],
+      recoveryPlan: [{ key: 'plan', sections: {} }],
+      meta: [{ key: 'lock', salt: 'x', check: 'y' }],
+      logs: [row(mine.log.id, now), row('sample-1', now)],
+    } }) };
+    try {
+      const r = await Actions.loadSample();
+      assert.equal(r.count, 1);
+      assert.deepEqual(S().view.get('profile', 'me'), before.profile);
+      assert.deepEqual(S().view.get('settings', 'app'), before.settings);
+      assert.deepEqual(S().view.get('recoveryPlan', 'plan'), before.plan);
+      assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
+      assert.equal(S().view.get('meta', 'lock'), null);
+      assert.equal(S().view.get('logs', 'sample-1').sample, true);
+      const eventsBefore = list('events').length;
+      const e = await Actions.eraseSample();
+      assert.equal(e.erased, 1);
+      assert.equal(S().view.get('logs', 'sample-1'), null);
+      assert.equal(S().view.get('meta', 'sample'), null);
+      assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
+      assert.deepEqual(S().view.get('profile', 'me'), before.profile);
+      assert.equal(list('events').length, eventsBefore);
+    } finally { delete C().sample; }
+  });
 });
 
 /* ── stand-ins, used only while the real file is absent ─────────────────────────────────────── */
