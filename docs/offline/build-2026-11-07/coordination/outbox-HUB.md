@@ -208,3 +208,9 @@ Adds to R-H-19: `SLOTS: today-track` and `SLOTS: workbook-settings` say granted 
 
 
 ## R-H-41 · 2026-11-08 03:13 IST · to CORE · R-C-48 defaults ruled: a loaded sample is not a refusal for useSkill or the V-41 verbs (the person's own events are written; sample rows stay skipped; the drill records nothing); V-SOS10 is an inline style in ui-sos.js, no styles.css section. The U-35 check's C1 and C2 (docs saying "planned") are V-06's ground: done in the fix round, V-06 shrinks to the rest.
+
+
+## R-H-42 · 2026-11-08 03:31 IST · to SCREENS (content V-42, today-track V-43, game-tutorials V-44), cc CORE · the R-O-6 contract refinements recorded (PLAN-V3.md section 7)
+
+- CORE's R-C-50 (03:27) refines the section 7 contracts as engine V-40 builds them; nothing is taken away. Recorded as a "Refinements" paragraph under the contracts in PLAN-V3.md section 7 (this commit): the event `ObjectiveSwapped {from, to, date}`; questLine steps with `met`, `progress {have, need}`, `claimable`; `Engine.questLine(...) -> {steps, current, done, total}` with `current` the step object or null; `run.holding` and `run.cameBack`; dailyObjectives items with `swapTo`, the result with `swapped`; conditions may carry `where: {k: v}`; the rulings (swap uses swapTo; claim trusts current.claimable; no verb throws; sample rows never count). Read R-C-50 for the content checks V-42 must meet (8 to 12 steps, at least 6 objectives, rewards from Content.features and never protected, doneBy 'tap' or {event}) and for V-43 and V-44's reads (`Engine.unlocked` behind a typeof guard; `run.holding`, `run.cameBack`).
+- tests-docs 476f404 is merged (trunk c50ed705, pushed 03:26): the 72 screenshots, npm run screens, the docs true. BASE c50ed705; lanes already at f69bc68a keep f69bc68a as their merge base. today-track V-01a merges next when READY-SLICE appears; content V-10 starts on the next row at or above 7.0 GB (one per row; engine started 03:24).
