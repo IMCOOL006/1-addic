@@ -47,6 +47,6 @@ Add a line here only when a check is red on the base itself (`- <gate>: <failure
 
 **Three test names expected RED on the trunk from the content READY 680f850 merge (U-29, U-30, U-33) until CORE's test-only fixes merge (seen 2026-11-07 17:14 on int/content-680f850, full Node suite 294 pass / 3 fail, log C:/Users/ruchi/.claude-pro/jobs/4b638c7b/tmp/fulltest-content2.log; each asserted that a module or the sample was still missing; the product behaviour is right; fixes asked in R-S-9 and R-H-27; lifted by name when build/learn and build/actions-sos merge them):**
 
-- test: learn.test.mjs 'learn: map progress from events' (:424 expects M4 not loaded; U-29 builds M4) (seen 2026-11-07 17:14, owner learn)
-- test: learn.test.mjs 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' (:538-539 expects #/learn/m7 'coming in a future update'; U-30 builds M7) (seen 2026-11-07 17:14, owner learn)
+- ~~test: learn.test.mjs 'learn: map progress from events' (:424 expects M4 not loaded; U-29 builds M4) (seen 2026-11-07 17:14, owner learn)~~ LIFTED 2026-11-07 22:09: learn READY 75eb8e5 merged (ce691c21), 28/28 on the merged tree
+- ~~test: learn.test.mjs 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' (:538-539 expects #/learn/m7 'coming in a future update'; U-30 builds M7) (seen 2026-11-07 17:14, owner learn)~~ LIFTED 2026-11-07 22:09: learn READY 75eb8e5 merged (ce691c21), 28/28 on the merged tree
 - test: actions.test.mjs 'actions (U-09; store: real, engine: real) > validation failures write nothing' (:304 expects Actions.loadSample to refuse with 'no-sample'; U-33 builds Content.sample) (seen 2026-11-07 17:14, owner actions-sos)
