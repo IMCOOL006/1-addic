@@ -624,11 +624,11 @@ function storeStandIn() {
     },
     async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify(); },
     lock: {
-      async set(p) { pin = String(p); },
+      async set(p) { const s = String(p); if (s.length < 4 || s.length > 64) throw Object.assign(new Error('A PIN has 4 to 64 characters.'), { code: 'BAD_PIN' }); pin = s; },
       async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; return true; } return false; },
       async verify(p) { return pin !== null && String(p) === pin; },
       async remove(p) { if (pin !== null && String(p) === pin) { pin = null; locked = false; return true; } return false; },
-      lockNow() { if (pin !== null) { locked = true; for (const fn of lockSubs) fn(); } },
+      lockNow() { if (pin !== null) { locked = true; for (const fn of lockSubs) fn({ reason: 'manual' }); } },
       touch() {},
       onLock(fn) { lockSubs.add(fn); return () => lockSubs.delete(fn); },
     },
@@ -794,5 +794,145 @@ describe('sos screens read const globals like a browser (U-10)', () => {
     assert.equal(vm.runInContext('module.exports.isCrisisEmotion("hopeless")', ctx), true);
     assert.equal(vm.runInContext('module.exports.isCrisisText("only the engine knows")', ctx), true);
     assert.equal(vm.runInContext('module.exports.soberSteps(Content).length', ctx), 5);
+  });
+});
+
+// ── U-11: the lock screen and onboarding, their pure parts (offline/src/ui-onboarding.js loads in Node) ─────────────
+describe('lock screen and onboarding (U-11)', () => {
+  const O = require(src('ui-onboarding.js'));
+  const SOS = require(src('ui-sos.js'));
+  const ONB_SRC = readFileSync(src('ui-onboarding.js'), 'utf8');
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const fullAnswers = () => ({
+    earlyNoticeSeen: true, discreet: true, substances: ['Alcohol'], substanceOther: 'Gutka', term: 'clean', startDate: daysAgo(3), notSure: false,
+    stage: 'preparation', score: 7, medical: { heavyDaily: true, sedatives: false, opioids: false },
+    reasons: ['my health', '', 'my daughter'], contact: { name: 'Ravi', phone: '+91 98765 43210' }, region: 'intl',
+    checkin: { morning: '07:30', evening: '21:00' }, reviewDay: 0, pace: 'steady',
+  });
+
+  test('onboarding has eight steps and only the safety notice cannot be skipped', () => {
+    assert.deepEqual(O.STEPS.map((s) => s.n), [1, 2, 3, 4, 5, 6, 7, 8]);
+    assert.deepEqual(O.STEPS.filter((s) => !s.skip).map((s) => s.id), ['safety']);
+    for (const s of O.STEPS) assert.ok(O.COPY.steps[s.id].title && O.COPY.steps[s.id].line.length <= 80, s.id);
+    assert.match(ONB_SRC, /testid: 'onb-safety-ok'/);
+    assert.match(ONB_SRC, /step\.id === 'safety'\) \{\n\s*nav = \[btn\(COPY\.safetyOk/, 'the safety step offers "I understand" and no Skip');
+  });
+
+  test('onboarding full writes the profile, settings, reasons, contact and motivation', async () => {
+    const r = await O.finishOnboarding(Actions, fullAnswers(), C());
+    assert.equal(r.ok, true);
+    assert.deepEqual(r.errors, []);
+    const me = S().view.get('profile', 'me');
+    assert.equal(me.locale, 'en');
+    assert.equal(me.region, 'intl');
+    assert.deepEqual(me.substances, ['Alcohol', 'Gutka']);
+    assert.equal(me.term, 'clean');
+    assert.equal(me.stage, 'preparation');
+    assert.deepEqual(me.checkin, { morning: '07:30', evening: '21:00' });
+    assert.equal(me.medical.heavyDaily, true);
+    assert.ok(me.onboardedAt);
+    const set = S().view.get('settings', 'app');
+    assert.equal(set.discreet, true);
+    assert.equal(set.earlyNoticeSeen, true);
+    assert.equal(events('OnboardingCompleted').length, 1);
+    const resp = list('responses').filter((x) => x.exerciseId === 'quick-reasons');
+    assert.deepEqual(resp[0].payload.reasons, ['my health', 'my daughter']);
+    assert.deepEqual(list('contacts').map((x) => [x.name, x.role, x.active]), [['Ravi', 'safetyNet', true]]);
+    assert.deepEqual(list('motivation').map((x) => [x.stage, x.score]), [['preparation', 7]]);
+    assert.deepEqual(SOS.reasonsFrom(S().view, null), ['my health', 'my daughter'], 'SOS day 1: Remind me why has the reasons');
+  });
+
+  test('onboarding skip all lands with defaults and writes nothing extra', async () => {
+    const r = await O.finishOnboarding(Actions, {}, C());
+    assert.equal(r.ok, true);
+    const me = S().view.get('profile', 'me');
+    assert.equal(me.region, 'in');
+    assert.equal(me.locale, 'en');
+    assert.ok(me.onboardedAt);
+    for (const s of ['contacts', 'motivation', 'responses']) assert.equal(list(s).length, 0, s);
+    assert.equal(S().view.get('settings', 'app').earlyNoticeSeen, false, 'the notice shows again until dismissed');
+    await O.finishOnboarding(Actions, {}, C());
+    assert.equal(events('OnboardingCompleted').length, 1, 'once only');
+    assert.equal((await O.finishOnboarding(null, {}, C())).ok, false, 'no Actions: no throw');
+  });
+
+  test('onboarding answers that Actions would refuse are dropped, not sent', () => {
+    const p = O.buildPatch({ term: 'nope', stage: 'nope', score: 7, startDate: '2026-13-45', reasons: ['  ', 'x'.repeat(201)],
+      contact: { name: '  ', phone: '123' }, region: 'mars', checkin: { morning: '25:00' }, reviewDay: 9, pace: 'warp', medical: { opioids: 'yes' } }, C());
+    assert.deepEqual(p.profile, { medical: { heavyDaily: false, sedatives: false, opioids: false }, region: 'in' });
+    assert.equal(p.motivation, null, 'no stage, no motivation row');
+    assert.equal(p.reasons, null);
+    assert.equal(p.contact, null);
+    const unsure = O.buildPatch({ notSure: true, startDate: '2026-01-01' }, C()).profile;
+    assert.equal(unsure.notSure, true);
+    assert.equal(unsure.startDate, null, '"not sure yet" wins over a date');
+    assert.equal(O.needsMedicalCard({ sedatives: true }), true);
+    assert.equal(O.needsMedicalCard({ heavyDaily: false, sedatives: false, opioids: false }), false);
+    assert.equal(O.needsMedicalCard(undefined), false);
+  });
+
+  test('unlock: a wrong PIN pauses and says so; the right PIN opens', async () => {
+    await S().lock.set('2468', { autoLockMin: 5 });
+    S().lock.lockNow();
+    assert.equal(S().status().locked, true);
+    const t0 = Date.now();
+    const wrong = await O.attemptUnlock(S(), '1111', { delayMs: 40 });
+    assert.deepEqual(wrong, { ok: false, message: O.COPY.wrong });
+    assert.ok(Date.now() - t0 >= 35, 'the pause comes before the message');
+    assert.equal(S().status().locked, true);
+    assert.deepEqual(await O.attemptUnlock(S(), '', { delayMs: 0 }), { ok: false, message: O.COPY.wrong });
+    assert.deepEqual(await O.attemptUnlock(S(), '2468', { delayMs: 0 }), { ok: true, message: '' });
+    assert.equal(S().status().locked, false);
+    assert.equal(O.WRONG_PAUSE_MS, 1000);
+    const thrown = await O.attemptUnlock({ lock: { unlock: async () => { throw Object.assign(new Error('x'), { code: 'NO_CRYPTO' }); } } }, '9999', { delayMs: 0 });
+    assert.deepEqual(thrown, { ok: false, message: 'A PIN is not available on this device.' });
+    assert.equal(O.lockError({ code: 'BAD_PIN' }), 'Use 4 to 64 characters.');
+    assert.equal(O.lockError({ code: 'WRITE_FAILED' }), 'This device did not save it. Try again.');
+    await refused(S().lock.set('12'), 'BAD_PIN');
+  });
+
+  test('a locked person reaches urgent help and SOBER in one tap, from Content only', async () => {
+    await Actions.onboard({ region: 'intl' });
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const L = O.lockLabels(false, C());
+    assert.equal(L.urgent.href, '#/sos/urgent', 'one link, no PIN');
+    assert.equal(L.urgent.label, 'Urgent help');
+    const profile = S().view.get('profile', 'me') || {};
+    assert.deepEqual(profile, {}, 'nothing of the person is readable while locked');
+    const m = SOS.urgentList(profile.region, C());
+    assert.equal(m.sections[0].id, 'in');
+    assert.ok(m.sections[0].items.filter((i) => i.tel).length >= 5, 'the numbers are there without the PIN');
+    assert.equal(SOS.soberSteps(C()).length, 5, 'SOBER from content alone');
+    assert.match(ONB_SRC, /testid: 'lock-sober'/);
+    assert.match(ONB_SRC, /dataset: tid\('lock-urgent'\)/);
+    const D = O.lockLabels(true, C());
+    assert.deepEqual([D.title, D.urgent.label], [C().discreetName, 'Help']);
+    assert.equal(O.discreetFrom('1', false), true);
+    assert.equal(O.discreetFrom(null, false), false);
+  });
+
+  test('forgot PIN erases this device, then a backup restores', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    assert.equal(await O.forgetPin(S()), true);
+    assert.deepEqual(S().status().hasLock, false);
+    assert.equal(list('logs').length, 0);
+    await Actions.importBackup(backup);
+    assert.ok(list('logs').length > 0, 'the backup brings the notes back');
+    assert.equal(S().status().hasLock, false, 'an import never installs a PIN');
+  });
+
+  test('lock and onboarding make no network call and never keep the PIN', () => {
+    assert.doesNotMatch(ONB_SRC, /https?:\/\//);
+    assert.doesNotMatch(ONB_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\.|localStorage\.setItem/);
+    assert.doesNotMatch(ONB_SRC, /(settings|patch|commit|answers)\.?[^\n]*\bpin\b(?!\s*=\s*h\()/i, 'the PIN never goes into rows or answers');
+    assert.match(ONB_SRC, /pin\.value = '';/, 'the field is cleared at once');
+    assert.ok(O.COPY.early.length <= 80, 'the early-access notice is short');
+    assert.equal(O.COPY.clinicalReview, true);
+    assert.doesNotMatch(ONB_SRC, /\baddicts?\b/i);
   });
 });
