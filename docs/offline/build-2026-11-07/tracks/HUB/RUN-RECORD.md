@@ -29,4 +29,7 @@
 - 07:42-07:44 MERGE engine 04fc0c1: prepare clean; guards GREEN (build 127289 B, test GREEN, validate SKIP until U-08); commit 6089dad; finish, trunk 33d2a04f pushed, build/engine pushed. BASE 33d2a04f.
 - 07:46 status-HUB, status-CORE (from the HUB), board-notes, board rewritten; tests-docs slot recorded WAITING; grants resume at about 7 GB free. Two commits of this session claimed a change their python step had not made (R-H-4's lane_args line, 221ef22's status lines); each was corrected in the next commit (c11c120, 43d880a).
 - 08:16-08:19 MERGE core 4a43190 (U-03, U-02): prepare CONFLICT on the generated offline/1-addic.html only; conflicts step: not an append point; resolved by rebuilding from the merged sources in _int (node offline/build.mjs, 187464 B) and staging; guards GREEN by name (build, test GREEN; validate SKIP); commit 063b261; finish, trunk 68371bb5 pushed, build/core pushed. Memory 9.3-9.9 GB with nothing running; actions-sos granted at 08:21 (core's U-04 run launched by CORE 08:17). CORE at 245k context, hand-over planned.
+- 08:25 R-O-1: no owner answer, defaults in force (995cd87).
+- 08:46-08:48 MERGE actions-sos 1cb96a3 (U-09): prepare clean; guards GREEN by name (build 240874 B, test GREEN, validate SKIP); commit 7a9547c; finish, trunk 22c39654 pushed, build/actions-sos pushed. BASE 22c39654.
+- 08:49 memory 2.2-2.4 GB with two runs live (core U-04, actions-sos U-10): actions-sos (newest lane) told to pause at its next commit (R-H-6). CORE at 271k, hand-over written. 08:50 records committed.
 

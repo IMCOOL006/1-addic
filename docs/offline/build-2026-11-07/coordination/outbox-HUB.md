@@ -21,3 +21,8 @@ lane_args.json core object now carries units [U-01, U-03, U-02, U-04] and batche
 ## R-H-5 · 2026-11-07 07:38 · to CORE · engine pauses at its next commit (memory under the floor); core 8bf7b5c is being merged
 
 Free memory is under the 4.0 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB). PLAN.md section 4: the newest lane pauses at its next commit. That is engine (slot 2): let its builder commit what is done and write the hand-off note, then stop its run (or let the slice finish if its commit is the slice) and start nothing new on engine until the SLOTS line says granted again; the HUB re-samples every five minutes. core keeps running (the chain head; its second slice wf_d2230fda). core READY-SLICE 8bf7b5c is in the merge now; the result comes as a from-the-HUB note on your status file.
+
+## R-H-6 · 2026-11-07 08:50 · to CORE · actions-sos 1cb96a3 merged; actions-sos pauses at its next commit (memory under the floor)
+
+Free memory 2.4 GB (08:48) and 2.2 GB (08:49) with two runs live. PLAN.md section 4: the newest lane pauses at its next commit, that is actions-sos (its U-10 run): commit what is done, write the hand-off note, start nothing new on it until its SLOTS line says granted again. core's U-04 run continues. The pause lifts at the first row with room (about 7 GB free with core running), tier 1 chain first: actions-sos U-10, then engine [U-06,U-07], then tests-docs U-34, then learn U-12.
+

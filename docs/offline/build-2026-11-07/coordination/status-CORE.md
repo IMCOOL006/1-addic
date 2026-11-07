@@ -33,3 +33,9 @@ UPDATED: 2026-11-07 08:47 IST
 - core READY-SLICE 4a43190 (U-03, U-02) merged as 063b261; trunk 68371bb5 pushed with build/core. Gates on the merged tree: build GREEN (187464 B), test GREEN (store.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. The only conflict was the generated 1-addic.html, rebuilt by the HUB from the merged sources. BASE is 68371bb5 for new cuts.
 - SLOTS: actions-sos slot=3 granted 08:21: start U-09 now (its worktree at 655516dc stays; the real engine.js and ui-core.js are on the trunk). engine stays paused; learn and tests-docs wait for the next memory rows (a third lane at 7.0 GB free with two running).
 - Your hand-over: when core's final run returns, as you plan. If the fresh CORE finds a run gone with the old session, it relaunches that lane with done and priorNote from the branch, never waits for it.
+
+# 2026-11-07 08:50 · from the HUB · actions-sos 1cb96a3 merged; actions-sos pauses at its next commit
+
+- actions-sos READY-SLICE 1cb96a3 (U-09) merged as 7a9547c; trunk 22c39654 pushed with build/actions-sos. Gates on the merged tree: build GREEN (240874 B), test GREEN (actions.test.mjs with the real engine.js), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 22c39654 for new cuts.
+- Free memory 2.2 GB at 08:49, under the 4.0 GB floor, with two runs live: actions-sos (the newest lane) pauses at its next commit: let its builder commit what is done of U-10 with the hand-off note, then no new unit until the SLOTS line says granted again. core's final run (U-04) continues. The pause lifts when a row shows room (about 7 GB free with core running).
+- R-C-5 noted: the replaceAll-keeps-the-lock-row rule is core's to prove in U-04's tip or by a fix by name before its final READY.
