@@ -188,3 +188,9 @@
 - 17:47 today-track READY a02f121 from SCREENS 2; conflict at the section boundary resolved by hand (marker before the workbook-settings section); guards GREEN by name; 71a65763 pushed 17:51. Rows 17:48 4.1, 17:49 6.0 GB.
 
 - **Resume here (17:52):** as 17:41 with: nineteen merges; BASE 71a65763; SCREENS 2 is live (actions U-22 checking, game-tutorials U-27 building). Next merges unchanged: actions-sos READY (655516dc, flagged, RS-SAMPLE expected), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), actions and game-tutorials READY-SLICE (9b319256). HUB context about 230k.
+
+## 2026-11-07 17:58 · the twentieth merge (game-tutorials U-27)
+
+- 17:54 READY-SLICE 5af6665; prepare clean; guards RED on territory over 9b319256 (false: wrong cut base on the LANE line), GREEN over the real merge base 9f3026c6; merge 89976d80 pushed 17:57. SCREENS paused the lane at 3.3 GB (17:53).
+
+- **Resume here (17:58):** as 17:52 with: twenty merges; BASE 89976d80; game-tutorials slice in, lane paused for memory. Before guards: `git merge-base build/offline-v1 <tip>` and use it as the base when the LANE line's cut base differs. Next merges: actions READY-SLICE (U-22), actions-sos READY (655516dc, flagged, RS-SAMPLE), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), game-tutorials READY (9f3026c6). HUB context about 248k: the hand-over comes at the next safe point past about 290k (nothing of the HUB's running, no merge half done): STATE RESTART with UPDATED from date, then stop.

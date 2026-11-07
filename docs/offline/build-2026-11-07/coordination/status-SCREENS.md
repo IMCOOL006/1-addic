@@ -1,12 +1,21 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-07 17:44 IST: SCREENS chat d6887185 resumed (6721d28e gone, its runs died with it); actions check relaunched wf_954d557f-237, game-tutorials U-27 relaunched wf_270cb2ea-a72; content, workbook-settings, today-track MERGED (complete); owed by name: the Settings sample stop-gap, the today-track end marker
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track READY a02f121   # fix by name R-H-24: /* -- end today-track -- */ closes its styles.css section; build GREEN, territory 0 errors; U-15..U-18 merged 17:01 (9f3026c6), complete
+LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 9cbf630   # READY 9cbf630 merged 17:39 (be0f806d); complete; owed by name: Load sample data only without an own profile (R-H-28, a tag condition); C1 open by name
-LANE: actions CHECKING   # slot 7; cut 17:10 at 9f3026c6; U-22 built 84b92be, 3de2d32 (tip 3de2d32); the check relaunched 17:42 as wf_954d557f-237 (start check, sliceRun)
+LANE: actions READY-SLICE 710502f   # U-22 planner; run wf_954d557f-237 check FIX -> C1, C2 FIXED, C3 accepted; test 13/13, validate GREEN; lifts planner-day, planner-gaps, planner-add; browser not run; next U-23..U-25 after the workbook-settings fix by name
 LANE: game-tutorials READY-SLICE 5af6665   # U-27 guidance engine; run wf_270cb2ea-a72 check PASS; test 14/14, validate GREEN, guards baselined/by-cut names only; browser not run; PAUSED for memory (3.3 GB 17:53): U-26, U-28 on a 7.0 GB row
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:55 IST
+UPDATED: 2026-11-07 17:58 IST
+
+# 2026-11-07 17:58 IST · actions READY-SLICE 710502f (U-22 the day planner); today-track a02f121 merged
+
+- For the HUB: merge build/actions at 710502f (cut base 9f3026c6; 84b92be the day planner at #/actions/planner in ui-actions.js with its styles.css section /* -- actions -- */ to /* -- end actions -- */, 3de2d32 actions-ui.test.mjs, b909a75 C1 the help line survives the Store re-render, 710502f C2 the contract's data-testid hooks planner-add-btn and planner-block next to data-test). Run wf_954d557f-237 (the check relaunched after 6721d28e died): check FIX -> C1 MEDIUM FIXED b909a75, C2 LOW FIXED 710502f, C3 LOW WONTFIX-ACCEPTED (84b92be and 3de2d32 carry Claude-Session 6721d28e, the session that made them; no history rewrite).
+- Gates on 710502f (the re-checker): build GREEN, test GREEN 13/13, validate GREEN, guards RED by name on 7: bp-new, bp-form, review-start still baselined (U-23, U-24 build them); workbook-groups, workbook-card, plan-sections, plan-print absent only because the cut 9f3026c6 predates be0f806d. planner-day, planner-gaps, planner-add pass: lift them from baselines.md at the merge. Territory 2 own, 1 shared at its append point, 0 errors. Logs C:/Users/ruchi/1-addic-wt/_logs/gates/actions/*-20261107-1754*.log. Report tracks/SCREENS/lane-reports/actions.md (7987 B).
+- NOT run: the browser gate (no browser test of the lane yet; hooks go to tests-docs, R-S-11).
+- What a person gets: plan a day in blocks, mark a block risky with its Battle Plan link, done/skip without 'overdue' or 'missed', gaps and ideas, an inline add form and two-step remove (SOS never covered); a help line to #/sos/urgent when a saved block has crisis words. Battle Plans, review, quests, predictions, to-dos: honest 'being built' stubs with Back to Actions until U-23..U-25.
+- Verified by me: the branch log (4 commits after 9f3026c6), the tip, the run's result. Assumed: the gate counts as the re-checker ran them.
+- today-track a02f121 merged by the HUB (BASE 71a65763, 17:51).
 
 # 2026-11-07 17:55 IST · game-tutorials READY-SLICE 5af6665 (U-27 guidance engine); the lane pauses (memory 3.3 GB)
 
@@ -117,3 +126,7 @@ UPDATED: 2026-11-07 17:55 IST
 # 2026-11-07 17:52 · from the HUB · today-track a02f121 merged
 
 - The end marker is on the trunk (71a65763, pushed); today-track stays complete. BASE 71a65763. Memory 6.0 GB at 17:49 with four runs; the pause rule stands (game-tutorials first under 4.0).
+
+# 2026-11-07 17:58 · from the HUB · game-tutorials 5af6665 merged; a note on cut bases
+
+- game-tutorials READY-SLICE 5af6665 -> 89976d80 pushed with build/game-tutorials (new on origin); GREEN by name. Its real cut base is 9f3026c6 (the LANE line says 9b319256): write the sha the worktree was actually cut from (git merge-base build/offline-v1 <tip>) on READY lines; the same check applies to actions. BASE 89976d80. The pause you applied at 3.3 GB is right; resume on a 7.0 GB row.
