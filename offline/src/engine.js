@@ -871,6 +871,334 @@ const Engine = (() => {
     };
   }
 
+  /* ── insights (3.9): ready at 7 logs (craving + feeling + check-in); under 14 every card carries
+     a small-sample caveat. heatmap[weekday 0 = Sunday .. 6][hour 0..23] = {count, mean|null}. ──── */
+
+  const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const num = (x) => (typeof x === 'number' && isFinite(x) ? x : null);
+  const mean = (list) => { const xs = list.filter((x) => num(x) !== null); return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null; };
+  const r1 = (x) => (x === null ? null : Math.round(x * 10) / 10);
+  const INSIGHT_TYPES = new Set(['craving', 'feeling', 'checkin']);
+  const INSIGHTS_READY = 7; // logs before Insights show
+  const INSIGHTS_SOLID = 14; // under this, each card says the sample is small
+
+  function heatmapOf(logs) {
+    const grid = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => ({ count: 0, sum: 0, n: 0 })));
+    for (const l of logs) {
+      if (l.type !== 'craving') continue;
+      const c = grid[weekday(l.date)][l.hour];
+      c.count += 1;
+      if (num(l.intensity) !== null) { c.sum += l.intensity; c.n += 1; }
+    }
+    return grid.map((row) => row.map((c) => ({ count: c.count, mean: c.n ? r1(c.sum / c.n) : null })));
+  }
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+  const pleasantWord = (n) => `${n} pleasant ${n === 1 ? 'activity' : 'activities'}`;
+  /* Evening check-ins, the last one of each date, compared by pleasant activities (>= 1 against 0).
+     Plain sentences about what went together; never a claim about cause. */
+  function moodVsActivities(view) {
+    const byDate = new Map();
+    for (const l of eveningCheckins(view)) byDate.set(l.date, checkinOf(l));
+    const days = [...byDate.values()].filter((c) => Number.isInteger(c.pleasantCount));
+    const group = (list) => ({ days: list.length, mood: r1(mean(list.map((c) => c.mood))), craving: r1(mean(list.map((c) => c.peakCraving))) });
+    const withActivity = group(days.filter((c) => c.pleasantCount >= 1));
+    const withoutActivity = group(days.filter((c) => c.pleasantCount === 0));
+    const said = (g, lead) => {
+      if (!g.days) return null;
+      const parts = [];
+      if (g.mood !== null) parts.push(`your mood averaged ${g.mood}/10`);
+      if (g.craving !== null) parts.push(`your peak craving ${g.craving}/10`);
+      return parts.length ? `${lead}, ${parts.join(' and ')}.` : null;
+    };
+    const sentences = [
+      said(withActivity, `On ${plural(withActivity.days, 'day')} with at least one pleasant activity`),
+      said(withoutActivity, `On ${plural(withoutActivity.days, 'day')} with none`),
+    ].filter(Boolean);
+    if (withActivity.days && withoutActivity.days && sentences.length) sentences.push('This shows what went together in your check-ins, not what caused what.');
+    return { withActivity, withoutActivity, sentences };
+  }
+  function predictionsSummary(view) {
+    const done = rowsOf(view, 'predictions').filter((p) => num(p.predicted) !== null && num(p.actual) !== null);
+    return { count: done.length, predicted: r1(mean(done.map((p) => p.predicted))), actual: r1(mean(done.map((p) => p.actual))), better: done.filter((p) => p.actual > p.predicted).length };
+  }
+  function motivationHistory(view) {
+    return rowsOf(view, 'motivation').filter((r) => !isNaN(msOf(r.at))).sort(byAt)
+      .map((r) => ({ id: r.id, at: r.at, date: dateStr(r.at), score: num(r.score), stage: r.stage || null, plusOne: strOf(r.plusOne) || null }));
+  }
+  function insights(view, now) {
+    const today = todayStr(now);
+    const logs = logsOf(view);
+    const count = logs.filter((l) => INSIGHT_TYPES.has(l.type)).length;
+    const cravings = logs.filter((l) => l.type === 'craving');
+    const thisWeek = weekStart(today, 1);
+    const cravingTrend = [];
+    for (let w = 7; w >= 0; w -= 1) {
+      const start = addDays(thisWeek, -7 * w);
+      const end = addDays(start, 6);
+      const inWeek = cravings.filter((l) => l.date >= start && l.date <= end);
+      cravingTrend.push({ weekStart: start, count: inWeek.length, mean: r1(mean(inWeek.map((l) => l.intensity))) });
+    }
+    const chips = triggerChips(view);
+    return {
+      ready: count >= INSIGHTS_READY,
+      count,
+      cravingTrend,
+      topTriggers: triggerCounts(view).slice(0, 5).map((t) => ({ id: t.id, label: chipLabel(chips, t.id), count: t.count })),
+      heatmap: heatmapOf(logs),
+      moodVsActivities: moodVsActivities(view),
+      skillRanking: rankSkills(view).filter((s) => s.uses > 0).slice(0, 8),
+      predictions: predictionsSummary(view),
+      motivationHistory: motivationHistory(view),
+      caveat: count < INSIGHTS_SOLID ? `Based on ${plural(count, 'log')}. That is a small sample, so read these lightly.` : null,
+    };
+  }
+
+  /* ── Warning Sign Radar (3.9): six detectors, gentle wording, never red. Each sign maps to a
+     Content.catalogs.warningSigns id; the person's own plan (their warning-signs top 3) wins over
+     the general suggestion. Thresholds:
+       noMeeting        no meeting in the last 14 days, >= 2 meeting dates in the 28 before
+       fewPleasant      < 2 pleasant activities over the last 7 check-ins (7 needed, last 14 days)
+       poorSleep        < 6 h sleep on 3 of the last 5 check-ins with sleep (last 14 days)
+       noContact        an active supportive contact, no ContactReached in 14 days, data >= 14 days old
+       weekendUnplanned this week's planner in use, a Fri/Sat/Sun evening from today on with no block
+                        overlapping 18:00-23:00
+       feelingsRising   mean feeling intensity of the last 7 days >= the 7 before + 2 (>= 2 logs each) ── */
+
+  const POOR_SLEEP_HOURS = 6;
+  const RADAR = [
+    { signId: 'noMeeting', catalogId: 'groups-less', label: 'Fewer meetings lately', plan: 'Pick one meeting or group this week and put it in the planner.' },
+    { signId: 'fewPleasant', catalogId: 'few-fun', label: 'Few enjoyable things lately', plan: 'Schedule one want-to for tomorrow, at your riskiest hour.' },
+    { signId: 'poorSleep', catalogId: 'poor-sleep', label: 'Sleep has been short', plan: 'Plan a calm wind-down tonight. If it keeps up, mention it to a doctor.' },
+    { signId: 'noContact', catalogId: 'isolating', label: 'Less contact with your people', plan: 'Send one short message to someone in your crew today.' },
+    { signId: 'weekendUnplanned', catalogId: 'unstructured', label: 'Open weekend evenings', plan: 'Put one plan, or a Battle Plan, in each open evening.' },
+    { signId: 'feelingsRising', catalogId: 'intense-emotions', label: 'Feelings running higher', plan: 'Try a feeling tool in SOS, and tell someone how this week has been.' },
+  ];
+  const SUPPORT_ROLES = new Set(['safetyNet', 'sponsor', 'therapist', 'other']);
+  const toMin = (t) => { const m = /^(\d{2}):(\d{2})$/.exec(String(t || '')); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
+  const hhmm = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+  function ownWarningPlans(view) {
+    const ws = payloadOf(latest(view, 'warning-signs'));
+    const plans = new Map();
+    for (const x of arr(ws.top || ws.picks || ws.topN).slice(0, 3)) {
+      const sid = typeof x === 'string' ? x : x && (x.id || x.sign || x.signId);
+      if (typeof sid === 'string' && sid) plans.set(sid, strOf(x && x.plan));
+    }
+    return plans;
+  }
+  function planRows(view) { return rowsOf(view, 'plans').filter((p) => DATE_RE.test(String(p.date || '')) && p.status !== 'skipped'); }
+  function warningSigns(view, now) {
+    const today = todayStr(now);
+    if (!today) return [];
+    const from = (k) => addDays(today, -k);
+    const logs = logsOf(view).filter((l) => l.date <= today);
+    const ev = normEvents(view).filter((e) => dateStr(e.at) <= today);
+    const fired = {};
+    // noMeeting
+    const meetDates = new Set(logs.filter((l) => (l.type === 'checkin' && checkinOf(l).meeting === true)
+      || (l.type === 'activity' && l.activity && l.activity.kind === 'meeting')).map((l) => l.date));
+    for (const e of ev) if (e.type === 'SkillUsed' && pl(e).skillId === 'meeting') meetDates.add(dateStr(e.at));
+    const recentMeet = [...meetDates].filter((d) => d >= from(13)).length;
+    const priorMeet = [...meetDates].filter((d) => d >= from(41) && d <= from(14)).length;
+    if (!recentMeet && priorMeet >= 2) fired.noMeeting = `No meeting logged in the last 14 days. You logged ${plural(priorMeet, 'meeting day')} in the four weeks before.`;
+    // fewPleasant and poorSleep: recent check-ins only
+    const recentCheckins = logs.filter((l) => l.type === 'checkin' && l.date >= from(13)).map(checkinOf);
+    const withPleasant = recentCheckins.filter((c) => Number.isInteger(c.pleasantCount)).slice(-7);
+    const pleasant = withPleasant.reduce((a, c) => a + c.pleasantCount, 0);
+    if (withPleasant.length >= 7 && pleasant < 2) fired.fewPleasant = `Your last 7 check-ins show ${pleasantWord(pleasant)}.`;
+    const withSleep = recentCheckins.filter((c) => num(c.sleep) !== null).slice(-5);
+    const short = withSleep.filter((c) => c.sleep < POOR_SLEEP_HOURS).length;
+    if (withSleep.length >= 5 && short >= 3) fired.poorSleep = `Less than ${POOR_SLEEP_HOURS} hours of sleep on ${short} of your last 5 check-ins.`;
+    // noContact
+    const crew = rowsOf(view, 'contacts').filter((c) => c.active !== false && SUPPORT_ROLES.has(c.role));
+    const firstDate = [...logs.map((l) => l.date), ...ev.map((e) => dateStr(e.at))].sort()[0];
+    const reached = ev.some((e) => e.type === 'ContactReached' && dateStr(e.at) >= from(13));
+    if (crew.length && !reached && firstDate && firstDate <= from(14)) fired.noContact = 'No contact with your crew marked in the last 14 days.';
+    // weekendUnplanned
+    const ws = weekStart(today, 1);
+    const weekPlans = planRows(view).filter((p) => p.date >= ws && p.date <= addDays(ws, 6));
+    if (weekPlans.length) {
+      const open = [4, 5, 6].map((k) => addDays(ws, k)).filter((d) => d >= today)
+        .filter((d) => !weekPlans.some((p) => p.date === d && toMin(p.start) < 23 * 60 && toMin(p.end) > 18 * 60));
+      if (open.length) fired.weekendUnplanned = `Nothing planned yet for ${open.map((d) => `${WEEKDAYS[weekday(d)]} evening`).join(', ')}.`;
+    }
+    // feelingsRising
+    const feel = logs.filter((l) => l.type === 'feeling' && num(l.intensity) !== null);
+    const last7 = feel.filter((l) => l.date >= from(6)).map((l) => l.intensity);
+    const prev7 = feel.filter((l) => l.date >= from(13) && l.date <= from(7)).map((l) => l.intensity);
+    if (last7.length >= 2 && prev7.length >= 2 && mean(last7) - mean(prev7) >= 2) {
+      fired.feelingsRising = `Your feeling logs average ${r1(mean(last7))}/10 this week, up from ${r1(mean(prev7))}/10 the week before.`;
+    }
+    const ownPlans = ownWarningPlans(view);
+    return RADAR.filter((r) => own(fired, r.signId)).map((r) => {
+      const mine = ownPlans.has(r.catalogId);
+      return { signId: r.signId, label: r.label, evidence: fired[r.signId], plan: (mine && ownPlans.get(r.catalogId)) || r.plan, own: mine };
+    });
+  }
+
+  /* ── planner (3.9): a day runs 07:00-23:00; a gap is an uncovered stretch of 2 h or more ──── */
+
+  const DAY_START = 7 * 60;
+  const DAY_END = 23 * 60;
+  const GAP_MIN = 120;
+  function gaps(planItems, ds) {
+    const list = (planItems && typeof planItems.list === 'function') ? rowsOf(planItems, 'plans') : arr(planItems);
+    const spans = list.filter((p) => p && p.sample !== true && p.date === ds && p.status !== 'skipped')
+      .map((p) => [Math.max(DAY_START, toMin(p.start)), Math.min(DAY_END, toMin(p.end))])
+      .filter(([s, e]) => !isNaN(s) && !isNaN(e) && e > s).sort((a, b) => a[0] - b[0]);
+    const span = (a, b) => ({ start: hhmm(a), end: hhmm(b), hours: Math.round(((b - a) / 60) * 100) / 100 });
+    const out = [];
+    let cur = DAY_START;
+    for (const [s, e] of spans) { if (s - cur >= GAP_MIN) out.push(span(cur, s)); cur = Math.max(cur, e); }
+    if (DAY_END - cur >= GAP_MIN) out.push(span(cur, DAY_END));
+    return out;
+  }
+  /* The hours with the most craving logs over all weekdays (ties: higher mean, then earlier hour). */
+  function riskyHours(heatmap, n = 3) {
+    const tot = Array.from({ length: 24 }, (_, h) => ({ h, count: 0, sum: 0, k: 0 }));
+    for (const row of arr(heatmap)) {
+      arr(row).slice(0, 24).forEach((c, h) => {
+        const count = typeof c === 'number' ? c : (c && num(c.count)) || 0;
+        if (count <= 0) return;
+        tot[h].count += count;
+        if (c && num(c.mean) !== null) { tot[h].sum += c.mean * count; tot[h].k += count; }
+      });
+    }
+    const m = (t) => (t.k ? t.sum / t.k : 0);
+    return tot.filter((t) => t.count > 0).sort((a, b) => (b.count - a.count) || (m(b) - m(a)) || (a.h - b.h)).slice(0, n).map((t) => t.h);
+  }
+  /* Want-tos: the person's activity-menu (or used-to-enjoy) list, else the Activity Library. */
+  function wantTos(view) {
+    const mine = pickTexts(payloadOf(latest(view, 'activity-menu')), ['wantTos', 'wantTo', 'want', 'activities', 'items'])
+      .concat(pickTexts(payloadOf(latest(view, 'used-to-enjoy')), ['items', 'activities', 'enjoyed']));
+    if (mine.length) return uniq(mine);
+    return arr(C.catalogs && C.catalogs.activities).flatMap((g) => textsOf(g && g.items));
+  }
+  /* Up to three want-tos at the heatmap's top hours that fall inside an open gap of the day; the
+     activity rotates by date (deterministic, never random). */
+  function suggestions(view, ds) {
+    if (!DATE_RE.test(String(ds || ''))) return [];
+    const plans = planRows(view);
+    const open = gaps(plans, ds);
+    const hours = riskyHours(heatmapOf(logsOf(view)), 24).filter((h) => h * 60 >= DAY_START && (h + 1) * 60 <= DAY_END)
+      .filter((h) => open.some((g) => toMin(g.start) <= h * 60 && (h + 1) * 60 <= toMin(g.end))).slice(0, 3);
+    const planned = new Set(plans.filter((p) => p.date === ds).flatMap((p) => [strOf(p.title), strOf(p.activity)]).filter(Boolean).map((s) => s.toLowerCase()));
+    const acts = wantTos(view).filter((a) => !planned.has(a.toLowerCase()));
+    if (!acts.length) return [];
+    const base = Math.abs(daysBetween('2000-01-03', ds));
+    return hours.slice().sort((a, b) => a - b).map((hour, i) => ({ hour, activity: acts[(base + i) % acts.length] }));
+  }
+
+  /* ── Weekly Review (3.9, ADR 0021): the forecast check and a summary; no score, no XP ─────── */
+
+  const partOfDay = (min) => (min < 12 * 60 ? 'morning' : min < 17 * 60 ? 'afternoon' : 'evening');
+  function weekDates(ws) {
+    const start = DATE_RE.test(String(ws || '')) ? ws : weekStart(dateStr(ws), 1);
+    return start ? Array.from({ length: 7 }, (_, k) => addDays(start, k)) : [];
+  }
+  function forecastCheck(view, ws) {
+    const dates = weekDates(ws);
+    const plans = planRows(view);
+    const logs = logsOf(view).filter((l) => l.type === 'craving' || l.type === 'feeling');
+    return dates.map((date) => {
+      const planned = plans.filter((p) => p.date === date && (p.risky === true || p.kind === 'risky' || (p.battlePlan && typeof p.battlePlan === 'object')))
+        .sort((a, b) => (toMin(a.start) - toMin(b.start)) || cmpStr(String(a.id || ''), String(b.id || '')))
+        .map((p) => ({ id: p.id, title: strOf(p.title), start: p.start || null, end: p.end || null, battlePlan: Boolean(p.battlePlan && typeof p.battlePlan === 'object') }));
+      const logged = logs.filter((l) => l.date === date)
+        .map((l) => ({ id: l.id, type: l.type, intensity: num(l.intensity), hour: l.hour, time: fmtTime(l.at) }));
+      let line = null;
+      if (planned.length) {
+        const when = `${WEEKDAYS[weekday(date)]} ${isNaN(toMin(planned[0].start)) ? '' : partOfDay(toMin(planned[0].start))}`.trim();
+        const top = logged.filter((l) => l.intensity !== null).sort((a, b) => (b.intensity - a.intensity) || (a.hour - b.hour))[0];
+        if (top) line = `You planned for rough weather on ${when}; the log shows a ${top.intensity}/10 at ${top.time}${planned.some((p) => p.battlePlan) ? ', and your plan was there' : ''}.`;
+        else if (!logged.length) line = `You planned for rough weather on ${when}; no craving or feeling was logged that day.`;
+      }
+      return { date, planned, logged, line };
+    });
+  }
+  function weekSummary(view, ws) {
+    const dates = weekDates(ws);
+    if (!dates.length) return null;
+    const inWeek = (d) => d >= dates[0] && d <= dates[6];
+    const logs = logsOf(view).filter((l) => inWeek(l.date));
+    const ev = normEvents(view).filter((e) => inWeek(dateStr(e.at)));
+    const countType = (t) => logs.filter((l) => l.type === t).length;
+    const counts = { craving: countType('craving'), feeling: countType('feeling'), checkin: countType('checkin'), activity: countType('activity') };
+    const skillEv = ev.filter((e) => e.type === 'SkillUsed' && typeof pl(e).skillId === 'string');
+    const helpedBy = new Map();
+    for (const e of skillEv) if (helpfulValue(pl(e).helpful) === 1) helpedBy.set(pl(e).skillId, (helpedBy.get(pl(e).skillId) || 0) + 1);
+    const skillName = (sid) => (arr(C.skills).find((s) => s.id === sid) || {}).name || sid;
+    const topSkills = [...helpedBy.entries()].sort((a, b) => (b[1] - a[1]) || cmpStr(a[0], b[0])).slice(0, 3).map(([sid]) => skillName(sid));
+    const pleasant = logs.filter((l) => l.type === 'checkin').reduce((a, l) => a + (Number.isInteger(checkinOf(l).pleasantCount) ? checkinOf(l).pleasantCount : 0), 0)
+      + logs.filter((l) => l.type === 'activity' && l.activity && l.activity.kind === 'pleasant').length;
+    const plans = planRows(view).filter((p) => inWeek(p.date));
+    const sos = ev.filter((e) => e.type === 'SosCompleted');
+    const passed = sos.filter((e) => sosOutcome(e) === 'passed').length;
+    const logsTotal = counts.craving + counts.feeling + counts.checkin + counts.activity;
+    const highlights = [
+      logsTotal ? `You logged ${plural(logsTotal, 'time')} this week.` : null,
+      skillEv.length ? `You used a skill ${plural(skillEv.length, 'time')}${topSkills.length ? `; ${topSkills[0]} helped most often` : ''}.` : null,
+      pleasant ? `${pleasantWord(pleasant)} made it into your week.` : null,
+      passed ? `You rode out ${plural(passed, 'craving')} with SOS.` : null,
+      plans.some((p) => p.status === 'done') ? `You followed through on ${plural(plans.filter((p) => p.status === 'done').length, 'plan')}.` : null,
+    ].filter(Boolean);
+    return {
+      weekStart: dates[0], end: dates[6], logs: counts,
+      cravingMean: r1(mean(logs.filter((l) => l.type === 'craving').map((l) => l.intensity))),
+      skillsUsed: skillEv.length, topSkills, pleasant,
+      plans: { total: plans.length, done: plans.filter((p) => p.status === 'done').length, debriefed: plans.filter((p) => p.debrief && typeof p.debrief === 'object').length },
+      sos: { sessions: sos.length, passed },
+      highlights,
+    };
+  }
+
+  /* ── SOS (3.9): the guide's tool order and the typed-text crisis check ─────────────────────── */
+
+  /* The craving tools of ui-sos and the skill each one credits. 'wave' (Ride the wave, with SOBER
+     breathing) always opens the guide; the other two places go to the tools rated most helpful
+     (a tool never rated counts as 0.5), ties in this default order. Never empty. */
+  const SOS_TOOLS = Object.freeze([
+    { id: 'wave', skillId: 'ride-wave' }, { id: 'why', skillId: 'reasons' }, { id: 'distract', skillId: 'distract' },
+    { id: 'call', skillId: 'call' }, { id: 'talkback', skillId: 'talk-back' },
+  ].map((t) => Object.freeze(t)));
+  const GUIDE_LEN = 3;
+  function guideSequence(view) {
+    const m = mastery(view);
+    const score = (t) => (m[t.skillId] && m[t.skillId].helpfulAvg !== null ? m[t.skillId].helpfulAvg : 0.5);
+    const rest = SOS_TOOLS.slice(1).map((t, i) => ({ id: t.id, i, s: score(t) })).sort((a, b) => (b.s - a.s) || (a.i - b.i)).map((x) => x.id);
+    return ['wave'].concat(rest.slice(0, GUIDE_LEN - 1));
+  }
+
+  /* clinicalReview: true. Typed-text crisis phrases (RS2 and RS10 of contracts/actions-sos.md):
+     matched case-insensitively after curly quotes become straight and spaces collapse; an apostrophe
+     may be missing. It errs toward showing the urgent numbers: a false alarm is allowed, a miss is not. */
+  const CRISIS_PATTERNS = [
+    'suicid\\w*',
+    'kill(?:s|ed|ing)? my ?self', 'kill me', 'kms',
+    'self[- ]?harm\\w*',
+    '(?:hurt(?:s|ing)?|harm(?:s|ed|ing)?|cut(?:s|ting)?|hang(?:s|ing)?|injur(?:e|es|ed|ing)) my ?self',
+    'overdos(?:e|ed|ing) on purpose',
+    '(?:want(?:s|ed|ing)?|going|ready|wish(?:ed)?) to die', 'wanna die',
+    'wish i (?:was|were) dead', 'better off dead', 'better off without me',
+    "(?:do not|don'?t|doesn'?t|not|never) (?:want|wanna)(?: to)? (?:live|be here|be alive|wake up|exist)",
+    "(?:can'?t|cannot|can not) go on",
+    'end(?:s|ed|ing)? (?:it all|it|things|my life|everything)',
+    'tak(?:e|es|ing) my (?:own )?life',
+    'nothing to live for',
+    'no (?:reason|point)(?: (?:to|in|for))? (?:live|living|go on|going on)',
+    "(?:not|isn'?t) worth living",
+    'never wake up',
+    '(?:think(?:s|ing)?|thought(?:s)?) (?:about|of) (?:death|dying|suicide|killing my ?self|ending it|ending my life)',
+  ];
+  const CRISIS_RE = new RegExp('\\b(?:' + CRISIS_PATTERNS.join('|') + ')\\b', 'gi');
+  /* The crisis phrases found in text (lower case, each once, in order), or [] (non-strings too). */
+  function crisisKeywords(text) {
+    if (typeof text !== 'string' || !text.trim()) return [];
+    const s = text.replace(/[‘’‛ʼ`´]/g, "'").replace(/\s+/g, ' ').toLowerCase();
+    const out = [];
+    for (const m of s.matchAll(CRISIS_RE)) if (!out.includes(m[0])) out.push(m[0]);
+    return out;
+  }
+
   /* ── views ───────────────────────────────────────────────────────────────────────────────── */
 
   /* A Store.view-shaped object over plain rows: {get(store,id), list(store), count(store)}. */
@@ -894,6 +1222,8 @@ const Engine = (() => {
     roadmap, nextLesson, revealed, isRevealed, newDots, explorer, explorerDone, pickTip, quests,
     latest, history, reasonsCard, reasonsCardSections, comebacks, comebackRows, distractionDeck, spiralThoughts, triggerChips,
     prefillRecoveryPlan, sosOutcome,
+    insights, warningSigns, gaps, riskyHours, suggestions, forecastCheck, weekSummary,
+    guideSequence, crisisKeywords, SOS_TOOLS, CRISIS: { clinicalReview: true, patterns: CRISIS_PATTERNS.slice() },
     makeView, STORES,
   };
 })();
