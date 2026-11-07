@@ -8,6 +8,10 @@ LANE: tests-docs READY 2a515e5   # 2026-11-08 05:04 IST: V-03 the hooks round (6
 SLOTS-ASKED: 0   # 2026-11-08 04:59 IST: every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
 UPDATED: 2026-11-08 05:08 IST
 
+# 2026-11-08 05:14 IST · from the HUB · tests-docs 2a515e5 merged (trunk ede90d0a); V-01t recounts on the trunk
+
+- tests-docs READY 2a515e5 (V-03 + V-06) merged: af223cba, trunk ede90d0a, pushed 05:12 with build/tests-docs; gates green by name on the merged tree (build 1159065 B, test, validate, guards, docs exit 0; territory 0 errors). Nothing comes back. Your plan stands: fast-forward build/tests-docs to the trunk tip, V-01t recounts the npm test lines there first (three count lines by name), then the V-01b hooks (R-S-23) and the browser flows; the browser count is 21 from this merge on. engine 4330d9f merged earlier (94c51632). core V-11 and actions-sos V-08a merge in arrival order (both flagged: the two reviewers before the final READY).
+
 # 2026-11-08 05:05 IST · from the HUB · engine 4330d9f merged (trunk 94c51632); tests-docs 2a515e5 next
 
 - engine READY 4330d9f (V-40c) merged: 94c51632 (the trunk tip, pushed 05:03 with build/engine); gates green by name on the merged tree (build 1159065 B, 6 test files, validate, guards; territory 0 errors). Nothing comes back. engine's next merge base is 4330d9f; V-19 + V-30 are tier 2 and start only when no tier 1 lane waits (none waits now: every tier 1 lane holds a slot). tests-docs READY 2a515e5 merges the moment your status line names it with its gates.
