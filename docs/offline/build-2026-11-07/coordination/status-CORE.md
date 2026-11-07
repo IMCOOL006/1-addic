@@ -149,3 +149,7 @@ UPDATED: 2026-11-07 18:23 IST
 # 2026-11-07 17:19 · from the HUB · content complete on the trunk; three test-only fixes asked; the sample-data fix is a tag condition (R-H-27)
 
 - content 680f850 merged (trunk c8dc6716). Baselined by name until fixed: learn.test.mjs 'learn: map progress from events', 'learn: M0 plays end to end ... (stand-in DOM)' (a test-only round on build/learn, READY line); actions.test.mjs 'validation failures write nothing' (with actions-sos's next round). RS-SAMPLE (loadSample never overwrites an own profile or settings) is a condition for offline-v1.1: please take it into actions-sos's round with a test. Memory 4.5 GB at 17:17 with five runs; your two rounds stand.
+
+# 2026-11-07 18:28 · from the HUB · core 8e80951 merged (complete); slots for the fresh CORE
+
+- core READY 8e80951 -> a3081f33 pushed with build/core; GREEN by name; core complete, slot 1 free. For CORE 6: actions-sos slot 3 held (FIX-R6: RS-SAMPLE is the tag condition), learn slot 9 and engine slot 2 granted for FIX-RS9 and FIX-RS9E by name; start them as memory allows (7.0 GB row per start; 18:19 5.0 GB with two SCREENS runs). READY lines with the tip; cut base 655516dc for all three. BASE a3081f33.

@@ -1,4 +1,4 @@
-STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: twenty-two merges on the trunk (BASE 42d2467d, pushed 18:13). In since the tag: the encrypted Store, the whole engine, every tier 1 screen (Today, Track, Insights, Harbor, Settings, Reasons Card, Support Network, Workbook, My Recovery Plan), the whole validated content, and the first tier 2 pieces (the guidance engine, the planner). Still building: the SOS screens with onboarding and lock (actions-sos, fifth safety round), core's high-contrast fix, battle plans and the weekly review (actions), game surfaces and tools (game-tutorials). The HUB is session 5 (4b638c7b), handing over soon at its context limit.
+STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: twenty-three merges on the trunk (BASE a3081f33, pushed 18:27). In since the tag: the encrypted Store, the whole engine, every tier 1 screen (Today, Track, Insights, Harbor, Settings, Reasons Card, Support Network, Workbook, My Recovery Plan), the whole validated content, and the first tier 2 pieces (the guidance engine, the planner). Still building: the SOS screens with onboarding and lock (actions-sos, sixth safety round: the sample-data fix, one regression), battle plans and the weekly review (actions), game surfaces and tools (game-tutorials). The HUB is session 5 (4b638c7b), handing over soon at its context limit.
 NEEDS YOU: (1) The build is continuing on your word (R-O-2, 14:38: 'I agree with the defaults', and run on to the complete edition and the guide): the launcher stays running, three lanes are in their rounds. (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake while the rounds run; the pharma tag (about 15:30) is what frees the memory for the SCREENS chat.
 NEXT: the HUB merges, in arrival order, actions-sos READY (U-10 SOS, U-11 onboarding and lock, every safety fix) when its fourth round ends, the rest of the content (U-31b, U-29, U-30, U-32, U-33), the Reasons Card and Support Network (U-20a), core's high-contrast fix, then the planner and guidance-engine slices; the guide with screenshots comes last. Memory is falling (6.8 GB at 17:02 with eight runs): the newest lane pauses under 4 GB.
 
@@ -6,7 +6,7 @@ NEXT: the HUB merges, in arrival order, actions-sos READY (U-10 SOS, U-11 onboar
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 18:15 IST by `board.py`.
+Rewritten 2026-11-07 18:29 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -14,38 +14,38 @@ FORECAST (corrected 17:41: every SCREENS tier 1 unit is merged; actions-sos READ
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 18:14 IST: HUB 5 (4b638c7b, context about 255k: hand-over at the next safe point past about 290k); twenty-two merges, BASE 42d2467d pushed 18:13 (workbook-settings FIX-SAMPLE: the Settings…
-- BASE: 42d2467d (the trunk after the workbook-settings FIX-SAMPLE merge, 2026-11-07 18:13; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- STATE: BUILDING — 2026-11-07 18:28 IST: HUB 5 (4b638c7b, context about 270k: hands over at the next safe point past about 290k); twenty-three merges, BASE a3081f33 pushed 18:27 (core FIX-V11: core complete again)…
+- BASE: a3081f33 (the trunk after the core FIX-V11 merge, 2026-11-07 18:27; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 18:14 IST
+- UPDATED: 2026-11-07 18:28 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 4b638c7b (launcher-started 2026-11-07 16:27) | BUILDING — 2026-11-07 18:14 IST: HUB 5 (4b638c7b, context about 255k: hand-over at the next safe point past about 290k)… | 252k | 2026-11-07 18:14 IST |
-| CORE | 06285082 (launcher-started 2026-11-07 16:19) | BUILDING — 2026-11-07 17:57 IST: actions-sos FIX-R5 returned (RS33 MEDIUM open; FIX-R6 ruled, for the fresh CORE); one run live… | 294k | 2026-11-07 17:57 IST |
-| SCREENS | d6887185 (launcher-started 2026-11-07 17:31) | BUILDING — 2026-11-07 18:11 IST: workbook-settings READY 0e76065 (FIX-SAMPLE, for the HUB); two runs live: actions U-24, U-25… | 228k | 2026-11-07 18:11 IST |
+| HUB | 4b638c7b (launcher-started 2026-11-07 16:27) | BUILDING — 2026-11-07 18:28 IST: HUB 5 (4b638c7b, context about 270k: hands over at the next safe point past about 290k)… | 263k | 2026-11-07 18:28 IST |
+| CORE | 60f08c84 (launcher-started 2026-11-07 18:23) | RESTART — 2026-11-07 18:23 IST: CORE 06285082 hands over near 300k with NOTHING running (all its runs returned). The fresh CORE… | 116k | 2026-11-07 18:23 IST |
+| SCREENS | d6887185 (launcher-started 2026-11-07 17:31) | BUILDING — 2026-11-07 18:28 IST: one run live: actions U-25 (wf_6effec68-3fd); game-tutorials paused at d4c49d1 (all units built… | 248k | 2026-11-07 18:28 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED again 2026-11-07 16:42 for the fix round by name FIX-V11 (R-C-22: R-S-6 settings.highContrast as html[data-contrast="high"] on every render in… |
-| `engine` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=2 free from 2026-11-07 16:47: FIX-RS4 READY 57153d3…; FIX-RS4 READY 16:4x, merged by the HUB as 3720d119 (R-H-25, 17:03; the baselined names… |
+| `core` | CORE | 1 | yes | slot ? | READY | GRANTED slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951…; 2026-11-07 18:23 IST: FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) and its… |
+| `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED again 2026-11-07 18:28 for FIX-RS9E by name (R-S-9: recoveryPlanPrefill and ownWarningPlans read x.item; CORE's wrapper ready), test-only or one-line… |
 | `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at 1131827 (16:18, pushed) RS19-RS23 FIXED on the safety re-check, test GREEN 119/119, but the… |
-| `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 16:45: FIX-RS4 READY 4f5832f…; FIX-RS4 READY 16:4x, merged by the HUB as cb0b427 (R-H-25, 17:03); before: READY 19f373c… |
+| `learn` | CORE | 1 |  | slot 9 | MERGED | GRANTED again 2026-11-07 18:28 for FIX-RS9 by name (test-only, learn.test.mjs :424 and :538-539; lifts two baselined names); READY with the tip; the lane was… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
 | `today-track` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=5 free from 2026-11-07 17:01: READY 3f3001e merged…; the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete; tip… |
-| `workbook-settings` | SCREENS | 1 |  | slot ? | READY | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; fix by name FIX-SAMPLE (R-H-28, the tag condition, Settings side): 03c3631, 0e76065; run… |
+| `workbook-settings` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met… |
 | `actions` | SCREENS | 2 |  | slot 7 | BUILDING | GRANTED 2026-11-07 16:33 (SCREENS, tier 2): READY-SLICE 710502f (U-22 planner) merged 18:02 (0106d664); the lane continues (U-23, U-24, U-25); its real cut… |
 | `game-tutorials` | SCREENS | 2 |  | slot 8 | BUILDING | GRANTED 2026-11-07 16:33 (SCREENS, tier 2): READY-SLICE 5af6665 (U-27 guidance engine) merged 17:57 (89976d80); PAUSED by SCREENS at 17:53 (3.3 GB row)… |
 | `content` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1… |
 
-Slots allowed: 5 runs live from 17:10 (actions-sos FIX-R4, core FIX-V11, workbook-settings, actions, game-tutorials); nothing new starts until a row shows 7.0 GB free with the live runs counted (17:17: 4.5 GB); under 4.0 GB the newest run pauses at its next commit (game-tutorials, then actions); tests-docs tier 2 (U-35, U-36b) and its hooks round after actions-sos merges. Granted: 10 lanes (`core` slot 1, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot 7, `game-tutorials` slot 8).
+Slots allowed: 5 runs live from 17:10 (actions-sos FIX-R4, core FIX-V11, workbook-settings, actions, game-tutorials); nothing new starts until a row shows 7.0 GB free with the live runs counted (17:17: 4.5 GB); under 4.0 GB the newest run pauses at its next commit (game-tutorials, then actions); tests-docs tier 2 (U-35, U-36b) and its hooks round after actions-sos merges. Granted: 10 lanes (`core` slot ?, `engine` slot 2, `actions-sos` slot 3, `learn` slot 9, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot 7, `game-tutorials` slot 8).
 
 ## Merges
 
@@ -69,7 +69,8 @@ Slots allowed: 5 runs live from 17:10 (actions-sos FIX-R4, core FIX-V11, workboo
 - 17:57 game-tutorials READY-SLICE 5af6665 (U-27 guidance engine) -> 89976d80. build, test 14/14, validate, guards GREEN by name.
 - 18:02 actions READY-SLICE 710502f (U-22 planner) -> 0106d664. build, test 13/13, validate, guards GREEN by name; three tour-target names lifted (three remain).
 - 18:13 workbook-settings READY 0e76065 (Load sample data only without an own profile: the tag condition's Settings side) -> 42d2467d. build, test 25/25, validate, guards GREEN by name.
-- Queue: empty (actions-sos READY, core FIX-V11, learn test fix, actions READY, game-tutorials READY next, as they appear).
+- 18:27 core READY 8e80951 (high contrast on every render, focus and screen-reader fixes, every reviewer finding fixed) -> a3081f33. build, test 87/87, validate, guards GREEN by name.
+- Queue: empty (actions-sos READY, learn and engine test fixes, actions READY, game-tutorials READY next, as they appear).
 
 ## Blockers and questions
 
@@ -86,8 +87,8 @@ Slots allowed: 5 runs live from 17:10 (actions-sos FIX-R4, core FIX-V11, workboo
 
 ## Machine
 
-- Free memory 7.2 GB of 31.8 GB at 2026-11-07 18:09 IST; claude 31, node 54 processes; 4 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 14024); its last launch: SCREENS d6887185 at 2026-11-07 17:31.
+- Free memory 5.0 GB of 31.8 GB at 2026-11-07 18:19 IST; claude 30, node 52 processes; 1 slots by the rule (lane-widening.md).
+- The launcher loop: running (pid 14024); its last launch: CORE 60f08c84 at 2026-11-07 18:23.
 
 ## Files of the build
 
