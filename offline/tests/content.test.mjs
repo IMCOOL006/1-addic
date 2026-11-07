@@ -1,6 +1,6 @@
 // Lane content's Node tests (node:test, no dependencies). U-31a: the M0-M3 exercises of BUILD-PLAN 3.8 and the
 // checkpoint, the content-core safety asks (R-C-13, R-C-18), and Engine.validateContent over the loaded content.
-// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6.
+// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6. U-30: lessons M7-M10.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -227,10 +227,10 @@ test('content: slip, anger and warning-sign exercises carry clinicalReview; slip
 });
 
 // U-29: lessons M4-M6 in the 3.6 shape.
-const LESSON_COUNTS = { m4: 6, m5: 6, m6: 6 };
+const LESSON_COUNTS = { m4: 6, m5: 6, m6: 6, m7: 6, m8: 6, m9: 5, m10: 4 };
 const sentences = (s) => String(s).split(/(?<=[.!?])\s+(?=[A-Z"“(])/).filter((x) => x.trim()).length;
 
-test('content: lessons shape (3.6) for m4-m6', () => {
+test('content: lessons shape (3.6) for m4-m10', () => {
   const features = new Set(Object.keys(C.features));
   const ranks = new Set(C.ranks.map((r) => r.id));
   for (const [mid, n] of Object.entries(LESSON_COUNTS)) {
@@ -279,4 +279,19 @@ test('content: the spiral lesson carries clinicalReview and points to urgent hel
   assert.equal(l.clinicalReview, true);
   assert.ok(strings(l).includes('#/sos/urgent'));
   assert.ok(!strings(C.modules).some((s) => /\breset/i.test(s)), 'no reset wording');
+});
+
+// U-30: lessons M7-M10. Rule 4: M9-M10 touch feelings, anger, slips and warning signs.
+test('content: M9-M10 lessons carry clinicalReview', () => {
+  for (const l of lessonsOf(['m9', 'm10'])) assert.equal(l.clinicalReview, true, l.id);
+  const all = strings(lessonsOf(['m9', 'm10']));
+  assert.ok(all.includes('#/sos/urgent'), 'urgent help is linked');
+  assert.ok(all.includes('#/sos/slip') && all.includes('#/workbook/plan'), 'slip help and the plan are linked');
+  assert.ok(!all.some((s) => /reset|start (over|again) from (zero|day one)|dose/i.test(s)), 'no reset or dose wording');
+});
+
+test('content: 39 lessons in m4-m10 and the M7, M9, M10 milestones', () => {
+  assert.equal(lessonsOf(['m4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10']).length, 39);
+  const ms = Object.fromEntries(C.modules.map((m) => [m.id, m.milestone]));
+  assert.deepEqual([ms.m7, ms.m9, ms.m10], ['navigator', 'builder', 'guide']);
 });
