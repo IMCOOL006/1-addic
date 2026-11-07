@@ -596,6 +596,7 @@ const UI = (function () {
     if (locked || !S || !S.view || typeof S.view.get !== 'function' || (state.booted && !state.loaded)) return flag;
     let row;
     try { row = S.view.get('settings', 'app'); } catch (e) { return flag; } // unreadable: the flag decides
+    if (!row) return flag; // no settings row to read (none yet, or one that will not open, Q4): the flag decides (RS13)
     const on = !!(row && row.discreet);
     if (on !== flag) setDiscreetFlag(on);
     return on;

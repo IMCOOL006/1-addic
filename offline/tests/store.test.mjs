@@ -960,6 +960,24 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.ok(!main().textContent.includes('SOS'));
   });
 
+  test('RS13: unlocked, a settings row that will not open (absent from view, Q4) keeps the discreet flag', async () => {
+    setup();
+    const box = new Map([['1-addic:discreet', '1']]);
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    globalThis.Store = {
+      view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: false, unreadable: 1 }),
+    };
+    UI.pages.today = page('today');
+    at('#/today');
+    await UI.render();
+    assert.equal(box.get('1-addic:discreet'), '1', 'the flag stays');
+    assert.equal(document.title, 'Notebook');
+    assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
