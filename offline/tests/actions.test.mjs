@@ -2444,5 +2444,37 @@ describe('review round 4 fixes (FIX-R4)', () => {
     await d3.settle();
     assert.equal(events('SosCompleted').length, 1, 'a save on the notebook as it is goes in');
   });
+  test('RS27: a kept save dropped after the unlock says This was not saved., once; It goes in your log when you unlock. stays', async () => {
+    const count = (d, msg) => d.toasts.filter((t) => t[0] === msg).length;
+    assert.equal(H.COPY.keptLost, 'This was not saved.');
+    assert.ok(H.COPY.slipStart.kept.startsWith('It goes in your log when you unlock.'), 'the RS21 line stays');
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    let refuse = false;
+    const A = Object.assign({}, Actions, { sosSession: (p) => (refuse ? Promise.reject(Object.assign(new Error('The device refused the write.'), { code: 'WRITE_FAILED' })) : Actions.sosSession(p)) });
+    const d = sosDom();
+    craving(d, A);
+    await d.settle();
+    craving(d, A);
+    await d.settle();
+    assert.equal(count(d, H.COPY.lockedKept), 2, 'two saves kept for the unlock');
+    refuse = true;
+    assert.ok(await S().lock.unlock('2468'));
+    await d.settle(); await d.settle();
+    assert.equal(events('SosCompleted').length, 0, 'the device refused both after the unlock');
+    assert.equal(count(d, H.COPY.keptLost), 1, 'one toast says so');
+    // a kept save whose notebook went away (RS26) says so too
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d2 = sosDom();
+    craving(d2, Actions);
+    await d2.settle();
+    await S().lock.remove('2468');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d2.settle();
+    assert.equal(events('SosCompleted').length, 0);
+    assert.equal(count(d2, H.COPY.keptLost), 1, 'dropped at the notify: told once');
+  });
   // -- FIX-R4 tests end --
 });

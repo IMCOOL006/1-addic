@@ -58,6 +58,7 @@
     copied: 'Copied.',
     hidden: 'Locked: your own notes are hidden.',
     lockedKept: 'Locked. This saves when you unlock.',
+    keptLost: 'This was not saved.', // RS27: a kept save dropped after the unlock
   };
 
   // Stand-ins until Content.practices (content U-32) and the engine's SOS views arrive. Reported for clinical review.
@@ -430,16 +431,17 @@
   async function flushWaiting() {
     if (flushing || !waiting.length || isLockedNow()) return;
     flushing = true;
+    let lost = false; // RS27: a kept save dropped after the unlock is never dropped in silence
     try {
       while (waiting.length && !isLockedNow()) {
         const fn = waiting[0];
         if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook changed is dropped, never written into this one
-          try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; }
-        }
+          try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; lost = true; }
+        } else lost = true;
         waiting.shift();
         marks.delete(fn);
       }
-    } finally { flushing = false; }
+    } finally { flushing = false; if (lost) toast(COPY.keptLost, 'warn'); } // one toast, however many
   }
   // C2: a kept save belongs to the notebook it was made in. A reset (Forgot PIN, Erase) or an import drops it.
   const DROP = new Set(['resetAll', 'replaceAll']);
