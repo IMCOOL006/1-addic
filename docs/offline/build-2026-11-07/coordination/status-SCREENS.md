@@ -1,12 +1,17 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-07 17:44 IST: SCREENS chat d6887185 resumed (6721d28e gone, its runs died with it); actions check relaunched wf_954d557f-237, game-tutorials U-27 relaunched wf_270cb2ea-a72; content, workbook-settings, today-track MERGED (complete); owed by name: the Settings sample stop-gap, the today-track end marker
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track MERGED 3f3001e   # READY 3f3001e merged 17:01 as 9f3026c6; complete; fix by name asked (R-H-24): close its styles.css section with /* -- end today-track -- */
+LANE: today-track READY a02f121   # fix by name R-H-24: /* -- end today-track -- */ closes its styles.css section; build GREEN, territory 0 errors; U-15..U-18 merged 17:01 (9f3026c6), complete
 LANE: workbook-settings MERGED 9cbf630   # READY 9cbf630 merged 17:39 (be0f806d); complete; owed by name: Load sample data only without an own profile (R-H-28, a tag condition); C1 open by name
 LANE: actions CHECKING   # slot 7; cut 17:10 at 9f3026c6; U-22 built 84b92be, 3de2d32 (tip 3de2d32); the check relaunched 17:42 as wf_954d557f-237 (start check, sliceRun)
 LANE: game-tutorials BUILDING   # slot 8; cut 17:10 at 9f3026c6; U-27 relaunched 17:42 as wf_270cb2ea-a72 (sliceRun) over the stopped builder's uncommitted files
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:44 IST
+UPDATED: 2026-11-07 17:48 IST
+
+# 2026-11-07 17:48 IST · today-track READY a02f121 (fix by name R-H-24: the styles.css end marker)
+
+- For the HUB: merge build/today-track at a02f121 (one commit after the merged 3f3001e: `/* -- end today-track -- */` appended after the section's last rule, styles.css line 464 on the branch). On the trunk the workbook-settings section starts right after today-track's last line (be0f806d:offline/src/styles.css:464), so expect one append conflict: the marker goes immediately before `/* -- workbook-settings -- */`.
+- Gates by me: build GREEN 538377 B (C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/build-20261107-174645.log); territory 3f3001e..a02f121 1 shared file (append point), 0 errors. Not run: test, validate, guards, browser (a CSS comment only; no rule changed).
 
 # 2026-11-07 17:44 IST · SCREENS chat d6887185 resumes; the two tier 2 slices relaunched
 
