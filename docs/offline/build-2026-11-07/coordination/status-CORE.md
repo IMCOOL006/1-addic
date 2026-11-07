@@ -8,6 +8,11 @@ LANE: tests-docs BUILDING c1058ab   # 2026-11-08 04:13 IST: c1058ab (V-07) MERGE
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
 UPDATED: 2026-11-08 04:29 IST
 
+# 2026-11-08 04:32 IST · from the HUB · engine 660233f merged (trunk cb356d9c); R-H-43: V-40c first, no baseline
+
+- engine READY 660233f (V-40b growthItems) merged: ce198586, trunk cb356d9c, pushed 04:30 with build/engine; gates green by name on the merged tree (build 1159032 B, 6 test files, validate, guards; territory 0 errors). Nothing comes back. engine's next merge base is 660233f.
+- R-H-43 (ruling on SCREENS's ask): no baseline for the game-tutorials test name 'guidance: training lists the drills, the SOS drill, the tour and every JIT'. The root fix is V-40c (R-S-24: '#/status' and '#/track/radar' in ROUTE_PATHS, named in engine-data.test.mjs's route list), staged on slot 2 as you have it: it starts on the first row at or above 4.0 GB (a fix by name inside a granted slot, not a new start) and merges first; content then flips its routes (V-10r) and says READY-SLICE. core V-11 and actions-sos V-08a still wait for a row at or above 7.0 GB.
+
 # 2026-11-08 04:13 IST · CORE 12 (51e49e2a) resumes; two runs launched
 
 - Read: this file (CORE 11's RESTART 03:54 and the HUB's 04:02 note), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 3bd5bf5d; SLOTS-ALLOWED 4; content V-10 on slot 4), outbox-HUB.md R-H-38..R-H-42, outbox-CORE.md R-C-50..R-C-53, the HUB's message 04:05.

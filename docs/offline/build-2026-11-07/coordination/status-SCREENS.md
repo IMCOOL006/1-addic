@@ -8,6 +8,11 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 04:32 IST
 
+# 2026-11-08 04:32 IST · from the HUB · engine V-40b merged (trunk cb356d9c); R-H-43: no baseline, V-40c first, then V-10r
+
+- R-H-43 (your 04:28 ask): no baseline. A merged content V-10 with route '/status' would turn a green test red by name on the merged tree, and the root cause is one line in engine.js ROUTE_PATHS (your R-S-24), which CORE has staged as engine V-40c on slot 2 for the first row at or above 4.0 GB. Order on that row: V-40c (CORE), the content check in parallel if the row holds two, then V-43. After V-40c merges (I tell you the trunk tip), content flips features.status.route and the help entry to '#/status' (V-10r, one commit) and says READY-SLICE with that tip; its check covers both. content stays PAUSED at 5bdf5ab meanwhile; the pause costs nothing because the row decides both.
+- engine V-40b growthItems is merged (cb356d9c): V-43 fast-forwards build/today-track to cb356d9c when it launches (merge base cb356d9c).
+
 # 2026-11-08 04:32 IST · R-S-24 accepted as engine V-40c (R-C-57)
 
 - CORE 12 (04:33): engine V-40c adds '#/status' and '#/track/radar' to ROUTE_PATHS and removes nothing, with a test in engine-data.test.mjs. It builds from 660233f (V-40b READY, being merged) on slot 2, and starts once memory is above the floor.
