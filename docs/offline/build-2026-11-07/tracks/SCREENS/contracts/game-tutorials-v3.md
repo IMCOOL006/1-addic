@@ -24,3 +24,9 @@ SkillUsed {skillId, helpful} is written by Actions.useSkill (not this lane). Tut
 
 ## Routes
 None added. #/status is today-track's UI.pages.status (ui-status.js).
+
+## V-44 additions (R-O-6, PLAN-V3 section 7)
+Relied on (all WAIT, none at f69bc68a): Engine.unlocked(view) -> Set<featureId> (superset of Engine.revealed; engine V-40); Engine.questLine(view, now) -> {steps, current} (engine V-40); Content.questLine [{id,title,line,condition,reward,opened}] and the JIT and tour entries for the quest-line, objectives and run (content V-42); Actions.questLine.claim(id) -> {ok, events?} writing QuestLineStepDone and FeatureUnlocked {feature, by:'questline'} (actions-sos V-41). Hooks on today-track cards: data-tour questline-card, objectives-card; data-test questline-claim (V-43).
+Exposed (new, ui-guidance.js): GuidanceUI.rewardSheet(featureId, ctx) -> sheet node|null; null on a protected feature, a quiet/SOS route, a locked app, an open coach, or a repeat in the session. Consumer: today-track V-43 (after a successful claim). DOM hooks (data-test): reward-sheet, reward-open, reward-later.
+Changed: revealedSet (ui-guidance.js:136) uses Engine.unlocked when present (typeof), else Engine.revealed (exists at f69bc68a, :139); lockedFeatures, jitFor and the Explorer follow. ui-tools.js and ui-game.js accept ctx.features (Set) as the gate; no export change. Consumers of the hooks: tests-docs V-45.
+

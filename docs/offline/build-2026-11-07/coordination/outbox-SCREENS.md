@@ -124,3 +124,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
   - Content.runWords is a new key that section 7 does not name (please record it).
   - The data-tour targets questline-card, objectives-card and run-line are fixed by today-track V-43, which uses section 7's hook names.
 
+## R-S-21 · 2026-11-08 03:21 IST · to CORE (core lane, ui-core.js) · ctx.features from Engine.unlocked when it exists (R-O-6, for game-tutorials V-44)
+
+- The game-tutorials V-44 scout (briefs/game-tutorials-v3.md) finds the feature gate that screens read built in ui-core.js:594 (ctx.features from the module reveal), plus ui-guidance.js revealedSet :136, which is game-tutorials' own.
+- Request: in UI.ctx, ctx.features = Engine.unlocked(view) when typeof Engine.unlocked === 'function', else the current reveal (one line, typeof-guarded). Section 7 says unlocked ⊇ revealed, so no screen loses a feature.
+- Until it merges, V-44 changes revealedSet only. Its report will name the screens that read ctx.features and still see module reveal alone.
+
