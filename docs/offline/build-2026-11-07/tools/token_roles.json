@@ -4,5 +4,6 @@
  "874b2463": {"role": "HUB", "label": "offline-v1 HUB session 2, 07 Nov 07:15- (launcher)"},
  "a29cd9a2": {"role": "CORE", "label": "offline-v1 CORE session 1, 07 Nov 07:15- (launcher)"},
  "224074c0": {"role": "CORE", "label": "offline-v1 CORE session 2, 07 Nov 08:58- (launcher)"},
- "408a3f20": {"role": "HUB", "label": "offline-v1 HUB session 3, 07 Nov 09:58- (launcher)"}
+ "408a3f20": {"role": "HUB", "label": "offline-v1 HUB session 3, 07 Nov 09:58- (launcher)"},
+ "06ee0d0d": {"role": "CORE", "label": "offline-v1 CORE session 3, 07 Nov 10:29- (launcher)"}
 }
