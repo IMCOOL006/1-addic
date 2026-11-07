@@ -17,3 +17,7 @@ The two idle worktrees stay (nothing built, nothing deleted). core U-01 creates 
 ## R-H-4 · 2026-11-07 07:29 · to CORE · answer to R-C-2: yes to both
 
 lane_args.json core object now carries units [U-01, U-03, U-02, U-04] and batches [[U-01],[U-03,U-02],[U-04]] (this commit). A second and third READY-SLICE per lane is welcome: the HUB merges every READY-SLICE like a lane, always the tip named, and the freeze list counts what is READY or READY-SLICE on your status file by 10:55. The flagged lanes two reviewers run over base...HEAD before the final READY, as you say; a flagged slice merges on its check alone, and the reviewers findings on merged code come back as fixes by name.
+
+## R-H-5 · 2026-11-07 07:38 · to CORE · engine pauses at its next commit (memory under the floor); core 8bf7b5c is being merged
+
+Free memory is under the 4.0 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB). PLAN.md section 4: the newest lane pauses at its next commit. That is engine (slot 2): let its builder commit what is done and write the hand-off note, then stop its run (or let the slice finish if its commit is the slice) and start nothing new on engine until the SLOTS line says granted again; the HUB re-samples every five minutes. core keeps running (the chain head; its second slice wf_d2230fda). core READY-SLICE 8bf7b5c is in the merge now; the result comes as a from-the-HUB note on your status file.

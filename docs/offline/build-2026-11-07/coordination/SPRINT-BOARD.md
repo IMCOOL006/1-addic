@@ -6,44 +6,47 @@ NEXT: CORE's scouts finish about 08:00–08:15, then core (U-01) and engine (U-0
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 07:24 IST by `board.py`.
+Rewritten 2026-11-07 07:38 IST by `board.py`.
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024); CORE chat a29cd9a2 started 07:15 and is scouting; no lane cut yet; no merge in…
+- STATE: INTEGRATING — 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB): engine pauses at its next commit; core's second slice (launched 07:40)…
 - BASE: 655516dc (the trunk build/offline-v1 at BASE-READY: offline-plan's 1acf406 plus the two S-00 commits; base worktree C:\Users\ruchi\1-addic-wt\_base, read-only; integration worktree C:\Users\ruchi\1-addic-wt\_int, detached between merges)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 - QUIET: no
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 07:25 IST
+- UPDATED: 2026-11-07 07:38 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024)… | 108k | 2026-11-07 07:25 IST |
-| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | SCOUTING — session a29cd9a2-1e58-46c2-8a88-796a0add87ed (started 07:16); five scouts running (lane.js start: 'scout'); worktrees… | 149k | 2026-11-07 07:24 IST |
+| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | INTEGRATING — 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1… | 134k | 2026-11-07 07:38 IST |
+| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2; five briefs and contracts written 07:22-07:26 (tracks/CORE/briefs, contracts); core and engine slices… | 207k | 2026-11-07 07:37 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | NEW | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); scout wf_4b21626d-e18; slot 1; worktree cut 07:21 at… |
-| `engine` | CORE | 1 |  | slot 2 | NEW | GRANTED 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts); scout wf_7ceb0dd2-585; slot 2; worktree cut 07:21 at 655516d; slice U-05 |
-| `actions-sos` | CORE | 1 | yes | slot ? | NEW | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; scout wf_bd6b7205-030; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error (read the… |
-| `learn` | CORE | 1 |  | slot ? | NEW | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; scout wf_9b3634ad-c4d; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error: idle until… |
-| `tests-docs` | CORE | 1 |  | - | NEW | scout wf_59642865-7f0; no slot yet; U-34 needs core's U-01 merged |
+| `core` | CORE | 1 | yes | slot 1 | READY-SLICE | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); merging now; U-01 (one commit on build/core); check… |
+| `engine` | CORE | 1 |  | slot 2 | BUILDING | GRANTED 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write… |
+| `actions-sos` | CORE | 1 | yes | slot ? | SCOUTED | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built… |
+| `learn` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice… |
+| `tests-docs` | CORE | 1 |  | - | SCOUTED | brief 13.7 KB; no slot yet; slice U-34 needs core's U-01 merged |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
 | `workbook-settings` | SCREENS | 1 |  | - | NEW | tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js, src/ui-workbook.js, src/ui-plan.js |
 | `actions` | SCREENS | 2 |  | - | NEW | tier 2; slice U-22; files offline/src/ui-actions.js, src/ui-practices.js; starts only when no tier 1 lane waits for a slot |
 | `game-tutorials` | SCREENS | 2 |  | - | NEW | tier 2; slice U-27; files offline/src/ui-game.js, src/ui-guidance.js, src/ui-tools.js; starts only when no tier 1 lane waits for a slot |
 | `content` | SCREENS | 1 |  | - | NEW | tier 1 (U-31a) then tier 2; slice U-31a; files offline/src/content-lessons-b.js, content-lessons-c.js, content-exercises.js, content-practices.js… |
 
-Slots allowed: 2 (the lowest of the last three samples at 07:20 is 5.7 GB (07:11 5.7, 07:15 7.6, 07:17 5.7): (5.7 - 4.0 floor) / 0.7 = 2; SCREENS's 1.5 GB is judged by the TRACKS-ALLOWED rule, not reserved here; re-sampled every ten minutes in lane-widening.md; slots 3 and 4 are re-granted the moment the lowest of the last three samples reaches 6.1 GB / 6.8 GB; under 4.0 GB free the newest lane pauses at its next commit). Granted: 4 lanes (`core` slot 1, `engine` slot 2, `actions-sos` slot ?, `learn` slot ?).
+Slots allowed: 2 (held at 2; the lowest of the last three rows at 07:38 is 3.4 GB, under the floor, so no grant moves; MEASURED: the two running slices took the free memory from 9.7 GB (07:25, no builder) to 3.4 (07:36, two builders and a checker), about 3 GB per running lane, not the 0.7 GB of the formula; slots 3 and 4 are re-granted only when a row shows at least 4.0 + 3.0 GB per lane to add; under 4.0 GB the newest lane pauses at its next commit). Granted: 4 lanes (`core` slot 1, `engine` slot 2, `actions-sos` slot ?, `learn` slot ?).
 
 ## Merges
+
+- merging now: core READY-SLICE 8bf7b5c (U-01) since 07:38
+- the merge queue: core 8bf7b5c (being merged)
 
 (none yet; the queue is empty)
 
@@ -55,7 +58,7 @@ Slots allowed: 2 (the lowest of the last three samples at 07:20 is 5.7 GB (07:11
 
 ## Machine
 
-- Free memory 7.6 GB of 31.8 GB at 2026-11-07 07:15 IST; claude 21, node 48 processes; 5 slots by the rule (lane-widening.md).
+- Free memory 3.4 GB of 31.8 GB at 2026-11-07 07:36 IST; claude 25, node 58 processes; 0 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: CORE a29cd9a2 at 2026-11-07 07:15.
 
 ## Files of the build

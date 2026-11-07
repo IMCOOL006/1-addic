@@ -1,19 +1,24 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024); CORE chat a29cd9a2 started 07:15 and is scouting; no lane cut yet; no merge in flight; nothing of the HUB's runs detached
+STATE: INTEGRATING   # 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB): engine pauses at its next commit; core's second slice (launched 07:40) runs
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 655516dc (the trunk build/offline-v1 at BASE-READY: offline-plan's 1acf406 plus the two S-00 commits; base worktree C:\Users\ruchi\1-addic-wt\_base, read-only; integration worktree C:\Users\ruchi\1-addic-wt\_int, detached between merges)
-SLOTS-ALLOWED: 2 (the lowest of the last three samples at 07:20 is 5.7 GB (07:11 5.7, 07:15 7.6, 07:17 5.7): (5.7 - 4.0 floor) / 0.7 = 2; SCREENS's 1.5 GB is judged by the TRACKS-ALLOWED rule, not reserved here; re-sampled every ten minutes in lane-widening.md; slots 3 and 4 are re-granted the moment the lowest of the last three samples reaches 6.1 GB / 6.8 GB; under 4.0 GB free the newest lane pauses at its next commit)
+SLOTS-ALLOWED: 2 (held at 2; the lowest of the last three rows at 07:38 is 3.4 GB, under the floor, so no grant moves; MEASURED: the two running slices took the free memory from 9.7 GB (07:25, no builder) to 3.4 (07:36, two builders and a checker), about 3 GB per running lane, not the 0.7 GB of the formula; slots 3 and 4 are re-granted only when a row shows at least 4.0 + 3.0 GB per lane to add; under 4.0 GB the newest lane pauses at its next commit)
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
-SLOTS: engine slot=2 granted 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts)
+SLOTS: engine slot=2 granted 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write the hand-off note, start no new unit until this line says granted again; the HUB re-samples every five minutes while under the floor
 SLOTS: actions-sos slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1, flagged; next in line when memory allows)
 SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1; after actions-sos)
-MERGING: none
-MERGE-QUEUE: (empty)
+MERGING: core READY-SLICE 8bf7b5c (U-01) since 07:38
+MERGE-QUEUE: core 8bf7b5c (being merged)
 MERGED: (none yet)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 07:25 IST
+UPDATED: 2026-11-07 07:38 IST
+
+# 2026-11-07 07:38 · the first READY-SLICE, and the floor
+
+- core READY-SLICE 8bf7b5c (U-01: build.mjs, shell.html, styles.css, boot.js, package.json, the built file 103409 B) at 07:36; check PASS; guards RED only on the 15 screen-lane tour-target names (baselined by name below in baselines.md once the merge's own gates name them). Merge started 07:38.
+- Memory rows 07:36 3.4 GB (the launcher), by hand 07:36 3.2, 07:37 3.1, 07:37 2.4: under the 4.0 GB floor. Rule applied: the newest lane (engine, slot 2) pauses at its next commit (R-H-5). core's second slice [U-03, U-02] (CORE's run wf_d2230fda, 07:40) is the chain's head and runs. Measured cost about 3 GB per running lane; the HUB grants from that measurement, not from the 0.7 GB of the formula (the GOAL: slots from measured free memory).
 
 # 2026-11-07 07:20 · HUB session 2 (874b2463-96d1-45f0-9d4a-ec8c1816634f, started by the launcher at 07:15) resumes
 
