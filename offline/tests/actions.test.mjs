@@ -1574,5 +1574,18 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     const date = root.querySelectorAll('input').find((i) => i.attrs.type === 'date');
     assert.match(String(date.attrs.max), /^\d{4}-\d{2}-\d{2}$/, 'the input has a max');
   });
+  test('REACH: the slip flow shows Reach out', async () => {
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-reading');
+    d.tapId(root, 'sos-slip-safe');
+    const atPeople = () => root.textContent.includes(W.reach.title) || root.textContent.includes(W.call.title);
+    for (let k = 0; k < 4 && !atPeople(); k += 1) d.tap(root, 'Continue');
+    assert.ok(root.textContent.includes(W.reach.title), 'Reach out');
+    assert.ok(root.textContent.includes(W.reach.line));
+    assert.ok(!root.textContent.includes(W.call.title), 'not the craving words');
+  });
   // -- FIX-ONB-EMO tests end --
 });

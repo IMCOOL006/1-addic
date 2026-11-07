@@ -482,8 +482,9 @@
     return box;
   }
 
-  function contactsView(c, drill, onDone) {
+  function contactsView(c, drill, onDone, words) {
     const A = c.A;
+    const w = words || COPY.call; // the slip flow says Reach out
     const people = drill || isLockedNow() ? [] : activeContacts(c.view);
     const groups = meetingsFrom(Cn());
     const reached = (id, how) => { if (!drill && A && A.contacts && A.contacts.reached) save(() => A.contacts.reached(id, how)); };
@@ -494,7 +495,7 @@
         h('a', { class: 'btn ghost', href: 'sms:' + telHref(p.phone).slice(4), text: 'Text', style: { width: 'auto' }, onClick: () => reached(p.id, 'text') }))))))
       : null;
     return h('div', { class: 'stack' },
-      screen(COPY.call.title, drill ? COPY.call.drill : people.length ? COPY.call.line : COPY.call.none, list),
+      screen(w.title, drill ? COPY.call.drill : people.length ? w.line : COPY.call.none, list),
       groups.length ? h('details', { class: 'card' }, h('summary', { text: COPY.meetings.title, style: { minHeight: '44px' } }),
         h('ul', { class: 'sos-list' }, groups.map((g) => h('li', { class: 'row' }, h('span', { text: g.name }),
           g.url ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy link', style: { width: 'auto' }, onClick: () => copyText(g.url) }) : null,
@@ -744,7 +745,7 @@
       paint();
     }
 
-    function reach() { show(contactsView(c, mode.preview, nextSteps)); }
+    function reach() { show(contactsView(c, mode.preview, nextSteps, COPY.reach)); }
 
     function nextSteps() {
       let adding = false;
