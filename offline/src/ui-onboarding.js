@@ -432,11 +432,17 @@
   }
 
   UI.onboardingHelpers = O;
-  // On ui:route (no change to ui-core): only #/ or #/today, only a new person, never while locked, once.
-  safe(() => document.addEventListener('ui:route', (ev) => {
+  // On ui:route (no change to ui-core): only #/ or #/today, only a new person, never while locked, once. ui-core may
+  // draw Today before a slow Store.load ends (its 4 s fallback), when everyone reads as new: so the rule waits for the
+  // load (Store.load is idempotent), then asks again on the route the person is on now (never out of SOS).
+  safe(() => document.addEventListener('ui:route', async (ev) => {
     if (sentOnce || !shouldOnboard(ev && ev.detail, getStore())) return;
+    const S = getStore();
+    if (S && typeof S.load === 'function') { try { await S.load(); } catch (err) { return; } }
+    const now = safe(() => (typeof UI.route === 'function' ? UI.route() : null), null) || (ev && ev.detail);
+    if (sentOnce || !shouldOnboard(now, getStore())) return;
     sentOnce = true;
-    UI.go('#/onboarding', { replace: true });
+    safe(() => UI.go('#/onboarding', { replace: true }), null);
   }), null);
   if (UI.pages) {
     UI.pages.lock = lockPage;

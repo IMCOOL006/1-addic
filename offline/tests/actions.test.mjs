@@ -964,7 +964,7 @@ function sosDom(opts) {
   const doc = { body, createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
     addEventListener: (t, fn) => { (docOn[t] = docOn[t] || []).push(fn); } };
   const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto,
-    setInterval: () => 0, clearInterval: () => {}, setTimeout, Content: C(), Store: S(), module: { exports: {} } });
+    setInterval: () => 0, clearInterval: () => {}, setTimeout, Content: C(), Store: o.store || S(), module: { exports: {} } });
   vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
   if (o.onboarding) vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
   const byId = (root, id) => {
@@ -1441,14 +1441,17 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.equal(O.shouldOnboard(route('/today'), S()), true);
     d.fire('ui:route', route('/sos'));
     d.fire('ui:route', route('/lock'));
+    await d.settle();
     assert.deepEqual(d.go, [], 'never from SOS or the lock');
     d.fire('ui:route', route('/today'));
     d.fire('ui:route', route('/'));
+    await d.settle();
     assert.deepEqual(d.go, ['#/onboarding'], 'once');
     assert.deepEqual(d.replaced, ['#/onboarding'], 'with replace');
     const seen = sosDom({ onboarding: true });
     seen.onb({});
     seen.fire('ui:route', route('/today'));
+    await seen.settle();
     assert.deepEqual(seen.go, [], 'a person who has seen onboarding in this visit is not sent back');
     await Actions.onboard({ name: 'Asha' });
     assert.equal(O.shouldOnboard(route('/today'), S()), false, 'onboarded: never');
@@ -1456,6 +1459,51 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     await S().lock.set('2468');
     S().lock.lockNow();
     assert.equal(O.shouldOnboard(route('/'), S()), false, 'locked: never');
+  });
+  test('REDIRECT (slow load): ui-core may draw Today before Store.load ends; the rule waits for the load, then asks again on the route the person is on now', async () => {
+    const real = S();
+    let loaded = false;
+    let gate = null;
+    let open = null;
+    const fresh = () => { loaded = false; gate = null; };
+    const slow = Object.assign(Object.create(real), {
+      load: () => gate || (gate = new Promise((r) => { open = r; }).then(() => { loaded = true; })), // idempotent, as Store.load is
+      view: { get: (s, id) => (loaded ? real.view.get(s, id) : null), list: (s) => (loaded ? real.view.list(s) : []), count: (s) => (loaded ? real.view.count(s) : 0) },
+      status: () => real.status(),
+    });
+    const at = (d, p) => { d.UI.route = () => route(p); };
+    // a returning person, drawn on Today before the load ends: never sent to onboarding
+    await Actions.onboard({ name: 'Asha' });
+    const back = sosDom({ onboarding: true, store: slow });
+    at(back, '/today');
+    back.fire('ui:route', route('/today'));
+    await back.settle();
+    assert.deepEqual(back.go, [], 'nothing is decided before the load ends');
+    open();
+    await back.settle();
+    assert.deepEqual(back.go, [], 'a returning person is never sent to onboarding');
+    // a new person who taps SOS while the load runs: never pulled out of SOS
+    await S().resetAll();
+    fresh();
+    const sos = sosDom({ onboarding: true, store: slow });
+    at(sos, '/today');
+    sos.fire('ui:route', route('/today'));
+    at(sos, '/sos/craving');
+    open();
+    await sos.settle();
+    assert.deepEqual(sos.go, [], 'moved to SOS meanwhile: stays in SOS');
+    // a new person who stays on Today: sent once, with replace, after the load
+    fresh();
+    const stay = sosDom({ onboarding: true, store: slow });
+    at(stay, '/today');
+    stay.fire('ui:route', route('/today'));
+    stay.fire('ui:route', route('/today'));
+    await stay.settle();
+    assert.deepEqual(stay.go, [], 'not before the load');
+    open();
+    await stay.settle();
+    assert.deepEqual(stay.replaced, ['#/onboarding'], 'once, with replace, after the load');
+    assert.deepEqual(stay.go, ['#/onboarding']);
   });
   test('EMO: sosSession keeps an optional emotion, rated or not; without one the log has none; an unknown one is refused', async () => {
     const id = C().emotions.find((e) => e && e.crisisCheck !== true && e.id !== 'other').id;
