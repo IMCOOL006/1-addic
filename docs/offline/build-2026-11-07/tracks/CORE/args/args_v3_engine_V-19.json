@@ -1,0 +1,62 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-roadmap.test.mjs",
+  "offline/tests/engine-insights.test.mjs",
+  "offline/tests/engine-data.test.mjs",
+  "offline/tests/engine-warning-item.test.mjs",
+  "offline/tests/engine-questline.test.mjs"
+ ],
+ "units": [
+  "V-40",
+  "V-40b",
+  "V-40c",
+  "V-19",
+  "V-30"
+ ],
+ "batches": [
+  [
+   "V-40",
+   "V-40b",
+   "V-40c"
+  ],
+  [
+   "V-19",
+   "V-30"
+  ]
+ ],
+ "unitTier": {
+  "V-40": 1,
+  "V-19": 2,
+  "V-30": 2
+ },
+ "unitNotes": {
+  "V-19": "FIX-SPIRAL-OWN (0.5 h, V3-19): each spiral reply pair carries own: boolean; engine.js:719-729 fills an empty reply from catalogs.slipSelfTalk with own:false; the person's reply own:true; SOS (ui-sos.js, actions-sos) may then say 'a line to try' instead of 'you wrote'; a test per branch. Tell actions-sos by outbox.",
+  "V-30": "Export tutorialDone (0.2 h): ui-guidance.js:132 calls E.tutorialDone behind a typeof guard but engine.js exports only tour/drill wrappers (engine.js:611-623, the export list 1495-1505); export tutorialDone(view, id, allowSkipped) so the guidance uses the engine's rule; a test that it agrees with the wrappers."
+ },
+ "laneNote": "V-40 is tier 1 and the slice (R-O-6, 03:03); V-19 and V-30 are tier 2 after it. On the content contract until V-42 merges. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 12's word (2026-11-08 05:07 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/engine/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E",
+  "V-40",
+  "V-40b",
+  "V-40c"
+ ],
+ "base": "f69bc68a",
+ "session": "51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb",
+ "now": "2026-11-08 05:07 IST",
+ "diffFrom": "4330d9f",
+ "slot": 2,
+ "sliceRun": false,
+ "priorNote": "Line numbers in the V-19 and V-30 notes are from before V-40: find by name. V-19: grep -n 'function spiralThoughts' offline/src/engine.js; add own: boolean per pair (ruled 02:24 in contracts/engine.md); one test per branch in offline/tests/logic.test.mjs. V-30: add tutorialDone to the return block at the end of engine.js (after makeView, STORES and the V-40 lines); test it agrees with explorer() items tour (allowSkipped false) and drill (true) for a row, an event, a skipped event and nothing. Leave growthWalk, ROUTE_PATHS and the V-40 block alone. Before you: V-40c READY 4330d9f, merged 94c51632 (your merge base 4330d9f). offline/1-addic.html in the worktree is the gates' rebuild: never commit it. After V-19, the SOS copy change is actions-sos's: put one request line in your note, do not edit ui-sos.js.\n"
+}

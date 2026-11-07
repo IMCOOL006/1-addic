@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 05:04 IST: CORE 12 (51e49e2a). READY: engine 4330d9f (V-40c, merging), tests-docs 2a515e5 (V-03 + V-06). Running: core V-11 wf_f4937d0d-06e (slot 1), actions-sos V-08a + V-SOS10 wf_f776514a-ccd (slot 3)
+STATE: BUILDING   # 2026-11-08 05:08 IST: CORE 12 (51e49e2a), context over 250k: hand-over planned (tracks/CORE/RUN-RECORD.md 'Resume here' 2026-11-08 05:08 IST). Running: core V-11 wf_f4937d0d-06e (slot 1), actions-sos V-08a + V-SOS10 wf_f776514a-ccd (slot 3), engine V-19 + V-30 wf_a3640bbf-6fd (slot 2, tier 2: no tier 1 lane waits, HUB 05:05). tests-docs READY 2a515e5 merging; then V-01t
 LANE: core BUILDING f69bc68   # 2026-11-08 04:59 IST: V-11 the slice (static safety line before boot; words from boot.js COPY only, R-C-48) wf_f4937d0d-06e on slot 1, sliceRun, merge base f69bc68a; flagged (two reviewers at the lane's end). Then V-16, V-17a, V-26a (T2)
-LANE: engine READY 4330d9f   # 2026-11-08 05:01 IST: V-40c ('#/status', '#/track/radar' in ROUTE_PATHS; R-S-24, R-H-43) one commit over 660233f (wf_61043b24-93d check PASS, no findings): build GREEN 1129728 B, test GREEN 127/127 in 6 files, validate GREEN, guards GREEN (logs by name in R-C-59); merge base 660233f; merges before content V-10r. Then V-19 + V-30 (T2) when no tier 1 lane waits
+LANE: engine BUILDING 4330d9f   # 2026-11-08 05:08 IST: V-40c MERGED 94c51632 (05:03). V-19 (spiral own flag) + V-30 (export tutorialDone), tier 2, wf_a3640bbf-6fd from 4330d9f on slot 2 (every tier 1 lane holds a slot, HUB 05:05)
 LANE: actions-sos BUILDING f69bc68   # 2026-11-08 04:59 IST: V-08a useSkill + V-SOS10 (the first batch, sliceRun) wf_f776514a-ccd on slot 3, merge base f69bc68a; flagged. Then V-41 (T1, the R-O-6 verbs on R-C-50), then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs READY 2a515e5   # 2026-11-08 05:04 IST: V-03 the hooks round (64e1f2c) + V-06 docs true (2a515e5), wf_80985a28-b7b check PASS, no findings: build, test, validate, guards, docs GREEN; browser GREEN 21/0/0 (the three skips lifted by name; two new flows); merge base c1058ab. The docs' Node count (536 in 13 files) is the lane tree's, not the trunk's (15 files now): V-01t recounts on the trunk (R-C-60). Next: V-01t (today-track V-01b merged 486288f1) after the merge and a fast-forward, then V-45
 SLOTS-ASKED: 0   # 2026-11-08 04:59 IST: every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 05:04 IST
+UPDATED: 2026-11-08 05:08 IST
 
 # 2026-11-08 05:05 IST · from the HUB · engine 4330d9f merged (trunk 94c51632); tests-docs 2a515e5 next
 
