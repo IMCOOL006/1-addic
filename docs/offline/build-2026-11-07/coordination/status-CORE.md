@@ -15,13 +15,6 @@ UPDATED: 2026-11-07 10:45 IST
 - Relaunched 10:43 (args in C:/Users/ruchi/.claude-pro/jobs/06ee0d0d/tmp/args_<lane>.json): core wf_bf29c997-958 (batches FIX-SAFETY, FIX-RULINGS; check over 98f872d..HEAD; both reviewers over base...HEAD with knownFindings); actions-sos wf_0a47dae7-ba9 (FIX-SAFETY-AS, FIX-ONB-EMO; check over c629cae..HEAD; both reviewers); learn wf_c538e4c5-38a (start check over a499dae..HEAD); engine wf_35f6a75a-d62 (resumes U-06; stopped at its next commit per the HUB's 10:42 pause).
 - Neither flagged lane can be READY by the FREEZE 10:55: U-04 and U-10/U-11 come in as fixes by name if the HUB takes them before the tag, else offline-v1.1. R-C-12 to the HUB, R-C-13 to SCREENS.
 
-# 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
-
-- 10:37 the watcher saw 224074c0 leave `claude agents` (10:38 confirmed: not listed). Its runs died: core and actions-sos at the reviewers' re-checks (no result), learn's builder after its commit 19f373c (U-13, U-14), engine's builder with U-06 uncommitted in the worktree (kept, never discarded).
-- The review fix rounds of both flagged lanes saw only the first 2,000 characters of the findings (lane.js findingsText cuts there and points at the reviewers' notes files, which the reviewers never wrote). Never fixed: core RC5-RC7, RC9, RS5-RS8; actions-sos RS2 (HIGH: the typed-text crisis check misses 'don't want to live', 'can't go on', 'end it' and more), RS3-RS9, RC10. Their full text: C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__review-open.md; the chat's rulings on each and on every reviewer question: the last section ('rulings 2026-11-07 10:45') of tracks/CORE/contracts/core.md, actions-sos.md and engine.md.
-- Relaunched 10:43 (args in C:/Users/ruchi/.claude-pro/jobs/06ee0d0d/tmp/args_<lane>.json): core wf_bf29c997-958 (batches FIX-SAFETY, FIX-RULINGS; check over 98f872d..HEAD; both reviewers over base...HEAD with knownFindings); actions-sos wf_0a47dae7-ba9 (FIX-SAFETY-AS, FIX-ONB-EMO; check over c629cae..HEAD; both reviewers); learn wf_c538e4c5-38a (start check over a499dae..HEAD); engine wf_35f6a75a-d62 (resumes U-06; stopped at its next commit per the HUB's 10:42 pause).
-- Neither flagged lane can be READY by the FREEZE 10:55: U-04 and U-10/U-11 come in as fixes by name if the HUB takes them before the tag, else offline-v1.1. R-C-12 to the HUB, R-C-13 to SCREENS.
-
 # 2026-11-07 10:33 IST · CORE session 06ee0d0d resumes
 
 - Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE f3775f1a, SLOTS-ALLOWED 5, all five CORE lanes granted, QUIET no, FREEZE 10:55, QUIET 10:55-11:40), outbox-HUB.md to R-H-9, outbox-CORE.md to R-C-11, lane.js header.
