@@ -1,7 +1,7 @@
 ## learn (CORE, 1-addic offline build): the slice report
 
-State: READY. Branch build/learn, base 655516dc, tip 4f5832f. Run time 2026-11-07 10:41 IST (continued from a499dae; earlier slice run 09:51 IST was READY-SLICE at a499dae).
-Commits (655516dc..HEAD): 4f5832f test(learn, FIX-RS4): open an id outside Content.exercises for the missing-exercise check; 19f373c feat(learn U-13, U-14): lesson player, checkpoint, roadmap and glossary; dc248cb fix(learn C2, U-12): module.exports carries the pure functions only; 9bbccd2 fix(learn C1, U-12): crisis check accepts true or a non-empty word list; a499dae feat(learn U-12): exercise engine and the #/dev/fields gallery.
+State: READY. Branch build/learn, base 655516dc, tip 75eb8e5. Run time 2026-11-07 19:00 IST (continued from 4f5832f; built FIX-RS9; earlier runs 10:41 and 16:36, slice run 09:51 READY-SLICE at a499dae).
+Commits (655516dc..HEAD): 75eb8e5 test(learn, FIX-RS9): derive map and coming-stop checks from Content.modules; 4f5832f test(learn, FIX-RS4): open an id outside Content.exercises for the missing-exercise check; 19f373c feat(learn U-13, U-14): lesson player, checkpoint, roadmap and glossary; dc248cb fix(learn C2, U-12): module.exports carries the pure functions only; 9bbccd2 fix(learn C1, U-12): crisis check accepts true or a non-empty word list; a499dae feat(learn U-12): exercise engine and the #/dev/fields gallery.
 Builders' record: C:/Users/ruchi/1-addic-wt/_logs/reports/learn/learn__units.md
 
 ### Turn caps
@@ -10,6 +10,7 @@ Builders' record: C:/Users/ruchi/1-addic-wt/_logs/reports/learn/learn__units.md
 
 ### Turn caps
 - Run 2026-11-07 10:41: no builder batch this run (it built nothing). The earlier run's builder wrote U-13/U-14 in 19f373c; its session died at 10:37 before a hand-off note. capHits: 0.
+- 2026-11-07 19:00 run: builder batch [FIX-RS9]: steps_used 9, returned a note. capHits: 0.
 
 ### Units
 - 2026-11-07 10:41 run: U-12 (a499dae, merged 10:18 as 4618e43c) with fixes C1 9bbccd2 and C2 dc248cb; U-13 and U-14 (19f373c, tier 1, built by the earlier run, judged by this run's check). Held: none.
@@ -20,6 +21,7 @@ Builders' record: C:/Users/ruchi/1-addic-wt/_logs/reports/learn/learn__units.md
 - Held or blocked: none.
 - (Earlier, now built:) U-13 (offline/src/ui-learn.js: LearnUI.lessonSteps/checkResult/moduleProgress, UI.pages.lesson, UI.pages.learn checkpoint; try-it opens #/exercise/<id>?mode=tutorial&from=<lessonId>, and ExerciseUI returns to #/lesson/<from> after saving). U-14 (planWeeks, needsWelcomeBack, glossaryFilter, focusData, focusCard; #/learn map, plan and glossary pages; test "learn: nothing overdue" scanning every string).
 - 2026-11-07 16:36 run: FIX-RS4 (4f5832f, tier 1, test-only): offline/tests/learn.test.mjs:265 now opens 'not-an-exercise' instead of 'quick-reasons', since content U-31a makes quick-reasons a real exercise (R-S-4 (3), granted by R-H-21). No change for a person using the file. 28/28 pass on the branch and against trunk 9b319256 (ok 13). Closes R-S-4 (3). Held: none. U-12, U-13, U-14 unchanged.
+- 2026-11-07 19:00 run: FIX-RS9 (75eb8e5, tier 1, test-only): offline/tests/learn.test.mjs:425-429 and :541-547. The coming-stop checks now run on stub Content (m4 removed for mapData; globalThis.Content without m7 for the module page, restored in a finally), so content growth no longer breaks them. No change for a person using the file. 28/28 on the branch and on trunk c8dc6716 (before the fix, two tests named in R-S-9 failed). Closes R-S-9. Held: none. U-12, U-13, U-14, FIX-RS4 unchanged.
 
 ### Contract changes
 2026-11-07 10:41: ExerciseUI.crisisCheck accepts true or a non-empty word list (C1); module.exports carries ExerciseUI.PURE only (C2). New file offline/src/ui-learn.js: LearnUI (lessonSteps, checkResult, moduleProgress, planWeeks, needsWelcomeBack, glossaryFilter, focusData, focusCard); UI.pages.lesson, UI.pages.learn (map, ?checkpoint=1, /plan, /glossary). Try-it opens #/exercise/<id>?mode=tutorial&from=<lessonId>. Needs Actions.completeLesson, checkpoint, onboard, todos.add; Engine.roadmap optional. Build chat: record in tracks/CORE/contracts/learn.md.
@@ -30,6 +32,7 @@ All in offline/src/ui-exercise.js. Consumer: none yet (U-13 will use them), unle
 - Routes/UI.pages: UI.pages.exercise (#/exercise/<id>?mode=&from=), UI.pages.dev (#/dev/fields only). No new content keys, no data-tour targets.
 - The build chat must record these (extras, null/'' empties, hooks, trigger id format) in tracks/CORE/contracts/learn.md.
 2026-11-07 16:36: none (FIX-RS4 is test-only).
+2026-11-07 19:00: none (FIX-RS9 is test-only).
 
 ### Gates
 2026-11-07 10:41 run (diff a499dae..19f373c):
@@ -57,10 +60,18 @@ VERIFIED:
 - Territory 655516dc..HEAD: 3 files, all own; 0 shared, 0 nobody's, 0 errors, 0 warnings. After 19f373c only learn.test.mjs changed.
 ASSUMED:
 - build SKIP (no build.mjs): build-20261107-164039.log; validate SKIP (no engine.js): validate-20261107-164042.log. Browser gate not run. Full Node suite on merged tree not run.
+2026-11-07 19:00 run (diff 4f5832f..75eb8e5):
+VERIFIED:
+- test GREEN 28/28: C:/Users/ruchi/1-addic-wt/_logs/gates/learn/test-20261107-190438.log (builder: test-20261107-190250.log); against trunk c8dc6716 content 28/28: _logs/reports/learn/learn__FIX-RS9.trunk.log (builder's log, read not re-run)
+- guards RED, no new name: same 21 tour-target names; 15 baselined (lifted on trunk 49f1c1d4), 6 nav-*/sos-button fail as the branch has no shell.html/ui-core.js (R-H-21): guards-20261107-190441.log
+- Territory 655516dc..HEAD: 3 files, all own; 0 shared, 0 nobody's, 0 errors, 0 warnings. FIX-RS9 changed only learn.test.mjs.
+ASSUMED:
+- build SKIP (no build.mjs): build-20261107-190438.log; validate SKIP (no engine.js): validate-20261107-190441.log; csp, theme-parity skipped. Browser gate not run.
 
 ### Review gates
 None.
 2026-11-07 16:36: not flagged; no reviewers run; 0 open review findings.
+2026-11-07 19:00: not flagged; no reviewers run; 0 open review findings.
 
 ### Check
 2026-11-07 10:41 run: verdict PASS at 19f373c. Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/learn/learn__check.md
@@ -75,16 +86,19 @@ Verdict PASS at a499dae.
 - C2 LOW, fix dc248cb (closed) (ui-exercise.js:957-971): exports the whole ExerciseUI including DOM functions, where the brief says pure only. Harmless. Fix: none; open, optional.
 Not checked: browser gate; smoke run read, not re-run (22 px checkboxes sit inside 44 px trunk .choice rows with clickable labels; the hidden urgent link is 0x0).
 2026-11-07 16:36 run: verdict PASS at 4f5832f (judged 19f373c..HEAD). Findings: none new. Open from before: C3, C4 (LOW, no fix, unchanged). Not checked: browser gate; U-12/13/14 acceptance not re-judged; no brief section names FIX-RS4, judged against R-S-4 (3) in outbox-SCREENS.md:26.
+2026-11-07 19:00 run: verdict PASS at 75eb8e5 (judged 4f5832f..HEAD). Findings: none new. FIX-RS9 present; both tests can still fail if mapData or learnPage stop reading Content. Open from before: C3, C4 (LOW, no fix, unchanged). Not checked: browser gate; trunk 28/28 run is the builder's log, not re-run; U-12/13/14/FIX-RS4 not re-judged.
 
 ### Review
 2026-11-07 10:41: still not flagged; no reviewers run; 0 open review findings.
 Not a flagged lane: no reviewers run.
+2026-11-07 19:00: not flagged; no reviewers run; 0 open review findings.
 
 ### Safety and content marks
 2026-11-07 10:41: U-13/U-14 add no numbers or links beyond in-app routes; checkpoint has no pass mark or fail state; roadmap never shows behindWeeks. clinicalReview: the lesson/checkpoint/welcome-back wording in ui-learn.js:24-80 and the Skip on sensitive lessons.
 - clinicalReview: true: ExerciseUI.URGENT_LINE in offline/src/ui-exercise.js, the one-line urgent-help prompt. The clinical reviewer must check the wording and that it never blocks the save.
 - verify: true: none (no numbers or links; the link is in-app #/sos/urgent).
 2026-11-07 16:36: none new (test-only).
+2026-11-07 19:00: none new (test-only).
 
 ### Requests for other lanes
 - 2026-11-07 10:41: core: UI.h, UI.sheet, UI.speak, UI.go, plus a styles.css section for ln-* classes (44 px, focus). actions-sos: completeLesson, checkpoint, onboard, todos.add. engine: roadmap, lessonsDone, modulesDone.
@@ -92,6 +106,7 @@ Not a flagged lane: no reviewers run.
 - core (ui-core.js, U-03): provide UI.h, UI.svg, UI.toast, UI.go. ExerciseUI uses a local h fallback without UI and drops the bodymap figure (buttons stay).
 - actions-sos (U-09): Actions.saveResponse. engine (U-07): Engine.crisisKeywords returning a boolean.
 - 2026-11-07 16:36: none new. Engine's two R-S-4 names are engine's to fix.
+- 2026-11-07 19:00: none new.
 
 ### Docs owed
 - 2026-11-07 10:41: README file list: ui-learn.js; Guide: lessons, checkpoint, plan paces, glossary.
@@ -99,12 +114,14 @@ Not a flagged lane: no reviewers run.
 - Guide: exercise screens support 19 field types, drafts and tutorial/workbook modes.
 - CLAUDE.md: no lines owed.
 - 2026-11-07 16:36: none new.
+- 2026-11-07 19:00: none new.
 
 ### Open questions
 - 2026-11-07 10:41: C1, C2 closed. C3 (first-time-only XP on checkpoint), C4 (sheet fallback): default left as built.
 - C1 (accept array from crisisKeywords?): default built is boolean only.
 - C2 (export only pure functions?): default built is the whole object.
 - 2026-11-07 16:36: none new; FIX-RS4 closes R-S-4 (3).
+- 2026-11-07 19:00: none new; FIX-RS9 closes R-S-9.
 
 ### For the HUB at the merge
 - 2026-11-07 10:41: tip 19f373c; 3 own files, no shared, no package changes. After merge, confirm real Actions/Engine/UI integration, add ln-* CSS, re-run guards and browser tests.
@@ -112,3 +129,4 @@ Not a flagged lane: no reviewers run.
 - Territory warnings: none.
 - Run the lane smoke (_logs/reports/learn/learn_smoke/smoke.cjs, with LX_CHROME set to ms-playwright/chromium-1234) and the browser tests in the quiet window. After the merge, re-run guards: the 21 names should drop to the 15 baselined.
 - 2026-11-07 16:36: tip 4f5832f; FIX-RS4 is one test line, no src change, ready to merge. After merge guards should drop to the 15 baselined names.
+- 2026-11-07 19:00: tip 75eb8e5; FIX-RS9 is test-only (offline/tests/learn.test.mjs), no src change, ready to merge. Guards: 15 baselined names were lifted on trunk 49f1c1d4; the 6 nav-*/sos-button names clear once merged with the shell.

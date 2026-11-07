@@ -185,3 +185,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - core MERGED a3081f33 noted (core complete; slot 1 free).
 - actions-sos FIX-R6 wf_45f788de-56d launched 18:36 on the 18:35 row (7.8 GB): the tag-condition round, tier 1. Rows since: 6.2 (18:36), 3.7 (18:39), 5.3 (18:42), 3.6 (18:45).
 - Under 4.0 GB I read the pause order of your SLOTS-ALLOWED line with PLAN.md section 6 (tier 1 before tier 2): the tier 2 runs pause first (game-tutorials paused 18:41; the actions check next), and FIX-R6 runs on. Default: FIX-R6 continues; if you rule it the newest to pause, write it on the actions-sos SLOTS line and I stop it after its next commit and relaunch with done. learn FIX-RS9 and engine FIX-RS9E wait for 7.0 GB rows, one per row.
+
+## R-C-33 · 2026-11-07 19:08 IST · to HUB · learn READY 75eb8e5 (FIX-RS9: the two baselined learn names)
+
+- FIX-RS9, test-only, one file (offline/tests/learn.test.mjs, 12+/4-): 'learn: map progress from events' and 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' derive their expected values from Content.modules. Check PASS at 75eb8e5: test GREEN 28/28 (_logs/gates/learn/test-20261107-190438.log); guards the same names as the earlier report, none new. Verified by this chat: the fixed file against the trunk 5d0f8b1's content (git archive), 28/28, both names ok. Cut base 655516dc; the round's diff 4f5832f..75eb8e5. Its merge lifts the two learn names from baselines.md.
+- Running: actions-sos FIX-R6 (all five ids committed 42f5a9a..87030e3; the safety re-check now), engine FIX-RS9E wf_5b1d1a90-01f (launched 19:07 on the 19:06 row 8.3 GB).

@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 19:01 IST: CORE 60f08c84; two runs: actions-sos FIX-R6 wf_45f788de-56d (all five ids committed, 42f5a9a..87030e3; the safety re-check next) and learn FIX-RS9 wf_c7ba502a-591 (launched 19:00 on the 19:00 row 10.7 GB); engine FIX-RS9E at the next 7.0 GB row
+STATE: BUILDING   # 2026-11-07 19:08 IST: CORE 60f08c84; learn READY 75eb8e5 (FIX-RS9); running: actions-sos FIX-R6 wf_45f788de-56d (the safety re-check), engine FIX-RS9E wf_5b1d1a90-01f (launched 19:07 on the 19:06 row 8.3 GB)
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine MERGED 57153d3   # FIX-RS4 merged as 3720d119 (R-H-25); next: FIX-RS9E by name (x.item in recoveryPlanPrefill and ownWarningPlans; R-C-27), waiting for memory
+LANE: engine BUILDING 57153d3   # 2026-11-07 19:07 IST: FIX-RS9E wf_5b1d1a90-01f (x.item in recoveryPlanPrefill and ownWarningPlans, with a test); merged before at 57153d3 (3720d119)
 LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 19:01 IST: FIX-R6 wf_45f788de-56d: RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3 committed; the safety re-check next; READY when clean of HIGH and MEDIUM
-LANE: learn BUILDING 4f5832f   # 2026-11-07 19:00 IST: FIX-RS9 wf_c7ba502a-591 (test-only: learn.test.mjs :424, :538-539, the two baselined names); merged before at 4f5832f (cb0b427)
+LANE: learn READY 75eb8e5   # 2026-11-07 19:08 IST: FIX-RS9 (test-only, one file: learn.test.mjs; the two baselined names derive from Content.modules) wf_c7ba502a-591; check PASS at 75eb8e5 (test GREEN 28/28, _logs/gates/learn/test-20261107-190438.log); the CORE chat re-ran the file on the trunk 5d0f8b1's content: 28/28, both names ok; cut base 655516dc, round diff 4f5832f..75eb8e5; report lane-reports/learn.md (15462 B)
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
 SLOTS-ASKED: 3   # actions-sos slot 3 (FIX-R6 running), learn slot 9 (FIX-RS9), engine slot 2 (FIX-RS9E); core slot 1 free (merged a3081f33)
-UPDATED: 2026-11-07 19:01 IST
+UPDATED: 2026-11-07 19:08 IST
 
 # 2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
 
