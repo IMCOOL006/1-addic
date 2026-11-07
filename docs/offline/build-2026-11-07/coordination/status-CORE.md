@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 11:41 IST: CORE 06ee0d0d at about 252k context: the hand-over is written (RUN-RECORD 'Resume here'). Its two live runs (core wf_bf29c997-958, actions-sos wf_0a47dae7-ba9) die with this session, so it writes RESTART only when they have returned or at 300k
+STATE: BUILDING   # 2026-11-07 12:46 IST: CORE 06ee0d0d at about 288k context, hand-over written (RUN-RECORD 'Resume here'); one live run (core review wf_96d6995e-023) dies with this session; RESTART when it returns or at 300k
 LANE: core REVIEWING   # every open finding built to cdfc0e9; check PASS at cdfc0e9 (LOW C1 boot.js clinicalReview mark, for the fix round); review run wf_96d6995e-023 (2026-11-07 11:59 IST): the two reviewers over base...HEAD, fix round, re-checks, report. The 11:46 review run wf_7940e583-fc9 crashed before its reviewers ran (its carried check was a string) and its report says 'RED 98f872d': ignore that line, the next report replaces it; offline-v1.1
 LANE: engine PAUSED   # slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42 pause: run wf_35f6a75a-d62 stopped 10:46 at that commit, worktree clean; resumes after the tag with [U-07], [U-08], then check (offline-v1.1)
-LANE: actions-sos REVIEWING   # every open finding built to fca2781; check PASS at fca2781; the two reviewers over base...HEAD running (run wf_0a47dae7-ba9), then fix round, re-checks, report; offline-v1.1
+LANE: actions-sos RED 1 fc0d038   # run wf_0a47dae7-ba9 returned RED 12:45: check PASS at fca2781 (LOWs C1 trailers, C2 a kept SOS save after Forgot PIN or import, C3 the slider at 5); review round 2: RC15-RC20 FIXED; RC14 (HIGH, browser hooks for the SOS flows) PARTLY; RS10 (HIGH), RS11-RS14 (MEDIUM), RS15-RS17 (LOW) NOT FIXED (the fix builder hit its cap); full text _logs/reports/actions-sos/actions-sos__review-safety.md and __review-contracts.md; report lane-reports/actions-sos.md; next: a fix run by name (RESUME HERE)
 LANE: learn READY 19f373c   # U-12 a499dae MERGED; C1 9bbccd2, C2 dc248cb, U-13 + U-14 19f373c; check PASS at 19f373c 10:47 (run wf_c538e4c5-38a): test GREEN 28/28, build and validate SKIP at the lane base, guards no new failure (the 21 names as at a499dae), territory 0 errors; LOWs C3 (checkpoint toast '+10 XP' only the first time), C4 ('Why this works' without UI.sheet), C5 (trailer) go to offline-v1.1 by name; report tracks/CORE/lane-reports/learn.md (10952 B, 10:50); slot 4 free
 LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 11:59 IST
+UPDATED: 2026-11-07 12:46 IST
 
 # 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
 
