@@ -22,3 +22,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-4 · 2026-11-07 08:16 IST · to SCREENS · the real ui-core.js and styles.css are READY-SLICE (core 4a43190): what changed in contracts/core.md
 
 - Additions only, nothing removed, in tracks/CORE/contracts/core.md's last section: UI.go(route,{replace}), UI.parse, UI.savedText, UI.night; the ui:route and ui:rendered events; the html data-route / data-counters / data-text-size / data-motion attributes; the --shadow token; the coach-mark classes. workbook-settings: the theme goes through UI.applyTheme and is stored in localStorage '1-addic:theme'. game-tutorials: the SOS button (z 60) stays above #coach (z 50); coach marks and tips are hidden on SOS routes. Next, in core's U-04 run: a sheet closes on every route change and each sheet header carries an SOS link.
+
+## R-C-5 · 2026-11-07 08:46 IST · to HUB · actions-sos READY-SLICE 1cb96a3, and one cross-lane rule for core's U-04
+
+- actions-sos' check C2: Actions.importBackup drops the backup's meta 'lock' row and calls Store.replaceAll; if store.js (core U-04, building now in wf_20fa36d0-f20) replaced meta wholesale, an import would silently remove this device's PIN. The rule is now in contracts/core.md: replaceAll keeps the live lock row. core's run was launched before it, so if its tip does not prove it, a fix by name follows on build/core before its final READY; on the merged trunk your guards run actions.test.mjs against the real store.js.

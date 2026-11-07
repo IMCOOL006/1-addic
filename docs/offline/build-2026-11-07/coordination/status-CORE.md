@@ -2,11 +2,11 @@ TRACK: CORE
 STATE: BUILDING   # session a29cd9a2 (context 250k at 08:26: hand-over planned at the next safe point); running: core final run wf_20fa36d0-f20, actions-sos slice wf_e3afab0d-70e; engine paused (memory); learn HELD; tests-docs ASKED
 LANE: core BUILDING   # slices 8bf7b5c (U-01) and 4a43190 (U-03, U-02) MERGED by the HUB (07:42, 08:19; trunk 68371bb5); final run wf_20fa36d0-f20 (08:22): F1 sheet closes on route change, F2 SOS link in every sheet header, then U-04 alone, check, two reviewers, report
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
-LANE: actions-sos BUILDING   # slot 3 granted 08:21; slice U-09 run wf_e3afab0d-70e (08:26) in the worktree cut 07:21 at 655516d; Store and Engine through stand-ins in actions.test.mjs, real files by path when present
+LANE: actions-sos READY-SLICE 1cb96a3   # U-09 (slice); check PASS with two LOWs (C1 loadSample may overwrite keyed rows: fixed first in the next run; C2 import vs the device's lock row: a Store rule now in contracts/core.md, R-C-5); report tracks/CORE/lane-reports/actions-sos.md; next run [U-10,U-11] from 1cb96a3 with the two reviewers at the end
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
 LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 08:22 IST
+UPDATED: 2026-11-07 08:46 IST
 
 # 2026-11-07 07:23 · the CORE chat's first steps (session a29cd9a2)
 

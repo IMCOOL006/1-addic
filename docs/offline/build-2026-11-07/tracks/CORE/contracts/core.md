@@ -47,3 +47,7 @@ Variables (HSL triplets, used as hsl(var(--x))), identical in light and dark: --
 - **Theme (workbook-settings):** call `UI.applyTheme('light'|'dark'|'system')`; the theme of record is localStorage '1-addic:theme' (ui-core does not read settings.theme). ui-core reads settings.discreet, calm, counters, textSize and reducedMotion on each render and store change.
 - **Coach marks (game-tutorials):** the SOS button is at z-index 60 above #coach at 50; popovers never cover it. On SOS routes ui-core empties and hides #coach and CSS hides .tip, .dot and coach marks.
 - **Coming in core's U-04 run (the chat's ruling 2026-11-07 08:16 IST):** an open sheet closes whenever the route changes, and every sheet's header carries its own SOS link (one tap to SOS from anywhere, even with a modal open).
+
+## Rule added by the CORE chat 2026-11-07 08:46 IST (from actions-sos' check C2 at 1cb96a3)
+
+- `Store.replaceAll(obj)` (import) keeps the live `meta` 'lock' row of this device: an import never removes, replaces or changes the PIN; `Actions.importBackup` already drops any 'lock' row from the backup before calling it. A test in store.test.mjs proves it (import with a lock set: still locked with the same PIN after).
