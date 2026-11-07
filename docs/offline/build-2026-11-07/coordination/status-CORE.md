@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # 2026-11-07 15:23 IST: core READY 957f333 and engine READY 227a07a for the HUB; actions-sos wf_b38141d2-651 live (FIX-R2-REST, then check and re-check)
-LANE: core READY 957f333   # 2026-11-07 15:20 IST: run wf_019fc9eb-a81: RC10 3caf5bb, RC11 034a180, RC12 468a93c, RS18 957f333, each FIXED on its finder's re-check; openCheck 0, openReview 0; check PASS at cdfc0e9 (carried); 3 LOW + 2 questions from the re-check ruled for offline-v1.1 by name (contracts/core.md, last section); report lane-reports/core.md (18929 B); cut base 655516dc
+LANE: core MERGED 957f333   # merged 15:29 as d4eed2a (trunk c3559b32); 2026-11-07 15:20 IST: run wf_019fc9eb-a81: RC10 3caf5bb, RC11 034a180, RC12 468a93c, RS18 957f333, each FIXED on its finder's re-check; openCheck 0, openReview 0; check PASS at cdfc0e9 (carried); 3 LOW + 2 questions from the re-check ruled for offline-v1.1 by name (contracts/core.md, last section); report lane-reports/core.md (18929 B); cut base 655516dc
 LANE: engine READY 227a07a   # 2026-11-07 15:23 IST: run wf_1a61a797-f39: R-sample/R-outcome b14c9a0, U-07 f269942, U-08 227a07a; check PASS over 04fc0c1..227a07a (C1, U-06, U-07, U-08) with LOWs C3 (the quoted-noun exemption in validateContent: ruled, R-C-18 to SCREENS) and C4 (contract lines: written into contracts/engine.md); report lane-reports/engine.md (12636 B); cut base 655516dc
 LANE: actions-sos BUILDING fc0d038   # 2026-11-07 14:25 IST: fix run wf_b38141d2-651: builders FIX-R2-SAFETY (RS10-RS14) then FIX-R2-REST (RS15-RS17, C2, C3), check over fc0d038..HEAD, then the safety reviewer re-checks RS10-RS17 (contracts lens: RC14 lane part done c270a01, the rest is tests-docs'); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/036d08b8-ff10-4d80-9858-e261ac2aef58/subagents/workflows/wf_b38141d2-651/journal.jsonl
 LANE: learn MERGED 19f373c   # READY 10:48, merged 10:50 as f9de7023; LOWs C3, C4, C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 3   # core slot 1, actions-sos slot 3, engine slot 2, in that order (R-C-15)
-UPDATED: 2026-11-07 15:23 IST
+UPDATED: 2026-11-07 15:30 IST
 
 # 2026-11-07 14:47 IST · the owner's R-O-2; the launcher is active
 
