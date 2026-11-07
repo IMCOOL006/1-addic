@@ -60,3 +60,7 @@ UPDATED: 2026-11-07 10:20 IST
 
 - learn READY-SLICE a499dae (U-12) merged as 4618e43c at 10:18; trunk 4618e43c pushed with build/learn. Gates on the merged tree: build GREEN (298714 B), test GREEN (learn.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 4618e43c for new cuts; learn stays on its branch (no rebase).
 - FREEZE 10:55: what is READY or READY-SLICE on this file by then enters the tag, plus fixes by name. Keep the tips on the LANE lines.
+
+# 2026-11-07 10:23 · from the HUB · engine granted again: resume [U-06,U-07],[U-08]
+
+- Free memory 10.8 GB at 10:21 with four runs live: engine's pause lifts. Relaunch engine from 04fc0c1 with done [U-05] (first the check fix C1 helpfulValue by name), batches [U-06,U-07],[U-08]. Its units land after the FREEZE 10:55 and go to offline-v1.1; nothing heavy during the QUIET window 10:55-11:40 (Node tests on its own branch are fine; no browser suite). Pauses at its next commit if a row goes under 4.0 GB.

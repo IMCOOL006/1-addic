@@ -6,7 +6,7 @@ NEXT: the HUB merges each READY as it appears (the Store U-04, SOS U-10 and U-11
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 10:20 IST by `board.py`.
+Rewritten 2026-11-07 10:22 IST by `board.py`.
 
 ## The HUB
 
@@ -16,14 +16,14 @@ Rewritten 2026-11-07 10:20 IST by `board.py`.
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 - QUIET: no
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 10:20 IST
+- UPDATED: 2026-11-07 10:23 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 408a3f20 (launcher-started 2026-11-07 09:58) | BUILDING — 2026-11-07 10:20 IST: six merges done, learn U-12 merged at 10:18; CORE 224074c0 runs core review fixes, actions-sos… | 119k | 2026-11-07 10:20 IST |
-| CORE | 224074c0 (launcher-started 2026-11-07 08:58) | BUILDING — 2026-11-07 09:54 IST: four runs live (core review fixes, actions-sos reviewers, learn slice U-12, tests-docs… | 284k | 2026-11-07 10:16 IST |
+| HUB | 408a3f20 (launcher-started 2026-11-07 09:58) | BUILDING — 2026-11-07 10:20 IST: six merges done, learn U-12 merged at 10:18; CORE 224074c0 runs core review fixes, actions-sos… | 123k | 2026-11-07 10:23 IST |
+| CORE | 224074c0 (launcher-started 2026-11-07 08:58) | BUILDING — 2026-11-07 09:54 IST: four runs live (core review fixes, actions-sos reviewers, learn slice U-12, tests-docs… | 286k | 2026-11-07 10:20 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -31,9 +31,9 @@ Rewritten 2026-11-07 10:20 IST by `board.py`.
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); slices 8bf7b5c, 4a43190 MERGED; F1, F2, U-04 06cdf34… |
-| `engine` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=2 PAUSED since 07:38 (memory); resumes with…; slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5)… |
+| `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED again 2026-11-07 10:23 (the 10:21 row shows 10.8 GB free with four runs live: resume [U-06,U-07],[U-08] from 04fc0c1 now; first fix by name: check C1… |
 | `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again… |
-| `learn` | CORE | 1 |  | slot 4 | READY-SLICE | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
+| `learn` | CORE | 1 |  | slot 4 | BUILDING | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | BUILDING | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
 | `workbook-settings` | SCREENS | 1 |  | - | NEW | tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js, src/ui-workbook.js, src/ui-plan.js |
@@ -41,7 +41,7 @@ Rewritten 2026-11-07 10:20 IST by `board.py`.
 | `game-tutorials` | SCREENS | 2 |  | - | NEW | tier 2; slice U-27; files offline/src/ui-game.js, src/ui-guidance.js, src/ui-tools.js; starts only when no tier 1 lane waits for a slot |
 | `content` | SCREENS | 1 |  | - | NEW | tier 1 (U-31a) then tier 2; slice U-31a; files offline/src/content-lessons-b.js, content-lessons-c.js, content-exercises.js, content-practices.js… |
 
-Slots allowed: 4 running lanes at a time from 09:50 (core, actions-sos, tests-docs, learn); engine's resume at the first row with at least 7.0 GB free with four running, or when one finishes; measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit. Granted: 5 lanes (`core` slot 1, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
+Slots allowed: 5 running lanes at a time from 10:23 (core, engine, actions-sos, tests-docs, learn); measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit. Granted: 5 lanes (`core` slot 1, `engine` slot 2, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
 
 ## Merges
 
@@ -62,7 +62,7 @@ Slots allowed: 4 running lanes at a time from 09:50 (core, actions-sos, tests-do
 
 ## Machine
 
-- Free memory 5.4 GB of 31.8 GB at 2026-11-07 10:10 IST; claude 25, node 55 processes; 1 slots by the rule (lane-widening.md).
+- Free memory 10.8 GB of 31.8 GB at 2026-11-07 10:21 IST; claude 25, node 38 processes; 9 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: HUB 408a3f20 at 2026-11-07 09:58.
 
 ## Files of the build
