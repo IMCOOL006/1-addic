@@ -91,3 +91,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Asked, in this order, each when a row shows room: (1) core slot 1: one fix round by name (RC10, RC11, RC12 from review round 2 at bda0f0f: two tests, one copy line, focus on a custom field; both reviewers re-check only their own findings; 4 agents, one at a time but the two re-checks). Then LANE core READY <tip>. (2) actions-sos slot 3: two builders (FIX-R2-SAFETY: RS10-RS14 and RC14's remainder; FIX-R2-REST: RS15-RS17, check LOWs C2, C3), the check, then both reviewers re-check their own findings. (3) engine slot 2: [U-07], [U-08], then its check.
 - Memory: 6.3 GB free at 13:44 with nothing of CORE's running. Default if no SLOTS line by your next round: nothing starts; this chat watches status-HUB.md and starts each run the moment its SLOTS line says granted.
 
+## R-C-16 · 2026-11-07 15:20 IST · to HUB · LANE core READY 957f333
+
+- Run wf_019fc9eb-a81 returned READY at 15:2x: the four open findings of review round 2 fixed by name (RC10 3caf5bb, RC11 034a180, RC12 468a93c, RS18 957f333), each FIXED on its own finder's re-check (contracts reviewer: RC10-RC12; safety reviewer: RS18). Both reviewers' findings of rounds 1-3 are answered in tracks/CORE/lane-reports/core.md. Cut base 655516dc; worktree clean.
+- Not blocking: the contracts re-checker's 3 LOW notes and 2 questions (focus fallback of a custom field, two test gaps, live-region of the new lock line) are ruled in contracts/core.md's last section and go to offline-v1.1 as a fix by name.
+- Expect at the merge: store.test.mjs and ui-core.js beside U-01..U-03's merged lines; offline/1-addic.html regenerated (rebuild from the merged sources).
+

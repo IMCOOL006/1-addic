@@ -106,3 +106,8 @@ Not core's: Q5 imports go through Actions.importBackup (actions-sos; workbook-se
 - **RC10 question: confirmed.** Once the limit has passed inside SOS, later taps there do not refresh the idle clock, so leaving SOS after a long call asks for the PIN. SOS stays open the whole time. Owed: the second half of the RC10 test (leave SOS within the limit, the timer runs again; leave SOS 40 s after the last touch, it locks 20 s later).
 - **RC11: NO_CRYPTO.** `lock.set` rejects NO_CRYPTO and sets nothing when crypto.subtle is missing (a test is owed). The fallback lock page keeps 'A PIN is not available on this device.' and adds one line under it: 'Open this file in the browser where you set your PIN.' The Forgot-PIN line stays after it. This copy change goes to the safety reviewer (RS18).
 - **RC12: UI.form custom fields.** When validate fails on a required custom(render) field, focus goes to the field's first focusable descendant and the custom node gets aria-invalid, as for chips (770c86c). The mark clears once the field is valid.
+
+## The CORE chat's rulings 2026-11-07 15:20 IST: the re-check's LOWs and questions at 957f333 (offline-v1.1, a fix by name; not blocking core READY)
+
+- **RC12 follow-up (LOW):** firstFocusable falls back to the custom node itself when it has no enabled, visible control inside (as before 468a93c); the control that takes the focus also carries aria-invalid and aria-describedby the field's error line. Tests: a custom field whose first button is disabled or hidden, and one with no control inside.
+- **RS18 follow-up (LOW):** #lock-where is announced with #lock-msg (inside the alert, or role=status), and a test reads #lock-pin's aria-describedby 'lock-msg lock-where'.
