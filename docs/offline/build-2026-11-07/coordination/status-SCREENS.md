@@ -1,10 +1,10 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-08 02:42 IST: SCREENS 1c2cf086, V3 (PLAN-V3.md, R-H-38). today-track has slot 6 (V3 tier 1): fast-forwarded to BASE f69bc68a at 02:38 (no merge commit); its scout wf_ea78e1ac-572 is running, then the V-01a slice. Scouts for content (wf_10d4cc97-c2a) and game-tutorials (wf_39613665-fbc) are running too; their slots are asked, on the next 7.0 GB rows
-LANE: content SCOUTING 680f850   # V3: V-10 (T1, after today-track's slice), V-23 (T2), V-10b (after the owner's I6); scout wf_10d4cc97-c2a (briefs/content-v3.md); slot asked. v1: MERGED 680f850
-LANE: today-track SCOUTING f69bc68a   # V3 slot 6 granted 02:34; fast-forwarded 6b0184b..f69bc68a 02:38; scout wf_ea78e1ac-572 (brief tracks/SCREENS/briefs/today-track-v3.md); then V-01a slice, then V-01b. v1: MERGED 6b0184b (U-15..U-18, FIX-EMBED)
+LANE: content NEW 680f850   # V3: V-10 (T1, after today-track's slice), V-23 (T2), V-10b (after the owner's I6); scout wf_10d4cc97-c2a (briefs/content-v3.md); slot asked. v1: MERGED 680f850
+LANE: today-track NEW f69bc68a   # V3 slot 6 granted 02:34; fast-forwarded 6b0184b..f69bc68a 02:38; scout wf_ea78e1ac-572 (brief tracks/SCREENS/briefs/today-track-v3.md); then V-01a slice, then V-01b. v1: MERGED 6b0184b (U-15..U-18, FIX-EMBED)
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials SCOUTING bd2e085   # V3: V-08b (T1, after actions-sos V-08a; contract before), V-28 (T1), V-21 (T2); scout wf_39613665-fbc (briefs/game-tutorials-v3.md); slot asked. v1: MERGED bd2e085
+LANE: game-tutorials NEW bd2e085   # V3: V-08b (T1, after actions-sos V-08a; contract before), V-28 (T1), V-21 (T2); scout wf_39613665-fbc (briefs/game-tutorials-v3.md); slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 02:42 IST
 
