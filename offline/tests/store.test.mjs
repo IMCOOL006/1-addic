@@ -1154,6 +1154,35 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(await a, false, 'Esc');
     assert.equal(dlg.open, false);
   });
+
+  test('R-S-6: high contrast is on after the first render of a reload, and off when the setting is off', async () => {
+    setup(); // a reload: a fresh page, and Settings is never opened
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    let settings = { key: 'app', highContrast: true };
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? settings : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+    };
+    UI.pages.today = page('today');
+    const root = () => document.documentElement;
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'the first render applies it');
+    at('#/sos');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'every render keeps it, SOS too');
+    settings = { key: 'app', highContrast: false };
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), null, 'false removes it');
+    settings = { key: 'app' };
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), null, 'no setting: off');
+    assert.equal(box.size, 0, 'no new storage key');
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
