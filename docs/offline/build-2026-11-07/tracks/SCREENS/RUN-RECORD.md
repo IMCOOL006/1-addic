@@ -247,3 +247,4 @@
   - HUB 10 = SendMessage to "uds:\.\pipe\LOCAL\cc-msg-61fc232d7d4c0109accb2e284a2456fd" (HUB 03:17); CORE 12 = "CORE 03:56".
   - Complex quoting in a bash heredoc broke once: write the Python to the job tmp folder and run it.
   - Do not run a wait loop; one background until-loop for a single condition is fine.
+  - HUB 04:41: for content V-10 + V-10r, a validate finding on the branch alone that names only '#/status' is expected and does not block. Write READY-SLICE <tip> and name that finding plus the scratch-tree proof in the LANE note.

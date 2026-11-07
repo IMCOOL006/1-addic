@@ -6,7 +6,11 @@ LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:38 IST
+UPDATED: 2026-11-08 04:40 IST
+
+# 2026-11-08 04:40 IST · HUB (04:41): the merged tree judges content V-10 + V-10r
+
+- A validate finding on the branch alone that names only '#/status' is expected and does not block. Write READY-SLICE <tip>, and name that one finding and the scratch-tree proof in the LANE line's note. No merge commit on the branch. The HUB sends the V-40c trunk tip the moment it is merged.
 
 # 2026-11-08 04:32 IST · from the HUB · engine V-40b merged (trunk cb356d9c); R-H-43: no baseline, V-40c first, then V-10r
 
