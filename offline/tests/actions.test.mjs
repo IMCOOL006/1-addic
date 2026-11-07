@@ -38,6 +38,27 @@ const STORES = () => S().STORES || E().STORES;
 const list = (store) => S().view.list(store) || [];
 const events = (type) => list('events').filter((e) => !type || e.type === type);
 const tick = () => new Promise((r) => setTimeout(r, 0));
+// FIX-R8 C-R7-1: a wait for a condition. The real Store (the merged trunk) makes a real key (PBKDF2) for lock.set,
+// unlock and remove, about a second and far longer than a settle. This looks every few ms, each look after a timer
+// (so the work a tap queued has run), and fails with msg when cond() does not hold within ms; a throw from cond()
+// fails at once. It never passes on its own.
+async function until(cond, msg, ms = 30000) {
+  const end = RealDate.now() + ms;
+  for (;;) {
+    await new Promise((r) => setTimeout(r, 3));
+    if (cond()) return;
+    if (RealDate.now() > end) assert.fail(`${msg} (not within ${ms} ms)`);
+  }
+}
+// FIX-R8 C-R7-1: the Store with its lock.set calls counted. On the real Store a PIN being set still reads as no lock,
+// so a refusal before the Store is proven by no call, not by a lock that has not come yet.
+function setSpy() {
+  const real = S();
+  const calls = [];
+  const store = Object.create(real);
+  store.lock = Object.assign(Object.create(real.lock), { set: (...a) => { calls.push(a[0]); return real.lock.set(...a); } });
+  return { store, calls };
+}
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 function sortStores(stores) {
   const out = {};
@@ -1633,7 +1654,8 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.equal(typeof O.pinOk, 'function');
     for (const p of ['1234', '123456789012']) assert.equal(O.pinOk(p), true, p);
     for (const p of ['123', '1234567890123', 'abcd', '12 34', '', null]) assert.equal(O.pinOk(p), false, String(p));
-    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const spy = setSpy(); // FIX-R8 C-R7-1
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} }, store: spy.store });
     const root = d.onb({});
     d.tapId(root, 'onb-next');
     for (const id of ['onb-pin', 'onb-pin2']) for (const [k, v] of Object.entries(O.PIN_ATTRS)) assert.equal(d.byId(root, id).attrs[k], v, id + ' ' + k);
@@ -1642,10 +1664,11 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     d.tapId(root, 'onb-pin-set');
     await d.settle();
     assert.equal(S().status().hasLock, false, 'not 4 to 12 digits: refused before the Store');
+    assert.deepEqual(spy.calls, [], 'not 4 to 12 digits: refused before the Store');
     assert.ok(root.textContent.includes('Use 4 to 12 digits.'));
     d.byId(root, 'onb-pin').value = '2468'; d.byId(root, 'onb-pin2').value = '2468';
     d.tapId(root, 'onb-pin-set');
-    await d.settle();
+    await until(() => !root.textContent.includes(O.COPY.pinSetting), 'the PIN set ends'); // FIX-R8 C-R7-1: a real key on the real Store
     assert.equal(S().status().hasLock, true);
     const lp = d.byId(d.UI.pages.lock({}), 'lock-pin');
     for (const k of ['type', 'inputmode', 'pattern', 'autocomplete']) assert.equal(lp.attrs[k], O.PIN_ATTRS[k], 'lock ' + k);
@@ -1973,18 +1996,22 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
     }
   });
   test('RS11: Next on the privacy step with a typed PIN sets it, or stays on the step and says why', async () => {
-    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const spy = setSpy(); // FIX-R8 C-R7-1
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} }, store: spy.store });
     const root = d.onb({});
     d.tapId(root, 'onb-next');
-    const typed = async (a, b) => { d.byId(root, 'onb-pin').value = a; d.byId(root, 'onb-pin2').value = b; d.tapId(root, 'onb-next'); await d.settle(); };
+    // FIX-R8 C-R7-1: Next waits until the PIN step ends (a real key on the real Store), then the margin it had
+    const typed = async (a, b) => { d.byId(root, 'onb-pin').value = a; d.byId(root, 'onb-pin2').value = b; d.tapId(root, 'onb-next'); await until(() => !root.textContent.includes(O.COPY.pinSetting), 'the PIN step ends'); await d.settle(); };
     await typed('2468', '1357');
     assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'two PINs that differ: still on step 2');
     assert.ok(root.textContent.includes(O.COPY.pinMismatch), 'and it says why');
     assert.equal(S().status().hasLock, false);
+    assert.deepEqual(spy.calls, [], 'two PINs that differ: never sent to the Store');
     await typed('12ab', '12ab');
     assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'not 4 to 12 digits: still on step 2');
     assert.ok(root.textContent.includes(O.COPY.pinDigits));
     assert.equal(S().status().hasLock, false);
+    assert.deepEqual(spy.calls, [], 'not 4 to 12 digits: never sent to the Store');
     await typed('2468', '2468');
     assert.equal(S().status().hasLock, true, 'Next set the typed PIN');
     assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'then went on');
@@ -2282,10 +2309,12 @@ describe('review round 3 fixes (FIX-R3)', () => {
       return root;
     };
     const kept = (d) => d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept);
+    // FIX-R8 C-R7-1: each refusal in the stub unlocks with a real key on the real Store; a save ends in a kept or a not saved toast
+    const ended = (x) => () => x.toasts.some((t) => t[0] === x.UI.sosHelpers.COPY.lockedKept || t[0] === x.UI.sosHelpers.COPY.notSaved);
     const one = refusing(1);
     const d = sosDom();
     walk(d, one.A, 'sos-used-yes');
-    await d.settle();
+    await until(() => d.go.length > 0, 'refused once: tried once more, at once');
     assert.equal(one.calls, 2, 'refused once: tried once more, at once');
     assert.equal(S().status().hasLock, true, 'the lock row the save began with');
     assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, not at some later notify');
@@ -2298,11 +2327,12 @@ describe('review round 3 fixes (FIX-R3)', () => {
     const two = refusing(2);
     const d2 = sosDom();
     walk(d2, two.A, 'sos-used-no');
-    await d2.settle();
+    await until(ended(d2), 'one retry, no more');
     assert.equal(two.calls, 2, 'one retry, no more');
     assert.ok(kept(d2), 'the retry refused too: kept for the unlock');
     assert.equal(events('SosCompleted').length, 1);
     await Actions.settings.patch({ theme: 'light' });
+    await until(() => events('SosCompleted').length >= 2, 'the kept one is saved once, at the next notify');
     await d2.settle();
     assert.equal(two.calls, 3);
     assert.equal(events('SosCompleted').length, 2, 'the kept one is saved once, at the next notify');
@@ -2310,11 +2340,11 @@ describe('review round 3 fixes (FIX-R3)', () => {
     const three = refusing(0);
     const d3 = sosDom();
     walk(d3, three.A, 'sos-used-no');
-    await d3.settle();
+    await until(ended(d3), 'really locked: no retry');
     assert.equal(three.calls, 1, 'really locked: no retry');
     assert.ok(kept(d3), 'kept for the unlock, as before');
     assert.ok(await S().lock.unlock('2468'));
-    await d3.settle();
+    await until(() => three.calls >= 2, 'saved after the unlock');
     assert.equal(three.calls, 2, 'saved after the unlock');
   });
   test('RS21: a slip save kept for the unlock never reads It is in your log.; it says It goes in your log when you unlock.', async () => {
@@ -2324,7 +2354,7 @@ describe('review round 3 fixes (FIX-R3)', () => {
     S().lock.lockNow();
     const root = d.open(['sos', 'craving']);
     for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) d.tapId(root, id);
-    await d.settle();
+    await until(() => d.go.length > 0, 'kept for the unlock, not written yet: never ?logged=1'); // FIX-R8 C-R7-1
     assert.deepEqual(d.go, ['#/sos/slip?kept=1'], 'kept for the unlock, not written yet: never ?logged=1');
     assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: { kept: '1' } }).kept, true);
     assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: {} }).kept, false);
@@ -2338,13 +2368,14 @@ describe('review round 3 fixes (FIX-R3)', () => {
     await d.settle();
     assert.ok(slip.querySelector('[data-testid="sos-slip-safe"]'), 'then the safety step');
     assert.ok(await S().lock.unlock('2468'));
+    await until(() => events('SosCompleted').length > 0, 'saved after the unlock'); // FIX-R8 C-R7-1: sealed with the real key
     await d.settle();
     assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved after the unlock');
     assert.equal(events('SlipLogged').length, 1, 'the kept session logs the slip once; Go on wrote nothing more');
     const saved = sosDom();
     const r2 = saved.open(['sos', 'craving']);
     for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) saved.tapId(r2, id);
-    await saved.settle();
+    await until(() => saved.go.length > 0, 'written at once: It is in your log. is true'); // FIX-R8 C-R7-1
     assert.deepEqual(saved.go, ['#/sos/slip?logged=1'], 'written at once: It is in your log. is true');
   });
   test('RS20: while the PIN is being set, Next and Skip wait and a line says so; no step is skipped unseen', async () => {
@@ -2359,7 +2390,15 @@ describe('review round 3 fixes (FIX-R3)', () => {
     assert.ok(typeof O.COPY.pinSetting === 'string' && root.textContent.includes(O.COPY.pinSetting), 'a short line says the PIN is being set');
     for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-skip');
     assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'Skip does nothing meanwhile');
-    await d.settle();
+    // FIX-R8 C-R7-1: on the real Store the key takes a real derivation (about a second); until the PIN is set, every
+    // look finds step 2, the line that says so, and the buttons waiting
+    const waits = (x, r, ids) => () => {
+      if (S().status().hasLock === true) return true;
+      assert.ok(r.querySelector('[data-testid="onb-step-2"]') && r.textContent.includes(O.COPY.pinSetting), 'until the PIN is set: step 2 and the line that says so');
+      for (const id of ids) assert.equal(x.byId(r, id).disabled, true, id + ' waits until the PIN is set');
+      return false;
+    };
+    await until(waits(d, root, ['onb-next', 'onb-skip']), 'the PIN is set');
     assert.equal(S().status().hasLock, true, 'the PIN is set');
     assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'then step 3 shows: none skipped unseen');
     await S().resetAll();
@@ -2374,7 +2413,7 @@ describe('review round 3 fixes (FIX-R3)', () => {
     assert.equal(e.byId(r2, 'onb-pin-set').disabled, true, 'and Set PIN runs once');
     e.tapId(r2, 'onb-skip');
     assert.ok(r2.querySelector('[data-testid="onb-step-2"]'));
-    await e.settle();
+    await until(waits(e, r2, ['onb-next', 'onb-skip', 'onb-pin-set']), 'the PIN is set'); // FIX-R8 C-R7-1
     assert.equal(S().status().hasLock, true);
     assert.ok(r2.textContent.includes(O.COPY.pinSet), 'it says the PIN is set');
     assert.equal(e.byId(r2, 'onb-next').disabled, false, 'Next is back');
@@ -2493,7 +2532,9 @@ describe('review round 4 fixes (FIX-R4)', () => {
     const A = Object.assign({}, Actions, { sosSession: async (p) => { calls += 1; if (calls === 1) { await S().lock.remove('2468'); throw stale(); } return Actions.sosSession(p); } });
     const d = sosDom();
     craving(d, A);
-    await d.settle(); await d.settle();
+    // FIX-R8 C-R7-1: the stub's remove makes a real key on the real Store; wait for the refusal's end, then the margin it had
+    await until(() => told(d, H.COPY.notSaved) || told(d, H.COPY.lockedKept) || calls > 1, 'the refused save ends');
+    await d.settle();
     assert.equal(calls, 1, 'the lock row went away: never tried again');
     assert.equal(events('SosCompleted').length, 0, 'nothing written into the erased notebook');
     assert.ok(told(d, H.COPY.notSaved) && !told(d, H.COPY.lockedKept), 'told it was not saved, never that it waits');
