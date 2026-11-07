@@ -422,3 +422,16 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 .tr-more summary:focus-visible, .tr-kind:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
 .tr-more .chips { margin-top: var(--space-2); }
 .tr-error:empty { display: none; }
+.tr-chart { display: block; width: 100%; height: auto; max-width: 480px; }
+.tr-grid { stroke: hsl(var(--border)); stroke-width: 1; }
+.tr-axis { fill: hsl(var(--muted)); font-size: 11px; }
+.tr-line { fill: none; stroke: hsl(var(--primary)); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.tr-dot { fill: hsl(var(--primary)); }
+.tr-bar { fill: hsl(var(--accent)); }
+.tr-heat { fill: hsl(var(--surface-2)); }
+.tr-heat-on { fill: hsl(var(--primary)); }
+.tr-caveat { margin: 0; font-size: 0.9em; }
+.tr-list { margin: 0; padding-left: 1.4em; }
+.tr-list li { padding: var(--space-1) 0; }
+.tr-table { border-collapse: collapse; margin-top: var(--space-2); }
+.tr-table th, .tr-table td { text-align: left; padding: var(--space-1) var(--space-3) var(--space-1) 0; border-bottom: 1px solid hsl(var(--border)); }
