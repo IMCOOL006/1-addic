@@ -269,7 +269,17 @@
 
 - wf_2b0e95b3-328 returned READY-SLICE 03840ef (V-40; C1 fixed; gates GREEN by name). R-C-53 to the HUB.
 
+## 2026-11-08 04:15 IST · CORE 12 (51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb) resumes
+
+- c2601cf1 gone (`claude agents --json` 04:06); wf_181dd398-6a1 (tests-docs V-03 + V-06) died; its builder stopped 03:58 with no commit and one uncommitted hooks.mjs edit (+96/-8).
+- 04:04 engine V-40b wf_f9ed651c-e3b (gen7.py: SESSION env, EXTRA for units outside lane_args_v3.json; note tracks/CORE/briefs/engine/V-40b.md). 04:08 tests-docs V-03 + V-06 wf_80985a28-b7b (relaunch; the relaunch note first in priorNote, since lane.js cuts the prior note from the end to fit 12 KB).
+- R-S-23 (V-01b hooks) recorded for V-01t in contracts/tests-docs.md. R-C-54 to the HUB.
+
 ## Resume here
+
+- **(2026-11-08 04:15 IST) STATE BUILDING, CORE 12 (51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb).** Running in 51e49e2a: **engine V-40b wf_f9ed651c-e3b** and **tests-docs V-03 + V-06 wf_80985a28-b7b** (journals C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb/subagents/workflows/<run>/journal.jsonl). Each returns READY: write `LANE: <lane> READY <tip>`, an R-C to the HUB with the gates by name. If 51e49e2a is gone from `claude agents --json`, both died: relaunch each from its branch's last commit with done and priorNote (put the relaunch words first in priorNote).
+- **Next, in order:** core **V-11** on its SLOTS line (regenerate: `SESSION=<id> SLOT=<n> python tracks/CORE/args/gen7.py "<now>" core '[["V-11"]]' f69bc68a`; wf_sim; sliceRun true; flagged); actions-sos **V-08a + V-SOS10** on its SLOTS line (gen7 '[["V-08a","V-SOS10"]]' f69bc68a), then **V-41**; tests-docs **V-01t** when the board shows today-track V-01b merged (R-S-23 hooks in contracts/tests-docs.md), then **V-45**; engine **V-19 + V-30** (tier 2) when no tier 1 lane waits.
+- **Facts:** gen7.py is gen6.py with SESSION from the environment and EXTRA (a JSON {unit: {tier, note}}) for units outside lane_args_v3.json. lane.js cuts priorNote from its end to fit the 12 KB builder prompt: put what must survive first, under about 700 characters. Write hub files with Python or a heredoc; commit with tools/hub_commit.py from C:/Users/ruchi/1-addic.
 
 - **(2026-11-08 03:54 IST) STATE RESTART, CORE 11 (c2601cf1) hands over near 300k.** Still running in c2601cf1: **tests-docs V-03 + V-06 wf_181dd398-6a1** (from c1058ab). Do not relaunch it while c2601cf1 is listed in `claude agents --json` and the journal is still growing. Watch C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_181dd398-6a1/journal.jsonl: the last 'result' line of the report agent marks the end, and the checker's verdict is in its 'result'. Then write `LANE: tests-docs READY <tip>` (git -C C:/Users/ruchi/1-addic-wt/tests-docs log -1) and an R-C to the HUB with the gates read by name. If c2601cf1 is gone and the run never finished, relaunch V-03 + V-06 from the branch's last commit with done [..., 'V-07'] and a priorNote (args_v3_tests-docs_V-03.json: set now, diffFrom; wf_sim).
 - **Next, in order:**

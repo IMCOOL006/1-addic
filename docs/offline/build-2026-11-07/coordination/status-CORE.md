@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-08 03:54 IST: CORE 11 (c2601cf1) hands over (context near 300k). ONE run still alive in c2601cf1: tests-docs V-03 + V-06 wf_181dd398-6a1 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_181dd398-6a1/journal.jsonl). CORE 12: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 03:54 IST)
-LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 8e80951 (a3081f33)
-LANE: engine READY-SLICE 03840ef   # 2026-11-08 03:54 IST: V-40 (6723893) + check fix C1 (03840ef: a logged slip is never a day shown up); check FIX then re-check PASS; build 1128591 B, test 6 files, validate, guards GREEN (C:/Users/ruchi/1-addic-wt/_logs/gates/engine/*-20261108-0348..0350*.log); merge base f69bc68a. The worktree's offline/1-addic.html is the gates' rebuild, uncommitted (generated). Next: V-40b growthItems (T1, R-C-51), then V-19 + V-30 (T2)
-LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs; scout running), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
+STATE: BUILDING   # 2026-11-08 04:13 IST: CORE 12 (51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb) up from CORE 11's RESTART. c2601cf1 is gone from `claude agents`, so its V-03 + V-06 run wf_181dd398-6a1 died (builder stopped 03:58, no commit; one uncommitted hooks.mjs edit kept for the relaunch). Running: engine V-40b wf_f9ed651c-e3b (slot 2), tests-docs V-03 + V-06 wf_80985a28-b7b (slot 5, relaunched). Waiting: core V-11, actions-sos V-08a on their SLOTS lines
+LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line (args_v3_core_V-11.json: regenerate with gen7.py for the session). v1 MERGED 8e80951 (a3081f33)
+LANE: engine BUILDING 03840ef   # 2026-11-08 04:13 IST: V-40b Engine.growthItems (T1, R-C-51) wf_f9ed651c-e3b from 03840ef (merged 3bd5bf5d, the merge base); then V-19 + V-30 (T2) only when no tier 1 lane waits
+LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs), then V-25, V-18, V-17b (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs READY c1058ab   # 2026-11-08 03:52 IST: V-07 the guide Parts 3 and 4 (check PASS, no findings; build, test, validate, guards, browser 16/0/3, docs GREEN with STRICT_IMAGES True); on 476f404 (READY-SLICE, merged by the HUB). Building on: V-03 + V-06 (wf_181dd398-6a1); then V-01t, V-45
+LANE: tests-docs BUILDING c1058ab   # 2026-11-08 04:13 IST: c1058ab (V-07) MERGED 8d21c8ca (trunk 9946ffe5). V-03 + V-06 relaunched wf_80985a28-b7b from c1058ab (the first run died with c2601cf1). Then V-01t when today-track V-01b merges (SCREENS READY da9bb6b), then V-45
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
-UPDATED: 2026-11-08 03:54 IST
+UPDATED: 2026-11-08 04:13 IST
+
+# 2026-11-08 04:13 IST · CORE 12 (51e49e2a) resumes; two runs launched
+
+- Read: this file (CORE 11's RESTART 03:54 and the HUB's 04:02 note), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 3bd5bf5d; SLOTS-ALLOWED 4; content V-10 on slot 4), outbox-HUB.md R-H-38..R-H-42, outbox-CORE.md R-C-50..R-C-53, the HUB's message 04:05.
+- `claude agents --json` 04:06: c2601cf1 not listed. wf_181dd398-6a1's builder stopped at 03:58 before any commit (its last tool call was refused when the session ended); the worktree has one uncommitted, maybe partial edit, offline/tests/helpers/hooks.mjs (+96/-8), kept for the relaunch, which verifies each entry before it commits.
+- 04:04 engine V-40b wf_f9ed651c-e3b (lane.js; args tracks/CORE/args/args_v3_engine_V-40b.json from the new gen7.py: the session from SESSION, units outside lane_args_v3.json from EXTRA; unit note tracks/CORE/briefs/engine/V-40b.md; done + V-40, diffFrom 03840ef, slot 2; wf_sim OK, builder prompt 12004 B).
+- 04:08 tests-docs V-03 + V-06 wf_80985a28-b7b (args_v3_tests-docs_V-03.json with this session and the relaunch first in priorNote: lane.js cuts the prior note from the end; wf_sim OK, 12000 B). Free memory 6.3-6.5 GB: both are continuations on held slots, not new starts.
+
 
 # 2026-11-08 04:02 IST · from the HUB · tests-docs c1058ab and engine 03840ef merged (trunk 3bd5bf5d); engine continues with V-40b; the 04:00 defaults
 

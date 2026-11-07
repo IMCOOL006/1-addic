@@ -1,0 +1,52 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-roadmap.test.mjs",
+  "offline/tests/engine-insights.test.mjs",
+  "offline/tests/engine-data.test.mjs",
+  "offline/tests/engine-warning-item.test.mjs",
+  "offline/tests/engine-questline.test.mjs"
+ ],
+ "units": [
+  "V-40",
+  "V-40b"
+ ],
+ "batches": [
+  [
+   "V-40"
+  ],
+  [
+   "V-40b"
+  ]
+ ],
+ "unitTier": {
+  "V-40": 1,
+  "V-40b": 1
+ },
+ "unitNotes": {
+  "V-40b": "Engine.growthItems (1 h, tier 1, R-S-22, R-C-51; for today-track V-43): growthItems(view) -> [{date, id, grows}], oldest first, listing exactly the units growth(view) counts, so growthItems(view).length === growth(view) for every view. It never shrinks: later events never remove or reorder an earlier item. id is the objective that made that day count: the first objective done that day, ordered by id; grows is that objective's Content.objectives element (the object itself). Pure; sample rows skipped exactly as growth skips them; with no Content.objectives (or not an array) it returns []. Export it beside growth in the return block. [The rest of this note, with the tests to write: tracks/CORE/briefs/engine/V-40b.md and tracks/CORE/contracts/engine.md (V-40b): read both before you build. V-19 and V-30 are not in this run.]"
+ },
+ "laneNote": "V-40 is tier 1 and the slice (R-O-6, 03:03); V-19 and V-30 are tier 2 after it. On the content contract until V-42 merges. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 12's word (2026-11-08 04:02 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/engine/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E",
+  "V-40"
+ ],
+ "base": "f69bc68a",
+ "session": "51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb",
+ "now": "2026-11-08 04:02 IST",
+ "diffFrom": "03840ef",
+ "slot": 2,
+ "sliceRun": false,
+ "priorNote": "{\"tip\": \"03840ef\", \"slice\": \"V-40 (6723893) + check fix C1 (03840ef); check PASS on re-check; merged by the HUB from 03840ef (merge base f69bc68a)\", \"one_thing\": \"The V-40 block sits in engine.js just before '/* ── views', and it reads Content.questLine and Content.objectives each time it is called. The tests set an inline fixture (9 steps, 8 objectives, fxTool1..9 features, Content.xp ObjectiveDone 5 / QuestLineStepDone 20) on the shared Content object inside withContent() and restore it in finally; withoutContent() hides the real keys, so the tests keep passing after content V-42 merges. Choices that differ from the contract or that the brief left open: (1) shownUpDays(view, now?) is an extra export that is not in the contract list. (2) growth(view, now?) takes an optional now. (3) dailyObjectives sets swapped to true as soon as the day has any ObjectiveSwapped event, even if that swap's from/to did not apply, because a day allows one swap attempt; from then on swapTo is null on every item. (4) progress.have is capped at need. (5) ObjectiveDone counts toward growth on its date even if that id was not in the day's draw. In this build the brief and the base code did not disagree.\", \"fix_one_thing\": \"C1 is fixed in shownUpOver only (engine.js, the function after eventDay). Log rows of type 'slip' never add a day shown up, and neither does a LogCreated whose payload.type is 'slip'. That second check is a guard: actions.js writes no such event today. logsOf is deliberately unchanged, because heatmaps, insights and the slip review still need the slip rows, so filter slips where they count as shown up, never in logsOf. If another act happens on the slip's day, that day still counts. The public shapes of run, shownUpDays and growth are unchanged. Red before and green after with the exact rows from actions.js:369-370 are in C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__C1.redgreen.log. Code and brief agree on this point.\", \"files_touched\": [\"C:/Users/ruchi/1-addic-wt/engine/offline/src/engine.js\", \"C:/Users/ruchi/1-addic-wt/engine/offline/tests/engine-questline.test.mjs\"]}"
+}
