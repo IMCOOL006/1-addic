@@ -1,0 +1,420 @@
+{
+ "_readme": [
+  "The V3 args of each lane of the 1-addic offline edition build (cut 2026-11-08 02:25 IST by HUB 9 from PLAN-V3.md section 2 and V3-IMPROVEMENTS.md). Same shape and use as lane_args.json (read its _readme): Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js', args: {...lanes.<lane>, base, slot, session, now, sliceRun|done|priorNote|diffFrom}}).",
+  "V3 on an existing lane: the branch build/<lane> and its worktree exist and are merged. Fast-forward both to the BASE line of status-HUB.md (f69bc68a or later; no merge commit; refuse if it is not a fast-forward and ask the HUB), then launch with done = the lane's v1 units (lane_args.json lanes.<lane>.units plus its fix rounds by name), diffFrom = the fast-forward point, sliceRun: true for batches[0]. The territory is coordination/territory.json (today-track now owns offline/src/ui-status.js and offline/tests/status.test.mjs). The status layer's contract is PLAN-V3.md section 3: the hook names are fixed there.",
+  "The slice rule holds: batches[0] is ONE unit; READY-SLICE <tip> on the status file when it is committed and green by name; the HUB merges it; the lane goes on. Tier 2 units start only when no tier 1 lane waits for a slot. A unit marked 'after X' builds on the contract until the board shows X merged. Reports under 20 KB, evidence by path; the trailers on every commit."
+ ],
+ "lanes": {
+  "today-track": {
+   "lane": "today-track",
+   "chat": "SCREENS",
+   "tier": 1,
+   "flagged": false,
+   "area": "The status layer 'Your Harbor' (#/status, ui-status.js), the Today chip, the Harbor scene's place taps, the radar card on Track.",
+   "files": [
+    "offline/src/ui-status.js",
+    "offline/src/ui-today.js",
+    "offline/src/ui-track.js",
+    "offline/src/ui-harbor.js",
+    "offline/tests/status.test.mjs",
+    "offline/tests/today-track.test.mjs"
+   ],
+   "units": [
+    "V-01a",
+    "V-01b"
+   ],
+   "batches": [
+    [
+     "V-01a"
+    ],
+    [
+     "V-01b"
+    ]
+   ],
+   "unitTier": {
+    "V-01a": 1,
+    "V-01b": 1
+   },
+   "unitNotes": {
+    "V-01a": "The status page (3 h, V3-01): new offline/src/ui-status.js, namespace StatusUI, registered as UI.pages.status (ui-core.js pageKey accepts any registered segment: no core edit); one parts line in build.mjs after ui-harbor.js at the append point. Renders: HarborUI.scene(ctx) reused full width, with data-place='<region>' on each place (ui-harbor.js gets the attribute only) and a tap sheet listing that region's skills with level and uses from GameUI.model(gs).skills and the next level's count; 'Where you stand' from the same model object (GameUI.rankCard, xpBar, the badge count; total days only when counters are on and discreet is off; never the current run); 'Next small step' (the first undone Engine.explorer item, else Engine.nextLesson / Engine.roadmap().focus, else an open quest step; one link); Back to Today; an SOS link data-testid status-sos (the chrome's #sos-btn stays). StatusUI.model(gs, extra) and StatusUI.diff(before, after) are pure (plain objects in, plain objects out; the diff lists rises only; a slip changes no level). Calm: no scene, XP or badges, the places as a plain list; discreet: no scene, no days; text as text, no innerHTML with data, no network. Hooks (data-testid) exactly as PLAN-V3.md section 3: status-page, status-scene, status-place (data-region, data-level), status-stand, status-days, status-next, status-next-go, status-sos, status-back. offline/tests/status.test.mjs: model and diff pure and deterministic; a SkillUsed raises its region and the diff names it; a SlipLogged plus a slip log leaves every level equal and the diff empty; Calm and discreet rules; the page renders from an empty and a sample profile with no dead button and SOS one tap away; pure exports only. Done when #/status renders both profiles, every test passes by name, and the gates are green on the branch.",
+    "V-01b": "What changed, what to watch, the way in (2 h, V3-01, V3-02): 'What just changed' = StatusUI.diff of the model since the page was last drawn (memory only, this session, like GameUI's seen): a light that grew (place, level), XP today, a badge, a rank, an Explorer step, a quest step, a day banked; the matching place pulses once (class hb-grew on ui-harbor.js's place, transform scale 300 ms, transform only; none under prefers-reduced-motion, data-motion=reduce or on an SOS route: the words carry it); first open 'Here is where you stand.'; hooks status-change, status-change-item (data-kind). The 14-day strip of dated dots from Engine.momentum(...).dates (status-strip, status-strip-day with data-date and data-active; a history, never a count headline; decision V-Q4). 'What to watch' from Engine.warningSigns(view, now) with each sign's plan (own plans win), gentle wording, never red, empty state 'Nothing to watch right now.' (status-watch, status-watch-item data-sign); the same card at #/track/radar in ui-track.js (closes V3-02: the revealed radar feature led to plain Track). Today: a 'Your harbor' chip in the header quick row beside Log a craving and SOS (data-testid today-status, data-tour status-open) and the harbor card becomes a link (today-harbor-go); GuidanceUI.dot on the chip once Content.features.status exists (typeof-guarded). data-tour status-scene, status-change, status-watch on the page. The CSS in today-track's styles.css section. status.test.mjs grows: the diff after a quick log names the rise; reduced motion adds no moving class; the radar renders on #/track/radar; Today's chip routes to #/status. Done when the page shows a rise after a logged skill use and nothing after a slip, by test."
+   },
+   "laneNote": "Builds on what is merged (f69bc68a): HarborUI, GameUI, GuidanceUI, Engine.gameState/explorer/quests/warningSigns/roadmap/nextLesson/momentum, Actions, Store.subscribe re-render through ui-core. Nothing new is computed in the DOM; the Engine is read, never written; the page never shows a decrease or the current run. The house rules of docs/BUILD-GUIDE.md and BUILD-PLAN.md section 2 bind (original words, grade 6-8, no promises). V3-IMPROVEMENTS.md section 2 is the proposal; PLAN-V3.md section 3 the contract. Questions V-Q3 to V-Q6 default at 03:30 IST unless outbox-OWNER.md says otherwise: a page, the strip as dated dots, 'changed' since the last draw this session, the name 'Your Harbor'."
+  },
+  "tests-docs": {
+   "lane": "tests-docs",
+   "chat": "CORE",
+   "tier": 1,
+   "flagged": false,
+   "area": "The screenshots, the guide, the browser harness and the hooks round, the offline docs true, the status layer's browser tests, the boot-time and contrast checks.",
+   "files": [
+    "offline/tests/browser.test.mjs",
+    "offline/tests/screens.mjs",
+    "offline/tests/helpers/*",
+    "offline/docs/*",
+    "offline/README.md",
+    "README.md (## Offline edition)",
+    "CLAUDE.md (## Offline edition)",
+    "docs/decisions/0022-*.md",
+    "docs/decisions/README.md (the 0022 row)",
+    "package.json (scripts, devDependencies)",
+    "package-lock.json"
+   ],
+   "units": [
+    "U-35",
+    "V-07",
+    "V-03",
+    "V-06",
+    "V-01t",
+    "V-22a",
+    "V-26b",
+    "V-27",
+    "V-29"
+   ],
+   "batches": [
+    [
+     "U-35"
+    ],
+    [
+     "V-07"
+    ],
+    [
+     "V-03",
+     "V-06"
+    ],
+    [
+     "V-01t"
+    ],
+    [
+     "V-22a",
+     "V-26b",
+     "V-27",
+     "V-29"
+    ]
+   ],
+   "unitTier": {
+    "U-35": 1,
+    "V-07": 1,
+    "V-03": 1,
+    "V-06": 1,
+    "V-01t": 1,
+    "V-22a": 2,
+    "V-26b": 2,
+    "V-27": 2,
+    "V-29": 2
+   },
+   "unitNotes": {
+    "U-35": "Screenshots (1.5 h): as lane_args.json (running since 02:07 as wf_3e4ac20d-750; images committed dfc2703).",
+    "V-07": "Guide Parts 3 and 4 (2.5 h, V3-07): the 14 lessons marked U-36b written, Part 4 rows no longer 'Planned'; the Node and browser test counts and names as the trunk has them; the screenshots of U-35 referenced; python offline/docs/build_guide.py exit 0 with every image present. Original words only.",
+    "V-03": "The hooks round, test side (2.2 h, V3-03, V3-04, V3-05): facts first: sos-reassess-passed and sos-reassess-still exist (ui-sos.js:709-710, hooks.mjs:35-36); the skip is the flow's path: flows.mjs advanceUntil taps only Next/Continue/Start, while the app needs sos-helped-yes (ui-sos.js:675) then sos-checkin (:700) or Guide me (:676): the helper taps helped, then Check in. quicklog-button is a data-tour on #/track only (ui-track.js:452): the quick-log test gets start: '#/track', then #/today before the evening check-in. helpers/hooks.mjs learns every name of R-S-6 (Settings: settings-tab-<tab>, set-pin, pin-*, remove-pin, lock-now, auto-lock, discreet-toggle, theme-*, text-size-*, calm/contrast/motion/counters/run toggles, export-btn, import-file, erase-all, print-logs, load-sample, erase-sample, erase-sample-note, sample-loaded, backup-reminder, last-backup, settings-message, tour-replay, tour-later, drills-later, early-notice, early-notice-ok, version, rhythm-save, names-save), R-S-11 (planner-*, actions-hub, actions-back, actions-to-planner; coach-*, jit-*, tip-*, explorer-*, more-tools, show-now, new-dot), the load-sample note and the lock-said parent; the attribute each uses as the source has it (data-testid, data-tour, or an id: read the source, do not assume data-test). The one asked hook absent from every ui-*.js is actions-open-planner (actions-to-planner exists at ui-actions.js:389): use the existing one, or ask actions by outbox for the attribute only. New flows: Settings PIN set and remove, planner add and save, the tour from Settings Help by hook. The three skipped tests run and pass by name; no test is weakened. Done when npm run test:browser shows 0 skip for those three, by name, on the branch's built file.",
+    "V-06": "Docs true again (1 h, V3-06): offline/README.md no longer says the data layer, PIN, export, Settings and the discreet switch are planned, nor that the label always says Not saved; the '## Offline edition' sections of README.md and CLAUDE.md match the file (what is merged, the commands, the tests by name and count); the release copy offline/releases/1-addic-v1.1.html named. Append-only sections in the shared files (territory.json).",
+    "V-01t": "The status layer's browser tests and guide lesson (1.5 h; after today-track V-01b merges; the hook names are fixed in PLAN-V3.md section 3, so the tests are written first against them): 'status opens from Today in one tap'; 'status shows the change after a quick log'; 'status: a slip lowers no light' (data-level of every status-place before and after a slip log); 'status under reduced motion has no moving class'. hooks.mjs lists the status hooks. The guide gets the lesson 'Your Harbor' with a screenshot pair (screens.mjs adds the route). Done when the four tests pass by name on the merged file.",
+    "V-22a": "C-TM-1 (0.2 h): the two writes in the markOnboarded helper become one, or are ordered and awaited; test-only.",
+    "V-26b": "Boot-time budget (0.7 h, V3-26): a browser test that measures the time from navigation to the first ui:rendered on the built file, prints it in the log and bounds it (the bound from three runs on this machine, with margin); core prints per-part sizes in build.mjs (V-26a, by outbox if not yet merged).",
+    "V-27": "Contrast guard (1 h, V3-27): a Node check (offline/tests/contrast.test.mjs or inside guards) of the fg/bg token pairs of styles.css in both themes at 4.5:1 for text and 3:1 for large text, by name; .coach-sos and .gt-dot included. A red names the pair and goes to the token's owner by outbox.",
+    "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others."
+   },
+   "laneNote": "Runs on from U-35 without a new cut (fast-forwarded to f69bc68a 02:03). Tier 1 first: U-35, V-07, then V-03 and V-06, then V-01t when today-track V-01b is merged; tier 2 after. Every hook that must be added to another lane's file is asked by outbox with the attribute name and the element (the owner adds the attribute only). Under 4.0 GB free the run pauses at its next commit (the floor was crossed 02:23)."
+  },
+  "core": {
+   "lane": "core",
+   "chat": "CORE",
+   "tier": 1,
+   "flagged": true,
+   "area": "The shell's static safety line, the core LOWs, Store.status().lockId, build.mjs per-part sizes.",
+   "files": [
+    "offline/build.mjs",
+    "offline/src/shell.html",
+    "offline/src/styles.css",
+    "offline/src/ui-core.js",
+    "offline/src/store.js",
+    "offline/src/boot.js",
+    "offline/tests/store.test.mjs",
+    "package.json",
+    "offline/1-addic.html"
+   ],
+   "units": [
+    "V-11",
+    "V-16",
+    "V-17a",
+    "V-26a"
+   ],
+   "batches": [
+    [
+     "V-11"
+    ],
+    [
+     "V-16",
+     "V-17a",
+     "V-26a"
+    ]
+   ],
+   "unitTier": {
+    "V-11": 1,
+    "V-16": 2,
+    "V-17a": 2,
+    "V-26a": 2
+   },
+   "unitNotes": {
+    "V-11": "A safety line before boot (0.5 h, V3-11): shell.html's <main> carries a static, plain line 'If you are in danger, call your local emergency number' with the built-in number (the same words boot.js shows on a start failure; clinicalReview-marked like them), visible from the first byte and replaced at the first render; no script needed to show it. A store test or a shell check asserts it is in the built file and gone after boot. Original words; no new number.",
+    "V-16": "LOWs N1, N2, Q-a (1 h, V3-16) as ruled in tracks/CORE/contracts/core.md:117-119: role=group over an implicit role; the contenteditable keeps its tab stop; the bare control gets a name. Tests by name in store.test.mjs or the component tests.",
+    "V-17a": "Store.status().lockId (0.5 h, V3-17): an opaque id that changes when the notebook is erased or a new PIN is set, in status(); as ruled in contracts/actions-sos.md:130; a test that a new PIN after an erase changes it. The SOS side (V-17b) is actions-sos'.",
+    "V-26a": "build.mjs prints the size of every part and the total (0.3 h, V3-26); the parts list unchanged."
+   },
+   "laneNote": "Flagged: both reviewers (contracts and tests; safety copy, privacy and the person's data) on the final READY as before. Fast-forward build/core to BASE first. Tier 1 is V-11 alone."
+  },
+  "actions-sos": {
+   "lane": "actions-sos",
+   "chat": "CORE",
+   "tier": 1,
+   "flagged": true,
+   "area": "Actions.useSkill, the unlock sign of life, the actions-sos LOWs, SOS waiting saves marked with lockId.",
+   "files": [
+    "offline/src/actions.js",
+    "offline/src/ui-sos.js",
+    "offline/src/ui-onboarding.js",
+    "offline/src/styles.css",
+    "offline/tests/actions.test.mjs"
+   ],
+   "units": [
+    "V-08a",
+    "V-SOS10",
+    "V-25",
+    "V-18",
+    "V-17b"
+   ],
+   "batches": [
+    [
+     "V-08a",
+     "V-SOS10"
+    ],
+    [
+     "V-25",
+     "V-18"
+    ],
+    [
+     "V-17b"
+    ]
+   ],
+   "unitTier": {
+    "V-08a": 1,
+    "V-25": 2,
+    "V-18": 2,
+    "V-17b": 2,
+    "V-SOS10": 1
+   },
+   "unitNotes": {
+    "V-08a": "Actions.useSkill({skillId, helpful}) -> {ok, event} (0.5 h, V3-08, R-C-39): a skill used in a game or a tool is credited with a SkillUsed event through Actions (the USE_VERB refusal at ui-tools.js:315 is the symptom; the ruling in contracts/actions-sos.md:175). On a refusal (unknown skill, sample mode, locked) it returns ok:false and throws nothing. Tests: the event is written with the right fields; XP follows the Engine's rule; a sample profile writes nothing of the person's own. game-tutorials' V-08b calls it.",
+    "V-25": "Unlock gives a sign of life (0.3 h, V3-25): an aria-live polite line 'Opening your notebook' in the lock form during the key derivation (ui-onboarding.js:240-252), cleared on success or failure; the controls stay disabled meanwhile as now; the owner times it on a phone (the PC takes about 1.2 s).",
+    "V-18": "RC22, RC23, R8-RC1 (1 h, V3-18) as ruled in contracts/actions-sos.md:172, :177, :183: a status change over a sample plan keeps the mark and BattlePlanCreated only for the person's row; the two test gaps closed; test-only where the ruling says so.",
+    "V-17b": "SOS marks its waiting saves with Store.status().lockId (0.5 h, V3-17; after core V-17a merges): a save queued before a lock is dropped when the lockId changed (another tab erased and set a new PIN); a test with a stub store whose lockId changes.",
+    "V-SOS10": "The SOS rating '10' wraps at 390 px (0.3 h, tier 1; CORE 10's finding in the U-35 screenshots, R-C-46): the rating row of the SOS craving screen keeps every value on one line at the phone width (ui-sos.js, the CSS in actions-sos' section); a Node test on the markup where possible and the U-35 screenshot re-taken by tests-docs after the merge. No copy change."
+   },
+   "laneNote": "Flagged: the two reviewers on the final READY (safety copy, privacy, the person's data; contracts and tests). Fast-forward build/actions-sos to BASE first. Tier 1 is V-08a alone; its contract is published to game-tutorials by outbox the moment the signature is fixed."
+  },
+  "engine": {
+   "lane": "engine",
+   "chat": "CORE",
+   "tier": 2,
+   "flagged": false,
+   "area": "The spiral reply's own flag; the exported tutorialDone.",
+   "files": [
+    "offline/src/engine.js",
+    "offline/tests/logic.test.mjs",
+    "offline/tests/engine-roadmap.test.mjs",
+    "offline/tests/engine-insights.test.mjs",
+    "offline/tests/engine-data.test.mjs",
+    "offline/tests/engine-warning-item.test.mjs"
+   ],
+   "units": [
+    "V-19",
+    "V-30"
+   ],
+   "batches": [
+    [
+     "V-19",
+     "V-30"
+    ]
+   ],
+   "unitTier": {
+    "V-19": 2,
+    "V-30": 2
+   },
+   "unitNotes": {
+    "V-19": "FIX-SPIRAL-OWN (0.5 h, V3-19): each spiral reply pair carries own: boolean; engine.js:719-729 fills an empty reply from catalogs.slipSelfTalk with own:false; the person's reply own:true; SOS (ui-sos.js, actions-sos) may then say 'a line to try' instead of 'you wrote'; a test per branch. Tell actions-sos by outbox.",
+    "V-30": "Export tutorialDone (0.2 h): ui-guidance.js:132 calls E.tutorialDone behind a typeof guard but engine.js exports only tour/drill wrappers (engine.js:611-623, the export list 1495-1505); export tutorialDone(view, id, allowSkipped) so the guidance uses the engine's rule; a test that it agrees with the wrappers."
+   },
+   "laneNote": "Tier 2: starts only when no tier 1 lane waits for a slot. One batch, two small units."
+  },
+  "learn": {
+   "lane": "learn",
+   "chat": "CORE",
+   "tier": 2,
+   "flagged": false,
+   "area": "The learn LOWs.",
+   "files": [
+    "offline/src/ui-learn.js",
+    "offline/src/ui-exercise.js",
+    "offline/tests/learn.test.mjs"
+   ],
+   "units": [
+    "V-20"
+   ],
+   "batches": [
+    [
+     "V-20"
+    ]
+   ],
+   "unitTier": {
+    "V-20": 2
+   },
+   "unitNotes": {
+    "V-20": "C3, C4 (0.5 h, V3-20): the '+10 XP' words at ui-learn.js:610 appear only the first time a module's checkpoint is finished (CheckpointCompleted earns once per module, engine.js:181); C4 as the lane report names it; C5 is provenance only (no code). Tests by name."
+   },
+   "laneNote": "Tier 2. One batch."
+  },
+  "content": {
+   "lane": "content",
+   "chat": "SCREENS",
+   "tier": 1,
+   "flagged": false,
+   "area": "The status feature's content, the India numbers, the content LOWs, the clinical-review fixes.",
+   "files": [
+    "offline/src/content-core.js",
+    "offline/src/content-lessons-a.js",
+    "offline/src/content-lessons-b.js",
+    "offline/src/content-lessons-c.js",
+    "offline/src/content-exercises.js",
+    "offline/src/content-practices.js",
+    "offline/src/content-sample.js",
+    "offline/tests/content.test.mjs"
+   ],
+   "units": [
+    "V-10",
+    "V-10b",
+    "V-23"
+   ],
+   "batches": [
+    [
+     "V-10"
+    ],
+    [
+     "V-23"
+    ],
+    [
+     "V-10b"
+    ]
+   ],
+   "unitTier": {
+    "V-10": 1,
+    "V-10b": 1,
+    "V-23": 2
+   },
+   "unitNotes": {
+    "V-10": "The status feature's content (0.3 h, V3-28): Content.features.status (revealed with the Harbor, never later than m1), its JIT tutorial for the first open and its help entry; original words, grade 6-8, no promise of outcomes; validateContent green; a content test that the feature, tutorial and help entry exist and read as text.",
+    "V-23": "C2 (both items so numbered in the lane report: the content-sample.js:6 header against plans 1-3 days ahead; the sample erase assertion), C3, C4 (0.3 h, V3-23): one comment, one assert, the 'guide' id note.",
+    "V-10b": "The India crisis numbers (0.5 h; only after the owner's I6 answer is in outbox-OWNER.md): the verify: true flags of content-core.js:421-432 cleared only for the numbers the owner confirms; the rest keep 'please verify'. Never a new number without the owner's word."
+   },
+   "laneNote": "Tier 1 is V-10 (the status layer needs its feature and tutorial, house rule 5). The clinical-review fixes come by name after the reviewer's answers (V-09, the HUB's pack); hours by the answers."
+  },
+  "game-tutorials": {
+   "lane": "game-tutorials",
+   "chat": "SCREENS",
+   "tier": 1,
+   "flagged": false,
+   "area": "The skill credit in tools, the status tour step and dot, the guidance LOWs.",
+   "files": [
+    "offline/src/ui-game.js",
+    "offline/src/ui-guidance.js",
+    "offline/src/ui-tools.js",
+    "offline/tests/game-tutorials.test.mjs"
+   ],
+   "units": [
+    "V-08b",
+    "V-28",
+    "V-21"
+   ],
+   "batches": [
+    [
+     "V-08b"
+    ],
+    [
+     "V-28"
+    ],
+    [
+     "V-21"
+    ]
+   ],
+   "unitTier": {
+    "V-08b": 1,
+    "V-28": 1,
+    "V-21": 2
+   },
+   "unitNotes": {
+    "V-08b": "ui-tools.js credits a used skill through Actions.useSkill({skillId, helpful}) (0.5 h, V3-08; after actions-sos V-08a merges; on the contract before: typeof-guarded, the old refused call removed); a test that the call is made with the right fields and that a refusal shows nothing wrong to the person.",
+    "V-28": "The status layer's tour step and dot (0.4 h, V3-28): a tour step on data-tour status-open (the Today chip; text from Content.tutorials), the JIT tutorial wiring for Content.features.status on the first open of #/status, GuidanceUI.dot on the chip while unseen; the data-tour target check stays green (the chip exists once today-track V-01b is merged: build on the contract, guard by typeof).",
+    "V-21": "C1 and the coach after a route change (1 h, V3-21): the tour ends as aborted when the route leaves Today (no centred card over another screen's button, the board's 01:39 finding); the narrow/flip branch (ui-guidance.js:329-335) gets a Node case for both branches."
+   },
+   "laneNote": "Starts after today-track's slice (V-01a) is merged, or on a free slot with typeof guards."
+  },
+  "workbook-settings": {
+   "lane": "workbook-settings",
+   "chat": "SCREENS",
+   "tier": 2,
+   "flagged": false,
+   "area": "The early-access sentence; C1b.",
+   "files": [
+    "offline/src/ui-settings.js",
+    "offline/src/ui-workbook.js",
+    "offline/src/ui-plan.js",
+    "offline/tests/workbook-settings.test.mjs"
+   ],
+   "units": [
+    "V-24",
+    "V-22b"
+   ],
+   "batches": [
+    [
+     "V-24",
+     "V-22b"
+    ]
+   ],
+   "unitTier": {
+    "V-24": 2,
+    "V-22b": 2
+   },
+   "unitNotes": {
+    "V-24": "The early-access sentence (0.2 h, V3-24): ui-settings.js:65 'Some screens are still being built' becomes what is true now (every screen is in; honest stubs show only where content is missing); one sentence, original words.",
+    "V-22b": "C1b (0.3 h): workbook-settings.test.mjs:284-294 asserts the eraseSample round trip instead of skipping when absent."
+   },
+   "laneNote": "Tier 2, one batch. The Settings hooks of R-S-6 are already in the source (the researcher's grep 02:20): nothing to add unless tests-docs asks by outbox."
+  },
+  "actions": {
+   "lane": "actions",
+   "chat": "SCREENS",
+   "tier": 1,
+   "flagged": false,
+   "area": "One planner hook, if tests-docs asks.",
+   "files": [
+    "offline/src/ui-actions.js",
+    "offline/src/ui-practices.js",
+    "offline/tests/actions-ui.test.mjs"
+   ],
+   "units": [
+    "V-03h"
+   ],
+   "batches": [
+    [
+     "V-03h"
+    ]
+   ],
+   "unitTier": {
+    "V-03h": 1
+   },
+   "unitNotes": {
+    "V-03h": "actions-open-planner (0.1 h): the one asked hook absent from the source (actions-to-planner exists at ui-actions.js:389); add the attribute tests-docs names, or confirm by outbox that actions-to-planner is the hook. No slot needed for an attribute-only commit if the HUB says so."
+   },
+   "laneNote": "Only when asked by tests-docs by outbox."
+  }
+ }
+}

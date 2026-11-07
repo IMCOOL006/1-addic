@@ -1,5 +1,7 @@
 # 1-addic · Offline edition · Build program plan (7 November 2026)
 
+> **V3 (2026-11-08 02:30 IST):** offline-v1.0 (45473b2) and offline-v1.1 (f69bc68) are tagged; every lane of this plan is merged. The next edition is planned in `PLAN-V3.md` (units, lanes, the status layer's contract, hours, decisions) from `V3-IMPROVEMENTS.md`; sections 4 to 8 of this file still bind.
+
 **Written by:** the HUB chat (session `26196777`), 06:25–07:00 IST, from `docs/offline/BUILD-PLAN.md` (the specification: architecture, data model, contracts, exercise and route tables, the proposed cut). This file holds the program's arithmetic, lanes, tracks, hours, rules and decisions. The spec stays where it is; every brief cites it by section.
 
 **The goal in one line.** One self-contained HTML file, `offline/1-addic.html`, assembled by `node offline/build.mjs` from `offline/src/*`, running the recovery-skills app completely offline from `file://` on any phone or computer, with Node and browser tests and a guide (`offline/docs/1-addic-Guide.md` → `.docx` with screenshots). Tag `offline-v1.0` at today's green; the lanes continue toward `offline-v1.1` under the same gates.
