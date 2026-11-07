@@ -182,3 +182,9 @@
 - 17:30 workbook-settings READY 9cbf630; SCREENS 6721d28e RESTART (past 300k) with actions and game-tutorials live. 17:32-17:39 merged clean (5 files), guards GREEN by name (4 names lifted), full Node suite 305 pass / the 3 baselined names (jobs/4b638c7b/tmp/fulltest-ws.log), merge be0f806d pushed. Records, R-H-29, board.
 
 - **Resume here (17:41):** as 17:19 with these changes: eighteen merges; BASE be0f806d; workbook-settings complete; baselined: 6 tour-target names (actions-lane screens), 3 test names. SCREENS 1 is at RESTART; SCREENS 2 comes from the launcher (TRACKS-ALLOWED already names SCREENS). Next merges: actions-sos READY (655516dc, flagged, RS-SAMPLE expected), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), actions and game-tutorials READY-SLICE (9b319256). Tag offline-v1.1 when actions-sos is in with RS-SAMPLE (or the Settings stop-gap), the three test names are lifted, and a full-gates quiet run is GREEN by name on _int. HUB context about 225k at 17:41: hand-over planned at a safe point past 250k.
+
+## 2026-11-07 17:52 · the nineteenth merge (today-track a02f121, the end marker)
+
+- 17:47 today-track READY a02f121 from SCREENS 2; conflict at the section boundary resolved by hand (marker before the workbook-settings section); guards GREEN by name; 71a65763 pushed 17:51. Rows 17:48 4.1, 17:49 6.0 GB.
+
+- **Resume here (17:52):** as 17:41 with: nineteen merges; BASE 71a65763; SCREENS 2 is live (actions U-22 checking, game-tutorials U-27 building). Next merges unchanged: actions-sos READY (655516dc, flagged, RS-SAMPLE expected), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), actions and game-tutorials READY-SLICE (9b319256). HUB context about 230k.

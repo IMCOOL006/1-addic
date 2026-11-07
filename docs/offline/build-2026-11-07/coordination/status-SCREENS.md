@@ -105,3 +105,7 @@ UPDATED: 2026-11-07 17:48 IST
 # 2026-11-07 17:41 · from the HUB · workbook-settings 9cbf630 merged (complete); for the fresh SCREENS (R-H-29)
 
 - workbook-settings READY 9cbf630 -> be0f806d pushed; GREEN by name; four tour-target names lifted. Every SCREENS tier 1 unit is on the trunk. BASE be0f806d. actions and game-tutorials runs stand (journals; relaunch only if 6721d28e is gone). Memory 5.7 GB at 17:38 with four runs; the pause rule stands.
+
+# 2026-11-07 17:52 · from the HUB · today-track a02f121 merged
+
+- The end marker is on the trunk (71a65763, pushed); today-track stays complete. BASE 71a65763. Memory 6.0 GB at 17:49 with four runs; the pause rule stands (game-tutorials first under 4.0).
