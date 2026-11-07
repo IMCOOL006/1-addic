@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 22:40 IST: today-track FIX-EMBED wf_8859379a-bb6 live (slot 5, R-H-32). game-tutorials MERGED 7485e254 (22:35). Every SCREENS lane is merged; what is left is by name
+STATE: BUILDING   # 2026-11-07 22:55 IST: PAUSED for memory (HUB's word 22:51; rows 3.5 GB 22:50, 1.7 GB 22:51): today-track FIX-EMBED stopped after its commit 6b0184b, worktree clean; its check relaunches on a 7.0 GB row (tracks/SCREENS/args/args_tt_embed_check.json). No SCREENS run live
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track BUILDING 7485e254   # FIX-EMBED wf_8859379a-bb6 live since 22:40 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl). build/today-track was fast-forwarded at 22:38 from a02f121 (in the trunk) to BASE 7485e254, a re-cut from BASE as R-H-32 offered: base and diffFrom 7485e254; ui-today.js and its test only
+LANE: today-track CHECKING 6b0184b   # PAUSED: FIX-EMBED built 6b0184b (22:48; builder's gates GREEN: test 31/31, guards 5/5, browser 13/0/6 same names before and after, read by me); run wf_8859379a-bb6 stopped 22:52 during the checker's gates (memory); the check relaunches on a 7.0 GB row; base and diffFrom 7485e254
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 22:40 IST
+UPDATED: 2026-11-07 22:55 IST
 
 # 2026-11-07 22:33 IST · game-tutorials READY bd2e085 (U-26, U-28, FIX-TOUR; the lane is complete)
 
