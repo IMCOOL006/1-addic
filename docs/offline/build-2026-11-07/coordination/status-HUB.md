@@ -1,11 +1,11 @@
 TRACK: HUB
 STATE: BUILDING   # 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and SCREENS 4d443a20. CORE 60f08c84 and SCREENS d6887185 are gone from claude agents: their runs died at the park (actions-sos FIX-R6 safety re-check, engine FIX-RS9E; the game-tutorials re-check never ran): the fresh chats relaunch each from the branch's last commit with done and priorNote. 12.5 GB free at 22:05. First: merge learn READY 75eb8e5 (test-only; aborted before guards at the park), then actions-sos, engine, game-tutorials as they come READY; then the full gates and the tag offline-v1.1
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: ce691c21 (the trunk after the learn 75eb8e5 merge, 2026-11-07 22:09 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+BASE: 3ea2e13d (the trunk after the engine 84075b6 merge, 2026-11-07 22:19 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 3 (from the 22:04-22:05 rows 12.5-14.2 GB free: (12.5 - 4.0) / 0.7 = 12 by the formula, held to one start per 7.0 GB row at about 3 GB a run; tier 1 first: actions-sos FIX-R6 re-check (CORE, slot 3), engine FIX-RS9E finish and check (CORE, slot 2), then the game-tutorials re-check (SCREENS, slot 8); under 4.0 GB the newest run pauses at its next commit)
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
-SLOTS: engine slot=2 granted again 2026-11-07 18:28 for FIX-RS9E by name (R-S-9: recoveryPlanPrefill and ownWarningPlans read x.item; CORE's wrapper ready), test-only or one-line; READY with the tip; the lane was complete at 57153d3
+SLOTS: engine slot=2 free from 2026-11-07 22:19 IST: FIX-RS9E READY 84075b6 merged (3ea2e13d); the lane is complete; fixes by name only
 SLOTS: actions-sos slot=3 granted again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at 1131827 (16:18, pushed) RS19-RS23 FIXED on the safety re-check, test GREEN 119/119, but the re-check raised RS24 HIGH (more typed death wishes missed; ruled by class: any typed text shows the urgent line) and RS25-RS28: not READY; FIX-R4 by name is the fresh CORE's first run (args ready in jobs/036d08b8/tmp/args_as_r4.json); the HUB merges READY after the safety reviewer's re-check passes
 SLOTS: learn slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY 75eb8e5 merged (ce691c21); the lane is complete; fixes by name only
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
@@ -15,7 +15,7 @@ SLOTS: workbook-settings slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged
 SLOTS: actions slot=7 free from 2026-11-07 18:50: READY 0977edd merged (49f1c1d4; U-22..U-25 in the trunk); the lane is complete; fixes by name only
 SLOTS: game-tutorials slot=8 granted 2026-11-07 16:33 (SCREENS, tier 2): READY-SLICE 5af6665 (U-27 guidance engine) merged 17:57 (89976d80); PAUSED by SCREENS at 17:53 (3.3 GB row); resumes U-26, U-28 on a 7.0 GB row; its real cut base is 9f3026c6 (the LANE line said 9b319256: use 9f3026c6 for its merges)
 MERGING: none
-MERGE-QUEUE: as they appear: actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33; lifts the actions.test.mjs name; both reviewers' answers read before the merge), engine FIX-RS9E READY (655516dc), game-tutorials READY (real cut base 9f3026c6; check git merge-base first)
+MERGE-QUEUE: as they appear: actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33; lifts the actions.test.mjs name; both reviewers' answers read before the merge), game-tutorials READY (real cut base 9f3026c6; check git merge-base first)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
@@ -41,9 +41,15 @@ MERGED: workbook-settings READY 0e76065 (FIX-SAMPLE: Load sample data only witho
 MERGED: core READY 8e80951 (FIX-V11: high contrast on every render, custom-field focus, PIN-where line; review fixes RC1-RC3, RS19; store.test.mjs 87 tests) -> merge a3081f33, trunk a3081f33, pushed 18:27 (build GREEN, 1-addic.html rebuilt; test GREEN 87/87; validate GREEN; guards GREEN by name, the 3 baselined names only; territory 0 errors; merged clean, 4 files; flagged: both reviewers on the round, each finding FIXED on re-check)
 MERGED: actions READY 0977edd (U-23 Battle Plans, U-24 Weekly Review, U-25 quests, Prediction Lab, to-dos, practices player ui-practices.js new; C1; actions-ui.test.mjs 32 tests) -> merge 49f1c1d4, trunk 49f1c1d4, pushed 18:50 (build GREEN; test GREEN 32/32; validate GREEN; guards GREEN with no baselined name left (bp-new, bp-form, review-start lifted); territory 0 errors over 710502f..0977edd; merged clean, 4 files; the lane is complete)
 MERGED: learn READY 75eb8e5 (FIX-RS9, test-only: learn.test.mjs derives its map and coming-stop checks from Content.modules) -> merge ce691c21, trunk ce691c21, pushed 22:09 (build GREEN 952607 B; test GREEN learn.test.mjs 28/28; validate GREEN; guards GREEN by name, no baselined tour target; territory 0 errors; merge base 4f5832fd; merged clean, 1 file; lifts the two baselined learn names; the lane is complete again)
+MERGED: engine READY 84075b6 (FIX-RS9E: recoveryPlanPrefill and ownWarningPlans read a warning sign as x.item; engine-warning-item.test.mjs new) -> merge 3ea2e13d, trunk 3ea2e13d, pushed 22:19 (build GREEN 952627 B; test GREEN 105/105 in 5 files; validate GREEN; guards GREEN by name; territory 0 errors; merge base 57153d3; merged clean, 2 files; the lane is complete again)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 22:09 IST
+UPDATED: 2026-11-07 22:19 IST
+
+# 2026-11-07 22:19 IST · the twenty-sixth merge: engine FIX-RS9E; the SOS and game-tutorials re-checks live
+
+- CORE 93bffdb7 up 22:15 with actions-sos FIX-R6's safety re-check wf_4b67e91f-df4 (22:09) and engine FIX-RS9E wf_76a65b95-f5b relaunched from the wip; SCREENS 4d443a20 up 22:11, the game-tutorials re-check wf_b62ade63-a26 live 22:16. Rows 22:14 14.3 GB, 22:16 14.9 GB with three runs.
+- 22:18 engine READY 84075b6 (check PASS; CORE verified 105/105 on the branch and over the trunk's content). Merge base 57153d3 checked; prepare MERGED-CLEAN (2 files), conflicts none, guards GREEN by name (build 952627 B; test 105/105 in 5 files; validate; guards; territory 0 errors); commit 3ea2e13d; finish --hub --push: the trunk and build/engine on origin 22:19. Slot 2 free.
 
 # 2026-11-07 22:09 IST · HUB 7 (0a13fa1c) resumes on the owner's --start; the twenty-fifth merge: learn FIX-RS9
 

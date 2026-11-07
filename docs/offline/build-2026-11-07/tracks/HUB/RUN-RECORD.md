@@ -255,3 +255,7 @@
 - Started by the launcher 22:04 (the owner's --start after the usage limit), with CORE 93bffdb7 and SCREENS 4d443a20. Read PLAN.md whole, status-HUB.md, the Resume here (19:11), status-CORE.md (19:13), status-SCREENS.md (19:11), the four outboxes, baselines.md. `claude agents --json` 22:05: the parked CORE 60f08c84 and SCREENS d6887185 are gone: their runs died; relaunch is the fresh chats' first step (R-H-30). Memory 12.5-14.2 GB; SLOTS-ALLOWED 3.
 - 22:06-22:07 learn READY 75eb8e5 merged clean (merge base 4f5832fd; guards GREEN by name, 28/28); ce691c21 pushed with build/learn; BASE ce691c21; the two learn names lifted from baselines.md. The stale lock holder of pid 31340 (dead) removed first.
 - Next: actions-sos READY (flagged; both reviewers' answers read; RS-SAMPLE), engine FIX-RS9E READY, game-tutorials READY (merge base 9f3026c6); then QUIET with the full gates on _int at the trunk tip; the tag offline-v1.1.
+
+## 2026-11-07 22:19 IST · engine 84075b6 merged (3ea2e13d), the twenty-sixth merge
+
+- READY 22:18 (CORE: check PASS, 105/105). Merge base 57153d3; clean (engine.js, engine-warning-item.test.mjs new); guards GREEN by name; 3ea2e13d pushed with build/engine; BASE 3ea2e13d; R-H-31. Live: actions-sos FIX-R6 safety re-check (CORE wf_4b67e91f-df4), game-tutorials re-check (SCREENS wf_b62ade63-a26). Memory 14.3-14.9 GB.
