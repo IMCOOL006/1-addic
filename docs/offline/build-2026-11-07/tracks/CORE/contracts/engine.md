@@ -42,3 +42,10 @@ No routes, UI.pages entries, data-tour targets or DOM hooks. Content keys it rel
 ## For U-07, written in by the CORE chat 2026-11-07 09:33 IST: the shapes actions-sos' ui-sos.js reads (built at 1507640)
 
 - Return these exact shapes (ui-sos tolerates the alternatives in contracts/actions-sos.md, but these are the contract): `crisisKeywords(text) -> boolean`; `guideSequence(view) -> ['wave'|'why'|'call'|'distract'|'talkback', ...]` (flat on Engine); `reasonsCard(view) -> string[]`, `distractionDeck(view) -> string[]`, `comebacks(view) -> string[]`, `spiralThoughts(view) -> [{thought, reply}]`. Crisis words are short and marked clinicalReview; an empty or unknown text is false.
+
+
+## The CORE chat's rulings 2026-11-07 10:45 IST from the actions-sos review (session 06ee0d0d; built in engine's run, by name where U-06 to U-08 do not already cover them)
+
+- **SosCompleted.outcome** is one enum: 'passed'|'still'|'used' ('still' means the craving had not passed and the person did not use). A reader treats any other value as 'other'. This replaces 'passed'|'used'|'other' above.
+- **Sample rows:** every derivation skips rows and events marked sample: true. That covers XP, mastery, badges, total days, the Harbor's light, the runs, insights and the planner. Loading sample data then never awards anything, and Actions.eraseSample never lowers anything.
+- **crisisKeywords(text)** covers at least the phrases of actions-sos' widened CRISIS_RE (RS2 in contracts/actions-sos.md, rulings of 10:45), with straight, curly and missing apostrophes. It returns the matched words, or an empty array.

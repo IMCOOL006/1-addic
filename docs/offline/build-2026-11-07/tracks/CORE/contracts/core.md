@@ -72,3 +72,30 @@ Variables (HSL triplets, used as hsl(var(--x))), identical in light and dark: --
 - **Q4 a row that will not open.** It is never deleted: a PIN change, a remove or an import carries such a row over as it is stored; it is counted in status() as `unreadable` (a number) so a screen can say so plainly.
 - **Q5 imports.** Every import, the settings import screen included, goes through `Actions.importBackup` (it validates app and schemaVersion); `Store.replaceAll` is called by Actions only.
 - **Q6 the browser flows.** Owed by tests-docs U-34 (building now, wf_5eb3e38a-14f): zero console errors, zero network requests, the SOS button hidden in SOS, 390 px, dark theme, PIN set, lock, unlock, export, export -> erase -> import, the locked discreet case; each a named test, SKIP by name until its code is on the tree.
+
+
+## The CORE chat's rulings 2026-11-07 10:45 IST: core's review findings still open at 3789c81 and the reviewers' questions (session 06ee0d0d; built in core's follow-up run, batches FIX-SAFETY then FIX-RULINGS)
+
+The review fix round at 3789c81 never saw the findings after RS4: its prompt was cut at 2,000 characters. Their full text is in C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__review-open.md. Already done: Q1 by RC4 (f2159e0), Q2 by RS4 (1e9272c), RC1, RS2 (e26b958), RC2, RS3 (0de55c7), RS1 (2f7266b), RC3 (af2e097), RC8 (4a48ead, 3789c81).
+
+**FIX-SAFETY** (each a commit naming its id, a test red first):
+- RS5: in a session that is not 'indexeddb', resetAll also deletes the IndexedDB database '1-addic' (with a timeout, onblocked handled). If that fails, it rejects with the code ERASE_PARTIAL so the settings copy can say plainly what was not erased.
+- RS6: after the load, boot decides on the current route. An SOS page already drawn is never re-rendered: `pageKey(route()) === 'sos' && state.lastPath !== null` gives chrome('sos'), anything else render('route').
+- RS7: the pre-paint head script reads '1-addic:discreet'. When it is '1', it sets html[data-discreet] and the title 'Notebook' (O1), and CSS keeps #app-name and #sos-btn discreet until ui-core paints them. boot calls chrome(pageKey(route())) before it awaits the load.
+- RS8: URGENT keeps one built-in entry: 112 as a tel: link, verify: true, inside the clinicalReview block. It is shown only when the Content list is empty. A test renders #/sos with Content undefined and finds one tel: link.
+- From the safety reviewer's questions:
+  - (a) render() empties #print-root whenever the store is locked.
+  - (b) Store.lock.touch() first checks the time since the last touch. If that is past the limit, it locks at once instead of resetting the timer. ui-core also calls it on visibilitychange (when visible), pageshow and input.
+  - (c) Every PIN field has inputmode numeric, pattern [0-9]* and autocomplete 'one-time-code'. The Store's own check (4 to 64 characters) stays as it is.
+  - (d) The fallback lock page gets one plain line: 'Forgot your PIN? You can erase this notebook and restore a backup.'
+  - (e) h() drops a string on* attribute, and any href or src that starts with 'javascript:' (after a trim, in any case).
+
+**FIX-RULINGS:**
+- Q3: view.get and view.list return frozen rows (a shallow Object.freeze).
+- Q4 and RC9: a row that will not open is kept as stored. lock.set, remove and replaceAll carry it over, and status().unreadable gives the count. decode inserts rows in their stored order. list() and exportJson() sort by key in every mode. A test locks, unlocks, and finds the same ids in the same order.
+- RC5, RC6, RC7: the stand-in DOM tests these findings name:
+  - aria-current and focus on #main for each of the five tabs;
+  - the SOS night theme, with a stand-in Engine.isNight;
+  - UI.form's validate, values and set, and confirm's answer (true only on its confirm button).
+
+Not core's: Q5 imports go through Actions.importBackup (actions-sos; workbook-settings by outbox). Q6 and a Back case belong to tests-docs' next run. The line 'Set a PIN before you write anything private.' belongs to the PIN help in onboarding (actions-sos) and settings (workbook-settings).

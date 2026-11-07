@@ -1,12 +1,26 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 10:33 IST: CORE session 06ee0d0d (launcher 10:29) takes over from 224074c0; 224074c0 is still listed by claude agents (busy), so its four runs are alive and are not relaunched; this chat reads their journals and writes the LANE lines
-LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 030f949 + 98f872d, check PASS; review fixes to 3789c81; the two reviewers re-check (run wf_6b7ddbb3-2a7, live at 10:31), then report; then FIX-RULINGS
-LANE: engine BUILDING   # slice U-05 04fc0c1 MERGED; run wf_f39915b9-3a4 (10:23): C1 helpfulValue 3ed6e1d, builder on [U-06, U-07], then [U-08], check, report; lands after the FREEZE (offline-v1.1)
-LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae, check PASS; review fixes to 5cfed71; the two reviewers re-check (run wf_379c12ed-2e4, live at 10:31), then report; then FIX-ONB-EMO
-LANE: learn BUILDING   # slice U-12 a499dae MERGED; run wf_7e30a83f-8e5 (10:16): U-13, U-14 committed 19f373c (C1, C2 by name in it); builder hand-off, then check, report
+STATE: BUILDING   # 2026-11-07 10:45 IST: CORE session 06ee0d0d; 224074c0 left claude agents at 10:37 and its four runs died; all four relaunched 10:43 in this session (core wf_bf29c997-958, actions-sos wf_0a47dae7-ba9, learn wf_c538e4c5-38a, engine wf_35f6a75a-d62)
+LANE: core BUILDING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 98f872d (check PASS), review fixes to 3789c81; review findings the fix round never saw (its prompt cut at 2,000 chars) + rulings 10:45: run wf_bf29c997-958 builds FIX-SAFETY, FIX-RULINGS, then check, two reviewers, report; not READY by the FREEZE: fixes by name
+LANE: engine PAUSED   # slice U-05 04fc0c1 MERGED; C1 3ed6e1d; HUB pause 10:42 (3.6 GB): run wf_35f6a75a-d62 resumes U-06 in progress and is stopped at its next commit; resumes after the tag (offline-v1.1)
+LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae (check PASS), review fixes to 5cfed71; RS2 (HIGH, crisis text) to RS9 never reached the fix round + rulings 10:45: run wf_0a47dae7-ba9 builds FIX-SAFETY-AS, FIX-ONB-EMO, then check, two reviewers, report; not READY by the FREEZE: fixes by name
+LANE: learn CHECKING   # slice U-12 a499dae MERGED; C1 9bbccd2, C2 dc248cb, U-13 + U-14 19f373c (10:31); the builder died before its hand-off: run wf_c538e4c5-38a from the check over a499dae..HEAD, then report
 LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 10:33 IST
+UPDATED: 2026-11-07 10:45 IST
+
+# 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
+
+- 10:37 the watcher saw 224074c0 leave `claude agents` (10:38 confirmed: not listed). Its runs died: core and actions-sos at the reviewers' re-checks (no result), learn's builder after its commit 19f373c (U-13, U-14), engine's builder with U-06 uncommitted in the worktree (kept, never discarded).
+- The review fix rounds of both flagged lanes saw only the first 2,000 characters of the findings (lane.js findingsText cuts there and points at the reviewers' notes files, which the reviewers never wrote). Never fixed: core RC5-RC7, RC9, RS5-RS8; actions-sos RS2 (HIGH: the typed-text crisis check misses 'don't want to live', 'can't go on', 'end it' and more), RS3-RS9, RC10. Their full text: C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__review-open.md; the chat's rulings on each and on every reviewer question: the last section ('rulings 2026-11-07 10:45') of tracks/CORE/contracts/core.md, actions-sos.md and engine.md.
+- Relaunched 10:43 (args in C:/Users/ruchi/.claude-pro/jobs/06ee0d0d/tmp/args_<lane>.json): core wf_bf29c997-958 (batches FIX-SAFETY, FIX-RULINGS; check over 98f872d..HEAD; both reviewers over base...HEAD with knownFindings); actions-sos wf_0a47dae7-ba9 (FIX-SAFETY-AS, FIX-ONB-EMO; check over c629cae..HEAD; both reviewers); learn wf_c538e4c5-38a (start check over a499dae..HEAD); engine wf_35f6a75a-d62 (resumes U-06; stopped at its next commit per the HUB's 10:42 pause).
+- Neither flagged lane can be READY by the FREEZE 10:55: U-04 and U-10/U-11 come in as fixes by name if the HUB takes them before the tag, else offline-v1.1. R-C-12 to the HUB, R-C-13 to SCREENS.
+
+# 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
+
+- 10:37 the watcher saw 224074c0 leave `claude agents` (10:38 confirmed: not listed). Its runs died: core and actions-sos at the reviewers' re-checks (no result), learn's builder after its commit 19f373c (U-13, U-14), engine's builder with U-06 uncommitted in the worktree (kept, never discarded).
+- The review fix rounds of both flagged lanes saw only the first 2,000 characters of the findings (lane.js findingsText cuts there and points at the reviewers' notes files, which the reviewers never wrote). Never fixed: core RC5-RC7, RC9, RS5-RS8; actions-sos RS2 (HIGH: the typed-text crisis check misses 'don't want to live', 'can't go on', 'end it' and more), RS3-RS9, RC10. Their full text: C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__review-open.md; the chat's rulings on each and on every reviewer question: the last section ('rulings 2026-11-07 10:45') of tracks/CORE/contracts/core.md, actions-sos.md and engine.md.
+- Relaunched 10:43 (args in C:/Users/ruchi/.claude-pro/jobs/06ee0d0d/tmp/args_<lane>.json): core wf_bf29c997-958 (batches FIX-SAFETY, FIX-RULINGS; check over 98f872d..HEAD; both reviewers over base...HEAD with knownFindings); actions-sos wf_0a47dae7-ba9 (FIX-SAFETY-AS, FIX-ONB-EMO; check over c629cae..HEAD; both reviewers); learn wf_c538e4c5-38a (start check over a499dae..HEAD); engine wf_35f6a75a-d62 (resumes U-06; stopped at its next commit per the HUB's 10:42 pause).
+- Neither flagged lane can be READY by the FREEZE 10:55: U-04 and U-10/U-11 come in as fixes by name if the HUB takes them before the tag, else offline-v1.1. R-C-12 to the HUB, R-C-13 to SCREENS.
 
 # 2026-11-07 10:33 IST · CORE session 06ee0d0d resumes
 

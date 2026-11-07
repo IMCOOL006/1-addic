@@ -41,3 +41,41 @@ data-tour targets this lane carries: `sos-urgent` (urgent entry on the SOS hub),
 - **Globals in the built page.** Each part is its own classic script, so `const Content`, `Engine`, `Store` are not globalThis properties: read them with `typeof X !== 'undefined' ? X : null`, never `globalThis.X` (a vm test guards it in actions.test.mjs). Every screen lane: the same rule.
 - **The chat's rulings 2026-11-07 09:33 IST (built in actions-sos' follow-up run):** (1) a new person (no profile.onboardedAt, not locked) who opens the app on the default route (#/ or #/today) is sent once to #/onboarding with replace, never from SOS, the lock or any other route; ui-onboarding.js does it on the ui:route event (no change to ui-core). (2) `Actions.sosSession` takes an optional `emotion`, so a feeling session saved without a rating keeps the feeling the person chose.
 - **Sample data (O6; consumer workbook-settings; check C3 at c629cae):** `Actions.loadSample() -> {sample, count, skipped}` never overwrites the person's rows (keyed rows profile/settings/recoveryPlan and existing ids are skipped and counted in `skipped`); every sample row is marked; `Actions.eraseSample() -> {erased}` removes only the marked rows (actions.js:909-925).
+
+
+## The CORE chat's rulings 2026-11-07 10:45 IST: actions-sos' review findings still open at 5cfed71 and the reviewers' questions (session 06ee0d0d; built in its follow-up run, batches FIX-SAFETY-AS then FIX-ONB-EMO)
+
+The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,000 characters. Their full text is in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-open.md.
+
+**FIX-SAFETY-AS** (each a commit naming its id; where code changes, a test red first):
+- RS2 (HIGH): widen CRISIS_RE as the finding says. It must cover straight, curly and missing apostrophes, and 'don't want to live / be here / be alive / wake up', 'can't go on', 'end it / end it all / ending my life', 'take my own life', 'wanna die', 'kms', 'nothing to live for', 'no reason to live', 'hurt / cut / hang myself' and 'overdose on purpose'. Add positive and negative test phrases, and mark the list clinicalReview.
+- RS3: the withdrawal label is 'Heavy daily drinking or sedatives: stop with a doctor.' (clinicalReview).
+- RS4: the primary slip button says 'Log it and go on'. A ghost button 'Just reading' goes on and logs nothing. A pure helper and a test pin which choice writes.
+- RS5: when opioids is ticked, the card adds Content.resources.opioidSafety when it is present. Otherwise it adds one built-in line: 'After a break, your tolerance drops. Never use alone. In an emergency, call for help.' (clinicalReview).
+- RS6: 'please verify' appears beside each meetings group with verify:true (data-test meetings-verify).
+- RS7: the feeling flow asks once at its end, 'What helped?', with toggles that start off. A toggle left off writes helpful:false.
+- RS8: UI.sosSoberView takes a title: 'Breathe' when discreet. The step line becomes 'Notice what you feel in your body.'
+- RS9: spiralPairs skips any thought that isCrisisText flags or that contains 'hopeless'.
+- FALLBACK.talkback is 'I can wait 15 minutes and let this wave pass.' (clinicalReview).
+- In crisis mode the verify note is one short line: 'Please check these numbers.'
+
+**FIX-ONB-EMO:**
+- The 09:33 ruling (1): a new person (no profile.onboardedAt, not locked) on #/ or #/today is sent once to #/onboarding with replace. This never happens from SOS, the lock or any other route. It is done on ui:route in ui-onboarding.js.
+- The 09:33 ruling (2), Actions.sosSession taking an optional emotion: check caed857 and add only what is missing.
+- Q1 of core's review: an SOS commit that fails with LOCKED keeps the session in memory and saves it after the next unlock.
+- RC10: there is one outcome enum, 'passed'|'still'|'used' (the code's). engine.md now says the same.
+- PIN fields: autocomplete 'one-time-code', inputmode numeric, pattern [0-9]*, 4 to 12 digits. The PIN help adds 'Set a PIN before you write anything private.'
+- O6: step 1 of onboarding gets a ghost button 'Look around with sample data' (Actions.loadSample: marked, erasable in Settings).
+- The drill says 'Nothing goes in your log.'
+- The motivation slider starts with no value and saves only when the person moves it or confirms it.
+- A start date after today is refused: max on the input, and Actions refuses it with the code FUTURE_DATE.
+- The slip flow shows COPY.reach.
+- Leaving a craving flow by Urgent help or Back to SOS after at least one tool saves those tools as one session with outcome 'still'. The save happens after the next screen draws, never before the numbers.
+- recordEvent refuses SosCompleted, LogCreated, SkillUsed and SlipLogged (the code USE_VERB: each has its own verb).
+- actions.test.mjs pins its clock. quick-reasons expects ArtifactSaved only when Content gives it the kind build, assess or plan.
+- recoveryPlan.graduatedAt is set once, by the verb that writes RecoveryPlanConfirmed, and never cleared.
+- Every import goes through Actions.importBackup (core's Q5).
+
+**Rulings on questions that need no code here:**
+- sms: is accepted beside tel: and Copy. It opens the device's own app, and this file sends nothing.
+- While locked, the region is unknown: the India list comes first, then the international list, as now. No plain region flag. The content lane is asked by outbox for a number on the intl local-emergency item.
