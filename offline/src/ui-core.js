@@ -722,6 +722,7 @@ const UI = (function () {
     }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
+      h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)
       h('div', { class: 'row' },
         h('a', { class: 'btn', href: '#/sos/urgent', text: 'Urgent help' }),
         h('a', { class: 'btn', href: '#/sos/craving', text: 'Ride the wave' })));

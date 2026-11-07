@@ -381,6 +381,16 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(pin.getAttribute('autocomplete'), 'one-time-code');
   });
 
+  test('(d): the fallback lock page says, in one plain line, what to do about a forgotten PIN', async () => {
+    setup();
+    globalThis.Store = lockedStore('2468');
+    at('#/lock');
+    await UI.render();
+    const lines = main().all().filter((e) => e.tagName === 'P' && /Forgot your PIN\?/.test(e.textContent));
+    assert.equal(lines.length, 1);
+    assert.equal(lines[0].textContent.trim(), 'Forgot your PIN? You can erase this notebook and restore a backup.');
+  });
+
   test('RS8: with Content missing, unreadable or its list empty, the built-in urgent page still has one number to tap', async () => {
     const contents = [undefined, { resources: { in: { emergency: [], crisis: [] } } }, { resources: { in: { emergency: 'x' } } },
       { get resources() { throw new Error('unreadable'); } }];
