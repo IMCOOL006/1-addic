@@ -852,3 +852,61 @@ test('actions hub: every card opens a working screen', async () => {
     assert.equal(byTest(root, 'actions-hub-quests')[0].all((n) => n.getAttribute && n.getAttribute('class') === 'act-soon').length, 0);
   });
 });
+
+test('the event log never shrinks: a to-do remove, a Battle Plan attach and edit, and a planner remove keep every event; XP is never lower', async () => {
+  await freshStore();
+  const snap = () => ({ ids: Store.view.list('events').map((e) => e.id), xp: E.gameState(Store.view, NOW).xp.total });
+  const kept = (before, step) => {
+    const now = snap();
+    const have = new Set(now.ids);
+    for (const id of before.ids) assert.ok(have.has(id), `${step}: event ${id} is still in the log`);
+    assert.ok(now.ids.length >= before.ids.length, `${step}: the log is not shorter`);
+    assert.ok(now.xp >= before.xp, `${step}: XP ${now.xp} is not lower than ${before.xp}`);
+    return now;
+  };
+  const { plan: past } = await Actions.plans.add({ date: '2026-11-06', start: '19:00', end: '21:00', title: 'Friday evening', kind: 'risky', battlePlan: { plan: 'Walk it off' } });
+  await P.debriefPlan(Actions, past.id, true, 'It held');
+  const { plan: b } = await Actions.plans.add({ date: TODAY, start: '18:00', end: '20:00', title: 'Evening alone', kind: 'should' });
+  await Actions.todos.add({ text: 'Call the clinic' });
+  let s = snap();
+  assert.ok(s.ids.length >= 2, 'the log starts with the plan events');
+  assert.ok(s.xp > 0, 'the start carries XP');
+  await withDom(async () => {
+    const todos = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    await one(todos, 'todo-remove').fire('click');
+    await one(todos, 'todo-remove-yes').fire('click');
+    await until(() => Store.view.list('todos').length === 0);
+    assert.equal(Store.view.list('todos').length, 0);
+    s = kept(s, 'to-do remove');
+
+    const attach = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    one(attach, 'bp-f-plan').value = 'Cook, then call a friend';
+    await one(attach, 'bp-form').fire('submit');
+    await until(() => !!Store.view.get('plans', b.id).battlePlan);
+    assert.equal(evs('BattlePlanCreated').length, 2);
+    s = kept(s, 'Battle Plan attach');
+
+    const edit = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    one(edit, 'bp-f-plan').value = 'Cook, then call my brother';
+    await one(edit, 'bp-form').fire('submit');
+    await until(() => Store.view.get('plans', b.id).battlePlan.plan === 'Cook, then call my brother');
+    assert.equal(evs('BattlePlanCreated').length, 2, 'an edit adds no second BattlePlanCreated');
+    s = kept(s, 'Battle Plan edit');
+
+    const day = AU.page(ctxFor(Store.view, R('/actions/planner', { date: '2026-11-06' })));
+    await one(day, 'planner-remove').fire('click');
+    await one(day, 'planner-remove-yes').fire('click');
+    await until(() => !Store.view.get('plans', past.id));
+    assert.equal(Store.view.get('plans', past.id), null);
+    s = kept(s, 'planner remove of a debriefed Battle Plan');
+    assert.equal(evs('BattlePlanCreated').filter((e) => e.payload.planId === past.id).length, 1, 'its BattlePlanCreated stays');
+    assert.equal(evs('BattlePlanDebriefed').filter((e) => e.payload.planId === past.id).length, 1, 'its debrief stays');
+
+    const today = AU.page(ctxFor(Store.view, R('/actions/planner', { date: TODAY })));
+    await one(today, 'planner-remove').fire('click');
+    await one(today, 'planner-remove-yes').fire('click');
+    await until(() => Store.view.list('plans').length === 0);
+    assert.equal(Store.view.list('plans').length, 0);
+    kept(s, 'planner remove');
+  });
+});
