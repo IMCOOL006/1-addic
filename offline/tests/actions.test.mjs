@@ -801,7 +801,8 @@ describe('sos screens (U-10)', () => {
 
   test('routes: hub, flows, drill, preview', () => {
     const r = (path, query) => H.parseSos({ parts: path.split('/').filter(Boolean), query: query || {} });
-    assert.deepEqual(r('sos'), { flow: 'hub', drill: false, preview: false, logged: false });
+    assert.deepEqual(r('sos'), { flow: 'hub', drill: false, preview: false, logged: false, kept: false });
+    assert.equal(r('sos/slip', { kept: '1' }).kept, true, 'RS21: kept for the unlock');
     assert.equal(r('sos', { drill: '1' }).flow, 'craving');
     assert.equal(r('sos', { drill: '1' }).drill, true);
     assert.equal(r('sos/craving').drill, false);
@@ -1819,7 +1820,7 @@ describe('review round 2 fixes (RC14-RC20)', () => {
     d.tapId(root, 'sos-reassess-passed');
     d.tapId(root, 'sos-used-yes');
     await d.settle();
-    assert.deepEqual(d.go, ['#/sos/slip?logged=1'], 'kept for the unlock: the slip is on its way');
+    assert.deepEqual(d.go, ['#/sos/slip?kept=1'], 'kept for the unlock: the slip is on its way, not in the log yet (RS21)');
     const slip = d.open(['sos', 'slip']);
     d.tapId(slip, 'sos-slip-continue');
     await d.settle();
@@ -2233,6 +2234,36 @@ describe('review round 3 fixes (FIX-R3)', () => {
     assert.ok(await S().lock.unlock('2468'));
     await d3.settle();
     assert.equal(three.calls, 2, 'saved after the unlock');
+  });
+  test('RS21: a slip save kept for the unlock never reads It is in your log.; it says It goes in your log when you unlock.', async () => {
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const root = d.open(['sos', 'craving']);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) d.tapId(root, id);
+    await d.settle();
+    assert.deepEqual(d.go, ['#/sos/slip?kept=1'], 'kept for the unlock, not written yet: never ?logged=1');
+    assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: { kept: '1' } }).kept, true);
+    assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: {} }).kept, false);
+    const slip = d.open(['sos', 'slip'], { kept: '1' });
+    assert.ok(!slip.textContent.includes('It is in your log.'), 'not in the log yet: it never says so');
+    assert.ok(slip.textContent.includes('It goes in your log when you unlock.'));
+    assert.equal(W.slipStart.kept.startsWith('It goes in your log when you unlock.'), true);
+    assert.ok(!slip.querySelector('[data-testid="sos-slip-reading"]'), 'one way on: the slip is on its way');
+    assert.equal(d.byId(slip, 'sos-slip-continue').textContent.trim(), W.slipStart.goOn);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    assert.ok(slip.querySelector('[data-testid="sos-slip-safe"]'), 'then the safety step');
+    assert.ok(await S().lock.unlock('2468'));
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved after the unlock');
+    assert.equal(events('SlipLogged').length, 1, 'the kept session logs the slip once; Go on wrote nothing more');
+    const saved = sosDom();
+    const r2 = saved.open(['sos', 'craving']);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) saved.tapId(r2, id);
+    await saved.settle();
+    assert.deepEqual(saved.go, ['#/sos/slip?logged=1'], 'written at once: It is in your log. is true');
   });
   // -- FIX-R3 tests end --
 });

@@ -40,7 +40,7 @@
     feelRate: { title: 'How strong is the feeling now?', line: 'Optional. Tap 0 to 10, or skip.' },
     motivation: { title: 'How is your motivation?', line: 'Optional. 0 is none, 10 is strong.' },
     feelDone: { title: 'You stayed with it.', line: 'That takes skill. It gets easier.' },
-    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.', log: 'Log it and go on', read: 'Just reading', logged: 'It is in your log. Everything you earned stays.', goOn: 'Go on' }, // RS16
+    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.', log: 'Log it and go on', read: 'Just reading', logged: 'It is in your log. Everything you earned stays.', kept: 'It goes in your log when you unlock. Everything you earned stays.', goOn: 'Go on' }, // RS16, RS21
     slipSafe: { title: 'Are you safe right now?', line: 'If not, get help now.' },
     reach: { title: 'Reach out', line: 'One call or text. You do not have to explain it all.' },
     slipNext: { title: 'Within a day', line: 'Look back at what happened, kindly. It helps next time.' },
@@ -194,7 +194,7 @@
     const sub = parts[1];
     const flow = ['craving', 'feeling', 'slip', 'urgent'].includes(sub) ? sub : 'hub';
     const drill = flow === 'hub' && String(q.drill) === '1';
-    return { flow: drill ? 'craving' : flow, drill, preview: flow === 'slip' && String(q.preview) === '1', logged: String(q.logged) === '1' };
+    return { flow: drill ? 'craving' : flow, drill, preview: flow === 'slip' && String(q.preview) === '1', logged: String(q.logged) === '1', kept: String(q.kept) === '1' }; // RS21: kept for the unlock
   }
 
   // The Actions.sosSession payload for a finished session. Ratings left out when not given.
@@ -631,12 +631,12 @@
       st.used = used;
       clearInterval(iv);
       const payload = Object.assign(sessionFrom(st), { date: dayNow() }); // RC16: the day of the tap, kept when a lock delays the save
-      let refused = false;
+      let state = 'refused'; // RS21: saved, kept (for the unlock, not written yet) or refused
       if (A && typeof A.sosSession === 'function') {
         const fn = () => A.sosSession(payload);
-        refused = !(await save(fn)) && !waiting.includes(fn); // RC20: neither saved nor kept for the unlock
+        state = (await save(fn)) ? 'saved' : waiting.includes(fn) ? 'kept' : 'refused'; // RC20
       }
-      if (used && !mode.drill) { UI.go(refused ? '#/sos/slip' : '#/sos/slip?logged=1'); return; } // refused: the slip flow logs it
+      if (used && !mode.drill) { UI.go(state === 'saved' ? '#/sos/slip?logged=1' : state === 'kept' ? '#/sos/slip?kept=1' : '#/sos/slip'); return; } // refused: the slip flow logs it
       if (used && mode.drill) { UI.go('#/sos/slip?preview=1'); return; }
       const words = mode.drill ? COPY.drillDone : COPY.surfed;
       show(screen(words.title, words.line, link('Finish', '#/today', { primary: true, testid: 'sos-finish' })));
@@ -781,7 +781,7 @@
       mode.preview ? h('p', { class: 'card', dataset: tid('sos-preview-banner'), text: COPY.previewBanner }) : null,
       body, h('div', { class: 'row' }, link('Urgent help', '#/sos/urgent'), link('Back to SOS', '#/sos')));
     const show = (node) => { body.replaceChildren(node); focusTitle(body); };
-    let logged = mode.logged;
+    let logged = mode.logged || mode.kept; // RS21: kept for the unlock is on its way: never written twice
     const write = (fn) => (mode.preview ? Promise.resolve(toast(COPY.previewBanner, 'info')) : save(fn));
 
     function start() {
@@ -790,7 +790,7 @@
         safety();
       };
       if (logged) { // RS16: the slip is in the log already: one way on, nothing written again
-        show(screen(COPY.slipStart.title, COPY.slipStart.logged, btn(COPY.slipStart.goOn, go('log'), { primary: true, testid: 'sos-slip-continue' })));
+        show(screen(COPY.slipStart.title, mode.logged ? COPY.slipStart.logged : COPY.slipStart.kept, btn(COPY.slipStart.goOn, go('log'), { primary: true, testid: 'sos-slip-continue' })));
         return;
       }
       show(screen(COPY.slipStart.title, COPY.slipStart.line,
