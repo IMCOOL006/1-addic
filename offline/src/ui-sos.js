@@ -274,6 +274,9 @@
 
   // RS14: outside the drill SOS reads only the person's own rows: a sample row (sample: true) never shows as theirs.
   const isOwn = (r) => !!r && r.sample !== true;
+  // RS36R (rulings 22:25 and 22:52): the stage and the region come from the person's own profile only; a sample
+  // profile counts as none, so the region is India's by default and no motivation question comes from its stage.
+  const ownProfile = (c) => { const p = safe(() => c.profile, null); return isOwn(p) ? p : null; };
   const ownView = (view) => (view ? Object.assign(Object.create(view), {
     get: (s, k) => { const r = safe(() => view.get(s, k), null); return isOwn(r) ? r : null; },
     list: (s) => (safe(() => view.list(s), []) || []).filter(isOwn),
@@ -536,7 +539,7 @@
   // RS24: above the steps after typed text on Something else: the urgent line, its numbers (never none), each one
   // tap, and All urgent help.
   function leadView(c) {
-    const items = leadList(safe(() => c.profile.region, 'in'), Cn());
+    const items = leadList(safe(() => ownProfile(c).region, 'in'), Cn());
     return h('section', { class: 'stack sos-lead', 'aria-label': COPY.urgent.title, dataset: tid('sos-urgent-lead') },
       h('p', { class: 'sos-line', id: LEAD.id, text: LEAD.line }),
       ...items.map((it, k) => { const nid = it.note ? noteId() : null; return h('div', { class: 'row' },
@@ -550,7 +553,7 @@
   // The urgent numbers. Reads Content (and the region from the profile when unlocked) only. Shared with the lock screen.
   function urgentView(c, opts) {
     const o = opts || {};
-    const region = safe(() => c.profile.region, 'in');
+    const region = safe(() => ownProfile(c).region, 'in');
     const model = urgentList(region, Cn());
     const words = o.crisis ? COPY.crisis : COPY.urgent;
     let n = 0;
@@ -849,7 +852,7 @@
         const day = dayNow(); // RC16: the day of the tap, kept when a lock delays the save
         await save(() => A.sosSession(Object.assign(sessionFrom(s), { date: day })));
       }
-      const stage = safe(() => c.profile.stage, null);
+      const stage = safe(() => ownProfile(c).stage, null);
       if (stage && A && A.motivation && typeof A.motivation.add === 'function') {
         show(screen(COPY.motivation.title, COPY.motivation.line,
           ratingRow((n) => { save(() => A.motivation.add({ stage, score: n, source: 'sos' })); end(); }, 'sos-motivation'),

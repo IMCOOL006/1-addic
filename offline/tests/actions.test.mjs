@@ -2904,6 +2904,35 @@ describe('review round 5 fixes (FIX-R5)', () => {
       await Actions.eraseSample();
       assert.equal(row('contacts', sc.id), null, 'eraseSample takes it');
     });
+    test("RS36R: SOS reads the stage from the person's own profile only: with the sample profile the feeling flow asks no motivation and writes none; with their own at stage action it asks", async () => {
+      await withSample(TRUNK_SAMPLE, () => Actions.loadSample());
+      assert.equal(S().view.get('profile', 'me').stage, 'action', 'the sample profile, at stage action, is the one handed to SOS (trunk ui-core.js:590)');
+      const toEnd = async (d, root) => { d.tapId(root, 'sos-feeling-' + d.calm()); d.toRating(root); d.rate(root, 3); await d.settle(); return root; };
+      const d = sosDom();
+      const sampleRoot = await toEnd(d, d.open(['sos', 'feeling']));
+      assert.ok(!sampleRoot.querySelector('[data-testid="sos-motivation"]'), "no motivation question from the sample's stage");
+      assert.ok(sampleRoot.querySelector('[data-testid="sos-finish"]'), 'the flow ends: Finish');
+      assert.equal(list('motivation').length, 0, 'no motivation row written');
+      const v = sosDom();
+      const ownRoot = await toEnd(v, page(v, ['sos', 'feeling'], { key: 'me', name: 'Asha', stage: 'action' }));
+      const ask = ownRoot.querySelector('[data-testid="sos-motivation"]');
+      assert.ok(ask, 'their own stage: the motivation question');
+      ask.querySelectorAll('button')[6].click();
+      await v.settle();
+      assert.deepEqual(list('motivation').map((m) => [m.stage, m.score, m.source, m.sample === true]), [['action', 6, 'sos', false]]);
+    });
+    test("RS36R: SOS reads the region from the person's own profile only, India by default: a sample profile's region orders no list and picks no lead number", () => {
+      // a stand-in sample profile away from the default ('intl'): the trunk's sample says 'in', the default, where it would not show
+      const d = sosDom();
+      const heads = (profile) => d.UI.sosUrgentView({ profile }, {}).querySelectorAll('h2').map((x) => x.textContent.trim());
+      const tels = (profile) => typedIn(sosDom(), 'I feel strange today', profile).querySelector('[data-testid="sos-urgent-lead"]')
+        .querySelectorAll('a').map((a) => String(a.attrs.href || '')).filter((x) => x.startsWith('tel:'));
+      assert.notDeepEqual(heads({ region: 'intl' }), heads({ region: 'in' }), "the person's own region orders the urgent lists");
+      assert.notDeepEqual(tels({ region: 'intl' }), tels({ region: 'in' }), 'and picks the lead numbers');
+      assert.deepEqual(heads({ region: 'intl', sample: true }), heads({ region: 'in' }), "a sample profile's region is not read: India first, the default");
+      assert.deepEqual(tels({ region: 'intl', sample: true }), tels({ region: 'in' }), "nor for the lead's numbers");
+      assert.deepEqual(heads({ region: 'intl', sample: true }), heads(undefined), 'the same as no profile');
+    });
     // -- FIX-R7 tests end --
   });
   // -- FIX-R5 tests end --
