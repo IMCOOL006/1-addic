@@ -634,3 +634,119 @@ test('workbook-settings U-20b: browser, every artifact opens; stubs are honest; 
   } finally { if (saved === undefined) delete globalThis.Content.exercises; else globalThis.Content.exercises = saved; }
   assert.ok(byTest(UI.pages.workbook(wctx([])), 'workbook-card-journal').textContent.includes('Saved '));
 });
+
+/* ── U-21: My Recovery Plan (offline/src/ui-plan.js) ────────────────────────────────────────────────────── */
+const PL = require(src('ui-plan.js'));
+globalThis.PlanUI = classic('ui-plan.js', 'PlanUI'); // ui-workbook reads PlanUI by name, as in the browser
+
+test('workbook-settings U-21: merge adds and never drops; normalise, confirm, still true, move (pure)', () => {
+  assert.deepEqual(PL.SECTIONS, ['motivation', 'wellness', 'situation', 'people', 'mood', 'triggers', 'warnings', 'battlePlans', 'support']);
+  const saved = { motivation: { items: ['My kids', 'my own line'], confirmed: true }, people: { items: [], confirmed: false }, extra: { items: ['kept'] } };
+  const prefill = { motivation: { items: ['my kids', 'Clear mornings'], confirmed: false }, people: { items: ['Asha (Safety Net)'], confirmed: false } };
+  const m = PL.merge(saved, prefill);
+  assert.deepEqual(m.motivation, { items: ['My kids', 'my own line', 'Clear mornings'], confirmed: true }, 'saved lines first, new ones after, one each');
+  assert.deepEqual(m.people.items, ['Asha (Safety Net)']);
+  assert.deepEqual(m.extra.items, ['kept'], 'a section not in the list is kept');
+  for (const id of PL.SECTIONS) {
+    assert.ok(Array.isArray(m[id].items), id);
+    for (const t of (saved[id] && saved[id].items) || []) assert.ok(m[id].items.includes(t), 'never drops ' + t);
+  }
+  assert.deepEqual(PL.merge(null, prefill).motivation.items, ['my kids', 'Clear mornings']);
+  assert.deepEqual(PL.normalise({ mood: { items: ['  a  b ', 'A B', '', 7], confirmed: 'yes' } }).mood, { items: ['a b'], confirmed: false });
+  assert.equal(PL.allConfirmed(PL.normalise({})), false);
+  assert.equal(PL.allConfirmed(Object.fromEntries(PL.SECTIONS.map((id) => [id, { items: [], confirmed: true }]))), true);
+  const now = new Date('2026-11-07T10:00:00');
+  assert.equal(PL.stillTrue('2026-10-01T10:00:00', now), true);
+  assert.equal(PL.stillTrue('2026-10-20T10:00:00', now), false);
+  assert.equal(PL.stillTrue(null, now), false);
+  assert.deepEqual(PL.move(['a', 'b', 'c'], 2, -1), ['a', 'c', 'b']);
+  assert.deepEqual(PL.move(['a', 'b'], 0, -1), ['a', 'b']);
+});
+
+test('workbook-settings U-21: the plan prefills, edits, confirms, saves, refreshes and prints', async () => {
+  await S().resetAll();
+  PlanUI.reset();
+  await Actions.saveResponse('quick-reasons', { reasons: ['My health'] });
+  await Actions.contacts.add({ name: 'Asha', role: 'safetyNet' });
+  const open = (q) => UI.pages.workbook(Object.assign(wctx(['plan']), q || {}));
+  let pg = open();
+  assert.ok(isTest(pg, 'plan-page'));
+  assert.ok(tours(pg).includes('plan-sections') && tours(pg).includes('plan-print'));
+  for (const id of PL.SECTIONS) { assert.ok(byTest(pg, 'plan-section-' + id), id); assert.ok(byTest(pg, 'plan-confirm-' + id), id); }
+  assert.ok(byTest(pg, 'plan-draft'), 'a first draft says nothing is saved yet');
+  assert.equal(byTest(pg, 'plan-item-motivation-0').value, 'My health', 'prefilled from the Reasons Card');
+  assert.equal(byTest(pg, 'plan-item-people-0').value, Engine.prefillRecoveryPlan(S().view, new Date()).people.items[0]);
+  assert.match(byTest(pg, 'plan-section-triggers').textContent, /Your triggers show here/);
+
+  // Edit: add two lines, reorder, remove one; confirm every section; the page is one node that repaints in place.
+  byTest(pg, 'plan-add-input-triggers').value = 'Payday evenings';
+  byTest(pg, 'plan-add-triggers').fire('click');
+  byTest(pg, 'plan-add-input-triggers').value = 'Being alone after work';
+  byTest(pg, 'plan-add-triggers').fire('click');
+  byTest(pg, 'plan-up-triggers-1').fire('click');
+  assert.equal(byTest(pg, 'plan-item-triggers-0').value, 'Being alone after work');
+  byTest(pg, 'plan-add-input-mood').value = 'Throwaway';
+  byTest(pg, 'plan-add-mood').fire('click');
+  byTest(pg, 'plan-remove-mood-0').fire('click');
+  assert.equal(byTest(pg, 'plan-item-mood-0'), undefined);
+  const typed = byTest(pg, 'plan-item-motivation-0');
+  typed.value = 'My health, and my mornings';
+  typed.fire('input');
+  assert.ok(byTest(pg, 'plan-unsaved'));
+  assert.ok(isTest(open(), 'plan-page') && byTest(open(), 'plan-item-motivation-0').value === 'My health, and my mornings', 'a re-render keeps the draft');
+  for (const id of PL.SECTIONS) { const b = byTest(pg, 'plan-confirm-' + id); b.checked = true; b.fire('change'); }
+
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => { const r = S().view.get('recoveryPlan', 'plan'); return r && r.confirmedAt; });
+  let row = S().view.get('recoveryPlan', 'plan');
+  assert.deepEqual(row.sections.triggers.items, ['Being alone after work', 'Payday evenings']);
+  assert.deepEqual(row.sections.motivation.items[0], 'My health, and my mornings');
+  assert.ok(PL.allConfirmed(row.sections));
+  const confirmedAt = row.confirmedAt;
+  const confirmedEvents = () => S().view.list('events').filter((e) => e.type === 'RecoveryPlanConfirmed').length;
+  assert.equal(confirmedEvents(), 1);
+  await tick();
+  pg = open();
+  assert.equal(byTest(pg, 'plan-draft'), undefined);
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.match(pg.textContent, /Confirmed on /);
+
+  // Save again: confirmedAt and the event stay once; lastReviewAt moves.
+  await new Promise((r) => setTimeout(r, 5));
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => S().view.get('recoveryPlan', 'plan').lastReviewAt !== row.lastReviewAt);
+  row = S().view.get('recoveryPlan', 'plan');
+  assert.equal(row.confirmedAt, confirmedAt);
+  assert.equal(confirmedEvents(), 1);
+
+  // Refresh adds what the notebook has now, keeps every line the person wrote.
+  await Actions.contacts.add({ name: 'Ravi', role: 'sponsor' });
+  pg = open();
+  byTest(pg, 'plan-refresh').fire('click');
+  // Two: Ravi, and 'My health' again (the person reworded that line, so the notebook's own line is missing).
+  assert.match(calls.toasts[calls.toasts.length - 1][0], /^Added 2 lines from your notebook\. Nothing was removed\./);
+  assert.ok(byTest(pg, 'plan-section-people').all((n) => n.tagName === 'input').some((n) => /Ravi/.test(n.value)));
+  assert.equal(byTest(pg, 'plan-item-triggers-1').value, 'Payday evenings');
+
+  // Print: the lists only, no controls.
+  byTest(pg, 'plan-print').fire('click');
+  const doc = calls.printed[calls.printed.length - 1];
+  assert.match(doc.textContent, /^My Recovery Plan/);
+  assert.match(doc.textContent, /Payday evenings/);
+  assert.match(doc.textContent, /Ravi/);
+  assert.equal(hooks(doc).length, 0);
+
+  // Still true? 30 days after the last save (text only).
+  PlanUI.reset();
+  assert.equal(byTest(open(), 'plan-still-true'), undefined);
+  assert.ok(byTest(open({ now: new Date(Date.now() + 31 * 86400000) }), 'plan-still-true'));
+  assert.match(open({ settings: { discreet: true } }).textContent, /My plan/);
+
+  const text = readFileSync(src('ui-plan.js'), 'utf8');
+  assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write/.test(text), 'text only');
+  assert.ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|https?:\/\//.test(text), 'no network');
+  assert.ok(!/globalThis\.(Content|Engine|Store|Actions)|\baddicts?\b|\bscore\b|\bat risk\b/i.test(text));
+  const sandbox = { module: { exports: {} } };
+  vm.runInNewContext(text, sandbox, { filename: 'ui-plan.js' }); // loads with no globals (it only loads)
+  assert.equal(sandbox.module.exports.SECTIONS.length, 9);
+});
