@@ -66,6 +66,15 @@ function savedType(exerciseId) {
   if (['build', 'assess', 'plan'].includes(kind)) return 'ArtifactSaved';
   return ['practice', 'reflect', 'tool'].includes(kind) ? 'ExerciseDone' : null; // null: no kind, or one 3.7 names in neither list (RC17)
 }
+// RS9T: fn runs with a stub Content, the real one's fields without `sample` (the real Content is never changed); the
+// real one goes back after
+async function withoutSample(fn) {
+  const real = globalThis.Content;
+  const stub = Object.assign({}, real);
+  delete stub.sample;
+  globalThis.Content = stub;
+  try { return await fn(); } finally { globalThis.Content = real; }
+}
 // Content.sample may be loaded (content-sample.js, BUILD-PLAN 3.1): a test that sets it, or needs it absent, puts it back after.
 async function withSample(sample, fn) {
   const had = Object.prototype.hasOwnProperty.call(C(), 'sample');
@@ -337,7 +346,8 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       [() => Actions.recoveryPlan.save('my plan'), 'bad-plan'],
       [() => Actions.scriptUsed('no-such-response'), 'bad-script'],
       [() => Actions.onboard({ admin: true }), 'bad-profile'],
-      [() => withSample(undefined, () => Actions.loadSample()), 'no-sample'],
+      [() => withoutSample(() => Actions.loadSample()), 'no-sample'], // RS9T: a stub Content without `sample`, whatever this tree loads
+      [() => withSample(TRUNK_SAMPLE, () => withoutSample(() => Actions.loadSample())), 'no-sample'], // and with the trunk's Content.sample there
     ];
     for (const [call, code] of cases) await refused(call(), code);
     await tick();
