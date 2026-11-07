@@ -177,19 +177,34 @@
 - R-H-39 (02:45): data-test confirmed; the HUB corrected lane_args_v3.json and PLAN-V3 section 3 (1c068e5).
 - The V-01a slice was launched at 02:47 as wf_6851b095-834 (args tracks/SCREENS/args/v3_tt_slice.json: the corrected unitNotes plus the builder laneNote). Memory was 9.7 GB.
 
+## 2026-11-08 03:15 IST · R-O-6; V-01a built; append scouts; hand-over planned (context 255k)
+
+- R-H-40 (03:09, 819a72b): R-O-6 adds the quest-line, the daily objectives and the run (PLAN-V3 section 7; the contracts are binding; V-Q9..V-Q13 default at 04:00). The SCREENS units: content V-42 (batch 2), today-track V-43 (batch 3), game-tutorials V-44 (batch 3, after engine V-40). lane_args_v3.json and territory.json are updated; content owns content-quests.js.
+- Append scouts launched at 03:11: content V-42 wf_c5b05222-47a, game-tutorials V-44 wf_247f1e2a-70b. Args: tracks/SCREENS/args/v3_scout2_<lane>.json.
+- V-01a: the builder committed 50aae69, 758f8cb and 127509e. The builder's gates are green (test 43/43, browser 16/0/3). The checker is next, in wf_6851b095-834.
+- The context rule fired at 254,844 tokens: the hand-over is planned, and this record is written early.
+
 ## Resume here
 
-- Chat 1c2cf086 (SCREENS), STATE BUILDING, V3 (PLAN-V3.md). Stamp: 2026-11-08 02:50 IST.
-- RUNNING (alive only while session 1c2cf086 is listed by claude agents --json): wf_6851b095-834, the today-track V-01a slice (lane.js sliceRun; slot 6; worktree C:/Users/ruchi/1-addic-wt/today-track on build/today-track from f69bc68a). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/wf_6851b095-834/journal.jsonl. Builder progress: C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track__progress.md.
-- If this chat is gone and the run is not live, relaunch it from v3_tt_slice.json with now from date. If the branch has V-01a committed past f69bc68a, launch with start 'check' and diffFrom f69bc68a instead.
+- Chat 1c2cf086 (SCREENS), STATE BUILDING, V3 + R-O-6 (PLAN-V3.md sections 2, 3, 7). Context 255k at 03:15 IST: the hand-over is planned.
+- RUNNING in session 1c2cf086 (alive only while it is listed by claude agents --json; journals at C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/<run>/journal.jsonl):
+  - wf_6851b095-834: the today-track V-01a slice. Built at 127509e (50aae69, 758f8cb, 127509e); the checker is running. It returns {state READY-SLICE, tip}.
+  - wf_c5b05222-47a: the content scout appending V-42 to briefs/content-v3.md.
+  - wf_247f1e2a-70b: the game-tutorials scout appending V-44 to briefs/game-tutorials-v3.md.
+- A FRESH CHAT does not relaunch a running run.
+  - If session 1c2cf086 is listed, read the journals and wait.
+  - If it is gone, the runs died. For V-01a: if a journal line shows the checker's PASS, verify by hand: run python tools/gates.py --wt C:/Users/ruchi/1-addic-wt/today-track --lane today-track build test validate guards, run git checkout -- offline/1-addic.html, and check the trailers and a clean worktree. Then write READY-SLICE <tip>. Otherwise relaunch lane.js from tracks/SCREENS/args/v3_tt_slice.json with start 'check' (now from date). For the scouts: relaunch from v3_scout2_<lane>.json if the brief has no V-42 / V-44 section.
 - NEXT:
-  - (1) When it returns READY-SLICE <tip>: verify the tip, the trailers and a clean worktree. Then write LANE: today-track READY-SLICE <tip> plus the slice report path, and send the HUB a line.
-  - (2) Then the V-01b run: the same args minus sliceRun, plus done + [V-01a], priorNote (the slice builder's note from the journal), diffFrom <the slice tip>.
-  - (3) content V-10 and game-tutorials V-08b/V-28 wait for their SLOTS lines. For each: fast-forward the worktree with merge --ff-only to BASE, then lane.js with the -v3 brief and contract paths and a builder laneNote like v3_tt_slice.json's.
+  - (1) V-01a returns READY-SLICE <tip>:
+    - Verify: git -C <wt>/today-track log f69bc68a..HEAD, the trailers (Co-Authored-By Fable 5.1 and Claude-Session), a clean worktree (restore offline/1-addic.html with git checkout --), and the slice report at tracks/SCREENS/lane-reports/today-track.md.
+    - Write LANE: today-track READY-SLICE <tip> and a SendMessage line to HUB 9. HUB 9's address is the from= of its messages: uds:\.\pipe\LOCAL\cc-msg-eab6efe502e25da19013c26828501e9e. Or use the R-S outbox.
+  - (2) Then V-01b: the same args as v3_tt_slice.json (refresh units, batches and unitNotes from lane_args_v3.json lanes.today-track), minus sliceRun, plus done = v1 units + [V-01a], priorNote = the slice builder's note (journal), diffFrom = the slice tip. lane.js builds every remaining batch in one run: [V-01b] then [V-43]. V-43 needs V-40, V-41 and V-42 merged (on the contracts before). So pass done + [V-43]? No: keep V-43 for a later run. Launch V-01b alone by passing done = v1 + [V-01a, V-43]? That would mark V-43 done. Instead pass batches [[V-01b]] and units [V-01a, V-01b] (with V-01a in done). Append the V-43 section to the today-track brief before its batch, as an annex if the brief would pass 15 KB.
+  - (3) content: wait for its SLOTS line. Fast-forward <wt>/content to BASE with merge --ff-only, then run its slice V-10 with a builder laneNote like v3_tt_slice.json's. Answers to its questions: reveal.m1 = ['status']; the route '/status'.
+  - (4) game-tutorials: wait for its SLOTS line, after today-track's slice is merged. V-08b waits for actions-sos V-08a (contract: R-C-48 in outbox-CORE.md).
 - Facts:
-  - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume>.
+  - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume> (both in tracks/SCREENS/args/).
   - hub_commit.py runs from the repo root, with repo-relative paths.
   - claude agents needs --json.
   - The board's states: tools/board.py:65.
-  - lane.js's scout prompt is v1-shaped; the V3 runs override it through laneNote.
+  - lane.js's scout prompt is v1-shaped; the V3 runs override it through laneNote (it reaches builders as "THE BUILD CHAT'S WORD"). Pass brief and contract at the -v3 paths on every V3 run.
   - Do not run a wait loop.
