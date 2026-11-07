@@ -746,6 +746,7 @@ const UI = (function () {
     let key = pageKey(r);
     keepOpen(key);
     const locked = isLocked();
+    if (locked) clearPrint(); // a document waiting to print is the person's too (a)
     if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
     // A sheet belongs to the screen it opened on: a new route closes it (a pending confirm answers false), so a
     // private sheet never stays on screen over #/sos or #/lock.
@@ -838,6 +839,11 @@ const UI = (function () {
     if (s) safe(() => s.cancel(), null);
   }
 
+  function clearPrint() {
+    const root = byId('print-root');
+    if (root && root.firstChild) root.replaceChildren();
+  }
+
   function printDoc(node) {
     const root = byId('print-root');
     if (!root || typeof window === 'undefined') return;
@@ -918,6 +924,7 @@ const UI = (function () {
       if (typeof S.subscribe === 'function') safe(() => S.subscribe(schedule), null);
       if (S.lock && typeof S.lock.onLock === 'function') {
         safe(() => S.lock.onLock(() => {
+          clearPrint(); // also inside SOS, where the page is not drawn again (a)
           if (pageKey(route()) === 'sos') { chrome('sos'); return; } // never pull a person out of SOS
           go('#/lock', { replace: true });
         }), null);

@@ -192,7 +192,7 @@ function fakeDom() {
     contains: () => true,
   };
   for (const [id, tag] of [['main', 'main'], ['sos-btn', 'a'], ['nav', 'nav'], ['saved-label', 'span'], ['app-name', 'span'],
-    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button']]) {
+    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div']]) {
     const e = new El(tag); e.id = id; ids[id] = e;
   }
   return doc;
@@ -703,6 +703,26 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
     b.opened();
     await b.booting; // loaded and open, the settings row decides from here (C5)
+  });
+
+  test('(a): locked, nothing waits in #print-root: render empties it, and so does a lock inside SOS', async (t) => {
+    setup();
+    const pr = document.getElementById('print-root');
+    pr.appendChild(document.createElement('p')); // a worksheet sent to print, waiting for afterprint
+    globalThis.Store = lockedStore('2468');
+    at('#/workbook');
+    await UI.render();
+    assert.equal(pr.children.length, 0, 'render while locked empties it');
+    clearStandIns();
+    const b = await bootPending(t, '#/sos');
+    let lockFn = null;
+    globalThis.Store.lock = { onLock: (f) => { lockFn = f; } };
+    b.opened();
+    await b.booting;
+    const doc = document.getElementById('print-root');
+    doc.appendChild(document.createElement('p'));
+    lockFn({ reason: 'auto' });
+    assert.equal(doc.children.length, 0, 'a lock inside SOS empties it too');
   });
 
   test('RS7: discreet, the head script names the tab Notebook before first paint, and the CSS keeps name and button discreet', () => {
