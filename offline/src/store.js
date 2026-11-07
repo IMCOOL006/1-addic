@@ -131,6 +131,10 @@ const Store = (function () {
   }
   // The rows that open, and the rows that will not (damaged, or sealed under another key) kept as they are stored
   // rather than failing the unlock (Q4). Each goes in its stored order, whatever order the decryptions end in (RC9).
+  // A sealed row is exactly {<key>, enc: {iv, ct}}, as stored() writes it. Any other row is plain data, even one with
+  // a field named enc: it opens, and the next lock.set seals it (RC17).
+  const isSealed = (row) => !!(row && row.enc && typeof row.enc === 'object' && typeof row.enc.iv === 'string'
+    && typeof row.enc.ct === 'string' && Object.keys(row).length === 2);
   async function decode(all, key) {
     const rows = blank();
     const unread = blank();
@@ -139,7 +143,7 @@ const Store = (function () {
       for (const row of (all && all[n]) || []) {
         const id = row && row[STORES[n]];
         if (typeof id !== 'string' || (n === 'meta' && id === 'lock')) continue;
-        if (!row.enc) jobs.push([n, id, row]);
+        if (!isSealed(row)) jobs.push([n, id, row]);
         else if (!key) jobs.push([n, id, undefined, row]);
         else jobs.push(unseal(key, n, id, row.enc).then((v) => [n, id, v], () => [n, id, undefined, row]));
       }
@@ -691,7 +695,7 @@ const Store = (function () {
         const id = r && r[STORES[n]];
         if (typeof id !== 'string' || (n === 'meta' && id === 'lock') || state.rows[n].has(id)) continue;
         let v = r;
-        if (r.enc) {
+        if (isSealed(r)) {
           try { v = await unseal(key, n, id, r.enc); } catch (e) { (left[n] = left[n] || []).push(r); continue; }
         }
         puts.push([n, id, v, await stored(key, n, id, v)]);

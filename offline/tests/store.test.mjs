@@ -1836,6 +1836,25 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.deepEqual(S.view.list('events').map((r) => r.id), ['e0', 'e1', 'e2', 'e3']);
   });
 
+  test('RC17: a plain row with a field named enc is plain data: it opens after a reload and is sealed with the rest', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await S.load();
+    const row = { id: 'p1', type: 'Note', enc: 'yes', note: MARK };
+    await S.commit('t', (d) => { d.put('events', row); });
+    const R = freshStore();
+    await R.load();
+    assert.deepEqual({ ...R.view.get('events', 'p1') }, row, 'it opens after a reload');
+    assert.equal(R.status().unreadable, 0);
+    await R.lock.set('2468');
+    assert.ok(!idb.dump().includes(MARK), 'sealed in IndexedDB like every other row');
+    const T = freshStore();
+    await T.load();
+    assert.equal(await T.lock.unlock('2468'), true);
+    assert.deepEqual({ ...T.view.get('events', 'p1') }, row);
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });
