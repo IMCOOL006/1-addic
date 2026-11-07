@@ -1,0 +1,1 @@
+V-40b READY 660233f (check PASS; merging in the HUB from merge base 03840ef). growth and growthItems share growthWalk(ctx, pool, upTo, ids) just before '/* -- views' in engine.js: leave it alone in this run. V-40c touches only ROUTE_PATHS and one test file. offline/1-addic.html in the worktree is the gates' rebuild: never commit it.

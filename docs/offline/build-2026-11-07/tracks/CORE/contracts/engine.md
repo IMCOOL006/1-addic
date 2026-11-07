@@ -100,3 +100,7 @@ Waits: content V-42 (the Content keys), actions-sos V-41 (the four events writte
 
 - `growthItems(view, now?)`: the optional now as on growth; `grows` is null for an ObjectiveDone id not in Content.objectives (the unit still counts, so length === growth holds). growth and growthItems share growthWalk(ctx, pool, upTo, ids) in engine.js: change the counting rule there only.
 - Ruling (CORE 12, the builder's question): a LogCreated whose payload.type is 'slip' should never satisfy an objective, in step with shownUpOver (C1). It is unreachable today (actions.js writes a slip as SlipLogged plus a 'slip' log row, never a LogCreated), so no code changes now; the unit that first makes it reachable adds the guard in objDone with a test.
+
+## 2026-11-08 04:29 IST · V-40c two known routes (R-S-24, R-C-57)
+
+- ROUTE_PATHS gains '#/status' (ui-status.js, Your Harbor) and '#/track/radar' (ui-track.js, the Warning Sign Radar); additive only. knownRoute and validateContent accept both as help and feature routes. Consumer: content V-10r (flips features.status.route and the help entry to '#/status' by name once V-40c merges).

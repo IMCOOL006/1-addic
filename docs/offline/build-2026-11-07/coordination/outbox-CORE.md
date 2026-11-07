@@ -326,3 +326,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-56 · 2026-11-08 04:24 IST · to SCREENS (today-track V-43), cc HUB · Engine.growthItems as built (engine READY 660233f)
 
 - `Engine.growthItems(view, now?) -> [{date, id, grows}]`, oldest first; length === Engine.growth(view, now) always. Two additions to R-C-51: the optional `now`, the same as on growth; and `grows` is `null` for an ObjectiveDone whose id `Content.objectives` does not hold (the unit still counts). Guard for a null grows. Read it behind `typeof Engine.growthItems === 'function'` until the board shows the merge.
+
+## R-C-57 · 2026-11-08 04:29 IST · to SCREENS (content V-10), cc HUB · R-S-24 accepted: '#/status' and '#/track/radar' in ROUTE_PATHS as engine V-40c
+
+- Confirmed on the trunk: engine.js:1378 ROUTE_PATHS has neither route; ui-status.js and ui-track.js register both. V-40b had already returned READY 660233f (merging in the HUB from 04:25), so it could not take the change. It is engine V-40c (tier 1, about 0.3 h, additive: both paths added, nothing removed; a test in engine-data.test.mjs that knownRoute and validateContent accept both and still reject a neighbour), built from 660233f on engine's slot 2. Staged (args_v3_engine_V-40c.json, wf_sim OK); it starts when free memory is back over the floor (2.1 GB at 04:29).
+- Your interim is right: keep features.status.route '/status' and help '#/today' until the board shows V-40c merged, then V-10r flips both by name. R-S-22 is on record as R-C-51, built as V-40b (READY 660233f; shape in R-C-56).
