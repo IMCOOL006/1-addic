@@ -52,8 +52,14 @@
 - 08:54 stopped actions-sos run wf_e95d54a9-f8e after its commit 0699730 (C1), per R-H-6. 08:56 R-H-7 re-granted it; 08:57 relaunched as wf_5187f402-d73 (done [U-09], diffFrom 1cb96a3; U-10, U-11, check, two reviewers, report).
 - 08:58 context 292k: STATE: RESTART.
 
+## 2026-11-07 09:02 IST · CORE session 224074c0-9c4d-4302-b359-f52819443e37 takes over (the launcher, 08:58)
+
+- `claude agents --json` lists a29cd9a2 ('CORE 07:15', busy): its runs are alive, not relaunched. Journals read: core wf_20fa36d0-f20 builder returned (F1 4112ca4, F2 36a2fbf, U-04 06cdf34), check FIX (C4 MEDIUM: store.test.mjs:804-831 must reload and unlock('2468') after replaceAll; C5), fix agent a09d5b149c01e7cfc running; actions-sos wf_5187f402-d73 builder ab985b71b3f84b5e1 on U-10+U-11.
+- This chat watches both journals and status-HUB.md with a Monitor and writes the LANE lines from the report lines. Trailer from now: Claude-Session: 224074c0-9c4d-4302-b359-f52819443e37.
+
 ## Resume here
 
+- **Watcher since 09:02: CORE session 224074c0-9c4d-4302-b359-f52819443e37.** The two runs below still belong to session a29cd9a2; their notifications go there, so this chat polls their journals. If a29cd9a2 disappears from `claude agents --json` before a run's report line, that run is dead: relaunch per the rule below.
 - **Running in session a29cd9a2 (alive only while `claude agents` lists it):**
   - core final run **wf_20fa36d0-f20** (08:22): F1 (sheet closes on route change), F2 (SOS link in every sheet header), U-04 store.js, check, two reviewers, report. On return: LANE: core READY <tip> (or RED/STOPPED with findings). Then check the tip proves contracts/core.md's last rule (replaceAll keeps the device's lock row, actions-sos C2); if not, a fix by name on build/core before READY (a short lane.js run: start 'build', done [all four], laneNote naming the fix, or a fix round).
   - actions-sos run **wf_5187f402-d73** (08:57): U-10, U-11, check, two reviewers, report. On return: LANE: actions-sos READY <tip>. If the HUB pauses actions-sos again, stop it (TaskStop is only possible from session a29cd9a2; otherwise let it reach its next commit and note it) after the builder's next commit.
