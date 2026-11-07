@@ -1,0 +1,139 @@
+{
+ "note": {
+  "done": [
+   {
+    "unit": "C-R7-2",
+    "shas": [
+     "8153d16"
+    ],
+    "how": "RS9 (actions.test.mjs ~1495) now builds C9, a copy of Content with 'I feel hopeless' (a string the test already used) placed first in catalogs.spiral, and passes C9 to H.spiralPairs. spiralPairs takes C as an argument (ui-sos.js:341), so the real Content is never changed and nothing needs restoring. The premise check now runs on C9. All other assertions are unchanged, and pairs[0] still gets the fallback reply after the skipped first line. I confirmed the lane's content-core.js:314 has \"I'm hopeless.\" and the trunk's spiral list has none. Red before: trunk-preview-20261108-002223.log line 603. Green in the worktree and on the preview (trunk-preview-20261108-fixr8-rs9.log). Mutation check: with the hopeless/crisis skip removed, RS9 fails (mut-fixr8-C-R7-2-no-hopeless-skip.log)."
+   },
+   {
+    "unit": "C-R7-3",
+    "shas": [
+     "514050d"
+    ],
+    "how": "The RS24 remainder case 'Somewhere else, no line with a number' now passes noNumber() through withResources, which restores Content in its finally. noNumber() is a copy of the real Content.resources with every intl line that has a number or a tel left out (urgentItem reads number or tel, ui-sos.js:157), so the case proves the built-in 112 and 'Please check this number.' on any content. A new case, 'Somewhere else, the real Content' (null, intl, false), keeps the real intl list covered: the lead has a one-tap tel: line, each line says whom it calls, and All urgent help is one tap. That holds on both the lane's and the trunk's content (the trunk's intl list has 'Your local emergency number' with tel '112'). Red before: line 1234 of the checker's log. Green in the worktree and on the preview (trunk-preview-20261108-fixr8-rs24.log). Mutation check: with the leadList built-in fallback removed, the test fails with 'Somewhere else, no line with a number: at least one number, one tap'."
+   },
+   {
+    "unit": "C-R7-1",
+    "shas": [
+     "7d9d557"
+    ],
+    "how": "I confirmed CORE's diagnosis. The worktree has no store.js, so the tests use the stand-in, which sets the PIN at once. On the merged tree the trunk's real store.js makes a key with PBKDF2-SHA256 at 310000 iterations through globalThis.crypto, i.e. Node's real WebCrypto (store.js:19, :59-61, :79-84, setLock :661-670, keyFor for unlock and remove :99-110). One key took 1205 ms here; d.settle() waits about 10 ms. The vm crypto {subtle:{}} only feeds the UI's cryptoReady(), so I kept it. Added until(cond, msg, ms=30000): it checks every 3 ms, each check after a timer, fails with msg on timeout, and a throw inside cond fails at once. In PIN, RS11, RS20, RS21, RS22 and RS26, each settle after a lock set, unlock, remove or sealed or kept save is now a wait for the UI's own outcome: the pinSetting line gone, d.go set, the kept or not-saved toast, SosCompleted in the log, or the stub's call count. A settle stays after the wait where the next assertion says once or nothing more. No assertion was removed or weakened (git diff -U0 cd385a5..HEAD shows only settles, sosDom calls, the typed helper and the two premises replaced). RS20: while the real key is made, every check asserts step 2, the pinSetting line, and Next, Skip and Set PIN disabled, so the test now proves the wait across a real key. PIN and RS11: a setSpy that counts lock.set calls is added next to each hasLock-false refusal check. On the real Store a PIN still being set reads as no lock, so a settle alone proved nothing there. Mutation checks on a preview copy, each red at the intended assertion: the hold ends 50 ms into the key ('onb-next waits until the PIN is set'); a refused PIN is sent to the Store ('refused before the Store' and 'never sent to the Store'); no RS22 retry ('refused once: tried once more, at once'); moved() always false ('the lock row went away: never tried again'); no flush after the unlock ('saved after the unlock (not within 30000 ms)', which shows the wait fails loudly). Logs: _logs/gates/actions-sos/mut-fixr8-C-R7-1-*.log."
+   }
+  ],
+  "tip": "7d9d557d61e5385fd1740365c04bb67c2a663999",
+  "files_changed": [
+   "offline/tests/actions.test.mjs"
+  ],
+  "product_defect": "none. All 8 failures were test premises or harness timing. Once each test waits for the real outcome, all of these behave as the tests say on the trunk's real store.js and the trunk's content: the PIN set, the unlock, the kept save, the RS22 retry, the RS26 drop, the hopeless skip and the urgent lead's one-tap number. The mutation checks show that each fixed test still fails when that behaviour is broken.",
+  "worktree_test": "gates.py --wt C:/Users/ruchi/1-addic-wt/actions-sos --lane actions-sos test at tip 7d9d557: GREEN, 169 pass, 0 fail, 0 skip (1 file). Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-005315.log",
+  "preview_runs": [
+   "Red before: fresh preview, trunk build/offline-v1 364b1e2 + lane cd385a5, actions.test.mjs: 169 tests, 161 pass, 8 fail (RS9, PIN, RS11, RS22, RS21, RS20, RS26, RS24 remainder). Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-before.log",
+   "C-R7-2 only (RS9): 1/1 pass. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-rs9.log",
+   "C-R7-3 only (RS24 remainder, RS29): 2/2 pass. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-rs24.log",
+   "C-R7-1 only (PIN, RS11, RS22, RS21, RS20, RS26): 6/6 pass. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-r71.log",
+   "Full suite, fresh preview (emptied and recreated by git archive), trunk 364b1e2 + lane 7d9d557, every offline/tests/*.test.mjs except browser.test.mjs: 536 tests, 536 pass, 0 fail, build exit 0. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-full.log",
+   "actions.test.mjs run 1: 169/169 pass, 0 fail. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-actions-run1.log",
+   "actions.test.mjs run 2: 169/169 pass, 0 fail. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-actions-run2.log",
+   "actions.test.mjs run 3: 169/169 pass, 0 fail. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-actions-run3.log",
+   "Mutation checks (scratch copy of the preview, each file restored and compared byte for byte, copy deleted afterwards): 7 of 7 failed at the intended assertion. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-fixr8-*.log"
+  ],
+  "blocked": [],
+  "for_the_chat": [
+   "done: C-R7-2 8153d16, C-R7-3 514050d, C-R7-1 7d9d557 (test only, offline/tests/actions.test.mjs). in flight: none. next: none in this round; the lane is ready for CORE's re-check of cd385a5..7d9d557.",
+   "the one thing to know: on the merged tree, lock.set, unlock and remove each make a real PBKDF2 key, about 1.2 s here. Every wait after them is now until(cond, msg), a condition on the UI's own outcome that fails loudly at 30 s. The stand-in run is unchanged. actions.test.mjs takes about 61 s on the preview.",
+   "Two additions beyond plain waits. RS20 now checks on every wait that step 2, the pinSetting line and the disabled Next, Skip and Set PIN hold until the PIN is set. PIN and RS11 count lock.set calls, so a refused PIN is proven never to reach the Store; on the real Store, hasLock false after a settle proved nothing.",
+   "The trunk moved: every preview used build/offline-v1 at 364b1e2 (not d62756a). Red before at 364b1e2 + cd385a5 shows the same 8 failures as the checker's log.",
+   "question: the commits carry the prompt's trailers (Co-Authored-By: Claude Fable 5.1, Claude-Session: 11310a7c-...), but this session ran as Claude Opus 5.5. If CORE wants the trailer to name the model that ran, that needs a decision; I did not amend.",
+   "Notes per id: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__fix-r8.md. Preview script: C:/Users/ruchi/1-addic-wt/_logs/scratch/as-fix-r8-preview.sh. The preview tree is left at C:/Users/ruchi/1-addic-wt/_logs/scratch/as-fix-r8. The trunk checkout was only read through git show and archive; its two pre-existing modified files are untouched."
+  ],
+  "steps_used": 33
+ },
+ "srcChanged": false,
+ "out": [
+  {
+   "job": {
+    "kind": "recheck"
+   },
+   "result": {
+    "verdict": "PASS",
+    "tip": "7d9d557d61e5385fd1740365c04bb67c2a663999 (build/actions-sos; base 655516dc; round cd385a5..7d9d557; trunk build/offline-v1 at 364b1e2)",
+    "results": [
+     {
+      "id": "C-R7-1",
+      "state": "FIXED",
+      "evidence": "The 6 lock/PIN tests (PIN, RS11, RS20, RS21, RS22, RS26) pass on a new merge preview (trunk 364b1e2 + lane tip, real store.js) in the full suite and in 3 separate actions.test.mjs runs (169/169 each, so no flakiness seen): C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-010300.log, trunk-preview-20261108-check-r8-actions-run1..3.log. The until() helper at actions.test.mjs:45-52 polls every 3 ms and calls assert.fail(`${msg} (not within ${ms} ms)`) on timeout. A throw in cond propagates at once, so the wait fails loudly. Mutation (a): I replaced `await S.lock.set(...)` in ui-onboarding.js:325 with a no-op in the preview, and PIN, RS11 and RS20 then fail ('false !== true', 'Next set the typed PIN', 'Next waits while the key is made'): C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-check-r8-a-skip-lock-set.log. File restored, cmp equal to the worktree."
+     },
+     {
+      "id": "C-R7-2",
+      "state": "FIXED",
+      "evidence": "RS9 passes on the trunk content in the preview (trunk-preview-20261108-010300.log). Mutation (c): with `!/hopeless/i.test(p.thought) && ` dropped from ui-sos.js:352, RS9 fails, and so do Q-SPIRAL and RS35: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-check-r8-c-no-hopeless.log. File restored, cmp equal."
+     },
+     {
+      "id": "C-R7-3",
+      "state": "FIXED",
+      "evidence": "The RS24 remainder test passes on the preview with the trunk Content (trunk-preview-20261108-010300.log). Mutation (b): with leadList's fallback (ui-sos.js:201) changed to `return got;`, the test fails with 'Somewhere else, no line with a number: at least one number, one tap': C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-check-r8-b-no-builtin.log line 910. File restored, cmp equal."
+     }
+    ],
+    "findings": [],
+    "gates": [
+     "build SKIP (expected: offline/build.mjs absent in the worktree) C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/build-20261108-010436.log",
+     "test GREEN 169 pass 0 fail 0 skip C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-010436.log",
+     "validate SKIP (expected: offline/src/engine.js absent) C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/validate-20261108-010446.log",
+     "guards RED with 21 other-lane tour-target names (nav-today ... plan-print). By name, these are the same 21 as guards-20261108-002211.log (diff of the sorted name lists is empty), so this is the accepted state. C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261108-010446.log"
+    ],
+    "trunk_suite": "I recreated the merge preview C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r8 from git archive of build/offline-v1 (364b1e2) with the lane's 4 files copied over it. node offline/build.mjs exits 0. Full suite (every offline/tests/*.test.mjs except browser.test.mjs): 536 tests, 536 pass, 0 fail, 0 skip, so there are no failing names. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-010300.log. actions.test.mjs alone: run 1 169/169, run 2 169/169, run 3 169/169. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-check-r8-actions-run1.log, -run2.log, -run3.log. Mutation logs: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-check-r8-a-skip-lock-set.log, mut-check-r8-b-no-builtin.log, mut-check-r8-c-no-hopeless.log. After each mutation the preview files were restored and cmp-equal to the worktree. No baseline lookup was needed because nothing failed.",
+    "territory": "check_territory.py actions-sos 655516dc..HEAD: 4 files, 4 own (offline/src/actions.js, offline/src/ui-onboarding.js, offline/src/ui-sos.js, offline/tests/actions.test.mjs), 0 shared, 0 nobody's, 0 errors, 0 warnings. The round's diff cd385a5..HEAD lists only offline/tests/actions.test.mjs, so no offline/src file changed (this matches the fixer's product_defect 'none'). There are 3 commits, one per id (8153d16 C-R7-2, 514050d C-R7-3, 7d9d557 C-R7-1). Each subject names FIX-R8 and its id, and each carries the trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 11310a7c-b949-4ec5-8ddc-1f7fa59bc77a'. The worktree is clean.",
+    "not_checked": [
+     "Browser gate (test:browser): not asked for in this prompt.",
+     "I did not re-read the full text of the round's diff line by line beyond the until/setSpy helpers and the mutation targets. I checked that the tests are not vacuous by mutation, not by reviewing every assertion against cd385a5.",
+     "Product rules: this round touched no offline/src file, so no new copy, crisis phrase, network call or innerHTML could come in. I did not re-audit the lane's earlier product code.",
+     "The fixer's open question about the trailer model name (Fable 5.1 vs the model that ran) is a decision for CORE. The trailers match what this prompt requires."
+    ]
+   },
+   "verdicts": [],
+   "lost": 0
+  },
+  {
+   "job": {
+    "kind": "review",
+    "lens": "contracts"
+   },
+   "result": {
+    "verdict": "PASS",
+    "results": [],
+    "findings": [
+     {
+      "id": "R8-RC1",
+      "severity": "LOW",
+      "where": "U-10 RS22, C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:2317-2318. The same zero-width 'no more' checks are at :2330-2331, :2343-2344 and :2347-2348.",
+      "scenario": "I delayed the retry at ui-sos.js:503 by 1.5 s (a setTimeout before `return await fn()`). The tip's RS22 still passes, on the stand-in and on the real store: `until(() => d.go.length > 0)` waits up to 30 s and only then checks `one.calls === 2`. The cd385a5 RS22 failed the same mutant with 1 !== 2. So 'refused once: tried once more, at once' is now held by the order of events only, not by time. C2 (:2187-2199, a settle after the tap) still fails the mutant on both stores, so no rule is left without a red test. Only RS22's own claim is looser than its name.",
+      "evidence": "Mutant: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/fr8probe/make_probe.py. Tip RS22 passes the mutant: fr8probe/p1-standin-mut-tip-RS22.log and fr8probe/p7-real-mut-tip-RS22.log. cd385a5 RS22 fails it ('refused once: tried once more, at once' 1 !== 2): fr8probe/p2-standin-mut-old-cd385a5-RS22.log. C2 still fails it ('erase (Forgot PIN): kept for the unlock'): fr8probe/p8-standin-mut-tip-full.log and fr8probe/p9-real-mut-tip-full.log, 168/169 each. All paths are under C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/.",
+      "fix": "Test only, three lines. In refusing(k), count `s.refused = (s.refused || 0) + 1` just before `throw lockedErr()`. After walk(d, one.A, 'sos-used-yes'), run `await until(() => one.refused === 1, 'the stub refused once'); await d.settle(); assert.equal(one.calls, 2, 'refused once: tried once more, at once');`, then keep the existing until(go) and assertions. This needs no key derivation on the real store, because the key is already in memory after the stub's unlock. A probe copy is green without the mutant (fr8probe/p3-standin-probe-RS22.log, p5-real-probe-RS22.log) and red with it (p4-standin-mut-probe-RS22.log, p6-real-mut-probe-RS22.log: 'PROBE at once ... 1 !== 2'). If CORE wants the settle back at :2331, :2344 and :2348, the same wait-then-settle closes those checks too. Once-only on unlock is already held by RS21 :2371-2374, which keeps its settle."
+     }
+    ],
+    "gates": [
+     "test GREEN 169/169 at tip 7d9d557, store stand-in, engine stand-in: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-012159.log (gates.py --wt C:/Users/ruchi/1-addic-wt/actions-sos --lane actions-sos test)",
+     "Real store: the 8 changed tests (PIN, RS11, RS20, RS21, RS22, RS26, RS9, RS24 remainder) ran twice, 8/8 each, on a copy of the fixer's preview C:/Users/ruchi/1-addic-wt/_logs/scratch/as-fix-r8. I compared the copy byte for byte: trunk 364b1e2 store.js and content-core.js, plus the tip's ui-sos.js, ui-onboarding.js, actions.js and actions.test.mjs. Logs: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/fr8probe/p10-real-tip-changed-run1.log and p10-real-tip-changed-run2.log",
+     "Delayed-retry mutant, full tip actions.test.mjs: stand-in 168/169 and real 168/169, with only C2 red: fr8probe/p8-standin-mut-tip-full.log, fr8probe/p9-real-mut-tip-full.log"
+    ],
+    "trunk_suite": "I read the fixer's logs and did not rebuild a preview myself. Fresh preview, trunk build/offline-v1 364b1e2 + lane 7d9d557: 536/536 pass, build exit 0 (C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-fixr8-full.log). actions.test.mjs three times: 169/169 each, 33 to 73 s (trunk-preview-20261108-fixr8-actions-run1.log, run2.log, run3.log). Before the fix, at 364b1e2 + cd385a5: 161/169, with the 8 named fails (trunk-preview-20261108-fixr8-before.log). There are 7 mutation logs (mut-fixr8-*.log), each red at the intended line. For PIN, the failing line is the spy at :1667, not the hasLock line.",
+    "territory": "The round changed only offline/tests/actions.test.mjs (cd385a5..7d9d557: 8153d16 C-R7-2, 514050d C-R7-3, 7d9d557 C-R7-1; +68/-16). No product file changed. No assertion was removed: the one removed assert line is RS9's premise, which now runs on C9 at :1499. Assert calls went from 821 to 827, there are 119 test( lines before and after, and no REAL_STORE branch was added. The waits are deterministic: each is a condition with a 30 s deadline on RealDate, and a throw inside the condition fails at once. RS20 checks step 2, the pinSetting line and the disabled buttons on every look across a real key. Its exit look is safe because the trunk's setLock reaches the UI's continuation through microtasks only (store.js:656-677, :385-389, :418-421). The stubs have the trunk shapes. TRUNK_INTL equals trunk content-core.js:443-449. noNumber() filters number or tel, which is what urgentItem reads. C9's spiral is string[], like trunk :313-316. setSpy is an Object.create of the real closure-based Store, passed to one vm only. Nothing is installed globally, and withResources restores in finally. On the real store, the hasLock-false lines :1666, :2008 and :2013 pass vacuously on their own when a refused PIN still reaches the Store; the spy is what makes them count. Notes are appended under '# Round FIX-R8 (2026-11-08 00:35 IST)' in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-contracts.md.",
+    "tip": "7d9d557d61e5385fd1740365c04bb67c2a663999",
+    "not_checked": [
+     "Browser and docs gates (this branch has no build.mjs).",
+     "A fresh full-suite merge preview of my own. I used the fixer's full log and ran only the changed tests on a byte-checked copy of its preview.",
+     "The stand-in store's lock code (storeStandIn).",
+     "RS26's import and kept parts (:2544-2569), RS27 (:2571-2602) and C2 (:2181-2204): read for timing only, no mutants run against them except the delayed retry.",
+     "The fixer's question about the commit trailers ('Claude Fable 5.1' vs Opus 5.5): not this lens, left to CORE.",
+     "QUESTION Q1 (RS9, :1498-1502, a future risk): R-C-21 (outbox-CORE.md:130; outbox-SCREENS.md:13 'may read spiralPairs when present') would have ui-sos.js:341-354 read Content.catalogs.spiralPairs. C9 copies the trunk's spiralPairs (x7, no hopeless line, trunk content-core.js:525-533) and puts 'I feel hopeless' only in catalogs.spiral. After R-C-21, RS9 would therefore pass with the skip removed. Should that round also put the line in C9.catalogs.spiralPairs, or should RS9 check the source now, e.g. pairs.length === C9.catalogs.spiral.filter((t) => !/hopeless/i.test(t)).length?",
+     "QUESTION Q2 (RS11, :2018-2022, unchanged code): 'empty fields: Next goes on at once' runs on a store that already holds the PIN set at :2015. So hasPin is true (ui-onboarding.js:317), no field is drawn (:330), and read() returns true on !hasPin (:334). Is Next with empty fields and no PIN covered elsewhere, or should `again` start after S().resetAll()?"
+    ]
+   },
+   "verdicts": [],
+   "lost": 0
+  }
+ ]
+}
