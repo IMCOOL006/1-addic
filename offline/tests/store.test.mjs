@@ -1823,6 +1823,19 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.ok(!idb.dump().includes(MARK));
   });
 
+  test('RC15: a draft lists its rows in key order, staged rows included, as view.list does', async () => {
+    const S = freshStore();
+    await S.commit('t', (d) => { d.put('events', { id: 'e2', type: 'A' }); d.put('events', { id: 'e1', type: 'A' }); });
+    let ids = null;
+    await S.commit('t', (d) => {
+      d.put('events', { id: 'e3', type: 'A' });
+      d.put('events', { id: 'e0', type: 'A' });
+      ids = d.list('events').map((r) => r.id);
+    });
+    assert.deepEqual(ids, ['e0', 'e1', 'e2', 'e3']);
+    assert.deepEqual(S.view.list('events').map((r) => r.id), ['e0', 'e1', 'e2', 'e3']);
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });

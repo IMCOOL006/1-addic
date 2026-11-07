@@ -1636,7 +1636,7 @@ const Store = (function () {
           known(store);
           const out = new Map(state.rows[store]);
           for (const s of staged.values()) if (s.store === store) { if (s.row === null) out.delete(s.id); else out.set(s.id, s.row); }
-          return clone(Array.from(out.values()));
+          return clone(sorted(out)); // key order, staged rows too, as view.list gives them (RC15)
         },
         put(store, row) {
           const id = idOf(store, row);
