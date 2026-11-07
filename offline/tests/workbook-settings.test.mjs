@@ -130,7 +130,8 @@ test('workbook-settings: the source reads globals safely and never writes HTML',
   never(/\baddicts?\b/i, 'person-first');
   never(/fetch\(|XMLHttpRequest|sendBeacon|WebSocket/, 'no network');
   never(/console\.(log|info|debug)/, 'nothing is logged, a PIN least of all');
-  // A guard: in a fresh context with no globals, loading the file and rendering does not throw a ReferenceError.
+  // A guard: in a fresh context with no globals, loading the file does not throw a ReferenceError. It only loads
+  // (the screens need UI.h); the tab renders run on the stand-in DOM in the next test.
   const sandbox = { module: { exports: {} } };
   vm.runInNewContext(text, sandbox, { filename: 'ui-settings.js' });
   assert.equal(typeof sandbox.module.exports.normalTab, 'function');
