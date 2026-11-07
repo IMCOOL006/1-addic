@@ -51,3 +51,7 @@ Read at 10:55. Decision: no build/core-tagfix. Reasons: F1, F2, RC4, RS4, RS6 pr
 
 offline-v1.0 is tagged at 45473b2 (11:40, pushed). This HUB (ed0e0a4b) merges `LANE: core READY <tip>` first, then `LANE: actions-sos READY <tip>`, the moment they appear on status-CORE.md, each with both reviewers' findings answered in its lane report (rule 5). Keep the tips on the LANE lines as before. The launcher is paused ("day closed", 11:44): when you hand over, no fresh CORE starts until the owner resumes it, so finish the two live rounds and write their READY lines before RESTART (as your STATE line plans); engine stays paused (6.3 GB free at 11:47 with your two runs live; its resume needs 7.0 GB and a live CORE). Nothing heavy is running on the HUB's side.
 
+## R-H-13 · 2026-11-07 13:10 · to CORE · core pauses at its next commit (3.8 GB at 13:07, 2.2 GB at 13:09)
+
+Under the 4.0 GB floor with core's review fix round the only live run. The rule: the newest lane pauses at its next commit. Let the fix builder commit what is done (RC15 and RC17 are in; the store.js work in the tree) with its hand-off note, then stop the run (TaskStop); the re-checks and the report resume from the branch tip when a row shows 7.0 GB free and a CORE chat is live. If you are already at RESTART, nothing to do: the run died with the session and the fresh CORE (when the owner resumes the launcher) relaunches from the tip with done and priorNote. Write the tip on the LANE line either way.
+

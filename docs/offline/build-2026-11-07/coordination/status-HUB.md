@@ -2,9 +2,9 @@ TRACK: HUB
 STATE: BUILDING   # 2026-11-07 12:50 IST: HUB session 4 waits for the first offline-v1.1 merges. core REVIEWING (review run wf_96d6995e-023 live under CORE 06ee0d0d, which is at 288k and RESTARTs when it returns or at 300k); actions-sos RED 1 on its own review round (fc0d038: RS10 HIGH, RS11-RS17, RC14 PARTLY not fixed, the fix builder hit its cap): its fix run needs a CORE chat. The launcher is PAUSED since 11:44 (day closed): after 06ee0d0d hands over no fresh CORE starts until the owner's --resume, so the actions-sos fix run, engine's resume and the SCREENS track all wait on that one line (NEEDS YOU on the board)
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 2 running lanes from 11:51 (core and actions-sos finishing their check and review rounds); engine paused; nothing new starts until a row shows 7.0 GB free AND a CORE chat is live to launch it (the launcher is paused); under 4.0 GB free the newest lane pauses at its next commit
+SLOTS-ALLOWED: 1 running lane from 13:10 (core's review fix round), and it PAUSES at its next commit: rows 13:07 3.8 GB and 13:09 2.2 GB are under the 4.0 GB floor; actions-sos returned RED 1 at 12:45 (no run live); engine paused; nothing new starts until a row shows 7.0 GB free AND a CORE chat is live to launch it (the launcher is paused)
 TRACKS-ALLOWED: CORE   # the launcher is paused since 11:44 (day closed): the owner's --resume brings a fresh CORE when 06ee0d0d hands over; SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
-SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
+SLOTS: core slot=1 PAUSE at its next commit from 2026-11-07 13:10 (rows 13:07 3.8 GB, 13:09 2.2 GB under the 4.0 GB floor; the only live run is core's review fix round wf_96d6995e-023: let the fix builder commit what is done with its hand-off note, then stop the run; the reviewers' re-checks and the report resume when a row shows 7.0 GB free and a CORE chat is live). Granted 07:15 (tier 1, flagged); U-01..U-03 merged; U-04 and the review fixes on the branch
 SLOTS: engine slot=2 PAUSED since 2026-11-07 10:42 (6cb722e committed, worktree clean, run stopped 10:46); resumes with [U-07], [U-08] then its check when a row shows 7.0 GB free with the live lanes counted (11:47 by hand 6.3 GB with two runs live: not yet) and a CORE chat is live to relaunch it; offline-v1.1
 SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again at its next commit if a row goes under 4.0 GB)
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
@@ -21,7 +21,12 @@ MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide
 MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 12:50 IST
+UPDATED: 2026-11-07 13:10 IST
+
+# 2026-11-07 13:10 · under the floor: core pauses at its next commit
+
+- Memory rows: 12:56 8.0 GB; 13:07 3.8 GB (the launcher); 13:09 2.2 GB (by hand) with one run live (core's review fix round: RC15 bf38f72, RC17 aac2772 committed, store.js and store.test.mjs modified in the worktree at 13:09). The rule (PLAN.md section 4): under 4.0 GB the newest lane pauses at its next commit; core is the only live lane. SLOTS line written; R-H-13 to CORE. If CORE 06ee0d0d has already restarted when it reads this, the run is dead with it and the pause is moot; the resume (re-checks and the report from the branch tip) then follows the engine rule: a row with 7.0 GB free and a live CORE.
+- No READY line; nothing to merge; nothing of the HUB's runs. The launcher stays paused (the owner's line, on the board since 12:50).
 
 # 2026-11-07 12:50 · actions-sos RED 1 on its own review; CORE near its restart; the launcher pause is now the blocker
 
