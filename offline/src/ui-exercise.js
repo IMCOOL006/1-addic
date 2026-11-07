@@ -375,13 +375,15 @@ const ExerciseUI = (function () {
   };
 
   // True when any typed answer (text, textarea) holds crisis words, per Engine.crisisKeywords. Never blocks saving.
+  // A hit is true or a non-empty list of matched words (the readers ui-sos accepts, contracts/actions-sos.md).
+  const isCrisisHit = (r) => r === true || (Array.isArray(r) && r.length > 0);
   function crisisCheck(spec, values, engine) {
     const E = engine || ns('Engine');
     if (!E || typeof E.crisisKeywords !== 'function') return false;
     for (const f of (spec && spec.fields) || []) {
       if (f.type !== 'text' && f.type !== 'textarea') continue;
       const t = values ? values[f.id] : '';
-      try { if (typeof t === 'string' && t && E.crisisKeywords(t) === true) return true; } catch (e) { /* ignore */ }
+      try { if (typeof t === 'string' && t && isCrisisHit(E.crisisKeywords(t))) return true; } catch (e) { /* ignore */ }
     }
     return false;
   }
@@ -954,11 +956,16 @@ const ExerciseUI = (function () {
     return open(r.parts[1], { mode: r.query && r.query.mode, from: r.query && r.query.from }, ctxIn);
   }
 
+  // The pure names: module.exports carries these only (check C2); the DOM functions stay on the global ExerciseUI.
+  const PURE = ['FIELD_TYPES', 'SAMPLE_SPEC', 'SAMPLE_CONTACTS', 'REGIONS', 'URGENT_LINE', 'TEXT', 'defaultValue', 'normalise',
+    'toPayload', 'fromPayload', 'validate', 'isEmpty', 'optionsFor', 'triggerId', 'resume', 'history', 'startState',
+    'exerciseFor', 'summarize', 'crisisCheck'];
+
   return {
     FIELD_TYPES, SAMPLE_SPEC, SAMPLE_CONTACTS, REGIONS, URGENT_LINE, TEXT,
     defaultValue, normalise, toPayload, fromPayload, validate, isEmpty, optionsFor, triggerId,
     resume, history, startState, exerciseFor, summarize, crisisCheck,
-    render, open, gallery, devPage, exercisePage,
+    render, open, gallery, devPage, exercisePage, PURE,
   };
 })();
 
@@ -968,4 +975,7 @@ if (typeof UI !== 'undefined' && UI && UI.pages) {
   UI.pages.dev = (ctx) => ExerciseUI.devPage(ctx);
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = ExerciseUI;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {};
+  for (const k of ExerciseUI.PURE) module.exports[k] = ExerciseUI[k];
+}
