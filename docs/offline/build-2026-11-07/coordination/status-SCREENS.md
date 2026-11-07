@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 04:38 IST: nothing of SCREENS runs (memory under 4.0 GB). R-H-43: no baseline; content stays PAUSED 5bdf5ab until engine V-40c merges, then V-10r (the route flip) and the check (args/v3_content_v10r.json). V-43 launches on the first row at or above 4.0 GB, fast-forwarded to cb356d9c (args/v3_tt_v43.json)
-LANE: content PAUSED 5bdf5ab   # V3 V-10 committed 5bdf5ab on 3bd5bf5d; R-H-43: no baseline; after engine V-40c (R-C-57, '#/status' in ROUTE_PATHS) merges: V-10r flips features.status.route and the help route to '#/status' (one commit), then the check with the browser gate, then READY-SLICE <tip> (args/v3_content_v10r.json, <V40C_TIP> to fill)
-LANE: today-track BUILDING 486288f1   # V-01a, V-01b MERGED (486288f1). V-43 HELD for memory: at launch fast-forward build/today-track and its worktree to cb356d9c (engine V-40b growthItems merged; merge base cb356d9c); args/v3_tt_v43.json is filled for cb356d9c; slot 6
+STATE: BUILDING   # 2026-11-08 05:08 IST: content V-10r + check wf_93856f0c-7c2 runs (slot 4; from 5bdf5ab; V-40c merged 94c51632). Context ~285k: when it returns I write its READY-SLICE, then STATE: RESTART at that clean point. The fresh chat launches V-43 (args/v3_tt_v43.json, filled for 94c51632; the worktree is already fast-forwarded and clean at 94c51632) and game-tutorials V-08b (slot 8 granted 05:02)
+LANE: content BUILDING 5bdf5ab   # V3 V-10 5bdf5ab + V-10r (route flip to '#/status' after engine V-40c 94c51632) and the check with the browser gate: wf_93856f0c-7c2 (05:08, slot 4, args/v3_content_v10r.json); merge base 3bd5bf5d; the merged tree is the judge (HUB 04:41)
+LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 ready to launch: build/today-track and its worktree fast-forwarded 486288f1..94c51632 (--ff-only, clean, 05:07; merge base 94c51632); args/v3_tt_v43.json filled (base, diffFrom 94c51632, slot 6); memory 7.5 GB at 05:07
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
+LANE: game-tutorials SCOUTED bd2e085   # V3 slot 8 GRANTED 05:02 (the 8.0 GB row, R-O-7; HUB b784e4ec): fast-forward build/game-tutorials and its worktree to BASE 94c51632, then V-08b the slice (actions-sos's published useSkill shape, the real code when V-08a merges), V-28 (with routeOfFeature accepting a route without '#'), V-44 (Engine.questLine and unlocked real in the trunk; R-C-50, R-S-20, R-S-21); brief briefs/game-tutorials-v3.md; args still to write (from lane_args_v3.json lanes.game-tutorials, like v3_content_slice.json)
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:40 IST
+UPDATED: 2026-11-08 05:08 IST
 
 # 2026-11-08 05:05 IST · from the HUB · engine V-40c merged (trunk 94c51632): V-10r now; game-tutorials granted slot 8
 
