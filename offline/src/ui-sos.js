@@ -206,10 +206,18 @@
     return rows.filter((r) => r && r.exerciseId === exerciseId && !r.draft).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] || null;
   }
 
+  // Engine.reasonsCard gives {quick, drawbacks, benefits, different} (BUILD-PLAN 3.2) or a list: every list, in that order.
+  const REASON_LISTS = ['reasons', 'items', 'cards', 'lines', 'quick', 'drawbacks', 'benefits', 'different'];
+  const reasonLists = (v) => (Array.isArray(v) ? v : v && typeof v === 'object'
+    ? [].concat(...REASON_LISTS.map((k) => (Array.isArray(v[k]) ? v[k] : []))) : []);
+  // Engine.comebacks gives [{thought, response, at}] or strings: a card shows the reply, never the craving thought.
+  const replyText = (x) => (typeof x === 'string' ? x : x && typeof x === 'object'
+    ? String(x.response || x.reply || x.rebuttal || x.answer || x.text || '') : '');
+
   function reasonsFrom(view, E) {
     const eng = E === undefined ? glob('Engine') : E;
     if (eng && typeof eng.reasonsCard === 'function') {
-      const got = texts(listOf(safe(() => eng.reasonsCard(view), null)));
+      const got = texts(reasonLists(safe(() => eng.reasonsCard(view), null)));
       if (got.length) return got;
     }
     const r = latestResponse(view, 'quick-reasons');
@@ -228,7 +236,7 @@
   function comebacksFrom(view, E) {
     const eng = E === undefined ? glob('Engine') : E;
     if (eng && typeof eng.comebacks === 'function') {
-      const got = texts(listOf(safe(() => eng.comebacks(view), null)));
+      const got = listOf(safe(() => eng.comebacks(view), null)).map(replyText).filter((s) => s.trim() !== '');
       if (got.length) return got;
     }
     return FALLBACK.talkback.slice();

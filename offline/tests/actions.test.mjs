@@ -750,6 +750,19 @@ describe('sos screens (U-10)', () => {
     assert.ok(H.soberSteps(C()).length === 5 && H.deckFrom(view, null, C()).length > 3 && H.comebacksFrom(view, null).length > 0);
   });
 
+  test('RC1: Talk back shows the reply, never the craving thought; the reasons card is read in full', () => {
+    const view = S().view;
+    const eng = {
+      comebacks: () => [{ thought: 'I need it now', response: 'I want it. I do not need it.', at: '2026-11-07T09:00:00.000Z' }, 'A plain line'],
+      reasonsCard: () => ({ quick: ['my health'], drawbacks: ['the arguments'], benefits: [{ text: 'more money' }], different: ['mornings with my kids'] }),
+    };
+    assert.deepEqual(H.comebacksFrom(view, eng), ['I want it. I do not need it.', 'A plain line']);
+    assert.deepEqual(H.reasonsFrom(view, eng), ['my health', 'the arguments', 'more money', 'mornings with my kids']);
+    assert.deepEqual(H.comebacksFrom(view, { comebacks: () => ['one', 'two'] }), ['one', 'two'], 'a list of strings (engine.md) still works');
+    assert.deepEqual(H.reasonsFrom(view, { reasonsCard: () => ['a', 'b'] }), ['a', 'b']);
+    assert.deepEqual(H.comebacksFrom(view, { comebacks: () => [{ thought: 'only a thought' }] }), H.FALLBACK.talkback, 'a thought with no reply is never shown');
+  });
+
   test('wave timer counts 15 minutes down and never below zero', () => {
     assert.equal(H.WAVE_MIN, 15);
     assert.equal(H.clock(900), '15:00');
