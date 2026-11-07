@@ -145,7 +145,8 @@ const StatusUI = (() => {
       xp,
       rank: rk ? { id: rid, name: str(rk.name) || rid } : null,
       badges: { earned: gm ? gm.earnedCount : earned.size, total: badgeTotal },
-      days: { show: x.counters !== false && x.discreet !== true, total: num(ct.total) },
+      // a person who set no start date has no day count to show (tracking false), so no 'Days in all: 0'
+      days: { show: x.counters !== false && x.discreet !== true && ct.tracking !== false, total: num(ct.total) },
       next: nextStep(x),
       ticks: { explorer: ex, quests: qd },
     };

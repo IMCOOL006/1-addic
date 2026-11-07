@@ -192,12 +192,14 @@ test('days show only with counters on and discreet off, never the current run', 
   assert.deepEqual(STP.model(gs, { counters: true, discreet: false }).days, { show: true, total: gs.counters.total });
   assert.equal(STP.model(gs, { counters: false }).days.show, false);
   assert.equal(STP.model(gs, { counters: true, discreet: true }).days.show, false);
+  assert.equal(STP.model(E.gameState(viewOf({}), NOW), { counters: true }).days.show, false, 'no start date: no day count');
   assert.ok(!/current|run|streak/i.test(JSON.stringify(Object.keys(STP.model(gs, {})))), 'no current-run field');
   withDom(() => {
     const root = render(sampleRows());
     assert.equal(byTest(root, 'status-days')[0].textContent, 'Days in all: ' + gs.counters.total);
     assert.doesNotMatch(root.textContent, /in a row|current run|streak/i);
     assert.equal(byTest(render({ ...sampleRows(), settings: [settingsRow({ counters: false })] }), 'status-days').length, 0);
+    assert.equal(byTest(render({}), 'status-days').length, 0, 'empty profile: no Days in all: 0');
   });
 });
 
