@@ -26,13 +26,14 @@ after(async () => { if (L && L.browser) await L.browser.close(); });
 const TABS = ['today', 'learn', 'workbook', 'track', 'actions'];
 
 // One named flow: fresh context, open, probe needs, run, assert clean. spec: {start, routes, globals, hooks,
-// page (newPage options), onboarded (default true: the first-run onboarding is completed through Actions first)}.
+// page (newPage options), onboarded (default true: the first-run onboarding is completed through Actions first),
+// tour (true: the flow drives the first-run tour itself, so it is not marked done first)}.
 function flow(name, spec, body) {
   test(name, { skip: TOP || false, timeout: spec.timeout || 120000 }, async (t) => {
     const s = await newPage(L.browser, spec.page || {});
     try {
       await openApp(s.page, '#/today');
-      if (spec.onboarded !== false) await markOnboarded(s.page);
+      if (spec.onboarded !== false) await markOnboarded(s.page, spec.tour !== true);
       if (spec.start && spec.start !== '#/today') await F.go(s.page, spec.start);
       let why = await skipReason(s.page, spec);
       if (!why) {
@@ -51,11 +52,18 @@ function flow(name, spec, body) {
   });
 }
 
-// Completes first-run onboarding without the UI when the onboarding page exists (so other flows start on Today).
-async function markOnboarded(page) {
+// Completes first-run onboarding without the UI when the onboarding page exists (so other flows start on Today), and
+// marks the first-run tour skipped the way the product records it (Actions.tutorial.done; the auto tour reads a skipped
+// tour as done), so its coach never covers another flow's controls (FIX-TOURMARK); a flow with tour: true keeps it.
+async function markOnboarded(page, tourDone) {
   if (!(await routeRegistered(page, 'onboarding'))) return;
   if (await missingGlobal(page, ['Store', 'Actions.onboard'])) return;
-  await page.evaluate(async () => { try { await Actions.onboard({}); } catch (e) { /* the flow then starts wherever the app lands */ } });
+  await page.evaluate(async (tour) => {
+    try { await Actions.onboard({}); } catch (e) { /* the flow then starts wherever the app lands */ }
+    if (tour && Actions.tutorial && typeof Actions.tutorial.done === 'function') {
+      try { await Actions.tutorial.done('tour', { skipped: true }); } catch (e) { /* the tour may then start on Today */ }
+    }
+  }, tourDone === true);
   await F.go(page, '#/today');
 }
 
@@ -146,13 +154,13 @@ async function tourRun(page, buttonName) {
 const tourEvent = (page) => page.evaluate(() => Store.view.list('events')
   .filter((e) => e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'tour').map((e) => !!e.payload.skipped));
 
-flow('tour complete', { globals: ['UI.tour', 'Store'] }, async ({ page }) => {
+flow('tour complete', { globals: ['UI.tour', 'Store'], tour: true }, async ({ page }) => {
   await tourRun(page, /^(next|done|finish|got it)\b/i);
   await F.waitFor(page, () => Store.view.list('events').some((e) => e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'tour'));
   assert.deepEqual(await tourEvent(page), [false], 'one TutorialCompleted, not skipped');
 });
 
-flow('tour skip', { globals: ['UI.tour', 'Store'] }, async ({ page }) => {
+flow('tour skip', { globals: ['UI.tour', 'Store'], tour: true }, async ({ page }) => {
   await tourRun(page, /^skip\b/i);
   await F.waitFor(page, () => Store.view.list('events').some((e) => e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'tour'));
   assert.deepEqual(await tourEvent(page), [true], 'one TutorialCompleted, skipped');
@@ -259,6 +267,9 @@ flow('lesson to artifact shown in SOS', { routes: ['exercise', 'sos'], globals: 
   await F.click(page, HOOKS.exerciseSave);
   await F.waitFor(page, (n) => Store.view.count('responses') >= n, r0 + 1);
   await F.go(page, '#/sos/craving');
+  await F.need(page, HOOKS.sosCraving);
+  // The craving flow asks how strong it is first (as F.cravingSession does): rate it, then the tools show.
+  if (await present(page, HOOKS.sosRating, 800)) await F.setRating(page, HOOKS.sosRating, 7);
   await F.click(page, HOOKS.sosTool('why'));
   await F.waitFor(page, (txt) => document.getElementById('main').textContent.includes(txt), reason, 5000);
 });
