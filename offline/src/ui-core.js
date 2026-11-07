@@ -184,8 +184,15 @@ const UI = (function () {
     const onNativeClose = () => { if (!dlg.open) close('dismissed'); };
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
     const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
+    // A modal sheet makes the page behind it, and its SOS button, inert: so every sheet carries its own way to SOS,
+    // one tap, even a sheet that cannot be dismissed.
+    const discreet = document.documentElement.getAttribute('data-discreet') !== null;
+    const toSos = h('a', {
+      href: '#/sos', class: 'sheet-sos', text: discreet ? 'Help' : 'SOS', 'aria-label': discreet ? 'Help' : 'SOS: help right now',
+      onClick: (ev) => { if (ev && typeof ev.preventDefault === 'function') ev.preventDefault(); close('route'); go('#/sos'); },
+    });
     const head = h('div', { class: 'sheet-head' },
-      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }),
+      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }), toSos,
       o.dismissable === false ? null : h('button', {
         type: 'button', class: 'icon-btn sheet-close', 'aria-label': 'Close', onClick: () => close('dismissed'),
       }, icon('close', 22)));

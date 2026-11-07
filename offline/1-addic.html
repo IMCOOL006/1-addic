@@ -276,6 +276,13 @@ dialog.sheet {
 dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sheet-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-1) var(--space-4); }
 .sheet-title { flex: 1; min-width: 0; margin: 0; font-size: 1.125rem; }
+/* Every sheet's own way to SOS (the page's SOS button is inert behind a modal). */
+.sheet-sos {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  min-width: 44px; min-height: 44px; padding: 0 14px; border-radius: 22px;
+  background: hsl(var(--accent)); color: hsl(var(--primary-text)); font-weight: 800; text-decoration: none;
+}
+.sheet-sos:focus-visible { outline-offset: 3px; }
 .sheet-body { padding: var(--space-2) var(--space-4) var(--space-4); }
 .sheet-actions { justify-content: flex-end; padding: 0 var(--space-4) var(--space-4); }
 @media (min-width: 720px) {
@@ -1367,8 +1374,15 @@ const UI = (function () {
     const onNativeClose = () => { if (!dlg.open) close('dismissed'); };
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
     const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
+    // A modal sheet makes the page behind it, and its SOS button, inert: so every sheet carries its own way to SOS,
+    // one tap, even a sheet that cannot be dismissed.
+    const discreet = document.documentElement.getAttribute('data-discreet') !== null;
+    const toSos = h('a', {
+      href: '#/sos', class: 'sheet-sos', text: discreet ? 'Help' : 'SOS', 'aria-label': discreet ? 'Help' : 'SOS: help right now',
+      onClick: (ev) => { if (ev && typeof ev.preventDefault === 'function') ev.preventDefault(); close('route'); go('#/sos'); },
+    });
     const head = h('div', { class: 'sheet-head' },
-      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }),
+      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }), toSos,
       o.dismissable === false ? null : h('button', {
         type: 'button', class: 'icon-btn sheet-close', 'aria-label': 'Close', onClick: () => close('dismissed'),
       }, icon('close', 22)));

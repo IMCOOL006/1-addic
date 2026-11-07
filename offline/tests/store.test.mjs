@@ -4,6 +4,7 @@
 import { describe, test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import fs from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const UI = require('../src/ui-core.js');
@@ -468,5 +469,43 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(await asked, false, 'a confirm left open by a route change answers false');
     assert.equal(dlg.open, false);
     dlg.flush();
+  });
+
+  test('F2: every sheet header carries its own SOS link: one tap closes the sheet and opens SOS; Help when discreet', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    UI.pages.today = page('today');
+    at('#/today');
+    await UI.render();
+    const why = [];
+    UI.sheet('Your plan', page('PRIVATE plan')(), { onClose: (w) => why.push(w), dismissable: false });
+    const sosLink = () => dlg.all().find((e) => e.tagName === 'A' && e.getAttribute('href') === '#/sos');
+    const link = sosLink();
+    assert.ok(link, 'a link to SOS, even in a sheet that cannot be dismissed');
+    assert.ok(dlg.children[0].children.includes(link), 'it sits in the sheet header');
+    assert.equal(link.textContent.trim(), 'SOS');
+    assert.match(link.getAttribute('class'), /\bsheet-sos\b/);
+    let prevented = false;
+    link.on.click[0]({ preventDefault() { prevented = true; } });
+    assert.equal(prevented, true);
+    assert.deepEqual(why, ['route']);
+    assert.equal(dlg.open, false);
+    assert.equal(dlg.kids.length, 0);
+    assert.equal(location.hash, '#/sos', 'one tap goes to SOS');
+    dlg.flush();
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? { discreet: true } : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false }),
+    };
+    at('#/today');
+    await UI.render();
+    const s = UI.sheet('Notes', page('notes')());
+    assert.equal(sosLink().textContent.trim(), 'Help', 'discreet mode says Help');
+    s.close();
+    dlg.flush();
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    const rule = (css.match(/\.sheet-sos\s*\{([^}]*)\}/) || [])[1] || '';
+    assert.match(rule, /min-height:\s*44px/);
+    assert.match(rule, /min-width:\s*44px/);
   });
 });
