@@ -1,0 +1,54 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The pure rules engine and its Node tests.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-*.test.mjs"
+ ],
+ "units": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E",
+  "FIX-SPIRAL-OWN"
+ ],
+ "batches": [
+  [
+   "FIX-SPIRAL-OWN"
+  ]
+ ],
+ "unitTier": {
+  "U-05": 1,
+  "U-06": 1,
+  "U-07": 1,
+  "U-08": 1,
+  "FIX-RS4": 1,
+  "FIX-RS9E": 1,
+  "FIX-SPIRAL-OWN": 1
+ },
+ "unitNotes": {
+  "FIX-SPIRAL-OWN": "contracts/actions-sos.md line 151 (RS35's engine side). spiralThoughts(view) returns [{thought, reply, stockReply}]: reply is the person's own words or '' (never a fill), stockReply the catalog slipSelfTalk line it used to fill with. The one consumer, ui-sos.js spiralPairs (:341-357), already reads reply as the person's words and supplies its own fallback, so SOS keeps working; prove it: node --test offline/tests/actions.test.mjs green by name. Tests in an engine test file: own reply kept, missing reply '' with stockReply set, strings and objects both."
+ },
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:15 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): one fix round by name on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/engine/engine__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E"
+ ],
+ "base": "f69bc68a",
+ "diffFrom": "f69bc68a",
+ "slot": 2,
+ "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
+ "now": "2026-11-08 02:15 IST",
+ "start": "build",
+ "priorNote": "The lane is MERGED at 84075b6 (3ea2e13d). This round: FIX-SPIRAL-OWN only. CORE 10 fast-forwarded build/engine to f69bc68a (no merge commit; clean) before this run."
+}

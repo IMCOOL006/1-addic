@@ -1,0 +1,79 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The Actions verbs, the SOS screens, the lock screen and onboarding.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/tests/actions.test.mjs"
+ ],
+ "units": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-SAFETY-AS",
+  "FIX-ONB-EMO",
+  "FIX-R4",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "FIX-LOCKID-MARK",
+  "FIX-USE-SKILL",
+  "FIX-RC22-RC23",
+  "FIX-RS22-AT-ONCE"
+ ],
+ "batches": [
+  [
+   "FIX-LOCKID-MARK",
+   "FIX-USE-SKILL",
+   "FIX-RC22-RC23",
+   "FIX-RS22-AT-ONCE"
+  ]
+ ],
+ "unitTier": {
+  "U-09": 1,
+  "U-10": 1,
+  "U-11": 1,
+  "FIX-SAFETY-AS": 1,
+  "FIX-ONB-EMO": 1,
+  "FIX-R4": 1,
+  "FIX-R5": 1,
+  "FIX-R6": 1,
+  "FIX-R7": 1,
+  "FIX-R8": 1,
+  "FIX-LOCKID-MARK": 1,
+  "FIX-USE-SKILL": 1,
+  "FIX-RC22-RC23": 1,
+  "FIX-RS22-AT-ONCE": 1
+ },
+ "unitNotes": {
+  "FIX-LOCKID-MARK": "RS26 remainder (contracts/actions-sos.md lines 111, 130): the save's mark (RS22's retry) also holds Store.status().lockId behind a feature check (no lockId field: today's behaviour); a retry whose lockId changed is dropped, never retried. Test with a stand-in store whose status().lockId changes between the mark and the retry, and one without the field.",
+  "FIX-USE-SKILL": "Q4 of contracts/actions-sos.md line 175: a verb Actions.useSkill({skillId, helpful}) writes SkillUsed {skillId, helpful, logId: null} with no log; skillId must be a skill in Content (else the lane's validation error, nothing written); helpful in the one encoding of the engine contract; never writes in a preview or drill. Tests: written once, refused bad ids, engine counts it. Name the verb and its shape in your note (the chat tells game-tutorials, ui-tools.js :315).",
+  "FIX-RC22-RC23": "RC22 (line 177): tests for the kept-session date in the feeling flow and the leave path. RC23 (line 172): a plan's status change is a flag for claimRow (keeps the sample mark), and plans.update writes BattlePlanCreated only for the person's own row.",
+  "FIX-RS22-AT-ONCE": "R8-RC1 (line 183), test-only: RS22's 'tried once more, at once' asserted by count, not order: count the refusal, wait for it, settle by condition, assert calls === 2 (the probe: _logs/reports/actions-sos/fr8probe/)."
+ },
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:15 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): one fix round by name on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/actions-sos/actions-sos__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-SAFETY-AS",
+  "FIX-ONB-EMO",
+  "FIX-R4",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8"
+ ],
+ "base": "f69bc68a",
+ "diffFrom": "f69bc68a",
+ "slot": 3,
+ "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
+ "now": "2026-11-08 02:15 IST",
+ "start": "build",
+ "priorNote": "The lane is MERGED at 7d9d557 (e8da3fbd). This round: the RS26 mark (core's FIX-LOCKID: feature-checked, works with or without it), FIX-USE-SKILL, RC22, RC23, R8-RC1. No copy changes; no new phrase. CORE 10 fast-forwarded build/actions-sos to f69bc68a (no merge commit; clean) before this run."
+}

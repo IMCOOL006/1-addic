@@ -6,7 +6,12 @@ LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs BUILDING f69bc68   # 2026-11-08 02:08 IST: 9931e10 MERGED (25269353, trunk f69bc68a; tag offline-v1.1). Fast-forwarded to f69bc68a 02:03 (no merge commit). U-35 slice wf_3e4ac20d-750 (args tracks/CORE/args/args_td_slice.json by gen4.py; wf_sim OK; 8.9 GB free at 02:07); then U-36b, then the hooks round (R-S-6, R-S-11, R-S-16, the two SOS reassess hooks) and C-TM-1
 SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01, R-H-37); the CORE LOWs by name after U-35, one lane at a time, asked then
-UPDATED: 2026-11-08 02:08 IST
+UPDATED: 2026-11-08 02:15 IST
+
+# 2026-11-08 02:15 IST · R-O-5 read (V3); the CORE fix rounds staged
+
+- R-O-5 (02:09) and HUB 8's RESTART (02:10): the next edition is V3 (offline-v3.0): the offline-v1.2 list plus an improvement review (V3-IMPROVEMENTS.md, about 02:30-02:50) and a visual status layer; HUB 9 (90539ba6) cuts the V3 plan. CORE builds what the plan grants; U-35 runs on.
+- Staged, each wf_sim OK, launched only on a grant (args tracks/CORE/args/args_low_<lane>.json by gen5.py "<now>" <lane> [BASE]; the worktree fast-forwarded to BASE first): core FIX-LOCKID + FIX-A11Y-N (N1, N2, Q-a; flagged: both reviewers); actions-sos FIX-LOCKID-MARK, FIX-USE-SKILL, FIX-RC22-RC23, FIX-RS22-AT-ONCE (flagged); engine FIX-SPIRAL-OWN; learn FIX-C3-C4 (C5 is provenance, no code). tests-docs: U-36b (gen4.py u36b), then the hooks round with C-TM-1. R-C-44 to the HUB.
 
 # 2026-11-08 02:08 IST · offline-v1.1 tagged; tests-docs U-35 running
 
