@@ -956,11 +956,16 @@ const ExerciseUI = (function () {
     return open(r.parts[1], { mode: r.query && r.query.mode, from: r.query && r.query.from }, ctxIn);
   }
 
+  // The pure names: module.exports carries these only (check C2); the DOM functions stay on the global ExerciseUI.
+  const PURE = ['FIELD_TYPES', 'SAMPLE_SPEC', 'SAMPLE_CONTACTS', 'REGIONS', 'URGENT_LINE', 'TEXT', 'defaultValue', 'normalise',
+    'toPayload', 'fromPayload', 'validate', 'isEmpty', 'optionsFor', 'triggerId', 'resume', 'history', 'startState',
+    'exerciseFor', 'summarize', 'crisisCheck'];
+
   return {
     FIELD_TYPES, SAMPLE_SPEC, SAMPLE_CONTACTS, REGIONS, URGENT_LINE, TEXT,
     defaultValue, normalise, toPayload, fromPayload, validate, isEmpty, optionsFor, triggerId,
     resume, history, startState, exerciseFor, summarize, crisisCheck,
-    render, open, gallery, devPage, exercisePage,
+    render, open, gallery, devPage, exercisePage, PURE,
   };
 })();
 
@@ -970,4 +975,7 @@ if (typeof UI !== 'undefined' && UI && UI.pages) {
   UI.pages.dev = (ctx) => ExerciseUI.devPage(ctx);
 }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = ExerciseUI;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {};
+  for (const k of ExerciseUI.PURE) module.exports[k] = ExerciseUI[k];
+}

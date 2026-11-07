@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
@@ -15,6 +16,12 @@ const src = (f) => join(SRC, f);
 globalThis.Content = require(src('content-core.js'));
 for (const f of readdirSync(SRC).filter((n) => /^content-.+\.js$/.test(n) && n !== 'content-core.js').sort()) require(src(f));
 const X = require(src('ui-exercise.js'));
+// The DOM functions are not exported (C2): load the classic script as the browser does, for the stand-in DOM smoke runs.
+const classic = (file, name) => vm.runInThisContext(`(function () {
+${readFileSync(src(file), 'utf8')}
+return ${name};
+})()`, { filename: src(file) });
+const XD = classic('ui-exercise.js', 'ExerciseUI');
 const S = X.SAMPLE_SPEC;
 const field = (type) => S.fields.find((f) => f.type === type);
 const ex = S.tutorial.example.values;
@@ -200,6 +207,14 @@ test('learn: ui-exercise.js inserts text as text and makes no network call', () 
   assert.doesNotMatch(code, /\baddicts?\b(?!ed|ion)/i, 'person-first words');
 });
 
+test('learn: module.exports carries the pure functions only', () => {
+  for (const k of ['render', 'open', 'gallery', 'devPage', 'exercisePage']) {
+    assert.equal(X[k], undefined, `${k} is not exported`);
+    assert.equal(typeof XD[k], 'function', `${k} stays on the global ExerciseUI`);
+  }
+  for (const k of ['defaultValue', 'toPayload', 'fromPayload', 'validate', 'optionsFor', 'resume', 'crisisCheck']) assert.equal(typeof X[k], 'function', k);
+});
+
 /* ── a tiny stand-in DOM: enough for the gallery to render, save and resume a draft ─────────── */
 function fakeDom() {
   class Node {
@@ -223,7 +238,7 @@ function fakeDom() {
 test('learn: the gallery renders every field type, saves and resumes a draft (stand-in DOM)', async () => {
   globalThis.document = fakeDom();
   try {
-    const page = X.gallery({ route: { parts: ['dev', 'fields'], query: {} }, view: null });
+    const page = XD.gallery({ route: { parts: ['dev', 'fields'], query: {} }, view: null });
     const byTest = (p) => page.all((n) => (n.getAttribute && n.getAttribute('data-test') || '').startsWith(p));
     const types = byTest('fld-type-').map((n) => n.getAttribute('data-test').slice(9));
     assert.deepEqual(types.sort(), [...X.FIELD_TYPES].sort(), 'one section per field type');
@@ -244,10 +259,10 @@ test('learn: the gallery renders every field type, saves and resumes a draft (st
     assert.equal(json.draft, true); assert.equal(json.payload.different, 'Calmer mornings');
     assert.equal(byTest('exercise-draft-note').length, 1, 'the draft resumes with its note');
     assert.equal(byTest('exercise-fresh').length, 1, 'and a Start fresh button');
-    const again = X.gallery({ route: { parts: ['dev', 'fields'], query: { mode: 'tutorial' } }, view: null });
+    const again = XD.gallery({ route: { parts: ['dev', 'fields'], query: { mode: 'tutorial' } }, view: null });
     assert.equal(again.all((n) => n.getAttribute && n.getAttribute('data-test') === 'exercise-draft-note').length, 1, 'reopening resumes the draft');
     assert.ok(again.all((n) => n.tagName === 'details').length >= 1, 'tutorial mode shows the example first');
-    const missing = X.open('quick-reasons', { from: 'm0-l2' }, { view: null });
+    const missing = XD.open('quick-reasons', { from: 'm0-l2' }, { view: null });
     assert.match(missing.textContent, /Not available yet/);
     assert.equal(missing.all((n) => n.tagName === 'a')[0].getAttribute('href'), '#/lesson/m0-l2', 'never a dead end');
   } finally { delete globalThis.document; }
