@@ -29,3 +29,14 @@ In the cloud:
 - `docs/1-addic-execution-plan.docx` is the readable execution plan for the owner, designers, clinical reviewer and testers. Don't edit it by hand: it is generated from `scripts/execution_plan/content.md`, `docs/BUILD-GUIDE.md` and `docs/book/exercises.md` by `node scripts/build_execution_plan_doc.js`, and checked by `python3 scripts/check_execution_plan_doc.py`. Rebuild it after changing the plan or the guide.
 - `docs/1-addic-decisions-needed.docx` is the owner's questionnaire: every decision and input the project needs, with options and recommendations. Generated from `scripts/execution_plan/decisions.md` by `node scripts/build_decisions_doc.js`; check with `python3 scripts/check_execution_plan_doc.py docs/1-addic-decisions-needed.docx --briefs-only`.
 - `docs/program/` holds the Early Access plan and the proposed build program (`EARLY-ACCESS-AND-PROGRAM.md`, rendered to `docs/1-addic-early-access-and-program.docx` by `node scripts/build_doc.js`). Owner inputs are in `docs/decisions/owner-inputs.md`. The program's files (protocol, status, outboxes, agents, gates) are created only after the owner approves the proposal.
+
+## Offline edition
+
+The single-file edition (ADR 0022) lives in `offline/`. Node 22; the only dependency is the pinned `playwright` devDependency for the browser suite.
+
+- Build: `npm run build` (`node offline/build.mjs`) writes `offline/1-addic.html` under a CSP with `connect-src 'none'`.
+- Test: `npm test` (every `offline/tests/*.test.mjs` except `browser.test.mjs`); `npm run test:browser [-- --grep <name>]` (Playwright over Chrome, fallback bundled Chromium; offline, 390 px; fails on any console error or non-file request; skips by name when the browser, the file, a route or a hook is missing).
+- Screenshots: `npm run screens` (planned, U-35). Guide: `python offline/docs/build_guide.py` builds `offline/docs/1-addic-Guide.docx` (needs python-docx and the word-doc-generator skill's `gen_docx.py`).
+- All gates: `npm run check` (build, test, test:browser, guide). Validate and guards run in the build program's `gates.py`.
+- Layout: `offline/src/` parts (inlined in the order of `build.mjs`'s parts list), `offline/tests/` (Node tests, `browser.test.mjs`, `helpers/`), `offline/docs/` (the guide), `offline/README.md` (for the person using it).
+- Rules: no network call, tracker or remote font ever; data stays on the device; SOS is never gated; original words only (never the source book's text); every DOM hook the browser suite drives is in `offline/tests/helpers/hooks.mjs`. During a build program each lane edits only its own files and the shared append points.

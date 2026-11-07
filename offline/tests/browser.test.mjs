@@ -67,6 +67,11 @@ async function lockSet(page) {
 
 async function urgentOneTap(page, where) {
   if (await present(page, HOOKS.telLink, 2500)) return;
+  // [data-tour="sos-urgent"] is contracted (contracts/actions-sos.md): skip only while UI.pages.sos is absent.
+  if (!(await present(page, HOOKS.sosUrgentBtn, 2500))) {
+    if (!(await routeRegistered(page, 'sos'))) throw new F.Skip(REASON.route('sos'));
+    assert.fail(`${HOOKS.sosUrgentBtn} absent on the SOS hub (${where}): urgent help must be one tap from SOS`);
+  }
   await F.click(page, HOOKS.sosUrgentBtn);
   assert.ok(await present(page, HOOKS.telLink, 2500), `urgent numbers one tap from SOS (${where})`);
 }
@@ -193,7 +198,8 @@ flow('SOS craving flow offline with delay loop and both outcomes', { routes: ['s
   await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'SlipLogged').length >= n, slip0 + 1);
   assert.ok((await F.count(page, 'logs')) >= logs0 + 2, 'two sessions logged');
   const d2 = await F.derived(page);
-  if (d1 && d2) for (const k of Object.keys(d1)) assert.ok(d2[k] >= d1[k], `${k} never decreases after a slip (${d1[k]} -> ${d2[k]})`);
+  if (!d1 || !d2) throw new F.Skip(REASON.global('Engine.gameState') + ' (nothing-decreases not checked; both sessions logged)');
+  for (const k of Object.keys(d1)) assert.ok(d2[k] >= d1[k], `${k} never decreases after a slip (${d1[k]} -> ${d2[k]})`);
 });
 
 flow('SOS reachable and not gated before onboarding or on lock screen', { onboarded: false }, async ({ page }) => {
