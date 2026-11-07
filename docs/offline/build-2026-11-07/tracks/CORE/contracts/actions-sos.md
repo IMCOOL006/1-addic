@@ -111,3 +111,10 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **RS26 (the person's data):** RS22's retry never writes into a notebook that was erased, reset or replaced in the meantime: when the C2 signal fired (or the store's lock row changed identity), the save is dropped, never retried.
 - **RS27 (LOW):** a kept save dropped after the unlock for any reason shows one short toast ('This was not saved.'). 'It goes in your log when you unlock.' stays.
 - **RS28 (LOW, clinical review):** when typed overdose words led to the urgent view, the overdose card is open, and the view's first line is announced (aria-live assertive). 'I could not wake up this morning' matching '(not|never) wake up' is an accepted false positive (it errs towards the numbers).
+
+## Shapes for SCREENS 16:22 (R-C-21; CORE 06285082)
+
+- `Content.catalogs.spiralPairs` ([{thought, reply}]) is read by ui-sos.js when present (actions-sos round FIX-SCREENS-ASKS, after READY); the fallback order stays Engine.spiralThoughts, then catalogs.spiral with catalogs.slipSelfTalk replies; RS9's filter applies to every source.
+- `ExplorerCompleted` is written, if at all, by `Actions.recordEvent('ExplorerCompleted', {})` (allowed, once ever); no verb.
+- Sample rows (sample: true) award nothing in any derivation (10:45 ruling, unchanged).
+- FIX-SCREENS-ASKS also adds one link 'Open my Reasons Card' to `#/workbook/reasons?big=1` on the SOS 'Remind me why' card, shown only when unlocked and not in drill or preview.
