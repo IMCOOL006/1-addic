@@ -38,6 +38,7 @@
     pinHelp: 'Set a PIN before you write anything private.',
     pinDigits: 'Use 4 to 12 digits.',
     pinIsSet: 'A PIN is set. You can change it in Settings.', // RS17
+    pinSetting: 'Setting your PIN. One moment.', // RS20
     sample: 'Look around with sample data',
     sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
     sampleFailed: 'The sample data could not load.',
@@ -280,6 +281,8 @@
     let at = 0;
     let finishing = false;
     let sampled = false; // RS13: the sample path goes from step 1 to the safety step, then Today
+    let holding = false; // RS20: while Store.lock.set makes the key, Next and Skip wait; paint() points hold at them
+    let hold = (on) => { holding = on; };
     const root = h('section', { class: 'page stack onboarding-page', dataset: tid('onboarding') });
     sentOnce = true; // seen in this visit: never sent back to it
     const settings = (c && c.settings) || {};
@@ -317,7 +320,8 @@
           p1.value = ''; p2.value = '';
           if (a !== b) { out.textContent = COPY.pinMismatch; return false; }
           if (!pinOk(a)) { out.textContent = COPY.pinDigits; return false; }
-          try { await S.lock.set(a, { autoLockMin: 5 }); out.textContent = COPY.pinSet; setBtn.disabled = true; return true; } catch (err) { out.textContent = lockError(err); return false; }
+          out.textContent = COPY.pinSetting; setBtn.disabled = true; hold(true); // RS20: the key takes a moment; nothing moves meanwhile
+          try { await S.lock.set(a, { autoLockMin: 5 }); out.textContent = COPY.pinSet; return true; } catch (err) { out.textContent = lockError(err); setBtn.disabled = false; return false; } finally { hold(false); }
         };
         const setBtn = btn('Set PIN', () => { trySet(); }, { testid: 'onb-pin-set' });
         const disc = choice('checkbox', 'discreet', '1', 'Discreet mode: show "' + String(C.discreetName || 'Notebook') + '" instead of the app name', settings.discreet === true);
@@ -426,14 +430,15 @@
       const words = COPY.steps[step.id];
       const col = collectors(step.id);
       let moving = false; // RS11: a step whose read() checks something first goes on only when it says so
+      hold = (on) => { holding = on; };
       const forward = () => {
-        if (moving) return;
+        if (moving || holding) return;
         const r = col.read();
         const next = (ok) => { if (ok !== false) { at += 1; paint(); } };
         if (r && typeof r.then === 'function') { moving = true; r.then((ok) => { moving = false; next(ok); }, () => { moving = false; }); return; }
         next(r);
       };
-      const skip = () => { for (const k of STEP_KEYS[step.id]) if (k !== 'earlyNoticeSeen') delete answers[k]; at += 1; paint(); };
+      const skip = () => { if (moving || holding) return; for (const k of STEP_KEYS[step.id]) if (k !== 'earlyNoticeSeen') delete answers[k]; at += 1; paint(); };
       let nav;
       if (step.id === 'safety') {
         nav = [btn(COPY.safetyOk, sampled ? () => { col.read(); UI.go('#/today'); } : forward, { primary: true, testid: 'onb-safety-ok' })];
@@ -444,7 +449,10 @@
           btn('Practise SOS once', () => finish('drill'), { testid: 'onb-drill' }),
           btn('Go to Today', () => finish('today'), { primary: !hasTour, testid: 'onb-finish' }))];
       } else {
-        nav = [h('div', { class: 'row' }, btn('Next', forward, { primary: true, testid: 'onb-next' }), btn('Skip', skip, { ghost: true, testid: 'onb-skip' }))];
+        const nextB = btn('Next', forward, { primary: true, testid: 'onb-next' });
+        const skipB = btn('Skip', skip, { ghost: true, testid: 'onb-skip' });
+        hold = (on) => { holding = on; nextB.disabled = on; skipB.disabled = on; }; // RS20
+        nav = [h('div', { class: 'row' }, nextB, skipB)];
       }
       const node = h('div', { class: 'stack', dataset: tid('onb-step-' + step.n) },
         h('p', { class: 'muted', text: 'Step ' + step.n + ' of ' + STEPS.length }),
