@@ -6,7 +6,12 @@ LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:31 IST
+UPDATED: 2026-11-08 04:32 IST
+
+# 2026-11-08 04:32 IST · R-S-24 accepted as engine V-40c (R-C-57)
+
+- CORE 12 (04:33): engine V-40c adds '#/status' and '#/track/radar' to ROUTE_PATHS and removes nothing, with a test in engine-data.test.mjs. It builds from 660233f (V-40b READY, being merged) on slot 2, and starts once memory is above the floor.
+- content keeps the interim routes ('/status', help '#/today') until the board shows V-40c merged. Then V-10r flips both to '#/status' by name, in the content lane's next batch (with V-42 if that is still open). Growth items: V-40b READY 660233f, shape in R-C-56.
 
 # 2026-11-08 04:31 IST · memory watcher stopped by Claude Code (system critically low on memory)
 
