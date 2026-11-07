@@ -1353,4 +1353,16 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     assert.deepEqual(used.filter(([, ok]) => ok === true).map(([s]) => s), [picked]);
     assert.equal(used.filter(([, ok]) => ok === false).length, boxes.length - 1, 'a toggle left off writes helpful:false');
   });
+
+  test('RS8: the discreet lock screen breathing panel is titled Breathe, and no step names the urge', () => {
+    const O = require(src('ui-onboarding.js'));
+    assert.equal(O.lockLabels(true, C()).sober.title, 'Breathe');
+    assert.equal(O.lockLabels(false, C()).sober.title, null);
+    assert.match(readFileSync(src('ui-onboarding.js'), 'utf8'), /UI\.sosSoberView\([^\n]*'Done', L\.sober\.title\)/, 'the lock screen passes it');
+    assert.equal(H.FALLBACK.sober[1], 'Observe. Notice what you feel in your body.');
+    for (const t of H.FALLBACK.sober) assert.doesNotMatch(t, /\b(urge|crav\w*|use|using|drink\w*)\b/i, t);
+    const d = sosDom();
+    assert.equal(d.UI.sosSoberView(() => {}, 'Done', 'Breathe').querySelector('.sos-title').textContent.trim(), 'Breathe');
+    assert.equal(d.UI.sosSoberView(() => {}, 'Done').querySelector('.sos-title').textContent.trim(), H.COPY.wave.title);
+  });
 });

@@ -155,7 +155,7 @@
       title: discreet ? String(content.discreetName || 'Notebook') : COPY.lock.title,
       line: COPY.lock.line,
       urgent: { label: discreet ? 'Help' : 'Urgent help', href: '#/sos/urgent' },
-      sober: { label: discreet ? 'Breathe' : 'Ride the wave (SOBER)', href: '#/sos/craving' },
+      sober: { label: discreet ? 'Breathe' : 'Ride the wave (SOBER)', href: '#/sos/craving', title: discreet ? 'Breathe' : null },
     };
   }
 
@@ -217,7 +217,7 @@
     } }, field('PIN', pin), msg, unlock);
     const sober = typeof UI.sosSoberView === 'function'
       ? btn(L.sober.label, () => {
-        panel.replaceChildren(UI.sosSoberView(() => { panel.hidden = true; panel.replaceChildren(); }, 'Done'));
+        panel.replaceChildren(UI.sosSoberView(() => { panel.hidden = true; panel.replaceChildren(); }, 'Done', L.sober.title));
         panel.hidden = false;
         const t = panel.querySelector('h1'); if (t && t.focus) t.focus();
       }, { testid: 'lock-sober' })

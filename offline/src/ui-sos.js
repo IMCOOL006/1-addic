@@ -63,7 +63,7 @@
     clinicalReview: true,
     sober: [
       'Stop. Pause where you are.',
-      'Observe. Notice the urge in your body. No judging.',
+      'Observe. Notice what you feel in your body.', // RS8: neutral, so a discreet screen stays discreet
       'Breathe. Slow breath in. Slower breath out.',
       'Expand. Notice the whole room around you.',
       'Respond. Choose your next move on purpose.',
@@ -417,13 +417,13 @@
   }
 
   // SOBER, one step a time, with read-aloud (device voice only, O4). Shared with the lock screen.
-  function soberView(onDone, doneLabel) {
+  function soberView(onDone, doneLabel, title) { // title: 'Breathe' from the discreet lock screen (RS8)
     const steps = soberSteps(Cn());
     let i = 0;
     const box = h('div', { class: 'stack' });
     const paint = () => {
       const last = i >= steps.length - 1;
-      box.replaceChildren(screen(COPY.wave.title, steps[i],
+      box.replaceChildren(screen(title || COPY.wave.title, steps[i],
         btn('Read aloud', () => { if (!safe(() => UI.speak(steps[i]), false)) toast(COPY.noVoice, 'info'); }, { ghost: true }),
         btn(last ? (doneLabel || 'Done') : 'Next', () => {
           safe(() => UI.stopSpeaking(), null);
@@ -789,6 +789,6 @@
 
   UI.sosHelpers = H;
   UI.sosUrgentView = (c, opts) => urgentView(c || {}, opts);
-  UI.sosSoberView = (onDone, label) => soberView(onDone, label);
+  UI.sosSoberView = (onDone, label, title) => soberView(onDone, label, title);
   if (UI.pages) UI.pages.sos = page;
 })();
