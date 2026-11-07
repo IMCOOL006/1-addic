@@ -289,7 +289,7 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       [() => Actions.logActivity({ kind: 'nap', minutes: 10 }), 'bad-activity'],
       [() => Actions.logSlip({ date: 'yesterday' }), 'bad-slip'],
       [() => Actions.recordEvent('SoberDayClaimed', {}), 'bad-event'],
-      [() => Actions.recordEvent('SkillUsed', { skillId: 'ride-wave', helpful: 3 }), 'bad-event'],
+      [() => Actions.recordEvent('SkillUsed', { skillId: 'ride-wave', helpful: 3 }), 'USE_VERB'],
       [() => Actions.completeLesson('m99-l9'), 'unknown-lesson'],
       [() => Actions.checkpoint('m99', []), 'bad-checkpoint'],
       [() => Actions.saveResponse('quick-reasons', 'plain text'), 'bad-response'],
@@ -1616,6 +1616,12 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     root.querySelectorAll('a').find((x) => x.textContent.trim() === 'Back to SOS').click();
     await new Promise((r) => setTimeout(r, 350));
     assert.equal(events('SosCompleted').length, 1, 'no tool used: leaving writes nothing');
+  });
+  test('USEVERB: recordEvent refuses the types each verb owns, with USE_VERB, and writes nothing', async () => {
+    for (const type of ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged']) await refused(Actions.recordEvent(type, {}), 'USE_VERB');
+    assert.equal(events().length, 0, 'nothing written');
+    await Actions.recordEvent('MindfulMinute');
+    assert.equal(events('MindfulMinute').length, 1, 'other types still work');
   });
   // -- FIX-ONB-EMO tests end --
 });
