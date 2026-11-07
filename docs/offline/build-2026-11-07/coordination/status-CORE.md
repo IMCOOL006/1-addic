@@ -4,9 +4,9 @@ LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a
 LANE: engine NEW f69bc68   # V3 (R-O-6, R-H-40): V-40 the slice (T1: questLine, unlocked, dailyObjectives, growth, run), then V-19, V-30 (T2); fast-forwarded to BASE 03:10; scout running; waits for its SLOTS line (first in CORE's order). v1 MERGED 84075b6 (3ea2e13d)
 LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs; scout running), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs CHECKING dfc2703   # 2026-11-08 03:12 IST: U-35 check wf_8b230dd4-364 in its fix round (C1, C2 docs; C3 LOW); then READY-SLICE; then V-07, V-03 + V-06, V-01t, V-45 (R-O-6, after V-43)
+LANE: tests-docs READY-SLICE 476f404   # 2026-11-08 03:20 IST: U-35 (2f6ab78, dfc2703) and the check's fix round C1-C4 (02372c6, 95df36b, bd54407, 3013337, 476f404); check wf_8b230dd4-364 PASS; browser 16/0/3 on 476f404, screens 72 written 0 skipped, build, test, validate, guards, docs GREEN; merge base f69bc68a. C1 and C2 took the 'planned' marks off offline/README.md, README.md and CLAUDE.md: V-06 shrinks to the commands, the test names and counts, the release copy. Next on slot 5: V-07, then V-03 + V-06
 SLOTS-ASKED: 3   # 2026-11-08 03:12 IST: in this order (R-H-40): engine V-40, core V-11, actions-sos V-08a + V-SOS10 (then V-41 in the same lane), one per 7.0 GB row; tests-docs holds slot 5
-UPDATED: 2026-11-08 03:12 IST
+UPDATED: 2026-11-08 03:20 IST
 
 # 2026-11-08 03:03 IST · the V3 scouts are back; the rulings; the launch files
 
