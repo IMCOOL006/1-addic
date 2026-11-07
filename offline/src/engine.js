@@ -1199,6 +1199,283 @@ const Engine = (() => {
     return out;
   }
 
+  /* ── data: backup, import, migrate and the calendar file (BUILD-PLAN 3.2, 3.3) ─────────────── */
+
+  /* An error with a code, callable with or without `new`. */
+  function AppError(message, code) {
+    if (!(this instanceof AppError)) return new AppError(message, code);
+    const e = new Error(String(message == null ? '' : message));
+    this.name = 'AppError';
+    this.message = e.message;
+    this.code = code == null ? 'error' : String(code);
+    this.stack = e.stack;
+  }
+  AppError.prototype = Object.create(Error.prototype, { constructor: { value: AppError, writable: true, configurable: true } });
+
+  const APP = '1-addic';
+  const schemaNow = () => (Number.isInteger(C.schemaVersion) && C.schemaVersion > 0 ? C.schemaVersion : 1);
+  const isObj = (x) => x !== null && typeof x === 'object' && !Array.isArray(x) && !(x instanceof Date);
+  const cloneJson = (x) => JSON.parse(JSON.stringify(x));
+  const isLockRow = (store, row) => store === 'meta' && isObj(row) && row.key === 'lock';
+  const errText = (e) => String((e && e.message) || e).replace(/\s+/g, ' ').slice(0, 200);
+
+  /* meta: {exportedAt} or {now}, or the moment itself (ISO, Date, ms). No clock here. */
+  function exportedAtOf(meta) {
+    const m = isObj(meta) ? (meta.exportedAt != null ? meta.exportedAt : meta.now) : meta;
+    const d = toDate(m);
+    return d ? d.toISOString() : null;
+  }
+  /* Every store, in the view's own order, as plain JSON. The meta `lock` row never leaves; the
+     `sample` row does, so sample data stays marked and erasable after an import. */
+  function exportBackup(view, meta) {
+    const stores = {};
+    for (const s of Object.keys(STORES)) {
+      const rows = arr(view && typeof view.list === 'function' ? view.list(s) : []);
+      stores[s] = cloneJson(rows.filter((r) => isObj(r) && !isLockRow(s, r)));
+    }
+    return { app: APP, schemaVersion: schemaNow(), exportedAt: exportedAtOf(meta), stores };
+  }
+
+  const MAX_BACKUP_ERRORS = 20;
+  const okKey = (k) => (typeof k === 'string' && k.length > 0) || (typeof k === 'number' && isFinite(k));
+  /* {ok, errors[]}; never throws. Plain-language errors a person can read. */
+  function validateBackup(obj) {
+    const errors = [];
+    const add = (m) => { if (errors.length < MAX_BACKUP_ERRORS) errors.push(m); };
+    try {
+      if (!isObj(obj)) return { ok: false, errors: ['This is not a 1-addic backup: the file is not a JSON object.'] };
+      if (obj.app !== APP) add(`This is not a 1-addic backup: app is ${JSON.stringify(obj.app === undefined ? null : obj.app)}.`);
+      const v = obj.schemaVersion;
+      if (!Number.isInteger(v) || v < 1) add('The backup has no valid schemaVersion.');
+      else if (v > schemaNow()) add(`This backup comes from a newer version of 1-addic (schema ${v}; this copy reads up to ${schemaNow()}).`);
+      if (!isObj(obj.stores)) {
+        add('The backup has no stores.');
+      } else {
+        for (const s of Object.keys(STORES)) {
+          if (!own(obj.stores, s)) continue;
+          const rows = obj.stores[s];
+          if (!Array.isArray(rows)) { add(`stores.${s} is not a list.`); continue; }
+          const kp = STORES[s];
+          const seen = new Set();
+          rows.forEach((r, i) => {
+            if (!isObj(r)) { add(`stores.${s}[${i}] is not a row.`); return; }
+            if (!okKey(r[kp])) add(`stores.${s}[${i}] has no ${kp}.`);
+            else if (seen.has(r[kp])) add(`stores.${s} has the ${kp} ${JSON.stringify(r[kp])} twice.`);
+            else seen.add(r[kp]);
+            if (s === 'events') {
+              if (typeof r.type !== 'string' || !r.type) add(`stores.events[${i}] has no type.`);
+              if (!isFinite(msOf(r.at))) add(`stores.events[${i}] has no valid time (at).`);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      add('The backup could not be read: ' + errText(e));
+    }
+    return { ok: errors.length === 0, errors };
+  }
+
+  /* Steps from an older schema to the next, keyed by the version they start from. None yet. */
+  const MIGRATIONS = {};
+  /* A migrated copy: every store present ([] when missing), unknown stores and any lock row
+     dropped, schemaVersion brought up to date. null for a non-object. Run validateBackup first. */
+  function migrateBackup(obj) {
+    if (!isObj(obj)) return null;
+    let out;
+    try { out = cloneJson(obj); } catch (e) { return null; }
+    const src = isObj(out.stores) ? out.stores : {};
+    const stores = {};
+    for (const s of Object.keys(STORES)) stores[s] = arr(src[s]).filter((r) => !isLockRow(s, r));
+    out.stores = stores;
+    let v = Number.isInteger(out.schemaVersion) && out.schemaVersion > 0 ? out.schemaVersion : 1;
+    while (v < schemaNow()) {
+      if (typeof MIGRATIONS[v] === 'function') out = MIGRATIONS[v](out) || out;
+      v += 1;
+    }
+    if (!(Number.isInteger(out.schemaVersion) && out.schemaVersion > schemaNow())) out.schemaVersion = schemaNow();
+    if (out.app === undefined) out.app = APP;
+    return out;
+  }
+
+  /* .ics (RFC 5545): CRLF lines folded at 75 octets, escaped text, floating local times. */
+  const BYDAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const utf8Len = (ch) => { const c = ch.codePointAt(0); return c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4; };
+  function icsText(s) {
+    return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r\n|\r|\n/g, '\\n');
+  }
+  function icsFold(line) {
+    const out = [];
+    let cur = '';
+    let bytes = 0;
+    for (const ch of line) {
+      const b = utf8Len(ch);
+      if (bytes + b > 75) { out.push(cur); cur = ' '; bytes = 1; }
+      cur += ch;
+      bytes += b;
+    }
+    out.push(cur);
+    return out.join('\r\n');
+  }
+  const icsDay = (ds) => ds.replace(/-/g, '');
+  const icsUtc = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  /* 'FREQ=WEEKLY;BYDAY=SU' for a 0-6 weekday (0 = Sunday, as profile.reviewDay), or null. */
+  function weeklyRrule(day) { return Number.isInteger(day) && day >= 0 && day <= 6 ? `FREQ=WEEKLY;BYDAY=${BYDAY[day]}` : null; }
+  /* An rrule given as 'FREQ=...' (an 'RRULE:' prefix is allowed) or {freq, byDay: 0-6 | 'MO'}. */
+  function rruleOf(r) {
+    if (typeof r === 'string') {
+      const s = r.replace(/^RRULE:/i, '').trim().toUpperCase();
+      return /^FREQ=(?:SECONDLY|MINUTELY|HOURLY|DAILY|WEEKLY|MONTHLY|YEARLY)(?:;[A-Z]+=[A-Z0-9,+-]+)*$/.test(s) ? s : null;
+    }
+    if (!isObj(r)) return null;
+    const freq = String(r.freq || 'WEEKLY').toUpperCase();
+    if (!/^(?:DAILY|WEEKLY|MONTHLY|YEARLY)$/.test(freq)) return null;
+    let s = `FREQ=${freq}`;
+    const d = typeof r.byDay === 'number' ? BYDAY[r.byDay] : (typeof r.byDay === 'string' ? r.byDay.toUpperCase() : null);
+    if (d && BYDAY.includes(d)) s += `;BYDAY=${d}`;
+    return s;
+  }
+  /* items: [{id, title, date, start?, end?, notes?, rrule?}]; opts.now sets DTSTAMP (else the
+     item's local midnight). An item without a valid date is left out. */
+  function ics(items, opts) {
+    const o = isObj(opts) ? opts : {};
+    const stampNow = toDate(o.now);
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//1-addic//offline edition//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+    arr(items).forEach((it, i) => {
+      if (!isObj(it) || typeof it.date !== 'string' || !DATE_RE.test(it.date) || dateStr(toDate(it.date)) !== it.date) return;
+      const sMin = toMin(it.start);
+      const eMin = toMin(it.end);
+      const stamp = stampNow || toDate(it.date);
+      lines.push('BEGIN:VEVENT');
+      lines.push(`UID:${icsText(it.id != null && it.id !== '' ? it.id : `${it.date}-${i}`)}@1-addic`);
+      lines.push(`DTSTAMP:${icsUtc(stamp)}`);
+      if (isFinite(sMin)) {
+        lines.push(`DTSTART:${icsDay(it.date)}T${hhmm(sMin).replace(':', '')}00`);
+        if (isFinite(eMin)) {
+          const endDay = eMin <= sMin ? addDays(it.date, 1) : it.date;
+          lines.push(`DTEND:${icsDay(endDay)}T${hhmm(eMin).replace(':', '')}00`);
+        }
+      } else {
+        lines.push(`DTSTART;VALUE=DATE:${icsDay(it.date)}`);
+        lines.push(`DTEND;VALUE=DATE:${icsDay(addDays(it.date, 1))}`);
+      }
+      const rr = rruleOf(it.rrule);
+      if (rr) lines.push(`RRULE:${rr}`);
+      lines.push(`SUMMARY:${icsText(it.title || '1-addic')}`);
+      if (it.notes != null && String(it.notes).trim()) lines.push(`DESCRIPTION:${icsText(it.notes)}`);
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+  }
+
+  /* ── content: validateContent (BUILD-PLAN 3.2; tools/gates.py's validate gate) ───────────────── */
+
+  /* The route table of BUILD-PLAN 3.5, by path (a query string is ignored). */
+  const ROUTE_PATHS = new Set([
+    '#/today', '#/learn', '#/learn/plan', '#/learn/glossary', '#/workbook', '#/track', '#/track/insights',
+    '#/actions', '#/actions/planner', '#/actions/battle', '#/actions/review', '#/actions/quests', '#/actions/predictions', '#/actions/todos',
+    '#/tools/trial', '#/tools/should-i-go', '#/tools/problem-solver',
+    '#/games/big-game', '#/games/distortion-sort', '#/games/spot-red-flag', '#/games/refusal', '#/games/rewrite',
+    '#/sos', '#/sos/craving', '#/sos/feeling', '#/sos/slip', '#/sos/urgent',
+    '#/settings', '#/onboarding', '#/lock', '#/dev/fields',
+  ]);
+  const ROUTE_SETS = {
+    workbook: new Set(['reasons', 'balance', 'motivation', 'triggers', 'redflags', 'journal', 'spiral', 'signature', 'anger', 'network', 'scripts', 'activities', 'balance-sw', 'distractions', 'warnings', 'plan', 'signs', 'risks']),
+    practice: new Set(['breathe', 'body-scan', 'sober', 'urge-surf', 'shower', 'eating', 'walking']),
+    settings: new Set(['privacy', 'look', 'rhythm', 'names', 'help', 'about', 'data']),
+    log: new Set(['craving', 'feeling', 'checkin', 'activity', 'slip']),
+  };
+  /* The ids in a list of {id} rows or the keys of a map; null when absent. */
+  function idSet(x) {
+    if (Array.isArray(x)) return new Set(x.filter(isObj).map((r) => r.id).filter((v) => v != null));
+    if (isObj(x)) return new Set(Object.keys(x));
+    return null;
+  }
+  function lessonRows(content) {
+    const out = [];
+    for (const m of arr(content.modules)) for (const l of arr(m && m.lessons)) if (isObj(l)) out.push(l);
+    return out;
+  }
+  function routeIndex(content) {
+    return {
+      modules: idSet(arr(content.modules)) || new Set(),
+      lessons: idSet(lessonRows(content)) || new Set(),
+      exercises: idSet(content.exercises),
+    };
+  }
+  /* Why a route is not in the table, or null when it is. */
+  function routeProblem(route, idx) {
+    if (typeof route !== 'string' || !route.startsWith('#/')) return 'is not a hash route';
+    const path = route.split('?')[0];
+    if (ROUTE_PATHS.has(path)) return null;
+    const p = path.slice(2).split('/');
+    if (p.length === 2 && p[0] === 'learn') return idx.modules.has(p[1]) ? null : `names no module ${p[1]}`;
+    if (p.length === 2 && p[0] === 'lesson') return idx.lessons.has(p[1]) ? null : `names no lesson ${p[1]}`;
+    if (p.length === 2 && p[0] === 'exercise') return (!idx.exercises || idx.exercises.has(p[1])) && p[1] ? null : `names no exercise ${p[1]}`;
+    if (p.length === 2 && ROUTE_SETS[p[0]] && p[0] !== 'log') return ROUTE_SETS[p[0]].has(p[1]) ? null : 'is not in the route table';
+    if (p.length === 3 && p[0] === 'track' && p[1] === 'log') return ROUTE_SETS.log.has(p[2]) ? null : 'is not in the route table';
+    return 'is not in the route table';
+  }
+  function knownRoute(route, content) {
+    const c = isObj(content) ? content : C;
+    return routeProblem(route, routeIndex(c)) === null;
+  }
+
+  /* "addict" or "addicts" as a word; "1-addic", "addicted brain" and "addiction" pass. A string
+     that is wholly one quotation is a person's thought shown as an example, not the app's voice. */
+  const ADDICT_RE = /\baddicts?\b/i;
+  const WHOLE_QUOTE_RE = /^\s*(?:"[^"]*"|“[^”]*”)\s*$/;
+  const NOT_VOICE_KEYS = new Set(['book', 'cite', 'refs', 'id']);
+  function walkStrings(x, path, fn, seen, depth) {
+    if (depth > 12 || x == null) return;
+    if (typeof x === 'string') { fn(x, path); return; }
+    if (typeof x !== 'object' || seen.has(x)) return;
+    seen.add(x);
+    if (Array.isArray(x)) { x.forEach((v, i) => walkStrings(v, `${path}[${i}]`, fn, seen, depth + 1)); return; }
+    for (const k of Object.keys(x)) walkStrings(x[k], path ? `${path}.${k}` : k, fn, seen, depth + 1);
+  }
+
+  /* [] when the content holds together; otherwise one plain string per problem. Never throws. */
+  function validateContent(content) {
+    const c = content === undefined ? C : content;
+    if (!isObj(c)) return ['content: not an object'];
+    const errors = [];
+    try {
+      const refs = idSet(c.references) || new Set();
+      const regions = idSet(c.regions) || new Set();
+      const cast = idSet(c.cast) || new Set();
+      const idx = routeIndex(c);
+      for (const l of lessonRows(c)) {
+        const name = `lesson ${l.id}`;
+        const cites = arr(l.refs);
+        if (!cites.length) errors.push(`${name}: cites no reference`);
+        for (const r of cites) if (!refs.has(r)) errors.push(`${name}: cites unknown reference ${r}`);
+        if (idx.exercises && isObj(l.tryIt) && l.tryIt.exercise != null && !idx.exercises.has(l.tryIt.exercise)) errors.push(`${name}: tryIt.exercise ${l.tryIt.exercise} is not in Content.exercises`);
+        if (isObj(l.moment) && l.moment.cast != null && !cast.has(l.moment.cast)) errors.push(`${name}: moment.cast ${l.moment.cast} is not in Content.cast`);
+      }
+      for (const s of arr(c.skills)) {
+        if (!isObj(s)) continue;
+        if (!regions.has(s.region)) errors.push(`skill ${s.id}: region ${s.region} is not in Content.regions`);
+      }
+      walkStrings(c, '', (str, path) => {
+        if (str.startsWith('#/')) {
+          const why = routeProblem(str, idx);
+          if (why) errors.push(`${path}: route ${str} ${why}`);
+        }
+      }, new Set(), 0);
+      const voice = {};
+      for (const k of Object.keys(c)) if (k !== 'references') voice[k] = c[k];
+      walkStrings(voice, '', (str, path) => {
+        const last = path.replace(/\[\d+\]$/, '').split('.').pop();
+        if (NOT_VOICE_KEYS.has(last) || WHOLE_QUOTE_RE.test(str)) return;
+        if (ADDICT_RE.test(str)) errors.push(`${path}: uses "addict" as a noun (say "a person with an addiction")`);
+      }, new Set(), 0);
+    } catch (e) {
+      errors.push('validateContent could not finish: ' + errText(e));
+    }
+    return errors;
+  }
+
   /* ── views ───────────────────────────────────────────────────────────────────────────────── */
 
   /* A Store.view-shaped object over plain rows: {get(store,id), list(store), count(store)}. */
@@ -1224,6 +1501,7 @@ const Engine = (() => {
     prefillRecoveryPlan, sosOutcome,
     insights, warningSigns, gaps, riskyHours, suggestions, forecastCheck, weekSummary,
     guideSequence, crisisKeywords, SOS_TOOLS, CRISIS: { clinicalReview: true, patterns: CRISIS_PATTERNS.slice() },
+    exportBackup, validateBackup, migrateBackup, ics, weeklyRrule, AppError, validateContent, knownRoute,
     makeView, STORES,
   };
 })();
