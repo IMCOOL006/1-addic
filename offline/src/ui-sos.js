@@ -21,8 +21,8 @@
     tools: { title: 'Pick a tool', line: 'Somewhere risky? Leaving is a valid move.' },
     wave: { title: 'Ride the wave' },
     helped: { title: 'Did that help?' },
-    why: { title: 'Remind me why', empty: 'Add your reasons in the Workbook later.' },
-    call: { title: 'Call someone', line: 'Pick someone safe. A short call is enough.', none: 'No Safety Net yet. You can add one later.', drill: 'In a real craving, your people show here.' },
+    why: { title: 'Remind me why', empty: 'Add your reasons in the Workbook later.', hidden: 'Your reasons are hidden while the notebook is locked.' }, // RS15
+    call: { title: 'Call someone', line: 'Pick someone safe. A short call is enough.', none: 'No Safety Net yet. You can add one later.', hidden: 'Your people are hidden while the notebook is locked.', drill: 'In a real craving, your people show here.' },
     meetings: { title: 'Meetings' },
     distract: { title: 'Distract me' },
     talkback: { title: 'Talk back' },
@@ -507,7 +507,7 @@
     const box = h('div', { class: 'stack', dataset: testid ? tid(testid) : null });
     const paint = () => {
       const items = (typeof list === 'function' ? list() : list) || [];
-      if (!items.length) { box.replaceChildren(screen(title, emptyText, btn('Done', onDone, { primary: true, testid: 'sos-step-done' }))); return; }
+      if (!items.length) { box.replaceChildren(screen(title, typeof emptyText === 'function' ? emptyText() : emptyText, btn('Done', onDone, { primary: true, testid: 'sos-step-done' }))); return; }
       const s = screen(title, items[i % items.length],
         items.length > 1 ? btn('Another one', () => { i += 1; paint(); focusTitle(box); }) : null,
         btn('Done', onDone, { primary: true, testid: 'sos-step-done' }));
@@ -531,7 +531,7 @@
         h('a', { class: 'btn ghost', href: 'sms:' + telHref(p.phone).slice(4), text: 'Text', style: { width: 'auto' }, onClick: () => reached(p.id, 'text') }))))))
       : null;
     return h('div', { class: 'stack' },
-      screen(w.title, drill ? COPY.call.drill : people.length ? w.line : COPY.call.none, list),
+      screen(w.title, drill ? COPY.call.drill : people.length ? w.line : isLockedNow() ? COPY.call.hidden : COPY.call.none, list), // RS15: sealed, not missing
       groups.length ? h('details', { class: 'card' }, h('summary', { text: COPY.meetings.title, style: { minHeight: '44px' } }),
         h('ul', { class: 'sos-list' }, groups.map((g) => h('li', { class: 'row' }, h('span', { text: g.name }),
           g.url ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy link', style: { width: 'auto' }, onClick: () => copyText(g.url) }) : null,
@@ -570,7 +570,7 @@
       const tool = TOOLS.find((t) => t.id === id);
       if (!tool) { next(); return; }
       if (id === 'wave') show(soberView(() => helped(tool)));
-      else if (id === 'why') show(cards(COPY.why.title, reasons, COPY.why.empty, () => helped(tool), null, !mode.drill));
+      else if (id === 'why') show(cards(COPY.why.title, reasons, () => (!mode.drill && isLockedNow() ? COPY.why.hidden : COPY.why.empty), () => helped(tool), null, !mode.drill)); // RS15
       else if (id === 'call') show(contactsView(c, mode.drill, () => helped(tool)));
       else if (id === 'distract') show(cards(COPY.distract.title, () => deckFrom(mode.drill || isLockedNow() ? null : c.view, c.E, Cn()), '', () => helped(tool), null, !mode.drill));
       else if (id === 'talkback') show(cards(COPY.talkback.title, () => (mode.drill || isLockedNow() ? FALLBACK.talkback.slice() : comebacksFrom(c.view, c.E)), '', () => helped(tool), null, !mode.drill));

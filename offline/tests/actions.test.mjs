@@ -2001,3 +2001,41 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
   });
   // -- FIX-R2-SAFETY tests end --
 });
+
+// ── FIX-R2-REST (2026-11-07, rulings 13:55): review round 2's RS15 to RS17 and the check's C2 and C3 ──
+describe('review round 2 rest (FIX-R2-REST)', () => {
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS15: while locked, Call someone and Remind me why say they are hidden, not empty; urgent help stays one tap away', async () => {
+    await Actions.saveResponse('quick-reasons', { reasons: ['my kids'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const urgent = (r) => r.querySelectorAll('a').some((a) => a.attrs.href === '#/sos/urgent');
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-tool-call');
+    assert.ok(!root.textContent.includes(W.call.none), 'never No Safety Net yet while the people are only sealed');
+    assert.ok(W.call.hidden && root.textContent.includes(W.call.hidden), 'it says they are hidden while locked');
+    assert.doesNotMatch(root.textContent, /Ravi/);
+    assert.ok(urgent(root), 'urgent help one tap away');
+    const r2 = d.open(['sos', 'craving']);
+    d.tapId(r2, 'sos-rate-skip');
+    d.tapId(r2, 'sos-tool-why');
+    assert.ok(!r2.textContent.includes(W.why.empty), 'never Add your reasons later while they are only sealed');
+    assert.ok(W.why.hidden && r2.textContent.includes(W.why.hidden), 'it says they are hidden while locked');
+    assert.doesNotMatch(r2.textContent, /my kids/);
+    assert.ok(urgent(r2));
+    assert.ok(await S().lock.unlock('2468'));
+    const r3 = d.open(['sos', 'craving']);
+    d.tapId(r3, 'sos-rate-skip');
+    d.tapId(r3, 'sos-tool-call');
+    assert.ok(!r3.textContent.includes(W.call.hidden), 'unlocked: the people show again');
+    assert.match(r3.textContent, /Ravi/);
+  });
+  // -- FIX-R2-REST tests end --
+});
