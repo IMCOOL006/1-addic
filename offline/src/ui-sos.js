@@ -181,7 +181,8 @@
     }
     out.tools = [...seen].map(([skillId, helpful]) => ({ skillId, helpful }));
     if (typeof s.emotion === 'string' && s.emotion) out.emotion = s.emotion; // a feeling session keeps the feeling
-    out.outcome = s.outcome || outcomeFrom(out.ratingBefore, out.ratingAfter, used);
+    // The person's own word wins (It passed); a use is always 'used' (Actions refuses anything else with used).
+    out.outcome = used ? 'used' : s.outcome === 'passed' || s.outcome === 'still' ? s.outcome : outcomeFrom(out.ratingBefore, out.ratingAfter, false);
     return out;
   }
 
@@ -495,7 +496,7 @@
         for (const b of row.querySelectorAll('button')) b.setAttribute('aria-pressed', b.dataset.value === String(n) ? 'true' : 'false');
       });
       show(screen(COPY.reassess.title, COPY.reassess.line, row,
-        btn('It passed', usedQ, { primary: true, testid: 'sos-reassess-passed' }),
+        btn('It passed', () => { st.outcome = 'passed'; usedQ(); }, { primary: true, testid: 'sos-reassess-passed' }),
         btn('Still strong: wait 15 more', () => { st.delays += 1; st.ratingAfter = null; started = Date.now(); tools(); }, { testid: 'sos-reassess-still' })));
     }
 

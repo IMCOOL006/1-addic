@@ -974,6 +974,30 @@ describe('sos flows in a stand-in DOM (fix round)', () => {
     assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), [], 'every save went through');
   });
 
+  test('RC5: It passed is what the session records', async () => {
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    d.rate(root, 6);
+    d.tap(root, 'Check in with the craving');
+    d.rate(root, 6);
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-no');
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.outcome, e.payload.ratingBefore, e.payload.ratingAfter]), [['passed', 6, 6]]);
+    assert.match(root.textContent, /Wave surfed/);
+    const again = d.open(['sos', 'craving']);
+    d.tap(again, 'Skip');
+    d.tap(again, 'Check in with the craving');
+    d.tapId(again, 'sos-reassess-passed');
+    d.tapId(again, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed', 'used'], 'a use after It passed is saved as used');
+    assert.equal(events('SlipLogged').length, 1);
+    assert.deepEqual(d.go, ['#/sos/slip?logged=1']);
+    assert.equal(d.UI.sosHelpers.sessionFrom({ kind: 'craving', outcome: 'passed', used: true }).outcome, 'used');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+  });
+
   // -- fix round: stand-in DOM tests above this line --
 });
 
