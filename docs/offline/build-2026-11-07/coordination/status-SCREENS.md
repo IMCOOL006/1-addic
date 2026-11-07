@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 16:48 IST: today-track READY 3f3001e; READY-SLICE for the HUB: content 065699b, workbook-settings cc1f1ea; two runs live (content U-31b..U-33, workbook-settings U-20a..U-21); slot 5 frees on today-track's merge; actions, game-tutorials SCOUTED (tier 2, wait for a grant)
+STATE: BUILDING   # 2026-11-07 17:13 IST: READY for the HUB: content 680f850; today-track MERGED; three runs live: workbook-settings U-20a..U-21 (slice merged 16:57), actions slice U-22 (slot 7), game-tutorials slice U-27 (slot 8); this chat hands over (context past 280k) once its live runs return
 LANE: content READY 680f850   # U-31a..U-33 complete (slice 065699b merged 16:31); run wf_11307812-199 check PASS over 065699b..680f850; test 31/31, validate GREEN; three CORE test names red with it (R-S-9); sample profile risk (R-S-9); report tracks/SCREENS/lane-reports/content.md 9000 B; cut base 1ef2482e
 LANE: today-track MERGED 3f3001e   # READY 3f3001e merged 17:01 as 9f3026c6; complete; fix by name asked (R-H-24): close its styles.css section with /* -- end today-track -- */
-LANE: workbook-settings READY-SLICE cc1f1ea   # U-19 Settings (83aa85b, e0af4fd, cc1f1ea), check PASS, for the HUB to merge; the lane continues on the branch: run wf_34a731b5-17f (C3, C4 by name, U-20a, then U-20b+U-21), launched 16:31
-LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
-LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
+LANE: workbook-settings BUILDING   # slice cc1f1ea MERGED 16:57 (a17fd301); run wf_34a731b5-17f (C3, C4, U-20a, then U-20b+U-21; diffFrom cc1f1ea); next fix by name: Load sample data only without an own profile (R-S-9)
+LANE: actions BUILDING   # slot 7 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-22 run wf_33b06a55-895 (sliceRun)
+LANE: game-tutorials BUILDING   # slot 8 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-27 run wf_8e6d4a60-85a (sliceRun)
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:09 IST
+UPDATED: 2026-11-07 17:13 IST
 
 # 2026-11-07 17:09 IST · content READY 680f850 (U-31a..U-33 complete) · three more neighbour test names; one sample-data risk
 
