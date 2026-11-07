@@ -250,9 +250,11 @@ const Actions = (() => {
   }
 
   /* ── recordEvent ─────────────────────────────────────────────────────────────────────────── */
-  const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged']; // each is written by its own verb
+  // Each is written by its own verb, with the row or the rule it needs (RC19: a plan confirmed with no plan row, an
+  // onboarding with no profile row, a module whose lessons are not all done).
+  const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted'];
   async function recordEvent(type, payload) {
-    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip).`);
+    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson or checkpoint).`);
     if (!EVENT_TYPES.includes(type)) fail('bad-event', `Unknown event type "${type}".`);
     const pl = payload === undefined ? {} : payload;
     if (!isObj(pl) || jsonSize(pl) > 5000) fail('bad-event', 'An event payload must be a small object.');

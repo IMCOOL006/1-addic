@@ -1830,5 +1830,15 @@ describe('review round 2 fixes (RC14-RC20)', () => {
       await refused(Actions.sosSession({ kind: 'craving', date: 'soon' }), 'bad-session');
     } finally { shiftClock(-14 * 3600 * 1000); }
   });
+  test('RC19: recordEvent refuses RecoveryPlanConfirmed, OnboardingCompleted and ModuleCompleted with USE_VERB, and writes nothing', async () => {
+    const before = await snapshot();
+    await refused(Actions.recordEvent('RecoveryPlanConfirmed', {}), 'USE_VERB');
+    await refused(Actions.recordEvent('OnboardingCompleted', {}), 'USE_VERB');
+    await refused(Actions.recordEvent('ModuleCompleted', { moduleId: firstModule().id }), 'USE_VERB');
+    assert.deepEqual(await snapshot(), before);
+    const p = await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    assert.ok(p.plan.confirmedAt && p.plan.graduatedAt, 'the verb writes the plan row with its event');
+    assert.equal(events('RecoveryPlanConfirmed').length, 1);
+  });
   // -- review round 2 tests end --
 });
