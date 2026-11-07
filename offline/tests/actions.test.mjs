@@ -2083,9 +2083,9 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
       await S().resetAll();
       await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
       const backup = S().exportJson();
-      let once = true;
+      let refusals = 2; // RS22: an unlocked notebook tries once more at once, so the device refuses twice to keep it
       const A = Object.assign({}, Actions, { sosSession: (p) => {
-        if (once) { once = false; const e = new Error('The data locked before this was saved.'); e.code = 'LOCKED'; return Promise.reject(e); }
+        if (refusals > 0) { refusals -= 1; const e = new Error('The data locked before this was saved.'); e.code = 'LOCKED'; return Promise.reject(e); }
         return Actions.sosSession(p);
       } });
       const d = sosDom();
@@ -2185,6 +2185,54 @@ describe('review round 3 fixes (FIX-R3)', () => {
     const crisis = typedTo('I want to be dead');
     assert.ok(crisis.querySelector('[data-testid="sos-crisis"]'), 'crisis words without overdose words: the crisis view, as before');
     assert.ok(!crisis.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'the crisis view says little else');
+  });
+  test('RS22: a save refused LOCKED while the notebook reads unlocked (another tab changed the lock) is tried once more, at once', async () => {
+    const lockedErr = () => Object.assign(new Error('The lock changed in another tab.'), { code: 'LOCKED' });
+    const refusing = (k) => {
+      const s = { calls: 0 };
+      s.A = Object.assign({}, Actions, { sosSession: (p) => { s.calls += 1; return s.calls <= k ? Promise.reject(lockedErr()) : Actions.sosSession(p); } });
+      return s;
+    };
+    const walk = (d, A, last) => {
+      const root = d.open(['sos', 'craving'], null, A);
+      for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', last]) d.tapId(root, id);
+      return root;
+    };
+    const kept = (d) => d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept);
+    const one = refusing(1);
+    const d = sosDom();
+    walk(d, one.A, 'sos-used-yes');
+    await d.settle();
+    assert.equal(one.calls, 2, 'refused once: tried once more, at once');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, not at some later notify');
+    assert.equal(events('SlipLogged').length, 1, 'the slip is in the log');
+    assert.ok(!kept(d), 'never told it waits for an unlock');
+    assert.deepEqual(d.go, ['#/sos/slip?logged=1'], 'written: It is in your log. is true');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(events('SosCompleted').length, 1, 'nothing kept to write twice');
+    const two = refusing(2);
+    const d2 = sosDom();
+    walk(d2, two.A, 'sos-used-no');
+    await d2.settle();
+    assert.equal(two.calls, 2, 'one retry, no more');
+    assert.ok(kept(d2), 'the retry refused too: kept for the unlock');
+    assert.equal(events('SosCompleted').length, 1);
+    await Actions.settings.patch({ theme: 'light' });
+    await d2.settle();
+    assert.equal(two.calls, 3);
+    assert.equal(events('SosCompleted').length, 2, 'the kept one is saved once, at the next notify');
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const three = refusing(0);
+    const d3 = sosDom();
+    walk(d3, three.A, 'sos-used-no');
+    await d3.settle();
+    assert.equal(three.calls, 1, 'really locked: no retry');
+    assert.ok(kept(d3), 'kept for the unlock, as before');
+    assert.ok(await S().lock.unlock('2468'));
+    await d3.settle();
+    assert.equal(three.calls, 2, 'saved after the unlock');
   });
   // -- FIX-R3 tests end --
 });

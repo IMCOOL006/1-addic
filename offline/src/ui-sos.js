@@ -421,7 +421,11 @@
     if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe((e) => { if (e && DROP.has(e.label)) waiting.length = 0; flushWaiting(); }), null); }
   }
   async function save(fn) {
-    try { return await fn(); } catch (err) {
+    try { return await fn(); } catch (first) {
+      let err = first;
+      if (err && err.code === 'LOCKED' && !isLockedNow()) { // RS22: another tab changed the lock and this one reads open: once more, now
+        try { return await fn(); } catch (again) { err = again; }
+      }
       if (err && err.code === 'LOCKED') { keepForUnlock(fn); toast(COPY.lockedKept, 'info'); return null; }
       toast(COPY.notSaved, 'warn');
       return null;
