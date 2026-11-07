@@ -1,7 +1,12 @@
 ## actions-sos (CORE, 1-addic offline build): the lane report
 
-State: READY. Branch build/actions-sos (worktree C:/Users/ruchi/1-addic-wt/actions-sos). Base 655516dc. Tip a8dce5a5c4c1aa87d1dbf55d072b742e75bef393 (updated 2026-11-07 14:23 IST; the earlier slice state was READY-SLICE at 1cb96a3, 08:26 IST). Units: U-09, U-10, U-11, FIX-SAFETY-AS, FIX-ONB-EMO, FIX-R2-SAFETY, FIX-R2-REST. Held: none.
+State: READY at 1131827 (reviewer re-check: RS19-RS23 FIXED; N1 HIGH and N2 MEDIUM open for the chat). Branch build/actions-sos (worktree C:/Users/ruchi/1-addic-wt/actions-sos). Base 655516dc. Tip 1131827 (continued from a8dce5a; updated 2026-11-07 15:46 IST; a8dce5a5c4c1aa87d1dbf55d072b742e75bef393 was the tip at 14:23; the earlier slice state was READY-SLICE at 1cb96a3, 08:26 IST). Units: U-09, U-10, U-11, FIX-SAFETY-AS, FIX-ONB-EMO, FIX-R2-SAFETY, FIX-R2-REST. Held: none.
 Commits (655516dc..HEAD, newest first):
+- 1131827 fix(FIX-R3 RS20): while the PIN is being set, Next and Skip wait and say so
+- 5e820b7 fix(FIX-R3 RS21): a slip kept for the unlock says It goes in your log when you unlock.
+- e2e1017 fix(FIX-R3 RS22): a save refused LOCKED on an open notebook is tried once more, at once
+- d2be169 fix(FIX-R3 RS23): typed overdose words open the full urgent view with the overdose card
+- 1a9c1ec fix(FIX-R3 RS19): typed death wishes and better off without me go to the numbers
 - a8dce5a fix(FIX-R2-REST C3): motivation slider gets a confirm button that keeps the shown value
 - a060d95 fix(FIX-R2-REST C2): a save kept for the unlock is dropped when the notebook is erased or replaced
 - 1068c5f fix(FIX-R2-REST RS17): with a PIN set, the privacy step says so, no PIN fields
@@ -17,6 +22,7 @@ Commits (655516dc..HEAD, newest first):
 - 1cb96a3 feat(actions-sos, U-09): Actions verbs of 3.2 with validation and events
 
 ### Turn caps
+- 2026-11-07 15:46 run (continued from a8dce5a): this run built nothing in the lane; the FIX-R3 builder (RS19-RS23, five commits 1a9c1ec..1131827) ran in the review fix round. capHits: 0.
 - 2026-11-07 run (continued from fc0d038): FIX-R2-SAFETY builder steps_used 23; FIX-R2-REST first builder hit its 80-turn cap with no note (all five ids already committed); resume builder steps_used 7, verified and rebuilt nothing. capHits: 1.
 - Builder for U-09: steps_used 34; returned a note. capHits: 0.
 
@@ -25,6 +31,7 @@ Commits (655516dc..HEAD, newest first):
 - 2026-11-07 run (continued from fc0d038). Built by the earlier run (10:43-12:45): U-10, U-11, FIX-SAFETY-AS, FIX-ONB-EMO and review round 2 RC15-RC20 (check PASS at fca2781).
 - FIX-R2-SAFETY (c7c1c92, b50e28d, b841098, 1f1ab9f, 1f06923). For a person: typed 'killing myself', 'self harming', 'cutting myself' and similar now open the numbers, not breathing (RS10); on onboarding step 2, Next with a typed PIN sets it or stays and says why (RS11); in discreet mode the lock screen and tab title are neutral (RS12); 'Look around with sample data' shows the safety step, which cannot be skipped, then Today (RS13); SOS never offers sample contacts or reasons, no tel: or sms: to a sample number (RS14). Closes RS10-RS14.
 - FIX-R2-REST (d9ecf0c, b7fd04f, 1068c5f, a060d95, a8dce5a). For a person: while locked, Call someone and Remind me why say the people and reasons are hidden, not missing (RS15); after Yes to 'Did you use?', the slip page says 'It is in your log.' with one Go on, nothing logged twice (RS16); with a PIN already set, step 2 says so and shows no PIN fields (RS17); a save kept for the unlock is dropped when the notebook is erased or imported (C2); the motivation slider has a confirm button (onb-score-ok), moving it still saves, untouched saves nothing (C3). Closes RS15-RS17, C2, C3.
+- 2026-11-07 15:46 FIX-R3 (1a9c1ec, d2be169, e2e1017, 5e820b7, 1131827). For a person: typed 'I want to be dead', 'not wake up', 'no longer worth living', 'want it all to end', 'better off without me' open the numbers (RS19); 'overdose', 'OD', 'took too much' open the full urgent view with the overdose card, checked before crisis words (RS23); a save refused LOCKED on an open notebook is retried at once (RS22); a slip kept for the unlock says 'It goes in your log when you unlock.' (route #/sos/slip?kept=1, parseSos returns {flow, drill, preview, logged, kept}) (RS21); while the PIN is set, Next and Skip wait and 'Setting your PIN. One moment.' shows (RS20). Closes RS19-RS23 and the STALE-LOCKED question (retry once). Older tests changed with RS21/RS22 (C2 stand-in refuses twice; RC16 expects kept=1; routes test). Builder choices: overdose before crisis; only 'took'/'taken too much'; a non-LOCKED retry failure shows Not saved and is not kept; no sosSession verb sends Yes to #/sos/slip as not logged.
 - Held or blocked: none.
 - Still to build: U-10 (offline/src/ui-sos.js: UI.pages.sos, UI.sosHelpers {urgentList, outcomeFrom, isCrisisEmotion}, tests as a new describe in actions.test.mjs; waits for core U-03 in the base; ends a flow with Actions.sosSession and must finish without saving if LOCKED). U-11 (offline/src/ui-onboarding.js: UI.pages.lock via Store.lock.unlock then UI.go('#/today',{replace:true}), urgent help via UI.sosUrgentView; UI.pages.onboarding finishing with Actions.onboard, motivation.add, saveResponse('quick-reasons'), contacts.add).
 
@@ -47,25 +54,17 @@ All verbs async; failure is AppError(message, code), nothing written. Consumer i
 - No content keys, routes, UI.pages or data-tour targets added.
 
 ### Gates
+2026-11-07 15:46 run: the check ran no gate (it judged after a8dce5a: PASS). ASSUMED from the builder at 1131827: test GREEN 119/119 C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261107-160159.log; guards RED on the same 21 tour-target names as a8dce5a C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261107-160205.log; build SKIP build-20261107-160159.log; validate SKIP validate-20261107-160205.log. Reviewer probe at 1131827: test GREEN 119/119 test-20261107-160634.log. Red and green logs per id: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__RS19..RS23.red.log/.green.log. Browser gate not run.
 2026-11-07 run, VERIFIED at a8dce5a (check):
 - GREEN test pass=95 fail=0: C:\Users\ruchi\1-addic-wt\_logs\gates\actions-sos\test-20261107-151840.log
 - RED guards, 21 FAIL lines, all 'guard: tour-target <name>' (nav-*, sos-button, quicklog-*, planner-*, bp-*, workbook-*, insights-*, review-start, plan-*); baselined RED until screen lanes land; same names as at fc0d038 and 1f06923, no new failure: C:\Users\ruchi\1-addic-wt\_logs\gates\actions-sos\guards-20261107-151852.log
 - Each of RS10-RS17, C2, C3 has a red log (fail 1) and a green log in C:\Users\ruchi\1-addic-wt\_logs\reports\actions-sos\ (actions-sos__<id>.red.log, .green.log).
 ASSUMED / SKIP: build SKIP (build.mjs absent) build-20261107-151840.log; validate SKIP (engine.js absent) validate-20261107-151852.log; CSP and theme-parity guards skipped. Browser gate not run (cases for RS12, RS15, RS16, RS17, C3 belong to tests-docs).
-Earlier gates (slice run):
-VERIFIED (check's runs at tip 1cb96a3):
-- GREEN test pass=20 fail=0: C:\Users\ruchi\1-addic-wt\_logs\gates\actions-sos\test-20261107-084110.log
-- GREEN guards pass=2 skip=3: C:\Users\ruchi\1-addic-wt\_logs\gates\actions-sos\guards-20261107-084112.log
-- Scratch (not a gate): same 20 tests 20/20 against trunk's real engine.js; three mutations turn tests red (_logs/reports/actions-sos/checker-real).
-
-ASSUMED / SKIP:
-- SKIP build (offline/build.mjs absent on base): _logs\gates\actions-sos\build-20261107-084110.log
-- SKIP validate (engine.js absent on base): _logs\gates\actions-sos\validate-20261107-084112.log
-- Guard skips: csp, theme parity, tour targets (no build, styles.css, ui-*.js yet).
-- Not checked: browser gate; real store.js behaviour (rollback, LOCKED, replaceAll); Engine.validateBackup/migrateBackup (U-08 unmerged); U-10/U-11 product rules.
-
+Earlier gates (slice run, tip 1cb96a3: test 20/20 GREEN, guards GREEN, build and validate SKIP): see actions-sos-report-annex.md.
 Territory 2026-11-07: actions-sos 655516dc..HEAD: 4 files changed, all the lane's own (actions.js, ui-onboarding.js, ui-sos.js, tests/actions.test.mjs); 0 shared, 0 nobody's, 0 errors, 0 warnings. Since fc0d038 only ui-sos.js, ui-onboarding.js, actions.test.mjs changed. All 10 new commits carry both trailers. No innerHTML, no http(s) URL.
 Earlier territory: "actions-sos 655516dc..HEAD: 2 files changed, 2 own, 0 shared (append points), 0 nobody's, 0 errors"; no warnings.
+
+Territory 2026-11-07 15:46: a8dce5a..1131827 touched only ui-sos.js, ui-onboarding.js, tests/actions.test.mjs (all own); 0 shared.
 
 ### Review gates
 None.
@@ -78,6 +77,9 @@ Verdict PASS at 1cb96a3.
 ### Check (2026-11-07 run)
 Verdict PASS at a8dce5a (judged commits after fc0d038). FIX-R2-SAFETY and FIX-R2-REST present and meet the rulings; no new findings. Earlier units not re-judged. C2 fixed a060d95, C3 fixed a8dce5a (C1 LOW: no fix). Not checked: browser gate, build, validate.
 
+### Check (2026-11-07 15:46 run)
+Continued from a8dce5a; no check of the new commits ran at this point; the check on file is PASS at a8dce5a with no findings (above).
+
 ### Review
 Slice run: not run. 2026-11-07 run: lenses contracts and safety judged 655516dc...HEAD. Contracts reviewer: no findings. Safety reviewer round 2 (found at fc0d038; finder re-check at a8dce5a):
 - RS10 HIGH U-10 fix c7c1c92: FIXED. RS11 MEDIUM U-11 b50e28d: FIXED. RS12 MEDIUM U-11 b841098: FIXED. RS13 MEDIUM U-11 1f1ab9f: FIXED. RS14 MEDIUM U-10 1f06923: FIXED.
@@ -87,11 +89,22 @@ Slice run: not run. 2026-11-07 run: lenses contracts and safety judged 655516dc.
 - New LOW U-10 (RS16 line on the RC20 path): a save kept for the unlock goes to ?logged=1 and the page says 'It is in your log.' before it is saved (ui-sos.js:617-622). No fix yet.
 The review fix round changed nothing: every handed finding was already fixed this run.
 
+### Review (2026-11-07 15:46 run, round 3; lenses contracts and safety over 655516dc...HEAD)
+Contracts reviewer: no findings. Safety reviewer found, finder re-check at 1131827:
+- RS19 HIGH U-10 fix 1a9c1ec: FIXED. RS20 LOW U-11 fix 1131827: FIXED. RS21 LOW U-10 fix 5e820b7: FIXED. RS22 LOW U-10 fix e2e1017: FIXED. RS23 MEDIUM U-10 fix d2be169: FIXED.
+- RS10-NEARBY (earlier, no id) is covered by RS19.
+- New from the re-check, no fix yet (evidence actions-sos__review-safety.md, probe log gates/actions-sos/test-20261107-161247.log):
+  - N1 HIGH U-10 ui-sos.js:89, :93-94: "I hope I don't wake up", "I wish I didn't wake up", "I wanna be dead", "I hope I die", "I wish I hadn't been born", "I wish it would all end", "better off if I was gone/were dead" get breathing steps, not the numbers. Not fixed.
+  - N2 MEDIUM U-10 ui-sos.js:103: "I took too many pills", "taken too many sleeping pills", "I used too much" get breathing steps, not urgent help. Not fixed.
+- Questions: Q1 (RS22) another tab erasing, Forgot PIN or importing makes resync report unlocked, and the retry writes the SOS session into the replaced notebook; Q2 the kept save lives only in memory, so 'when you unlock' holds while the tab stays open, and a non-LOCKED failure after unlock is dropped silently (toast?); Q3 (clinical) overdose plus crisis text gets the view without aria-live assertive and the overdose card closed; '(not|never) wake up' also matches 'I could not wake up the baby'.
+
 ### Safety and content marks
+2026-11-07 15:46: CRISIS.patterns widened again (RS19), OVERDOSE now clinicalReview: true with 3 patterns (RS23); clinical review owed on both and on false positives; N1 and N2 are open safety gaps (HIGH, MEDIUM) and block a clean READY in the reviewers' view; the chat decides.
 2026-11-07: CRISIS.patterns widened (RS10), clinicalReview: true kept; clinical review owed on the patterns and on idiom false positives ('this is killing me') the ruling allows; only 'overdose on purpose' matches the overdose case. The safety step cannot be skipped on any path (RS13). Sample rows never show as the person's own in SOS (RS14). Urgent help stays one tap away while locked (RS15). No network call, innerHTML or URL added.
 clinicalReview: true passages: none (no copy in U-09). verify: true resources: none. actions.js holds no crisis copy, network call, URL, innerHTML or 'addict' (grep). Safety writes proved by 10 mutations (drill guard, slip event, used-means-slip, locale en, backup check and others). The marks arrive with U-10 and U-11.
 
 ### Requests for other lanes
+- (2026-11-07 15:46) core: Q1 (RS22) needs a signal that a store was replaced (label on notify or a generation id) so a stale retry does not write into a new notebook. Open an id for N1 and N2 in the CORE chat. guards RED: 15 of 21 baselined (baselines.md:26-40), 6 (nav-*, sos-button) are core's, HUB R-C-19.
 - (2026-11-07) core: C2 relies on Store.subscribe passing { label } ('resetAll' for Forgot PIN and Erase, 'replaceAll' for import; store.js 418-420, 550, 584); core.md promises only Store.subscribe(fn). Keep the label or tell this lane. RS12: core's chrome() could write '1-addic:discreet' itself (the lane uses UI.applyDiscreet when present, else a guarded flag write).
 - tests-docs: browser cases for RS12, RS15, RS16, RS17, C3; add hook onb-score-ok to the contract and tests/helpers/hooks.mjs.
 - content: a sample flag on Content.sample rows (RS14 skips sample === true).
@@ -101,9 +114,11 @@ clinicalReview: true passages: none (no copy in U-09). verify: true resources: n
 - Content lane: Content.exercises absent, so any id-like exerciseId is accepted (ArtifactSaved kind null); Content.sample.generate(now) shape is {stores:{name: rows}} or the map itself, else 'no-sample'.
 
 ### Docs owed
+2026-11-07 15:46: guide text for the overdose view, 'Setting your PIN', and 'It goes in your log when you unlock.'; contract text of the RS19 phrases is in contracts/actions-sos.md last section.
 None for U-09. 2026-11-07: guide text for the sample-data path (safety step first), the hidden-while-locked lines, 'It is in your log.', the motivation confirm button; contract entry for onb-score-ok.
 
 ### Open questions
+2026-11-07 15:46 (defaults taken): overdose checked before crisis words; only 'took'/'taken too much' route; non-LOCKED retry failure shows Not saved; no sosSession verb sends Yes to slip as not logged; open: Q1-Q3 above. STALE-LOCKED closed by RS22.
 2026-11-07 (defaults taken): RS13 the sample path does not save the safety ticks; RS10 idiom false positives allowed; RS16 second sentence on the logged line kept; STALE-LOCKED (another tab changed the lock; session kept on an unlocked phone until next notify): default keep, proposal retry once now; RS15 no Unlock link; overdose words ('overdose', 'OD', 'took too much') for clinical review; guards RED on 21 tour-targets, 6 of them (nav-*, sos-button) not baselined by name for this base, HUB to confirm.
 1. Engine U-05 lacks AppError/validateBackup/migrateBackup: default built an in-file AppError and an always-run backup check; migration uses Engine.migrateBackup when present, fills every store, drops any meta 'lock' row.
 2. SosCompleted outcome vocabulary 'still' vs engine's 'other': default 'passed'|'still'|'used'.
@@ -111,6 +126,7 @@ None for U-09. 2026-11-07: guide text for the sample-data path (safety step firs
 4. Content.sample shape: default as in Requests; malformed = 'no-sample'.
 
 ### For the HUB at the merge
+- 2026-11-07 15:46: tip 1131827, same 3 own files changed, no shared files; guards RED on the same 21 names; N1/N2 unfixed.
 - 2026-11-07: still no shared files and no package changes; 4 own files; expect guards RED on the 21 tour-target names until the screen lanes and core's shell merge; build and validate SKIP on this branch, run them after the merge; browser cases owed by tests-docs.
 - Shared files touched: none. build.mjs on trunk already lists actions.js, ui-sos.js, ui-onboarding.js.
 - package.json / package-lock.json: no changes (none on the base).

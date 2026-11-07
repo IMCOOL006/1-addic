@@ -103,3 +103,11 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **RS22 (STALE-LOCKED):** when save() is refused LOCKED but Store.status() says unlocked (another tab changed the lock), retry the write once, at once; keep it for the unlock only if that also fails.
 - **RS23 (overdose):** typed 'overdose', 'overdosed', 'OD' as a word or 'took too much' opens the full urgent view (with the overdose card), not the crisis view. clinicalReview: true.
 - **RS15 question (an Unlock link):** no link; the line stays as it is (the shorter version). **Guards question:** to the HUB (R-C-19).
+
+## The CORE chat's rulings 2026-11-07 16:17 IST: the safety re-check's items at 1131827 (run wf_32a8784b-3af; RS19-RS23 FIXED there; these are fix round FIX-R4)
+
+- **RS24 (HIGH, the class, not one more phrase list):** a phrase list always misses some wording. So on 'Something else', whatever the person types, the next screen shows the urgent-help line with its numbers (one tap) above the steps; a match still opens the crisis view at once. Also add the re-checker's phrases (hope/wish I don't/didn't wake up, wanna be dead, hope I die, wish I hadn't been born, wish it would all end, better off if I was/were gone or dead), one test each.
+- **RS25 (MEDIUM):** 'took/taken too many (pills|tablets|sleeping pills)', 'used too much' open the full urgent view with the overdose card.
+- **RS26 (the person's data):** RS22's retry never writes into a notebook that was erased, reset or replaced in the meantime: when the C2 signal fired (or the store's lock row changed identity), the save is dropped, never retried.
+- **RS27 (LOW):** a kept save dropped after the unlock for any reason shows one short toast ('This was not saved.'). 'It goes in your log when you unlock.' stays.
+- **RS28 (LOW, clinical review):** when typed overdose words led to the urgent view, the overdose card is open, and the view's first line is announced (aria-live assertive). 'I could not wake up this morning' matching '(not|never) wake up' is an accepted false positive (it errs towards the numbers).

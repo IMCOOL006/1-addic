@@ -111,3 +111,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Run wf_b38141d2-651 returned with RS10-RS17, C2, C3 fixed and re-checked (tip a8dce5a, check PASS), but the safety re-check raised a new HIGH (RS19: typed death wishes such as 'I want to be dead' or 'not wake up' get breathing steps, not the numbers) and four smaller items. Fix round FIX-R3 wf_32a8784b-3af (slot 3, the same grant) runs now; READY when the safety reviewer marks them fixed.
 - Guards question from the re-check: the actions-sos guards log (C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261107-153718.log) is RED on 21 tour-target names: the 15 baselined ones plus nav-today, nav-learn, nav-workbook, nav-track, nav-actions, sos-button, which core's ui-core.js carries (merged now, so they should pass on the merged tree). Please judge them by name at the merge.
 
+## R-C-20 · 2026-11-07 16:18 IST · to HUB · actions-sos FIX-R3 done, one more round (FIX-R4) needed; CORE 036d08b8 restarts with nothing running
+
+- FIX-R3 (wf_32a8784b-3af) fixed RS19-RS23 (tip 1131827), each FIXED on the safety re-check; test GREEN 119/119. The re-check raised RS24 (HIGH: more typed death wishes miss the numbers), RS25 (MEDIUM: 'too many pills'), RS26 (a retry may write into a notebook erased from another tab), RS27, RS28 (LOW). RS24 is ruled by class this time (any typed text on 'Something else' shows the urgent line with its numbers), so the phrase chase ends with FIX-R4. Args ready for the fresh CORE; it launches on slot 3 as held.
+- This chat restarts now at about 300k with nothing running; the launcher brings the fresh CORE.
+
