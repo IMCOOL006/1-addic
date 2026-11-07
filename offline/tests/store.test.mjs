@@ -1884,6 +1884,32 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(P.view.get('events', 'f1').note, MARK, 'the row was sealed in and opens at the next unlock');
   });
 
+  test('RC16: in the browser each wrong try waits 250 ms longer, at most 2 s, and the right PIN starts the count again', async () => {
+    const S = freshStore();
+    await S.lock.set('2468');
+    S.lock.lockNow();
+    const realSet = globalThis.setTimeout;
+    const waits = [];
+    globalThis.window = {};
+    globalThis.setTimeout = (fn, ms, ...a) => {
+      const wait = typeof ms === 'number' && ms >= 250 && ms <= 2000;
+      if (wait) waits.push(ms);
+      return realSet(fn, wait ? 0 : ms, ...a);
+    };
+    try {
+      for (let i = 0; i < 9; i++) assert.equal(await S.lock.unlock(''), false);
+      assert.deepEqual(waits, [250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2000]);
+      assert.equal(await S.lock.unlock('2468'), true);
+      S.lock.lockNow();
+      waits.length = 0;
+      assert.equal(await S.lock.unlock(''), false);
+      assert.deepEqual(waits, [250], 'the right PIN starts the count again');
+    } finally {
+      globalThis.setTimeout = realSet;
+      delete globalThis.window;
+    }
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });
