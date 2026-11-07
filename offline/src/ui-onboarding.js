@@ -168,8 +168,18 @@
     return true;
   }
 
+  // The 09:33 ruling (1): a new person (no profile.onboardedAt, not locked) on #/ or #/today is sent to onboarding.
+  function shouldOnboard(route, S) {
+    const path = route && typeof route.path === 'string' ? route.path : '';
+    if (path !== '/' && path !== '/today') return false;
+    const st = safe(() => S.status(), null);
+    if (!st || st.locked) return false;
+    const me = safe(() => S.view.get('profile', 'me'), null);
+    return !(me && me.onboardedAt);
+  }
+
   const O = { COPY, STEPS, STEP_KEYS, WRONG_PAUSE_MS, needsMedicalCard, medicalLines, buildPatch, finishOnboarding, lockError, attemptUnlock,
-    lockLabels, discreetFrom, forgetPin };
+    lockLabels, discreetFrom, forgetPin, shouldOnboard };
   if (typeof module !== 'undefined' && module.exports) module.exports = O;
   if (typeof UI === 'undefined' || !UI || typeof document === 'undefined') return;
 
@@ -182,6 +192,7 @@
     text: label, dataset: o && o.testid ? tid(o.testid) : null, onClick });
   let uid = 0;
   const nextId = (p) => 'onb-' + p + '-' + (++uid);
+  let sentOnce = false; // the redirect to onboarding happens once in a visit
 
   function field(label, input, hint) {
     if (!input.id) input.id = nextId('f');
@@ -247,6 +258,7 @@
     let at = 0;
     let finishing = false;
     const root = h('section', { class: 'page stack onboarding-page', dataset: tid('onboarding') });
+    sentOnce = true; // seen in this visit: never sent back to it
     const settings = (c && c.settings) || {};
     let noticeOpen = settings.earlyNoticeSeen !== true;
 
@@ -393,6 +405,12 @@
   }
 
   UI.onboardingHelpers = O;
+  // On ui:route (no change to ui-core): only #/ or #/today, only a new person, never while locked, once.
+  safe(() => document.addEventListener('ui:route', (ev) => {
+    if (sentOnce || !shouldOnboard(ev && ev.detail, getStore())) return;
+    sentOnce = true;
+    UI.go('#/onboarding', { replace: true });
+  }), null);
   if (UI.pages) {
     UI.pages.lock = lockPage;
     UI.pages.onboarding = onboardingPage;

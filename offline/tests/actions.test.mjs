@@ -880,9 +880,12 @@ describe('sos screens read const globals like a browser (U-10)', () => {
 });
 
 // ── fix round (2026-11-07): the SOS flows themselves, run in Node in a small stand-in DOM (UI.h builds plain nodes; a tap calls the handler) ──
-function sosDom() {
+function sosDom(opts) {
+  const o = opts || {};
   const vm = require('node:vm');
   const go = [];
+  const replaced = [];
+  const docOn = {};
   const toasts = [];
   class N {
     constructor(tag) {
@@ -939,10 +942,13 @@ function sosDom() {
     return n;
   }
   const body = new N('body');
-  const UI = { h, pages: {}, go: (r) => { go.push(r); }, toast: (m, tone) => { toasts.push([m, tone]); }, speak: () => false, stopSpeaking: () => {} };
-  const ctx = vm.createContext({ UI, document: { body, createElement: (t) => new N(t), createTextNode: text }, navigator: {},
+  const UI = { h, pages: {}, go: (r, op) => { go.push(r); if (op && op.replace) replaced.push(r); }, toast: (m, tone) => { toasts.push([m, tone]); }, speak: () => false, stopSpeaking: () => {} };
+  const doc = { body, createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
+    addEventListener: (t, fn) => { (docOn[t] = docOn[t] || []).push(fn); } };
+  const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto,
     setInterval: () => 0, clearInterval: () => {}, setTimeout, Content: C(), Store: S(), module: { exports: {} } });
   vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
+  if (o.onboarding) vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
   const byId = (root, id) => {
     const n = root.querySelector(`[data-testid="${id}"]`);
     if (!n) throw new Error(`no ${id} on: ${root.textContent.slice(0, 160)}`);
@@ -954,7 +960,13 @@ function sosDom() {
     return b;
   };
   return {
-    UI, go, toasts, byId,
+    UI, go, replaced, toasts, byId, docOn,
+    fire: (type, detail) => { for (const fn of docOn[type] || []) fn({ type, detail }); },
+    onb(c) {
+      const root = UI.pages.onboarding(Object.assign({ A: Actions, settings: {} }, c));
+      body.replaceChildren(root);
+      return root;
+    },
     tap: (root, label) => button(root, label).click(),
     tapId: (root, id) => byId(root, id).click(),
     rate: (root, n) => byId(root, 'sos-rating').querySelectorAll('button')[n].click(),
@@ -1395,4 +1407,37 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     assert.ok(urgent.textContent.includes(note), 'the urgent page keeps it');
     assert.equal(urgent.querySelectorAll('[data-testid="crisis-verify"]').length, 0);
   });
+});
+
+describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const route = (path) => ({ path, parts: path.split('/').filter(Boolean), query: {} });
+
+  test('REDIRECT: a new person on #/ or #/today goes to onboarding once, with replace; never from SOS, the lock or another route', async () => {
+    const d = sosDom({ onboarding: true });
+    const O = d.UI.onboardingHelpers;
+    assert.equal(typeof O.shouldOnboard, 'function', 'the rule is a pure helper');
+    for (const p of ['/sos', '/sos/craving', '/sos/urgent', '/lock', '/learn', '/onboarding', '/settings']) assert.equal(O.shouldOnboard(route(p), S()), false, p);
+    assert.equal(O.shouldOnboard(route('/'), S()), true);
+    assert.equal(O.shouldOnboard(route('/today'), S()), true);
+    d.fire('ui:route', route('/sos'));
+    d.fire('ui:route', route('/lock'));
+    assert.deepEqual(d.go, [], 'never from SOS or the lock');
+    d.fire('ui:route', route('/today'));
+    d.fire('ui:route', route('/'));
+    assert.deepEqual(d.go, ['#/onboarding'], 'once');
+    assert.deepEqual(d.replaced, ['#/onboarding'], 'with replace');
+    const seen = sosDom({ onboarding: true });
+    seen.onb({});
+    seen.fire('ui:route', route('/today'));
+    assert.deepEqual(seen.go, [], 'a person who has seen onboarding in this visit is not sent back');
+    await Actions.onboard({ name: 'Asha' });
+    assert.equal(O.shouldOnboard(route('/today'), S()), false, 'onboarded: never');
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    assert.equal(O.shouldOnboard(route('/'), S()), false, 'locked: never');
+  });
+  // -- FIX-ONB-EMO tests end --
 });
