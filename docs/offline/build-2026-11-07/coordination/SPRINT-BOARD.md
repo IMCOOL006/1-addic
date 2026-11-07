@@ -6,24 +6,24 @@ NEXT: the fresh HUB merges each READY as it appears (the Store U-04, SOS U-10 an
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 09:57 IST by `board.py`.
+Rewritten 2026-11-07 10:02 IST by `board.py`.
 
 ## The HUB
 
-- STATE: RESTART — 2026-11-07 09:57 IST: HUB session 2 (874b2463) hands over at the safe point after the tests-docs merge: context over 250k, nothing of the HUB's running, no merge in flight, queue empty; the fresh HUB…
+- STATE: BUILDING — 2026-11-07 10:02 IST: HUB session 3 (408a3f20) resumed; CORE 224074c0 alive with four runs (core review fixes, actions-sos reviewers, learn U-12, tests-docs U-37+U-36a); engine paused; memory 4.4 GB…
 - BASE: 2da0caa4 (the trunk after the tests-docs U-34 merge, 2026-11-07 09:55; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 - QUIET: no
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 09:57 IST
+- UPDATED: 2026-11-07 10:02 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | RESTART — 2026-11-07 09:57 IST: HUB session 2 (874b2463) hands over at the safe point after the tests-docs merge: context over… | 257k | 2026-11-07 09:57 IST |
-| CORE | 224074c0 (launcher-started 2026-11-07 08:58) | BUILDING — 2026-11-07 09:54 IST: four runs live (core review fixes, actions-sos reviewers, learn slice U-12, tests-docs… | 272k | 2026-11-07 09:54 IST |
+| HUB | 408a3f20 (launcher-started 2026-11-07 09:58) | BUILDING — 2026-11-07 10:02 IST: HUB session 3 (408a3f20) resumed; CORE 224074c0 alive with four runs (core review fixes… | 94k | 2026-11-07 10:02 IST |
+| CORE | 224074c0 (launcher-started 2026-11-07 08:58) | BUILDING — 2026-11-07 09:54 IST: four runs live (core review fixes, actions-sos reviewers, learn slice U-12, tests-docs… | 274k | 2026-11-07 09:58 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -61,8 +61,8 @@ Slots allowed: 4 running lanes at a time from 09:50 (core, actions-sos, tests-do
 
 ## Machine
 
-- Free memory 7.4 GB of 31.8 GB at 2026-11-07 09:49 IST; claude 25, node 56 processes; 4 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 14024); its last launch: CORE 224074c0 at 2026-11-07 08:58.
+- Free memory 4.9 GB of 31.8 GB at 2026-11-07 10:00 IST; claude 27, node 59 processes; 1 slots by the rule (lane-widening.md).
+- The launcher loop: running (pid 14024); its last launch: HUB 408a3f20 at 2026-11-07 09:58.
 
 ## Files of the build
 

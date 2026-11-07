@@ -1,5 +1,5 @@
 TRACK: HUB
-STATE: RESTART   # 2026-11-07 09:57 IST: HUB session 2 (874b2463) hands over at the safe point after the tests-docs merge: context over 250k, nothing of the HUB's running, no merge in flight, queue empty; the fresh HUB starts from KICKOFF-PROMPTS.md Prompt 0 plus the resume line and runs the loop to the FREEZE 10:55, QUIET, TAG 11:55, HANDOVER
+STATE: BUILDING   # 2026-11-07 10:02 IST: HUB session 3 (408a3f20) resumed; CORE 224074c0 alive with four runs (core review fixes, actions-sos reviewers, learn U-12, tests-docs U-37+U-36a); engine paused; memory 4.4 GB at 10:00; queue empty; FREEZE 10:55
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 2da0caa4 (the trunk after the tests-docs U-34 merge, 2026-11-07 09:55; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 4 running lanes at a time from 09:50 (core, actions-sos, tests-docs, learn); engine's resume at the first row with at least 7.0 GB free with four running, or when one finishes; measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit
@@ -18,7 +18,14 @@ MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654,
 MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4, pushed 09:55 (build GREEN 240874 B; test GREEN harness.test.mjs; validate SKIP until U-08; guards GREEN by name; package.json merged clean, tests-docs keys)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 09:57 IST
+UPDATED: 2026-11-07 10:02 IST
+
+# 2026-11-07 10:02 · HUB session 3 (408a3f20, started by the launcher 09:58) resumes
+
+- Read whole: PLAN.md, status-HUB.md, RUN-RECORD.md "Resume here", status-CORE.md, status-SCREENS.md, outbox-CORE.md from R-C-7, outbox-SCREENS.md, outbox-OWNER.md, outbox-HUB.md, lane-widening.md, board-notes.md, baselines.md. S-00 and S-01 stand. Nothing of the HUB's was running; no merge in flight; MERGE-QUEUE empty; `_int` detached at 2da0caa.
+- `claude agents` at 10:00 lists CORE 224074c0 (pid 432, busy): its four runs (core wf_6b7ddbb3, actions-sos wf_379c12ed, learn wf_bb0fcbce, tests-docs wf_50c9a385) live on. Branch tips at 10:00: core e26b958 (09:59, review fixes RC1, RS2), actions-sos c629cae (U-11), learn 655516d (U-12 not yet committed), tests-docs 0019a3d (09:58, U-37 committed), engine 04fc0c1 (paused).
+- Memory 4.4 GB at 10:00 with four runs live: above the 4.0 GB floor, nothing pauses; the rule stands (under 4.0 the newest lane, learn, pauses at its next commit). No READY line on status-CORE.md yet; the candidates before the FREEZE 10:55: core READY (U-04), actions-sos READY (U-10, U-11), tests-docs READY-SLICE (U-37, U-36a), learn READY-SLICE (U-12).
+- The trunk carried one unpushed docs commit (CORE's aeddf7c): pushed with this one.
 
 # 2026-11-07 09:57 · tests-docs U-34 merged; HUB session 2 hands over
 
