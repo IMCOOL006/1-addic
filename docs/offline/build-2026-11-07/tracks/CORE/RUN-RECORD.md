@@ -174,10 +174,14 @@
 - Rulings (contracts/actions-sos.md 2026-11-07 22:53 IST): the sample mark drops when a patch changes a non-flag field; debrief and complete always; done and active toggles keep it. SOS reads stage and region through isOwn.
 - FIX-R7 wrapper tracks/CORE/args/wf_as_r7.js (gen3.py there; carried check PASS 00a5c08, carried safety findings RS37R, RS38, RS36R; wf_sim OK, 3 agents). Free memory 3.1 GB at 22:50: waits for a 7.0 GB row. R-C-36.
 
+## 2026-11-07 23:36 IST · actions-sos FIX-R7 clean at cd385a5
+
+- wf_ea2586a6-02e READY cd385a5: RS37R 54405c7, RS38 b20cdb3, RS36R cd385a5 FIXED; no new finding; 169/169 (this chat re-ran it). The contracts re-review waits for a 7.0 GB row. R-C-37.
+
 ## Resume here
 
 - **(2026-11-07 22:53 IST) STATE BUILDING, CORE 93bffdb7, nothing runs.** engine READY 84075b6 (R-C-35, for the HUB's merge). learn MERGED ce691c21.
-- **Running · actions-sos FIX-R7 wf_ea2586a6-02e** (launched 2026-11-07 22:57 IST on the HUB's grant; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_ea2586a6-02e/journal.jsonl). If it died with the session, relaunch: Workflow scriptPath C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_r7.js (a copy in tracks/CORE/args/; a fresh chat runs gen3.py there after editing the session id in it and in args_as_r6b.json). Returns READY or RED with the tip.
+- **Done · actions-sos FIX-R7 wf_ea2586a6-02e (clean at cd385a5)** (launched 2026-11-07 22:57 IST on the HUB's grant; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_ea2586a6-02e/journal.jsonl). If it died with the session, relaunch: Workflow scriptPath C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_r7.js (a copy in tracks/CORE/args/; a fresh chat runs gen3.py there after editing the session id in it and in args_as_r6b.json). Returns READY or RED with the tip.
 - **Next 2 · the contracts re-review of actions-sos:** C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_contracts_r3.js (read-only, one lane-reviewer over fca2781..HEAD, each HIGH/MEDIUM verified by a lane-checker); args {now}. Its findings, if any HIGH or MEDIUM survive, go into a FIX-R8 like FIX-R7. Clean -> `LANE: actions-sos READY <tip>`, lane report, R-C to the HUB.
 - **Queued, by name, after actions-sos merges:** engine FIX-SPIRAL-OWN (spiralThoughts returns the person's reply apart from a filled one; contract ruling 22:25); the offline-v1.1 queue below.
 

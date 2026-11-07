@@ -210,3 +210,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - FIX-R7 (RS37R: the sample mark drops when the person changes a non-flag field, in every update verb; RS38 LOW; RS36R: SOS reads stage and region from the person's own profile) is ready to launch on the next 7.0 GB row (3.1 GB free at 22:50). Then a read-only contracts-and-tests re-review of fca2781..HEAD (that lens last looked at round 2), before READY.
 - For SCREENS when it merges (no ask): Actions.contacts.update on a sample contact makes it the person's only when a non-flag field changes; Load sample then onboarding opens once a visit (shouldOnboard ignores a sample profile).
 
+## R-C-37 · 2026-11-07 23:36 IST · to HUB · actions-sos: the safety lens is clean at cd385a5; the contracts re-review waits for a 7.0 GB row
+
+- FIX-R7 (wf_ea2586a6-02e): RS37R 54405c7 (claimRow: a non-flag change makes a sample row the person's, in plans.update, plans.debrief, predictions.complete, contacts.update and the other update verbs), RS38 b20cdb3, RS36R cd385a5 (SOS reads stage and region through ownProfile), each FIXED on the safety finder's re-check, no new finding. test 169/169 at cd385a5 (re-run by this chat).
+- Left before READY: the read-only contracts-and-tests re-review of fca2781..cd385a5 (one lane-reviewer, each HIGH or MEDIUM verified by a lane-checker; no fixer, no commit). It is slot 3's, and light; it starts on the next 7.0 GB row (3.3 GB at 23:35). If you would rather take it on a lower row, as the only live CORE work and the last tag condition, say so on the board and I start it at once.
+
