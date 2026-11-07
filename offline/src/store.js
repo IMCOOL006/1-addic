@@ -24,7 +24,7 @@ const Store = (function () {
   const unutf8 = new TextDecoder();
 
   const state = {
-    loading: null, mode: 'memory', backend: null, rows: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
+    loading: null, mode: 'memory', backend: null, rows: blank(), unread: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
     subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, asked: false, chain: Promise.resolve(), epoch: 0,
     fails: 0, last: 0, timer: null,
   };
@@ -127,22 +127,36 @@ const Store = (function () {
     if (!key || store === 'meta') return clone(row);
     return { [STORES[store]]: id, enc: await seal(key, store, id, row) };
   }
+  // The rows that open, and the rows that will not (damaged, or sealed under another key) kept as they are stored
+  // rather than failing the unlock (Q4). Each goes in its stored order, whatever order the decryptions end in (RC9).
   async function decode(all, key) {
-    const out = blank();
+    const rows = blank();
+    const unread = blank();
     const jobs = [];
     for (const n of NAMES) {
       for (const row of (all && all[n]) || []) {
         const id = row && row[STORES[n]];
         if (typeof id !== 'string' || (n === 'meta' && id === 'lock')) continue;
-        if (!row.enc) { out[n].set(id, row); continue; }
-        if (!key) continue;
-        // A damaged row is left where it is, unread, rather than failing the unlock.
-        jobs.push(unseal(key, n, id, row.enc).then((v) => { out[n].set(id, v); }, () => {}));
+        if (!row.enc) jobs.push([n, id, row]);
+        else if (!key) jobs.push([n, id, undefined, row]);
+        else jobs.push(unseal(key, n, id, row.enc).then((v) => [n, id, v], () => [n, id, undefined, row]));
       }
     }
-    await Promise.all(jobs);
-    return out;
+    for (const [n, id, v, raw] of await Promise.all(jobs)) {
+      if (raw) unread[n].set(id, raw);
+      else rows[n].set(id, v);
+    }
+    return { rows, unread };
   }
+  // lock.set, remove and replaceAll write the unread rows back as they are stored, unless the new rows hold the id.
+  function keep(rows, unread) {
+    const left = blank();
+    const puts = [];
+    for (const n of NAMES) for (const [id, r] of unread[n]) if (!rows[n].has(id)) { left[n].set(id, r); puts.push([n, id, clone(r)]); }
+    return { left, puts };
+  }
+  const byKey = (a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  const sorted = (m) => Array.from(m).sort(byKey).map((e) => e[1]); // key order, as IndexedDB gives it, in every mode
 
   /* ── Backends: IndexedDB, the localStorage snapshot, memory ───────────────────────────── */
   function idbFactory() {
@@ -351,7 +365,9 @@ const Store = (function () {
     state.lock = L ? clone(L) : null;
     state.locked = !!L;
     state.key = null;
-    state.rows = L ? blank() : await decode(all, null);
+    const d = L ? null : await decode(all, null);
+    state.rows = d ? d.rows : blank();
+    state.unread = d ? d.unread : blank();
   }
 
   function load() {
@@ -450,6 +466,7 @@ const Store = (function () {
       await write({ clear: false, puts, dels });
       if (epoch !== state.epoch) return out; // locked while saving: the rows are saved sealed, the working set stays empty
       for (const s of staged.values()) {
+        state.unread[s.store].delete(s.id); // the stored row was replaced or deleted: never written back later
         if (s.row === null) state.rows[s.store].delete(s.id);
         else state.rows[s.store].set(s.id, s.row);
       }
@@ -477,22 +494,24 @@ const Store = (function () {
       const r = state.rows[store].get(String(id));
       return r === undefined ? null : Object.freeze(r);
     },
-    list(store) { return state.locked || !has(store) ? [] : Array.from(state.rows[store].values(), (r) => Object.freeze(r)); },
+    list(store) { return state.locked || !has(store) ? [] : sorted(state.rows[store]).map((r) => Object.freeze(r)); },
     count(store) { return state.locked || !has(store) ? 0 : state.rows[store].size; },
   };
 
   // autoLockMin is the lock's idle minutes (1, 5 or 15; 0 is never; null without a PIN), so the settings screen can
-  // show the choice in force (RC3).
+  // show the choice in force (RC3). unreadable counts the stored rows that did not open (0 while locked) (Q4).
   function status() {
+    let unreadable = 0;
+    if (!state.locked) for (const n of NAMES) unreadable += state.unread[n].size;
     return { persistence: state.mode, lastSavedAt: state.lastSavedAt, hasLock: !!state.lock, locked: state.locked,
-      autoLockMin: state.lock ? state.lock.autoLockMin : null };
+      autoLockMin: state.lock ? state.lock.autoLockMin : null, unreadable };
   }
 
-  // Decrypted rows. When a lock exists the caller asks for the PIN first (Store.lock.verify).
+  // Decrypted rows, in key order. When a lock exists the caller asks for the PIN first (Store.lock.verify).
   function exportJson() {
     if (state.locked) throw fail('LOCKED', 'The data is locked.');
     const stores = {};
-    for (const n of NAMES) stores[n] = clone(Array.from(state.rows[n].values()));
+    for (const n of NAMES) stores[n] = clone(sorted(state.rows[n]));
     return { app: '1-addic', schemaVersion: 1, exportedAt: new Date().toISOString(), stores };
   }
 
@@ -513,10 +532,11 @@ const Store = (function () {
         }
       }
       const epoch = state.epoch;
-      const puts = await sealAll(next, state.key);
+      const kept = keep(next, state.unread);
+      const puts = (await sealAll(next, state.key)).concat(kept.puts);
       if (state.lock) puts.push(['meta', 'lock', clone(state.lock)]);
       await write({ clear: true, puts, dels: [] });
-      if (epoch === state.epoch) state.rows = next;
+      if (epoch === state.epoch) { state.rows = next; state.unread = kept.left; }
       notify('replaceAll');
     });
   }
@@ -544,6 +564,7 @@ const Store = (function () {
       if (plain) try { plain.removeItem(DISCREET); } catch (e) { /* nothing there */ }
       state.epoch += 1;
       state.rows = blank();
+      state.unread = blank();
       state.lock = null;
       state.key = null;
       state.locked = false;
@@ -615,13 +636,14 @@ const Store = (function () {
       // The rows are taken before the first wait: a lock while the key is derived empties state.rows, and a clear
       // write of an empty set would erase every row (RC1, RS2).
       const rows = state.rows;
+      const kept = keep(rows, state.unread);
       const salt = random(16);
       const key = await derive(pin, salt, ITERATIONS);
       const row = {
         key: 'lock', salt: b64(salt), iterations: ITERATIONS, check: await seal(key, 'meta', 'lock', CHECK),
         autoLockMin: minutes(opts && opts.autoLockMin), setAt: new Date().toISOString(),
       };
-      const puts = await sealAll(rows, key);
+      const puts = (await sealAll(rows, key)).concat(kept.puts);
       puts.push(['meta', 'lock', row]);
       await write({ clear: true, puts, dels: [] });
       state.lock = row;
@@ -670,7 +692,9 @@ const Store = (function () {
     disarm();
     state.lock = L ? clone(L) : null;
     state.locked = !!L;
-    state.rows = L ? blank() : await decode(all, null);
+    const d = L ? null : await decode(all, null);
+    state.rows = d ? d.rows : blank();
+    state.unread = d ? d.unread : blank();
     if (L) call(state.lockSubs, { reason: 'auto' });
     notify(L ? 'lock' : 'unlock');
   }
@@ -684,7 +708,9 @@ const Store = (function () {
       const key = await keyFor(pin);
       if (!key) return refused();
       if (!state.locked) { state.fails = 0; return true; }
-      state.rows = await decode(await state.backend.readAll(), key);
+      const d = await decode(await state.backend.readAll(), key);
+      state.rows = d.rows;
+      state.unread = d.unread;
       opened(key);
       try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
       notify('unlock');
@@ -706,10 +732,13 @@ const Store = (function () {
       if (!state.lock) return false;
       const key = await keyFor(pin);
       if (!key) return refused();
-      const rows = state.locked ? await decode(await state.backend.readAll(), key) : state.rows;
-      await write({ clear: true, puts: await sealAll(rows, null), dels: [] });
+      const d = state.locked ? await decode(await state.backend.readAll(), key) : { rows: state.rows, unread: state.unread };
+      const rows = d.rows;
+      const kept = keep(rows, d.unread);
+      await write({ clear: true, puts: (await sealAll(rows, null)).concat(kept.puts), dels: [] });
       state.epoch += 1;
       state.rows = rows;
+      state.unread = kept.left;
       state.lock = null;
       state.key = null;
       state.locked = false;

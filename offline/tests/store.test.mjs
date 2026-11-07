@@ -908,7 +908,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
       contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id',
       reveals: 'id', tips: 'id', recoveryPlan: 'key' });
     await S.load();
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
     assert.equal(await addRows(S), 'wrote', 'commit resolves with what the rule returned');
     assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
     assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
@@ -1000,7 +1000,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.notEqual(idb.rows('events').find((r) => r.id === 'e1').enc.iv, iv1, 'a fresh iv for every row write');
     const R = freshStore(); // the page reloads
     await R.load();
-    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5 });
+    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5, unreadable: 0 });
     assert.equal(R.view.get('profile', 'me'), null);
     assert.equal(R.view.count('events'), 0);
     assert.equal(await R.lock.unlock('2468'), true);
@@ -1020,7 +1020,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.onLock((info) => heard.push(info.reason));
     S.lock.lockNow();
     assert.deepEqual(heard, ['manual']);
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0 });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0, unreadable: 0 });
     assert.equal(S.view.get('profile', 'me'), null);
     assert.deepEqual(S.view.list('events'), []);
     assert.equal(S.view.count('events'), 0);
@@ -1152,7 +1152,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.lockNow();
     ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
     await S.resetAll(); // Forgot PIN: erase, then start again from a backup
-    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null });
+    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
     assert.equal(S.view.count('todos'), 0);
     for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
     assert.equal(ls.getItem('1-addic:snapshot'), null);
@@ -1436,6 +1436,85 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     });
     assert.equal(S.view.get('profile', 'me').name, 'Asha');
     assert.equal(Object.isFrozen(S.view.get('profile', 'me')), true);
+  });
+
+  const ids = (rows) => rows.map((r) => r.id);
+  const cba = (S) => S.commit('t', (d) => { for (const id of ['c', 'a', 'b']) d.put('events', { id, type: 'CravingLogged' }); });
+  // IndexedDB, events written c, a, b behind PIN 2468, and the stored row b damaged: it holds a's box, which is sealed
+  // for another place, so it will not open. Unlocked again when it returns.
+  const damaged = async () => {
+    const fake = fakeIndexedDB();
+    globalThis.indexedDB = fake;
+    const S = freshStore();
+    await cba(S);
+    await S.lock.set('2468');
+    const ev = (id) => fake.rows('events').find((r) => r.id === id);
+    ev('b').enc = JSON.parse(JSON.stringify(ev('a').enc));
+    const bad = JSON.parse(JSON.stringify(ev('b')));
+    S.lock.lockNow();
+    assert.equal(await S.lock.unlock('2468'), true);
+    return { S, ev, bad };
+  };
+
+  test('RC9: list() and exportJson() give rows in key order in every mode, the same after a lock, an unlock and a reload', async () => {
+    const M = freshStore(); // memory
+    await cba(M);
+    assert.deepEqual(ids(M.view.list('events')), ['a', 'b', 'c']);
+    assert.deepEqual(ids(M.exportJson().stores.events), ['a', 'b', 'c']);
+    await M.lock.set('2468');
+    M.lock.lockNow();
+    assert.equal(await M.lock.unlock('2468'), true);
+    assert.deepEqual(ids(M.view.list('events')), ['a', 'b', 'c'], 'the same ids in the same order after the unlock');
+    globalThis.indexedDB = fakeIndexedDB(); // this stand-in gives rows back in the order they were written
+    const S = freshStore();
+    await cba(S);
+    await S.lock.set('2468');
+    const T = freshStore(); // a reload
+    assert.equal(await T.lock.unlock('2468'), true);
+    assert.deepEqual(ids(T.view.list('events')), ['a', 'b', 'c']);
+    assert.deepEqual(ids(T.exportJson().stores.events), ['a', 'b', 'c']);
+  });
+
+  test('Q4: a row that will not open is kept as stored: lock.set, remove and replaceAll carry it; status() counts it', async () => {
+    const { S, ev, bad } = await damaged();
+    assert.deepEqual(ids(S.view.list('events')), ['a', 'c']);
+    assert.equal(S.status().unreadable, 1);
+    assert.deepEqual(ids(S.exportJson().stores.events), ['a', 'c']);
+    S.lock.lockNow();
+    assert.equal(S.status().unreadable, 0, 'nothing is counted while locked');
+    assert.equal(await S.lock.unlock('2468'), true);
+    await S.lock.set('1357'); // a new PIN
+    assert.deepEqual(ev('b'), bad, 'lock.set kept the row as it was stored');
+    S.lock.lockNow();
+    assert.equal(await S.lock.unlock('1357'), true);
+    assert.equal(S.status().unreadable, 1);
+    assert.equal(await S.lock.remove('1357'), true);
+    assert.deepEqual(ev('b'), bad, 'remove kept it, sealed as stored');
+    assert.equal(ev('a').enc, undefined, 'the rows that opened are plain again');
+    const T = freshStore(); // a reload: no lock now, and the row still will not open
+    await T.load();
+    assert.equal(T.status().unreadable, 1);
+    assert.deepEqual(ids(T.view.list('events')), ['a', 'c']);
+    await T.replaceAll(T.exportJson());
+    assert.deepEqual(ev('b'), bad, 'replaceAll kept it too');
+    assert.equal(T.status().unreadable, 1);
+    await T.commit('t', (d) => d.del('events', 'b'));
+    assert.equal(T.status().unreadable, 0, 'deleted on purpose, it is gone');
+    await T.lock.set('2468');
+    assert.equal(ev('b'), undefined, 'a deleted row is never written back');
+  });
+
+  test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
+    const one = await damaged();
+    await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });
+    assert.equal(one.S.status().unreadable, 0);
+    assert.notDeepEqual(one.ev('b'), one.bad, 'the backup’s row replaced the stored one');
+    one.S.lock.lockNow();
+    assert.equal(await one.S.lock.unlock('2468'), true);
+    assert.equal(one.S.view.get('events', 'b').note, 'from the backup');
+    const two = await damaged();
+    await two.S.resetAll();
+    assert.equal(two.S.status().unreadable, 0);
   });
 });
 
