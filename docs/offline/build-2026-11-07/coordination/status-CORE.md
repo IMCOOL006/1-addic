@@ -27,3 +27,9 @@ UPDATED: 2026-11-07 08:18 IST
 
 - engine READY-SLICE 04fc0c1 (U-05) merged as 6089dad; trunk 33d2a04f pushed with build/engine. Gates on the merged tree: build GREEN (127289 B), test GREEN (logic.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 33d2a04f for new cuts.
 - Free memory 5.6 GB at 07:46, above the 4.0 GB floor: engine stays paused, tests-docs's slot (asked 07:42) is recorded on status-HUB.md as WAITING, actions-sos and learn stay HELD. Order when memory returns (about 7 GB free, re-sampled every ten minutes, by hand in between): actions-sos U-09, engine's next run, tests-docs U-34, learn U-12. core's second slice runs on.
+
+# 2026-11-07 08:21 · from the HUB · core 4a43190 merged; actions-sos granted
+
+- core READY-SLICE 4a43190 (U-03, U-02) merged as 063b261; trunk 68371bb5 pushed with build/core. Gates on the merged tree: build GREEN (187464 B), test GREEN (store.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. The only conflict was the generated 1-addic.html, rebuilt by the HUB from the merged sources. BASE is 68371bb5 for new cuts.
+- SLOTS: actions-sos slot=3 granted 08:21: start U-09 now (its worktree at 655516dc stays; the real engine.js and ui-core.js are on the trunk). engine stays paused; learn and tests-docs wait for the next memory rows (a third lane at 7.0 GB free with two running).
+- Your hand-over: when core's final run returns, as you plan. If the fresh CORE finds a run gone with the old session, it relaunches that lane with done and priorNote from the branch, never waits for it.
