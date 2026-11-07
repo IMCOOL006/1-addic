@@ -918,8 +918,10 @@ const UI = (function () {
           go('#/lock', { replace: true });
         }), null);
       }
-      if (!sosFirst || state.lastPath === null) await render('route');
-      else chrome(pageKey(route()));
+      // Decided on the route as it is now (RS6): an SOS page already drawn is never drawn again, so a breathing or
+      // wave step the person started while the Store loaded goes on, and focus stays where it is.
+      if (pageKey(route()) === 'sos' && state.lastPath !== null) chrome('sos');
+      else await render('route');
     }
   }
 

@@ -9,6 +9,12 @@ import fs from 'node:fs';
 const require = createRequire(import.meta.url);
 const UI = require('../src/ui-core.js');
 const Content = require('../src/content-core.js');
+const UI_PATH = require.resolve('../src/ui-core.js');
+// A copy of ui-core that has not booted yet (boot runs once per copy).
+function freshUi() {
+  delete require.cache[UI_PATH];
+  return require(UI_PATH);
+}
 
 const STAND_INS = ['Store', 'Engine', 'Actions', 'Content', 'location', 'history', 'document', 'localStorage', 'window',
   'SpeechSynthesisUtterance'];
@@ -626,6 +632,53 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(box.get('1-addic:discreet'), '1');
     assert.equal(document.title, 'Notebook', 'loaded and locked: still Notebook');
     assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
+  });
+
+  // Boots a fresh ui-core at a hash with a Store whose load waits for opened(); on.<type> holds window listeners.
+  const bootPending = async (t, hash, box) => {
+    setup();
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const U = freshUi();
+    const on = {};
+    const store = box || new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k),
+    };
+    globalThis.window = { addEventListener: (type, f) => { (on[type] = on[type] || []).push(f); } };
+    document.addEventListener = (type, f) => { (on['doc:' + type] = on['doc:' + type] || []).push(f); };
+    let opened;
+    const loading = new Promise((res) => { opened = res; });
+    globalThis.Store = {
+      view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+      load: () => loading,
+    };
+    at(hash);
+    const booting = U.boot();
+    await new Promise((r) => setImmediate(r));
+    return { U, on, booting, opened: () => opened() };
+  };
+
+  test('RS6: SOS opened while the Store is still loading is never drawn again when the load ends', async (t) => {
+    const b = await bootPending(t, '#/today');
+    b.U.pages.sos = () => { const p = globalThis.document.createElement('div'); p.textContent = 'Breathe in'; return p; };
+    at('#/sos'); // the person taps SOS at once
+    for (const f of b.on.hashchange) f();
+    await new Promise((r) => setImmediate(r));
+    const drawn = main().firstChild;
+    assert.match(main().textContent, /Breathe in/);
+    b.opened();
+    await b.booting;
+    assert.equal(main().firstChild, drawn, 'the same SOS node: the step goes on, focus stays');
+    assert.match(main().textContent, /Breathe in/);
+  });
+
+  test('RS6: a route other than SOS is drawn when the load ends', async (t) => {
+    const b = await bootPending(t, '#/today');
+    b.U.pages.today = () => { const p = globalThis.document.createElement('p'); p.textContent = 'Today, loaded'; return p; };
+    b.opened();
+    await b.booting;
+    assert.match(main().textContent, /Today, loaded/);
   });
 });
 
