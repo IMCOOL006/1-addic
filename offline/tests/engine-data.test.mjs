@@ -240,7 +240,7 @@ test('validateContent: catches each planted error in a cloned content, and never
 
 test('validateContent: the tryIt exercise check waits for Content.exercises, then runs', () => {
   const c = JSON.parse(JSON.stringify(Content));
-  assert.equal(c.exercises, undefined, 'the base has no Content.exercises');
+  delete c.exercises;
   const tried = [];
   for (const m of c.modules) for (const l of m.lessons) if (l.tryIt && l.tryIt.exercise) tried.push(l.tryIt.exercise);
   assert.ok(tried.length > 0);
@@ -263,6 +263,7 @@ test('validateContent: "1-addic", "addicted brain", "addiction" and a quoted tho
 });
 
 test('knownRoute: the 3.5 route table, by path', () => {
-  for (const r of ['#/today', '#/sos?drill=1', '#/actions/battle?new=1', '#/workbook/reasons', '#/practice/urge-surf', '#/settings/data', '#/track/log/craving', '#/learn/m0', '#/lesson/m0-l1', '#/exercise/anything', '#/tools/trial?mode=redflag&thought=x']) assert.ok(E.knownRoute(r), r);
+  for (const r of ['#/today', '#/sos?drill=1', '#/actions/battle?new=1', '#/workbook/reasons', '#/practice/urge-surf', '#/settings/data', '#/track/log/craving', '#/learn/m0', '#/lesson/m0-l1', '#/exercise/quick-reasons', '#/tools/trial?mode=redflag&thought=x']) assert.ok(E.knownRoute(r), r);
   for (const r of ['#/nowhere', 'today', '#/workbook/nope', '#/track/log/party', '#/learn/m99', '#/settings/data/extra', '#/sos/urgent/2']) assert.ok(!E.knownRoute(r), r);
+  if (Content.exercises) assert.ok(!E.knownRoute('#/exercise/not-one'), '#/exercise/not-one');
 });
