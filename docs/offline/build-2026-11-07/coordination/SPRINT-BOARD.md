@@ -1,4 +1,4 @@
-STATE: BUILDING, 07:46 IST. Two slices are merged into the trunk (core U-01: the build pipeline and the shell; engine U-05: ids, dates, the game derivations, 33 tests green); trunk build/offline-v1 at 33d2a04f, pushed. core's second slice (the UI core and router, U-03, and tokens and components, U-02) is building. Free memory is 5.6 GB, under the 4 GB floor: engine is paused after its slice, and actions-sos, learn and tests-docs wait for memory.
+STATE: BUILDING, 07:46 IST. Two slices are merged into the trunk (core U-01: the build pipeline and the shell; engine U-05: ids, dates, the game derivations, 33 tests green); trunk build/offline-v1 at 33d2a04f, pushed. core's second slice (the UI core and router, U-03, and tokens and components, U-02) is building. Free memory is 5.6 GB with one lane running; a running lane costs about 3 GB, so a second would push the machine under the 4 GB floor: engine is paused after its slice, and actions-sos, learn and tests-docs wait for about 7 GB free.
 NEEDS YOU: (1) decisions O1–O9 and Q10–Q13 (PLAN.md section 9) take their defaults at 08:25 unless you answer in one line, e.g. `O1-O9 default, Q10-Q13 default`; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
 NEXT: the HUB merges core's second slice when it is READY-SLICE; the next slot goes to actions-sos (SOS and Actions, tier 1) when memory allows, then engine's next units, tests-docs (the browser harness), learn; FREEZE 10:55, QUIET to 11:40, TAG offline-v1.0 about 11:55.
 
@@ -6,7 +6,7 @@ NEXT: the HUB merges core's second slice when it is READY-SLICE; the next slot g
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 07:46 IST by `board.py`.
+Rewritten 2026-11-07 07:47 IST by `board.py`.
 
 ## The HUB
 
@@ -22,8 +22,8 @@ Rewritten 2026-11-07 07:46 IST by `board.py`.
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 07:46 IST: two slices merged (core U-01, engine U-05), trunk 33d2a04f pushed; queue empty; free memory 5.6… | 161k | 2026-11-07 07:46 IST |
-| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2; core's second slice [U-03,U-02] running (wf_d2230fda-3a5); engine READY-SLICE and paused (memory… | 225k | 2026-11-07 07:43 IST |
+| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 07:46 IST: two slices merged (core U-01, engine U-05), trunk 33d2a04f pushed; queue empty; free memory 5.6… | 165k | 2026-11-07 07:46 IST |
+| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2; core's second slice [U-03,U-02] running (wf_d2230fda-3a5); engine READY-SLICE and paused (memory… | 226k | 2026-11-07 07:47 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -31,10 +31,10 @@ Rewritten 2026-11-07 07:46 IST by `board.py`.
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | BUILDING | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); slice U-01 8bf7b5c MERGED by the HUB 07:42 (merge… |
-| `engine` | CORE | 1 |  | slot 2 | READY-SLICE | GRANTED 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write… |
+| `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write… |
 | `actions-sos` | CORE | 1 | yes | slot ? | SCOUTED | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built… |
 | `learn` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice… |
-| `tests-docs` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=5 ASKED 07:42, WAITING for memory (tier 1; U-34 needs…; brief 13.7 KB; core's U-01 is merged (07:42), so tests-docs ASKS ITS SLOT now (one of the… |
+| `tests-docs` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=5 ASKED 07:42, WAITING for memory (tier 1; U-34 needs…; brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
 | `workbook-settings` | SCREENS | 1 |  | - | NEW | tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js, src/ui-workbook.js, src/ui-plan.js |
 | `actions` | SCREENS | 2 |  | - | NEW | tier 2; slice U-22; files offline/src/ui-actions.js, src/ui-practices.js; starts only when no tier 1 lane waits for a slot |
