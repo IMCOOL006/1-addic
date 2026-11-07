@@ -263,7 +263,25 @@ test('validateContent: "1-addic", "addicted brain", "addiction" and a quoted tho
 });
 
 test('knownRoute: the 3.5 route table, by path', () => {
-  for (const r of ['#/today', '#/sos?drill=1', '#/actions/battle?new=1', '#/workbook/reasons', '#/practice/urge-surf', '#/settings/data', '#/track/log/craving', '#/learn/m0', '#/lesson/m0-l1', '#/exercise/quick-reasons', '#/tools/trial?mode=redflag&thought=x']) assert.ok(E.knownRoute(r), r);
+  for (const r of ['#/today', '#/sos?drill=1', '#/actions/battle?new=1', '#/workbook/reasons', '#/practice/urge-surf', '#/settings/data', '#/track/log/craving', '#/learn/m0', '#/lesson/m0-l1', '#/exercise/quick-reasons', '#/tools/trial?mode=redflag&thought=x', '#/status', '#/track/radar']) assert.ok(E.knownRoute(r), r);
   for (const r of ['#/nowhere', 'today', '#/workbook/nope', '#/track/log/party', '#/learn/m99', '#/settings/data/extra', '#/sos/urgent/2']) assert.ok(!E.knownRoute(r), r);
   if (Content.exercises) assert.ok(!E.knownRoute('#/exercise/not-one'), '#/exercise/not-one');
+});
+
+test('knownRoute (V-40c): #/status and #/track/radar are known; their neighbours are not', () => {
+  for (const r of ['#/status', '#/track/radar', '#/status?from=today']) assert.ok(E.knownRoute(r), r);
+  for (const r of ['#/status/nope', '#/track/radarx', '#/track/radar/2', '#/statusx']) assert.ok(!E.knownRoute(r), r);
+});
+
+test('validateContent (V-40c): a help entry and a feature routed to #/status pass with no route error', () => {
+  const c = JSON.parse(JSON.stringify(Content));
+  c.help[0].route = '#/status';
+  const fid = Object.keys(c.features)[0];
+  c.features[fid].route = '#/status';
+  c.tips[0].route = '#/track/radar';
+  assert.deepEqual(E.validateContent(c), []);
+  c.help[0].route = '#/status/nope';
+  const r = E.validateContent(c);
+  assert.equal(r.length, 1, JSON.stringify(r));
+  assert.ok(/help\[0\]\.route: route #\/status\/nope is not in the route table/.test(r[0]), r[0]);
 });

@@ -1382,6 +1382,7 @@ const Engine = (() => {
     '#/games/big-game', '#/games/distortion-sort', '#/games/spot-red-flag', '#/games/refusal', '#/games/rewrite',
     '#/sos', '#/sos/craving', '#/sos/feeling', '#/sos/slip', '#/sos/urgent',
     '#/settings', '#/onboarding', '#/lock', '#/dev/fields',
+    '#/status', '#/track/radar',
   ]);
   const ROUTE_SETS = {
     workbook: new Set(['reasons', 'balance', 'motivation', 'triggers', 'redflags', 'journal', 'spiral', 'signature', 'anger', 'network', 'scripts', 'activities', 'balance-sw', 'distractions', 'warnings', 'plan', 'signs', 'risks']),
