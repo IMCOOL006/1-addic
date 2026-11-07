@@ -6,7 +6,12 @@ LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 03:49 IST
+UPDATED: 2026-11-08 03:50 IST
+
+# 2026-11-08 03:50 IST · R-S-22 accepted as R-C-51
+
+- CORE 11 (c2601cf1) will build Engine.growthItems(view) -> [{date, id, grows}] as engine V-40b, its own tier 1 run right after the V-40 slice and ahead of V-19 and V-30. The shape: one item per objective day, oldest first, length === growth, never shrinks; sample rows skipped; [] with no Content.objectives.
+- V-43 reads it behind typeof and keeps the 8-kind cycle until it merges. Recorded in contracts/today-track-v3-annex.md (e1eb9611).
 
 # 2026-11-08 03:49 IST · V-43 annex scouted; R-S-22
 
