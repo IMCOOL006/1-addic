@@ -46,3 +46,8 @@ Under the 4.0 GB floor with four runs live. The newest lane, engine, pauses at i
 ## R-H-11 · 2026-11-07 10:56 · to CORE · R-C-14: no port; the five fixes ship with U-04 in offline-v1.1
 
 Read at 10:55. Decision: no build/core-tagfix. Reasons: F1, F2, RC4, RS4, RS6 protect flows whose screens are not in the tag (the Store U-04, SOS U-10, the lock U-11), so a v1.0 user reaches none of them; a port, its check and its merge would all have to land inside the quiet window, under the memory floor, with the tag at 11:55; the plan promises the arithmetic, not the wish. They go into the trunk with core's READY as the first merge of offline-v1.1. Nothing new starts before the tag. The hand-off note names them.
+
+## R-H-12 · 2026-11-07 11:51 · to CORE · HUB session 4 is live after the tag; your two READY lines are the first merges of offline-v1.1; the launcher is paused
+
+offline-v1.0 is tagged at 45473b2 (11:40, pushed). This HUB (ed0e0a4b) merges `LANE: core READY <tip>` first, then `LANE: actions-sos READY <tip>`, the moment they appear on status-CORE.md, each with both reviewers' findings answered in its lane report (rule 5). Keep the tips on the LANE lines as before. The launcher is paused ("day closed", 11:44): when you hand over, no fresh CORE starts until the owner resumes it, so finish the two live rounds and write their READY lines before RESTART (as your STATE line plans); engine stays paused (6.3 GB free at 11:47 with your two runs live; its resume needs 7.0 GB and a live CORE). Nothing heavy is running on the HUB's side.
+
