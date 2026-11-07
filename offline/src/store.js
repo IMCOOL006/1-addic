@@ -284,6 +284,26 @@ const Store = (function () {
       r.onerror = () => end(rej, r.error || fail('NO_DB', 'IndexedDB did not open.'));
     });
   }
+  // Deletes the database '1-addic' (resetAll in a session that runs without it, RS5). A tab that holds it open blocks
+  // the delete: the timeout then decides.
+  function dropDb(factory) {
+    return new Promise((res, rej) => {
+      let done = false;
+      const end = (f, v) => { if (!done) { done = true; clearTimeout(timer); f(v); } };
+      const timer = setTimeout(() => end(rej, fail('NO_DB', 'IndexedDB was not deleted.')), OPEN_TIMEOUT);
+      if (timer && typeof timer.unref === 'function') timer.unref();
+      let r;
+      try {
+        r = factory.deleteDatabase(DB_NAME);
+      } catch (e) {
+        end(rej, e);
+        return;
+      }
+      r.onsuccess = () => end(res);
+      r.onerror = () => end(rej, r.error || fail('NO_DB', 'IndexedDB was not deleted.'));
+      r.onblocked = () => {}; // another tab holds it open: wait for the timeout
+    });
+  }
 
   async function boot() {
     let all = null;
@@ -515,6 +535,10 @@ const Store = (function () {
         const ls = storage();
         if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
       }
+      // A session without IndexedDB (it did not open) may still have rows in it from an earlier visit: they go too.
+      let left = null;
+      const factory = state.mode !== 'indexeddb' ? idbFactory() : null;
+      if (factory) try { await dropDb(factory); } catch (e) { left = e; }
       const plain = storage();
       if (plain) try { plain.removeItem(DISCREET); } catch (e) { /* nothing there */ }
       state.epoch += 1;
@@ -526,6 +550,11 @@ const Store = (function () {
       state.lastSavedAt = null;
       disarm();
       notify('resetAll');
+      if (left) {
+        const f = fail('ERASE_PARTIAL', 'This copy was erased, but an older copy may still be on this device.');
+        f.cause = left;
+        throw f;
+      }
     });
   }
 

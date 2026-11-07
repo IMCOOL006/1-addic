@@ -686,6 +686,17 @@ function fakeIndexedDB() {
     }, 0);
     return r;
   };
+  fake.failDelete = null; // 'fail', or 'blocked' (another tab holds the database open)
+  fake.deleteDatabase = (name) => {
+    const r = {};
+    setTimeout(() => {
+      if (fake.failDelete === 'fail') { r.error = new Error('UnknownError'); r.onerror && r.onerror(); return; }
+      if (fake.failDelete === 'blocked') { r.onblocked && r.onblocked(); return; }
+      dbs.delete(name);
+      r.onsuccess && r.onsuccess();
+    }, 0);
+    return r;
+  };
   fake.rows = (store) => { const rec = dbs.get('1-addic'); return rec ? Array.from(rec.stores.get(store).rows.values()) : []; };
   fake.storeNames = () => Array.from(dbs.get('1-addic').stores.keys());
   fake.dump = () => JSON.stringify(Array.from(dbs.values()).map((rec) => Array.from(rec.stores).map(([n, st]) => [n, Array.from(st.rows.values())])));
@@ -988,6 +999,53 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(T.status().persistence, 'localstorage');
     await T.resetAll();
     assert.equal(ls.getItem('1-addic:discreet'), null);
+  });
+
+  test('RS5: resetAll in a fallback session also deletes the IndexedDB database, so a later visit finds nothing', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await S.load();
+    await addRows(S);
+    assert.equal(S.status().persistence, 'indexeddb');
+    idb.failOpen = true; // the next visit, IndexedDB does not open
+    const T = freshStore();
+    await T.load();
+    assert.equal(T.status().persistence, 'localstorage');
+    await T.resetAll(); // Erase everything, or Forgot PIN
+    idb.failOpen = false; // a third visit, IndexedDB works again
+    const U = freshStore();
+    await U.load();
+    assert.equal(U.status().persistence, 'indexeddb');
+    assert.equal(U.view.count('events'), 0);
+    assert.equal(U.view.get('profile', 'me'), null);
+    assert.ok(!idb.dump().includes(MARK), 'nothing of the erased rows stays on the device');
+  });
+
+  test('RS5: a delete that fails or stays blocked rejects with ERASE_PARTIAL; the snapshot and the flag still go', async (t) => {
+    for (const how of ['fail', 'blocked']) {
+      const idb = globalThis.indexedDB = fakeIndexedDB();
+      const ls = globalThis.localStorage = fakeLocalStorage();
+      idb.failOpen = true;
+      const T = freshStore();
+      await T.load();
+      await addRows(T);
+      ls.setItem('1-addic:discreet', '1');
+      assert.ok(ls.getItem('1-addic:snapshot'));
+      idb.failDelete = how;
+      t.mock.timers.enable({ apis: ['setTimeout'] });
+      const p = T.resetAll();
+      const caught = p.then(() => null, (e) => e);
+      for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r));
+      t.mock.timers.tick(60000);
+      const err = await caught;
+      t.mock.timers.reset();
+      assert.ok(err, how + ': resetAll does not claim a full erase');
+      assert.equal(err.code, 'ERASE_PARTIAL', how);
+      assert.equal(ls.getItem('1-addic:snapshot'), null, how + ': the snapshot is erased');
+      assert.equal(ls.getItem('1-addic:discreet'), null, how);
+      assert.equal(T.view.count('events'), 0, how);
+    }
   });
 
   test('auto-lock after the idle minutes; touch keeps it open; a touch after the limit (a phone that slept) locks', async (t) => {
