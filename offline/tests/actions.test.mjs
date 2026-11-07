@@ -1972,5 +1972,32 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
       assert.deepEqual(d.go, ['#/today']);
     });
   });
+  test("RS14: outside the drill, Call someone and Remind me why never show sample rows as the person's own", async () => {
+    await Actions.saveResponse('quick-reasons', { reasons: ['my kids'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const late = '2999-01-01T00:00:00.000Z';
+    await withSample({ generate: () => ({ stores: {
+      contacts: [{ id: 'sample-c1', name: 'Sample Sam', role: 'safetyNet', phone: '+91 90000 00001', active: true }],
+      responses: [{ id: 'sample-r1', exerciseId: 'quick-reasons', payload: { reasons: ['a sample reason'] }, at: late, updatedAt: late, draft: false }],
+    } }) }, () => Actions.loadSample());
+    assert.ok(list('contacts').some((x) => x.sample === true) && list('responses').some((x) => x.sample === true), 'the sample rows are in');
+    assert.deepEqual(H.activeContacts(S().view).map((x) => x.name), ['Ravi']);
+    assert.deepEqual(H.reasonsFrom(S().view, null), ['my kids']);
+    const eng = { reasonsCard: (v) => ({ quick: [].concat(...v.list('responses').map((r) => (r.payload && r.payload.reasons) || [])) }) };
+    assert.deepEqual(H.reasonsFrom(S().view, eng), ['my kids'], 'the engine is handed only the person\'s own rows');
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-tool-call');
+    const hrefs = root.querySelectorAll('a').map((a) => String(a.attrs.href || ''));
+    assert.ok(hrefs.some((x) => x.includes('919876543210')), 'their own person');
+    assert.ok(!hrefs.some((x) => x.includes('9000000001')), 'no tel: or sms: link to a sample number');
+    assert.doesNotMatch(root.textContent, /Sample Sam/);
+    const r2 = d.open(['sos', 'craving']);
+    d.tapId(r2, 'sos-rate-skip');
+    d.tapId(r2, 'sos-tool-why');
+    assert.match(r2.textContent, /my kids/);
+    assert.doesNotMatch(r2.textContent, /a sample reason/);
+  });
   // -- FIX-R2-SAFETY tests end --
 });

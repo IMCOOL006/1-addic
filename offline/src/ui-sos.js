@@ -220,10 +220,16 @@
     return steps.length ? steps : FALLBACK.sober.slice();
   }
 
+  // RS14: outside the drill SOS reads only the person's own rows: a sample row (sample: true) never shows as theirs.
+  const isOwn = (r) => !!r && r.sample !== true;
+  const ownView = (view) => (view ? Object.assign(Object.create(view), {
+    get: (s, k) => { const r = safe(() => view.get(s, k), null); return isOwn(r) ? r : null; },
+    list: (s) => (safe(() => view.list(s), []) || []).filter(isOwn),
+  }) : view);
   const listOf = (v) => (Array.isArray(v) ? v : v && typeof v === 'object' ? (v.reasons || v.items || v.cards || v.lines || []) : []);
   function latestResponse(view, exerciseId) {
     const rows = safe(() => view.list('responses'), []) || [];
-    return rows.filter((r) => r && r.exerciseId === exerciseId && !r.draft).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] || null;
+    return rows.filter((r) => isOwn(r) && r.exerciseId === exerciseId && !r.draft).sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] || null;
   }
 
   // Engine.reasonsCard gives {quick, drawbacks, benefits, different} (BUILD-PLAN 3.2) or a list: every list, in that order.
@@ -237,7 +243,7 @@
   function reasonsFrom(view, E) {
     const eng = E === undefined ? glob('Engine') : E;
     if (eng && typeof eng.reasonsCard === 'function') {
-      const got = texts(reasonLists(safe(() => eng.reasonsCard(view), null)));
+      const got = texts(reasonLists(safe(() => eng.reasonsCard(ownView(view)), null)));
       if (got.length) return got;
     }
     const r = latestResponse(view, 'quick-reasons');
@@ -247,7 +253,7 @@
   function deckFrom(view, E, C) {
     const eng = E === undefined ? glob('Engine') : E;
     if (eng && typeof eng.distractionDeck === 'function') {
-      const got = texts(listOf(safe(() => eng.distractionDeck(view), null)));
+      const got = texts(listOf(safe(() => eng.distractionDeck(ownView(view)), null)));
       if (got.length) return got;
     }
     return texts(safe(() => C.catalogs.distractions, []));
@@ -256,7 +262,7 @@
   function comebacksFrom(view, E) {
     const eng = E === undefined ? glob('Engine') : E;
     if (eng && typeof eng.comebacks === 'function') {
-      const got = listOf(safe(() => eng.comebacks(view), null)).map(replyText).filter((s) => s.trim() !== '');
+      const got = listOf(safe(() => eng.comebacks(ownView(view)), null)).map(replyText).filter((s) => s.trim() !== '');
       if (got.length) return got;
     }
     return FALLBACK.talkback.slice();
@@ -295,7 +301,7 @@
 
   function activeContacts(view) {
     const rows = safe(() => view.list('contacts'), []) || [];
-    return rows.filter((c) => c && c.active !== false && c.phone && telHref(c.phone));
+    return rows.filter((c) => isOwn(c) && c.active !== false && c.phone && telHref(c.phone));
   }
 
   function planFor(view) {
