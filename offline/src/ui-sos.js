@@ -36,6 +36,7 @@
     selfTalk: { title: 'Say it to yourself' },
     assertive: { title: 'If you need words' },
     activity: { title: 'One small good thing' },
+    feelHelped: { title: 'What helped?', line: 'Tick any that helped.' },
     feelRate: { title: 'How strong is the feeling now?', line: 'Optional. Tap 0 to 10, or skip.' },
     motivation: { title: 'How is your motivation?', line: 'Optional. 0 is none, 10 is strong.' },
     feelDone: { title: 'You stayed with it.', line: 'That takes skill. It gets easier.' },
@@ -273,6 +274,12 @@
   // RS4: which first choice of the slip flow writes the slip. Only 'log' does, and never in a preview.
   function slipLogs(choice, preview) { return choice === 'log' && preview !== true; }
 
+  // RS7: the feeling flow's tools are helpful only when the person ticks them at 'What helped?' (toggles start off).
+  function markHelped(tools, ticked) {
+    const yes = new Set(Array.isArray(ticked) ? ticked : []);
+    return (Array.isArray(tools) ? tools : []).map((t) => Object.assign({}, t, { helpful: yes.has(t.skillId) }));
+  }
+
   // RS6: the meetings list, each group keeping its verify flag ('please verify' shows beside it).
   function meetingsFrom(C) {
     const groups = safe(() => C.resources.in.groups, []);
@@ -308,7 +315,7 @@
   const H = {
     COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
     telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
-    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, meetingsFrom, activeContacts, planFor, planSections, clock, remaining,
+    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, markHelped, meetingsFrom, activeContacts, planFor, planSections, clock, remaining,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = H;
@@ -563,7 +570,7 @@
       h('div', { class: 'row' }, link('Urgent help', '#/sos/urgent'), link('Back to SOS', '#/sos')));
     const show = (node) => { safe(() => UI.stopSpeaking(), null); body.replaceChildren(node); focusTitle(body); };
     const crisis = () => show(urgentView(c, { crisis: true }));
-    const use = (skill, then) => () => { st.tools.push({ skillId: skill, helpful: true }); then(); };
+    const use = (skill, then) => () => { st.tools.push({ skillId: skill, helpful: false }); then(); }; // helpful only when ticked (RS7)
 
     function pick() {
       const list = Array.isArray(C.emotions) ? C.emotions : [];
@@ -618,7 +625,22 @@
       show(cards(COPY.activity.title, all.slice(start).concat(all.slice(0, start)), '', use(FEEL_SKILLS.activity, callStep)));
     }
 
-    function callStep() { show(contactsView(c, false, rateEnd)); }
+    function callStep() { show(contactsView(c, false, helpedStep)); }
+
+    // Asked once, at the end: every toggle starts off, and one left off is saved as helpful:false.
+    function helpedStep() {
+      const label = { [FEEL_SKILLS.beat]: COPY.beat.title, [FEEL_SKILLS.sober]: COPY.wave.title, [FEEL_SKILLS.selfTalk]: COPY.selfTalk.title, [FEEL_SKILLS.activity]: COPY.activity.title };
+      const ids = [...new Set(st.tools.map((t) => t.skillId))];
+      if (!ids.length) { rateEnd(); return; }
+      const boxes = ids.map((id) => {
+        const input = h('input', { type: 'checkbox', id: 'sos-helped-' + id, dataset: tid('sos-helped-' + id), style: { width: '24px', height: '24px' } });
+        input.checked = false;
+        return { id, input, el: h('label', { class: 'row', for: 'sos-helped-' + id, style: { minHeight: '44px', alignItems: 'center' } }, input, h('span', { text: label[id] || id })) };
+      });
+      show(h('div', { class: 'stack', dataset: tid('sos-helped') }, screen(COPY.feelHelped.title, COPY.feelHelped.line,
+        h('div', { class: 'stack' }, boxes.map((b) => b.el)),
+        btn('Next', () => { st.tools = markHelped(st.tools, boxes.filter((b) => b.input.checked).map((b) => b.id)); rateEnd(); }, { primary: true }))));
+    }
 
     function rateEnd() {
       show(screen(COPY.feelRate.title, COPY.feelRate.line,

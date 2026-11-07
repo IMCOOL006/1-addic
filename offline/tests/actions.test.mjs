@@ -1328,4 +1328,29 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     assert.equal(shown.length, m.length, 'one note per group');
     assert.ok(shown.every((n) => n.textContent.trim() === H.COPY.verify));
   });
+
+  test('RS7: the feeling flow asks What helped? once at its end; toggles start off and one left off is helpful:false', async () => {
+    assert.deepEqual(H.markHelped([{ skillId: 'sober', helpful: true }, { skillId: 'pleasant', helpful: true }], ['pleasant']),
+      [{ skillId: 'sober', helpful: false }, { skillId: 'pleasant', helpful: true }]);
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    for (let k = 0; !root.querySelector('[data-testid="sos-helped"]'); k += 1) {
+      assert.ok(k < 30, 'What helped? comes: ' + root.textContent.slice(0, 120));
+      root.querySelectorAll('button').find((x) => ['Next', 'Done'].includes(x.textContent.trim())).click();
+    }
+    const ask = d.byId(root, 'sos-helped');
+    assert.equal(ask.querySelector('.sos-title').textContent.trim(), 'What helped?');
+    const boxes = ask.querySelectorAll('input');
+    assert.ok(boxes.length >= 2 && boxes.every((b) => b.checked === false), 'every toggle starts off');
+    const picked = boxes[0].dataset.testid.slice('sos-helped-'.length);
+    boxes[0].checked = true;
+    d.tap(root, 'Next');
+    assert.ok(!root.querySelector('[data-testid="sos-helped"]'), 'asked once');
+    d.rate(root, 3);
+    await d.settle();
+    const used = events('SkillUsed').map((e) => [e.payload.skillId, e.payload.helpful]);
+    assert.deepEqual(used.filter(([, ok]) => ok === true).map(([s]) => s), [picked]);
+    assert.equal(used.filter(([, ok]) => ok === false).length, boxes.length - 1, 'a toggle left off writes helpful:false');
+  });
 });
