@@ -378,3 +378,27 @@ html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-si
 /* -- end core -- */
 /* Other lanes append their own section after this line, headed by a comment naming the lane
    (for example a comment reading "-- learn --"). Tokens are never redefined there. */
+
+/* -- today-track -- */
+.td-head h1 { margin: 0; }
+.td-quick { flex-wrap: wrap; }
+.td-card .card-title { margin: 0; }
+.td-plan, .td-quests { list-style: none; margin: 0; padding: 0; }
+.td-plan-item { padding: var(--space-2) 0; border-top: 1px solid hsl(var(--border)); }
+.td-plan-item:first-child { border-top: 0; }
+.td-plan-head { flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
+.td-time { font-variant-numeric: tabular-nums; color: hsl(var(--muted)); }
+.td-plan-title { font-weight: 600; }
+.td-tag { display: inline-block; padding: 0 var(--space-2); border: 1px solid hsl(var(--border)); border-radius: 999px; font-size: 0.85em; }
+.td-risky { border-color: hsl(var(--accent)); color: hsl(var(--accent)); font-weight: 700; }
+.td-is-risky { border-left: 4px solid hsl(var(--accent)); padding-left: var(--space-2); }
+.td-battle summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.td-battle summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.td-reason { margin: 0; padding-left: var(--space-3); border-left: 3px solid hsl(var(--primary)); font-size: 1.1em; }
+.td-tiles { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+.td-harbor { display: flex; justify-content: center; }
+.td-sea { fill: hsl(var(--primary) / 0.35); }
+.td-post { fill: hsl(var(--muted)); }
+.td-lamp { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1.5; }
+.td-glow { fill: hsl(var(--gold)); }
+html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
