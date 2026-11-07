@@ -2105,5 +2105,31 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
       assert.equal(events('SosCompleted').length, 0, name + ': and stays dropped');
     }
   });
+  test('C3: the slider has a confirm button that keeps the shown value; moving still saves; untouched, nothing', async () => {
+    const run = async (how) => {
+      await S().resetAll();
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-next');
+      const stage = root.querySelectorAll('input').find((i) => i.attrs.type === 'radio' && i.attrs.name === 'stage');
+      stage.checked = true;
+      const sl = root.querySelectorAll('input').find((i) => i.attrs.type === 'range');
+      const ok = root.querySelector('[data-testid="onb-score-ok"]');
+      assert.ok(ok, 'a confirm button by the slider');
+      assert.equal(ok.textContent.trim(), O.COPY.scoreOk);
+      if (how === 'confirm') { d.tapId(root, 'onb-score-ok'); assert.ok(root.textContent.includes('5 of 10'), 'the value is shown as chosen'); }
+      if (how === 'move') { sl.value = '8'; for (const fn of sl.on.input) fn({}); }
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-safety-ok');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+      return list('motivation').map((x) => x.score);
+    };
+    assert.deepEqual(await run('confirm'), [5], 'confirmed at 5: saved with no move away and back');
+    assert.deepEqual(await run('move'), [8], 'moved: saved');
+    assert.deepEqual(await run('none'), [], 'untouched: nothing saved');
+  });
   // -- FIX-R2-REST tests end --
 });

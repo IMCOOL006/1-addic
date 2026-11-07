@@ -42,6 +42,7 @@
     sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
     sampleFailed: 'The sample data could not load.',
     notSet: 'Not set',
+    scoreOk: 'Use this number', // C3
   };
 
   // The eight steps of PLAN 5.1. Only the safety notice cannot be skipped.
@@ -355,8 +356,10 @@
         const touch = () => { moved = true; slider.setAttribute('aria-valuetext', slider.value + ' of 10'); shown.textContent = slider.value + ' of 10'; };
         slider.addEventListener('input', touch);
         slider.addEventListener('change', touch);
+        // C3: a small confirm keeps the value the slider shows, so a 5 needs no move away and back.
+        const ok = btn(COPY.scoreOk, touch, { ghost: true, testid: 'onb-score-ok' });
         return {
-          body: [group('Which is closest?', stages), field('How much do you want to change? 0 to 10', slider), shown],
+          body: [group('Which is closest?', stages), field('How much do you want to change? 0 to 10', slider), shown, ok],
           read() { const s = stages.find((x) => x.input.checked); answers.stage = s ? s.input.value : undefined; answers.score = s && moved ? Number(slider.value) : undefined; },
         };
       }
