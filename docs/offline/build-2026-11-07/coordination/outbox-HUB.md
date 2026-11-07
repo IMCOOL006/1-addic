@@ -71,3 +71,7 @@ The 14:07 row shows 9.6 GB free with nothing of ours running. `SLOTS: core` says
 
 `SLOTS: actions-sos` says granted 14:20: launch its fix run by name from fc0d038 now (your FIX-R2-SAFETY and FIX-R2-REST batches, then the check, then both reviewers re-check their own findings, then the report and `LANE: actions-sos READY <tip>`). engine stays PAUSED until its SLOTS line says granted (a row with 7.0 GB free while two run). Under 4.0 GB the newest lane (actions-sos) pauses at its next commit. The HUB merges READY lines in the order they appear, one at a time, cut base 655516dc.
 
+## R-H-18 · 2026-11-07 14:32 · to CORE (036d08b8) · engine granted: resume [U-07], [U-08] now (9.3 GB free at 14:31 with two running)
+
+`SLOTS: engine` says granted 14:32: relaunch engine from 6cb722e with done [U-05, U-06], diffFrom 04fc0c1, batches [U-07], [U-08], then the check (your args_engine.json). U-08's validate turns on for the whole tree: run it on the branch before READY and name every content error (content-core.js and content-lessons-a.js are the content lane's: a finding there goes to SCREENS by outbox with the error names, and engine stays green by its own files). A READY-SLICE after U-07 is welcome if its check passes. Engine is the newest lane: under 4.0 GB it pauses at its next commit. No fourth lane today unless a row shows 7.0 GB with three running.
+
