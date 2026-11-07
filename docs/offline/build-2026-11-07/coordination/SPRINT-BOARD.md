@@ -6,7 +6,7 @@ NEXT: the SCREENS chat starts now (memory cleared its mark at 16:00): scouts for
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 16:03 IST by `board.py`.
+Rewritten 2026-11-07 16:05 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -14,21 +14,21 @@ FORECAST (from today's measured pace, written 14:45, corrected 16:00): core merg
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate GREEN for the first time) are in; trunk 1ef2482e pushed. Live under CORE 036d08b8…
+- STATE: BUILDING — 16:06: HUB 4 at 251k, hand-over written (RUN-RECORD 'Resume here' 16:06); it merges actions-sos READY if that line lands before about 280k, else RESTART first. 2026-11-07 15:36 IST: ten merges on the…
 - BASE: 1ef2482e (the trunk after the engine READY merge, 2026-11-07 15:34; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 16:03 IST
+- UPDATED: 2026-11-07 16:06 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate… | 250k | 2026-11-07 16:03 IST |
-| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 15:47 IST: one run live: actions-sos fix round FIX-R3 wf_32a8784b-3af; core and engine MERGED | 289k | 2026-11-07 15:47 IST |
-| SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 16:06: HUB 4 at 251k, hand-over written (RUN-RECORD 'Resume here' 16:06); it merges actions-sos READY if that line… | 253k | 2026-11-07 16:06 IST |
+| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 15:47 IST: one run live: actions-sos fix round FIX-R3 wf_32a8784b-3af; core and engine MERGED | 290k | 2026-11-07 15:47 IST |
+| SCREENS | 6721d28e (launcher-started 2026-11-07 16:05) | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
@@ -72,8 +72,8 @@ Slots allowed: 2 running lanes from 16:03 (actions-sos's third fix round live; c
 
 ## Machine
 
-- Free memory 9.2 GB of 31.8 GB at 2026-11-07 15:54 IST; claude 30, node 18 processes; 7 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 14024); its last launch: CORE 036d08b8 at 2026-11-07 13:43.
+- Free memory 15.7 GB of 31.8 GB at 2026-11-07 16:04 IST; claude 30, node 10 processes; 16 slots by the rule (lane-widening.md).
+- The launcher loop: running (pid 14024); its last launch: SCREENS 6721d28e at 2026-11-07 16:05.
 
 ## Files of the build
 

@@ -1,5 +1,5 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate GREEN for the first time) are in; trunk 1ef2482e pushed. Live under CORE 036d08b8 (hand-over written, RESTART soon; the launcher is active): actions-sos wf_b38141d2-651 (FIX-R2-REST, check, reviewers' re-checks). The HUB merges its READY line next. The SCREENS chat starts when a row shows 4.0 + 1.5 + 3.0 x (live lanes + 1) GB free
+STATE: BUILDING   # 16:06: HUB 4 at 251k, hand-over written (RUN-RECORD 'Resume here' 16:06); it merges actions-sos READY if that line lands before about 280k, else RESTART first. 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate GREEN for the first time) are in; trunk 1ef2482e pushed. Live under CORE 036d08b8 (hand-over written, RESTART soon; the launcher is active): actions-sos wf_b38141d2-651 (FIX-R2-REST, check, reviewers' re-checks). The HUB merges its READY line next. The SCREENS chat starts when a row shows 4.0 + 1.5 + 3.0 x (live lanes + 1) GB free
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 1ef2482e (the trunk after the engine READY merge, 2026-11-07 15:34; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 2 running lanes from 16:03 (actions-sos's third fix round live; content granted for the SCREENS chat once its scout has written the brief); today-track and workbook-settings HELD until a row shows 7.0 GB free with the live lanes counted (the HUB writes granted); tier 2 lanes (actions, game-tutorials) only when no tier 1 lane waits; under 4.0 GB the newest lane pauses at its next commit
@@ -26,7 +26,7 @@ MERGED: core READY 957f333 (U-04 Store with encryption and lock; review fixes F1
 MERGED: engine READY 227a07a (U-06 roadmap, reveal, Explorer, tips, quests, artifacts, plan prefill; U-07 insights, radar, planner, review, SOS sequence, crisis keywords; U-08 export/import/migrate, .ics, AppError, validateContent) -> merge 1ef2482, trunk 1ef2482e, pushed 15:34 (build GREEN 451085 B; test GREEN 102/102 in 4 files; validate GREEN 0 errors, its first run; guards GREEN by name, the 15 baselined tour targets only; territory 0 errors; merged clean, 5 files)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 16:03 IST
+UPDATED: 2026-11-07 16:06 IST
 
 # 2026-11-07 16:03 · the SCREENS chat is allowed: three rows over the mark
 
