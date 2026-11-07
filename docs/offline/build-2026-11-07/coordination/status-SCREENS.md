@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 03:23 IST: SCREENS 1c2cf086, V3. today-track READY-SLICE 127509e (V-01a; check PASS; merge base f69bc68a): for HUB 10 to merge alone. Next: V-01b on slot 6. content and game-tutorials SCOUTED (V-42 and V-44 appended); they wait for slots
+STATE: RESTART   # 2026-11-08 03:24 IST: SCREENS 1c2cf086 hands over at ~276k context, at a clean point: no SCREENS run is live. today-track READY-SLICE 127509e waits for HUB 10's merge. The fresh chat launches V-01b at once on slot 6 from tracks/SCREENS/args/v3_tt_v01b.json (RUN-RECORD.md 'Resume here')
 LANE: content SCOUTED 680f850   # V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2), V-10b (owner's I6); brief briefs/content-v3.md; slot asked (on a 7.0 GB row after engine V-40's start). v1: MERGED 680f850
 LANE: today-track READY-SLICE 127509e   # V3 V-01a 'Your Harbor' at #/status: 50aae69, 758f8cb, 127509e on f69bc68a (wf_6851b095-834; check PASS, LOWs C1 second banner pair in styles.css, C2 PURE adds placeLines and model adds ticks: for V-01b by name); report lane-reports/today-track.md; next V-01b, then V-43
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 03:23 IST
+UPDATED: 2026-11-08 03:24 IST
 
 # 2026-11-08 03:23 IST · today-track READY-SLICE 127509e (V-01a, for HUB 10)
 
