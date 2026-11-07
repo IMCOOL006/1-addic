@@ -91,3 +91,7 @@ Waits: content V-42 (the Content keys), actions-sos V-41 (the four events writte
 ## 2026-11-08 03:27 IST · V-40 rulings (CORE 11; R-C-50; in the run's laneNote)
 
 - The Engine owns the swap replacement (items[].swapTo). A day's draw reads only the events dated before that day. Tests assert that later events never lower growth, best, total or unlocked. `questLine().current.claimable` is what Actions.questLine.claim trusts. unlocked = revealed + the claimed steps' rewards + the FeatureUnlocked features, with protected ids ignored. With no Content.questLine or Content.objectives, every function returns its empty shape and never throws. SlipLogged, MilestoneSeen and the sober-day counters never count as a day shown up.
+
+## 2026-11-08 03:49 IST · V-40b Engine.growthItems (R-S-22, R-C-51)
+
+- `growthItems(view) -> [{date, id, grows}]` lists the units growth(view) counts, oldest first, and length === growth(view). It never shrinks. id is the first objective done that day (by id), grows its Content.objectives element. Sample rows skipped; [] without Content.objectives. Consumer: today-track V-43, behind typeof. Built in engine's next run after the V-40 slice, before V-19 and V-30.
