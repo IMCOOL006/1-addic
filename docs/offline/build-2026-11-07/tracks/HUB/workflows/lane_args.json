@@ -13,10 +13,40 @@
       "tier": 1,
       "flagged": true,
       "area": "The build pipeline, the shell, the look, the UI core and router, and the encrypted store; root package.json except its scripts and devDependencies keys.",
-      "files": ["offline/build.mjs", "offline/src/shell.html", "offline/src/styles.css", "offline/src/ui-core.js", "offline/src/store.js", "offline/src/boot.js", "offline/tests/store.test.mjs", "package.json (initial; all but scripts and devDependencies)"],
-      "units": ["U-01", "U-03", "U-04", "U-02"],
-      "batches": [["U-01"], ["U-03", "U-04", "U-02"]],
-      "unitTier": { "U-01": 1, "U-03": 1, "U-04": 1, "U-02": 1 },
+      "files": [
+        "offline/build.mjs",
+        "offline/src/shell.html",
+        "offline/src/styles.css",
+        "offline/src/ui-core.js",
+        "offline/src/store.js",
+        "offline/src/boot.js",
+        "offline/tests/store.test.mjs",
+        "package.json (initial; all but scripts and devDependencies)"
+      ],
+      "units": [
+        "U-01",
+        "U-03",
+        "U-02",
+        "U-04"
+      ],
+      "batches": [
+        [
+          "U-01"
+        ],
+        [
+          "U-03",
+          "U-02"
+        ],
+        [
+          "U-04"
+        ]
+      ],
+      "unitTier": {
+        "U-01": 1,
+        "U-03": 1,
+        "U-04": 1,
+        "U-02": 1
+      },
       "unitNotes": {
         "U-01": "Build pipeline and shell (1.5 h): build.mjs with the ordered parts list (// -- parts -- ... // -- end parts --) and the CSP head, shell.html, boot.js, package.json with build. Done when node offline/build.mjs writes offline/1-addic.html (title 1-addic, O1) that opens with no console error and reports its size.",
         "U-03": "UI core and router (2.5 h): ui-core.js per 3.2: nav with data-tour, saved label, theme and night rule, speak() (device speechSynthesis only, O4), the UI.pages registry, UI.boot() rendering a Today placeholder. Done when the five tabs navigate by hash and the browser back button works.",
@@ -31,10 +61,33 @@
       "tier": 1,
       "flagged": false,
       "area": "The pure rules engine and its Node tests.",
-      "files": ["offline/src/engine.js", "offline/tests/logic.test.mjs", "offline/tests/engine-*.test.mjs"],
-      "units": ["U-05", "U-06", "U-07", "U-08"],
-      "batches": [["U-05"], ["U-06", "U-07", "U-08"]],
-      "unitTier": { "U-05": 1, "U-06": 1, "U-07": 1, "U-08": 1 },
+      "files": [
+        "offline/src/engine.js",
+        "offline/tests/logic.test.mjs",
+        "offline/tests/engine-*.test.mjs"
+      ],
+      "units": [
+        "U-05",
+        "U-06",
+        "U-07",
+        "U-08"
+      ],
+      "batches": [
+        [
+          "U-05"
+        ],
+        [
+          "U-06",
+          "U-07",
+          "U-08"
+        ]
+      ],
+      "unitTier": {
+        "U-05": 1,
+        "U-06": 1,
+        "U-07": 1,
+        "U-08": 1
+      },
       "unitNotes": {
         "U-05": "Time, ids, game derivations (3 h): 3.2 ids, dates and profile plus 3.7 in full. Done when logic.test.mjs has a test for every rule, for determinism, and for 'a slip lowers nothing' (nothing ever decreases), all green.",
         "U-06": "Roadmap, reveal, Explorer, tips, quests, artifacts, Recovery Plan prefill (2.5 h): the rules of 3.2, 3.10 and 3.11. Done when every rule has a Node test and the tests are green.",
@@ -49,10 +102,31 @@
       "tier": 1,
       "flagged": true,
       "area": "The Actions verbs, the SOS screens, the lock screen and onboarding.",
-      "files": ["offline/src/actions.js", "offline/src/ui-sos.js", "offline/src/ui-onboarding.js", "offline/tests/actions.test.mjs"],
-      "units": ["U-09", "U-10", "U-11"],
-      "batches": [["U-09"], ["U-10", "U-11"]],
-      "unitTier": { "U-09": 1, "U-10": 1, "U-11": 1 },
+      "files": [
+        "offline/src/actions.js",
+        "offline/src/ui-sos.js",
+        "offline/src/ui-onboarding.js",
+        "offline/tests/actions.test.mjs"
+      ],
+      "units": [
+        "U-09",
+        "U-10",
+        "U-11"
+      ],
+      "batches": [
+        [
+          "U-09"
+        ],
+        [
+          "U-10",
+          "U-11"
+        ]
+      ],
+      "unitTier": {
+        "U-09": 1,
+        "U-10": 1,
+        "U-11": 1
+      },
       "unitNotes": {
         "U-09": "Actions (3 h): every verb of 3.2 with validation and events; actions.test.mjs in Node memory mode. Done when the tests prove: an SOS session writes a log and SkillUsed events; a drill writes nothing; a slip restarts only the run; export -> reset -> import is identical.",
         "U-10": "SOS screens (4.5 h; flagged: safety copy): the craving, feeling and slipped flows of docs/PLAN.md 5.2, urgent help (region file, call/copy, 'please verify' labels: O3), drill and preview modes, the night palette, 'My plan' when confirmed. Done when every flow works offline and one-handed with two lines of text per screen at most, crisis routing (hopeless, thoughts of death) shows the numbers at once, and nothing gates or interrupts SOS.",
@@ -66,10 +140,29 @@
       "tier": 1,
       "flagged": false,
       "area": "The exercise engine, the lesson player, the roadmap and the glossary page.",
-      "files": ["offline/src/ui-exercise.js", "offline/src/ui-learn.js"],
-      "units": ["U-12", "U-13", "U-14"],
-      "batches": [["U-12"], ["U-13", "U-14"]],
-      "unitTier": { "U-12": 1, "U-13": 1, "U-14": 1 },
+      "files": [
+        "offline/src/ui-exercise.js",
+        "offline/src/ui-learn.js"
+      ],
+      "units": [
+        "U-12",
+        "U-13",
+        "U-14"
+      ],
+      "batches": [
+        [
+          "U-12"
+        ],
+        [
+          "U-13",
+          "U-14"
+        ]
+      ],
+      "unitTier": {
+        "U-12": 1,
+        "U-13": 1,
+        "U-14": 1
+      },
       "unitNotes": {
         "U-12": "Exercise engine (3.5 h): every field type of 3.8, tutorial and workbook modes, examples and hints, 'finish later' drafts, the #/dev/fields gallery. Done when every field type renders in #/dev/fields, saves, and resumes a draft.",
         "U-13": "Lesson player and checkpoint (2.5 h): moment, cards, checks with no fail state, try it (exercise or route), wrap ('Why this works' to the evidence card); LessonCompleted, ModuleCompleted, the checkpoint at module end. Done when M0 plays end to end and writes those events.",
@@ -83,10 +176,45 @@
       "tier": 1,
       "flagged": false,
       "area": "The browser harness, the screenshots, the offline docs and the guide; root package.json's scripts and devDependencies keys and package-lock.json; the '## Offline edition' sections of README.md and CLAUDE.md; ADR 0022.",
-      "files": ["offline/tests/browser.test.mjs", "offline/tests/screens.mjs", "offline/tests/helpers/*", "offline/docs/*", "offline/README.md", "README.md (append ## Offline edition)", "CLAUDE.md (append ## Offline edition)", "docs/decisions/0022-*.md", "package.json (scripts test:browser, screens, check; devDependencies)", "package-lock.json"],
-      "units": ["U-34", "U-37", "U-36a", "U-35", "U-36b"],
-      "batches": [["U-34"], ["U-37", "U-36a"], ["U-35", "U-36b"]],
-      "unitTier": { "U-34": 1, "U-37": 1, "U-36a": 1, "U-35": 2, "U-36b": 2 },
+      "files": [
+        "offline/tests/browser.test.mjs",
+        "offline/tests/screens.mjs",
+        "offline/tests/helpers/*",
+        "offline/docs/*",
+        "offline/README.md",
+        "README.md (append ## Offline edition)",
+        "CLAUDE.md (append ## Offline edition)",
+        "docs/decisions/0022-*.md",
+        "package.json (scripts test:browser, screens, check; devDependencies)",
+        "package-lock.json"
+      ],
+      "units": [
+        "U-34",
+        "U-37",
+        "U-36a",
+        "U-35",
+        "U-36b"
+      ],
+      "batches": [
+        [
+          "U-34"
+        ],
+        [
+          "U-37",
+          "U-36a"
+        ],
+        [
+          "U-35",
+          "U-36b"
+        ]
+      ],
+      "unitTier": {
+        "U-34": 1,
+        "U-37": 1,
+        "U-36a": 1,
+        "U-35": 2,
+        "U-36b": 2
+      },
       "unitNotes": {
         "U-34": "Browser harness (3 h): Playwright pinned, channel 'chrome' with a fallback, the flows of 3.13 as named tests, console and network assertions, offline mode, the phone viewport. Done when npm run test:browser opens the built file offline at phone size and runs the 3.13 flows by name, failing on any console error or network request.",
         "U-37": "Docs true (1 h): offline/README.md (copy to a phone, open from Files/Chrome, the file:///sdcard/Download/1-addic.html tip, what 'Not saved' means), the README and CLAUDE.md '## Offline edition' sections, ADR 0022, npm run check. Done when npm run check runs every gate and the docs match the file.",
@@ -102,10 +230,35 @@
       "tier": 1,
       "flagged": false,
       "area": "The Today screen, the Track screen with the quick log and insights, and the Harbor scene.",
-      "files": ["offline/src/ui-today.js", "offline/src/ui-track.js", "offline/src/ui-harbor.js"],
-      "units": ["U-15", "U-16", "U-17", "U-18"],
-      "batches": [["U-15"], ["U-16"], ["U-17", "U-18"]],
-      "unitTier": { "U-15": 1, "U-16": 1, "U-17": 2, "U-18": 2 },
+      "files": [
+        "offline/src/ui-today.js",
+        "offline/src/ui-track.js",
+        "offline/src/ui-harbor.js"
+      ],
+      "units": [
+        "U-15",
+        "U-16",
+        "U-17",
+        "U-18"
+      ],
+      "batches": [
+        [
+          "U-15"
+        ],
+        [
+          "U-16"
+        ],
+        [
+          "U-17",
+          "U-18"
+        ]
+      ],
+      "unitTier": {
+        "U-15": 1,
+        "U-16": 1,
+        "U-17": 2,
+        "U-18": 2
+      },
       "unitNotes": {
         "U-15": "Today (3 h): greeting; check-in card by time of day; today's plan with risky blocks and their Battle Plans; want-to of the day; continue learning and weekly focus; active quests; Reasons Card peek; opt-in counters and Momentum ring; Explorer ring; tip of the day; backup reminder; milestone celebration; maintenance-mode variant. Done when Today renders every card from an empty and a sample profile with no dead button (O7).",
         "U-16": "Track (2.5 h): the quick log (+) for craving, feeling, check-in (morning/evening), activity and slip with trigger, red-flag and skill chips; the timeline; the counters. Done when each log kind saves through Actions and shows on the timeline, and a slip lowers no total.",
@@ -120,10 +273,35 @@
       "tier": 1,
       "flagged": false,
       "area": "Settings, the Reasons Card and Support Network, the workbook browser and the artifacts, and My Recovery Plan.",
-      "files": ["offline/src/ui-settings.js", "offline/src/ui-workbook.js", "offline/src/ui-plan.js"],
-      "units": ["U-19", "U-20a", "U-20b", "U-21"],
-      "batches": [["U-19"], ["U-20a"], ["U-20b", "U-21"]],
-      "unitTier": { "U-19": 1, "U-20a": 1, "U-20b": 2, "U-21": 2 },
+      "files": [
+        "offline/src/ui-settings.js",
+        "offline/src/ui-workbook.js",
+        "offline/src/ui-plan.js"
+      ],
+      "units": [
+        "U-19",
+        "U-20a",
+        "U-20b",
+        "U-21"
+      ],
+      "batches": [
+        [
+          "U-19"
+        ],
+        [
+          "U-20a"
+        ],
+        [
+          "U-20b",
+          "U-21"
+        ]
+      ],
+      "unitTier": {
+        "U-19": 1,
+        "U-20a": 1,
+        "U-20b": 2,
+        "U-21": 2
+      },
       "unitNotes": {
         "U-19": "Settings (3 h): privacy (PIN set/change/remove, auto-lock, discreet title 'Notebook': O1, O2), look (theme, Calm mode, text size, high contrast, reduced motion), rhythm, names, help and tutorials, about and evidence, your data (export, import, erase, print logs, sample data marked and erasable: O6, backup reminder), early-access notice, version. Done when every setting persists across a reload and every data action does exactly what it says.",
         "U-20a": "Reasons Card and Support Network (1.5 h): the Reasons Card view (big SOS view, lock-screen image export via canvas), contacts CRUD with roles and strategies, 'I reached out'. Done when contacts are saved on the device only and the card opens from SOS.",
@@ -138,10 +316,32 @@
       "tier": 2,
       "flagged": false,
       "area": "The planner, Battle Plans, the Weekly Review, quests and to-dos, and the practices player.",
-      "files": ["offline/src/ui-actions.js", "offline/src/ui-practices.js"],
-      "units": ["U-22", "U-23", "U-24", "U-25"],
-      "batches": [["U-22"], ["U-23", "U-24", "U-25"]],
-      "unitTier": { "U-22": 2, "U-23": 2, "U-24": 2, "U-25": 2 },
+      "files": [
+        "offline/src/ui-actions.js",
+        "offline/src/ui-practices.js"
+      ],
+      "units": [
+        "U-22",
+        "U-23",
+        "U-24",
+        "U-25"
+      ],
+      "batches": [
+        [
+          "U-22"
+        ],
+        [
+          "U-23",
+          "U-24",
+          "U-25"
+        ]
+      ],
+      "unitTier": {
+        "U-22": 2,
+        "U-23": 2,
+        "U-24": 2,
+        "U-25": 2
+      },
       "unitNotes": {
         "U-22": "Planner (3 h): the day planner per 3.9 with risky blocks. Done when blocks save through Actions, risky blocks are flagged with their Battle Plan, and nothing is ever overdue.",
         "U-23": "Battle Plans with .ics and debrief (2 h). Done when a plan exports a valid .ics (engine U-08) and the debrief writes its event.",
@@ -156,10 +356,30 @@
       "tier": 2,
       "flagged": false,
       "area": "The guidance engine (coach marks, tours, tutorials, tips, reveal), the game surfaces, and the tools and mini-games.",
-      "files": ["offline/src/ui-game.js", "offline/src/ui-guidance.js", "offline/src/ui-tools.js"],
-      "units": ["U-27", "U-26", "U-28"],
-      "batches": [["U-27"], ["U-26", "U-28"]],
-      "unitTier": { "U-27": 2, "U-26": 2, "U-28": 2 },
+      "files": [
+        "offline/src/ui-game.js",
+        "offline/src/ui-guidance.js",
+        "offline/src/ui-tools.js"
+      ],
+      "units": [
+        "U-27",
+        "U-26",
+        "U-28"
+      ],
+      "batches": [
+        [
+          "U-27"
+        ],
+        [
+          "U-26",
+          "U-28"
+        ]
+      ],
+      "unitTier": {
+        "U-27": 2,
+        "U-26": 2,
+        "U-28": 2
+      },
       "unitNotes": {
         "U-27": "Guidance engine (3 h): coach marks, first-run tour, JIT tutorials, Training drills (SOBER, quick log, Battle Plan, trial, refusal), tips, Explorer, reveal with 'Show now' and 'New' dots (the SOS drill itself lives in ui-sos.js). Done when every tutorial target exists (the guards gate) and nothing ever covers, gates or delays SOS.",
         "U-26": "Game surfaces (2 h): XP, mastery per skill, badges, ranks, region light, celebrations under 300 ms. Done when they render from Engine derivations and none of them ever decreases.",
@@ -173,10 +393,44 @@
       "tier": 1,
       "flagged": false,
       "area": "The original content: exercises, lessons M4-M10, practices and games data, and the sample data; owner of content-core.js (others append after /* -- additions -- */).",
-      "files": ["offline/src/content-lessons-b.js", "offline/src/content-lessons-c.js", "offline/src/content-exercises.js", "offline/src/content-practices.js", "offline/src/content-sample.js", "offline/src/content-core.js (owner)"],
-      "units": ["U-31a", "U-31b", "U-29", "U-30", "U-32", "U-33"],
-      "batches": [["U-31a"], ["U-31b", "U-29"], ["U-30", "U-32", "U-33"]],
-      "unitTier": { "U-31a": 1, "U-31b": 2, "U-29": 2, "U-30": 2, "U-32": 2, "U-33": 2 },
+      "files": [
+        "offline/src/content-lessons-b.js",
+        "offline/src/content-lessons-c.js",
+        "offline/src/content-exercises.js",
+        "offline/src/content-practices.js",
+        "offline/src/content-sample.js",
+        "offline/src/content-core.js (owner)"
+      ],
+      "units": [
+        "U-31a",
+        "U-31b",
+        "U-29",
+        "U-30",
+        "U-32",
+        "U-33"
+      ],
+      "batches": [
+        [
+          "U-31a"
+        ],
+        [
+          "U-31b",
+          "U-29"
+        ],
+        [
+          "U-30",
+          "U-32",
+          "U-33"
+        ]
+      ],
+      "unitTier": {
+        "U-31a": 1,
+        "U-31b": 2,
+        "U-29": 2,
+        "U-30": 2,
+        "U-32": 2,
+        "U-33": 2
+      },
       "unitNotes": {
         "U-31a": "Exercises M0-M3 need (1 h): quick-reasons, signs-check, risk-factors, help-request, program-questions, motivation, balance, four-lenses, checkpoint, with examples and hints from the cast; add the line /* -- additions -- */ to content-core.js. Done when every M0-M3 exercise id resolves with the 3.8 shape and the content validation gate is green (before engine U-08 merges: a Node check of the same).",
         "U-31b": "The remaining exercises (2 h). Done when every lesson's exercise id resolves and content validation is green.",
