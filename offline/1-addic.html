@@ -236,6 +236,8 @@ main:focus { outline: none; }
 }
 .empty .btn { margin-top: var(--space-1); }
 .render-fallback, .boot-failure { padding: var(--space-4); margin: 0; border-radius: var(--radius); background: hsl(var(--surface-2)); }
+.boot-line { padding: var(--space-4); margin: 0; border-radius: var(--radius); background: hsl(var(--surface-2)); font-size: 1.125rem; }
+.boot-line .sos-target { margin: var(--space-3) 0; font-weight: 700; font-size: 1.25rem; color: hsl(var(--primary)); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--gold)); vertical-align: middle; }
 .badge {
   display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px 10px; border-radius: 999px;
@@ -726,7 +728,12 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
     <a href="#/track" data-route="track" data-tour="nav-track">Track</a>
     <a href="#/actions" data-route="actions" data-tour="nav-actions">Actions</a>
   </nav>
-  <main id="main" tabindex="-1"></main>
+  <main id="main" tabindex="-1">
+    <!-- clinicalReview: true. Crisis copy shown before any script runs; the first render replaces it (V-11).
+         Words from boot.js COPY only (the tail of COPY.none, then COPY.verify): keep in step with boot.js.
+         112 is the built-in number (content-core.js resources.in.emergency, verify: true). -->
+    <p class="boot-line">If you are in danger, call your local emergency number. <a class="sos-target" href="tel:112">112</a> Please verify these numbers.</p>
+  </main>
   <dialog id="dialog" class="sheet"></dialog>
   <div id="toasts" class="toasts" aria-live="polite"></div>
   <div id="coach" class="coach" hidden></div>
