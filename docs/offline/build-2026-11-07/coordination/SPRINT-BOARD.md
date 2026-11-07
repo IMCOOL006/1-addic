@@ -6,7 +6,7 @@ NEXT (the HUB, in order): merge actions-sos when its safety re-check passes (the
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 23:37 IST by `board.py`.
+Rewritten 2026-11-08 00:03 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -22,14 +22,14 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 23:37 IST
+- UPDATED: 2026-11-08 00:03 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 203k | 2026-11-07 23:37 IST |
-| CORE | 93bffdb7 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 23:36 IST: CORE 93bffdb7: nothing runs; actions-sos FIX-R7 returned clean at cd385a5 (safety lens); the… | 245k | 2026-11-07 23:36 IST |
+| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 210k | 2026-11-08 00:03 IST |
+| CORE | 93bffdb7 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-08 00:02 IST: CORE 93bffdb7 (context over 250k): actions-sos contracts re-review clean of HIGH and MEDIUM… | 267k | 2026-11-08 00:02 IST |
 | SCREENS | 4d443a20 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 23:33 IST: every SCREENS lane MERGED and complete (today-track 6b0184b merged 23:30 as 4006fae2; BASE… | 261k | 2026-11-07 23:33 IST |
 
 ## Lanes (10)
@@ -47,7 +47,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 | `game-tutorials` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged…; READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW… |
 | `content` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1… |
 
-Slots allowed: 1 (2026-11-07 23:37 IST: the 23:36 row 5.1 GB free with nothing of this build running; the formula gives one slot, floor((5.1 - 4.0) / 0.7) = 1: the actions-sos contracts-and-tests re-review (read-only, one reviewer agent, no build or browser gate: lighter than a 3 GB builder run) STARTS NOW on slot 3; the 7.0 GB mark stays for builder and checker runs; nothing else starts; the HUB runs nothing heavy until QUIET). Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
+Slots allowed: 1 (2026-11-08 00:03 IST: actions-sos is clean on both lenses at cd385a5 (RC21 fixed in the contract, RC22 LOW); its lane check (builder-weight: build, test, validate, guards) is the one start, on the next 7.0 GB row (rows 23:58 5.6, 00:02 4.5 GB; the formula gives 0 at 4.5); nothing else starts; the HUB runs nothing heavy until QUIET). Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
 
 ## Merges
 
@@ -102,7 +102,7 @@ Slots allowed: 1 (2026-11-07 23:37 IST: the 23:36 row 5.1 GB free with nothing o
 
 ## Machine
 
-- Free memory 5.0 GB of 31.8 GB at 2026-11-07 23:37 IST; claude 28, node 44 processes; 1 slots by the rule (lane-widening.md).
+- Free memory 5.6 GB of 31.8 GB at 2026-11-07 23:58 IST; claude 28, node 44 processes; 2 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 25324); its last launch: SCREENS 4d443a20 at 2026-11-07 22:04.
 
 ## Files of the build
