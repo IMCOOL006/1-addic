@@ -49,7 +49,7 @@
     drillBanner: 'Practice drill: nothing is saved.',
     previewBanner: 'Preview: nothing is saved.',
     overdose: 'If someone may have overdosed',
-    withdrawal: 'Stopping suddenly can be dangerous',
+    withdrawal: 'Heavy daily drinking or sedatives: stop with a doctor.', // RS3, clinicalReview
     verify: 'please verify',
     noVoice: 'Read-aloud is not available on this device.',
     notSaved: 'Not saved on this device. You can keep going.',

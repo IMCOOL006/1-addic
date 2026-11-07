@@ -1276,4 +1276,11 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     assert.equal(H.isCrisisText("I can't go on", { crisisKeywords: () => [] }), true, 'never fewer than this list');
     assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
   });
+
+  test('RS3: the withdrawal label names the substances and the doctor', () => {
+    assert.equal(H.COPY.withdrawal, 'Heavy daily drinking or sedatives: stop with a doctor.');
+    const d = sosDom();
+    const labels = d.UI.sosUrgentView({}, {}).querySelectorAll('summary').map((s) => s.textContent.trim());
+    assert.ok(labels.includes(H.COPY.withdrawal), labels.join(' | '));
+  });
 });
