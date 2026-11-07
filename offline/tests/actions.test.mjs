@@ -549,6 +549,15 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     assert.deepEqual(events('ModuleCompleted').map((e) => e.payload.moduleId), [m.id]);
   });
 
+  test('RC12: an import never brings a lock row with it', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    backup.stores.meta = [...backup.stores.meta, { key: 'lock', salt: 'x', check: 'y' }];
+    await Actions.importBackup(backup);
+    assert.equal(S().view.get('meta', 'lock'), null);
+    assert.ok(list('logs').length > 0, 'the rest came in');
+  });
+
   // -- fix round: U-09 tests above this line --
 });
 
