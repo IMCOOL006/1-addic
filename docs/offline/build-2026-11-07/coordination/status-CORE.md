@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 04:24 IST: CORE 12 (51e49e2a). engine READY 660233f (V-40b). Running: tests-docs V-03 + V-06 wf_80985a28-b7b (slot 5; then V-01t: today-track V-01b merged 486288f1). Waiting: core V-11, actions-sos V-08a on their SLOTS lines (args staged, wf_sim OK)
+STATE: BUILDING   # 2026-11-08 04:41 IST: CORE 12 (51e49e2a). Running: engine V-40c wf_61043b24-93d (slot 2), tests-docs V-03 + V-06 wf_80985a28-b7b (slot 5; V-03 committed 64e1f2c; then V-01t). Waiting: core V-11, actions-sos V-08a on rows at or above 7.0 GB (args staged, wf_sim OK)
 LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line (args_v3_core_V-11.json: regenerate with gen7.py for the session). v1 MERGED 8e80951 (a3081f33)
-LANE: engine MERGED 660233f   # 2026-11-08 04:35 IST: V-40b merged ce198586 (trunk cb356d9c, 04:30). Next: V-40c (R-S-24: '#/status', '#/track/radar' in ROUTE_PATHS; T1, a fix by name inside slot 2, R-H-43) from 660233f, launched on the first reading at or above 4.0 GB (1.1 GB at 04:36); it merges before content V-10r. Then V-19 + V-30 (T2) when no tier 1 lane waits
+LANE: engine BUILDING 660233f   # 2026-11-08 04:41 IST: V-40c (R-S-24, R-H-43: '#/status', '#/track/radar' in ROUTE_PATHS; T1, a fix by name in slot 2) wf_61043b24-93d from 660233f (merged ce198586, trunk cb356d9c), launched on the 04:37 reading 7.0 GB; merges before content V-10r. Then V-19 + V-30 (T2) when no tier 1 lane waits
 LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs), then V-25, V-18, V-17b (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING c1058ab   # 2026-11-08 04:13 IST: c1058ab (V-07) MERGED 8d21c8ca (trunk 9946ffe5). V-03 + V-06 relaunched wf_80985a28-b7b from c1058ab (the first run died with c2601cf1). Then V-01t when today-track V-01b merges (SCREENS READY da9bb6b), then V-45
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
-UPDATED: 2026-11-08 04:35 IST
+UPDATED: 2026-11-08 04:41 IST
 
 # 2026-11-08 04:32 IST · from the HUB · engine 660233f merged (trunk cb356d9c); R-H-43: V-40c first, no baseline
 
