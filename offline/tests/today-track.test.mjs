@@ -214,8 +214,9 @@ test('today: milestone shown once', async () => {
     await tick(); await tick(); await tick();
     const reached = E.gameState(ctx.view, NOW).counters.reached;
     const top = Math.max(...reached);
-    assert.deepEqual(ctx.A.calls[1], ['recordEvent', 'MilestoneSeen', { milestone: top }]);
-    assert.deepEqual(ctx.A.calls[2], ['settings.patch', { milestonesSeen: reached }]);
+    const callOf = (name) => ctx.A.calls.filter((x) => x[0] === name);
+    assert.deepEqual(callOf('recordEvent'), [['recordEvent', 'MilestoneSeen', { milestone: top }]], 'one MilestoneSeen');
+    assert.deepEqual(callOf('settings.patch'), [['settings.patch', { milestonesSeen: reached }]], 'one settings.patch');
     assert.equal(card[0].hidden, true);
     rows.settings = [settingsRow({ showCurrentRun: true, lastBackupAt: rows.settings[0].lastBackupAt, milestonesSeen: reached })];
     assert.equal(byTest(render(rows).root, 'today-milestone').length, 0, 'not shown again');
