@@ -48,6 +48,13 @@ async function refused(promise, code) {
 }
 function daysAgo(n) { const d = new Date(); d.setDate(d.getDate() - n); return E().todayStr(d); }
 const firstModule = () => C().modules[0];
+// Content.sample may be loaded (content-sample.js, BUILD-PLAN 3.1): a test that sets it, or needs it absent, puts it back after.
+async function withSample(sample, fn) {
+  const had = Object.prototype.hasOwnProperty.call(C(), 'sample');
+  const old = C().sample;
+  if (sample === undefined) delete C().sample; else C().sample = sample;
+  try { return await fn(); } finally { if (had) C().sample = old; else delete C().sample; }
+}
 async function someData() {
   await Actions.onboard({ name: 'Asha', startDate: daysAgo(12), substances: ['Alcohol'] });
   await Actions.sosSession({ kind: 'craving', ratingBefore: 7, ratingAfter: 3, tools: [{ skillId: 'ride-wave', helpful: true }] });
@@ -301,7 +308,7 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       [() => Actions.recoveryPlan.save('my plan'), 'bad-plan'],
       [() => Actions.scriptUsed('no-such-response'), 'bad-script'],
       [() => Actions.onboard({ admin: true }), 'bad-profile'],
-      [() => Actions.loadSample(), 'no-sample'],
+      [() => withSample(undefined, () => Actions.loadSample()), 'no-sample'],
     ];
     for (const [call, code] of cases) await refused(call(), code);
     await tick();
@@ -453,9 +460,9 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
 
   test('sample data loads marked and erases with everything else', async () => {
     const at = new Date().toISOString();
-    C().sample = { generate: (now) => ({ stores: { logs: [{ id: 'sample-1', type: 'craving', at: now, date: E().todayStr(now), hour: 9,
+    const sample = { generate: (now) => ({ stores: { logs: [{ id: 'sample-1', type: 'craving', at: now, date: E().todayStr(now), hour: 9,
       intensity: 4, triggerIds: [], feelings: [], skills: [], drill: false }] } }) };
-    try {
+    await withSample(sample, async () => {
       const r = await Actions.loadSample();
       assert.equal(r.count, 1);
       assert.ok(S().view.get('meta', 'sample').loadedAt >= at.slice(0, 10));
@@ -463,7 +470,7 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       await Actions.eraseAll();
       assert.equal(S().view.get('meta', 'sample'), null);
       assert.equal(list('logs').length, 0);
-    } finally { delete C().sample; }
+    });
   });
 
   test('sample never overwrites the person\'s rows and erases only its own', async () => {
@@ -473,14 +480,14 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     const before = { profile: S().view.get('profile', 'me'), settings: S().view.get('settings', 'app'),
       plan: S().view.get('recoveryPlan', 'plan'), log: S().view.get('logs', mine.log.id) };
     const row = (id, n) => ({ id, type: 'craving', at: n, date: E().todayStr(n), hour: 9, intensity: 2, triggerIds: [], feelings: [], skills: [], drill: false });
-    C().sample = { generate: (now) => ({ stores: {
+    const sample = { generate: (now) => ({ stores: {
       profile: [{ key: 'me', name: 'Sample person', startDate: daysAgo(90) }],
       settings: [{ key: 'app', theme: 'light', showCurrentRun: true }],
       recoveryPlan: [{ key: 'plan', sections: {} }],
       meta: [{ key: 'lock', salt: 'x', check: 'y' }],
       logs: [row(mine.log.id, now), row('sample-1', now)],
     } }) };
-    try {
+    await withSample(sample, async () => {
       const r = await Actions.loadSample();
       assert.equal(r.count, 1);
       assert.deepEqual(S().view.get('profile', 'me'), before.profile);
@@ -497,8 +504,10 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
       assert.deepEqual(S().view.get('profile', 'me'), before.profile);
       assert.equal(list('events').length, eventsBefore);
-    } finally { delete C().sample; }
+    });
   });
+
+  // -- fix round: U-09 tests above this line --
 });
 
 /* ── stand-ins, used only while the real file is absent ─────────────────────────────────────── */
