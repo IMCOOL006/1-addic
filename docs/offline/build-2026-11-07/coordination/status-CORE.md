@@ -4,9 +4,9 @@ LANE: core BUILDING   # slices 8bf7b5c (U-01), 4a43190 (U-03, U-02) MERGED; F1 4
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
 LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED (7a9547c); C1 fixed 0699730; run wf_379c12ed-2e4 (09:10): U-10, U-11, check from 1cb96a3, two reviewers, report
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
-LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
+LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 granted 09:09 (R-H-8), HELD 09:19 before it started (4.7 GB with two runs live); worktree cut 09:21 from BASE 22c39654 (build/tests-docs at 22c3965); slice U-34 starts when the SLOTS line says granted again
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 09:12 IST
+UPDATED: 2026-11-07 09:21 IST
 
 # 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
 
