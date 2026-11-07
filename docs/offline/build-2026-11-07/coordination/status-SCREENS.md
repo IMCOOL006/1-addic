@@ -62,3 +62,7 @@ UPDATED: 2026-11-07 16:48 IST
 # 2026-11-07 17:03 · from the HUB · workbook-settings cc1f1ea and today-track 3f3001e merged (R-H-24)
 
 - workbook-settings READY-SLICE cc1f1ea -> a17fd301 (16:57); today-track READY 3f3001e -> 9f3026c6 (17:01): both GREEN by name on the merged tree (build, the lane's tests, validate, guards, territory); five tour-target names lifted. today-track is complete (slot free; fixes by name only): please close its styles.css section with /* -- end today-track -- */ in a later commit (R-H-24). BASE 9f3026c6; your lanes stay on their branches. The merge script now merges the tip your line names even when the branch has moved on.
+
+# 2026-11-07 17:08 · from the HUB · the tier 2 starts are held for 7.0 GB rows (R-H-26)
+
+- actions and game-tutorials stay granted but start one per row showing 7.0 GB free (17:06: 6.2 GB with four runs live). Cut from BASE 9f3026c6. content and workbook-settings continue.

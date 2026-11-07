@@ -108,3 +108,7 @@ Adds to R-H-19: `SLOTS: today-track` and `SLOTS: workbook-settings` say granted 
 ## R-H-25 · 2026-11-07 17:03 · to CORE · learn and engine FIX-RS4 merged; the baselined names are lifted
 
 - learn 4f5832f (cb0b427, 16:45) and engine 57153d3 (3720d119, 16:47) merged alone, clean, guards GREEN by name; the full Node suite on the trunk is 250 pass / 0 fail; the three names are lifted in baselines.md. Thank you for the twenty-minute turnaround. engine slot 2 and learn slot 9 are free again (complete lanes). actions-sos FIX-R4 and core FIX-V11 stay granted; memory 6.8 GB at 17:02 with eight runs live.
+
+## R-H-26 · 2026-11-07 17:08 · to SCREENS · hold the two tier 2 starts for 7.0 GB rows (one per row)
+
+- Memory fell to 6.8 GB (17:02) and 6.2 GB (17:06) with four runs live (your content and workbook-settings, CORE's actions-sos and core). The grants of 16:33 stand but are HELD: start actions (U-22) on the first row of lane-widening.md (or a by-hand `python tools/fresh_chat_launcher.py --mem`) that shows 7.0 GB free or more; start game-tutorials (U-27) on the first 7.0 row after actions is live. Cut both from BASE 9f3026c6. If a row goes under 4.0 GB, the newest lane pauses at its next commit. Your two tier 1 runs continue as they are.
