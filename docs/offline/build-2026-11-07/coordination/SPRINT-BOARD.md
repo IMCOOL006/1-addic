@@ -1,12 +1,16 @@
 STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); the lanes continue toward offline-v1.1 (13:48). In the tag: the build pipeline and shell, UI core, router and components, the engine's logic, the Actions layer, the exercise engine, lesson player, roadmap and glossary, the browser harness, the docs and the guide skeleton with its .docx; every gate green by name. On their branches, pushed: the encrypted Store (core, two MEDIUM review findings still open) and the SOS screens, lock screen and onboarding (actions-sos, one HIGH safety finding and seven more open). Both need one more fix run by name before they can be merged; a fresh CORE chat started at 13:43 to run them, core first.
-NEEDS YOU: (1) The build is continuing on its own past the planned 12:25 close: the launcher's 'day closed' pause did not hold (a tooling defect, recorded) and it started a fresh CORE chat at 13:43. Default: it continues (the plan says the lanes go on toward offline-v1.1 under the same gates). If you want it stopped now, run `python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --stop` (the loop ends; the chats that are running finish their step and hand over). (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message. (3) The decision defaults are in force (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built. (4) Keep the machine awake while a round runs.
-NEXT: the fresh CORE runs core's fix round by name (RC10, RC11, RC12), re-checks and report, READY; the HUB merges it with its gates on the merged tree and pushes the trunk. Then actions-sos (RS10 HIGH, RS11-RS17, RC14) the same way when memory allows a second lane; then engine U-06..U-08 and the SCREENS track.
+NEEDS YOU: (1) The build is continuing on your word (R-O-2, 14:38: 'I agree with the defaults', and run on to the complete edition and the guide): the launcher stays running, three lanes are in their rounds. (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake while the rounds run; the pharma tag (about 15:30) is what frees the memory for the SCREENS chat.
+NEXT: the HUB merges core READY (U-04 plus every review fix) and actions-sos READY (U-10, U-11 plus every review fix) as their fix rounds end, then engine U-07, U-08 (validate runs for the first time on that merge), then the SCREENS track tier 1 once memory allows its chat, then tier 2 and the guide with screenshots.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 14:33 IST by `board.py`.
+Rewritten 2026-11-07 14:46 IST by `board.py`.
+
+## For the owner (more)
+
+FORECAST (from today's measured pace, written 14:45, corrected as rows and READY lines come in): core and actions-sos READY and merged about 16:30-17:00 if their fix rounds end without a new HIGH finding; engine U-07 and U-08 merged about 16:45; SCREENS tier 1 (content U-31a, today-track U-15 and U-16, workbook-settings U-19 and U-20a) merged and offline-v1.1 tagged tonight about 19:30-20:30 if the pharma tag frees memory for the SCREENS chat by about 16:00, else the morning of 8 Nov; tier 2 and the guide Part 3 with screenshots (U-35, U-36b, last by design) by the afternoon of 8 Nov if the lanes run through the night, else the evening of 8 Nov.
 
 ## The HUB
 
@@ -16,14 +20,14 @@ Rewritten 2026-11-07 14:33 IST by `board.py`.
 - TRACKS-ALLOWED: CORE   # the launcher is active (its 11:44 pause did not hold); SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 14:32 IST
+- UPDATED: 2026-11-07 14:46 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE… | 194k | 2026-11-07 14:32 IST |
-| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 14:25 IST: two runs live: core wf_019fc9eb-a81 (slot 1, 14:11) and actions-sos wf_b38141d2-651 (slot 3… | 212k | 2026-11-07 14:25 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE… | 199k | 2026-11-07 14:46 IST |
+| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 14:37 IST: three runs live: core wf_019fc9eb-a81 (slot 1, 14:11), actions-sos wf_b38141d2-651 (slot 3… | 224k | 2026-11-07 14:37 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -31,7 +35,7 @@ Rewritten 2026-11-07 14:33 IST by `board.py`.
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED 2026-11-07 14:08 (the 14:07 row shows 9.6 GB free, nothing of ours running): start the fix run by name now from bda0f0f (RC10, RC11, RC12 and the… |
-| `engine` | CORE | 1 |  | slot 2 | PAUSED | GRANTED again 2026-11-07 14:32 (the 14:31 row shows 9.3 GB free with two runs live): resume from 6cb722e with done [U-05, U-06], diffFrom 04fc0c1, batches… |
+| `engine` | CORE | 1 |  | slot 2 | BUILDING | GRANTED again 2026-11-07 14:32 (the 14:31 row shows 9.3 GB free with two runs live): resume from 6cb722e with done [U-05, U-06], diffFrom 04fc0c1, batches… |
 | `actions-sos` | CORE | 1 | yes | slot 3 | BUILDING | GRANTED again 2026-11-07 14:20 (the 14:19 row shows 10.3 GB free with core's run live): start the fix run by name now from fc0d038 (FIX-R2-SAFETY: RS10 HIGH… |
 | `learn` | CORE | 1 |  | slot 4 | MERGED | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
@@ -62,11 +66,11 @@ Slots allowed: 3 running lanes from 14:32 (core's and actions-sos's fix runs liv
 - The planner chat (session e4492b2a) is at 630k context: not a track of this program; closing it frees memory for a lane.
 - lane.js (HUB tooling): the reviewers' findings over 2,000 characters were cut to ids and the fix rounds never saw them (R-C-12); worked around by laneNote today; fixed in the tooling for offline-v1.1.
 - Safety copy for clinical review (CORE R-C-9): the SOS fallback lines, the crisis copy, the onboarding safety and lock texts in ui-sos.js and ui-onboarding.js are built as placeholders; the content lane (SCREENS, not started today) writes the reviewed versions in offline-v1.1. Please read them on your walk.
-- Decisions: no answer by 08:25, so the defaults of PLAN.md section 9 are in force (outbox-OWNER.md R-O-1). A later one-line answer still counts for the units not yet built.
+- Decisions: the defaults of PLAN.md section 9 applied at 08:25 (R-O-1) and are the owner's own decision since 14:38 (R-O-2: 'I agree with the defaults'; the decisions document is DECISIONS.md beside PLAN.md). The build runs on to the complete edition and the guide on the owner's word; the launcher stays running.
 
 ## Machine
 
-- Free memory 9.3 GB of 31.8 GB at 2026-11-07 14:31 IST; claude 25, node 53 processes; 7 slots by the rule (lane-widening.md).
+- Free memory 5.0 GB of 31.8 GB at 2026-11-07 14:41 IST; claude 25, node 57 processes; 1 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: CORE 036d08b8 at 2026-11-07 13:43.
 
 ## Files of the build
