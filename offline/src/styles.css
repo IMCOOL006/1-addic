@@ -526,4 +526,8 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 .act-form-error:focus { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
 .act-page .btn, .act-page select, .act-page input[type="text"], .act-page input[type="date"], .act-page input[type="time"] { min-height: 44px; }
 .act-page .choice input[type="checkbox"] { min-width: 24px; min-height: 24px; }
+/* U-23 Battle Plans */
+.act-page textarea { width: 100%; min-height: 44px; }
+.act-bp-card .act-title { font-size: 1.05rem; margin: var(--space-1) 0; }
+.act-debrief { margin-top: var(--space-2); }
 /* -- end actions -- */

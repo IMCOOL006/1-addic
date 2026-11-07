@@ -2,7 +2,10 @@
    U-22: the day planner at #/actions/planner?date=YYYY-MM-DD. Blocks save through Actions (A.plans.*); the open stretches
    of 2 h or more come from Engine.gaps; risky blocks carry a flag and their Battle Plan (or a link to make one). A block
    is never overdue: a past block that was not marked just reads "Not marked yet", in the same calm colours as any other.
-   The other Actions screens (Battle Plans, Weekly Review, quests, Prediction Lab, to-dos) are honest stubs until their
+   U-23: Battle Plans at #/actions/battle (list, ?new=1 form, ?plan=<id> attach/edit): each exports a .ics through
+   Engine.ics and UI.download (a file on the device, no network; the buddy is left out of it), and once the block has
+   ended asks "Did the plan show up?" (A.plans.debrief, warm either way, no score).
+   The other Actions screens (Weekly Review, quests, Prediction Lab, to-dos) are honest stubs until their
    units land (O7). Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
    read through typeof guards (they are not globalThis properties in the built page); ctx.E and ctx.A come first. */
 const ActionsUI = (() => {
@@ -65,13 +68,54 @@ const ActionsUI = (() => {
     keep: 'Keep it',
     help: 'If things feel heavy right now, help is one tap away.',
     helpGo: 'Get help now',
+    // U-23 Battle Plans
+    bpTitle: 'Battle Plans',
+    bpIntro: 'A Battle Plan is made ahead, for a time that could be hard. When that time comes, the plan is already there.',
+    bpNew: 'New Battle Plan',
+    bpBack: 'Back to Battle Plans',
+    bpUpcoming: 'Coming up',
+    bpPast: 'Looking back',
+    bpNone: 'No Battle Plans yet. Think of a time this week that could be hard, and make one.',
+    bpNoUpcoming: 'Nothing coming up right now.',
+    bpFormNew: 'New Battle Plan',
+    bpFormEdit: 'Battle Plan for this block',
+    bpFTitle: 'What is the time or place?',
+    bpFSituation: 'What makes it risky? (optional)',
+    bpFPlan: 'What I will do',
+    bpFBackups: 'Backups, if the first idea does not work (one per line, up to 10)',
+    bpFBuddy: 'Someone I can reach (optional)',
+    bpFNoBuddy: 'No one this time',
+    bpFExit: 'How I will leave if I need to (optional)',
+    bpNeedPlan: 'Write what you will do. One line is enough.',
+    bpSave: 'Save the plan',
+    bpSaved: 'Plan saved.',
+    bpMissing: 'That block is not here any more. You can make a new Battle Plan instead.',
+    bpIcs: 'Add to calendar',
+    bpIcsDone: 'Calendar file saved to this device.',
+    bpIcsNo: 'This browser could not save the file.',
+    bpDefaultTitle: 'Risky time',
+    bpSituation: (t) => `Risky because: ${t}`,
+    bpPlan: (t) => `I will: ${t}`,
+    bpBackups: (t) => `Backups: ${t}`,
+    bpBuddy: (t) => `Someone to reach: ${t}`,
+    bpExit: (t) => `My way out: ${t}`,
+    bpAsk: 'Did the plan show up when it counted?',
+    bpHow: 'How did it go? (optional)',
+    bpYes: 'Yes, it did',
+    bpNo: 'Not this time',
+    bpThanksYes: 'Good to know. The plan did its job.',
+    bpThanksNo: 'Thank you for looking back. It helps the next plan.',
+    bpDebriefed: (used) => (used ? 'You looked back: the plan showed up.' : 'You looked back: the plan did not show up this time.'),
+    bpLater: 'When this time has passed, you can look back on how it went.',
+    bpEdit: 'Change',
+    bpInPlanner: 'See the day',
   };
   const KINDS = ['should', 'want', 'recovery', 'risky'];
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
   const HUB = [
     { id: 'planner', title: 'Planner', gist: 'Plan the day and see the open stretches.', href: '#/actions/planner', ready: true },
-    { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.' },
+    { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.', href: '#/actions/battle', ready: true },
     { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.' },
     { id: 'quests', title: 'Quests', gist: 'Small steps that add up.' },
     { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.' },
@@ -417,17 +461,256 @@ const ActionsUI = (() => {
     return root;
   }
 
+  /* ── pure data: Battle Plans (U-23) ────────────────────────────────────────────────────── */
+  /* A block whose time has passed (its day is before today, or today and its end has come). Its status does not matter. */
+  function planEnded(p, now) {
+    if (!isObj(p) || !DATE_RE.test(String(p.date || ''))) return false;
+    const today = localDate(now instanceof Date ? now : new Date());
+    return p.date < today || (p.date === today && TIME_RE.test(String(p.end || '')) && p.end <= nowHHMM(now));
+  }
+  /* The blocks that carry a Battle Plan: upcoming ones soonest first, past ones latest first (sample rows marked, O6). */
+  function battleLists(view, now) {
+    const rows = list(view, 'plans').filter((p) => battleOf(p))
+      .map((p) => Object.assign({}, p, { battlePlan: battleOf(p), sample: p.sample === true }));
+    const key = (p) => `${p.date || ''} ${p.start || ''} ${p.end || ''} ${p.id || ''}`;
+    return {
+      upcoming: rows.filter((p) => !planEnded(p, now)).sort((a, b) => key(a).localeCompare(key(b))),
+      past: rows.filter((p) => planEnded(p, now)).sort((a, b) => key(b).localeCompare(key(a))),
+    };
+  }
+  const backupList = (b) => arr(b).map(str).filter(Boolean);
+  /* The calendar note: the plan in the person's words. The buddy is left out on purpose (contacts never leave the device). */
+  function battleNotes(bp) {
+    const b = isObj(bp) ? bp : {};
+    return [str(b.situation) ? TEXT.bpSituation(str(b.situation)) : null, str(b.plan) ? TEXT.bpPlan(str(b.plan)) : null,
+      backupList(b.backups).length ? TEXT.bpBackups(backupList(b.backups).join('; ')) : null, str(b.exit) ? TEXT.bpExit(str(b.exit)) : null]
+      .filter(Boolean).join('\n');
+  }
+  /* One Engine.ics item for a block with a Battle Plan (contract: battlePlanIcsItem(plan)), or null. */
+  function battlePlanIcsItem(plan) {
+    if (!isObj(plan) || !DATE_RE.test(String(plan.date || ''))) return null;
+    return { id: 'battle-plan-' + String(plan.id || plan.date), date: plan.date, start: plan.start || null, end: plan.end || null,
+      title: str(plan.title) || TEXT.bpDefaultTitle, notes: battleNotes(plan.battlePlan) };
+  }
+  /* {filename, text} of the .ics for one plan (Engine U-08 writes it), or null when the Engine or the date is missing. */
+  function battleIcsFile(E, plan, now) {
+    const eng = E === undefined ? ns('Engine') : E;
+    const item = battlePlanIcsItem(plan);
+    if (!item || !eng || typeof eng.ics !== 'function') return null;
+    const text = safe(() => eng.ics([item], { now: now instanceof Date ? now : new Date() }), '');
+    return text ? { filename: `1-addic-battle-plan-${item.date}.ics`, text } : null;
+  }
+  /* The form's values -> the plan fields and the Battle Plan, for Actions.plans.add (new) or .update (attach/edit). */
+  function battleFromValues(v, attach) {
+    const o = isObj(v) ? v : {};
+    const backups = String(o.backups == null ? '' : o.backups).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    const battlePlan = { situation: str(o.situation), plan: str(o.plan), backups, buddyId: str(o.buddyId) || null, exit: str(o.exit) };
+    const item = { date: str(o.date), start: str(o.start), end: str(o.end), title: str(o.title) || TEXT.bpDefaultTitle, risky: true, battlePlan };
+    if (!attach) item.kind = 'risky';
+    return item;
+  }
+  /* Save a Battle Plan through Actions: {ok:true, plan} or {ok:false, code, message} (nothing written on a refusal). */
+  async function saveBattle(A, values, id) {
+    const item = battleFromValues(values, !!id);
+    if (!item.battlePlan.plan) return { ok: false, code: 'bad-plan', message: TEXT.bpNeedPlan };
+    try {
+      if (!A || !A.plans) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      const r = id ? await A.plans.update(id, item) : await A.plans.add(item);
+      return { ok: true, plan: r && r.plan ? r.plan : null };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-plan' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  /* The debrief through Actions (BattlePlanDebriefed once per plan; the same small credit whatever the answer). */
+  async function debriefPlan(A, id, usedPlan, how) {
+    const d = { usedPlan: usedPlan === true };
+    if (str(how)) d.how = str(how);
+    return A.plans.debrief(id, d);
+  }
+  /* The help line on the Battle Plans screen after a save or debrief with crisis words (session memory, never stored). */
+  const BP_HELP = { on: false };
+  const contactsOf = (view) => list(view, 'contacts').filter((c) => c.active !== false && str(c.name));
+
+  /* ── DOM: Battle Plans (U-23) ──────────────────────────────────────────────────────────── */
+  function battlePage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const now = ctx && ctx.now instanceof Date ? ctx.now : new Date();
+    const today = localDate(now);
+    const q = ctx && ctx.route && isObj(ctx.route.query) ? ctx.route.query : {};
+    const view = () => (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-battle', 'data-test': 'battle' });
+    const planId = str(q.plan);
+    const target = planId ? list(view(), 'plans').find((p) => p.id === planId) || null : null;
+    const state = { mode: q.new || planId ? 'form' : 'list', form: null };
+    const toastMsg = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    if (state.mode === 'form') {
+      const bp = target && isObj(target.battlePlan) ? target.battlePlan : {};
+      const qd = DATE_RE.test(str(q.date)) && shiftDate(q.date, 0) === q.date ? q.date : today;
+      state.form = target
+        ? { date: target.date, start: target.start, end: target.end, title: str(target.title), situation: str(bp.situation), plan: str(bp.plan),
+          backups: backupList(bp.backups).join('\n'), buddyId: str(bp.buddyId), exit: str(bp.exit), message: '' }
+        : { date: qd, start: '', end: '', title: '', situation: '', plan: '', backups: '', buddyId: '', exit: '', message: '' };
+    }
+    const toList = () => {
+      state.mode = 'list'; state.form = null; paint();
+      const U = ns('UI');
+      if (U && typeof U.go === 'function') safe(() => U.go('#/actions/battle'), null);
+    };
+
+    const paint = () => {
+      clear(root);
+      root.appendChild(h('div', { class: 'row act-head' }, state.mode === 'form'
+        ? link('#/actions/battle', TEXT.bpBack, 'btn ghost', 'bp-back') : link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.bpTitle }));
+      if (state.mode === 'form') {
+        if (planId && !target) {
+          root.appendChild(h('p', { 'data-test': 'bp-missing', text: TEXT.bpMissing }));
+          root.appendChild(h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.bpNew, 'btn primary', 'bp-new-instead')));
+          return;
+        }
+        root.appendChild(formEl(state.form));
+        return;
+      }
+      root.appendChild(h('p', { class: 'muted', text: TEXT.bpIntro }));
+      root.appendChild(h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.bpNew, 'btn primary', 'bp-new', { 'data-tour': 'bp-new' })));
+      const { upcoming, past } = battleLists(view(), now);
+      const all = upcoming.concat(past);
+      if (BP_HELP.on || all.some((p) => crisisIn(E, p.title, p.battlePlan.situation, p.battlePlan.plan, p.battlePlan.exit, ...backupList(p.battlePlan.backups),
+        isObj(p.debrief) ? p.debrief.how : ''))) {
+        root.appendChild(h('p', { class: 'tip act-help', 'data-test': 'bp-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'bp-help-go')));
+      }
+      if (!all.length) { root.appendChild(h('p', { class: 'muted', 'data-test': 'bp-none', text: TEXT.bpNone })); return; }
+      root.appendChild(h('section', { class: 'card act-bp-list', 'data-test': 'bp-upcoming', 'aria-labelledby': 'act-bp-up-h' },
+        h('h2', { class: 'card-title', id: 'act-bp-up-h', text: TEXT.bpUpcoming }),
+        upcoming.length ? h('ul', { class: 'act-blocks' }, upcoming.map(cardEl)) : h('p', { class: 'muted', text: TEXT.bpNoUpcoming })));
+      if (past.length) {
+        root.appendChild(h('section', { class: 'card act-bp-list', 'data-test': 'bp-past', 'aria-labelledby': 'act-bp-past-h' },
+          h('h2', { class: 'card-title', id: 'act-bp-past-h', text: TEXT.bpPast }), h('ul', { class: 'act-blocks' }, past.map(cardEl))));
+      }
+    };
+
+    function cardEl(p) {
+      const bp = p.battlePlan;
+      const title = str(p.title) || TEXT.bpDefaultTitle;
+      const buddy = bp.buddyId ? list(view(), 'contacts').find((c) => c.id === bp.buddyId && str(c.name)) || null : null;
+      const howId = fid('how');
+      const how = h('textarea', { id: howId, name: 'how', maxlength: '1000', rows: '2', 'data-test': 'bp-how' });
+      const answer = async (used) => {
+        try {
+          await debriefPlan(A, p.id, used, how.value);
+          if (crisisIn(E, how.value)) BP_HELP.on = true;
+          toastMsg(used ? TEXT.bpThanksYes : TEXT.bpThanksNo, 'ok');
+        } catch (e) { if (typeof console !== 'undefined') console.warn('[actions] debrief failed', e && e.code); toastMsg(TEXT.error, 'warn'); }
+        paint();
+      };
+      const ics = () => {
+        const f = battleIcsFile(E, p, now);
+        const U = ns('UI');
+        const ok = !!f && !!U && typeof U.download === 'function' && safe(() => U.download(f.filename, f.text, 'text/calendar'), false) !== false;
+        toastMsg(ok ? TEXT.bpIcsDone : TEXT.bpIcsNo, ok ? 'ok' : 'warn');
+      };
+      let back;
+      if (isObj(p.debrief)) {
+        back = h('div', { class: 'act-debrief', 'data-test': 'bp-debriefed' }, h('p', { text: TEXT.bpDebriefed(p.debrief.usedPlan === true) }),
+          str(p.debrief.how) ? h('p', { class: 'muted', text: str(p.debrief.how) }) : null);
+      } else if (planEnded(p, now)) {
+        back = h('div', { class: 'act-debrief', role: 'group', 'aria-labelledby': howId + '-q', 'data-test': 'bp-debrief' },
+          h('p', { class: 'act-bp-title', id: howId + '-q', text: TEXT.bpAsk }),
+          h('div', { class: 'field' }, h('label', { class: 'field-label', for: howId, text: TEXT.bpHow }), how),
+          h('div', { class: 'row' },
+            button(TEXT.bpYes, () => answer(true), 'btn', 'bp-debrief-yes', { 'data-testid': 'bp-debrief-yes' }),
+            button(TEXT.bpNo, () => answer(false), 'btn', 'bp-debrief-no', { 'data-testid': 'bp-debrief-no' })));
+      } else {
+        back = h('p', { class: 'muted', text: TEXT.bpLater });
+      }
+      return h('li', { class: 'act-block act-risky act-bp-card', 'data-test': 'bp-card', 'data-id': p.id },
+        h('div', { class: 'row act-block-head' },
+          h('span', { class: 'act-when', text: `${dayLabel(p.date)} · ${timeLabel(p.start)} to ${timeLabel(p.end)}` }),
+          p.sample ? h('span', { class: 'badge act-sample', text: TEXT.sample }) : null),
+        h('h3', { class: 'act-title', text: title }),
+        str(bp.situation) ? h('p', { text: TEXT.bpSituation(str(bp.situation)) }) : null,
+        str(bp.plan) ? h('p', { text: TEXT.bpPlan(str(bp.plan)) }) : null,
+        backupList(bp.backups).length ? h('p', { text: TEXT.bpBackups(backupList(bp.backups).join('; ')) }) : null,
+        buddy ? h('p', { text: TEXT.bpBuddy(str(buddy.name)) }) : null,
+        str(bp.exit) ? h('p', { text: TEXT.bpExit(str(bp.exit)) }) : null,
+        h('div', { class: 'row act-tools' },
+          button(TEXT.bpIcs, ics, 'btn', 'bp-ics', { 'data-testid': 'bp-ics', 'aria-label': `${TEXT.bpIcs}: ${title}` }),
+          link('#/actions/battle?plan=' + encodeURIComponent(p.id), TEXT.bpEdit, 'btn ghost', 'bp-edit', { 'aria-label': `${TEXT.bpEdit}: ${title}` }),
+          link('#/actions/planner?date=' + p.date, TEXT.bpInPlanner, 'btn ghost', 'bp-planner')),
+        back);
+    }
+
+    function formEl(f) {
+      const ids = {};
+      for (const k of ['title', 'situation', 'plan', 'backups', 'buddyId', 'exit', 'date', 'start', 'end', 'err']) ids[k] = fid('bp-' + k);
+      const area = (k, max) => h('textarea', { id: ids[k], name: k, maxlength: String(max), rows: '3', 'data-test': 'bp-f-' + k, value: f[k] || '' });
+      const people = contactsOf(view());
+      const inp = {
+        title: h('input', { id: ids.title, name: 'title', type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'bp-f-title', value: f.title }),
+        situation: area('situation', 1000),
+        plan: area('plan', 1000),
+        backups: area('backups', 3100),
+        buddyId: people.length ? h('select', { id: ids.buddyId, name: 'buddyId', 'data-test': 'bp-f-buddy', value: f.buddyId || '' },
+          h('option', { value: '', text: TEXT.bpFNoBuddy }), people.map((c) => h('option', { value: c.id, text: str(c.name) }))) : null,
+        exit: area('exit', 1000),
+        date: h('input', { id: ids.date, name: 'date', type: 'date', required: true, 'data-test': 'bp-f-date', value: f.date }),
+        start: h('input', { id: ids.start, name: 'start', type: 'time', required: true, 'data-test': 'bp-f-start', value: f.start }),
+        end: h('input', { id: ids.end, name: 'end', type: 'time', required: true, 'data-test': 'bp-f-end', value: f.end }),
+      };
+      inp.plan.setAttribute('required', '');
+      const field = (k, label) => (inp[k] ? h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids[k], text: label }), inp[k]) : null);
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'bp-f-error', text: f.message || '' });
+      if (!f.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      const read = () => ({ title: inp.title.value, situation: inp.situation.value, plan: inp.plan.value, backups: inp.backups.value,
+        buddyId: inp.buddyId ? inp.buddyId.value : '', exit: inp.exit.value, date: inp.date.value, start: inp.start.value, end: inp.end.value });
+      const helpNow = f.help || crisisIn(E, f.title, f.situation, f.plan, f.backups, f.exit);
+      return h('form', { class: 'card form stack act-form', 'data-tour': 'bp-form', 'data-test': 'bp-form', novalidate: true, 'aria-labelledby': 'act-bp-form-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = read();
+          const crisis = crisisIn(E, values.title, values.situation, values.plan, values.backups, values.exit);
+          const r = await saveBattle(A, values, target ? target.id : null);
+          if (!r.ok) { state.form = Object.assign({}, f, values, { message: r.message, help: crisis }); paint(); focusOn('.act-form-error'); return; }
+          if (crisis) BP_HELP.on = true;
+          toastMsg(TEXT.bpSaved, 'ok');
+          toList();
+        } },
+      h('h2', { class: 'card-title', id: 'act-bp-form-h', text: target ? TEXT.bpFormEdit : TEXT.bpFormNew }),
+      field('title', TEXT.bpFTitle),
+      h('div', { class: 'row act-times' }, field('date', TEXT.fDate), field('start', TEXT.fStart), field('end', TEXT.fEnd)),
+      field('situation', TEXT.bpFSituation),
+      field('plan', TEXT.bpFPlan),
+      field('backups', TEXT.bpFBackups),
+      field('buddyId', TEXT.bpFBuddy),
+      field('exit', TEXT.bpFExit),
+      err,
+      helpNow ? h('p', { class: 'tip act-help', 'data-test': 'bp-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'bp-help-go')) : null,
+      h('div', { class: 'row form-actions' },
+        h('button', { type: 'submit', class: 'btn primary', 'data-test': 'bp-save', 'data-testid': 'bp-save', text: TEXT.bpSave }),
+        link('#/actions/battle', TEXT.cancel, 'btn ghost', 'bp-cancel')));
+    }
+
+    paint();
+    return root;
+  }
+
   /* ── page ──────────────────────────────────────────────────────────────────────────────── */
   function page(ctx) {
     const parts = ctx && ctx.route && Array.isArray(ctx.route.parts) ? ctx.route.parts : [];
     const sub = parts[1] || '';
     if (!sub) return hubPage(ctx);
     if (sub === 'planner') return plannerPage(ctx);
+    if (sub === 'battle') return battlePage(ctx);
     return stubPage(sub);
   }
 
-  const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel'];
-  return { page, TEXT, PURE, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel };
+  const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel',
+    'planEnded', 'battleLists', 'battleNotes', 'battlePlanIcsItem', 'battleIcsFile', 'battleFromValues', 'saveBattle', 'debriefPlan'];
+  return { page, TEXT, PURE, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel,
+    planEnded, battleLists, battleNotes, battlePlanIcsItem, battleIcsFile, battleFromValues, saveBattle, debriefPlan };
 })();
 
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); ui-core.js is not changed.
