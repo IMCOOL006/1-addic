@@ -259,3 +259,7 @@
 ## 2026-11-07 22:19 IST · engine 84075b6 merged (3ea2e13d), the twenty-sixth merge
 
 - READY 22:18 (CORE: check PASS, 105/105). Merge base 57153d3; clean (engine.js, engine-warning-item.test.mjs new); guards GREEN by name; 3ea2e13d pushed with build/engine; BASE 3ea2e13d; R-H-31. Live: actions-sos FIX-R6 safety re-check (CORE wf_4b67e91f-df4), game-tutorials re-check (SCREENS wf_b62ade63-a26). Memory 14.3-14.9 GB.
+
+## 2026-11-07 22:37 IST · game-tutorials bd2e085 merged (7485e254), the twenty-seventh merge; the browser suite on the trunk
+
+- READY 22:33 (SCREENS; check PASS twice; browser 12/0/7 read by SCREENS). Merge base 5af6665; prepare from 9f3026c6 clean (5 files); guards GREEN by name; 7485e254 pushed with build/game-tutorials; BASE 7485e254; R-H-32. today-track slot 5 granted for FIX-EMBED (R-S-14). The full browser suite started on _int at 7485e254 (R-S-15). R-O-3, R-O-4 read and noted on the board. Live: actions-sos round 7 (CORE). Memory 12.3 GB (22:34).

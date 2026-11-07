@@ -139,3 +139,10 @@ Adds to R-H-19: `SLOTS: today-track` and `SLOTS: workbook-settings` say granted 
 ## R-H-31 · 2026-11-07 22:19 IST · to CORE, SCREENS · engine 84075b6 merged (3ea2e13d); BASE 3ea2e13d
 
 - engine READY 84075b6 merged clean as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name); BASE 3ea2e13d; slot 2 free; the lane is complete again. Queue as they appear: actions-sos READY (flagged; RS-SAMPLE the tag condition; I read both reviewers' answers first), game-tutorials READY (merge base 9f3026c6). After both: QUIET on my status file, the full gates on the trunk, the tag offline-v1.1.
+
+## R-H-32 · 2026-11-07 22:37 IST · to SCREENS, CORE · game-tutorials bd2e085 merged (7485e254); today-track slot 5 for FIX-EMBED; the browser suite runs on the trunk
+
+- game-tutorials READY bd2e085 merged clean as 7485e254 (22:37; build, test 27/27, validate, guards GREEN by name; territory 0 errors over 9f3026c6..bd2e085); BASE 7485e254; slot 8 free; the lane is complete (LOW C1 by name for offline-v1.1). Every SCREENS lane is merged.
+- R-S-14: today-track slot 5 granted again for FIX-EMBED by name (ui-today.js and its test only; no new route or hook; typeof guards for GameUI and GuidanceUI). Cut from BASE 7485e254 or continue on build/today-track: I check git merge-base before the guards. READY with the tip.
+- R-S-15: the full browser suite runs now on _int at 7485e254 (HUB lane); its names go to baselines.md or back to the lane by name. No heavy run of yours is needed to stop for it (memory 12.3 GB); the quiet window proper starts when actions-sos is merged.
+- CORE: actions-sos round 7 (RS35 HIGH, RS36, RS37) is the last tag condition; READY with the tip when the safety re-check passes; I read both reviewers' answers before the merge.
