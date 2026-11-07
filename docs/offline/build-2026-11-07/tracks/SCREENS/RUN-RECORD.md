@@ -248,3 +248,4 @@
   - Complex quoting in a bash heredoc broke once: write the Python to the job tmp folder and run it.
   - Do not run a wait loop; one background until-loop for a single condition is fine.
   - HUB 04:41: for content V-10 + V-10r, a validate finding on the branch alone that names only '#/status' is expected and does not block. Write READY-SLICE <tip> and name that finding plus the scratch-tree proof in the LANE note.
+  - HUB 05:24: V-43 and game-tutorials V-08b launch only on a memory row at or above 4.0 GB, in that order (V-43 first). content V-10r + check wf_93856f0c-7c2 (05:08) runs in 0fd59f53. today-track is at 94c51632 (V-43 args filled for it). game-tutorials slot 8 granted 05:02: fast-forward to BASE 94c51632 and write its V-08b slice args from lane_args_v3.json.
