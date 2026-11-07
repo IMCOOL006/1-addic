@@ -297,18 +297,23 @@
         const out = h('p', { role: 'status', class: 'muted' });
         const S = getStore();
         const canPin = cryptoReady() && S && S.lock && typeof S.lock.set === 'function';
-        const setBtn = btn('Set PIN', async () => {
+        // Set PIN and Next run the same check (RS11): true once it is set, false with the reason shown when it is not.
+        const trySet = async () => {
           const a = p1.value; const b = p2.value;
           p1.value = ''; p2.value = '';
-          if (a !== b) { out.textContent = COPY.pinMismatch; return; }
-          if (!pinOk(a)) { out.textContent = COPY.pinDigits; return; }
-          try { await S.lock.set(a, { autoLockMin: 5 }); out.textContent = COPY.pinSet; setBtn.disabled = true; } catch (err) { out.textContent = lockError(err); }
-        }, { testid: 'onb-pin-set' });
+          if (a !== b) { out.textContent = COPY.pinMismatch; return false; }
+          if (!pinOk(a)) { out.textContent = COPY.pinDigits; return false; }
+          try { await S.lock.set(a, { autoLockMin: 5 }); out.textContent = COPY.pinSet; setBtn.disabled = true; return true; } catch (err) { out.textContent = lockError(err); return false; }
+        };
+        const setBtn = btn('Set PIN', () => { trySet(); }, { testid: 'onb-pin-set' });
         const disc = choice('checkbox', 'discreet', '1', 'Discreet mode: show "' + String(C.discreetName || 'Notebook') + '" instead of the app name', settings.discreet === true);
         return {
           body: [canPin ? h('div', { class: 'stack' }, field('PIN (optional)', p1, COPY.pinHelp), field('Same PIN again', p2), setBtn, out)
             : h('p', { class: 'muted', text: lockError({ code: 'NO_CRYPTO' }) }), disc.el],
-          read() { answers.discreet = disc.input.checked; },
+          read() {
+            answers.discreet = disc.input.checked;
+            return canPin && (p1.value !== '' || p2.value !== '') ? trySet() : true; // RS11: never on with a typed one not set
+          },
         };
       }
       if (id === 'focus') {
@@ -404,7 +409,14 @@
       const step = STEPS[at];
       const words = COPY.steps[step.id];
       const col = collectors(step.id);
-      const forward = () => { col.read(); at += 1; paint(); };
+      let moving = false; // RS11: a step whose read() checks something first goes on only when it says so
+      const forward = () => {
+        if (moving) return;
+        const r = col.read();
+        const next = (ok) => { if (ok !== false) { at += 1; paint(); } };
+        if (r && typeof r.then === 'function') { moving = true; r.then((ok) => { moving = false; next(ok); }, () => { moving = false; }); return; }
+        next(r);
+      };
       const skip = () => { for (const k of STEP_KEYS[step.id]) if (k !== 'earlyNoticeSeen') delete answers[k]; at += 1; paint(); };
       let nav;
       if (step.id === 'safety') {

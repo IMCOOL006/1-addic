@@ -1893,5 +1893,27 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
       assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
     }
   });
+  test('RS11: Next on the privacy step with a typed PIN sets it, or stays on the step and says why', async () => {
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    const typed = async (a, b) => { d.byId(root, 'onb-pin').value = a; d.byId(root, 'onb-pin2').value = b; d.tapId(root, 'onb-next'); await d.settle(); };
+    await typed('2468', '1357');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'two PINs that differ: still on step 2');
+    assert.ok(root.textContent.includes(O.COPY.pinMismatch), 'and it says why');
+    assert.equal(S().status().hasLock, false);
+    await typed('12ab', '12ab');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'not 4 to 12 digits: still on step 2');
+    assert.ok(root.textContent.includes(O.COPY.pinDigits));
+    assert.equal(S().status().hasLock, false);
+    await typed('2468', '2468');
+    assert.equal(S().status().hasLock, true, 'Next set the typed PIN');
+    assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'then went on');
+    const again = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const r2 = again.onb({});
+    again.tapId(r2, 'onb-next');
+    again.tapId(r2, 'onb-next');
+    assert.ok(r2.querySelector('[data-testid="onb-step-3"]'), 'empty fields: Next goes on at once');
+  });
   // -- FIX-R2-SAFETY tests end --
 });
