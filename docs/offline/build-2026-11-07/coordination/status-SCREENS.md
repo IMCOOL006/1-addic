@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:42 IST: one run live: actions check wf_04c1d56e-d49 (in its fix round: 0977edd C1 test); game-tutorials paused at 1ea2ebf for memory (3.3 GB 18:41), its re-check on the next 7.0 GB row
+STATE: BUILDING   # 2026-11-07 18:48 IST: actions READY 0977edd (complete, for the HUB); game-tutorials paused at 1ea2ebf for memory, its re-check on the next 7.0 GB row (tmp/args_gt_recheck.json); no run live
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
-LANE: actions CHECKING   # U-22..U-25 built (tip 9ee68cf); the check over 710502f...HEAD with the browser gate: run wf_04c1d56e-d49 launched 18:32 on an 8.4 GB row; slice 710502f merged 18:02
+LANE: actions READY 0977edd   # U-23..U-25 complete (slice 710502f merged 18:02); run wf_04c1d56e-d49 check FIX -> C1 FIXED 0977edd; test 32/32, validate GREEN, browser GREEN 9/0/10 (by me); lifts bp-new, bp-form, review-start; the lane is complete
 LANE: game-tutorials CHECKING   # PAUSED for memory at 1ea2ebf (18:41, a 3.3 GB row): the check wf_2cdde478-7e9 said FIX (C1 MEDIUM: hooks game-card, trial-closing) and its fix round committed 1ea2ebf; the re-check (with the browser gate) on the next 7.0 GB row (tmp/args_gt_recheck.json)
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:42 IST
+UPDATED: 2026-11-07 18:48 IST
+
+# 2026-11-07 18:48 IST · actions READY 0977edd (U-23..U-25; the lane is complete)
+
+- For the HUB: merge build/actions at 0977edd (cut base 9f3026c6; the slice 710502f is in the trunk since 18:02; this READY adds 42ce8aa + 25308cc U-23 Battle Plans at #/actions/battle with .ics and debrief, bd8be70 + 0894beb U-24 the Weekly Review at #/actions/review with the forecast check, 40e3418 U-25 the practices player at #/practice/<id> in ui-practices.js (new), 7641b1b U-25 quests, Prediction Lab and to-dos, 9ee68cf their tests, 0977edd the check's C1 test). Files: ui-actions.js, ui-practices.js (new), actions-ui.test.mjs, the actions section of styles.css (closed by its end marker).
+- Gates: the check (run wf_04c1d56e-d49) on 9ee68cf: build GREEN 716337 B, test GREEN 32/32, validate GREEN, guards RED by name only on workbook-groups, workbook-card, plan-sections, plan-print (absent because the cut 9f3026c6 predates be0f806d; present on the trunk); bp-new, bp-form, review-start now pass: lift them from baselines.md. Check FIX -> C1 MEDIUM (no test that the event log never shrinks across removes and plan re-writes) FIXED 0977edd on the re-check. Territory 9f3026c6..HEAD 3 own, 1 shared at its append point, 0 errors. Browser by me on 0977edd: GREEN 9 pass, 10 skip, 0 fail (skips: routes and hooks of other lanes: #/onboarding, #/sos, UI.tour, #/workbook, quicklog-button) (C:/Users/ruchi/1-addic-wt/_logs/gates/actions/browser-20261107-184410.log). Report tracks/SCREENS/lane-reports/actions.md (15062 B).
+- Defaults built (R-S-13): the review looks back over the 7 days ending today and saves under this week's Monday; finishing a practice does not tick a quest; a to-do's due date is not editable. Shapes for consumers in R-S-12 (weekly-review payload; ExerciseDone from a practice, exerciseId 'breathing' for breathe). Content.practices is not in this lane's tree: the player was tested on a stand-in of the be0f806d shape; on the trunk it lists the eight practices.
+- Verified by me: the branch log (8 commits after 710502f), the browser gate on 0977edd. Assumed: the node, validate and guards counts as the checker ran them.
 
 # 2026-11-07 18:28 IST · game-tutorials PAUSED for memory after its U-28 commit; U-26 and U-28 built, the check waits for a 7.0 GB row
 
