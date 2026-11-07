@@ -67,6 +67,11 @@ async function lockSet(page) {
 
 async function urgentOneTap(page, where) {
   if (await present(page, HOOKS.telLink, 2500)) return;
+  // [data-tour="sos-urgent"] is contracted (contracts/actions-sos.md): skip only while UI.pages.sos is absent.
+  if (!(await present(page, HOOKS.sosUrgentBtn, 2500))) {
+    if (!(await routeRegistered(page, 'sos'))) throw new F.Skip(REASON.route('sos'));
+    assert.fail(`${HOOKS.sosUrgentBtn} absent on the SOS hub (${where}): urgent help must be one tap from SOS`);
+  }
   await F.click(page, HOOKS.sosUrgentBtn);
   assert.ok(await present(page, HOOKS.telLink, 2500), `urgent numbers one tap from SOS (${where})`);
 }
