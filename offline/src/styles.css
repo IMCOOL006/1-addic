@@ -551,3 +551,43 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 .wb-plan-confirm { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; cursor: pointer; font-weight: 600; }
 .wb-plan-confirm input { width: 24px; height: 24px; }
 /* -- end workbook-settings -- */
+
+/* -- game-tutorials -- */
+/* Guidance (U-27): the coach layer sits in #coach (z-index 50), under the SOS button (60), which stays clickable. */
+.coach-layer { position: absolute; inset: 0; }
+.coach-layer .coach-overlay { pointer-events: none; } /* the page stays usable: a tap outside the popover closes it and goes through */
+.coach-dim { background: hsl(var(--shadow) / 0.55); }
+.coach-center { left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(320px, calc(100vw - 32px)); }
+.coach-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.coach-head .coach-count { margin: 0; font-size: 0.875rem; }
+.coach-sos {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 var(--space-3);
+  border-radius: var(--radius); background: hsl(var(--danger)); color: hsl(0 0% 100%); font-weight: 700; text-decoration: none;
+}
+.coach-pop .coach-text { font-size: 1.0625rem; line-height: 1.5; }
+.coach-pop :focus-visible, .gt-jit :focus-visible, .gt-explorer:focus-visible, .gt-more summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.gt-jit {
+  margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius);
+  background: hsl(var(--surface)); border: 2px solid hsl(var(--primary) / 0.5);
+}
+.gt-jit p { margin: 0 0 var(--space-2); }
+.gt-explorer {
+  display: flex; align-items: center; gap: var(--space-3); min-height: 44px; width: 100%; padding: var(--space-2) var(--space-3);
+  background: hsl(var(--surface)); color: hsl(var(--text)); border: 1px solid hsl(var(--border)); border-radius: var(--radius);
+  font: inherit; text-align: left; cursor: pointer;
+}
+.gt-explorer-list, .gt-more-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.gt-explorer-list li { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; }
+.gt-explorer-list .gt-label { flex: 1 1 auto; min-width: 0; }
+.gt-explorer-list .gt-done .gt-mark { color: hsl(var(--primary)); font-weight: 700; }
+.gt-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.gt-more-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-2) 0; border-top: 1px solid hsl(var(--border)); }
+.gt-more-item .stack { flex: 1 1 14em; min-width: 0; }
+.gt-dot {
+  display: inline-block; margin-left: var(--space-1); padding: 0 6px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;
+  line-height: 1.5; background: hsl(var(--gold)); color: hsl(200 32% 13%); vertical-align: middle;
+}
+[data-route="sos"] .gt-jit, [data-route="sos"] #coach, [data-route="lock"] .gt-jit, [data-route="lock"] #coach { display: none !important; }
+[data-motion="reduce"] .coach-ring, [data-motion="reduce"] .coach-pop { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .coach-ring, .coach-pop { transition: none !important; } }
+/* -- end game-tutorials -- */
