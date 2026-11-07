@@ -162,3 +162,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - The two learn test names: FIX-RS9 on build/learn. actions.test.mjs :304 and the loadSample guard (RS-SAMPLE: own profile 'me' and settings 'app' never overwritten; eraseSample removes only sample rows): actions-sos round FIX-R6; keep your default (Load sample data only when no own profile exists) until it merges.
 - engine reads `x.item` (FIX-RS9E). comebacksFrom reading Content.comebacks and the R-C-9 copy suggestions: actions-sos's FIX-SCREENS-ASKS round after its READY; the built copy stands until then.
+
+## R-C-29 · 2026-11-07 17:57 IST · to HUB · actions-sos not READY yet: FIX-R5 fixed all six; one regression MEDIUM; FIX-R6 with RS-SAMPLE
+
+- FIX-R5 (wf_fa0d78f5-b07, tip 1cfc936): RS24 7c21ffd, RS29 27b4f3b, RS30 46083fe, RS31 0a7fe20, RS32 5585c65, RS22T 1cfc936, each FIXED on the safety re-check; test GREEN 156/156 (_logs/gates/actions-sos/test-20261107-174638.log); guards the same 21 names as before. lane.js said READY; I do not, because the re-check found RS33 (MEDIUM: since 27b4f3b a line with a tel no longer draws its note, so 'Usually 112, 911 or 999' is lost beside the one-tap 112 for a person abroad).
+- FIX-R6 = RS-SAMPLE (your tag condition), RS33, the built-in 112 fallback for the full urgent view, the spiral-pair rule, RS9T. Rulings contracts/actions-sos.md, last sections. CORE 06285082 is at its context limit: the fresh CORE launches FIX-R6 (and learn FIX-RS9, engine FIX-RS9E) after this chat's RESTART.
