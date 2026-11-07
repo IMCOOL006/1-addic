@@ -1,7 +1,11 @@
 ## core (CORE, 1-addic offline build): the slice report
 
-State: STOPPED (2026-11-07 16:41 IST, continued from 957f333; tip b4ccce4; check PASS; FIX-V11 built, review not run; guards RED on 15 tour-targets, 3 lifted on trunk). Earlier: READY (2026-11-07 14:11 IST, continued from bda0f0f; branch tip 957f333; all units built; RC10-RC12 and RS18 FIXED and re-checked; no open review or check item beyond 3 LOW and 2 QUESTIONS from the re-check, see Review 2026-11-07 14:11 IST; RS11 stays deferred; guards RED on the 15 baselined tour-targets). Earlier states in the annex. Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. Tip cdfc0e9: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS all built. Date 2026-11-07 07:26 IST; continued 07:40; continued 2026-11-07 10:41 IST (from 98f872d).
-Commits (655516dc..HEAD, tip b4ccce4, newest first):
+State: READY (2026-11-07 17:16 IST, continued from b4ccce4; tip 8e80951; check PASS at b4ccce4; review RC1, RC2, RC3, RS19 all FIXED and re-checked; open 0; guards RED on the 15 baselined tour-targets only). Earlier: STOPPED (16:41 IST, tip b4ccce4, review not run); READY (14:11 IST, tip 957f333). Earlier states in the annex. Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. All units built: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS, FIX-R2, FIX-V11 (tier 1). Dates 2026-11-07 07:26 to 17:16 IST.
+Commits (655516dc..HEAD, tip 8e80951, newest first):
+- 8e80951 RC2: test, high contrast follows a store change and boot paths
+- 58f309a RS19: high contrast stays on while the settings row is sealed
+- 15f99c6 RC3: a custom field's focus node is named by its label
+- 9b03126 RC1: a control a custom field returns keeps its tab stop
 - b4ccce4 FIX-V11 RS18-V11: the PIN-where line is read out with the first
 - 36c08fd FIX-V11 RC12-V11: custom field focus target marked, falls back to node
 - 16df9e7 FIX-V11 R-S-6: high contrast applied on every render
@@ -26,14 +30,12 @@ Commits (655516dc..HEAD, tip b4ccce4, newest first):
 Then cdfc0e9 and every earlier commit (8bf7b5c to cdfc0e9, with messages: C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md).
 
 ### Turn caps
-- 2026-11-07 16:41 IST (from 957f333): builders FIX-V11 x2 (33 steps, 5 steps relaunch); capHits 0; stopped: two builders in a row made no progress (FIX-V11 was already committed).
-- 2026-11-07 14:11 IST (continued from bda0f0f): no builders ran this run (builders []; capHits 0). The FIX-R2 fixer committed the four fixes.
-- 2026-11-07 11:58 IST (continued from cdfc0e9): no builders ran this run (builders []; capHits 0). The review-fix round (RC10-RC18, RS9-RS14, C1) was built by the fix step; both reviewers ran to the end this time.
-- Builder batch [U-01]: steps_used 17; returned a note (yes). capHits: 0.
-- 2026-11-07 07:40 IST: builder batch [U-03, U-02]: steps_used 42; returned a note (yes). capHits: 0.
-- 2026-11-07 10:41 IST run (continued from 98f872d): earlier runs built U-04 (06cdf34), FIX-C4-C5 and the review fixes. This run: builder [FIX-SAFETY] steps_used 45, note yes; builder [FIX-RULINGS] steps_used 36, note yes; relaunch [FIX-RULINGS] steps_used 5 (nothing redone, only re-ran gates). capHits: 0. Stopped: two builders in a row made no progress (the relaunch found the batch already done).
+- 2026-11-07 17:16 IST (continued from b4ccce4): no builders (builders []; capHits 0); two reviewers plus one fix round (RC1, RC3, RS19, RC2) and the re-checks.
+- Older runs (16:41, 14:11, 11:58, 10:41, 07:40, 07:26 IST): capHits 0; lines in the annex.
+
 
 ### Units
+- 2026-11-07 17:16 IST: no unit built this run; FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) was judged. Review fixes: RC1 9b03126 (a select, input or button a custom field returns keeps its natural tab stop after a failed Save); RC3 15f99c6 (the field label names the focused node, aria-labelledby, role group when bare); RS19 58f309a (high contrast no longer drops on the lock page or SOS while locked); RC2 8e80951 (test: high contrast follows store change and boot paths, 4 mutants red). Questions closed: RC12 marks the focused control; locked look stays as the session left it. Detail: _logs/reports/core/core__units.md:582, core__units-V11.md:57.
 - 2026-11-07 16:41 IST run (from 957f333; built this run: FIX-V11, 16df9e7 R-S-6, 36c08fd RC12-V11, b4ccce4 RS18-V11). Held: none. Person-visible: high contrast stays on from the first screen after reload (not on the lock screen); a required custom field left empty takes focus on its first usable control, read as invalid with its error line; the no-crypto lock page reads both lines together. No words changed. Closed: R-S-6, RC12 and RS18 follow-ups. Detail: _logs/reports/core/core__units.md line 527 on.
 - 2026-11-07 14:11 IST run (continued from bda0f0f; built this run: none; FIX-R2 fixes below). Held: none.
   Fixes: RC10 3caf5bb (test only; mutants of store.js failed); RC11 034a180 (test only; 4 mutants failed); RC12 468a93c; RS18 957f333.
@@ -94,7 +96,7 @@ Slice: not run. 2026-11-07 10:41 IST: two reviewers judged 655516dc..HEAD; no re
 Verdict PASS at cdfc0e9; judged commits after cdfc0e9 (none); findings none; openCheck 0. Territory: core's files only (run wf_bf29c997-958's check). Earlier check C1 fixed in 6afc262; re-check: not run.
 
 ### Review (2026-11-07 11:58 IST)
-RC10-RC18, RS9-RS14 FIXED, RS11 WONTFIX-ACCEPTED (deferred), RC10-RC12 PARTLY (closed 14:11). Full text in core-report-annex.md.
+(text: core-report-annex.md)
 
 ### Safety and content marks
 - 2026-11-07 16:41 IST: no new copy, no network, no event-log change, SOS not gated; none new clinicalReview.
@@ -110,26 +112,10 @@ None recorded in the notes' for_the_chat beyond: the HUB baselines the 15 tour-t
 - 2026-11-07 11:58 IST: actions-sos: do not call Store.lock.touch() as a keep-alive on SOS; ui-core holds via Store.lock.hold(on). Redraw private rows on the lock notification.
 
 ### Docs owed
-16:41 IST: contract G/settings: data-contrast by ui-core (R-S-6); contract B: custom focus target marked. Full text in C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md. Adds 11:58: the guide says a long SOS session ends at the lock screen and that without crypto.subtle a PIN is not available; contract E gets Store.lock.hold(on).
+See C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md (Docs owed).
 
 ### Open questions
-14. (16:41 IST) High contrast is off on the lock screen (settings row sealed); a device flag needs a ruling. Default: off.
-15. (16:41 IST) Chips group: focused chip unmarked. Default: unmarked.
-12. (2026-11-07 14:11 IST) Should the control that takes focus in a custom field carry aria-invalid and link its error text (aria-describedby)? Default built: aria-invalid on the custom node only.
-13. (2026-11-07 14:11 IST) Should #lock-where be a live region (role=status) so it is heard when Enter is pressed in #lock-pin? Default built: no.
-0. (11:46 IST) Rerun the two whole-lane reviews (contracts, safety) with a larger cap before the merge? Default: the HUB merges only after they return; until then the lane is RED, not for a code defect.
-1. 15 tour targets RED in guards. Default built: left to the screen lanes; HUB baselines them by name.
-2. Should a UI.boot() failure also show the urgent-help numbers (SOS never gated)? Default: no in U-01; U-03 may render #/sos/urgent content on the start-failure path.
-4. C4: should a sheet open on SOS close on lock? Default: no.
-5. 390 px proof used a 504 px clamp (Edge minimum). Default: accepted until browser tests.
-3. C1 (message when UI undefined). Default built: no message (the chat's word).
-6. (2026-11-07 10:41) Should a wake past the idle limit lock data while an SOS page stays on screen (Q1 vs (b))? Default: yes, chrome repainted only.
-7. aria-invalid on a required chips group (RC7); over-count by one in takeIn (Q4); draft.list order in commit (RC9). Defaults built by the builder.
-8. Check C1 (clinicalReview mark on start-failure copy). Default: unmarked.
-
-9. (11:58 IST) RS11 reserved meta gen row: build or accept? Default: not built.
-10. (11:58 IST) Confirm that idle past the limit inside SOS asks the PIN on leaving. Default built: yes.
-11. (11:58 IST) Which actions-sos routes draw private rows (data stays open on SOS, no outer bound)? Default: none checked.
+Earlier questions and defaults: core-report-annex.md. New ones: see Review 17:16 IST.
 
 ### For the HUB at the merge
 - 2026-11-07 16:41 IST: tip b4ccce4 replaces 957f333 (3 commits; ui-core.js, styles.css one rule, store.test.mjs +4, rebuilt html 208924 B). 3 of 15 tour-target REDs (quicklog-*) lift once the trunk's 3f3001e is merged; rest baselined.
@@ -160,3 +146,16 @@ VERIFIED: build GREEN 208924 B (_logs/gates/core/build-20261107-170636.log); tes
 
 ### Check (2026-11-07 16:41 IST)
 PASS at b4ccce4; findings none; open 0. FIX-V11 meets rulings (contracts/core.md 112-113, R-C-23). Review: not run (reviewers []), open 0.
+
+### Gates (2026-11-07 17:16 IST)
+VERIFIED at 8e80951 by the re-checker: build GREEN (_logs/gates/core/build-20261107-180846.log); test GREEN 87/87 (test-20261107-180848.log); validate SKIP, engine.js absent (validate-20261107-181706.log); guards RED by the same 15 tour-target names, none new (guards-20261107-181706.log). ASSUMED: no browser suite run; no real-browser check of textContent spacing (Q-m).
+
+### Check (2026-11-07 17:16 IST)
+PASS at b4ccce4 (judged only commits after b4ccce4: none); findings none. Territory: core's files only (ui-core.js, store.test.mjs, 1-addic.html rebuilt); no shared file touched.
+
+### Review (2026-11-07 17:16 IST)
+Contracts and safety judged 957f333...HEAD; one fix round; re-checked by the finders. openReview 0.
+- RC1 MEDIUM RC12-V11 36c08fd: fix 9b03126, FIXED. RC3 LOW RC12-V11: fix 15f99c6, FIXED. RC2 LOW R-S-6 16df9e7: fix 8e80951 (test only), FIXED. RS19 LOW R-S-6: fix 58f309a, FIXED, no new findings.
+- New from the RC re-check, not fixed: N1 LOW ui-core.js:377 (role=group replaces an implicit role such as list or table); N2 LOW :373-378 (a contenteditable node loses its tab stop and gets role group). Q-a: a bare native control returned as the node has no accessible name from the label.
+- Open questions from the reviewers: chips follow the aria-invalid rule (Q-chips); firstFocusable ignores class-hidden or closed-details controls (Q-n); text size and motion dropped on locked renders (Q-k); RS18 second line missing on the real NO_CRYPTO lock page in ui-onboarding.js:144 (Q-l, actions-sos lane); Q-m above. Defaults: no change.
+- Contract: custom-field focus rules (RC1, RC3) and the locked-chrome rule (data attributes left as the session left them while locked or loading) to be recorded in contracts/core.md. Requests: actions-sos align the NO_CRYPTO line (Q-l). Docs owed: none new. For the HUB at the merge: tip 8e80951 replaces b4ccce4; offline/1-addic.html rebuilt; guards RED = the 15 baselined names only; no test should expect data-contrast removed on a locked render.

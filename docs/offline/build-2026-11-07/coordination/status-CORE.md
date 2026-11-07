@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 17:57 IST: actions-sos FIX-R5 returned (RS33 MEDIUM open; FIX-R6 ruled, for the fresh CORE); one run live: core FIX-V11 review wf_6015fc2b-7ec; RESTART when it returns
-LANE: core REVIEWING b4ccce4   # 2026-11-07 17:17 IST: FIX-V11 built (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4; check PASS at b4ccce4, test GREEN 84/84 _logs/gates/core/test-20261107-170638.log, build GREEN); run wf_37a1972d-79e STOPPED before the reviewers only because the builder named its units by id; review run wf_6015fc2b-7ec (both reviewers over 957f333...b4ccce4); merged earlier as d4eed2a (957f333)
+STATE: RESTART   # 2026-11-07 18:23 IST: CORE 06285082 hands over near 300k with NOTHING running (all its runs returned). The fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here': launch actions-sos FIX-R6 (RS-SAMPLE, a tag condition), learn FIX-RS9 and engine FIX-RS9E (wrappers ready)
+LANE: core READY 8e80951   # 2026-11-07 18:23 IST: FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) and its review fixes RC1 9b03126, RC3 15f99c6, RS19 58f309a, RC2 8e80951, each FIXED on its finder's re-check; check PASS; test GREEN 87/87; LOWs N1, N2, Q-a for offline-v1.1; report lane-reports/core.md (18258 B); cut base 655516dc; merged earlier as d4eed2a (957f333)
 LANE: engine MERGED 57153d3   # FIX-RS4 READY 16:4x, merged by the HUB as 3720d119 (R-H-25, 17:03; the baselined names lifted); before: READY 227a07a merged 15:34; complete, fixes by name only (the crisisKeywords request of RS32/RS31 is offline-v1.1 by name)
 LANE: actions-sos REVIEWING 1cfc936   # 2026-11-07 17:57 IST: FIX-R5 wf_fa0d78f5-b07: RS24 7c21ffd, RS29 27b4f3b, RS30 46083fe, RS31 0a7fe20, RS32 5585c65, RS22T 1cfc936 FIXED; test GREEN 156/156; re-check raised RS33 MEDIUM (a regression: notes dropped beside a tel) and two questions (ruled); NEXT FIX-R6 = RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T (contracts/actions-sos.md last sections); report lane-reports/actions-sos.md (19778 B)
 LANE: learn MERGED 4f5832f   # FIX-RS4 READY 16:4x, merged by the HUB as cb0b427 (R-H-25, 17:03); before: READY 19f373c merged 10:50; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
-SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R5 running), core slot 1 (FIX-V11 running)
-UPDATED: 2026-11-07 17:57 IST
+SLOTS-ASKED: 3   # actions-sos slot 3 (held, FIX-R6 next), learn slot 9 and engine slot 2 (FIX-RS9, FIX-RS9E, R-H-27/R-C-27); core slot 1 free when READY 8e80951 merges
+UPDATED: 2026-11-07 18:23 IST
 
 # 2026-11-07 17:07 IST · actions-sos FIX-R4 returned RED; FIX-R5 ruled; waiting for memory
 

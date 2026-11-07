@@ -111,3 +111,10 @@ Not core's: Q5 imports go through Actions.importBackup (actions-sos; workbook-se
 
 - **RC12 follow-up (LOW):** firstFocusable falls back to the custom node itself when it has no enabled, visible control inside (as before 468a93c); the control that takes the focus also carries aria-invalid and aria-describedby the field's error line. Tests: a custom field whose first button is disabled or hidden, and one with no control inside.
 - **RS18 follow-up (LOW):** #lock-where is announced with #lock-msg (inside the alert, or role=status), and a test reads #lock-pin's aria-describedby 'lock-msg lock-where'.
+
+## The CORE chat's rulings 2026-11-07 18:23 IST: FIX-V11's review (run wf_6015fc2b-7ec; RC1 9b03126, RC3 15f99c6, RS19 58f309a, RC2 8e80951 FIXED; offline-v1.1 by name, not holding READY)
+
+- **N1 (LOW):** role=group is set only on a plain div or span; a node with an implicit role of its own (ul, table, svg) keeps it.
+- **N2 (LOW):** a contenteditable node counts as a control (no tabindex -1, no role=group written on it).
+- **Q-a (ruled):** a native control returned as a custom field's node gets aria-labelledby the field label's id, like the non-control nodes.
+- High contrast now holds its last state while the settings row is sealed (RS19), as discreet does.
