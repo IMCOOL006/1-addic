@@ -222,6 +222,27 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     errors = [];
     console.error = (...a) => errors.push(a.join(' '));
   };
+  // The dialog as a browser runs it: close() shuts it at once, but its 'close' event waits in a queue until flush(),
+  // as the HTML rule says (the event is a queued task, never fired inside close()). Escape fires 'cancel' first.
+  const dialogStandIn = () => {
+    const dlg = globalThis.document.getElementById('dialog');
+    const queued = [];
+    const fire = (type) => {
+      const ev = { type, target: dlg, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+      for (const f of [].concat(dlg.on[type] || [])) f(ev);
+      return ev;
+    };
+    Object.assign(dlg, {
+      open: false,
+      showModal() { dlg.open = true; },
+      close() { if (!dlg.open) return; dlg.open = false; queued.push('close'); },
+      removeEventListener(t, f) { dlg.on[t] = (dlg.on[t] || []).filter((x) => x !== f); },
+      escape() { if (!fire('cancel').defaultPrevented) dlg.close(); },
+      flush() { while (queued.length) fire(queued.shift()); },
+    });
+    return dlg;
+  };
+  const button = (root, label) => root.all().find((e) => e.tagName === 'BUTTON' && e.textContent.trim() === label);
 
   test('locked: no page with the person’s data is drawn; the lock screen offers urgent help without the PIN', async () => {
     setup();
@@ -340,5 +361,43 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.getElementById('app-name').textContent.trim(), 'Notebook');
     assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
     assert.equal(document.documentElement.getAttribute('data-counters'), 'off');
+  });
+
+  test('C2: a sheet that replaces another is not closed by the first sheet’s queued close event', () => {
+    setup();
+    const dlg = dialogStandIn();
+    const why = [];
+    UI.sheet('First', page('one')(), { onClose: (w) => why.push('first ' + w) });
+    const second = UI.sheet('Second', page('two')(), { onClose: (w) => why.push('second ' + w) });
+    assert.deepEqual(why, ['first replaced']);
+    dlg.flush(); // the browser now delivers the close event that the first sheet queued
+    assert.equal(dlg.open, true, 'the second sheet stays open');
+    assert.match(dlg.textContent, /Second/);
+    assert.deepEqual(why, ['first replaced'], 'an event that was not its own never closes the second sheet');
+    dlg.escape(); // a real dismissal still closes it
+    dlg.flush();
+    assert.deepEqual(why, ['first replaced', 'second dismissed']);
+    assert.equal(dlg.open, false);
+    assert.equal(dlg.kids.length, 0, 'the dialog is emptied');
+    second.close();
+    assert.deepEqual(why, ['first replaced', 'second dismissed'], 'closing twice does nothing twice');
+  });
+
+  test('C2: a confirm from inside a sheet, and a sheet opened as the confirm answers, wait for the person', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    UI.sheet('Your plan', page('PRIVATE plan')());
+    const asked = UI.confirm({ title: 'Delete this line?', confirmLabel: 'Delete', danger: true });
+    dlg.flush();
+    assert.equal(dlg.open, true, 'the confirm is still open after the sheet’s queued close event');
+    button(dlg, 'Delete').on.click[0]();
+    assert.equal(await asked, true, 'the person’s answer, never a false from an old event');
+    const next = UI.sheet('Deleted', page('done')());
+    dlg.flush(); // the confirm's own close event arrives after the next sheet opened
+    assert.equal(dlg.open, true, 'the sheet opened after the answer stays open');
+    assert.match(dlg.textContent, /Deleted/);
+    next.close();
+    dlg.flush();
+    assert.equal(dlg.open, false);
   });
 });

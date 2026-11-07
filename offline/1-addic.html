@@ -1362,7 +1362,9 @@ const UI = (function () {
       if (back && typeof back.focus === 'function' && document.contains(back)) back.focus();
       if (typeof o.onClose === 'function') o.onClose(why || 'closed');
     };
-    const onNativeClose = () => close('dismissed');
+    // The browser fires 'close' later, as a queued task. If a newer sheet has opened the dialog by then (a confirm
+    // from inside a sheet, a sheet opened as a confirm answers), the event belongs to an older sheet: ignore it.
+    const onNativeClose = () => { if (!dlg.open) close('dismissed'); };
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
     const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
     const head = h('div', { class: 'sheet-head' },
