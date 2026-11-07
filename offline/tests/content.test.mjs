@@ -1,6 +1,6 @@
 // Lane content's Node tests (node:test, no dependencies). U-31a: the M0-M3 exercises of BUILD-PLAN 3.8 and the
 // checkpoint, the content-core safety asks (R-C-13, R-C-18), and Engine.validateContent over the loaded content.
-// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6. U-30: lessons M7-M10. U-32: practices, games, comebacks.
+// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6. U-30: lessons M7-M10. U-32: practices, games, comebacks. U-33: the sample profile.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -13,7 +13,7 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
 globalThis.Content = require(src('content-core.js'));
-for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js', 'content-practices.js']) {
+for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js', 'content-practices.js', 'content-sample.js']) {
   if (existsSync(src(f))) require(src(f));
 }
 const C = globalThis.Content;
@@ -281,7 +281,7 @@ test('content: the spiral lesson carries clinicalReview and points to urgent hel
   assert.ok(!strings(C.modules).some((s) => /\breset/i.test(s)), 'no reset wording');
 });
 
-// U-30: lessons M7-M10. U-32: practices, games, comebacks. Rule 4: M9-M10 touch feelings, anger, slips and warning signs.
+// U-30: lessons M7-M10. U-32: practices, games, comebacks. U-33: the sample profile. Rule 4: M9-M10 touch feelings, anger, slips and warning signs.
 test('content: M9-M10 lessons carry clinicalReview', () => {
   for (const l of lessonsOf(['m9', 'm10'])) assert.equal(l.clinicalReview, true, l.id);
   const all = strings(lessonsOf(['m9', 'm10']));
@@ -352,4 +352,83 @@ test('content: practices and games keep the restraint rules', () => {
   assert.ok(!all.some((s) => /\baddicts?\b/i.test(s) && !/^\s*"[^"]*"\s*$/.test(s)), 'no addict noun');
   assert.ok(!all.some((s) => /\b(reset|streak|points?|dose|mg)\b|hopeless|suicid/i.test(s)), 'no reset, streak, points, dose or crisis words');
   assert.deepEqual(E.validateContent(C), []);
+});
+
+// U-33: the sample profile (O6). Every row and event sample: true, ids smp-, deterministic, nothing after now.
+const NOW = '2026-11-07T10:57:00.000Z';
+const sampleRows = (st) => Object.values(st).flat();
+
+test('content: sample passes backup validation', () => {
+  const out = C.sample.generate(NOW);
+  assert.equal(C.sample.name, 'Sample');
+  assert.ok(isObj(out) && isObj(out.stores), '{stores}');
+  const v = E.validateBackup({ app: '1-addic', schemaVersion: 1, stores: out.stores });
+  assert.ok(v.ok, (v.errors || []).join('; '));
+  for (const [name, rows] of Object.entries(out.stores)) {
+    const kp = E.STORES[name];
+    assert.ok(kp, `known store ${name}`);
+    assert.ok(Array.isArray(rows), `${name} is a list`);
+    const keys = rows.map((r) => r[kp]);
+    assert.ok(keys.every((k) => typeof k === 'string' && k), `${name}: every row has ${kp}`);
+    assert.equal(new Set(keys).size, keys.length, `${name}: keys unique`);
+  }
+  assert.ok(!('meta' in out.stores) && !('settings' in out.stores), 'no meta or settings rows: Actions adds the sample meta row');
+});
+
+test('content: all rows sample:true', () => {
+  const st = C.sample.generate(NOW).stores;
+  assert.ok(sampleRows(st).every((r) => r.sample === true), 'every row and event is marked');
+  for (const [name, rows] of Object.entries(st)) if (name !== 'profile') assert.ok(rows.every((r) => /^smp-/.test(r.id)), `${name}: ids smp-`);
+  assert.equal(st.profile[0].name, 'Sample');
+  assert.ok(st.contacts.every((c) => !/\d/.test(c.phone || '') && /sample/i.test(c.name)), 'invented contacts, no numbers');
+  assert.equal(st.contacts.filter((c) => c.role === 'safetyNet').length, 3);
+  const logs = (type) => st.logs.filter((l) => l.type === type);
+  assert.ok(logs('craving').length >= 12 && logs('craving').length <= 16, 'cravings 12-16');
+  assert.equal(logs('checkin').length, 28);
+  assert.ok(logs('feeling').length && logs('activity').length, 'feelings and activities');
+  assert.equal(st.plans.length, 3);
+  assert.ok(st.responses.length >= 4 && st.responses.length <= 6, 'responses 4-6');
+  for (const id of ['quick-reasons', 'triggers', 'red-flags']) assert.ok(st.responses.some((r) => r.exerciseId === id && byId(id)), id);
+  const now = Date.parse(NOW);
+  assert.ok([...st.logs, ...st.events, ...st.responses].every((r) => Date.parse(r.at) <= now), 'nothing after now');
+  const logIds = new Set(st.logs.map((l) => l.id));
+  assert.ok(st.events.filter((e) => e.payload.logId).every((e) => logIds.has(e.payload.logId)), 'events point at sample logs');
+  assert.ok(logs('craving').every((l) => st.events.some((e) => e.type === 'LogCreated' && e.payload.logId === l.id)), 'a LogCreated per craving');
+});
+
+test('content: sample is deterministic', () => {
+  assert.deepEqual(C.sample.generate(NOW), C.sample.generate(NOW));
+  assert.notDeepEqual(C.sample.generate(NOW).stores.logs[0].at, C.sample.generate('2026-12-01T10:00:00.000Z').stores.logs[0].at);
+  assert.throws(() => C.sample.generate('not a date'));
+  assert.ok(!/Math\.random/.test(String(C.sample.generate)), 'no Math.random');
+});
+
+test('content: the sample loads through Actions.loadSample, shows as sample and erases completely', async () => {
+  const data = {};
+  const keyOf = (s) => E.STORES[s] || 'id';
+  const draft = {
+    get: (s, k) => (data[s] || []).find((r) => r[keyOf(s)] === k) || null,
+    list: (s) => (data[s] || []).slice(),
+    put: (s, row) => { data[s] = (data[s] || []).filter((r) => r[keyOf(s)] !== row[keyOf(s)]).concat(row); },
+    del: (s, k) => { data[s] = (data[s] || []).filter((r) => r[keyOf(s)] !== k); },
+  };
+  const before = globalThis.Store;
+  globalThis.Store = { commit: async (label, fn) => fn(draft) };
+  globalThis.Engine = globalThis.Engine || E;
+  try {
+    const A = require(src('actions.js'));
+    const out = await A.loadSample();
+    assert.ok(out.count > 50, `rows put (${out.count})`);
+    assert.equal(draft.get('meta', 'sample').key, 'sample', 'the meta row marks the sample');
+    assert.equal(draft.get('profile', 'me').name, 'Sample');
+    for (const [s, rows] of Object.entries(data)) {
+      if (s === 'meta') continue;
+      assert.ok(rows.every((r) => r.sample === true), `${s}: every loaded row is sample`);
+    }
+    // Erase the sample: drop every sample row and the meta row; nothing of it is left.
+    for (const s of Object.keys(data)) data[s] = data[s].filter((r) => r.sample !== true && !(s === 'meta' && r.key === 'sample'));
+    assert.equal(Object.values(data).flat().length, 0, 'nothing left after erasing the sample');
+  } finally {
+    globalThis.Store = before;
+  }
 });
