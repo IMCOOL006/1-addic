@@ -2582,5 +2582,30 @@ describe('review round 5 fixes (FIX-R5)', () => {
     const g = plain.doc.activeElement;
     assert.ok(!g || g.getAttribute('aria-describedby') === null, 'a named feeling: no lead, nothing added');
   });
+  const RS31_YES = [
+    'I took too many painkillers', 'I took too many paracetamol', 'I took too many medicines', "I've taken too many medications",
+    'he took too many capsules', 'I took a whole bottle of pills', 'she took a whole bottle of tablets', 'I swallowed all my pills',
+    'I swallowed all my tablets', 'I took a whole strip of sleeping tablets',
+  ];
+  for (const t of RS31_YES) {
+    test('RS31: typed "' + t + '" opens the full urgent view with the overdose card open', () => {
+      assert.equal(H.isOverdoseText(t), true, t);
+      const root = typedIn(sosDom(), t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]') && !root.querySelector('[data-testid="sos-crisis"]'), t + ': the full urgent view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      const card = root.querySelectorAll('details').find((x) => { const s = x.querySelector('summary'); return s && s.textContent.trim() === H.COPY.overdose; });
+      assert.ok(card && card.getAttribute('open') === '', t + ': the overdose card, open');
+    });
+  }
+  test('RS31: the negatives stay out; too much to drink keeps the numbers above the steps, with no overdose card', () => {
+    for (const t of ['I took my medicine', 'too many people', "I've had too much to drink", 'a whole bottle of water', 'I took my pills', 'I swallowed my pride']) {
+      assert.equal(H.isOverdoseText(t), false, t);
+    }
+    const root = typedIn(sosDom(), "I've had too much to drink");
+    assert.ok(!root.querySelector('[data-testid="sos-urgent"]') && !root.querySelector('[data-testid="sos-crisis"]'), 'no urgent view');
+    assert.ok(root.querySelector('[data-testid="sos-urgent-lead"]'), 'the numbers above the steps');
+    assert.ok(!root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'no overdose card');
+    assert.equal(H.OVERDOSE.clinicalReview, true, 'marked for clinical review');
+  });
   // -- FIX-R5 tests end --
 });

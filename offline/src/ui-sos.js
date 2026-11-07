@@ -106,10 +106,13 @@
   const crisisNorm = (s) => String(s).replace(/[‘’‛ʼ`´]/g, "'").replace(/\s+/g, ' ');
   // RS23: typed overdose words open the full urgent view, which keeps the overdose card; a text with crisis words as
   // well goes there too (the numbers come first in both). OD only as a word: never odd or good.
+  // RS31: the pill words a person may type (clinical review); too much to drink stays with the lead above the steps.
+  const PILLS = '(pills|tablets|meds|pain ?killers|paracetamol|medicines?|medications?|capsules)';
   const OVERDOSE = {
     clinicalReview: true,
     patterns: ['overdos(e|es|ed|ing)', "od(s|'d|ed|ing)?", '(took|taken) too much',
-      "(took|taken) too many( [a-z']+){0,3} (pills|tablets|meds)", 'used too much'], // RS25: how a pill overdose is often typed
+      "(took|taken) too many( [a-z']+){0,3} " + PILLS, 'used too much', // RS25: how a pill overdose is often typed
+      "a whole (bottle|packet|pack|strip|box) of( [a-z']+){0,2} " + PILLS, "swallow(ed)? all (of )?(my|the)( [a-z']+){0,2} " + PILLS], // RS31
   };
   const OVERDOSE_RE = new RegExp('\\b(' + OVERDOSE.patterns.join('|') + ')\\b', 'i');
   function isOverdoseText(text) {
