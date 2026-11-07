@@ -2628,13 +2628,15 @@ const UI = (function () {
   }
 
   /* ── Built-in pages: Today placeholder, coming soon, lock fallback, urgent-help fallback ── */
+  // The word for SOS on screen: 'Help' in discreet mode, as on the button and the sheet link (RS14).
+  const sosWord = () => (hasDOM() && document.documentElement.getAttribute('data-discreet') !== null ? 'Help' : 'SOS');
   function todayPlaceholder() {
     return h('section', { class: 'page stack' },
       h('h1', { text: 'Today' }),
       h('p', { text: 'Today is coming together.' }),
       h('div', { class: 'row' },
         h('a', { class: 'btn primary', href: '#/learn', text: 'Go to Learn' }),
-        h('a', { class: 'btn', href: '#/sos', text: 'Open SOS' })));
+        h('a', { class: 'btn', href: '#/sos', text: 'Open ' + sosWord() })));
   }
   todayPlaceholder.placeholder = true;
 
@@ -2693,7 +2695,7 @@ const UI = (function () {
   function failure(key) {
     if (key === 'sos') return urgentFallback();
     if (key === 'lock') return lockFallback(); // a locked person can always type the PIN and reach urgent help (RS12)
-    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. SOS still works.' }));
+    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. ' + sosWord() + ' still works.' }));
   }
 
   /* ── Render ────────────────────────────────────────────────────────────────────────────── */

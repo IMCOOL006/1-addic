@@ -942,6 +942,24 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(location.hash, '#/today');
   });
 
+  test('RS14: discreet, the Today placeholder and a page that fails say Help, never SOS', async () => {
+    setup();
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? { key: 'app', discreet: true } : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+    };
+    delete UI.pages.today;
+    at('#/today');
+    await UI.render();
+    assert.match(main().textContent, /Open Help/);
+    assert.ok(!main().textContent.includes('SOS'), 'Today never names SOS');
+    UI.pages.track = () => { throw new Error('boom'); };
+    at('#/track');
+    await UI.render();
+    assert.match(main().textContent, /This page could not open\. Help still works\./);
+    assert.ok(!main().textContent.includes('SOS'));
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
