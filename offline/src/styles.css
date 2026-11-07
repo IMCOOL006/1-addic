@@ -704,4 +704,22 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 .st-sheet-title { font-weight: 600; margin: 0; }
 .st-skills { margin: 0; padding-left: 1.2rem; }
 .st-skills > li { margin-bottom: var(--space-1); }
+/* V-01b what changed, the 14-day strip, what to watch, the way in from Today */
+.st-change-list, .st-watch-list { margin: 0; padding-left: 1.2rem; }
+.st-change-list > li, .st-watch-list > li { margin-bottom: var(--space-1); }
+.st-strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 2px; justify-items: center; }
+.st-day { display: flex; align-items: center; justify-content: center; min-height: 20px; }
+.st-dot { display: block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid hsl(var(--muted)); background: transparent; }
+.st-on .st-dot { background: hsl(var(--gold)); border-color: hsl(var(--gold)); }
+.st-sign-label { font-weight: 600; margin: 0; }
+.st-sign > p { margin: 0 0 var(--space-1); }
+.st-plan { border-left: 3px solid hsl(var(--primary)); padding-left: var(--space-2); }
+.td-status { min-height: 44px; }
+.td-harbor-go { display: block; color: inherit; text-decoration: none; border-radius: var(--radius, 8px); }
+.td-harbor-go:focus-visible, .td-status:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hb-moving .hb-grew { transform-box: fill-box; transform-origin: 50% 50%; animation: hb-grew 300ms ease-out 1; }
+}
+[data-motion="reduce"] .hb-grew, [data-route="sos"] .hb-grew { animation: none !important; }
+@keyframes hb-grew { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 /* -- end today-track -- */

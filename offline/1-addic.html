@@ -715,6 +715,24 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 .st-sheet-title { font-weight: 600; margin: 0; }
 .st-skills { margin: 0; padding-left: 1.2rem; }
 .st-skills > li { margin-bottom: var(--space-1); }
+/* V-01b what changed, the 14-day strip, what to watch, the way in from Today */
+.st-change-list, .st-watch-list { margin: 0; padding-left: 1.2rem; }
+.st-change-list > li, .st-watch-list > li { margin-bottom: var(--space-1); }
+.st-strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 2px; justify-items: center; }
+.st-day { display: flex; align-items: center; justify-content: center; min-height: 20px; }
+.st-dot { display: block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid hsl(var(--muted)); background: transparent; }
+.st-on .st-dot { background: hsl(var(--gold)); border-color: hsl(var(--gold)); }
+.st-sign-label { font-weight: 600; margin: 0; }
+.st-sign > p { margin: 0 0 var(--space-1); }
+.st-plan { border-left: 3px solid hsl(var(--primary)); padding-left: var(--space-2); }
+.td-status { min-height: 44px; }
+.td-harbor-go { display: block; color: inherit; text-decoration: none; border-radius: var(--radius, 8px); }
+.td-harbor-go:focus-visible, .td-status:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hb-moving .hb-grew { transform-box: fill-box; transform-origin: 50% 50%; animation: hb-grew 300ms ease-out 1; }
+}
+[data-motion="reduce"] .hb-grew, [data-route="sos"] .hb-grew { animation: none !important; }
+@keyframes hb-grew { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 /* -- end today-track -- */
 </style>
 </head>
@@ -8054,6 +8072,7 @@ const TodayUI = (() => {
     title: 'Today',
     logCraving: 'Log a craving',
     sos: 'SOS', help: 'Help',
+    statusChip: 'Your harbor', harborGo: 'Your harbor: see where you stand',
     companion: (n) => `${n} is here with you today.`,
     checkinTitle: (k) => (k === 'morning' ? 'Morning check-in' : 'Evening check-in'),
     checkinBody: (k) => (k === 'morning'
@@ -8518,7 +8537,9 @@ const TodayUI = (() => {
     const Hb = ns('HarborUI');
     if (Hb && typeof Hb.scene === 'function') {
       const n = safe(() => Hb.scene(c), null);
-      return n ? h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-label': TEXT.harbor }, n) : null;
+      // the whole scene is one link to the status page (V-01b); the svg keeps its own description
+      return n ? h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-label': TEXT.harbor },
+        h('a', { href: '#/status', class: 'td-harbor-go', 'data-test': 'today-harbor-go', 'aria-label': TEXT.harborGo }, n)) : null;
     }
     const U = ns('UI');
     if (!U || typeof U.svg !== 'function') return null;
@@ -8529,6 +8550,14 @@ const TodayUI = (() => {
       s('rect', { class: 'td-lamp', x: '53', y: '12', width: '14', height: '12', rx: '2' }),
       s('circle', { class: 'td-glow', cx: '60', cy: '18', r: '4' }));
     return h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-hidden': 'true' }, art);
+  }
+
+  /* The way in to Your Harbor (#/status), beside Log a craving and SOS; the same word in Calm and discreet mode.
+     The "New" dot only once Content.features.status exists (content V-10; the dot itself is GuidanceUI's). */
+  function statusChip(c) {
+    const C = ns('Content'); const G = ns('GuidanceUI');
+    const dot = C && isObj(C.features) && C.features.status && G && typeof G.dot === 'function' ? safe(() => G.dot('status', c.ctxIn || c), null) : null;
+    return h('a', { href: '#/status', class: 'btn td-status', 'data-test': 'today-status', 'data-tour': 'status-open', text: TEXT.statusChip }, dot);
   }
 
   /* ── the page ──────────────────────────────────────────────────────────────────────────── */
@@ -8551,7 +8580,8 @@ const TodayUI = (() => {
       maintenance ? h('p', { class: 'muted', 'data-test': 'today-maintenance', text: TEXT.maintenance }) : null,
       h('div', { class: 'row td-quick' },
         link('#/track/log/craving', TEXT.logCraving, 'btn primary', 'today-log-craving'),
-        link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos')));
+        link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos'),
+        statusChip(c)));
     const make = {
       milestone: () => milestoneCard(c, gs), checkin: () => checkinCard(c), plan: () => planCard(c, features),
       want: () => wantCard(c, features), learn: () => learnCard(c), quests: () => questsCard(c), reasons: () => reasonsCard(c),
@@ -12073,6 +12103,7 @@ const TrackUI = (() => {
     current: (n) => `${n} in the current run`,
     insightsSoon: (n) => `Insights appear after seven logs. You have ${n} so far.`,
     insightsGo: 'See your insights',
+    radarTitle: 'Warning Sign Radar', radarGo: 'See what to watch', radarMissing: 'This cannot be shown right now. Your logs are saved.',
     insightsTitle: 'Insights',
     insightsMissing: 'Insights cannot be worked out right now. Your logs are saved.',
     insightsLead: (n) => `What your ${n} logs show so far. These are patterns to notice, not rules.`,
@@ -12116,6 +12147,7 @@ const TrackUI = (() => {
       if (name === 'Engine') return typeof Engine !== 'undefined' ? Engine : null;
       if (name === 'Actions') return typeof Actions !== 'undefined' ? Actions : null;
       if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
+      if (name === 'StatusUI') return typeof StatusUI !== 'undefined' ? StatusUI : null;
     } catch (e) { /* a namespace that throws counts as absent */ }
     return null;
   };
@@ -12331,11 +12363,12 @@ const TrackUI = (() => {
     };
   }
 
-  /* The route -> what to draw: { view: 'home'|'choose'|'log'|'insights', type, kind, saved }. */
+  /* The route -> what to draw: { view: 'home'|'choose'|'log'|'insights'|'radar', type, kind, saved }. */
   function routeOf(route) {
     const r = isObj(route) ? route : {};
     const parts = arr(r.parts); const q = isObj(r.query) ? r.query : {};
     if (parts[1] === 'insights') return { view: 'insights' };
+    if (parts[1] === 'radar') return { view: 'radar' };
     if (parts[1] === 'log') {
       const type = KINDS.includes(parts[2]) ? parts[2] : null;
       if (!type) return { view: 'choose' };
@@ -12511,7 +12544,22 @@ const TrackUI = (() => {
 
   function homePage(c) {
     return h('section', { class: 'page stack tr-page', 'data-test': 'track-page' },
-      header(c, TEXT.title), countersCard(c), insightsLine(c), timelineCard(c));
+      header(c, TEXT.title), countersCard(c), insightsLine(c), radarLine(c), timelineCard(c));
+  }
+
+  /* The Warning Sign Radar (#/track/radar): the status page's "What to watch" card (StatusUI.watchCard). */
+  function radarLine(c) {
+    const f = c.features && typeof c.features.has === 'function' ? c.features : safe(() => E_(c).revealed(c.view), null);
+    if (!(f && typeof f.has === 'function' && f.has('radar'))) return null;
+    return link('#/track/radar', TEXT.radarGo, 'btn', 'track-radar-link');
+  }
+  function radarPage(c) {
+    const S = ns('StatusUI');
+    const card = S && typeof S.watchCard === 'function' ? safe(() => S.watchCard(c), null) : null;
+    const C = ns('Content');
+    const title = (C && C.features && C.features.radar && typeof C.features.radar.name === 'string' && C.features.radar.name) || TEXT.radarTitle;
+    return h('section', { class: 'page stack tr-page', 'data-test': 'track-radar' },
+      header(c, title, '#/track'), card || h('p', { class: 'muted', text: TEXT.radarMissing }));
   }
 
   function choosePage(c) {
@@ -12698,9 +12746,10 @@ const TrackUI = (() => {
     const c = {
       view: x.view || { get: () => null, list: () => [], count: () => 0 },
       E: E_(x), A: x.A || ns('Actions'), profile: isObj(x.profile) ? x.profile : {}, settings: isObj(x.settings) ? x.settings : {},
-      now: x.now || new Date(), calm: !!x.calm, route: x.route || { path: '/track', parts: ['track'], query: {} }, go: x.go,
+      now: x.now || new Date(), calm: !!x.calm, route: x.route || { path: '/track', parts: ['track'], query: {} }, go: x.go, features: x.features,
     };
     const rt = routeOf(c.route);
+    if (rt.view === 'radar') return radarPage(c);
     if (rt.view === 'choose') return choosePage(c);
     if (rt.view === 'log') return logPage(c, rt);
     if (rt.view === 'insights') return insightsPage(c);
@@ -16361,7 +16410,9 @@ if (typeof module !== 'undefined' && module.exports) {
    next small step. It only reads: Engine.gameState and the Explorer, quest and roadmap readers. Nothing here writes
    to the Store or the Engine, nothing shown ever decreases, and the opt-in current run never appears. A slip changes
    no level. Calm mode: no scene, XP or badges; the places as a plain list. Discreet mode: no scene, no days.
-   The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML. */
+   The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML.
+   V-01b: what just changed since the last draw this session (memory only), a 14-day strip of dated dots (no count),
+   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js). */
 const StatusUI = (() => {
   const MAX = 5;
   const PLACES = ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather'];
@@ -16399,7 +16450,24 @@ const StatusUI = (() => {
       quest: (n) => `${n} quest steps done.`,
       day: (n) => `Days in all: ${n}.`,
     },
+    changeTitle: 'What just changed',
+    first: 'Here is where you stand.',
+    none: 'Nothing new since you last looked.',
+    stripTitle: 'Your last 14 days',
+    stripLead: 'A filled dot marks a day you did something for your recovery.',
+    stripList: 'The last 14 days, oldest first',
+    stripDay: (label, active) => `${label}: ${active ? 'active' : 'no entry'}`,
+    watchTitle: 'What to watch',
+    watchLead: 'A few patterns in your own logs that may be worth a look. Each one comes with a plan.',
+    watchNone: 'Nothing to watch right now.',
+    plan: (p) => `Your plan: ${p}`,
   };
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  /* The last draw, in memory for this session only (like GameUI's seen): never stored. `base` is the model the
+     person last looked at before this visit; a redraw while the page is still on screen (a Store change re-renders
+     the route before the old node is swapped out) keeps this visit's base, so a change shown is not wiped. */
+  const memo = { base: null, last: null, root: null, first: false };
   /* Explorer item -> where to try it (BUILD-PLAN 3.5 routes); an item not listed goes to Today. */
   const EXPLORER_HREF = {
     tour: '#/today?tour=1', drill: '#/sos?drill=1', reasons: '#/workbook/reasons', safetyNet: '#/workbook/network',
@@ -16549,6 +16617,21 @@ const StatusUI = (() => {
     return lines;
   }
 
+  /* strip(dates, now) -> the 14 local days ending today, oldest first: {date, active, label}. A history, no count. */
+  function strip(dates, now) {
+    const on = new Set(arr(dates).filter((d) => typeof d === 'string'));
+    const t = now instanceof Date ? now : new Date(now);
+    const base = isFinite(t.getTime()) ? t : new Date(0);
+    const pad = (n) => String(n).padStart(2, '0');
+    const out = [];
+    for (let k = 13; k >= 0; k--) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() - k, 12);
+      const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      out.push({ date, active: on.has(date), label: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}` });
+    }
+    return out;
+  }
+
   /* ── the page ──────────────────────────────────────────────────────────────────────────── */
 
   /* h: text through textContent only; on* keys become listeners; null/false attributes are skipped. */
@@ -16600,6 +16683,47 @@ const StatusUI = (() => {
     }
   }
 
+  /* Every node under n (the real DOM and the tests' fake one both have children). */
+  function walk(n, fn) {
+    if (!n) return;
+    fn(n);
+    for (const k of Array.from(n.children || [])) walk(k, fn);
+  }
+  /* The rises since the last draw; the first draw says where the person stands. Calm shows no XP, badge or rank. */
+  function changeCard(d, calm) {
+    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank'))) : [];
+    return h('section', { class: 'card stack st-change', 'data-test': 'status-change', 'data-tour': 'status-change', 'aria-label': TEXT.changeTitle },
+      h('h2', { class: 'card-title', text: TEXT.changeTitle }),
+      !d ? h('p', { class: 'muted', text: TEXT.first })
+        : items.length ? h('ul', { class: 'st-change-list' }, items.map((i) => h('li', { 'data-test': 'status-change-item', 'data-kind': i.kind, text: i.text })))
+          : h('p', { class: 'muted', text: TEXT.none }));
+  }
+  function stripCard(gs, now) {
+    const days = strip(isObj(gs.momentum) ? gs.momentum.dates : [], now);
+    return h('section', { class: 'card stack st-strip-card', 'data-test': 'status-strip', 'aria-label': TEXT.stripTitle },
+      h('h2', { class: 'card-title', text: TEXT.stripTitle }),
+      h('p', { class: 'muted', text: TEXT.stripLead }),
+      h('ol', { class: 'st-strip', 'aria-label': TEXT.stripList }, days.map((d) => h('li', {
+        class: d.active ? 'st-day st-on' : 'st-day', 'data-test': 'status-strip-day', 'data-date': d.date, 'data-active': d.active ? 'true' : 'false' },
+      h('span', { class: 'st-dot', 'aria-hidden': 'true' }), h('span', { class: 'sr-only', text: TEXT.stripDay(d.label, d.active) })))));
+  }
+  /* What to watch: the Engine's warning signs, each with its plan (the person's own plan already wins there).
+     Gentle: no score, no red. Also drawn by ui-track.js at #/track/radar. */
+  function watchCard(ctxIn) {
+    const x = ctxIn || {};
+    const E = x.E !== undefined ? x.E : ns('Engine');
+    const signs = E && typeof E.warningSigns === 'function' ? arr(safe(() => E.warningSigns(x.view, x.now || new Date()), [])) : [];
+    const list = signs.filter((s) => isObj(s) && typeof s.signId === 'string');
+    return h('section', { class: 'card stack st-watch', 'data-test': 'status-watch', 'data-tour': 'status-watch', 'aria-label': TEXT.watchTitle },
+      h('h2', { class: 'card-title', text: TEXT.watchTitle }),
+      list.length ? [h('p', { class: 'muted', text: TEXT.watchLead }),
+        h('ul', { class: 'st-watch-list' }, list.map((s) => h('li', { class: 'st-sign', 'data-test': 'status-watch-item', 'data-sign': s.signId, 'data-own': s.own === true ? 'true' : 'false' },
+          h('p', { class: 'st-sign-label', text: str(s.label) || s.signId }),
+          str(s.evidence) ? h('p', { class: 'muted', text: s.evidence }) : null,
+          str(s.plan) ? h('p', { class: 'st-plan', text: TEXT.plan(s.plan) }) : null)))]
+        : h('p', { class: 'muted', text: TEXT.watchNone }));
+  }
+
   function page(ctxIn) {
     const x = ctxIn || {};
     const c = {
@@ -16615,6 +16739,13 @@ const StatusUI = (() => {
       h('a', { href: '#/sos', class: 'btn', 'data-test': 'status-sos', text: mode.discreet ? TEXT.help : TEXT.sos, 'aria-label': mode.discreet ? TEXT.help : TEXT.sosAria }));
     const head = h('header', { class: 'stack st-head' }, h('h1', { text: TEXT.title }), nav);
     if (!m) return h('section', { class: 'page stack st-page', 'data-test': 'status-page' }, head, h('p', { class: 'muted', text: TEXT.unavailable }));
+    // memory only: no Store write, no event
+    const sameVisit = !!(memo.root && memo.root.isConnected === true);
+    if (!sameVisit) { memo.first = memo.last === null; memo.base = memo.last || m; }
+    const total = diff(memo.base, m);
+    const changed = memo.first && !total.items.length ? null : total; // null: the first look, "Here is where you stand."
+    const fresh = memo.last ? diff(memo.last, m) : { items: [] }; // new since the previous draw: only these pulse
+    memo.last = m;
 
     const byId = new Map(m.regions.map((r) => [r.id, r]));
     const Hb = ns('HarborUI');
@@ -16625,6 +16756,14 @@ const StatusUI = (() => {
         const r = t ? byId.get(t.getAttribute('data-place')) : null;
         if (r) openPlace(r, null);
       } }, sc) : null;
+    // the place that grew pulses once; none when still (reduced motion, data-motion=reduce, an SOS route): the words carry it
+    const grew = new Set(fresh.items.filter((i) => i.kind === 'region').map((i) => i.id));
+    if (sc && grew.size && !(typeof Hb.still === 'function' && safe(() => Hb.still(c), true) !== false)) {
+      walk(sc, (n) => {
+        const id = n && typeof n.getAttribute === 'function' ? n.getAttribute('data-place') : null;
+        if (id && grew.has(id)) n.setAttribute('class', `${n.getAttribute('class') || ''} hb-grew`.trim());
+      });
+    }
     const places = h('ul', { class: 'st-places', 'aria-label': TEXT.places }, m.regions.map((r) => {
       const more = h('div', { class: 'st-more', hidden: true });
       const btn = h('button', { type: 'button', class: 'btn st-place', 'data-test': 'status-place', 'data-region': r.id, 'data-level': String(r.level),
@@ -16647,12 +16786,18 @@ const StatusUI = (() => {
       m.next ? h('a', { href: m.next.href, class: 'btn primary', 'data-test': 'status-next-go', 'data-kind': m.next.kind, text: m.next.label })
         : h('p', { class: 'muted', text: TEXT.nextNone }));
 
-    return h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
-      head, scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next);
+    const root = h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
+      head, changeCard(changed, mode.calm), scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next,
+      stripCard(gs, c.now), watchCard(c));
+    memo.root = root;
+    return root;
   }
 
-  const PURE = ['TEXT', 'model', 'diff', 'nextStep', 'placeLines'];
-  return { TEXT, model, diff, nextStep, placeLines, page, PURE, EXPLORER_HREF };
+  const PURE = ['TEXT', 'model', 'diff', 'nextStep', 'placeLines', 'strip'];
+  return {
+    TEXT, model, diff, nextStep, placeLines, strip, page, watchCard, PURE, EXPLORER_HREF,
+    _reset() { memo.base = null; memo.last = null; memo.root = null; memo.first = false; }, // tests only: forget the last draw
+  };
 })();
 
 // The page registers from this file (ui-core.js's pageKey accepts any key in UI.pages); ui-core.js is not changed.

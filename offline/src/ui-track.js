@@ -76,6 +76,7 @@ const TrackUI = (() => {
     current: (n) => `${n} in the current run`,
     insightsSoon: (n) => `Insights appear after seven logs. You have ${n} so far.`,
     insightsGo: 'See your insights',
+    radarTitle: 'Warning Sign Radar', radarGo: 'See what to watch', radarMissing: 'This cannot be shown right now. Your logs are saved.',
     insightsTitle: 'Insights',
     insightsMissing: 'Insights cannot be worked out right now. Your logs are saved.',
     insightsLead: (n) => `What your ${n} logs show so far. These are patterns to notice, not rules.`,
@@ -119,6 +120,7 @@ const TrackUI = (() => {
       if (name === 'Engine') return typeof Engine !== 'undefined' ? Engine : null;
       if (name === 'Actions') return typeof Actions !== 'undefined' ? Actions : null;
       if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
+      if (name === 'StatusUI') return typeof StatusUI !== 'undefined' ? StatusUI : null;
     } catch (e) { /* a namespace that throws counts as absent */ }
     return null;
   };
@@ -334,11 +336,12 @@ const TrackUI = (() => {
     };
   }
 
-  /* The route -> what to draw: { view: 'home'|'choose'|'log'|'insights', type, kind, saved }. */
+  /* The route -> what to draw: { view: 'home'|'choose'|'log'|'insights'|'radar', type, kind, saved }. */
   function routeOf(route) {
     const r = isObj(route) ? route : {};
     const parts = arr(r.parts); const q = isObj(r.query) ? r.query : {};
     if (parts[1] === 'insights') return { view: 'insights' };
+    if (parts[1] === 'radar') return { view: 'radar' };
     if (parts[1] === 'log') {
       const type = KINDS.includes(parts[2]) ? parts[2] : null;
       if (!type) return { view: 'choose' };
@@ -514,7 +517,22 @@ const TrackUI = (() => {
 
   function homePage(c) {
     return h('section', { class: 'page stack tr-page', 'data-test': 'track-page' },
-      header(c, TEXT.title), countersCard(c), insightsLine(c), timelineCard(c));
+      header(c, TEXT.title), countersCard(c), insightsLine(c), radarLine(c), timelineCard(c));
+  }
+
+  /* The Warning Sign Radar (#/track/radar): the status page's "What to watch" card (StatusUI.watchCard). */
+  function radarLine(c) {
+    const f = c.features && typeof c.features.has === 'function' ? c.features : safe(() => E_(c).revealed(c.view), null);
+    if (!(f && typeof f.has === 'function' && f.has('radar'))) return null;
+    return link('#/track/radar', TEXT.radarGo, 'btn', 'track-radar-link');
+  }
+  function radarPage(c) {
+    const S = ns('StatusUI');
+    const card = S && typeof S.watchCard === 'function' ? safe(() => S.watchCard(c), null) : null;
+    const C = ns('Content');
+    const title = (C && C.features && C.features.radar && typeof C.features.radar.name === 'string' && C.features.radar.name) || TEXT.radarTitle;
+    return h('section', { class: 'page stack tr-page', 'data-test': 'track-radar' },
+      header(c, title, '#/track'), card || h('p', { class: 'muted', text: TEXT.radarMissing }));
   }
 
   function choosePage(c) {
@@ -701,9 +719,10 @@ const TrackUI = (() => {
     const c = {
       view: x.view || { get: () => null, list: () => [], count: () => 0 },
       E: E_(x), A: x.A || ns('Actions'), profile: isObj(x.profile) ? x.profile : {}, settings: isObj(x.settings) ? x.settings : {},
-      now: x.now || new Date(), calm: !!x.calm, route: x.route || { path: '/track', parts: ['track'], query: {} }, go: x.go,
+      now: x.now || new Date(), calm: !!x.calm, route: x.route || { path: '/track', parts: ['track'], query: {} }, go: x.go, features: x.features,
     };
     const rt = routeOf(c.route);
+    if (rt.view === 'radar') return radarPage(c);
     if (rt.view === 'choose') return choosePage(c);
     if (rt.view === 'log') return logPage(c, rt);
     if (rt.view === 'insights') return insightsPage(c);

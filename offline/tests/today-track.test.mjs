@@ -273,7 +273,8 @@ test('today: empty and sample profile render with no dead button', async () => {
         const href = a.getAttribute('href') || '';
         assert.match(href, /^#\//, `${name}: ${href} is a route`);
         const first = href.slice(2).split(/[/?]/)[0];
-        assert.ok(KNOWN.includes(first), `${name}: ${href} goes to a page of 3.5`);
+        // 'status' registers from ui-status.js through UI.pages (ui-core's pageKey accepts any UI.pages key; V-01a)
+        assert.ok(KNOWN.includes(first) || first === 'status', `${name}: ${href} goes to a page of 3.5`);
         assert.ok(a.textContent.trim().length > 0, `${name}: ${href} has words`);
       }
       for (const b of root.all((n) => n.tagName === 'button')) assert.ok((b.on.click || []).length > 0, `${name}: button "${b.textContent}" acts`);
