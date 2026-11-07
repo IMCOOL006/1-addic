@@ -2362,7 +2362,8 @@ describe('review round 4 fixes (FIX-R4)', () => {
       assert.equal(title.textContent.trim(), H.COPY.wave.title, what + ': the steps follow');
     }
     assert.deepEqual(H.leadList('in', C()).map((i) => i.number), ['112', '14416'], 'India: the emergency number and the first crisis line');
-    assert.ok(H.leadList('intl', C()).length <= 2 && H.leadList('intl', C()).every((i) => i.tel), 'elsewhere: at most two lines, each with a number');
+    const intl = H.leadList('intl', C());
+    assert.ok(intl.length >= 1 && intl.length <= 2 && intl.every((i) => i.tel), 'elsewhere: one or two lines, each with a number, never none (RS24 remainder)');
     assert.equal(H.LEAD.clinicalReview, true, 'marked for clinical review');
     assert.ok(typedTo('I wanna be dead').querySelector('[data-testid="sos-crisis"]'), 'a match still opens the crisis view at once');
     const d = sosDom();
@@ -2534,6 +2535,33 @@ describe('review round 5 fixes (FIX-R5)', () => {
       const call = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
       assert.ok(call && call.textContent.includes('Your local emergency number'), 'the intl lead: the local emergency line, one tap');
     });
+  });
+  test('RS24 remainder: the lead above the steps always has a number to tap, in every region and whatever Content holds, and All urgent help', () => {
+    const tels = (lead) => lead.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+    const cases = [ // [what, Content.resources (null: the real one), region, the built-in number expected]
+      ['India', null, 'in', false],
+      ['Somewhere else, the trunk shape', trunkRes(), 'intl', false],
+      ['Somewhere else, no line with a number', null, 'intl', true],
+      ['India, Content.resources empty', {}, 'in', true],
+      ['Somewhere else, Content.resources empty', {}, 'intl', true],
+    ];
+    for (const [what, res, region, builtIn] of cases) {
+      const run = () => typedIn(sosDom(), 'I feel strange today', { region }).querySelector('[data-testid="sos-urgent-lead"]');
+      const lead = res ? withResources(res, run) : run();
+      assert.ok(lead, what + ': the lead');
+      const nums = tels(lead);
+      assert.ok(nums.length >= 1, what + ': at least one number, one tap');
+      assert.ok(nums.every((a) => /^Call /.test(a.attrs['aria-label'] || '')), what + ': each says whom it calls');
+      const all = lead.querySelectorAll('a').find((a) => a.textContent.trim() === H.COPY.leadAll);
+      assert.ok(all && all.attrs.href === '#/sos/urgent', what + ': All urgent help, one tap');
+      if (builtIn) {
+        assert.equal(nums[0].attrs.href, 'tel:112', what + ': the built-in emergency number');
+        assert.ok(lead.textContent.includes(H.COPY.checkOne), what + ': Please check this number.');
+      }
+    }
+    for (const region of ['in', 'intl']) {
+      for (const C2 of [{ resources: {} }, { resources: null }, null]) assert.ok(H.leadList(region, C2).length >= 1, region + ': the model is never empty');
+    }
   });
   // -- FIX-R5 tests end --
 });

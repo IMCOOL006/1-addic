@@ -53,6 +53,8 @@
     withdrawal: 'Heavy daily drinking or sedatives: stop with a doctor.', // RS3, clinicalReview
     verify: 'please verify',
     crisisVerify: 'Please check these numbers.', // the one verify line of the crisis view
+    checkOne: 'Please check this number.', // RS24: beside the built-in emergency number in the lead
+    leadAll: 'All urgent help', // RS24: the lead's one link to the full urgent view
     noVoice: 'Read-aloud is not available on this device.',
     notSaved: 'Not saved on this device. You can keep going.',
     copied: 'Copied.',
@@ -173,13 +175,16 @@
     };
   }
 
-  // RS24: the two numbers above the steps: the region's emergency number and its first crisis line (elsewhere, the
-  // first two international lines with a number). The full list stays one tap away.
+  // RS24: the numbers above the steps: the region's emergency number and its first crisis line (elsewhere, the
+  // first two international lines with a number: the local emergency line). Never none, whatever Content holds: then
+  // the built-in emergency number, as core's URGENT.builtIn, with Please check this number. The full list is one tap away.
+  const BUILT_IN = Object.freeze({ name: 'Emergency', number: '112', verify: true });
   function leadList(region, C) {
     const res = safe(() => C.resources, {}) || {};
     const one = (arr) => (Array.isArray(arr) ? arr.map(urgentItem).filter((i) => i && i.name && i.tel) : []);
-    if (region === 'intl') return one(safe(() => res.intl.lines, [])).slice(0, 2);
-    return [].concat(one(safe(() => res.in.emergency, [])).slice(0, 1), one(safe(() => res.in.crisis, [])).slice(0, 1));
+    const got = region === 'intl' ? one(safe(() => res.intl.lines, [])).slice(0, 2)
+      : [].concat(one(safe(() => res.in.emergency, [])).slice(0, 1), one(safe(() => res.in.crisis, [])).slice(0, 1));
+    return got.length ? got : [Object.assign(urgentItem(BUILT_IN), { builtIn: true })];
   }
 
   // The same rule as Actions.sosSession when no outcome is given.
@@ -498,7 +503,8 @@
     toast(ok ? COPY.copied : 'Could not copy. It is ' + text + '.', ok ? 'ok' : 'warn');
   }
 
-  // RS24: above the steps after typed text on Something else: the urgent line and its two numbers, each one tap.
+  // RS24: above the steps after typed text on Something else: the urgent line, its numbers (never none), each one
+  // tap, and All urgent help.
   function leadView(c) {
     const items = leadList(safe(() => c.profile.region, 'in'), Cn());
     return h('section', { class: 'stack sos-lead', 'aria-label': COPY.urgent.title, dataset: tid('sos-urgent-lead') },
@@ -506,7 +512,8 @@
       ...items.map((it, k) => h('div', { class: 'row' },
         h('a', { class: 'sos-target', href: it.tel, dataset: tid('sos-lead-number-' + (k + 1)), 'aria-label': 'Call ' + it.name + ', ' + it.number },
           h('span', { class: 'sos-target-name', text: it.name }), h('span', { class: 'sos-target-number', text: it.number })),
-        it.verify ? h('span', { class: 'sos-verify muted', text: COPY.verify }) : null)));
+        it.verify ? h('span', { class: 'sos-verify muted', text: it.builtIn ? COPY.checkOne : COPY.verify }) : null)),
+      link(COPY.leadAll, '#/sos/urgent', { testid: 'sos-lead-all' })); // RS24: the full list, one tap
   }
 
   // The urgent numbers. Reads Content (and the region from the profile when unlocked) only. Shared with the lock screen.
