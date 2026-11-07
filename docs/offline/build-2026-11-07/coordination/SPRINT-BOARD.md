@@ -6,7 +6,7 @@ NEXT: the HUB (session 4) merges core READY (U-04 plus the review fixes F1, F2, 
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 11:53 IST by `board.py`.
+Rewritten 2026-11-07 12:26 IST by `board.py`.
 
 ## The HUB
 
@@ -16,14 +16,14 @@ Rewritten 2026-11-07 11:53 IST by `board.py`.
 - TRACKS-ALLOWED: CORE   # the launcher is paused since 11:44 (day closed): the owner's --resume brings a fresh CORE when 06ee0d0d hands over; SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 11:51 IST
+- UPDATED: 2026-11-07 12:26 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 11:51 IST: HUB session 4 (ed0e0a4b, started by the launcher 11:44 on the HANDOVER line) continues the loop… | 121k | 2026-11-07 11:51 IST |
-| CORE | 06ee0d0d (launcher-started 2026-11-07 10:29) | BUILDING — 2026-11-07 11:41 IST: CORE 06ee0d0d at about 252k context: the hand-over is written (RUN-RECORD 'Resume here'). Its two… | 267k | 2026-11-07 11:52 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 11:51 IST: HUB session 4 (ed0e0a4b, started by the launcher 11:44 on the HANDOVER line) continues the loop… | 131k | 2026-11-07 12:26 IST |
+| CORE | 06ee0d0d (launcher-started 2026-11-07 10:29) | BUILDING — 2026-11-07 11:41 IST: CORE 06ee0d0d at about 252k context: the hand-over is written (RUN-RECORD 'Resume here'). Its two… | 284k | 2026-11-07 11:59 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -64,7 +64,7 @@ Slots allowed: 2 running lanes from 11:51 (core and actions-sos finishing their 
 
 ## Machine
 
-- Free memory 7.6 GB of 31.8 GB at 2026-11-07 11:44 IST; claude 25, node 50 processes; 5 slots by the rule (lane-widening.md).
+- Free memory 5.8 GB of 31.8 GB at 2026-11-07 12:25 IST; claude 25, node 52 processes; 2 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: HUB ed0e0a4b at 2026-11-07 11:44.
 
 ## Files of the build

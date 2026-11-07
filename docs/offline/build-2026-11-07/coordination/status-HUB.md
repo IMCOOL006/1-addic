@@ -21,7 +21,13 @@ MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide
 MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 11:51 IST
+UPDATED: 2026-11-07 12:26 IST
+
+# 2026-11-07 12:26 · 12:25 passed: the plan's day is over; the loop runs on for the two READY lines
+
+- status-CORE.md at 11:59: core REVIEWING (check PASS at cdfc0e9, LOW C1 boot.js clinicalReview mark for the fix round; review run wf_96d6995e-023 from 11:59 after wf_7940e583-fc9 crashed before its reviewers ran); actions-sos REVIEWING (check PASS at fca2781; reviewers running in wf_0a47dae7-ba9). CORE 06ee0d0d alive at 12:24. No READY line yet; nothing to merge.
+- Memory rows: 11:54 5.8 GB, 12:05 3.1 GB (under the 4.0 GB floor), 12:15 7.4 GB. The 12:05 row was read at 12:24, after the recovery; the floor rule (the newest lane, actions-sos, pauses at its next commit) was not applied: a reviewer round has no commit to pause at, the next sample was 3.4 GB above the floor, and the two rounds are the last two merges this trunk can take without a fresh CORE. Recorded here as a rule read late, not as a decision to drop the rule: a row under 4.0 GB while a builder runs still pauses the newest lane.
+- 12:25 was the plan's HANDOVER mark; the hand-off note stands (RUN-RECORD.md, 11:43). This HUB stays in its loop only to merge core READY and actions-sos READY when they appear (PLAN.md section 3: the lanes continue on their branches under the same gates), then writes STATE HANDOVER again. The watch on status-CORE.md is re-armed every 30 minutes.
 
 # 2026-11-07 11:51 · HUB session 4 (ed0e0a4b) resumes after the tag; the loop continues toward offline-v1.1
 
