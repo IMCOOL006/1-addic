@@ -179,13 +179,14 @@
   }
 
   // The 09:33 ruling (1): a new person (no profile.onboardedAt, not locked) on #/ or #/today is sent to onboarding.
+  // RS36: a sample profile (O6, sample: true) carries the sample's onboardedAt, never the person's: it does not count.
   function shouldOnboard(route, S) {
     const path = route && typeof route.path === 'string' ? route.path : '';
     if (path !== '/' && path !== '/today') return false;
     const st = safe(() => S.status(), null);
     if (!st || st.locked) return false;
     const me = safe(() => S.view.get('profile', 'me'), null);
-    return !(me && me.onboardedAt);
+    return !(me && me.sample !== true && me.onboardedAt);
   }
 
   // PIN fields: digits only, 4 to 12, the phone's one-time-code keyboard (the Store itself takes 4 to 64 characters).

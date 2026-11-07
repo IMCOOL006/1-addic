@@ -2820,6 +2820,33 @@ describe('review round 5 fixes (FIX-R5)', () => {
       assert.deepEqual(S().view.get('contacts', sc.id), row, 'eraseSample keeps it as it was');
       assert.equal(S().view.get('contacts', other.id), null, 'and takes the sample contact nobody edited');
     });
+    test("RS36: a sample profile is not the person's onboarding: after the sample on a fresh notebook, #/today still goes to onboarding once; their own onboarding ends it", async () => {
+      const route = (path) => ({ path, parts: path.split('/').filter(Boolean), query: {} });
+      await withSample(TRUNK_SAMPLE, async () => {
+        await Actions.loadSample();
+        const me = S().view.get('profile', 'me');
+        assert.ok(me && me.sample === true && me.onboardedAt, 'the sample profile carries onboardedAt, as the trunk sample does');
+        const d = sosDom({ onboarding: true });
+        const O = d.UI.onboardingHelpers;
+        assert.equal(O.shouldOnboard(route('/today'), S()), true, 'still a new person on Today');
+        assert.equal(O.shouldOnboard(route('/'), S()), true, 'and on #/');
+        d.fire('ui:route', route('/today'));
+        await d.settle();
+        assert.deepEqual(d.go, ['#/onboarding'], 'sent to onboarding, once');
+        const v = sosDom({ onboarding: true }); // Look around with sample data, then I understand: Today, not sent back in this visit
+        const root = v.onb({});
+        v.tapId(root, 'onb-sample');
+        await v.settle();
+        v.tapId(root, 'onb-safety-ok');
+        v.fire('ui:route', route('/today'));
+        await v.settle();
+        assert.deepEqual(v.go, ['#/today'], 'no loop back to onboarding in this visit');
+        await Actions.onboard({ name: 'Asha' });
+        assert.equal(O.shouldOnboard(route('/today'), S()), false, 'their own onboarding ends it');
+        await Actions.eraseSample();
+        assert.equal(O.shouldOnboard(route('/today'), S()), false, 'and it stays ended once the sample is erased');
+      });
+    });
     // -- FIX-R6 tests end --
   });
   // -- FIX-R5 tests end --
