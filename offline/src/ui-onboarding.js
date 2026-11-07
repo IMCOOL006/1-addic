@@ -20,6 +20,7 @@
     forgot: { title: 'Forgot your PIN?', line: 'Without the PIN, the only way in is to erase this notebook on this device, then restore a backup if you have one.' },
     erase: { title: 'Erase everything on this device?', message: 'Your notes here will be gone. A backup file can bring them back.', confirm: 'Erase' },
     early: 'Early access: this is a test version. Export a backup now and then.',
+    opioid: 'After a break, your tolerance drops. Never use alone. In an emergency, call for help.', // RS5, clinicalReview
     steps: {
       welcome: { title: 'Welcome', line: 'A private skills coach for recovery. It is not treatment or a diagnosis.' },
       privacy: { title: 'Your notebook stays here', line: 'Nothing leaves this device. A PIN is recommended, never required.' },
@@ -59,6 +60,18 @@
 
   function needsMedicalCard(medical) {
     return !!(medical && (medical.heavyDaily === true || medical.sedatives === true || medical.opioids === true));
+  }
+
+  // RS5: the safety card's lines for the ticks. Content's withdrawal lines when any box is ticked; with opioids,
+  // Content.resources.opioidSafety when it is there, else the one built-in tolerance line.
+  const lineList = (v) => [].concat(v && !Array.isArray(v) && typeof v === 'object' && v.lines ? v.lines : v == null ? [] : v)
+    .map((x) => (typeof x === 'string' ? x : x && x.text ? String(x.text) : '')).filter((s) => s.trim() !== '');
+  function medicalLines(medical, C) {
+    if (!needsMedicalCard(medical)) return [];
+    const res = safe(() => (C || getContent()).resources, null) || {};
+    const out = lineList(res.withdrawal);
+    if (medical.opioids === true) { const own = lineList(res.opioidSafety); out.push(...(own.length ? own : [COPY.opioid])); }
+    return out;
   }
 
   const PHONE_RE = /^[0-9+()\-.\s]{3,24}$/; // the same rule as Actions.checkContact (actions.js)
@@ -155,7 +168,7 @@
     return true;
   }
 
-  const O = { COPY, STEPS, STEP_KEYS, WRONG_PAUSE_MS, needsMedicalCard, buildPatch, finishOnboarding, lockError, attemptUnlock,
+  const O = { COPY, STEPS, STEP_KEYS, WRONG_PAUSE_MS, needsMedicalCard, medicalLines, buildPatch, finishOnboarding, lockError, attemptUnlock,
     lockLabels, discreetFrom, forgetPin };
   if (typeof module !== 'undefined' && module.exports) module.exports = O;
   if (typeof UI === 'undefined' || !UI || typeof document === 'undefined') return;
@@ -293,9 +306,12 @@
       if (id === 'safety') {
         const items = [['heavyDaily', 'I drink heavily every day'], ['sedatives', 'I take sleeping pills or benzodiazepines every day'], ['opioids', 'I use opioids']]
           .map(([k, label]) => Object.assign(choice('checkbox', 'medical', k, label), { k }));
-        const lines = (safe(() => C.resources.withdrawal, []) || []).map((t) => h('li', { text: String(t) }));
-        const card = h('div', { class: 'card', dataset: tid('onb-medical-card'), role: 'note', hidden: true }, h('ul', null, lines));
-        const sync = () => { card.hidden = !needsMedicalCard(Object.fromEntries(items.map((i) => [i.k, i.input.checked]))); };
+        const card = h('div', { class: 'card', dataset: tid('onb-medical-card'), role: 'note', hidden: true });
+        const sync = () => {
+          const ticks = Object.fromEntries(items.map((i) => [i.k, i.input.checked]));
+          card.replaceChildren(h('ul', null, medicalLines(ticks, C).map((t) => h('li', { text: t }))));
+          card.hidden = !needsMedicalCard(ticks);
+        };
         for (const i of items) i.input.addEventListener('change', sync);
         return { body: [h('fieldset', { class: 'stack' }, ...items.map((i) => i.el)), card],
           read() { answers.medical = Object.fromEntries(items.map((i) => [i.k, i.input.checked])); } };

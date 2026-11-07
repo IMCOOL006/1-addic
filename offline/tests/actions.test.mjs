@@ -1300,4 +1300,17 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     await d.settle();
     assert.equal(events('SlipLogged').length, 1);
   });
+
+  test('RS5: with opioids ticked the safety card adds the tolerance line', () => {
+    const O = require(src('ui-onboarding.js'));
+    const w = [...C().resources.withdrawal];
+    assert.deepEqual(O.medicalLines({}, C()), [], 'nothing ticked: no card');
+    assert.deepEqual(O.medicalLines({ heavyDaily: true }, C()), w);
+    assert.deepEqual(O.medicalLines({ sedatives: true }, C()), w);
+    assert.equal(O.COPY.opioid, 'After a break, your tolerance drops. Never use alone. In an emergency, call for help.');
+    assert.deepEqual(O.medicalLines({ opioids: true }, { resources: { withdrawal: w } }), [...w, O.COPY.opioid], 'the built-in line');
+    assert.deepEqual(O.medicalLines({ opioids: true, heavyDaily: true }, { resources: { withdrawal: w, opioidSafety: ['From content.'] } }),
+      [...w, 'From content.'], 'Content.resources.opioidSafety wins when it is there');
+    assert.ok(!O.medicalLines({ heavyDaily: true }, C()).includes(O.COPY.opioid), 'no opioid line without the tick');
+  });
 });
