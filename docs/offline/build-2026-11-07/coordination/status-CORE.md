@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # 2026-11-07 10:45 IST: CORE session 06ee0d0d; 224074c0 left claude agents at 10:37 and its four runs died; all four relaunched 10:43 in this session (core wf_bf29c997-958, actions-sos wf_0a47dae7-ba9, learn wf_c538e4c5-38a, engine wf_35f6a75a-d62)
-LANE: core BUILDING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 98f872d (check PASS), review fixes to 3789c81; review findings the fix round never saw (its prompt cut at 2,000 chars) + rulings 10:45: run wf_bf29c997-958 builds FIX-SAFETY, FIX-RULINGS, then check, two reviewers, report; not READY by the FREEZE: fixes by name
+LANE: core BUILDING   # run wf_bf29c997-958: FIX-SAFETY done 37e0f14 RS5, 5dcb83c RS6, 02e2ac7 RS7, 2d84168 RS8, 7df959f (a), f36d66c (b), 93871c2 (c), f33ca6e (d), b3cde8e (e); FIX-RULINGS building; then check over 98f872d..HEAD, two reviewers, report; goes to offline-v1.1 (HUB 10:51, R-H-11)
 LANE: engine PAUSED   # slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42 pause: run wf_35f6a75a-d62 stopped 10:46 at that commit, worktree clean; resumes after the tag with [U-07], [U-08], then check (offline-v1.1)
-LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae (check PASS), review fixes to 5cfed71; RS2 (HIGH, crisis text) to RS9 never reached the fix round + rulings 10:45: run wf_0a47dae7-ba9 builds FIX-SAFETY-AS, FIX-ONB-EMO, then check, two reviewers, report; not READY by the FREEZE: fixes by name
+LANE: actions-sos BUILDING   # run wf_0a47dae7-ba9: FIX-SAFETY-AS done 2c34299 RS2, bf4cd96 RS3, 9e6a99f RS4, cf9bc2b RS5, 54fd607 RS6, 6a618e6 RS7, 5485c17 RS8, 0325cfe RS9, edc2ae7 talkback, f90d7cc verify note; FIX-ONB-EMO building; then check over c629cae..HEAD, two reviewers, report; goes to offline-v1.1
 LANE: learn READY 19f373c   # U-12 a499dae MERGED; C1 9bbccd2, C2 dc248cb, U-13 + U-14 19f373c; check PASS at 19f373c 10:47 (run wf_c538e4c5-38a): test GREEN 28/28, build and validate SKIP at the lane base, guards no new failure (the 21 names as at a499dae), territory 0 errors; LOWs C3 (checkpoint toast '+10 XP' only the first time), C4 ('Why this works' without UI.sheet), C5 (trailer) go to offline-v1.1 by name; report tracks/CORE/lane-reports/learn.md (10952 B, 10:50); slot 4 free
 LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 10:50 IST
+UPDATED: 2026-11-07 11:13 IST
 
 # 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
 
