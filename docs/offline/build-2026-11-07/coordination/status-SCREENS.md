@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:29 IST: no run live: actions (9ee68cf) and game-tutorials (d4c49d1) built and PAUSED for memory (rows 3.2-4.3 GB 18:25-18:28); their checks start one per 7.0 GB row, actions first; R-S-12 shapes and hooks to CORE, R-S-13 a default to HUB
+STATE: BUILDING   # 2026-11-07 18:33 IST: one run live: actions check wf_04c1d56e-d49 (8.4 GB row 18:32); game-tutorials built at d4c49d1, its check on the next 7.0 GB row (tmp/args_gt_check.json)
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
-LANE: actions BUILDING   # PAUSED for memory at 9ee68cf (18:28): U-23 42ce8aa, 25308cc; U-24 bd8be70, 0894beb; U-25 40e3418, 7641b1b, 9ee68cf built (test 32/32 by the builder); the check (with the browser gate) on the next 7.0 GB row; slice 710502f merged 18:02
+LANE: actions CHECKING   # U-22..U-25 built (tip 9ee68cf); the check over 710502f...HEAD with the browser gate: run wf_04c1d56e-d49 launched 18:32 on an 8.4 GB row; slice 710502f merged 18:02
 LANE: game-tutorials BUILDING   # PAUSED for memory at d4c49d1 (18:26): U-26 0f611e5, U-28 8dccbfb, d4c49d1 built (test 25/25 by the builder); the check (with the browser gate) on the next 7.0 GB row; slice 5af6665 merged 17:57
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:29 IST
+UPDATED: 2026-11-07 18:33 IST
 
 # 2026-11-07 18:28 IST · game-tutorials PAUSED for memory after its U-28 commit; U-26 and U-28 built, the check waits for a 7.0 GB row
 

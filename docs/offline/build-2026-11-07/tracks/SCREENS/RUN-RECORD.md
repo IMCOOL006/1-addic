@@ -91,8 +91,8 @@
 
 ## Resume here
 
-- Chat d6887185 (context past 250k at 18:29: RESTART at the next safe point past 300k). NO run live. Both remaining lanes are fully built and PAUSED for memory; only their checks remain:
-  - actions at 9ee68cf (U-23..U-25 after the merged slice 710502f): launch lane.js with C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp/args_actions_check.json on the next 7.0 GB row (replace @NOW@ in laneNote and set now from `date`; set session to the new chat's id).
+- Chat d6887185 (context past 250k at 18:29: RESTART at the next safe point past 300k). Live: actions check wf_04c1d56e-d49 (launched 18:32; journal under .../d6887185-82d2-4a14-8c98-cee7cc2b525d/subagents/workflows/wf_04c1d56e-d49/journal.jsonl). Both remaining lanes are fully built; only their checks remain:
+  - actions at 9ee68cf (U-23..U-25 after the merged slice 710502f): LAUNCHED 18:32 as wf_04c1d56e-d49; if its session died, relaunch lane.js with C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp/args_actions_check.json on the next 7.0 GB row (replace @NOW@ in laneNote and set now from `date`; set session to the new chat's id).
   - game-tutorials at d4c49d1 (U-26, U-28 after the merged slice 5af6665): tmp/args_gt_check.json, on the 7.0 GB row after that (one start per row).
   - Each returns READY (or RED): write `LANE: <lane> READY <tip>` with the gate lines; the lane is then complete (all its units in the READY); report path tracks/SCREENS/lane-reports/<lane>.md (under 20 KB).
 - Memory: `powershell -NoProfile -Command "[math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB,1)"`; rows swing 3.2-10.2 GB with the pharma and CORE runs. Pause rule: under 4.0 the newest run pauses at its next commit (stop it with TaskStop after the commit; relaunch start 'check' or with done).
