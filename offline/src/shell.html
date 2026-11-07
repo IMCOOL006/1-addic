@@ -1,0 +1,27 @@
+<!-- 1-addic shell: the body markup (BUILD-PLAN 3.1; ids are the contract of tracks/CORE/contracts/core.md, section A).
+     ui-core.js fills it. Owned by lane core; other lanes change it by request only. -->
+<div id="app">
+  <header id="topbar" class="topbar">
+    <span id="app-name" class="app-name">1-addic</span>
+    <span id="saved-label" class="saved-label" aria-live="polite">Loading</span>
+    <button id="theme-btn" class="icon-btn" type="button" aria-label="Change theme" title="Change theme">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+    </button>
+    <a id="settings-btn" class="icon-btn" href="#/settings" aria-label="Settings" title="Settings">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8" cy="17" r="2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+    </a>
+  </header>
+  <a id="sos-btn" class="sos-btn" href="#/sos" data-tour="sos-button">SOS</a>
+  <nav id="nav" class="nav" aria-label="Main">
+    <a href="#/today" data-route="today" data-tour="nav-today">Today</a>
+    <a href="#/learn" data-route="learn" data-tour="nav-learn">Learn</a>
+    <a href="#/workbook" data-route="workbook" data-tour="nav-workbook">Workbook</a>
+    <a href="#/track" data-route="track" data-tour="nav-track">Track</a>
+    <a href="#/actions" data-route="actions" data-tour="nav-actions">Actions</a>
+  </nav>
+  <main id="main" tabindex="-1"></main>
+  <dialog id="dialog" class="sheet"></dialog>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="coach" class="coach" hidden></div>
+</div>
+<div id="print-root" class="print-root"></div>
