@@ -1,8 +1,8 @@
 TRACK: HUB
-STATE: RESTART   # 2026-11-07 18:52 IST: HUB 5 (4b638c7b) hands over at about 290k context at a safe point: nothing of the HUB's runs, no merge in flight, _int detached, trunk = origin. Twenty-four merges; the last: actions READY 0977edd (U-23..U-25, the lane complete) as 49f1c1d4 at 18:50; every tour-target name lifted. The fresh HUB reads tracks/HUB/RUN-RECORD.md 'Resume here' (18:52) and continues the loop: merge game-tutorials READY (its check runs), actions-sos READY (FIX-R6 with RS-SAMPLE, the tag condition), learn FIX-RS9 and engine FIX-RS9E; then the full gates and the tag offline-v1.1; memory rows are tight (4.0-5.2 GB with three runs)
+STATE: BUILDING   # 2026-11-07 18:58 IST: HUB 6 (42f60331, from the launcher) resumed from HUB 5's 'Resume here' (18:52): twenty-four merges stand, BASE 49f1c1d4, _int detached at the trunk tip, no lock held, trunk = origin after this push. Live: CORE 60f08c84 (actions-sos FIX-R6 wf_45f788de-56d, the tag condition, three commits on the branch so far: Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); SCREENS d6887185 idle (game-tutorials re-check waits for a 7.0 GB row). Free memory 2.1-2.3 GB at 18:55-18:56: under the floor; FIX-R6 runs on as CORE's R-C-32 default (the only live run, tier 1); nothing else starts. Next merges as they appear: actions-sos READY (655516dc, flagged), learn FIX-RS9, engine FIX-RS9E, game-tutorials READY (9f3026c6); then the full gates and the tag offline-v1.1
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 49f1c1d4 (the trunk after the actions READY merge, 2026-11-07 18:50; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 0 new starts while the rows stay under 7.0 GB (18:31: 3.5 GB free with no run live); the checks of actions and game-tutorials (one per 7.0 GB row), then CORE 6's actions-sos FIX-R6, learn FIX-RS9, engine FIX-RS9E (one per 7.0 GB row, actions-sos first: the tag condition); under 4.0 GB the newest run pauses at its next commit
+SLOTS-ALLOWED: 0 new starts while the rows stay under 7.0 GB (18:56: 2.3 GB free with FIX-R6 the one live run); FIX-R6 runs on (tier 1, the tag condition: CORE's R-C-32 default accepted); then, one per 7.0 GB row, in this order: learn FIX-RS9, engine FIX-RS9E, the game-tutorials re-check; under 4.0 GB no tier 2 run resumes
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 granted again 2026-11-07 18:28 for FIX-RS9E by name (R-S-9: recoveryPlanPrefill and ownWarningPlans read x.item; CORE's wrapper ready), test-only or one-line; READY with the tip; the lane was complete at 57153d3
@@ -42,7 +42,15 @@ MERGED: core READY 8e80951 (FIX-V11: high contrast on every render, custom-field
 MERGED: actions READY 0977edd (U-23 Battle Plans, U-24 Weekly Review, U-25 quests, Prediction Lab, to-dos, practices player ui-practices.js new; C1; actions-ui.test.mjs 32 tests) -> merge 49f1c1d4, trunk 49f1c1d4, pushed 18:50 (build GREEN; test GREEN 32/32; validate GREEN; guards GREEN with no baselined name left (bp-new, bp-form, review-start lifted); territory 0 errors over 710502f..0977edd; merged clean, 4 files; the lane is complete)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 18:52 IST
+UPDATED: 2026-11-07 18:58 IST
+
+# 2026-11-07 18:58 · HUB 6 resumes; memory under the floor; FIX-R6 the one live run
+
+- Read: PLAN.md whole, this file, tracks/HUB/RUN-RECORD.md 'Resume here' (18:52), status-CORE.md (18:47: FIX-R6 running), status-SCREENS.md (18:54: actions READY merged, game-tutorials built at 1ea2ebf, re-check waits for memory), outbox-CORE.md to R-C-32, outbox-SCREENS.md to R-S-13, outbox-OWNER.md (R-O-2 the last), baselines.md (3 test names baselined, no tour target).
+- `claude agents --json` 18:56: CORE 60f08c84 busy (FIX-R6 wf_45f788de-56d), SCREENS d6887185 idle (its memory watch stopped by the system; the re-check launches when it wakes on a 7.0 GB row); HUB 5 4b638c7b stopped by the launcher 18:55. The launcher loop runs (pid 14024). _int detached at 49f1c1d, clean; no lock held.
+- Memory: 2.1 GB (18:55), 2.3 GB (18:56) free; rows 18:30-18:50 3.9-4.5. CORE's R-C-32 default accepted: FIX-R6 continues (tier 1, the only live run); the tier 2 runs stay paused. The owner is asked again on the board to close what is not this build.
+- The trunk: a SCREENS docs commit f976c83 sat ahead of origin; pushed with this commit.
+- Not mine, reported only: .claude/settings.json is modified in the main folder's working tree (34 added lines; the owner's or a chat's, never the HUB's).
 
 # 2026-11-07 18:52 · the twenty-fourth merge: actions complete; every tour target exists; HUB 5 hands over
 

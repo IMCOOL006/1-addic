@@ -1,34 +1,35 @@
-STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: twenty-four merges on the trunk (BASE 49f1c1d4, pushed 18:50). In since the tag: the encrypted Store, the whole engine, every tier 1 screen (Today, Track, Insights, Harbor, Settings, Reasons Card, Support Network, Workbook, My Recovery Plan), the whole validated content, and the tier 2 actions screens complete (planner, battle plans with calendar export and debrief, weekly review with the forecast check, quests, Prediction Lab, to-dos, the practices player) and the guidance engine. Still building: the SOS screens with onboarding and lock (actions-sos, sixth safety round: the sample-data fix, one regression), game surfaces and tools (game-tutorials, built and in its check), the guide with screenshots (last). The HUB hands over to session 6 at its context limit (the launcher starts it within minutes).
-NEEDS YOU: (1) 18:32: free memory is 3.5 GB with none of this build's runs live: other programs hold it (the pharma chats, the planner chat at 630k context, the browser). Every remaining unit waits for a row with 7.0 GB free; closing what is not this build is what moves it; the forecast slips an hour per hour the rows stay low. (2) Open offline/1-addic.html from the trunk (every tier 1 screen is in now) on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake.
-NEXT: the HUB merges, in arrival order, actions-sos READY (U-10 SOS, U-11 onboarding and lock, every safety fix) when its fourth round ends, the rest of the content (U-31b, U-29, U-30, U-32, U-33), the Reasons Card and Support Network (U-20a), core's high-contrast fix, then the planner and guidance-engine slices; the guide with screenshots comes last. Memory is falling (6.8 GB at 17:02 with eight runs): the newest lane pauses under 4 GB.
+STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: twenty-four merges on the trunk (BASE 49f1c1d4, pushed 18:50). In since the tag: the encrypted Store, the whole engine, every tier 1 screen (Today, Track, Insights, Harbor, Settings, Reasons Card, Support Network, Workbook, My Recovery Plan), the whole validated content, the tier 2 actions screens complete (planner, battle plans with calendar export and debrief, weekly review with the forecast check, quests, Prediction Lab, to-dos, the practices player) and the guidance engine. Still building: the SOS screens with onboarding and lock (actions-sos, sixth safety round running: the sample-data fix, one regression, three of its five fixes committed by 18:50), game surfaces and tools (game-tutorials, built, its re-check waits for memory), the guide with screenshots (last). HUB session 6 took over at 18:52 (the launcher).
+NEEDS YOU: (1) 18:56: free memory is 2.1-2.3 GB with one run of this build live (the SOS safety round). Other programs hold the rest (the pharma chats, the planner chat, the browser). Everything else waits for a row with 7.0 GB free; the SOS round itself is at risk under 4 GB. Closing what is not this build is the one thing that moves the tag tonight. (2) Open offline/1-addic.html from the trunk (every tier 1 screen and the actions screens are in now) on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake.
+NEXT: the HUB merges, as each appears: actions-sos READY (U-10 SOS, U-11 onboarding and lock, every safety fix: the tag condition), the two test-only fixes of learn and engine (they lift the three baselined test names), game-tutorials READY (game surfaces, tools and mini-games). Then the full gates on the trunk (quiet window: no lane runs anything heavy) and the tag offline-v1.1. The guide with screenshots (tests-docs U-35, U-36b) follows under CORE and goes to offline-v1.2 if the night's memory does not hold.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 18:52 IST by `board.py`.
+Rewritten 2026-11-07 18:59 IST by `board.py`.
 
 ## For the owner (more)
 
 FORECAST (corrected 17:41: every SCREENS tier 1 unit is merged; actions-sos READY about 18:00-18:30 after its fifth safety round; offline-v1.1 tag tonight about 19:30-20:30 once actions-sos and the three test fixes are in and the full gates run green; tier 2 planner, guidance engine, games and tools, and the guide with screenshots by the morning of 8 Nov if memory holds). Earlier forecast (14:45, 16:19): core merged 15:29 and engine 15:34; actions-sos READY and merged about 17:30-18:00 (fourth fix round for RS24; each round about 30-60 minutes now); the SCREENS tier 1 slices (U-31a, U-15, U-19) READY-SLICE and merged about 17:30-18:30, their second units (U-16, U-20a, U-31b) by about 20:00; offline-v1.1 tagged tonight about 21:00-22:00 if memory holds (15 GB free at 16:15); tier 2 (planner, battle plans, weekly review, quests, game surfaces, tools) and the guide Part 3 with screenshots (U-35, U-36b, last by design) by the afternoon of 8 Nov if the lanes run through the night, else the evening of 8 Nov.
+FORECAST (18:58): the SOS round ends about 19:30-20:00 if memory holds at 4 GB or more; actions-sos merged within the hour after its READY; the learn and engine test fixes and the game-tutorials re-check each need one 7.0 GB row (about 20 minutes each once the memory is there); offline-v1.1 tagged tonight about 21:00-22:00 with memory freed, else when the rows allow. Earlier forecast (17:41): offline-v1.1 about 19:30-20:30; tier 2 and the guide with screenshots by the morning of 8 Nov if memory holds.
 
 ## The HUB
 
-- STATE: RESTART — 2026-11-07 18:52 IST: HUB 5 (4b638c7b) hands over at about 290k context at a safe point: nothing of the HUB's runs, no merge in flight, _int detached, trunk = origin. Twenty-four merges; the last…
+- STATE: BUILDING — 2026-11-07 18:58 IST: HUB 6 (42f60331, from the launcher) resumed from HUB 5's 'Resume here' (18:52): twenty-four merges stand, BASE 49f1c1d4, _int detached at the trunk tip, no lock held, trunk =…
 - BASE: 49f1c1d4 (the trunk after the actions READY merge, 2026-11-07 18:50; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 18:52 IST
+- UPDATED: 2026-11-07 18:58 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 4b638c7b (launcher-started 2026-11-07 16:27) | RESTART — 2026-11-07 18:52 IST: HUB 5 (4b638c7b) hands over at about 290k context at a safe point: nothing of the HUB's runs, no… | 281k | 2026-11-07 18:52 IST |
-| CORE | 60f08c84 (launcher-started 2026-11-07 18:23) | BUILDING — 2026-11-07 18:37 IST: CORE 60f08c84; actions-sos FIX-R6 running (wf_45f788de-56d, launched 18:36 on the 18:35 row 7.8… | 160k | 2026-11-07 18:47 IST |
-| SCREENS | d6887185 (launcher-started 2026-11-07 17:31) | BUILDING — 2026-11-07 18:48 IST: actions READY 0977edd (complete, for the HUB); game-tutorials paused at 1ea2ebf for memory, its… | 293k | 2026-11-07 18:48 IST |
+| HUB | 42f60331 (launcher-started 2026-11-07 18:53) | BUILDING — 2026-11-07 18:58 IST: HUB 6 (42f60331, from the launcher) resumed from HUB 5's 'Resume here' (18:52): twenty-four… | 109k | 2026-11-07 18:58 IST |
+| CORE | 60f08c84 (launcher-started 2026-11-07 18:23) | BUILDING — 2026-11-07 18:37 IST: CORE 60f08c84; actions-sos FIX-R6 running (wf_45f788de-56d, launched 18:36 on the 18:35 row 7.8… | 163k | 2026-11-07 18:47 IST |
+| SCREENS | d6887185 (launcher-started 2026-11-07 17:31) | BUILDING — 2026-11-07 18:54 IST: no run live. actions READY 0977edd (complete, for the HUB). game-tutorials built at 1ea2ebf (C1… | 295k | 2026-11-07 18:54 IST |
 
 ## Lanes (10)
 
@@ -45,7 +46,7 @@ FORECAST (corrected 17:41: every SCREENS tier 1 unit is merged; actions-sos READ
 | `game-tutorials` | SCREENS | 2 |  | slot 8 | CHECKING | GRANTED 2026-11-07 16:33 (SCREENS, tier 2): READY-SLICE 5af6665 (U-27 guidance engine) merged 17:57 (89976d80); PAUSED by SCREENS at 17:53 (3.3 GB row)… |
 | `content` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1… |
 
-Slots allowed: 0 new starts while the rows stay under 7.0 GB (18:31: 3.5 GB free with no run live); the checks of actions and game-tutorials (one per 7.0 GB row), then CORE 6's actions-sos FIX-R6, learn FIX-RS9, engine FIX-RS9E (one per 7.0 GB row, actions-sos first: the tag condition); under 4.0 GB the newest run pauses at its next commit. Granted: 10 lanes (`core` slot ?, `engine` slot 2, `actions-sos` slot 3, `learn` slot 9, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot 8).
+Slots allowed: 0 new starts while the rows stay under 7.0 GB (18:56: 2.3 GB free with FIX-R6 the one live run); FIX-R6 runs on (tier 1, the tag condition: CORE's R-C-32 default accepted); then, one per 7.0 GB row, in this order: learn FIX-RS9, engine FIX-RS9E, the game-tutorials re-check; under 4.0 GB no tier 2 run resumes. Granted: 10 lanes (`core` slot ?, `engine` slot 2, `actions-sos` slot 3, `learn` slot 9, `tests-docs` slot 5, `content` slot ?, `today-track` slot ?, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot 8).
 
 ## Merges
 
@@ -85,11 +86,12 @@ Slots allowed: 0 new starts while the rows stay under 7.0 GB (18:31: 3.5 GB free
 - lane.js (HUB tooling): the reviewers' findings over 2,000 characters were cut to ids and the fix rounds never saw them (R-C-12); worked around by laneNote today; fixed in the tooling for offline-v1.1.
 - Safety copy for clinical review (CORE R-C-9): the SOS fallback lines, the crisis copy, the onboarding safety and lock texts in ui-sos.js and ui-onboarding.js are built as placeholders; the content lane (SCREENS, not started today) writes the reviewed versions in offline-v1.1. Please read them on your walk.
 - Decisions: the defaults of PLAN.md section 9 applied at 08:25 (R-O-1) and are the owner's own decision since 14:38 (R-O-2: 'I agree with the defaults'; the decisions document is DECISIONS.md beside PLAN.md). The build runs on to the complete edition and the guide on the owner's word; the launcher stays running.
+- 18:58 Memory 2.1-2.3 GB free (18:55, 18:56) with the SOS safety round the only live run of this build; the launcher's rows 18:30-18:50 were 3.9-4.5 GB. The tier 2 runs (game-tutorials re-check) are paused; the two CORE test fixes wait. Under the floor, the one tier 1 run continues (CORE's R-C-32 default, accepted by the HUB): pausing it would stop the tag's condition for nothing gained. What frees memory is on NEEDS YOU.
 
 ## Machine
 
 - Free memory 4.5 GB of 31.8 GB at 2026-11-07 18:50 IST; claude 30, node 60 processes; 0 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 14024); its last launch: CORE 60f08c84 at 2026-11-07 18:23.
+- The launcher loop: running (pid 14024); its last launch: HUB 42f60331 at 2026-11-07 18:53.
 
 ## Files of the build
 
