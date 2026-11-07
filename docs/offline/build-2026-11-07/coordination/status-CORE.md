@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 01:53 IST: CORE 11310a7c (context near 300k): tests-docs READY 9931e10 (FIX-TOURMARK, R-H-36; check PASS); nothing runs; the HUB merges, re-runs the browser gate and tags offline-v1.1; after the tag, the offline-v1.1 queue by name on granted slots (tracks/CORE/RUN-RECORD.md Resume here)
+STATE: RESTART   # 2026-11-08 01:54 IST: CORE 11310a7c hands over at a safe point (context near 300k; nothing runs; no workflow alive). tests-docs READY 9931e10 (FIX-TOURMARK) is with the HUB (R-C-42 and a direct message); every other CORE lane is merged. CORE 10 first: read this file and tracks/CORE/RUN-RECORD.md 'Resume here'; launch nothing for tests-docs unless the HUB sends it back; after the tag offline-v1.1, the offline-v1.1 queue by name on SLOTS grants
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs READY 9931e10   # 2026-11-08 01:53 IST: FIX-TOURMARK (test-only, browser.test.mjs, on BASE e8da3fbd by fast-forward): check wf_982bf179-aa7 PASS: browser full 16 pass, 0 fail, the quiet run's 3 hook skips by name; the four tour and artifact names pass; test --full 536/536; territory 0 errors; C-TM-1 LOW offline-v1.1; report tracks/CORE/lane-reports/tests-docs.md; U-35, U-36b and the hooks round after the tag
 SLOTS-ASKED: 0   # nothing runs; tests-docs slot 5 frees at the merge
-UPDATED: 2026-11-08 01:53 IST
+UPDATED: 2026-11-08 01:54 IST
 
 # 2026-11-08 01:33 IST · actions-sos merged; every CORE lane merged; QUIET
 
