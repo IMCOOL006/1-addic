@@ -167,9 +167,7 @@ flow('tour skip', { globals: ['UI.tour', 'Store'], tour: true }, async ({ page }
 });
 
 flow('tour replay from Settings Help', { routes: ['settings'], globals: ['UI.tour'], start: '#/settings/help' }, async ({ page }) => {
-  const replay = page.locator(HOOKS.main).getByRole('button', { name: /tour/i }).first();
-  if (!(await replay.count())) throw new F.Skip(REASON.hook('Settings Help button named "tour"'));
-  await replay.click();
+  await F.click(page, HOOKS.tourReplay); // ui-settings.js:421, data-test tour-replay
   await F.need(page, HOOKS.coach + ':not([hidden])', 4000);
   // SOS is never interrupted: one tap from the running tour, and inside SOS no coach mark shows.
   await page.locator(HOOKS.sosBtn).click();
@@ -236,17 +234,23 @@ flow('SOS reachable and not gated before onboarding or on lock screen', { onboar
 
 /* ── Today, Learn ── */
 
-flow('quick log and evening check-in', { globals: ['Store', 'Actions'], hooks: [HOOKS.quicklogButton] }, async ({ page }) => {
+// The quick log is Track's "Add" (data-tour quicklog-button, ui-track.js:452): a kind, then the form. The check-in
+// opens from Today's card when it shows at this hour, else from Track's kinds; the switch picks Evening.
+flow('quick log and evening check-in', { globals: ['Store', 'Actions'], start: '#/track', hooks: [HOOKS.quicklogButton] }, async ({ page }) => {
   const logs0 = await F.count(page, 'logs');
   await F.click(page, HOOKS.quicklogButton);
+  if (await present(page, HOOKS.logKind('craving'), 1500)) await F.click(page, HOOKS.logKind('craving'));
   if (await present(page, HOOKS.quicklogIntensity, 1500)) await F.setRating(page, HOOKS.quicklogIntensity, 6);
   await F.click(page, HOOKS.quicklogSave);
   await F.waitFor(page, (n) => Store.view.count('logs') >= n, logs0 + 1);
   await F.go(page, '#/today');
+  if (await present(page, HOOKS.todayCheckinGo, 1500)) await F.click(page, HOOKS.todayCheckinGo);
+  else { await F.go(page, '#/track/log'); await F.click(page, HOOKS.logKind('checkin')); }
   await F.click(page, HOOKS.checkinEvening);
+  await F.waitFor(page, () => { const f = document.querySelector('[data-test="log-checkin"]'); return !!f && f.dataset.kind === 'evening'; });
   await F.fillVisible(page);
   await F.click(page, HOOKS.checkinSave);
-  await F.waitFor(page, () => Store.view.list('events').some((e) => e.type === 'CheckinCompleted'));
+  await F.waitFor(page, () => Store.view.list('events').some((e) => e.type === 'CheckinCompleted' && e.payload && e.payload.kind === 'evening'));
 });
 
 flow('lesson to artifact shown in SOS', { routes: ['exercise', 'sos'], globals: ['Store', 'Actions', 'Content.exercises'] }, async ({ page }) => {
@@ -300,6 +304,48 @@ flow('PIN set lock unlock export', { globals: ['Store.lock'] }, async ({ page })
   await prompt.fill(F.TEST_PIN);
   await F.click(page, HOOKS.dialogConfirm);
   assert.match((await download).suggestedFilename(), /\.json$/);
+});
+
+// Settings > Privacy by its own buttons (ui-settings.js:314 set-pin, :327 remove-pin, the sheet's pin-* and pin-save).
+flow('Settings PIN set and remove', { routes: ['settings'], globals: ['Store.lock'], start: '#/settings/privacy' }, async ({ page }) => {
+  assert.equal(await page.evaluate(() => Store.status().hasLock), false, 'no PIN at the start');
+  await F.click(page, HOOKS.setPin);
+  await (await F.need(page, HOOKS.pinInput, 4000)).fill(F.TEST_PIN);
+  await (await F.need(page, HOOKS.pinInput2)).fill(F.TEST_PIN);
+  await F.click(page, HOOKS.pinSave);
+  await F.waitFor(page, () => Store.status().hasLock === true);
+  assert.equal(await page.evaluate(() => Store.status().locked), false, 'setting a PIN does not lock the open notebook');
+  await F.go(page, '#/settings/privacy');
+  await F.click(page, HOOKS.removePin);
+  const wrong = await F.need(page, HOOKS.pinInput, 4000);
+  await wrong.fill('0000');
+  await F.click(page, HOOKS.pinSave);
+  await page.waitForTimeout(800);
+  assert.equal(await page.evaluate(() => Store.status().hasLock), true, 'a wrong PIN does not remove the lock');
+  await (await F.need(page, HOOKS.pinInput)).fill(F.TEST_PIN);
+  await F.click(page, HOOKS.pinSave);
+  await F.waitFor(page, () => Store.status().hasLock === false);
+  await F.go(page, '#/settings/privacy');
+  await F.need(page, HOOKS.setPin);
+});
+
+// Actions > Planner by its own buttons (ui-actions.js:378 actions-open-planner, :416 planner-add-btn, the form, :507 planner-save).
+flow('planner add and save', { routes: ['actions'], globals: ['Store', 'Actions'], start: '#/actions' }, async ({ page }) => {
+  await F.click(page, HOOKS.actionsOpen('planner'));
+  await F.need(page, HOOKS.planner, 4000);
+  const blocks0 = await page.locator(HOOKS.plannerBlock).count();
+  const plans0 = await F.count(page, 'plans');
+  await F.click(page, HOOKS.plannerAdd);
+  await (await F.need(page, HOOKS.plannerTitle)).fill('Sample walk for the test');
+  await (await F.need(page, HOOKS.plannerStart)).fill('10:00');
+  await (await F.need(page, HOOKS.plannerEnd)).fill('10:30');
+  await F.click(page, HOOKS.plannerSave);
+  await F.waitFor(page, (n) => Store.view.count('plans') >= n, plans0 + 1);
+  assert.equal(await F.visible(page, HOOKS.plannerError), false, 'no form error');
+  await F.go(page, '#/today');
+  await F.go(page, '#/actions/planner');
+  await F.need(page, HOOKS.plannerBlock, 4000);
+  assert.ok((await page.locator(HOOKS.plannerBlock).count()) >= blocks0 + 1, 'the block shows on the day after leaving and coming back');
 });
 
 flow('discreet lock screen shows Notebook and Help', { globals: ['Store.lock', 'UI.applyDiscreet'] }, async ({ page }) => {

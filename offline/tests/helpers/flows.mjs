@@ -43,6 +43,7 @@ export async function click(page, sel) {
 }
 
 // Until sel is visible: press the page's own Next / Continue / Start, at most tries times; Skip if it never shows.
+// SOS's own steps (It helped, Check in with the craving) are tapped by hook in useTool and reachReassess.
 export async function advanceUntil(page, sel, tries = 4) {
   for (let i = 0; i <= tries; i += 1) {
     if (await visible(page, sel)) return page.locator(sel).first();
@@ -103,21 +104,20 @@ export async function cravingSession(page, { used, loop = true, start = '#/sos/c
   await useTool(page, 'wave');
   if (loop) {
     // The delay loop: still strong -> back to the tools for another 15 minutes.
-    await (await advanceUntil(page, HOOKS.sosStill)).click();
+    await (await reachReassess(page, HOOKS.sosStill)).click();
     await advanceUntil(page, HOOKS.sosAnyTool);
     await useTool(page, 'distract');
   }
-  if (await present(page, HOOKS.sosRating, 500) && (await visible(page, HOOKS.sosRating))) await setRating(page, HOOKS.sosRating, 3);
-  if (!used) {
-    await (await advanceUntil(page, HOOKS.sosPassed)).click();
-    if (await present(page, HOOKS.sosUsedNo, 1200)) await (await advanceUntil(page, HOOKS.sosUsedNo)).click();
-  } else {
-    await (await advanceUntil(page, HOOKS.sosUsedYes)).click();
-  }
+  const passed = await reachReassess(page, HOOKS.sosPassed);
+  if (await visible(page, HOOKS.sosRating)) await setRating(page, HOOKS.sosRating, 3);
+  await passed.click();
+  // "Did you use?" follows "It passed": No ends the session, Yes goes on to the slip flow.
+  await (await advanceUntil(page, used ? HOOKS.sosUsedYes : HOOKS.sosUsedNo)).click();
   if (await present(page, HOOKS.sosFinish, 1500)) await (await advanceUntil(page, HOOKS.sosFinish)).click();
   await page.waitForTimeout(300);
 }
 
+// A tool, then its own screens (Next on each step, Done on the last), then "Did it help?": It helped.
 async function useTool(page, name) {
   const sel = (await present(page, HOOKS.sosTool(name), 1500)) ? HOOKS.sosTool(name) : HOOKS.sosAnyTool;
   await (await advanceUntil(page, sel)).click();
@@ -127,6 +127,20 @@ async function useTool(page, name) {
     await page.clock.fastForward('16:00').catch(() => {});
     await page.waitForTimeout(150);
   }
+  for (let i = 0; i < 16; i += 1) {
+    if (await visible(page, HOOKS.sosHelpedYes)) { await click(page, HOOKS.sosHelpedYes); return; }
+    if (await visible(page, HOOKS.sosStepNext)) { await click(page, HOOKS.sosStepNext); continue; }
+    if (await visible(page, HOOKS.sosStepDone)) { await click(page, HOOKS.sosStepDone); continue; }
+    await page.waitForTimeout(200);
+  }
+  throw new Skip(REASON.hook(HOOKS.sosHelpedYes));
+}
+
+// From the tools list to the re-rating: "Check in with the craving" (ui-sos.js:700), then wait for sel.
+export async function reachReassess(page, sel) {
+  if (await visible(page, sel)) return page.locator(sel).first();
+  if (await present(page, HOOKS.sosCheckin, 1500)) await click(page, HOOKS.sosCheckin);
+  return advanceUntil(page, sel);
 }
 
 /* ── Onboarding (actions-sos U-11: eight steps, Skip on each but the safety notice) ── */
