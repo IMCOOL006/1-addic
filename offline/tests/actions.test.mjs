@@ -2767,11 +2767,43 @@ describe('review round 5 fixes (FIX-R5)', () => {
         { thought: 'I blew it', reply: 'One slip is not the whole road.' },
       ];
       assert.ok(H.isCrisisText(mine[0].thought, null) && H.isCrisisText(mine[1].thought, null), 'both are crisis text');
-      assert.deepEqual(H.spiralPairs(null, { spiralThoughts: () => mine }, C()), [
+      assert.deepEqual(H.spiralPairs(spiralView({ pairs: mine }), { spiralThoughts: () => mine }, C()), [ // RS35: their words are in their response
         { thought: "I can't do this anymore", reply: 'I can do the next hour.' },
         { thought: 'No one would miss me if I drank', reply: 'My sister would.' },
         { thought: 'I blew it', reply: 'One slip is not the whole road.' },
       ]);
+    });
+    // RS35: the trunk's Engine.spiralThoughts (42d2467d engine.js:719-728) by a stand-in of its behaviour: the latest
+    // spiral response's thoughts with their replies, a missing reply filled with a stock slipSelfTalk line.
+    const trunkSpiral = { spiralThoughts: (view) => {
+      const r = view ? view.list('responses').filter((x) => x.exerciseId === 'spiral' && !x.draft).pop() : null;
+      const p = (r && r.payload) || {};
+      const stock = C().catalogs.slipSelfTalk.map((x) => (typeof x === 'string' ? x : x.text));
+      const got = Array.isArray(p.pairs) ? p.pairs.map((x) => (typeof x === 'string' ? { thought: x, reply: '' } : { thought: x.thought, reply: x.reply || '' }))
+        : (p.thoughts || []).map((t, i) => ({ thought: t, reply: (p.replies || [])[i] || '' }));
+      return got.map((x, i) => ({ thought: x.thought, reply: x.reply || stock[i % stock.length] }));
+    } };
+    function spiralView(payload, extra) {
+      const at = '2026-11-01T10:00:00.000Z';
+      const rows = [Object.assign({ id: 'r1', exerciseId: 'spiral', mode: 'full', draft: false, at, payload }, extra)];
+      return { list: (s) => (s === 'responses' ? rows.slice() : []), get: () => null, count: (s) => (s === 'responses' ? rows.length : 0) };
+    }
+    test("RS35: on the trunk engine's shape, a crisis or hopeless thought never gets the stock line the engine fills in; only a reply the person saved keeps its pair", () => {
+      const stock = C().catalogs.slipSelfTalk.map((x) => (typeof x === 'string' ? x : x.text));
+      const ticked = spiralView({ thoughts: ['I want to die', 'No one would miss me', 'I feel hopeless', 'I blew it'] });
+      const filled = trunkSpiral.spiralThoughts(ticked);
+      assert.ok(filled.length === 4 && filled.every((x) => stock.includes(x.reply)), 'the stand-in fills every missing reply with a stock line');
+      assert.deepEqual(H.spiralPairs(ticked, trunkSpiral, C()), [{ thought: 'I blew it', reply: filled[3].reply }], 'no crisis or hopeless thought is paired with a stock line');
+      const answered = spiralView({ pairs: [{ thought: 'I want to die', reply: 'I will call my sister tonight.' }, { thought: 'I feel hopeless', reply: '' },
+        { thought: 'No one would miss me', reply: stock[0] }, 'I blew it'] });
+      assert.deepEqual(H.spiralPairs(answered, trunkSpiral, C()), [
+        { thought: 'I want to die', reply: 'I will call my sister tonight.' },
+        { thought: 'I blew it', reply: stock[3 % stock.length] },
+      ], 'the reply the person wrote keeps its pair; a stock line they saved is still a stock line');
+      const sample = spiralView({ pairs: [{ thought: 'I want to die', reply: 'I will call my sister tonight.' }] }, { sample: true });
+      assert.deepEqual(H.spiralPairs(sample, trunkSpiral, C()), [], "a sample row's reply is not the person's own words (O6)");
+      assert.deepEqual(H.spiralPairs(null, trunkSpiral, C()).map((p) => p.thought), C().catalogs.spiral.filter((t) => !/hopeless/i.test(t) && !H.isCrisisText(t, null)),
+        'with no view (a preview, or locked), the catalog without its crisis and hopeless thoughts');
     });
     // -- FIX-R6 tests end --
   });

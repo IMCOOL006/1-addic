@@ -320,19 +320,35 @@
     return FALLBACK.talkback.slice();
   }
 
+  // RS35: every string in v (Content's catalogs, a response's payload), trimmed; bounded in depth.
+  const allStrings = (v, out = [], d = 0) => {
+    if (typeof v === 'string') out.push(v.trim());
+    else if (v && typeof v === 'object' && d < 8) for (const x of Object.values(v)) allStrings(x, out, d + 1);
+    return out;
+  };
+  // RS35: the person's own words are the strings of their own latest spiral response that are no stock line. The
+  // engine fills a missing reply with a slipSelfTalk line, so a reply it gives is not proof of the person's words.
+  function ownSpiralWords(view, C) {
+    const stock = new Set(allStrings([safe(() => C.catalogs, null), FALLBACK.spiralReply, FALLBACK.talkback]));
+    const r = latestResponse(view, 'spiral');
+    return new Set(allStrings(r && r.payload).filter((s) => s !== '' && !stock.has(s)));
+  }
+
   // The person's own spiral thoughts first (engine), else the catalog; each with a reply.
   function spiralPairs(view, E, C) {
     const eng = E === undefined ? glob('Engine') : E;
     let raw = eng && typeof eng.spiralThoughts === 'function' ? listOf(safe(() => eng.spiralThoughts(view), null)) : [];
     if (!raw.length) raw = safe(() => C.catalogs.spiral, []) || [];
     const replies = texts(safe(() => C.catalogs.slipSelfTalk, []));
+    const mine = ownSpiralWords(view, C);
     // RS9: a thought that is crisis text or says 'hopeless' is never answered by a stock reply here. Q-SPIRAL: one the
-    // person answered in their own words keeps its pair, with their reply.
-    const keep = raw.map((x) => ({ thought: typeof x === 'string' ? x : toText(x),
-      own: x && typeof x === 'object' ? String(x.reply || x.rebuttal || x.answer || '').trim() : '' }))
-      .filter((p) => p.thought.trim() && (p.own || (!/hopeless/i.test(p.thought) && !isCrisisText(p.thought, eng || null))));
-    return keep.map(({ thought, own }, i) => (
-      { thought, reply: own || (i === 0 ? FALLBACK.spiralReply : replies[(i - 1) % (replies.length || 1)] || FALLBACK.spiralReply) }));
+    // person answered in their own words keeps its pair, with their reply. RS35: their words, never the engine's fill.
+    const keep = raw.map((x) => {
+      const said = x && typeof x === 'object' ? String(x.reply || x.rebuttal || x.answer || '').trim() : '';
+      return { thought: typeof x === 'string' ? x : toText(x), said, own: mine.has(said) };
+    }).filter((p) => p.thought.trim() && (p.own || (!/hopeless/i.test(p.thought) && !isCrisisText(p.thought, eng || null))));
+    return keep.map(({ thought, said }, i) => (
+      { thought, reply: said || (i === 0 ? FALLBACK.spiralReply : replies[(i - 1) % (replies.length || 1)] || FALLBACK.spiralReply) }));
   }
 
   // RS4: which first choice of the slip flow writes the slip. Only 'log' does, and never in a preview.
