@@ -657,9 +657,9 @@ function storeStandIn() {
   let pending = false;
   const subs = new Set();
   const lockSubs = new Set();
-  function notify() {
+  function notify(label) {
     if (depth) { pending = true; return; }
-    for (const fn of subs) fn();
+    for (const fn of subs) fn({ label }); // as the real Store: a subscriber gets { label } (C2)
   }
   function fromBackup(obj) {
     const next = empty();
@@ -708,9 +708,9 @@ function storeStandIn() {
       if (locked) throw lockedError();
       data = fromBackup(obj);
       lastSavedAt = new Date().toISOString();
-      notify();
+      notify('replaceAll');
     },
-    async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify(); },
+    async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify('resetAll'); },
     lock: {
       async set(p) { const s = String(p); if (s.length < 4 || s.length > 64) throw Object.assign(new Error('A PIN has 4 to 64 characters.'), { code: 'BAD_PIN' }); pin = s; },
       async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; notify(); return true; } return false; }, // the real Store notifies 'unlock'
@@ -2076,6 +2076,34 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
     fresh.tapId(r2, 'onb-next');
     assert.ok(r2.querySelector('[data-testid="onb-pin"]'), 'no PIN yet: the fields stay');
     assert.ok(!r2.textContent.includes(O.COPY.pinIsSet));
+  });
+  test('C2: a save kept for the unlock is dropped when the notebook is erased or replaced first, never written into the new one', async () => {
+    const cases = [['erase (Forgot PIN)', () => S().resetAll()], ['import', (backup) => Actions.importBackup(backup)]];
+    for (const [name, after] of cases) {
+      await S().resetAll();
+      await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+      const backup = S().exportJson();
+      let once = true;
+      const A = Object.assign({}, Actions, { sosSession: (p) => {
+        if (once) { once = false; const e = new Error('The data locked before this was saved.'); e.code = 'LOCKED'; return Promise.reject(e); }
+        return Actions.sosSession(p);
+      } });
+      const d = sosDom();
+      const root = d.open(['sos', 'craving'], null, A);
+      d.tap(root, 'Skip');
+      d.tap(root, 'Check in with the craving');
+      d.tapId(root, 'sos-reassess-passed');
+      d.tapId(root, 'sos-used-no');
+      await d.settle();
+      assert.ok(d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), name + ': kept for the unlock');
+      assert.equal(events('SosCompleted').length, 0, name + ': not saved yet');
+      await after(backup);
+      await d.settle();
+      assert.equal(events('SosCompleted').length, 0, name + ': the kept save is dropped, never written into the new notebook');
+      await Actions.settings.patch({ theme: 'dark' });
+      await d.settle();
+      assert.equal(events('SosCompleted').length, 0, name + ': and stays dropped');
+    }
   });
   // -- FIX-R2-REST tests end --
 });

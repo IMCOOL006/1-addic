@@ -400,10 +400,12 @@
       }
     } finally { flushing = false; }
   }
+  // C2: a kept save belongs to the notebook it was made in. A reset (Forgot PIN, Erase) or an import drops it.
+  const DROP = new Set(['resetAll', 'replaceAll']);
   function keepForUnlock(fn) {
     waiting.push(fn);
     const S = glob('Store');
-    if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe(() => { flushWaiting(); }), null); }
+    if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe((e) => { if (e && DROP.has(e.label)) waiting.length = 0; flushWaiting(); }), null); }
   }
   async function save(fn) {
     try { return await fn(); } catch (err) {
