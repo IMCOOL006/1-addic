@@ -1,49 +1,34 @@
 ## core (CORE, 1-addic offline build): the slice report
 
-State: RED (2026-11-07 11:46 IST, continued from 98f872d; branch tip cdfc0e9: the two reviewers, contracts and safety, stopped at their cap and returned no result, so the whole lane 655516dc..HEAD is unreviewed; no known code defect; check tip 98f872d). Earlier line: STOPPED (tip cdfc0e9; stop reason: two builders in a row made no progress, but FIX-RULINGS was in fact built in full, so the lane is complete and ready for the HUB). Earlier state READY-SLICE (tip 4a43190). Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. Tip cdfc0e9: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS all built. Date 2026-11-07 07:26 IST; continued 07:40; continued 2026-11-07 10:41 IST (from 98f872d).
-Commits (655516dc..HEAD, tip cdfc0e9, newest first):
-- cdfc0e9 RC7: UI.form validate, values, set and confirm's answers, tested
-- 32061e2 RC6: the SOS night theme, tested
-- 56d46d0 RC5: each tab's aria-current and the focus on #main, tested
-- 698b81b Q4, RC9: a row that will not open is kept as stored; rows in key order
-- d16be2c Q3: view.get and view.list return frozen rows
-- b3cde8e FIX-SAFETY (e): h() never sets code as an attribute
-- f33ca6e FIX-SAFETY (d): the lock page says what to do about a forgotten PIN
-- 93871c2 FIX-SAFETY (c): the PIN field asks for a number pad
-- f36d66c FIX-SAFETY (b): the lock is checked when the page wakes
-- 7df959f FIX-SAFETY (a): nothing waits in #print-root while locked
-- 2d84168 RS8: the built-in urgent page keeps one number to tap
-- 02e2ac7 RS7: discreet mode holds before the Store has loaded
-- 5dcb83c RS6: boot never draws again an SOS page already drawn
-- 37e0f14 RS5: resetAll in a fallback session also deletes the IndexedDB database
-- 3789c81 RC8: test proves a non-function listener is never kept
-- 4a48ead RC8: the refusal branches of the store, tested
-- 1e9272c RS4 (ruling Q2): a start failure still shows urgent help
-- f2159e0 RC4: no auto-lock fires inside SOS
-- af2e097 RC3: status() gives the auto-lock minutes in force
-- 2f7266b RS1: no plain copy of the rows stays beside a PIN
-- 0de55c7 RC2, RS3: a second tab never writes past a lock it has not seen
-- e26b958 RC1, RS2: a lock while a new PIN is derived erases nothing
-- 98f872d FIX-C4-C5 C5: discreet mode holds on the lock screen
-- 030f949 FIX-C4-C5 C4: replaceAll keeps the lock row across a reload, proven
-- 06cdf34 U-04: the store, encrypted with a PIN when one is set
-- 36a2fbf F2: every sheet header carries its own SOS link
-- 4112ca4 F1: a route change closes an open sheet
-Earlier (slice):
-- 4a43190 C3 (core, U-03): a test proves an open sheet closes when the app locks
-- 182659e C2 (core, U-03): a replaced sheet's queued close never reaches the next sheet
-- ce258e0 U-03 (core): lock-gate and render tests; sheet closes on lock; urgent note
-- c52d0eb U-02 (core): design tokens and components
-- 2bcc049 U-03 (core): UI core and hash router
-- 8bf7b5c U-01 (core): build pipeline and shell, the slice
+State: RED (2026-11-07 11:58 IST, continued from cdfc0e9; branch tip bda0f0f; all units built and the review round fixed; RED because 3 review items stay open (RC10-RC12 PARTLY), RS11 is deferred and guards are RED on the 15 baselined tour-targets). Earlier line: RED (2026-11-07 11:46 IST, continued from 98f872d; branch tip cdfc0e9: the two reviewers, contracts and safety, stopped at their cap and returned no result, so the whole lane 655516dc..HEAD is unreviewed; no known code defect; check tip 98f872d). Earlier line: STOPPED (tip cdfc0e9; stop reason: two builders in a row made no progress, but FIX-RULINGS was in fact built in full, so the lane is complete and ready for the HUB). Earlier state READY-SLICE (tip 4a43190). Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. Tip cdfc0e9: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS all built. Date 2026-11-07 07:26 IST; continued 07:40; continued 2026-11-07 10:41 IST (from 98f872d).
+Commits (655516dc..HEAD, tip bda0f0f, newest first):
+- bda0f0f RC16: the wrong-PIN wait is proven by a test
+- 0fc477b RC18: a lock during the snapshot take-in leaves nothing in memory
+- aac2772 RC17: only a real sealed box counts as sealed
+- bf38f72 RC15: a draft lists its rows in key order
+- fa399a6 RC14: replaceAll replaces a stale snapshot too
+- ef55fe2 RC13: autoLockMin is 5 unless 1, 5, 15 or never
+- cce8ae6 RC10, RS10: SOS holds the lock open; leaving SOS checks the idle time first
+- ffff640 RC11: without crypto.subtle the lock says so, never a wrong PIN
+- 770c86c RC12: a required chips field is marked and focused
+- 3d6ee8b RS13: a settings row that will not open keeps discreet mode
+- 93d738d RS14: discreet mode says Help on the built-in pages too
+- 8a7bf5a RS12: a lock page that fails still opens with the PIN
+- d6035ff RS9: on SOS the whole coach layer is hidden
+- 6afc262 C1: start-failure lines marked clinicalReview
+Then cdfc0e9 and every earlier commit (8bf7b5c to cdfc0e9, with messages: C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md).
 
 ### Turn caps
-- 2026-11-07 11:46 IST (continued from 98f872d): no builders ran (builders []; capHits 0); all 7 units were built by earlier runs. The two reviewers stopped at their cap.
+- 2026-11-07 11:58 IST (continued from cdfc0e9): no builders ran this run (builders []; capHits 0). The review-fix round (RC10-RC18, RS9-RS14, C1) was built by the fix step; both reviewers ran to the end this time.
 - Builder batch [U-01]: steps_used 17; returned a note (yes). capHits: 0.
 - 2026-11-07 07:40 IST: builder batch [U-03, U-02]: steps_used 42; returned a note (yes). capHits: 0.
 - 2026-11-07 10:41 IST run (continued from 98f872d): earlier runs built U-04 (06cdf34), FIX-C4-C5 and the review fixes. This run: builder [FIX-SAFETY] steps_used 45, note yes; builder [FIX-RULINGS] steps_used 36, note yes; relaunch [FIX-RULINGS] steps_used 5 (nothing redone, only re-ran gates). capHits: 0. Stopped: two builders in a row made no progress (the relaunch found the batch already done).
 
 ### Units
+- 2026-11-07 11:58 IST run (continued from cdfc0e9; built this run: none; review fixes below). Held: none.
+  Fixes: C1 6afc262; RS9 d6035ff; RS12 8a7bf5a; RS14 93d738d; RS13 3d6ee8b; RC12 770c86c; RC11 ffff640; RC10+RS10 cce8ae6; RC13 ef55fe2; RC14 fa399a6; RC15 bf38f72; RC17 aac2772; RC18 0fc477b; RC16 bda0f0f (test only).
+  For a person: the tour never covers SOS. A lock page that fails still takes the PIN. Discreet mode says Help on built-in pages and survives an unreadable settings row. A required feelings/triggers pick is marked and focused. Without crypto.subtle the lock says a PIN is not available here (no wrong-PIN count). While on SOS the timer does not lock the app; leaving SOS after the idle limit shows the lock screen. Auto-lock is 5 min unless 1, 5, 15 or never. An import replaces a stale snapshot. A lock during snapshot take-in leaves no plain rows in memory. Start-failure crisis lines are marked clinicalReview.
+  Questions closed: Q1 (SOS vs wake lock) by Store.lock.hold; the reviewers' takeIn epoch question.
 - U-01 Build pipeline and shell. SHA 8bf7b5c (build.mjs, shell.html, styles.css, boot.js, package.json, offline/1-addic.html).
   For a person: open offline/1-addic.html (one file, works from disk, no network). It shows the top bar (name "1-addic", saved label "Loading", theme button, settings link), five tabs (Today, Learn, Workbook, Track, Actions) and the floating SOS button. Nothing is behind them yet; the router and pages come with U-03 and the screen lanes. The theme follows the device, or a stored '1-addic:theme', before first paint. Zero console errors in headless Edge.
   Questions closed: brief Q3 (test script is a portable node one-liner), Q4 (parts list holds every name in territory.json).
@@ -76,62 +61,52 @@ Earlier (slice):
 - 2026-11-07 (U-03/U-02): UI object per contracts B/C/D and G classes now exist; UI.sheet/UI.confirm onClose reasons include 'dismissed' and 'locked'. Store must expose status().locked, lock.onLock/touch/unlock, subscribe, load (U-04, contract E). styles.css replaced by U-02 tokens.
 
 ### Gates
-VERIFIED (check, tip 8bf7b5c):
-- build GREEN size=103409B. Log C:\Users\ruchi\1-addic-wt\_logs\gates\core\build-20261107-073329.log
-- test SKIP (no node test files). Log ...\gates\core\test-20261107-073329.log
-- validate SKIP (engine.js absent, as on the base). Log ...\gates\core\validate-20261107-073329.log
-- guards RED pass=4 fail=15. Every failure is 'guard: tour-target' for: quicklog-button, quicklog-intensity, quicklog-save, planner-day, planner-gaps, planner-add, bp-new, bp-form, workbook-groups, workbook-card, insights-triggers, insights-heatmap, review-start, plan-sections, plan-print. Contract D gives all 15 to screen lanes; baselines.md line 22 expects them RED by name. csp, external-url, innerHTML and theme-parity pass. Log ...\gates\core\guards-20261107-073329.log
-- Territory: core 655516dc..HEAD: 6 files, 5 own, 1 shared (package.json, scripts keys with tests-docs' go-ahead), 0 nobody's, 0 errors, no warnings.
-ASSUMED (not run by me): headless Edge proof is the builder's (C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__proof-real.err/.dom); no browser tests exist; negative controls (part with `</script`, unparsable part, throwing browser.test.mjs) were read in code (build.mjs:77-110), not re-run; AA contrast of starter tokens not measured.
-
-VERIFIED (check 2026-11-07 10:41 IST, tip cdfc0e9; judged commits after 98f872d):
-- build GREEN pass=1, size 202428 B. Log C:\Users\ruchi\1-addic-wt\_logs\gates\core\build-20261107-114612.log
-- test GREEN 62/62, 0 fail. Log C:\Users\ruchi\1-addic-wt\_logs\gates\core\test-20261107-114615.log
-- validate SKIP (engine.js absent on this lane, as at every core tip). Log C:\Users\ruchi\1-addic-wt\_logs\gates\core\validate-20261107-114750.log
-- guards RED 4 pass, 15 fail; every failure is a baselined tour-target name (baselines.md line 22), no new one. Log C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-114750.log
-- Territory core 655516dc..HEAD: 9 files, 8 own, 1 shared (package.json, unchanged after 98f872d), 0 nobody's, 0 errors, 0 warnings. Worktree clean.
-ASSUMED: browser gate not run (core has no browser tests; RS7 slow-load, SOS-during-load and Back cases belong to tests-docs, contracts/core.md:101). Builders' red proofs (core__*-red.log) and mutant runs (core__q4-mut.log 10/10, core__rc567-mut.log 16/16) read by summary line, not re-run; the builders' batch ran inside QUIET so no browser suite.
-
-VERIFIED (check, 2026-11-07, tip 4a43190):
-- build GREEN (...\gates\coreuild-20261107-081342.log); test GREEN 18/18 (test-20261107-081343.log); validate SKIP, engine.js absent (validate-20261107-081346.log); guards RED only on the 15 tour-target names, baselined (baselines.md 26-40), counts green (guards-20261107-081346.log). Earlier check at ce258e0: build 163334 B, test 15/15 (build-20261107-075915.log, test-20261107-075917.log, guards-20261107-075920.log).
-- Territory 8bf7b5c..HEAD: 4 files, all own, 0 shared, 0 nobody's, 0 errors.
-ASSUMED: browser gate not run (none exists); 390 px proof is the builder's at 504 px (core__proof-nav.dom); AA contrast (core__contrast.mjs) and mutation script (core__mutate.sh) not rerun.
+VERIFIED (check, 2026-11-07 11:58 IST, tip cdfc0e9): PASS; judged only commits after cdfc0e9 (none built this run). Gates as in the check of run wf_bf29c997-958: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__check.md. Not checked: the browser suite.
+VERIFIED by the reviewers at bda0f0f: build GREEN 205925 B (_logs/gates/core/build-20261107-132631.log); test GREEN 77/77 (test-20261107-132634.log, test-20261107-132700.log); validate SKIP, engine.js absent (validate-20261107-133256.log); guards RED pass=4 fail=15, all 15 baselined tour-targets (guards-20261107-133101.log).
+ASSUMED: builder gates at bda0f0f (build-20261107-131454.log, test-20261107-131455.log, validate-20261107-131716.log, guards-20261107-131716.log); browser suite not run.
+Earlier gates (8bf7b5c to cdfc0e9): see annex.
 
 2026-11-07 10:41 IST check at cdfc0e9: PASS. All units present; FIX-SAFETY (a)-(e), RS5-RS8, Q3, Q4+RC9, RC5-RC7 each meet their ruling.
 - C1 (this run) LOW, RS4/Q2 (1e9272c), offline/src/boot.js:34 and :36 (showFailure): crisis copy ('If you are in danger, call your local emergency number', 'For urgent help...') carries no clinicalReview: true, though brief core.md line 68 says any crisis string is clinicalReview. Fix SHA: none. Re-check: not run. Default: left; the CORE chat to rule.
 - Check notes: Q1 and (b) may conflict (a wake past the idle limit locks data while the SOS page stays drawn; SOS is not interrupted; core__units.md:360; the CORE chat's call). Builder defaults still to rule: aria-invalid on a required chips group (RC7), over-count by one in takeIn (Q4), draft.list order in commit (RC9).
-
-2026-11-07 11:46 IST VERIFIED/ASSUMED (continued run): the check judged only commits after 98f872d and returned no findings and no territory text (territory line: not recorded, 0 open). The builder's own gates at cdfc0e9 (11:42 IST) were build GREEN (build-20261107-114217.log), test GREEN 62/62 (test-20261107-114219.log), validate SKIP (validate-20261107-114400.log), guards RED by the 15 baselined tour-target names only (guards-20261107-114400.log), in _logs/gates/core; they are ASSUMED here (not run by the check).
 
 ### Review gates
 None (the two reviewers judged 655516dc..HEAD; no gate recorded, openReview 0).
 
 ### Check
 Verdict PASS at 8bf7b5c.
-- C1 LOW, U-01, offline/src/boot.js:19: the brief (tracks/CORE/briefs/core.md:22) says to write a one-line message into #main when UI is undefined; the chat's word (briefs/core/U-01.md:3) only says to call UI.boot() when defined, and the builder chose no message. Fix: none yet; either add the message or amend the brief. Re-check: not run.
-
-2026-11-07 check at ce258e0: FIX; after fixes re-check below.
-- C2 MEDIUM, U-03, fix 182659e: a replaced sheet's queued close reached the next sheet. Re-check: FIXED (guard at ui-core.js:184).
-- C3 LOW, U-03, fix 4a43190: no test for sheet closing on lock. Re-check: FIXED (store.test.mjs:404).
-- C4 LOW, U-03, no fix yet: ui-core.js:714 closes a sheet on lock only when route is not SOS, so a private sheet stays open if the route moves to #/sos then locks. Re-check: not run. Default: left as deliberate (SOS never interrupted) pending the chat.
+Slice checks C1-C4 and earlier reviews: see annex.
 
 ### Review
 Slice: not run. 2026-11-07 10:41 IST: two reviewers judged 655516dc..HEAD; no review findings returned (their earlier re-checks died with their session; the earlier fixes RC1-RC4, RC8, RS1-RS8 are built, each with a test). openReview 0.
 
-### Check (2026-11-07 11:46 IST)
-Findings: none; openCheck 0. Earlier check C1 above (clinicalReview mark on start-failure copy) stands as written.
+### Check (2026-11-07 11:58 IST)
+Verdict PASS at cdfc0e9; judged commits after cdfc0e9 (none); findings none; openCheck 0. Territory: core's files only (run wf_bf29c997-958's check). Earlier check C1 fixed in 6afc262; re-check: not run.
 
-### Review (2026-11-07 11:46 IST)
-Contracts and safety reviewers judged 655516dc...HEAD; both stopped at their cap: no result, no finding id, severity, fix SHA or re-check state to record; openReview 0 but the lane is unreviewed. Held units: none.
+### Review (2026-11-07 11:58 IST)
+Contracts and safety judged 655516dc...HEAD and returned; fixes to bda0f0f re-checked by the finders. openReview 3.
+Contracts:
+- RC10 MEDIUM U-04/U-03 cce8ae6 (hold): PARTLY. RC11 MEDIUM U-04 ffff640: PARTLY (lock page says a PIN is not available). RC12 LOW U-03 770c86c: PARTLY (chips fixed; custom fields remain).
+- FIXED: RC13 ef55fe2, RC14 fa399a6, RC15 bf38f72, RC16 bda0f0f (test only), RC17 aac2772, RC18 0fc477b (all LOW, U-04).
+- New LOW, open: takeIn's "device lacks this row" check and write (store.js:697, :706) have no epoch check after earlier awaits, so a lock mid-write can still leave a row (the RC18 race). No fix.
+Safety:
+- RS9 MEDIUM d6035ff FIXED. RS10 MEDIUM cce8ae6 FIXED (30 s ticks gone). RS12 LOW 8a7bf5a FIXED. RS13 LOW 3d6ee8b FIXED. RS14 LOW 93d738d FIXED.
+- RS11 LOW U-04: WONTFIX-ACCEPTED, a deferral to the CORE chat (erase in tab B then PIN in tab A rewrites erased rows; needs a reserved meta gen row in resetAll and the expect check, store.js near :259-266, :204, :120). Not built.
+- New LOW, open (build chat): contract E line 69 still says ui-core touches every 30 s; Store.lock.hold(on) is missing from contract E.
+Questions raised: SOS wake past the limit leaves data open while on SOS (no outer bound); idle past the limit inside SOS asks the PIN on leaving (privacy-safe; confirm, and say so in the guide); a non-PIN unlock failure shows "That PIN did not match"; query-only route changes; bulk lock label; persist() prompt on SOS; toasts on SOS; restore after Forgot PIN; spellcheck (owner); urgent fallback Back link.
+Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__units.md (the contracts reviewer wrote no file; RC10-RC18 were built from the cut findings).
 
 ### Safety and content marks
 Slice: none. 2026-11-07 10:41 IST: URGENT.builtIn 112 in ui-core.js carries verify: true, inside the clinicalReview block, used only when the urgent list is empty or unreadable. Start-failure strings in boot.js have no clinicalReview mark (check C1). Forgotten-PIN line is the ruling's wording. h() drops string on* and javascript: attributes. SOS is never gated and never interrupted by auto-lock.
 
+- 2026-11-07 11:58 IST: start-failure crisis lines now carry clinicalReview (6afc262); they still need the clinical review. SOS: whole coach layer hidden; the hold keeps the timer from locking SOS; discreet mode says Help everywhere.
 ### Requests for other lanes
 None recorded in the notes' for_the_chat beyond: the HUB baselines the 15 tour-target names as expected RED until the screens land (HUB owns baselines.md).
 
+- 2026-11-07 11:58 IST: actions-sos: do not call Store.lock.touch() as a keep-alive on SOS; ui-core holds via Store.lock.hold(on). Redraw private rows on the lock notification.
+
 ### Docs owed
-None for U-01, U-03, U-02 (README and guide belong to tests-docs). 2026-11-07 10:41 IST: guide/README owe the forgotten-PIN line, discreet title Notebook, Erase everything also removing the database, and an unreadable-row note (tests-docs).
+Full text in C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md. Adds 11:58: the guide says a long SOS session ends at the lock screen and that without crypto.subtle a PIN is not available; contract E gets Store.lock.hold(on).
 
 ### Open questions
 0. (11:46 IST) Rerun the two whole-lane reviews (contracts, safety) with a larger cap before the merge? Default: the HUB merges only after they return; until then the lane is RED, not for a code defect.
@@ -144,6 +119,10 @@ None for U-01, U-03, U-02 (README and guide belong to tests-docs). 2026-11-07 10
 7. aria-invalid on a required chips group (RC7); over-count by one in takeIn (Q4); draft.list order in commit (RC9). Defaults built by the builder.
 8. Check C1 (clinicalReview mark on start-failure copy). Default: unmarked.
 
+9. (11:58 IST) RS11 reserved meta gen row: build or accept? Default: not built.
+10. (11:58 IST) Confirm that idle past the limit inside SOS asks the PIN on leaving. Default built: yes.
+11. (11:58 IST) Which actions-sos routes draw private rows (data stays open on SOS, no outer bound)? Default: none checked.
+
 ### For the HUB at the merge
 - 2026-11-07 11:46 IST: lane state RED only because the whole-lane review returned nothing; nothing new to merge since cdfc0e9. Rerun the reviewers before treating the lane as READY.
 - Shared files: package.json (new file; core owns all keys but scripts and devDependencies); offline/build.mjs parts list at lines 14-42 (core's own append point, pre-filled with all 27 parts).
@@ -154,3 +133,5 @@ None for U-01, U-03, U-02 (README and guide belong to tests-docs). 2026-11-07 10
 - Guards: write the 15 tour-target names into baselines as expected RED.
 - Browser tests for the quiet window: none exist yet; open offline/1-addic.html in a headless browser and confirm no console error.
 - 2026-11-07 10:41 IST: record the contract E additions above (unreadable, frozen rows, key order, ERASE_PARTIAL) in contracts/core.md. The guards stay RED on exactly the 15 baselined tour-target names. Run gates.py --wt C:/Users/ruchi/1-addic-wt/core --lane core build test validate guards browser after the QUIET window. Consuming lanes copy a view row before changing it. offline/1-addic.html is rebuilt at each unit (on conflict take the rebuilt file). Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/core/ (core__units.md, core__*-red.log, core__q4-mut.log, core__rc567-mut.log).
+
+- 2026-11-07 11:58 IST: tip bda0f0f replaces cdfc0e9. Record Store.lock.hold(on), NO_CRYPTO and the autoLockMin rule (1, 5, 15, never; else 5) in contracts/core.md. offline/1-addic.html rebuilt (205925 B). Guards RED = the 15 baselined names only. Resolve RS11 and the 3 PARTLY items first if the HUB wants READY.
