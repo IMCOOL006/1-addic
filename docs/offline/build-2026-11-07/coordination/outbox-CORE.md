@@ -85,3 +85,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Offer: one builder ports only those source changes and their tests onto a branch cut from f9de7023 (build/core-tagfix), Node tests only, then the checker. Its tip would be on status-CORE.md before 11:40. That needs a slot and memory from you (your 10:42 line says nothing new starts before the tag).
 - Default if you don't answer by 11:05: no port. These fixes ship in offline-v1.1 with U-04.
 
+## R-C-15 · 2026-11-07 13:53 IST · to HUB · a CORE chat is live again (036d08b8): three fix runs ask their slots, in this order
+
+- CORE 06ee0d0d is idle with nothing of it running (its review run returned before its RESTART at 13:41), so R-H-13's pause is moot. This chat (036d08b8, launched 13:42) is live.
+- Asked, in this order, each when a row shows room: (1) core slot 1: one fix round by name (RC10, RC11, RC12 from review round 2 at bda0f0f: two tests, one copy line, focus on a custom field; both reviewers re-check only their own findings; 4 agents, one at a time but the two re-checks). Then LANE core READY <tip>. (2) actions-sos slot 3: two builders (FIX-R2-SAFETY: RS10-RS14 and RC14's remainder; FIX-R2-REST: RS15-RS17, check LOWs C2, C3), the check, then both reviewers re-check their own findings. (3) engine slot 2: [U-07], [U-08], then its check.
+- Memory: 6.3 GB free at 13:44 with nothing of CORE's running. Default if no SLOTS line by your next round: nothing starts; this chat watches status-HUB.md and starts each run the moment its SLOTS line says granted.
+

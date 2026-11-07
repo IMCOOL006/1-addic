@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-07 13:41 IST: CORE 06ee0d0d hands over at 305k context with nothing running (all its runs returned); the fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here'
-LANE: core RED 1 bda0f0f   # review round 2 (run wf_96d6995e-023, returned 13:3x): fix round to bda0f0f; RS9-RS14 FIXED, RS11 WONTFIX-ACCEPTED, RC13-RC18 FIXED; RC10 (MEDIUM: auto-lock fires after a long crisis call on #/sos*), RC11 (MEDIUM: NO_CRYPTO on unlock/verify/remove), RC12 (LOW: UI.form chips focus) PARTLY; full text _logs/reports/core/core__review-safety.md and the run's journal; report lane-reports/core.md (19109 B); next: a fix run by name (RESUME HERE)
-LANE: engine PAUSED   # slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42 pause: run wf_35f6a75a-d62 stopped 10:46 at that commit, worktree clean; resumes after the tag with [U-07], [U-08], then check (offline-v1.1)
-LANE: actions-sos RED 1 fc0d038   # run wf_0a47dae7-ba9 returned RED 12:45: check PASS at fca2781 (LOWs C1 trailers, C2 a kept SOS save after Forgot PIN or import, C3 the slider at 5); review round 2: RC15-RC20 FIXED; RC14 (HIGH, browser hooks for the SOS flows) PARTLY; RS10 (HIGH), RS11-RS14 (MEDIUM), RS15-RS17 (LOW) NOT FIXED (the fix builder hit its cap); full text _logs/reports/actions-sos/actions-sos__review-safety.md and __review-contracts.md; report lane-reports/actions-sos.md; next: a fix run by name (RESUME HERE)
-LANE: learn READY 19f373c   # U-12 a499dae MERGED; C1 9bbccd2, C2 dc248cb, U-13 + U-14 19f373c; check PASS at 19f373c 10:47 (run wf_c538e4c5-38a): test GREEN 28/28, build and validate SKIP at the lane base, guards no new failure (the 21 names as at a499dae), territory 0 errors; LOWs C3 (checkpoint toast '+10 XP' only the first time), C4 ('Why this works' without UI.sheet), C5 (trailer) go to offline-v1.1 by name; report tracks/CORE/lane-reports/learn.md (10952 B, 10:50); slot 4 free
-LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
-SLOTS-ASKED: 5
-UPDATED: 2026-11-07 13:41 IST
+STATE: WAITING   # 2026-11-07 13:52 IST: CORE 036d08b8 resumed (06ee0d0d idle, nothing of it running); waits for a slot row (6.3 GB free at 13:44, the mark is 7.0); args ready for core FIX-R2, actions-sos FIX-R2, engine [U-07],[U-08]
+LANE: core RED 1 bda0f0f   # review round 2 left RC10, RC11, RC12 PARTLY (test gaps; one copy line); next: a fix round by name (start review, carried findings RC10r-RC12r + RS18 copy; both reviewers re-check their own) when slot 1 is granted
+LANE: engine PAUSED   # U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (unchecked); resumes with [U-07], [U-08], then its check (offline-v1.1) when slot 2 is granted
+LANE: actions-sos RED 1 fc0d038   # check PASS at fca2781 (LOWs C1-C3); review round 2: RC15-RC20 FIXED, RC14 PARTLY, RS10-RS17 NOT FIXED (cap); next: builders FIX-R2-SAFETY, FIX-R2-REST, check, then both reviewers re-check their own findings, when slot 3 is granted
+LANE: learn MERGED 19f373c   # READY 10:48, merged 10:50 as f9de7023; LOWs C3, C4, C5 for offline-v1.1 by name
+LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
+SLOTS-ASKED: 3   # core slot 1, actions-sos slot 3, engine slot 2, in that order (R-C-15)
+UPDATED: 2026-11-07 13:52 IST
+
+# 2026-11-07 13:52 IST · CORE session 036d08b8 resumes
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE f9de7023; SLOTS: core PAUSE since 13:10, engine PAUSED, actions-sos no run; resume needs a row with 7.0 GB free and a live CORE), outbox-HUB.md to R-H-13, lane.js header and its build/review/state code.
+- `claude agents --json` 13:44: 06ee0d0d listed idle (state blocked) with none of its runs alive (all returned before its RESTART at 13:41); HUB ed0e0a4b busy. Nothing to relaunch; the three worktrees (core bda0f0f, actions-sos fc0d038, engine 6cb722e) are clean.
+- Free memory 6.3 GB at 13:44 (rows 13:28 4.1, 13:38 5.0). Nothing starts until the HUB grants a slot. R-C-15 to the HUB.
 
 # 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
 
