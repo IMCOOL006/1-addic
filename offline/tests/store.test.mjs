@@ -804,6 +804,28 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.match(html, /html\[data-discreet\]:not\(\[data-route\]\) #app-name::after \{ content: "Notebook"/);
     assert.match(html, /html\[data-discreet\]:not\(\[data-route\]\) #sos-btn::after \{ content: "Help"/);
   });
+
+  test('RC5: each of the five tabs is the only one marked aria-current, and #main takes focus on every move', async () => {
+    setup();
+    const S = lockedStore('2468');
+    S.locked = false;
+    globalThis.Store = S;
+    const nav = document.getElementById('nav');
+    const tabs = ['today', 'learn', 'workbook', 'track', 'actions'];
+    for (const t of tabs) { const a = document.createElement('a'); a.setAttribute('data-route', t); nav.appendChild(a); }
+    nav.querySelectorAll = (sel) => (sel === 'a[data-route]' ? nav.children.filter((a) => a.getAttribute('data-route') !== null) : []);
+    const current = () => nav.children.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.getAttribute('data-route'));
+    at('#/settings'); // somewhere else first, so every tab below is a move
+    await UI.render();
+    assert.deepEqual(current(), [], 'no tab is current on a page that is not a tab');
+    for (const t of tabs) {
+      document.activeElement = null;
+      at('#/' + t);
+      await UI.render();
+      assert.deepEqual(current(), [t], 'only ' + t + ' is current');
+      assert.equal(document.activeElement, main(), '#main takes focus on the move to ' + t);
+    }
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
