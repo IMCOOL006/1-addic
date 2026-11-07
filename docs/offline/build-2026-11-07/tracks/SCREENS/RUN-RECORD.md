@@ -209,25 +209,34 @@
 - V-43 args are at args/v3_tt_v43.json: priorNote is the V-01b builder's note; <NEWBASE> and <date> are filled after the merge.
 - Held on purpose: V-43 starts after the HUB merges da9bb6b. build/today-track then fast-forwards to the trunk, so the real engine V-40 is in the worktree. A fast-forward now is impossible: the branch has commits the trunk lacks, and a merge commit is not allowed.
 
+## 2026-11-08 04:29 IST · V-01b merged; memory under the floor; content PAUSED; hand-over planned (context 250k)
+
+- HUB 10 merged today-track da9bb6b at 486288f1 (04:19, pushed). build/today-track and its worktree were fast-forwarded to 486288f1 (--ff-only, clean). The V-43 args are filled: args/v3_tt_v43.json, base and diffFrom 486288f1.
+- Memory under 4.0 GB: the HUB's 04:19 row read 3.0 GB; I read 2.6 GB at 04:20 and 2.2 GB at 04:25. V-43 was NOT launched. content V-10 was the newest run: its builder committed 5bdf5ab and paused itself, skipping the browser gate; I stopped wf_02dbd88e-f4a with TaskStop at 04:25 as its checker started.
+- The route gap: engine.js ROUTE_PATHS lacks '#/status' and '#/track/radar'. R-S-24 went to CORE 12 ('CORE 03:56'), who is building V-40b. game-tutorials.test.mjs 'training lists ... every JIT' would go red by name at the merge. Asked the HUB to baseline it until game-tutorials V-28 (routeOfFeature accepts '/status') or the content route flip; the HUB's answer is pending. Default: content holds READY-SLICE until the HUB answers.
+- The resume args for the content check are at args/v3_content_check.json (start 'check', priorNote = the V-10 builder's note, the browser gate by name). Board: f74df3f8.
+
 ## Resume here
 
-- Chat 0fd59f53 (SCREENS) is live.
-- Runs live: wf_02dbd88e-f4a, the content V-10 slice (slot 4). Its journal is at C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/0fd59f53-a9aa-480a-9878-1d10380b941a/subagents/workflows/wf_02dbd88e-f4a/journal.jsonl. A fresh chat waits for its notification only if 0fd59f53 is still listed by claude agents --json; otherwise it relaunches from the branch's last commit.
+- Chat 0fd59f53 (SCREENS) is live, with context over 250k and the hand-over planned.
+- Runs live: NONE. wf_02dbd88e-f4a was stopped at 04:25 for memory, and V-43 was never launched.
 - Board:
-  - today-track READY da9bb6b (V-01b), waiting for the HUB's merge. V-01a MERGED 37d1a53c.
-  - content BUILDING (V-10 slice).
+  - today-track BUILDING 486288f1: V-01a and V-01b MERGED; V-43 HELD for memory.
+  - content PAUSED 5bdf5ab (V-10 committed; the check and the browser gate are owed).
   - game-tutorials SCOUTED; it waits for a 7.0 GB row after core V-11 and actions-sos V-08a.
-- NEXT, in order:
-  - (1) The HUB merges da9bb6b. Then git -C C:/Users/ruchi/1-addic-wt/today-track merge --ff-only <the new BASE>. Fill args/v3_tt_v43.json: replace <NEWBASE> in base, diffFrom and the laneNote, and set now. Launch lane.js with it on slot 6 (no sliceRun). When it returns READY, write LANE: today-track READY <tip>.
-  - (2) content V-10 returns READY-SLICE <tip>: write it and tell the HUB. Then V-42 with done [v1, V-10], priorNote, diffFrom = the slice tip. V-42's laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event} with a known type; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20 (nothing locks an open tool), the real validator in the trunk (engine.js:1709), and the data-tour targets objectives-card, questline-card, run-line.
-  - (3) game-tutorials on its SLOTS line: fast-forward to BASE, then V-08b (after actions-sos V-08a, R-C-48), V-28, V-44 (R-C-50, R-S-20, R-S-21).
-  - (4) Watch outbox-OWNER.md for I6 (V-10b).
+  - SLOTS: today-track 6, content 4.
+- NEXT, in order, at the first memory row at or above 4.0 GB (read it with powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB", or wait for the HUB's line):
+  - (1) The content check. Workflow lane.js with args from args/v3_content_check.json; set now from date. It returns READY-SLICE <tip> or FIX. On READY-SLICE: LANE: content READY-SLICE <tip>, and tell the HUB, unless the HUB said "hold" on the baseline ask (then content waits for V-28 or R-S-24).
+  - (2) V-43. Workflow lane.js with args from args/v3_tt_v43.json (already filled: base 486288f1, slot 6); set now. First check that the worktree C:/Users/ruchi/1-addic-wt/today-track is clean at 486288f1. When it returns READY: LANE: today-track READY <tip>.
+  - (3) content V-42 after the slice merges: done [v1, V-10], priorNote, diffFrom = the slice tip. The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), and the data-tour targets objectives-card, questline-card, run-line. If R-S-24 has landed, add the V-10 route flip (V-10r: features.status.route and the help route to '#/status').
+  - (4) game-tutorials on its SLOTS line: fast-forward to BASE. Then V-08b (after actions-sos V-08a, R-C-48), then V-28 (with routeOfFeature accepting a route without '#', ui-guidance.js:108, which closes the baselined training name), then V-44 (R-C-50, R-S-20, R-S-21).
+  - (5) Watch outbox-OWNER.md for I6 (V-10b), and the HUB's answer on the baseline (04:28 ask).
 - Facts:
-  - setlane.py: "STATE:=STATE: ..." pairs plus an optional --section; never pass "-". rr.py takes <section> <resume>.
+  - setlane.py takes "PREFIX=full line" pairs plus an optional --section; never pass "-". rr.py takes <section> <resume>.
   - hub_commit.py runs from the repo root with repo-relative paths.
   - claude agents needs --json.
-  - lane.js's scout prompt is v1-shaped; V3 runs override it through laneNote.
+  - lane.js start 'check' judges doneBefore plus unitsToRun without a builder.
   - lane.js writes its report over lane-reports/<lane>.md.
-  - HUB 10 is at uds ...61fc232d7d4c0109accb2e284a2456fd; CORE 11 is "CORE 02:42".
-  - A heredoc with complex quoting broke in bash once: write the Python to the job tmp folder and run it there.
-  - Do not run a wait loop.
+  - HUB 10 = SendMessage to "uds:\.\pipe\LOCAL\cc-msg-61fc232d7d4c0109accb2e284a2456fd" (HUB 03:17); CORE 12 = "CORE 03:56".
+  - Complex quoting in a bash heredoc broke once: write the Python to the job tmp folder and run it.
+  - Do not run a wait loop; one background until-loop for a single condition is fine.

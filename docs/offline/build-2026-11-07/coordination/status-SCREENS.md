@@ -1,12 +1,30 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 04:22 IST: MEMORY 2.6 GB (04:20; the HUB's 04:19 row 3.0 GB, under the 4.0 floor). today-track V-43 NOT started (args filled, worktree fast-forwarded to 486288f1). content V-10 (wf_02dbd88e-f4a, the newest run) pauses at its next commit: the workflow is stopped when its builder's hand-off lands, before the check. Both resume on a row at or above 4.0 GB
-LANE: content BUILDING 3bd5bf5d   # V3 V-10 slice wf_02dbd88e-f4a (slot 4, 04:06): PAUSING at its next commit (memory under 4.0 GB, the HUB 04:20); the check runs on resume (lane.js start 'check'); then V-42, V-23 (T2), V-10b (I6). v1: MERGED 680f850
+STATE: BUILDING   # 2026-11-08 04:27 IST: MEMORY 2.2 GB (04:25). content V-10 PAUSED 5bdf5ab: the builder committed and handed off (it read 2.84 GB before its browser gate and skipped it); I stopped wf_02dbd88e-f4a at 04:25 as its check started. today-track V-43 HELD (not started). Both resume on the first row at or above 4.0 GB: the content check (lane.js start 'check' with the browser gate) first, then V-43
+LANE: content PAUSED 5bdf5ab   # V3 V-10 committed 5bdf5ab on 3bd5bf5d (builder gates: build, test 33/33, validate GREEN; guards RED by name on status-change, status-watch only at this cut, both in the trunk since 486288f1; territory 2 own, 0 errors; browser not run). wf_02dbd88e-f4a stopped 04:25 before its check (memory). Resume: the check, with the browser gate. R-S-24 to CORE: '#/status' in ROUTE_PATHS
 LANE: today-track BUILDING 486288f1   # V-01b MERGED 486288f1 (04:19). V-43 HELD for memory (not started): branch and worktree fast-forwarded da9bb6b..486288f1 with --ff-only at 04:20, clean; args args/v3_tt_v43.json (base and diffFrom 486288f1); launches on slot 6 at the first row at or above 4.0 GB
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:22 IST
+UPDATED: 2026-11-08 04:27 IST
+
+# 2026-11-08 04:27 IST · content V-10 PAUSED 5bdf5ab (memory); R-S-24
+
+- The V-10 builder committed 5bdf5ab, 'content(V-10): the status feature, its JIT tutorial and its help entry', 2 files: content-core.js and content.test.mjs.
+  - It read 2.84 GB free before the browser gate, so it stopped at its commit (PAUSED) and skipped that gate.
+  - Its gates (C:/Users/ruchi/1-addic-wt/_logs/gates/content/*-20261108-0422*): build GREEN, test GREEN 33/33, validate GREEN.
+  - guards are RED by name on the tour targets status-change and status-watch only. They are absent at this cut (3bd5bf5d) but in the trunk since V-01b's merge 486288f1, so the merged tree is green.
+- I stopped wf_02dbd88e-f4a at 04:25, as its lane-checker started (free memory 2.2 GB). The worktree is clean at 5bdf5ab.
+- Found by the builder, confirmed by me in the code:
+  - engine.js:1378 ROUTE_PATHS lacks '#/status' (and '#/track/radar') at 3bd5bf5d and at 486288f1, so validateContent rejects '#/status'.
+  - ui-guidance.js:108 routeOfFeature honours a Content.features route only when it starts with '#/'.
+- So V-10 ships features.status.route '/status' (validateContent green) and sends the help entry to '#/today'.
+  - Cost: Guidance.training() leaves out the status JIT.
+  - game-tutorials.test.mjs 'guidance: training lists the drills, the SOS drill, the tour and every JIT' fails on 'status' on the merged tree. This is a new red by name in my own game-tutorials lane's test.
+- Asks:
+  - R-S-24 to CORE: add '#/status' and '#/track/radar' to ROUTE_PATHS.
+  - To the HUB: baseline that one name at content V-10's merge, until game-tutorials V-28 makes routeOfFeature accept a route written without '#' (ui-guidance.js, my lane; V-28 already touches the status feature's tour step and dot), or until the content route flip after R-S-24. Default if the HUB prefers no baseline: content holds READY-SLICE until one of the two lands.
+- m1.unlocks stays [] (content-lessons-a.js:58); reveal.m1 = ['status'] gives the New dot. The brief's 'add to unlocks' was not done, because this run was limited to content-core.js.
 
 # 2026-11-08 04:18 IST · from the HUB · today-track da9bb6b merged (trunk 486288f1); V-43 from 486288f1
 
