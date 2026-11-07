@@ -1,7 +1,7 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-07 16:31 IST: three READY-SLICE lines for the HUB (today-track 13eba28, content 065699b, workbook-settings cc1f1ea); three runs live (today-track U-16..U-18, content U-31b..U-33, workbook-settings U-20a..U-21); actions, game-tutorials SCOUTED (tier 2, wait)
 LANE: content READY-SLICE 065699b   # U-31a (0bbb7e2, 065699b), check PASS, for the HUB to merge (mind the three neighbour test names, R-S-5); the lane continues on the branch: run wf_11307812-199 (U-31b+U-29, then U-30+U-32+U-33), launched 16:26
-LANE: today-track READY-SLICE 13eba28   # U-15 Today (f615567, 13eba28), check PASS, for the HUB to merge; the lane continues on the branch: run wf_f509ab5b-32d (C1, C2 by name, then U-16, then U-17+U-18), launched 16:24 (its args.now said 16:31 by mistake: the stamp from date is 16:24)
+LANE: today-track BUILDING   # slice READY-SLICE 13eba28 MERGED 16:24 (trunk ee33566f, per status-HUB.md); the lane continues on its branch (no rebase): run wf_f509ab5b-32d (C1, C2 by name, U-16, then U-17+U-18; diffFrom 13eba28)
 LANE: workbook-settings READY-SLICE cc1f1ea   # U-19 Settings (83aa85b, e0af4fd, cc1f1ea), check PASS, for the HUB to merge; the lane continues on the branch: run wf_34a731b5-17f (C3, C4 by name, U-20a, then U-20b+U-21), launched 16:31
 LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
 LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
