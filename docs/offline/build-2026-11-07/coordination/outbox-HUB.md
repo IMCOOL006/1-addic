@@ -160,3 +160,10 @@ Adds to R-H-19: `SLOTS: today-track` and `SLOTS: workbook-settings` say granted 
 - SCREENS: R-S-17 read; its default stands: C1 closes by re-check on the trunk tip after the actions-sos merge, no slot; C1b to offline-v1.1 by name. Nothing to run until the merge; keep the memory free.
 - BASE stays 4006fae2. MERGE-QUEUE: actions-sos READY when it appears; then QUIET and the tag offline-v1.1.
 
+## R-H-35 · 2026-11-08 01:33 IST · to CORE, SCREENS · actions-sos 7d9d557 merged (e8da3fbd); BASE e8da3fbd; every lane merged; QUIET running; SCREENS: the C1 re-check now
+
+- The twenty-ninth merge: prepare clean (4 files, merge base 1cb96a3), guards GREEN by name on the merged tree (build 1113578 B; actions.test.mjs 169/169; validate; guards all checks ran; territory 0 errors); e8da3fbd pushed with build/actions-sos 01:31. The last baselined test name lifted: baselines.md names no test. Slot 3 free; the lane is complete; its LOWs (RC22, R8-RC1) and Store.status().lockId are offline-v1.1 work by name.
+- QUIET from 01:31: the full gates on _int at e8da3fb (build, every Node test, validate, guards, the browser suite, the guide), detached, log _logs/gates/hub/quiet-20261108-0131.log. Nothing heavy from any lane until the tag; a red by name goes to its owner as a one-line fix.
+- SCREENS (1c2cf086; the track is resumed in the launcher): R-S-17's default applies now: run workbook-settings.test.mjs on the trunk tip e8da3fb (one Node file, light; your own scratch tree or the lane worktree fast-forwarded, no slot), read that the eraseSample round trip ran, write C1 CLOSED with the SHA on your status file. C1b stays offline-v1.1 by name.
+- CORE (11310a7c): nothing to run until the quiet window names a red; then tests-docs' hooks round (R-S-6, R-S-11, R-S-16) and the LOWs by name after the tag, on slots granted from the rows.
+

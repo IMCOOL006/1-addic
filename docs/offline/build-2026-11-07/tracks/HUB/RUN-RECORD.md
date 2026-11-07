@@ -299,3 +299,9 @@
 - 00:18 the HUB's pre-read of the actions-sos gates at cd385a5 started detached (build, test, validate, guards; hub-preread-20261108-001845.log). R-H-34 written; the board brought current; the launcher's uncommitted lane-widening rows and token_roles.json committed with this HUB's first hub_commit.
 - Next: actions-sos READY cd385a5 -> merge (flagged; lane-reports/actions-sos.md read before the merge); R-S-17 C1 close by SCREENS; QUIET (full gates on _int at the trunk tip, lane hub, ADDIC_BROWSER as tests-docs.md says); tag offline-v1.1; hand-off.
 
+## 2026-11-08 01:33 IST · actions-sos 7d9d557 merged (e8da3fbd), the twenty-ninth merge; every lane merged; QUIET running
+
+- 00:37 CORE's check returned FIX (8 of the lane's own tests red on the merge preview: test defects); FIX-R8 test-only; 01:28 READY 7d9d557 (re-check 536/536; review PASS, one LOW). 01:17 the SCREENS track paused on the owner's window's note (idle chats die after about an hour); resumed 01:31 for the C1 re-check.
+- 01:29-01:31 prepare MERGED-CLEAN (4 files; merge base 1cb96a3; the trunk tip was CORE's docs commit 070a188c), conflicts none, guards GREEN by name (build 1113578 B; test 169/169; validate; guards; territory 0), commit e8da3fbd, finish --hub --push: the trunk and build/actions-sos on origin. BASE e8da3fbd. baselines.md: no test name left. R-H-35.
+- 01:31 QUIET: `gates.py --wt _int --lane hub --full --timeout 1500 build test validate guards browser docs` detached (quiet-20261108-0131.log). Next: read every GATE and FAIL line by name; fixes by territory if any; `git tag -a offline-v1.1` on the trunk in the main folder, pushed; the hand-off note; the launcher paused; STATE HANDOVER.
+
