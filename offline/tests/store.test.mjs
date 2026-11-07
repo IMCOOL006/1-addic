@@ -381,6 +381,27 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(pin.getAttribute('autocomplete'), 'one-time-code');
   });
 
+  test('(e): h() never sets a string on* handler, and drops a javascript: href or src in any case or spacing', () => {
+    setup();
+    const onAttrs = (el) => Object.keys(el.attrs).filter((k) => /^on/i.test(k));
+    const a = UI.h('a', { href: '  JavaScript:alert(1)', onclick: 'alert(1)', onClick: 'alert(2)', ONMOUSEOVER: 'x', text: 'Go' });
+    assert.equal(a.getAttribute('href'), null);
+    assert.deepEqual(onAttrs(a), []);
+    assert.deepEqual(Object.keys(a.on), [], 'no string became a listener');
+    for (const src of ['javascript:x', '\tjavascript:x', 'JAVA\nSCRIPT:x', ' jAvAsCrIpT:void(0)']) {
+      assert.equal(UI.h('img', { src }).getAttribute('src'), null, JSON.stringify(src));
+      assert.equal(UI.h('a', { href: src }).getAttribute('href'), null, JSON.stringify(src));
+    }
+    const s = UI.svg('a', { href: 'javascript:x', 'xlink:href': ' javascript:x', onload: 'x' });
+    assert.equal(s.getAttribute('href'), null);
+    assert.equal(s.getAttribute('xlink:href'), null);
+    assert.deepEqual(onAttrs(s), []);
+    const ok = UI.h('a', { href: '#/sos', onClick: () => {} });
+    assert.equal(ok.getAttribute('href'), '#/sos', 'a route link stays');
+    assert.equal(ok.on.click.length, 1, 'a function handler is still a listener');
+    assert.equal(UI.h('a', { href: 'tel:112' }).getAttribute('href'), 'tel:112', 'a number to tap stays');
+  });
+
   test('(d): the fallback lock page says, in one plain line, what to do about a forgotten PIN', async () => {
     setup();
     globalThis.Store = lockedStore('2468');

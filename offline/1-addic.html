@@ -2007,6 +2007,10 @@ const UI = (function () {
         }
       } else if (/^on[A-Z]/.test(k) && typeof v === 'function') {
         el.addEventListener(k.slice(2).toLowerCase(), v);
+      } else if (/^on/i.test(k)) {
+        continue; // never: a handler written as a string would run as code (e)
+      } else if ((k === 'href' || k === 'src' || k === 'xlink:href') && /^javascript:/i.test(String(v).replace(/[\u0000- ]/g, ''))) {
+        continue; // never: a javascript: link, in any case or spacing (e)
       } else if (k === 'html' || k === 'innerHTML' || k === 'outerHTML') {
         continue; // never: text is inserted as text
       } else if (!isSvg && (k === 'value' || k === 'checked' || k === 'selected' || k === 'indeterminate')) {
