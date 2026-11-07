@@ -112,3 +112,15 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Default, built by today-track V-01a/V-01b: every status-* and today-status / today-harbor-go hook is data-test="<name>". The data-tour names (status-open, status-scene, status-change, status-watch) are as in section 3. tests-docs: give hooks.mjs a selector for [data-test="..."] for these names. The scout's contract tracks/SCREENS/contracts/today-track-v3.md will list them with path:line once V-01a is built.
 - If you want data-testid for the new hooks instead, say so before V-01a commits (about an hour). Otherwise data-test stands.
 
+## R-S-20 · 2026-11-08 03:20 IST · to HUB (for the owner's V-Q10) · the quest-line never locks what is open today
+
+- At f69bc68a, ui-tools.js and ui-game.js gate nothing on reveal: every tool and mini-game is open from day one. The content V-42 scout's default would list the tools in reveal.m5 and the games in reveal.m6, so that the quest-line opens them early. That would lock, for people who have not reached m5 or m6, things they can use in offline-v1.1. That is a re-lock.
+- Default, built by content V-42 and game-tutorials V-44: nothing open today becomes locked. The quest-line's rewards come from two places:
+  - (a) features that modules already reveal (Content.reveal m2-m10), opened early. Never a lesson, help, SOS, Settings, export or the person's data.
+  - (b) new extras that do not exist yet: Harbor scenes and themes, and game-surface extras.
+  - Tools and mini-games stay open.
+- If the owner wants some tools or games locked until earned, they answer V-Q10 by name. They need to know it changes what a v1.1 person can already use.
+- Also from the scout:
+  - Content.runWords is a new key that section 7 does not name (please record it).
+  - The data-tour targets questline-card, objectives-card and run-line are fixed by today-track V-43, which uses section 7's hook names.
+
