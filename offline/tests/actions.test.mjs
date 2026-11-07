@@ -532,6 +532,23 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     try { await refused(Actions.importBackup(backup), 'bad-backup'); } finally { if (had) eng.validateBackup = old; else delete eng.validateBackup; }
   });
 
+  test('RC11: the last lesson completes its module even when the draft lists only the rows written before', async () => {
+    const m = firstModule();
+    const ids = m.lessons.map((l) => l.id);
+    for (const id of ids.slice(0, -1)) await Actions.completeLesson(id);
+    await Actions.checkpoint(m.id, [1, 0, 2]);
+    assert.equal(events('ModuleCompleted').length, 0);
+    const real = globalThis.Store;
+    globalThis.Store = Object.assign(Object.create(real), {
+      commit: (label, fn) => real.commit(label, (draft) => {
+        const seen = {};
+        return fn(Object.assign({}, draft, { list: (s) => (seen[s] = seen[s] || draft.list(s)) }));
+      }),
+    });
+    try { await Actions.completeLesson(ids[ids.length - 1]); } finally { globalThis.Store = real; }
+    assert.deepEqual(events('ModuleCompleted').map((e) => e.payload.moduleId), [m.id]);
+  });
+
   // -- fix round: U-09 tests above this line --
 });
 

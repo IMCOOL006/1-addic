@@ -422,6 +422,7 @@ const Actions = (() => {
   const modules = () => (Array.isArray(getContent().modules) ? getContent().modules : []);
   const moduleOf = (moduleId) => modules().find((m) => m && m.id === moduleId) || null;
   const moduleOfLesson = (lessonId) => modules().find((m) => m && Array.isArray(m.lessons) && m.lessons.some((l) => l && l.id === lessonId)) || null;
+  // `plus`: the lesson this commit completes (a draft need not list the rows it has staged).
   function lessonsAllDone(tx, m, plus) {
     const ls = Array.isArray(m.lessons) ? m.lessons : [];
     return ls.every((l) => l.id === plus || tx.has('LessonCompleted', 'lessonId', l.id));
@@ -433,7 +434,7 @@ const Actions = (() => {
       if (!tx.has('LessonCompleted', 'lessonId', lessonId)) {
         tx.event('LessonCompleted', { lessonId });
         const m = moduleOfLesson(lessonId);
-        if (m && lessonsAllDone(tx, m) && tx.has('CheckpointCompleted', 'moduleId', m.id) && !tx.has('ModuleCompleted', 'moduleId', m.id)) {
+        if (m && lessonsAllDone(tx, m, lessonId) && tx.has('CheckpointCompleted', 'moduleId', m.id) && !tx.has('ModuleCompleted', 'moduleId', m.id)) {
           tx.event('ModuleCompleted', { moduleId: m.id });
         }
       }
