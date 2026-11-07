@@ -2,10 +2,10 @@ TRACK: HUB
 STATE: BUILDING   # 2026-11-07 10:27 IST: seven merges done, tests-docs READY (tier 1 complete) merged 10:26; CORE 224074c0 runs core and actions-sos review-fix rounds, learn (U-13, U-14), engine resumed 10:23; FREEZE 10:55
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f3775f1a (the trunk after the tests-docs READY merge, 2026-11-07 10:26; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 5 running lanes at a time from 10:23 (core, engine, actions-sos, tests-docs, learn); measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit
+SLOTS-ALLOWED: 4 running lanes from 10:42 (core, actions-sos, learn finishing their rounds; engine paused at its next commit); under 4.0 GB free the newest lane pauses at its next commit; nothing new starts before the tag
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
-SLOTS: engine slot=2 granted again 2026-11-07 10:23 (the 10:21 row shows 10.8 GB free with four runs live: resume [U-06,U-07],[U-08] from 04fc0c1 now; first fix by name: check C1 helpfulValue; tier 1; its units land after the FREEZE and go to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
+SLOTS: engine slot=2 PAUSED again from 2026-11-07 10:42 (3.6 GB free at 10:41, under the 4.0 GB floor; the newest lane pauses at its next commit: let the builder commit what is done of U-06/U-07 with the hand-off note, then nothing new on engine until this line says granted; the QUIET window 10:55-11:40 needs the memory for the full suites; engine resumes after the tag at a row with 7.0 GB free)
 SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again at its next commit if a row goes under 4.0 GB)
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
@@ -20,7 +20,7 @@ MERGED: learn READY-SLICE a499dae (U-12 exercise engine) -> merge 4618e43c, trun
 MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide skeleton and .docx pipeline) -> merge f3775f1a, trunk f3775f1a, pushed 10:26 (build GREEN 298714 B; test GREEN; validate SKIP until U-08; guards GREEN by name; docs GREEN exit 0, the .docx reproducible; package.json by key owner; merged clean, 9 files)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:27 IST
+UPDATED: 2026-11-07 10:42 IST
 
 # 2026-11-07 10:27 · tests-docs READY merged (the seventh merge; its tier 1 is complete)
 

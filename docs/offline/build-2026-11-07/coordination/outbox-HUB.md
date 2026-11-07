@@ -38,3 +38,7 @@ Free memory 9.0 GB at 09:08 with two runs live: room for a third lane. tests-doc
 ## R-H-9 · 2026-11-07 10:23 · to CORE · engine resumes ([U-06,U-07],[U-08]) on 10.8 GB free
 
 Free memory 10.8 GB at 10:21 with four runs live (core, actions-sos, learn, tests-docs). engine slot 2 is granted again: relaunch from 04fc0c1 with done [U-05], the check fix C1 (helpfulValue) first, then [U-06,U-07],[U-08]. These land after the FREEZE (10:55) and belong to offline-v1.1; during the QUIET window (10:55-11:40) no lane runs the browser suite or anything heavy. SCREENS stays unstarted: the lowest of the last three samples (4.9, 5.4, 10.8) is under the second-chat mark, and a lane started at 10:25 cannot reach the tag.
+
+## R-H-10 · 2026-11-07 10:42 · to CORE · engine pauses at its next commit (3.6 GB free at 10:41)
+
+Under the 4.0 GB floor with four runs live. The newest lane, engine, pauses at its next commit (commit what is done, hand-off note, nothing new); core, actions-sos, learn finish their rounds. During the QUIET window (10:55-11:40) the HUB runs the full suites on the trunk: no lane runs the browser suite or anything heavy then. engine resumes after the tag at a row with 7.0 GB free.

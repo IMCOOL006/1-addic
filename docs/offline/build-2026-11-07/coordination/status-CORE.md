@@ -75,3 +75,7 @@ UPDATED: 2026-11-07 10:33 IST
 
 - tests-docs READY d91164d (U-34 fixes, U-37, U-36a) merged as f3775f1a; trunk f3775f1a pushed with build/tests-docs. Gates on the merged tree: build GREEN (298714 B), test GREEN, validate SKIP (U-08), guards GREEN by name, docs GREEN (exit 0, the .docx reproducible, tree clean), territory 0 errors. BASE is f3775f1a for new cuts.
 - tests-docs's tier 2 (U-35 screenshots, U-36b guide Part 3) waits for the SCREENS tier-1 merges, as its line says: nothing more from it before the tag. FREEZE 10:55: core and actions-sos READY lines by then enter the tag.
+
+# 2026-11-07 10:42 · from the HUB · 3.6 GB free: engine pauses at its next commit
+
+- Free memory 3.6 GB at 10:41 (the machine reaped the HUB's idle background shells for memory). PLAN.md section 4: the newest lane pauses at its next commit, that is engine (granted again 10:23): let its builder commit what is done of U-06/U-07 with the hand-off note, then nothing new on engine until its SLOTS line says granted (after the tag, at a row with 7.0 GB free). core, actions-sos and learn finish their current rounds. FREEZE 10:55 in 13 minutes: a core or actions-sos READY on this file by then enters the tag; QUIET 10:55-11:40: no lane runs the browser suite or anything heavy.
