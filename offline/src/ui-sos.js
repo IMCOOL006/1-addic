@@ -506,6 +506,8 @@
     }
 
     async function finish(used) {
+      if (st.finished) return; // a second tap while the save runs writes nothing more
+      st.finished = true;
       st.used = used;
       clearInterval(iv);
       const payload = sessionFrom(st);
@@ -592,7 +594,10 @@
         ratingRow((n) => done(n)), btn('Skip', () => done(null), { ghost: true })));
     }
 
+    let saving = false;
     async function done(intensity) {
+      if (saving) return; // a second tap while the save runs writes nothing more
+      saving = true;
       if (A && typeof A.sosSession === 'function') { // one verb, rated or not: SosCompleted either way, and the feeling kept
         const s = { kind: 'feeling', tools: st.tools, emotion: st.emotion };
         if (isScoreN(intensity)) s.ratingAfter = intensity;
@@ -658,9 +663,12 @@
     function reach() { show(contactsView(c, mode.preview, nextSteps)); }
 
     function nextSteps() {
+      let adding = false;
       show(screen(COPY.slipNext.title, COPY.slipNext.line,
         link('Slip Review now', '#/exercise/slip-review', { primary: true, testid: 'sos-slip-review' }),
         btn('Add it to my to-dos', async () => {
+          if (adding) return; // one to-do for one tap, however fast the second comes
+          adding = true;
           if (A && A.todos && typeof A.todos.add === 'function') {
             const r = await write(() => A.todos.add({ text: 'Do the Slip Review', source: 'sos', route: '#/exercise/slip-review' }));
             if (r && !mode.preview) toast('Added to your to-dos.', 'ok');

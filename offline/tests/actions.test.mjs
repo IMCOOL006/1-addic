@@ -943,6 +943,37 @@ describe('sos flows in a stand-in DOM (fix round)', () => {
     await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling' }), 'bad-session');
   });
 
+  test('RC2: a second tap while the save runs writes nothing more', async () => {
+    const d = sosDom();
+    let root = d.open(['sos', 'craving']);
+    d.tap(root, 'Skip');
+    d.tap(root, 'Check in with the craving');
+    d.tapId(root, 'sos-reassess-passed');
+    const no = d.byId(root, 'sos-used-no');
+    no.click(); no.click();
+    await d.settle();
+    assert.equal(list('logs').length, 1, 'one craving log for one session');
+    assert.equal(events('SosCompleted').length, 1);
+    root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    d.toRating(root);
+    const four = d.byId(root, 'sos-rating').querySelectorAll('button')[4];
+    four.click(); four.click();
+    await d.settle();
+    assert.equal(list('logs').length, 2, 'one feeling log for one session');
+    assert.equal(events('SosCompleted').length, 2);
+    root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-continue');
+    d.tapId(root, 'sos-slip-safe');
+    d.tap(root, 'Continue');
+    d.tap(root, 'Done');
+    const todo = d.byId(root, 'sos-slip-todo');
+    todo.click(); todo.click();
+    await d.settle();
+    assert.equal(list('todos').length, 1, 'one to-do for one tap');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), [], 'every save went through');
+  });
+
   // -- fix round: stand-in DOM tests above this line --
 });
 
