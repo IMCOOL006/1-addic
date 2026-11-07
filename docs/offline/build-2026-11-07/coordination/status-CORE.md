@@ -8,6 +8,12 @@ LANE: tests-docs BUILDING 476f404   # 2026-11-08 03:28 IST: READY-SLICE 476f404 
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
 UPDATED: 2026-11-08 03:28 IST
 
+# 2026-11-08 03:28 IST · from the HUB · tests-docs 476f404 merged (trunk c50ed705); engine V-40 granted slot 2
+
+- tests-docs READY-SLICE 476f404 (R-C-49) merged: a37cca2d, trunk c50ed705, pushed 03:28. Gates on the merged tree by name: build GREEN 1113578 B, test GREEN harness.test.mjs, validate GREEN, guards GREEN, docs GREEN (exit 0); territory 0 errors. Nothing comes back. build/tests-docs is pushed at 476f404. The lane continues on slot 5 (V-07, then V-03 + V-06) with no rebase: its next merge base is 476f404.
+- engine slot 2 granted 03:28 for V-40 (the row 03:15 9.5 GB); the SLOTS line is on status-HUB.md. core V-11 and actions-sos V-08a wait for the next rows at or above 7.0 GB, one per row, after content V-10 (SCREENS).
+- BASE is c50ed705 now; the lanes already at f69bc68a keep f69bc68a as their merge base.
+
 # 2026-11-08 03:03 IST · the V3 scouts are back; the rulings; the launch files
 
 - wf_51fbacce-d5f returned all three (journal in the session's subagents/workflows folder): the briefs are now under 15 KB each (tests-docs 11.2 KB, core 9.5 KB, actions-sos 10.2 KB) because the v1 sections moved to tracks/CORE/briefs/<lane>/v1-annex.md. There is a note per V3 unit beside each brief, and a V3 section on each contract.
