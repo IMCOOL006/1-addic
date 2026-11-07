@@ -129,7 +129,7 @@ const Actions = (() => {
           return e;
         },
         has(type, field, value) {
-          return tx.list('events').some((e) => e && e.type === type && (field == null || (e.payload && e.payload[field] === value)));
+          return tx.list('events').some((e) => e && e.sample !== true && e.type === type && (field == null || (e.payload && e.payload[field] === value))); // sample rows never count (O6)
         },
       };
       out = fn(tx);
@@ -397,7 +397,7 @@ const Actions = (() => {
       /* a rehearsal: no log, no skill, no XP for the session, no slip; only the drill's tutorial mark, once */
       const S = store();
       const seen = (S.view && typeof S.view.list === 'function' ? S.view.list('events') || [] : [])
-        .some((e) => e && e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'drill');
+        .some((e) => e && e.sample !== true && e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'drill');
       if (seen) return { drill: true, events: [] };
       return write('sos drill', at, (tx) => {
         if (!tx.has('TutorialCompleted', 'id', 'drill')) tx.event('TutorialCompleted', { id: 'drill', skipped: false });

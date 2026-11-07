@@ -507,6 +507,21 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     });
   });
 
+  test('RC3: sample events never stand in for the person’s own once-only events', async () => {
+    const lesson = firstModule().lessons[0].id;
+    const ev = (id, type, payload) => ({ id, type, at: new Date().toISOString(), payload });
+    const sample = { generate: () => ({ stores: { events: [ev('sample-e1', 'LessonCompleted', { lessonId: lesson }),
+      ev('sample-e2', 'TutorialCompleted', { id: 'drill', skipped: false })] } }) };
+    await withSample(sample, async () => {
+      assert.equal((await Actions.loadSample()).count, 2);
+      await Actions.completeLesson(lesson);
+      await Actions.sosSession({ kind: 'craving', drill: true });
+      await Actions.eraseSample();
+    });
+    assert.deepEqual(events('LessonCompleted').map((e) => e.payload.lessonId), [lesson], 'the person’s own lesson stays when the sample goes');
+    assert.deepEqual(events('TutorialCompleted').map((e) => e.payload.id), ['drill'], 'and the drill mark');
+  });
+
   // -- fix round: U-09 tests above this line --
 });
 
