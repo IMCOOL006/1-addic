@@ -522,6 +522,16 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     assert.deepEqual(events('TutorialCompleted').map((e) => e.payload.id), ['drill'], 'and the drill mark');
   });
 
+  test('RC9: a backup the engine calls not valid is refused, even with no reason given', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    const eng = E();
+    const had = Object.prototype.hasOwnProperty.call(eng, 'validateBackup');
+    const old = eng.validateBackup;
+    eng.validateBackup = () => ({ ok: false, errors: [] });
+    try { await refused(Actions.importBackup(backup), 'bad-backup'); } finally { if (had) eng.validateBackup = old; else delete eng.validateBackup; }
+  });
+
   // -- fix round: U-09 tests above this line --
 });
 

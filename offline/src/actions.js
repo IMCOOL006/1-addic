@@ -856,7 +856,7 @@ const Actions = (() => {
     let errors;
     try {
       const r = E && typeof E.validateBackup === 'function' ? E.validateBackup(obj) : { ok: true, errors: [] };
-      errors = r && r.ok ? backupErrors(obj) : ((r && r.errors) || ['not valid']);
+      errors = r && r.ok === true ? backupErrors(obj) : (r && Array.isArray(r.errors) && r.errors.length ? r.errors : ['not valid']); // not ok is never ok
     } catch (e) { errors = ['not valid']; }
     if (errors.length) throw badBackup(errors);
     let next;
