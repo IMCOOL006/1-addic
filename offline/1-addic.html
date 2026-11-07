@@ -2354,7 +2354,12 @@ const UI = (function () {
       const done = finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
         { focus: () => {
           const c = target();
-          if (c === el && c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1'); // focusable, outside the tab order
+          // A node with nothing to press is made focusable outside the tab order; a control or link the render
+          // returned keeps its own tab stop, also while it is disabled (RC1).
+          const own = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName) || (el.tagName === 'A' && el.getAttribute('href') !== null);
+          if (c === el && !own) {
+            if (c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1');
+          }
           if (c.focus) c.focus();
         } }, el);
       done.mark = mark;

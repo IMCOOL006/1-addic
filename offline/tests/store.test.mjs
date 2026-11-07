@@ -1093,6 +1093,28 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(box.getAttribute('aria-describedby'), null);
   });
 
+  test('RC1: a custom field whose render returns a control: the control takes the focus and keeps its tab stop', () => {
+    for (const [tag, off] of [['select', false], ['input', false], ['textarea', false], ['button', false], ['a', false], ['select', true]]) {
+      setup();
+      findIn(globalThis.document);
+      let ctl = null;
+      const f = UI.form({ fields: [{ name: 'when', type: 'custom', label: 'When', required: true, render: () => {
+        ctl = globalThis.document.createElement(tag);
+        if (tag === 'a') ctl.setAttribute('href', '#/plan');
+        ctl.disabled = off;
+        return ctl;
+      } }] });
+      const what = tag + (off ? ' (disabled)' : '');
+      assert.equal(f.validate(), false);
+      if (!off) assert.equal(document.activeElement, ctl, what + ': the control takes the focus');
+      assert.equal(ctl.getAttribute('tabindex'), null, what + ': and keeps its tab stop');
+      ctl.disabled = false;
+      ctl.value = 'x';
+      assert.equal(f.validate(), true);
+      assert.equal(ctl.getAttribute('tabindex'), null, what + ': also once the field is valid');
+    }
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
