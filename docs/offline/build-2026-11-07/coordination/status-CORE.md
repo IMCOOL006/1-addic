@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # session a29cd9a2; core's second slice [U-03,U-02] running (wf_d2230fda-3a5); engine READY-SLICE and paused (memory, R-H-5); actions-sos and learn HELD; tests-docs waits for a slot and core's U-01 merged (in the HUB's merge now)
 LANE: core BUILDING   # slice U-01 8bf7b5c MERGED by the HUB 07:42 (merge 7eaf7f4, trunk fde4bbbd); second slice [U-03,U-02] running: wf_d2230fda-3a5 (07:40, diffFrom 8bf7b5c); then U-04 alone with the two reviewers
-LANE: engine READY-SLICE 04fc0c1   # U-05 (one commit); check PASS with two LOWs (helpful 1-5 reading; net-weaver counts inactive contacts, kept); gates: test GREEN 33/33, guards GREEN, build and validate SKIP (no build.mjs, no validateContent yet), territory 0 errors; report tracks/CORE/lane-reports/engine.md; PAUSED by the HUB 07:38 (memory under the floor, R-H-5): the next run [U-06,U-07],[U-08] waits for the SLOTS line to say granted again
+LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
 LANE: actions-sos SCOUTED   # brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built (R-C-1); slice U-09 starts the moment its SLOTS line says granted
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
-LANE: tests-docs SCOUTED   # brief 13.7 KB; core's U-01 is merged (07:42), so tests-docs ASKS ITS SLOT now (one of the five in SLOTS-ASKED); cut from the BASE line when granted; slice U-34
+LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 07:43 IST
+UPDATED: 2026-11-07 07:47 IST
 
 # 2026-11-07 07:23 · the CORE chat's first steps (session a29cd9a2)
 
