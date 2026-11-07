@@ -33,6 +33,7 @@ const UI = (function () {
     clinicalReview: true,
     title: 'Urgent help',
     line: 'If you or someone else is in danger, call now.',
+    note: 'India numbers: please verify. Elsewhere: your local emergency number (usually 112, 911 or 999).',
   };
   const EMPTY_VIEW = Object.freeze({ get() { return null; }, list() { return []; }, count() { return 0; } });
 
@@ -171,6 +172,7 @@ const UI = (function () {
       openSheet = null;
       dlg.removeEventListener('close', onNativeClose);
       dlg.removeEventListener('click', onBackdrop);
+      dlg.removeEventListener('cancel', onCancel);
       if (dlg.open && typeof dlg.close === 'function') dlg.close();
       else dlg.removeAttribute('open');
       dlg.replaceChildren();
@@ -179,6 +181,7 @@ const UI = (function () {
     };
     const onNativeClose = () => close('dismissed');
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
+    const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
     const head = h('div', { class: 'sheet-head' },
       h('h2', { id: titleId, class: 'sheet-title', text: title || '' }),
       o.dismissable === false ? null : h('button', {
@@ -190,7 +193,7 @@ const UI = (function () {
     dlg.setAttribute('aria-labelledby', titleId);
     dlg.addEventListener('close', onNativeClose);
     dlg.addEventListener('click', onBackdrop);
-    if (o.dismissable === false) dlg.addEventListener('cancel', (ev) => ev.preventDefault(), { once: true });
+    dlg.addEventListener('cancel', onCancel);
     try {
       if (typeof dlg.showModal === 'function') dlg.showModal();
       else dlg.setAttribute('open', '');
@@ -652,10 +655,10 @@ const UI = (function () {
       h('h1', { id: 'urgent-title', text: URGENT.title }),
       h('p', { text: URGENT.line }),
       lines.length
-        ? h('ul', { class: 'sos-list', 'aria-label': (local.name || 'India') + ' (please verify)' }, lines.map((x) => h('li', null,
+        ? h('ul', { class: 'sos-list', 'aria-label': local.name || 'India' }, lines.map((x) => h('li', null,
           h('a', { class: 'sos-target', href: tel(x.number) }, h('span', { class: 'sos-target-name', text: x.name }), h('span', { class: 'sos-target-number', text: x.number })))))
         : null,
-      h('p', { class: 'muted', text: 'Elsewhere: your local emergency number (usually 112, 911 or 999).' }));
+      h('p', { class: 'muted', text: URGENT.note }));
   }
 
   function lockFallback() {
@@ -706,6 +709,7 @@ const UI = (function () {
     let r = route();
     let key = pageKey(r);
     const locked = isLocked();
+    if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
     chrome(key);

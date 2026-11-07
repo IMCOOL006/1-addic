@@ -9,7 +9,8 @@ const require = createRequire(import.meta.url);
 const UI = require('../src/ui-core.js');
 const Content = require('../src/content-core.js');
 
-const STAND_INS = ['Store', 'Engine', 'Actions', 'Content', 'location', 'localStorage', 'window', 'SpeechSynthesisUtterance'];
+const STAND_INS = ['Store', 'Engine', 'Actions', 'Content', 'location', 'history', 'document', 'localStorage', 'window',
+  'SpeechSynthesisUtterance'];
 function clearStandIns() {
   for (const k of STAND_INS) delete globalThis[k];
 }
@@ -133,5 +134,211 @@ describe('ui-core (U-03)', () => {
     const before = cancels;
     UI.stopSpeaking();
     assert.equal(cancels, before + 1);
+  });
+});
+
+// The smallest DOM that ui-core's render path touches. A stand-in of this file only (never offline/tests/helpers/).
+function fakeDom() {
+  const ids = {};
+  class Txt {
+    constructor(t) { this.data = String(t); this.parentNode = null; }
+    get nodeType() { return 3; }
+    get textContent() { return this.data; }
+  }
+  class El {
+    constructor(tag) {
+      this.tagName = String(tag).toUpperCase(); this.attrs = {}; this.kids = []; this.dataset = {}; this.parentNode = null;
+      this.style = { setProperty() {} }; this.hidden = false; this.own = ''; this.on = {};
+      const cls = new Set();
+      this.classList = {
+        toggle: (c, f) => { if (f === undefined ? !cls.has(c) : f) cls.add(c); else cls.delete(c); },
+        contains: (c) => cls.has(c), add: (c) => cls.add(c), remove: (c) => cls.delete(c),
+      };
+    }
+    get nodeType() { return 1; }
+    setAttribute(k, v) { this.attrs[k] = String(v); if (k === 'hidden') this.hidden = true; if (k === 'id') this.id = String(v); }
+    getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
+    removeAttribute(k) { delete this.attrs[k]; }
+    appendChild(c) { c.parentNode = this; this.kids.push(c); return c; }
+    removeChild(c) { this.kids = this.kids.filter((x) => x !== c); return c; }
+    insertBefore(c) { c.parentNode = this; this.kids.unshift(c); return c; }
+    replaceChildren(...cs) { this.kids = []; this.own = ''; for (const c of cs) this.appendChild(typeof c === 'string' ? new Txt(c) : c); }
+    get children() { return this.kids.filter((k) => k.nodeType === 1); }
+    get firstChild() { return this.kids[0] || null; }
+    get textContent() { return [this.own].concat(this.kids.map((k) => k.textContent)).join(' '); }
+    set textContent(v) { this.own = String(v); this.kids = []; }
+    addEventListener(t, f) { (this.on[t] = this.on[t] || []).push(f); }
+    removeEventListener() {}
+    querySelectorAll() { return []; }
+    querySelector() { return null; }
+    focus() { doc.activeElement = this; }
+    contains(x) { for (let n = x; n; n = n.parentNode) if (n === this) return true; return false; }
+    matches() { return false; }
+    all() { return [this].concat(...this.children.map((k) => k.all())); }
+  }
+  const doc = {
+    title: '', activeElement: null, events: [],
+    documentElement: new El('html'), body: new El('body'),
+    createElement: (t) => new El(t), createElementNS: (n, t) => new El(t), createTextNode: (t) => new Txt(t),
+    getElementById: (id) => ids[id] || null,
+    dispatchEvent(e) { this.events.push(e.type); return true; },
+    contains: () => true,
+  };
+  for (const [id, tag] of [['main', 'main'], ['sos-btn', 'a'], ['nav', 'nav'], ['saved-label', 'span'], ['app-name', 'span'],
+    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button']]) {
+    const e = new El(tag); e.id = id; ids[id] = e;
+  }
+  return doc;
+}
+
+describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
+  const added = ['today', 'sos', 'track', 'workbook'];
+  let errors;
+  const realError = console.error;
+  afterEach(() => {
+    clearStandIns();
+    for (const k of added) delete UI.pages[k];
+    console.error = realError;
+  });
+  const at = (hash) => {
+    globalThis.location = { hash };
+    globalThis.history = { state: null, replaceState(s, t, url) { globalThis.location.hash = url; } };
+  };
+  const page = (text) => () => { const p = globalThis.document.createElement('p'); p.textContent = text; return p; };
+  const main = () => globalThis.document.getElementById('main');
+  const hrefs = () => main().all().map((e) => e.getAttribute('href')).filter(Boolean);
+  const lockedStore = (unlockWith) => {
+    const s = {
+      locked: true, tried: [],
+      view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'memory', lastSavedAt: null, hasLock: true, locked: s.locked }),
+      lock: { unlock: async (pin) => { s.tried.push(pin); if (pin === unlockWith) { s.locked = false; return true; } return false; } },
+    };
+    return s;
+  };
+  const setup = () => {
+    globalThis.document = fakeDom();
+    globalThis.Content = Content;
+    errors = [];
+    console.error = (...a) => errors.push(a.join(' '));
+  };
+
+  test('locked: no page with the person’s data is drawn; the lock screen offers urgent help without the PIN', async () => {
+    setup();
+    globalThis.Store = lockedStore('2468');
+    UI.pages.today = page('PRIVATE today');
+    UI.pages.workbook = page('PRIVATE reasons');
+    for (const hash of ['#/today', '#/workbook/reasons', '#/settings/data']) {
+      at(hash);
+      await UI.render();
+      assert.equal(location.hash, '#/lock', hash + ' goes to the lock screen');
+      assert.ok(!main().textContent.includes('PRIVATE'), 'no private page drawn for ' + hash);
+    }
+    assert.match(main().textContent, /Locked/);
+    assert.ok(hrefs().includes('#/sos/urgent') && hrefs().includes('#/sos/craving'), 'urgent help and Ride the wave, no PIN needed');
+    assert.equal(document.getElementById('nav').hidden, true, 'the tabs are hidden while locked');
+    assert.equal(document.getElementById('settings-btn').hidden, true);
+    assert.equal(document.getElementById('sos-btn').hidden, false, 'the SOS button stays on the lock screen');
+  });
+
+  test('locked: a wrong PIN is refused and changes nothing; the right one opens Today', async () => {
+    setup();
+    const S = lockedStore('2468');
+    globalThis.Store = S;
+    at('#/lock');
+    await UI.render();
+    const all = () => main().all();
+    const form = all().find((e) => e.tagName === 'FORM');
+    const pin = all().find((e) => e.id === 'lock-pin');
+    const msg = all().find((e) => e.id === 'lock-msg');
+    assert.ok(form && pin && msg, 'the fallback lock form is drawn');
+    pin.value = '1111';
+    await form.on.submit[0]({ preventDefault() {} });
+    assert.deepEqual(S.tried, ['1111']);
+    assert.equal(S.locked, true);
+    assert.equal(location.hash, '#/lock', 'a wrong PIN stays on the lock screen');
+    assert.equal(msg.hidden, false);
+    assert.match(msg.textContent, /did not match/);
+    assert.equal(pin.value, '', 'the typed PIN is cleared');
+    await form.on.submit[0]({ preventDefault() {} });
+    assert.deepEqual(S.tried, ['1111'], 'an empty PIN is never sent');
+    pin.value = '2468';
+    await form.on.submit[0]({ preventDefault() {} });
+    assert.equal(S.locked, false);
+    assert.equal(location.hash, '#/today');
+    assert.match(main().textContent, /Today is coming together/);
+  });
+
+  test('locked: SOS is never gated, and the SOS button hides inside SOS', async () => {
+    setup();
+    globalThis.Store = lockedStore('2468');
+    UI.pages.sos = page('SOS PAGE');
+    for (const hash of ['#/sos', '#/sos/craving', '#/sos/urgent', '#/sos?drill=1']) {
+      at(hash);
+      await UI.render();
+      assert.equal(location.hash, hash, hash + ' is not redirected');
+      assert.match(main().textContent, /SOS PAGE/);
+      assert.equal(document.getElementById('sos-btn').hidden, true);
+      assert.equal(document.documentElement.getAttribute('data-route'), 'sos');
+    }
+  });
+
+  test('unlocked: #/lock goes to Today', async () => {
+    setup();
+    const S = lockedStore('2468');
+    S.locked = false;
+    globalThis.Store = S;
+    at('#/lock');
+    await UI.render();
+    assert.equal(location.hash, '#/today');
+  });
+
+  test('a page that throws shows one line; an absent or failing SOS page shows the urgent numbers', async () => {
+    setup();
+    UI.pages.track = () => { throw new Error('boom'); };
+    at('#/track');
+    await UI.render();
+    assert.match(main().textContent, /This page could not open\. SOS still works\./);
+    assert.equal(errors.length, 1, 'the failure is reported once');
+    for (const sos of [undefined, () => { throw new Error('sos boom'); }, () => 'not a node']) {
+      if (sos) UI.pages.sos = sos; else delete UI.pages.sos;
+      at('#/sos/craving');
+      await UI.render();
+      const text = main().textContent;
+      assert.match(text, /Urgent help/);
+      assert.match(text, /112/);
+      assert.match(text, /14416/);
+      assert.match(text, /please verify/);
+      assert.ok(hrefs().includes('tel:112'), 'one tap calls the emergency number');
+    }
+  });
+
+  test('routes: unknown renders Today, a known unregistered page says coming soon, and each render is announced', async () => {
+    setup();
+    at('#/nowhere/at/all');
+    await UI.render();
+    assert.match(main().textContent, /Today is coming together/);
+    assert.ok(hrefs().includes('#/learn') && hrefs().includes('#/sos'));
+    assert.equal(document.getElementById('saved-label').textContent, 'Not saved — export before closing', 'no Store: said plainly');
+    at('#/games/refusal');
+    await UI.render();
+    assert.match(main().textContent, /coming soon/);
+    assert.ok(hrefs().includes('#/today'), 'never a dead end');
+    assert.ok(document.events.includes('ui:route') && document.events.includes('ui:rendered'));
+    assert.equal(document.title, '1-addic');
+  });
+
+  test('discreet mode: the name becomes Notebook and SOS reads Help', async () => {
+    setup();
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? { key: 'app', discreet: true } : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+    };
+    at('#/today');
+    await UI.render();
+    assert.equal(document.title, 'Notebook');
+    assert.equal(document.getElementById('app-name').textContent.trim(), 'Notebook');
+    assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
+    assert.equal(document.documentElement.getAttribute('data-counters'), 'off');
   });
 });
