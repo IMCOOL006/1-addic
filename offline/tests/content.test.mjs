@@ -225,3 +225,58 @@ test('content: slip, anger and warning-sign exercises carry clinicalReview; slip
   assert.equal(byId('slip-review').sensitive, true);
   assert.ok(!strings(exercises()).some((s) => /\breset/i.test(s)), 'no reset wording');
 });
+
+// U-29: lessons M4-M6 in the 3.6 shape.
+const LESSON_COUNTS = { m4: 6, m5: 6, m6: 6 };
+const sentences = (s) => String(s).split(/(?<=[.!?])\s+(?=[A-Z"“(])/).filter((x) => x.trim()).length;
+
+test('content: lessons shape (3.6) for m4-m6', () => {
+  const features = new Set(Object.keys(C.features));
+  const ranks = new Set(C.ranks.map((r) => r.id));
+  for (const [mid, n] of Object.entries(LESSON_COUNTS)) {
+    const m = C.modules.find((x) => x.id === mid);
+    assert.ok(m, `${mid} exists`);
+    assert.ok(m.name && m.harbor && m.blurb && m.book != null && 'step' in m, `${mid}: module fields`);
+    assert.ok(Array.isArray(m.unlocks) && m.unlocks.every((f) => features.has(f)), `${mid}: unlocks are feature ids`);
+    if (m.milestone) assert.ok(ranks.has(m.milestone), `${mid}: milestone ${m.milestone} is a rank`);
+    assert.equal(m.lessons.length, n, `${mid}: ${n} lessons`);
+    m.lessons.forEach((l, i) => {
+      const at = `lesson ${l.id}`;
+      assert.equal(l.id, `${mid}-l${i + 1}`, `${at}: id in order`);
+      assert.ok(l.title && l.minutes > 0, `${at}: title and minutes`);
+      assert.ok(C.cast[l.moment.cast] && l.moment.text, `${at}: moment by a cast member`);
+      const ms = sentences(l.moment.text);
+      assert.ok(ms >= 2 && ms <= 4, `${at}: moment has 2-4 sentences (${ms})`);
+      assert.ok(l.cards.length >= 3 && l.cards.length <= 4, `${at}: 3-4 cards`);
+      for (const c of l.cards) {
+        const cs = sentences(c.text);
+        assert.ok(c.title && cs >= 1 && cs <= 4, `${at}: card "${c.title}" has 1-4 sentences (${cs})`);
+        if (c.link) assert.ok(c.link.route && c.link.label, `${at}: card link {route, label}`);
+      }
+      assert.ok(l.checks.length >= 1 && l.checks.length <= 2, `${at}: 1-2 checks`);
+      for (const q of l.checks) {
+        assert.ok(q.q && q.options.length >= 2 && q.options.every((o) => o.t && o.why && typeof o.ok === 'boolean'), `${at}: check options {t, ok, why}`);
+        assert.ok(q.options.some((o) => o.ok), `${at}: a helpful reading`);
+      }
+      assert.ok(l.tryIt && (l.tryIt.exercise || (l.tryIt.route && l.tryIt.label)), `${at}: tryIt`);
+      assert.ok(l.wrap && l.wrap.built && l.wrap.lives && l.wrap.action && 'todo' in l.wrap, `${at}: wrap`);
+      assert.ok(Array.isArray(l.refs) && l.refs.length >= 1, `${at}: at least one ref`);
+    });
+  }
+});
+
+test('content: refs resolve for every lesson', () => {
+  const refs = new Set(C.references.map((r) => r.id));
+  for (const l of C.modules.flatMap((m) => m.lessons)) for (const r of l.refs) assert.ok(refs.has(r), `${l.id}: ${r}`);
+});
+
+test('content: routes known in every lesson string', () => {
+  for (const s of strings(C.modules).filter((x) => x.startsWith('#/'))) assert.ok(E.knownRoute(s, C), `route ${s}`);
+});
+
+test('content: the spiral lesson carries clinicalReview and points to urgent help', () => {
+  const l = C.modules.find((m) => m.id === 'm5').lessons.find((x) => x.id === 'm5-l5');
+  assert.equal(l.clinicalReview, true);
+  assert.ok(strings(l).includes('#/sos/urgent'));
+  assert.ok(!strings(C.modules).some((s) => /\breset/i.test(s)), 'no reset wording');
+});
