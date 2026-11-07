@@ -698,3 +698,89 @@ test('harbor: ui-harbor.js inserts text as text, makes no network call and expor
   assert.equal(HBM.scene, undefined);
   for (const k of ['lightLevels', 'lightOpacity', 'ariaLabel']) assert.equal(typeof HBM[k], 'function', k);
 });
+
+/* ── FIX-EMBED: game-tutorials' pieces on Today (contracts/game-tutorials.md lines 9 and 11) ── */
+const SLOT_TESTS = ['game-panel', 'explorer-ring', 'more-tools', 'tip-card', 'new-dot', 'today-explorer', 'today-tip'];
+const countOf = (root) => Object.fromEntries(SLOT_TESTS.map((k) => [k, byTest(root, k).length]));
+function withEmbeds(G, M, fn) {
+  globalThis.document = fakeDom();
+  if (G) globalThis.GuidanceUI = G;
+  if (M) globalThis.GameUI = M;
+  try { return fn(); } finally { delete globalThis.GuidanceUI; delete globalThis.GameUI; delete globalThis.document; }
+}
+const realGuidance = () => classic('ui-guidance.js', 'GuidanceUI');
+const realGame = () => classic('ui-game.js', 'GameUI');
+const sampleWith = (o) => { const rows = sampleRows(); rows.settings = [settingsRow(Object.assign({ showCurrentRun: true }, o || {}))]; return rows; };
+
+test('today: FIX-EMBED slots in cardsFor keep the Calm, discreet and maintenance rules', () => {
+  const all = T.cardsFor({});
+  assert.ok(all.indexOf('game') === all.indexOf('momentum') + 1, 'game follows momentum');
+  assert.ok(all.indexOf('more') === all.indexOf('tip') + 1, 'more follows tip');
+  assert.deepEqual(T.cardsFor({ maintenance: true }), ['checkin', 'plan', 'reasons', 'tip', 'backup']);
+  for (const k of ['game', 'momentum', 'explorer', 'harbor']) assert.ok(!T.cardsFor({ calm: true }).includes(k), `calm hides ${k}`);
+  for (const k of ['game', 'harbor', 'counters']) assert.ok(!T.cardsFor({ discreet: true }).includes(k), `discreet hides ${k}`);
+});
+
+test('today: FIX-EMBED with GuidanceUI and GameUI absent Today renders as before', () => withEmbeds(null, null, () => {
+  const { root } = render(sampleRows());
+  const n = countOf(root);
+  assert.deepEqual([n['game-panel'], n['explorer-ring'], n['more-tools'], n['tip-card'], n['new-dot']], [0, 0, 0, 0, 0]);
+  assert.equal(n['today-explorer'], 1, 'Today keeps its own Explorer card');
+}));
+
+test('today: FIX-EMBED with the real GuidanceUI and GameUI: one panel, the ring in place of Explorer, one More tools, one tip', async () => {
+  let c;
+  const root = withEmbeds(realGuidance(), realGame(), () => { const r = render(sampleRows()); c = r.c; return r.root; });
+  const n = countOf(root);
+  assert.equal(n['game-panel'], 1, 'GameUI.panel once');
+  assert.equal(n['explorer-ring'], 1, 'GuidanceUI.explorerRing once');
+  assert.equal(n['today-explorer'], 0, 'never the own Explorer card beside the ring');
+  assert.equal(n['more-tools'], 1, 'GuidanceUI.moreTools once');
+  assert.equal(n['tip-card'], 0, 'GuidanceUI.tipCard is never rendered on Today');
+  assert.ok(n['today-tip'] <= 1, 'at most one tip card');
+  await tick();
+  assert.ok(c.A.calls.filter((x) => x[0] === 'markTipShown').length <= 1, 'the tip is marked at most once');
+  const links = root.all((x) => x.tagName === 'a');
+  assert.equal(byTest(root, 'today-sos')[0].getAttribute('href'), '#/sos', 'SOS one tap away');
+  assert.equal(links.filter((a) => a.getAttribute('data-test') === 'today-sos').length, 1);
+  for (const b of root.all((x) => x.tagName === 'button')) assert.ok((b.on.click || []).length > 0, `button "${b.textContent}" acts`);
+  const kids = root.children.slice(1).filter(Boolean).map((x) => x.getAttribute('data-test') || (x.children[0] && x.children[0].getAttribute('data-test')));
+  assert.ok(kids.indexOf('game-panel') > kids.indexOf('today-momentum'), 'the panel comes after Momentum');
+  assert.ok(kids.indexOf('more-tools') > kids.indexOf('explorer-ring'), 'More tools comes after the ring');
+});
+
+test('today: FIX-EMBED Calm, discreet and maintenance keep their card rules with both modules present', () => {
+  const cases = [
+    ['calm', sampleWith({ calm: true }), { calm: true }, { 'game-panel': 0, 'explorer-ring': 0, 'today-explorer': 0 }],
+    ['discreet', sampleWith({ discreet: true }), { settings: settingsRow({ discreet: true }) }, { 'game-panel': 0 }],
+    ['maintenance', sampleWith({ maintenance: true }), null, { 'game-panel': 0, 'explorer-ring': 0, 'more-tools': 0, 'today-explorer': 0 }],
+  ];
+  for (const [name, rows, extra, want] of cases) {
+    withEmbeds(realGuidance(), realGame(), () => {
+      const root = TD.page(Object.assign(ctxFor(rows), extra || {}));
+      const n = countOf(root);
+      for (const k of Object.keys(want)) assert.equal(n[k], want[k], `${name}: ${k}`);
+      assert.equal(byTest(root, 'today-sos').length, 1, `${name}: SOS stays`);
+    });
+  }
+});
+
+test('today: FIX-EMBED stand-ins: a null ring shows nothing, a throw never breaks Today, a dot sits by its own link', () => {
+  const span = (t) => { const s = document.createElement('span'); s.setAttribute('data-test', t); return s; };
+  const seen = [];
+  withEmbeds({ explorerRing: () => null, moreTools: () => null, dot: (id) => { seen.push(id); return id === 'planner' ? span('new-dot') : null; } },
+    { panel: () => { throw new Error('boom'); } }, () => {
+      const { root } = render(sampleRows());
+      const n = countOf(root);
+      assert.deepEqual([n['explorer-ring'], n['today-explorer'], n['game-panel'], n['more-tools']], [0, 0, 0, 0], 'null ring: no fallback to the own card');
+      assert.equal(n['new-dot'], 1, 'one New dot, beside the Planner link');
+      assert.ok(seen.every((id) => id === 'planner' || id === 'quests'), 'dots only for one-to-one feature ids');
+      for (const k of ['today-plan', 'today-reasons', 'today-momentum', 'today-sos']) assert.equal(byTest(root, k).length, 1, k);
+    });
+  withEmbeds({ explorerRing: () => { throw new Error('boom'); }, moreTools: () => { throw new Error('boom'); }, dot: () => { throw new Error('boom'); } }, null, () => {
+    const { root } = render(sampleRows());
+    assert.equal(byTest(root, 'today-sos').length, 1);
+    assert.equal(byTest(root, 'today-plan').length, 1, 'a dot that throws leaves the card');
+    assert.equal(byTest(root, 'today-explorer').length, 0, 'a ring that throws shows nothing');
+  });
+});

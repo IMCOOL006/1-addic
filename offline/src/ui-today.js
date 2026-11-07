@@ -79,6 +79,8 @@ const TodayUI = (() => {
       if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
       if (name === 'LearnUI') return typeof LearnUI !== 'undefined' ? LearnUI : null;
       if (name === 'HarborUI') return typeof HarborUI !== 'undefined' ? HarborUI : null;
+      if (name === 'GuidanceUI') return typeof GuidanceUI !== 'undefined' ? GuidanceUI : null;
+      if (name === 'GameUI') return typeof GameUI !== 'undefined' ? GameUI : null;
     } catch (e) { /* a namespace that throws counts as absent */ }
     return null;
   };
@@ -278,14 +280,31 @@ const TodayUI = (() => {
   function cardsFor(o) {
     const base = ['checkin', 'plan', 'reasons', 'tip', 'backup'];
     if (o.maintenance) return base;
-    const all = ['milestone', 'checkin', 'plan', 'want', 'learn', 'quests', 'reasons', 'counters', 'momentum', 'explorer', 'tip', 'backup', 'harbor'];
-    return all.filter((k) => !(o.calm && (k === 'momentum' || k === 'explorer' || k === 'harbor')) && !(o.discreet && (k === 'harbor' || k === 'counters')));
+    const all = ['milestone', 'checkin', 'plan', 'want', 'learn', 'quests', 'reasons', 'counters', 'momentum', 'game', 'explorer', 'tip', 'more', 'backup', 'harbor'];
+    return all.filter((k) => !(o.calm && (k === 'momentum' || k === 'game' || k === 'explorer' || k === 'harbor')) && !(o.discreet && (k === 'harbor' || k === 'counters' || k === 'game')));
   }
 
   /* ── cards (DOM) ───────────────────────────────────────────────────────────────────────── */
   const sampleTag = (row) => (row && row.sample === true ? h('span', { class: 'td-tag td-sample', text: TEXT.sample }) : null);
   const run = (fn) => Promise.resolve().then(fn);
   function errLine(el) { return (e) => { if (el) el.textContent = (e && e.message) || TEXT.error; }; }
+
+  /* game-tutorials' pieces (contracts/game-tutorials.md): each behind typeof, each given the page's ctx as received,
+     each in safe() so a throw there never breaks Today. Absent, Today renders exactly as without them. */
+  const embedFn = (name, fn) => { const M = ns(name); return M && typeof M[fn] === 'function' ? M : null; };
+  const ctxOf = (c) => (c && c.ctxIn) || c;
+  function newDot(c, featureId) {
+    const G = embedFn('GuidanceUI', 'dot');
+    return G ? safe(() => G.dot(featureId, ctxOf(c)), null) : null;
+  }
+  function gameCard(c) {
+    const G = embedFn('GameUI', 'panel');
+    return G ? safe(() => G.panel(ctxOf(c)), null) : null;
+  }
+  function moreCard(c) {
+    const G = embedFn('GuidanceUI', 'moreTools');
+    return G ? safe(() => G.moreTools(ctxOf(c)), null) : null;
+  }
 
   function checkinCard(c) {
     const kind = checkinKind(c.view, c.now, c.profile);
@@ -300,7 +319,7 @@ const TodayUI = (() => {
     const battle = features.has('battlePlans');
     if (!rows.length) {
       return cardEl('today-plan', TEXT.planTitle, h('p', { class: 'muted', text: planner ? TEXT.planEmpty : TEXT.planEmptyLocked }),
-        h('div', { class: 'row' }, planner ? link('#/actions/planner', TEXT.planGo) : link('#/learn', TEXT.learnMore)));
+        h('div', { class: 'row' }, planner ? link('#/actions/planner', TEXT.planGo) : link('#/learn', TEXT.learnMore), planner ? newDot(c, 'planner') : null));
     }
     const items = rows.map((p) => {
       const time = p.start ? (p.end ? `${p.start}–${p.end}` : p.start) : '';
@@ -323,7 +342,7 @@ const TodayUI = (() => {
       return h('li', { class: ['stack', 'td-plan-item', p.risky ? 'td-is-risky' : ''] }, head, detail);
     });
     return cardEl('today-plan', TEXT.planTitle, h('ul', { class: 'stack td-plan' }, items),
-      planner ? h('div', { class: 'row' }, link('#/actions/planner', TEXT.planGo, 'btn ghost')) : null);
+      planner ? h('div', { class: 'row' }, link('#/actions/planner', TEXT.planGo, 'btn ghost'), newDot(c, 'planner')) : null);
   }
 
   function wantCard(c, features) {
@@ -350,7 +369,7 @@ const TodayUI = (() => {
     return cardEl('today-quests', TEXT.questsTitle,
       h('ul', { class: 'stack td-quests' }, qs.map((q) => h('li', { class: 'stack' },
         h('span', { text: q.name }), meterEl(q.done, q.total), h('span', { class: 'muted', text: TEXT.questSteps(q.done, q.total) })))),
-      h('div', { class: 'row' }, link('#/actions/quests', TEXT.questsGo, 'btn ghost')));
+      h('div', { class: 'row' }, link('#/actions/quests', TEXT.questsGo, 'btn ghost'), newDot(c, 'quests')));
   }
 
   function reasonsCard(c) {
@@ -380,7 +399,13 @@ const TodayUI = (() => {
       h('div', { class: 'row' }, ringEl(100 * m.days / m.of, TEXT.momentumTitle), h('p', { text: TEXT.momentum(m.days, m.of) })));
   }
 
+  /* With GuidanceUI.explorerRing present its ring takes this slot; its null (finished or hidden) shows nothing. */
   function explorerCard(c) {
+    const G = embedFn('GuidanceUI', 'explorerRing');
+    if (G) {
+      const n = safe(() => G.explorerRing(ctxOf(c)), null);
+      return n ? h('section', { class: 'card td-explorer', 'aria-label': TEXT.explorerTitle }, n) : null;
+    }
     const E = E_(c);
     if (!E || typeof E.explorer !== 'function') return null;
     if (safe(() => E.explorerDone(c.view), false) === true) return null;
@@ -469,6 +494,7 @@ const TodayUI = (() => {
       E: E_(x), A: x.A || ns('Actions'), profile: isObj(x.profile) ? x.profile : {}, settings: isObj(x.settings) ? x.settings : {},
       term: x.term, now: x.now || new Date(), features: x.features, calm: !!x.calm, route: x.route || { path: '/today', parts: ['today'], query: {} },
     };
+    Object.defineProperty(c, 'ctxIn', { value: x }); // the page's ctx as received, for game-tutorials' pieces
     const features = featuresOf(c);
     const discreet = discreetOf(c);
     const maintenance = c.settings.maintenance === true;
@@ -484,8 +510,8 @@ const TodayUI = (() => {
     const make = {
       milestone: () => milestoneCard(c, gs), checkin: () => checkinCard(c), plan: () => planCard(c, features),
       want: () => wantCard(c, features), learn: () => learnCard(c), quests: () => questsCard(c), reasons: () => reasonsCard(c),
-      counters: () => countersCard(c, gs), momentum: () => momentumCard(c, gs), explorer: () => explorerCard(c),
-      tip: () => tipCard(c), backup: () => backupCard(c), harbor: () => harborCard(c),
+      counters: () => countersCard(c, gs), momentum: () => momentumCard(c, gs), game: () => gameCard(c), explorer: () => explorerCard(c),
+      tip: () => tipCard(c), more: () => moreCard(c), backup: () => backupCard(c), harbor: () => harborCard(c),
     };
     const cards = cardsFor({ maintenance, calm: c.calm, discreet }).map((k) => safe(make[k], null));
     return h('section', { class: 'page stack td-page', 'data-test': 'today-page' }, head, cards);
