@@ -1347,6 +1347,62 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(root().getAttribute('data-contrast'), null, 'erased: off');
     assert.equal(box.size, 0);
   });
+
+  test('RC2: high contrast follows a store change on every path, and a reload straight onto #/sos turns it on once the load ends', async (t) => {
+    setup();
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const U = freshUi();
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    globalThis.window = { addEventListener() {} };
+    document.addEventListener = () => {};
+    let row = { key: 'app', highContrast: true };
+    let heard = null;
+    let opened;
+    const loading = new Promise((res) => { opened = res; });
+    globalThis.Store = {
+      view: { get: (st, id) => (st === 'settings' && id === 'app' ? row : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+      load: () => loading, subscribe: (f) => { heard = f; return () => {}; },
+    };
+    const drawn = { sos: 0, today: 0 };
+    let field = null;
+    U.pages.sos = () => { drawn.sos += 1; return page('sos')(); };
+    U.pages.today = () => {
+      drawn.today += 1;
+      const p = globalThis.document.createElement('div');
+      field = globalThis.document.createElement('input');
+      field.matches = (sel) => /\binput\b/.test(sel);
+      p.appendChild(field);
+      return p;
+    };
+    const root = () => document.documentElement;
+    const change = (on) => { row = { key: 'app', highContrast: on }; heard({ label: 'settings' }); t.mock.timers.tick(16); };
+    at('#/sos'); // a reload straight onto SOS
+    const booting = U.boot();
+    await new Promise((r) => setImmediate(r));
+    assert.equal(drawn.sos, 1, 'SOS draws before the Store loads');
+    assert.equal(root().getAttribute('data-contrast'), null, 'the row is not read before the load ends');
+    opened();
+    await booting;
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'on once the load ends');
+    assert.equal(drawn.sos, 1, 'and SOS is not drawn again');
+    change(false);
+    assert.equal(root().getAttribute('data-contrast'), null, 'on SOS a change follows after the frame');
+    assert.equal(drawn.sos, 1, 'without drawing SOS again');
+    at('#/today');
+    await U.render();
+    field.focus(); // the person is typing in a field of the page
+    change(true);
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'a field has the focus: it follows too');
+    assert.equal(drawn.today, 1, 'and the page is not drawn again');
+    document.activeElement = null;
+    change(false);
+    assert.equal(root().getAttribute('data-contrast'), null, 'no field has the focus: the page is drawn again with it');
+    assert.equal(drawn.today, 2);
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
