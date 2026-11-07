@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 09:31 IST: three runs live: core wf_6b7ddbb3-2a7 (reviewers), actions-sos wf_379c12ed-2e4 (U-10, U-11), tests-docs wf_5eb3e38a-14f (slice U-34); engine paused, learn held
-LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; F1 4112ca4, F2 36a2fbf, U-04 06cdf34, FIX-C4-C5 030f949 (C4) + 98f872d (C5); check PASS at 98f872d; run wf_6b7ddbb3-2a7: two reviewers over 655516dc..98f872d, then report
+STATE: BUILDING   # 2026-11-07 09:51 IST: four runs live: core (review fixes), actions-sos (reviewers), tests-docs (slice report), learn (slice U-12); engine paused for memory
+LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; F1, F2, U-04 06cdf34, FIX-C4-C5 030f949 + 98f872d; check PASS; both reviewers returned (two HIGH: PIN change during derivation erases rows; fallback session writes plain rows); review fix round running (wf_6b7ddbb3-2a7), then re-checks, report
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
 LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; C1 0699730; U-10 1507640, U-11 c629cae; check PASS at c629cae; run wf_379c12ed-2e4: two reviewers over 655516dc..c629cae, then report; a follow-up (onboarding redirect, sosSession emotion: the chat's rulings) after it
-LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
-LANE: tests-docs BUILDING   # slot 5 granted again 09:30; worktree cut 09:21 from BASE 22c39654; slice run wf_5eb3e38a-14f (09:30, sliceRun, U-34)
+LANE: learn BUILDING   # slot 4 granted 09:50; worktree cut 07:21 at 655516d; slice run wf_bb0fcbce-e1b (09:51, sliceRun, U-12)
+LANE: tests-docs CHECKING   # slice U-34 310780d; check PASS at 310780d; slice report being written (run wf_5eb3e38a-14f), then READY-SLICE
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 09:36 IST
+UPDATED: 2026-11-07 09:51 IST
 
 # 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
 
