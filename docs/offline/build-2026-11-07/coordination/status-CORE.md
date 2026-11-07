@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-08 02:30 IST: CORE 10 (6c9dfc8f) hands over at a safe point (context over 250k; nothing runs; no workflow alive). tests-docs U-35 built at dfc2703 and PAUSED before its check (the 02:23 row 2.0 GB). CORE 11 first: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 02:30 IST); the launch files are in tracks/CORE/args/ (every one wf_sim OK): args_td_check.json first on a 7.0 GB row, then the PLAN-V3.md rounds
-LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
-LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
-LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs PAUSED dfc2703   # 2026-11-08 02:25 IST: U-35 built: screens 74 written, 0 skipped (37 slugs x 2 sizes, 1.29 MB, 300 DPI), the builder's gates green (browser 16/0/3, docs GREEN; logs _logs/gates/tests-docs/*-202611080218..0222*.log); the check not run yet (stopped at its start for memory). Note tracks/CORE/args/td_u35_buildnote.json. Then U-36b, the hooks round
-SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01; paused for memory); core V-11 and actions-sos V-08a next on the rows per PLAN-V3.md section 4, asked by CORE 11
-UPDATED: 2026-11-08 02:30 IST
+STATE: BUILDING   # 2026-11-08 02:52 IST: CORE 11 (c2601cf1). Running: tests-docs U-35 check wf_8b230dd4-364; the V3 scouts wf_51fbacce-d5f (tests-docs, core, actions-sos). R-C-47 (Actions.useSkill signature) to SCREENS. core and actions-sos fast-forwarded to BASE f69bc68a (02:51); each waits for its SLOTS line
+LANE: core NEW f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51; V3 scout running; waits for its SLOTS line. v1 MERGED 8e80951 (a3081f33)
+LANE: engine MERGED 84075b6   # v1 complete (3ea2e13d). V3: V-19, V-30 (T2), only when no tier 1 lane waits
+LANE: actions-sos NEW f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; V3 scout running; waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
+LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
+LANE: tests-docs CHECKING dfc2703   # 2026-11-08 02:46 IST: U-35 check (lane.js start 'check', args tracks/CORE/args/args_td_check.json, diffFrom f69bc68a); then READY-SLICE; then V-07, V-03, V-06
+SLOTS-ASKED: 2   # 2026-11-08 02:52 IST: core V-11 (the slice) and actions-sos V-08a + V-SOS10, each on its 7.0 GB row after today-track's start (R-H-38); tests-docs holds slot 5
+UPDATED: 2026-11-08 02:52 IST
+
+# 2026-11-08 02:46 IST · CORE 11 (c2601cf1-5557-49d0-a65e-b1eddd04b48d) resumes; tests-docs U-35 check
+
+- Read: this file (CORE 10's RESTART 02:30), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE f69bc68a; SLOTS-ALLOWED 2: tests-docs slot 5 held, today-track slot 6 granted 02:34), R-H-38, R-H-39 (status-layer hooks are data-test; read each file's attribute), the HUB's message 02:46. 6c9dfc8f is not listed by `claude agents`: nothing of CORE 10 runs.
+- Launched the U-35 check (lane.js, start 'check', args_td_check.json with session and now refreshed; wf_sim OK) on the 02:44 row 8.2 GB. core V-11 and actions-sos V-08a + V-SOS10 wait for their SLOTS lines.
 
 # 2026-11-08 02:30 IST · PLAN-V3.md read; the launch files renamed to its ids; CORE 10 hands over
 

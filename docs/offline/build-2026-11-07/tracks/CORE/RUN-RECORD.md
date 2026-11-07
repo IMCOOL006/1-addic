@@ -243,7 +243,17 @@
 - PLAN-V3.md (02:28) read: CORE units as in status-CORE.md's section of 2026-11-08 02:30 IST. gen5.py renamed to the plan's ids (V-11, V-16, V-17a, V-26a; V-08a, V-SOS10, V-17b, V-18, V-25; V-19, V-30; V-20); gen4.py's U-36b is V-07. args_td_check.json written for the paused U-35 check. All wf_sim OK.
 - Nothing runs: wf_3e4ac20d-750 was stopped at 02:24 before its checker; its builder's result: tracks/CORE/args/td_u35_buildnote.json. The board watch is stopped.
 
+## 2026-11-08 02:52 IST · CORE 11 (c2601cf1-5557-49d0-a65e-b1eddd04b48d) resumes; U-35 check and the V3 scouts launched
+
+- 6c9dfc8f (CORE 10) is not in `claude agents --json` at 02:45; nothing of it runs. Read R-H-38, R-H-39, the HUB's message 02:46 (run the U-35 check now), PLAN-V3.md whole, lane_args_v3.json (CORE lanes).
+- 02:46 the U-35 check wf_8b230dd4-364 (lane.js, args tracks/CORE/args/args_td_check.json with session c2601cf1 and now 02:46; wf_sim OK; the 02:44 row 8.2 GB). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_8b230dd4-364/journal.jsonl.
+- 02:50 R-C-47 to SCREENS: Actions.useSkill({skillId, helpful}) -> {ok, event} | {ok:false, code, message}, never throws (contracts/actions-sos.md section 02:50).
+- 02:51 build/core and build/actions-sos fast-forwarded 8e80951 / 7d9d557 -> f69bc68a (no merge commit; clean).
+- 02:52 the V3 scouts wf_51fbacce-d5f (inline script, three scout agents; they append a dated V3 section to tracks/CORE/briefs/<lane>.md, unit notes, the contract's V3 section; staged in C:/Users/ruchi/1-addic-wt/_logs/briefs/v3). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_51fbacce-d5f/journal.jsonl.
+
 ## Resume here
+
+- **(2026-11-08 02:52 IST) STATE BUILDING, CORE 11 (c2601cf1).** Running: wf_8b230dd4-364 (tests-docs U-35 check; PASS -> `LANE: tests-docs READY-SLICE <tip>`, R-C to the HUB, then V-07 by lane.js with lane_args_v3.json lanes.tests-docs, done = the v1 units + FIX-TOURMARK + U-35, diffFrom the slice tip) and wf_51fbacce-d5f (the V3 scouts). If c2601cf1 is gone from `claude agents --json`, both died with it: relaunch the check with args_td_check.json (fresh now and session), the scouts from the script in the journal's folder. Then: core V-11 and actions-sos V-08a + V-SOS10 on their SLOTS lines (worktrees already at f69bc68a; done = the lane's v1 units and fix rounds; diffFrom f69bc68a; sliceRun true).
 
 - **(2026-11-08 02:30 IST) STATE RESTART, CORE 10 (6c9dfc8f) gone by its own hand-over; nothing runs.** Every CORE lane is merged (tag offline-v1.1 at f69bc68, BASE f69bc68a). V3 is the program now (PLAN-V3.md; R-O-5). Watch status-HUB.md (SLOTS, rows in coordination/lane-widening.md, R-H lines) and act:
   1. **tests-docs U-35 check** (slot 5 is held): on the first row with 7.0 GB free (by hand: powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB), Workflow scriptPath tracks/HUB/workflows/lane.js with args = tracks/CORE/args/args_td_check.json (set now to the date stamp; nothing else). PASS -> `LANE: tests-docs READY-SLICE <tip>` (dfc2703 unless the fix round commits), R-C to the HUB. Then V-07: regenerate args_td_u36b.json (gen4.py "<now>" u36b <a file with the slice builder's note> <the slice tip>), wf_sim, launch; then V-03 + V-06 (the hooks round and docs; write their notes from PLAN-V3.md's tests-docs row, the same way), then V-01t after today-track V-01b merges, then the tier 2 ones.

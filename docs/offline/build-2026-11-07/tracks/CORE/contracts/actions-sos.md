@@ -185,3 +185,8 @@ Rulings on the re-review's questions:
 ## Ruling 2026-11-08 02:24 IST (CORE 10 6c9dfc8f): FIX-SPIRAL-OWN takes the additive form (V3-19)
 
 - Supersedes line 151's engine shape: each pair of Engine.spiralThoughts(view) gains `own: true|false` (true only when the reply is the person's own words; false when filled from catalogs.slipSelfTalk); `thought` and `reply` stay as they are. ui-sos.js spiralPairs needs no change (it reads reply as before and may later read own instead of its stock-line set). Reason: additive, nothing that reads reply changes (V3-IMPROVEMENTS.md V3-19).
+
+
+## 2026-11-08 02:50 IST · V3: Actions.useSkill (V-08a), published to game-tutorials (R-C-47)
+
+- `Actions.useSkill({ skillId, helpful }) -> Promise<{ ok: true, event } | { ok: false, code, message }>`; never throws; a refusal writes nothing. Writes one SkillUsed event (payload skillId, helpful; no logId) through the verb path (VERB_OWNED keeps refusing recordEvent('SkillUsed')). Refusals: skillId not an id (isId), helpful not a boolean (isBool), the notebook locked, the sample rule RS-SAMPLE. Consumer: game-tutorials V-08b (ui-tools.js:315, behind a typeof guard). Replaces the 'FIX-USE-SKILL' line above (Q4, line 175).
