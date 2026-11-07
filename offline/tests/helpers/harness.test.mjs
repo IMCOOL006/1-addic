@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { isAllowedUrl } from './launch.mjs';
 import { REASON, HOOKS } from './hooks.mjs';
 import { testArgs, SUITE } from './run-browser.mjs';
+import { seed } from '../screens.mjs';
 
 test('harness: only file, data and blob URLs are allowed', () => {
   for (const u of ['file:///C:/x/1-addic.html', 'data:image/png;base64,AA', 'blob:null/1', 'about:blank']) assert.ok(isAllowedUrl(u), u);
@@ -51,4 +52,11 @@ test('harness: a missing built file skips every test with its reason', () => {
   assert.equal(status, 0, out);
   assert.match(out, /# SKIP offline\/1-addic\.html not built/);
   assert.doesNotMatch(out, /^not ok/m);
+});
+
+// screens.mjs (C4): a fresh profile with no Settings route or no Store skips every seeded shot by name, never throws.
+test('harness: screens skips the seed by name when Settings or the Store is missing', async () => {
+  const fake = (routes, globals) => ({ evaluate: async (fn) => (typeof fn === 'function' ? routes : globals) });
+  assert.equal(await seed(fake(false, true)), 'seed: ' + REASON.route('settings'));
+  assert.equal(await seed(fake(true, false)), 'seed: ' + REASON.global('Store.view'));
 });

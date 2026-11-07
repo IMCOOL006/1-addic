@@ -228,11 +228,14 @@ const problemLines = (p, from) => [
 ].slice(from);
 
 // Settings > Your data > "Load sample data" on a fresh profile, then the tour marked skipped as the product records it.
-async function seed(page) {
+// Resolves to a skip reason (string) when the route, the button or the Store is missing, else null.
+export async function seed(page) {
+  if (!(await routeRegistered(page, 'settings'))) return 'seed: ' + REASON.route('settings');
+  const g = await missingGlobal(page, ['Store.view']);
+  if (g) return 'seed: ' + REASON.global(g);
   await F.go(page, '#/settings/data');
-  if (!(await routeRegistered(page, 'settings'))) throw new Error('seed: ' + REASON.route('settings'));
   const btn = '[data-test="load-sample"]';
-  if (!(await present(page, btn, 4000))) throw new Error('seed: ' + REASON.hook(btn));
+  if (!(await present(page, btn, 4000))) return 'seed: ' + REASON.hook(btn);
   await F.click(page, btn);
   await F.waitFor(page, () => typeof Store !== 'undefined' && Store.view.get('meta', 'sample') != null, null, 15000);
   await page.evaluate(async () => {
@@ -241,19 +244,22 @@ async function seed(page) {
     }
   });
   await F.go(page, '#/today');
+  return null;
 }
 
+// A page with its profile; s.skip holds the seed's skip reason, and every shot taken on it then skips by that name.
 async function session(browser, size, profile) {
   const { viewport, mobile } = SIZES[size];
   const s = await newPage(browser, { viewport, mobile, scale: 1 });
   await s.page.clock.setFixedTime(new Date(FIXED_NOW));
   await openApp(s.page, profile === 'fresh' ? '#/onboarding' : '#/today');
-  if (profile !== 'fresh') await seed(s.page);
+  s.skip = profile !== 'fresh' ? await seed(s.page) : null;
   return s;
 }
 
 // One picture: a skip reason (string) or null when the image was written and checked.
 async function take(s, shot, size, file) {
+  if (s.skip) return s.skip;
   const { page } = s;
   const route = typeof shot.route === 'function' ? await shot.route(page) : shot.route;
   if (!route) return 'content for ' + shot.slug + ' absent';
