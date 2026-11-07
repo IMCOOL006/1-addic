@@ -1439,5 +1439,19 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     S().lock.lockNow();
     assert.equal(O.shouldOnboard(route('/'), S()), false, 'locked: never');
   });
+  test('EMO: sosSession keeps an optional emotion, rated or not; without one the log has none; an unknown one is refused', async () => {
+    const id = C().emotions.find((e) => e && e.crisisCheck !== true && e.id !== 'other').id;
+    await Actions.sosSession({ kind: 'feeling', emotion: id, tools: [] });
+    await Actions.sosSession({ kind: 'feeling', emotion: id, ratingAfter: 3, tools: [] });
+    await Actions.sosSession({ kind: 'feeling', tools: [] });
+    const logs = list('logs');
+    assert.deepEqual(logs.slice(0, 2).map((l) => l.emotion), [id, id], 'unrated and rated keep the feeling');
+    assert.ok(logs.slice(0, 2).every((l) => Array.isArray(l.feelings) && l.feelings.includes(id)));
+    assert.ok(!logs[2].emotion, 'no emotion given: none kept');
+    assert.equal(events('SosCompleted').length, 3);
+    await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling', tools: [] }), 'bad-session');
+    await Actions.sosSession({ kind: 'feeling', emotion: id, tools: [], drill: true });
+    assert.equal(list('logs').length, 3, 'a drill writes no log');
+  });
   // -- FIX-ONB-EMO tests end --
 });
