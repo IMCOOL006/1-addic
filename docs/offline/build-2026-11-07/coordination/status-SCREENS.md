@@ -1,12 +1,28 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 04:06 IST: two SCREENS lane runs live: today-track V-01b wf_ccfdc4d0-2ae (slot 6) and content V-10 slice wf_02dbd88e-f4a (slot 4, granted 04:02, launched 04:06 from BASE 3bd5bf5d). game-tutorials waits for a later 7.0 GB row
+STATE: BUILDING   # 2026-11-08 04:12 IST: today-track READY da9bb6b (V-01b; check PASS, no findings) for the HUB; V-43 waits for that merge and then a fast-forward to the new trunk, so it builds on the real engine V-40. content V-10 slice wf_02dbd88e-f4a running (slot 4)
 LANE: content BUILDING 3bd5bf5d   # V3 V-10 slice wf_02dbd88e-f4a (slot 4, 04:06; worktree fast-forwarded 680f850..3bd5bf5d with --ff-only, no merge commit; package.json gained only the screens script); then V-42 on R-C-50 with the real validator (engine V-40 in the trunk), V-23 (T2), V-10b (I6). v1: MERGED 680f850
-LANE: today-track BUILDING 127509e   # V3 V-01a MERGED 37d1a53c (03:37, HUB 10; slice 127509e). V-01b BUILDING wf_ccfdc4d0-2ae (03:31, slot 6, diffFrom and merge base 127509e; closes C1, C2); then V-43
+LANE: today-track READY da9bb6b   # V3 V-01b: 90bab1c, 99a0c8c, da9bb6b on 127509e (wf_ccfdc4d0-2ae; check PASS, no findings; C1, C2 closed); merge base 127509e; V-01a MERGED 37d1a53c; next V-43 (brief annex) after this merge
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:06 IST
+UPDATED: 2026-11-08 04:12 IST
+
+# 2026-11-08 04:12 IST · today-track READY da9bb6b (V-01b, for the HUB)
+
+- For the HUB: merge build/today-track at da9bb6b. Merge base 127509e (already in the trunk at 37d1a53c). Three commits:
+  - 90bab1c: what just changed, the 14-day strip, what to watch, the way in from Today.
+  - 99a0c8c: the CSS inside the lane's one V3 block; closes C1.
+  - da9bb6b: a redraw while Your Harbor is on screen keeps the change it showed.
+  - 6 files, +342/-12. Territory 127509e..da9bb6b: 5 own, 1 shared at its append point (styles.css, inside the existing V3 block at :694-725, no new banner pair), 0 errors (check_territory, run by me).
+- Gates. Check wf_ccfdc4d0-2ae: PASS, no findings. Builder's logs C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/*-20261108-0402*:
+  - build GREEN 1142915 B; test GREEN 51/51 (status.test.mjs and today-track.test.mjs); validate GREEN; guards GREEN.
+  - browser GREEN, exit 0: pass 16, fail 0, skip 3 (sos-reassess-passed, sos-reassess-still, quicklog-button), the same names as at the base.
+- C2 closed: contracts/today-track-v3.md now has a 'V-01b as built' section (exports TEXT, model, diff, nextStep, placeLines, strip; ticks; the new hooks).
+- R-S-23 to CORE (tests-docs): the new hooks track-radar, track-radar-link, and data-own on status-watch-item.
+- One test change outside the new code: today-track.test.mjs's 'no dead button' accepts #/status, which ui-status.js registers through UI.pages (ui-core.js unchanged).
+- Verified by me: the three commits with both trailers each, the territory check, the browser log's lines and verdict, the test log's 51/51, and the CSS banner lines (383/465 v1, 694/725 V3; no third pair). offline/1-addic.html restored; the worktree is clean. Assumed: validate and guards as the logs' verdict lines say.
+- Report: tracks/SCREENS/lane-reports/today-track.md (19860 B).
 
 # 2026-11-08 04:06 IST · content V-10 slice running (wf_02dbd88e-f4a, slot 4)
 

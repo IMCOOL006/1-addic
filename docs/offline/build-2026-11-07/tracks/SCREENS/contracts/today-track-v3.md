@@ -26,3 +26,9 @@ Behaviour rules the others rely on: SkillUsed raises its region's level at thres
 - `Engine.gameState` engine.js:474, `mastery` :255, `momentum` :288, `explorer` :616, `explorerDone` :638, `quests` :660, `nextLesson` :581, `roadmap` :546, `warningSigns` :989 (`[{signId,label,evidence,plan,own}]`), `revealed` :585.
 - `UI.pages`, `UI.sheet(title, body, opts)` ui-core.js:169, `UI.h`, `UI.svg`, `UI.ctx` :587, `pageKey` :561; `Content.masteryThresholds` content-core.js:124.
 - Waiting on others: `Content.features.status` and its tutorial/help (content V-10); tour step and dot wiring (game-tutorials V-28); `helpers/hooks.mjs` entries and browser tests (tests-docs V-03, V-01t, after V-01b merges). None blocks this lane.
+
+## V-01b as built (da9bb6b, 2026-11-08 04:12 IST; closes the slice's C2)
+- StatusUI pure exports (StatusUI.PURE and module.exports): TEXT, model, diff, nextStep, placeLines, strip. strip(dates, now) -> 14 objects {date, active, label}, oldest first (V-01b). model(gs, extra) also returns the additive ticks {explorer, quests}, which diff reads. The non-pure names are page, watchCard, EXPLORER_HREF and _reset (tests only).
+- The diff since the last draw keeps the visit's base model while the page's last root node is still connected. A redraw after a Store change keeps the change it showed. Only rises new since the previous draw get hb-grew.
+- Hooks live (data-test): status-change, status-change-item[data-kind], status-strip, status-strip-day[data-date][data-active], status-watch, status-watch-item[data-sign][data-own], today-status, today-harbor-go. New beyond section 3: track-radar (the #/track/radar page) and track-radar-link (on Track home once the radar is revealed). data-tour: status-scene, status-change, status-watch, status-open.
+- Today's chip calls GuidanceUI.dot('status', ctx) only when Content.features.status exists (content V-10).

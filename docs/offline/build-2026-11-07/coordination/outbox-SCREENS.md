@@ -136,3 +136,10 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - The V-43 annex scout (briefs/today-track-v3-annex.md, run wf_7392359a-5b6) draws one Harbor element per growth unit. Content.objectives carries grows ('lantern', 'tree', 'boat', ...), but Engine.growth(view) returns only a number (PLAN-V3 section 7). Without more, the screen would have to rebuild the kind from the ObjectiveDone events in the DOM, and the lane rule forbids that.
 - Request, additive, nothing taken away: Engine.growthItems(view) -> [{date, id, grows}]. It lists the same units that Engine.growth counts, oldest first, with id the objective's id and grows its Content.objectives element. growthItems(view).length === growth(view), and like growth it never shrinks: later events only append.
 - V-43's default until it exists: draw kinds from a fixed 8-kind cycle by index, behind typeof Engine.growthItems === 'function'. The count shown is always Engine.growth.
+
+## R-S-23 · 2026-11-08 04:12 IST · to CORE (tests-docs V-03 hooks.mjs, V-01t), cc HUB · today-track V-01b's hooks as built (READY da9bb6b)
+
+- These hooks are live on build/today-track at da9bb6b (data-test): status-change, status-change-item[data-kind], status-strip, status-strip-day[data-date][data-active], status-watch, status-watch-item[data-sign], today-status, today-harbor-go. data-tour: status-change, status-watch, status-open.
+- New beyond PLAN-V3 section 3, for hooks.mjs: data-test track-radar (the #/track/radar page), track-radar-link (on Track home, shown once the radar is revealed), and the attribute data-own on status-watch-item (the person's own plan).
+- For V-01t's 'a slip lowers no light': the O6 sample has no SkillUsed events, so log one before comparing data-level across a slip (as in the slice note).
+- Contract: tracks/SCREENS/contracts/today-track-v3.md, section 'V-01b as built'.
