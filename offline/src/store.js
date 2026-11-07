@@ -112,6 +112,12 @@ const Store = (function () {
     if (isBrowser()) await sleep(Math.min(250 * state.fails, 2000));
     return false;
   }
+  // Two tabs of the file share the storage. Each write carries the lock row its tab knows, and the backend refuses
+  // it when the stored one differs (another tab set, changed or removed the PIN): no tab then writes plain rows beside
+  // a lock, seals a row under an old key or drops the lock row (RC2, RS3).
+  const lockOf = (all) => ((all && Array.isArray(all.meta) ? all.meta : []).find((r) => r && r.key === 'lock' && r.salt && r.check) || null);
+  const lockId = (L) => (L && L.salt && L.check ? String(L.salt) + '|' + JSON.stringify(L.check) : '');
+  const stale = () => fail('STALE', 'Another tab changed the lock.');
   async function sealAll(rows, key) {
     const jobs = [];
     for (const n of NAMES) for (const [id, row] of rows[n]) jobs.push(stored(key, n, id, row).then((r) => [n, id, r]));
@@ -168,15 +174,20 @@ const Store = (function () {
     return o;
   }
 
-  // Memory, or memory mirrored whole into the snapshot on every write. A failed save changes nothing.
+  // Memory, or memory mirrored whole into the snapshot on every write. A failed save changes nothing. Another tab may
+  // have saved since, so with a snapshot every read and every write starts again from it.
   function mirror(ls) {
     const m = blank();
+    function seed(all) {
+      for (const n of NAMES) for (const r of Array.isArray(all[n]) ? all[n] : []) if (r && typeof r[STORES[n]] === 'string') m[n].set(r[STORES[n]], r);
+    }
+    const again = () => { if (!ls) return; Object.assign(m, blank()); const s = readSnapshot(ls); if (s) seed(s); };
     return {
-      seed(all) {
-        for (const n of NAMES) for (const r of all[n] || []) if (r && typeof r[STORES[n]] === 'string') m[n].set(r[STORES[n]], r);
-      },
-      async readAll() { return listAll(m); },
+      seed,
+      async readAll() { again(); return listAll(m); },
       async write(w) {
+        again();
+        if ('expect' in w && lockId(lockOf(listAll(m))) !== lockId(w.expect)) throw stale();
         const next = Object.assign({}, m);
         const open = (n) => { if (next[n] === m[n]) next[n] = new Map(w.clear ? [] : m[n]); return next[n]; };
         if (w.clear) for (const n of NAMES) open(n);
@@ -221,12 +232,24 @@ const Store = (function () {
       },
       // Every touched row goes in ONE transaction. Rows are sealed before it opens: IndexedDB ends a transaction that
       // waits on anything else.
+      // The stored lock row is read inside the same transaction, so no other tab can change it between the check and
+      // the write.
       write(w) {
+        let refused = false;
         return tx('readwrite', (t) => {
-          if (w.clear) for (const n of NAMES) t.objectStore(n).clear();
-          for (const [n, id] of w.dels) t.objectStore(n).delete(id);
-          for (const [n, , row] of w.puts) t.objectStore(n).put(row);
-        });
+          const apply = () => {
+            if (w.clear) for (const n of NAMES) t.objectStore(n).clear();
+            for (const [n, id] of w.dels) t.objectStore(n).delete(id);
+            for (const [n, , row] of w.puts) t.objectStore(n).put(row);
+          };
+          if (!('expect' in w)) { apply(); return; }
+          const g = t.objectStore('meta').get('lock');
+          g.onsuccess = () => {
+            if (lockId(g.result) === lockId(w.expect)) { apply(); return; }
+            refused = true;
+            t.abort();
+          };
+        }).catch((e) => { throw refused ? stale() : e; });
       },
       erase() { return this.write({ clear: true, puts: [], dels: [] }); },
     };
@@ -324,8 +347,12 @@ const Store = (function () {
   }
   async function write(w) {
     try {
-      await state.backend.write(w);
+      await state.backend.write(Object.assign({ expect: state.lock }, w));
     } catch (e) {
+      if (e && e.code === 'STALE') {
+        try { await resync(); } catch (err) { /* the next write asks again */ }
+        throw fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
+      }
       const f = fail('WRITE_FAILED', 'This could not be saved on this device.');
       f.cause = e;
       throw f;
@@ -571,9 +598,26 @@ const Store = (function () {
     });
   }
 
+  // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
+  // lock is stored.
+  async function resync() {
+    const all = await state.backend.readAll();
+    const L = lockOf(all);
+    state.epoch += 1;
+    state.key = null;
+    disarm();
+    state.lock = L ? clone(L) : null;
+    state.locked = !!L;
+    state.rows = L ? blank() : await decode(all, null);
+    if (L) call(state.lockSubs, { reason: 'auto' });
+    notify(L ? 'lock' : 'unlock');
+  }
+
   function unlock(pin) {
     return run(async () => {
       await load();
+      // The stored lock row decides: another tab may have changed the PIN since this tab loaded.
+      if (state.locked && lockId(lockOf(await state.backend.readAll())) !== lockId(state.lock)) await resync();
       if (!state.lock) return false;
       const key = await keyFor(pin);
       if (!key) return refused();

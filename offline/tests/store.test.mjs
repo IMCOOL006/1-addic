@@ -623,13 +623,14 @@ function fakeIndexedDB() {
       close() {},
       transaction(names, mode) {
         for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
-        const t = { error: null };
+        const t = { error: null, aborted: false, abort() { t.aborted = true; } };
         const ops = [];
         const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
         t.objectStore = (n) => {
           const st = rec.stores.get(n);
           return {
             getAll: () => request(() => Array.from(st.rows.values()).map(cp)),
+            get: (id) => request(() => (st.rows.has(id) ? cp(st.rows.get(id)) : undefined)),
             put: (row) => request(() => { st.rows.set(row[st.keyPath], cp(row)); }),
             delete: (id) => request(() => { st.rows.delete(id); }),
             clear: () => request(() => { st.rows.clear(); }),
@@ -637,7 +638,8 @@ function fakeIndexedDB() {
         };
         setTimeout(() => {
           if (fake.failWrites && mode === 'readwrite') { t.error = new Error('QuotaExceededError'); t.onerror && t.onerror(); return; }
-          for (const op of ops) op();
+          for (const op of ops) { if (t.aborted) break; op(); }
+          if (t.aborted) { t.onabort && t.onabort(); return; }
           t.oncomplete && t.oncomplete();
         }, 0);
         return t;
@@ -1013,5 +1015,61 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(await R.lock.unlock('2468'), true);
     assert.equal(R.view.get('profile', 'me').name, 'Asha ' + MARK);
     assert.equal(R.view.count('events'), 2);
+  });
+
+  test('RC2, RS3: two tabs on one storage: a tab that has not seen the PIN set, changed or removed writes nothing', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    const B = freshStore(); // the same file in a second tab, opened before the PIN is set
+    await B.load();
+    const heard = [];
+    B.lock.onLock((i) => heard.push(i.reason));
+    await A.lock.set('2468');
+    const backup = { app: '1-addic', schemaVersion: 1, stores: { events: [{ id: 'b1', type: 'CravingLogged', note: MARK }] } };
+    await assert.rejects(B.replaceAll(backup), (e) => e.code === 'LOCKED');
+    assert.ok(idb.rows('meta').some((r) => r.key === 'lock'), 'the lock row stays');
+    assert.deepEqual(idb.rows('events').map((r) => r.id).sort(), ['e1', 'e2']);
+    assert.ok(!idb.dump().includes(MARK), 'no plain row beside the lock');
+    assert.equal(B.status().locked, true, 'the second tab takes the stored lock');
+    assert.deepEqual(heard, ['auto']);
+    assert.equal(await B.lock.unlock('2468'), true);
+    assert.equal(B.view.get('profile', 'me').name, 'Asha ' + MARK);
+    await A.lock.set('1357'); // the PIN changed in the first tab
+    await assert.rejects(B.commit('t', (d) => d.put('events', { id: 'e3', type: 'CravingLogged' })), (e) => e.code === 'LOCKED');
+    assert.equal(idb.rows('events').length, 2, 'no row sealed under the old key');
+    B.lock.lockNow();
+    A.lock.lockNow();
+    const C = freshStore(); // a third tab, loaded now
+    await C.load();
+    await A.lock.unlock('1357');
+    await A.lock.set('9753'); // changed again while the other tabs are locked
+    assert.equal(await C.lock.unlock('9753'), true, 'a locked tab reads the stored lock before it opens');
+    assert.equal(C.view.count('events'), 2);
+    assert.equal(await A.lock.remove('9753'), true); // the PIN removed in the first tab
+    await assert.rejects(C.commit('t', (d) => d.put('events', { id: 'e4', type: 'CravingLogged', note: MARK })), (e) => e.code === 'LOCKED');
+    assert.equal(idb.rows('events').length, 2, 'nothing written under a removed lock');
+    assert.equal(C.status().hasLock, false, 'that tab now knows there is no PIN');
+    assert.equal(C.view.get('profile', 'me').name, 'Asha ' + MARK);
+
+    delete globalThis.indexedDB; // the fallback: the snapshot is shared the same way
+    globalThis.indexedDB = fakeIndexedDB();
+    globalThis.indexedDB.failOpen = true;
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const D = freshStore();
+    await D.load();
+    await addRows(D);
+    const E = freshStore();
+    await E.load();
+    assert.equal(E.status().persistence, 'localstorage');
+    await D.lock.set('2468');
+    await assert.rejects(E.commit('t', (d) => d.put('events', { id: 'e5', type: 'CravingLogged', note: MARK })), (e) => e.code === 'LOCKED');
+    assert.ok(!ls.getItem('1-addic:snapshot').includes(MARK), 'the snapshot holds no plain row beside the lock');
+    assert.equal(E.status().locked, true);
+    assert.equal(await E.lock.unlock('2468'), true);
+    await E.commit('t', (d) => d.put('events', { id: 'e6', type: 'CravingLogged' }));
+    assert.equal(await D.lock.unlock('2468'), true);
+    assert.equal(JSON.parse(ls.getItem('1-addic:snapshot')).stores.events.length, 3, 'a write keeps what the other tab saved');
   });
 });
