@@ -2286,6 +2286,10 @@ const UI = (function () {
       body = [h('p', { class: 'field-label', id: id + '-label', text: f.label || f.name }), hint, input];
       input.setAttribute('aria-labelledby', id + '-label');
       input.setAttribute('aria-describedby', described);
+      // The group cannot take the focus: its chosen chip, or else its first, does; the group carries the mark (RC12).
+      const group = input;
+      const chip = () => { const kids = Array.from(group.children || []); return kids.find((c) => c.getAttribute('aria-pressed') === 'true') || kids[0] || null; };
+      return finish(f, null, body.concat(err), get, set, err, { focus: () => { const c = chip(); if (c && c.focus) c.focus(); } }, group);
     } else if (t === 'slider') {
       const min = f.min != null ? f.min : 0;
       const max = f.max != null ? f.max : 10;
@@ -2319,10 +2323,10 @@ const UI = (function () {
     return finish(f, null, body.concat(err), get, set, err, input);
   }
 
-  function finish(f, lead, rest, get, set, err, focusEl) {
+  function finish(f, lead, rest, get, set, err, focusEl, ctl) {
     const el = h('div', { class: 'field field-' + (f.type || 'text'), dataset: { name: f.name } }, lead, rest);
     if (f.value !== undefined && f.type !== 'slider' && f.type !== 'chips') set(f.value);
-    return { name: f.name, field: f, el, get, set, err, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
+    return { name: f.name, field: f, el, get, set, err, ctl: ctl || null, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
   }
 
   function form(spec) {
@@ -2340,7 +2344,7 @@ const UI = (function () {
       x.err.textContent = msg || '';
       x.err.hidden = !msg;
       x.el.classList.toggle('invalid', !!msg);
-      const ctl = x.el.querySelector('input, select, textarea');
+      const ctl = x.el.querySelector('input, select, textarea') || x.ctl; // a chips group holds no input (RC12)
       if (ctl) { if (msg) ctl.setAttribute('aria-invalid', 'true'); else ctl.removeAttribute('aria-invalid'); }
     };
     const validate = () => {

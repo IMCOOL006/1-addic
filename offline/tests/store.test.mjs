@@ -978,6 +978,23 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
   });
 
+  test('RC12: UI.form: a required chips field is marked on its group and a chip takes the focus', () => {
+    setup();
+    findIn(globalThis.document);
+    const f = UI.form({ fields: [
+      { name: 'feel', type: 'chips', label: 'Feeling', required: true, options: [{ value: 'calm', label: 'Calm' }, { value: 'tense', label: 'Tense' }] },
+    ] });
+    const field = f.el.children.find((e) => e.dataset.name === 'feel');
+    const group = field.all().find((e) => e.getAttribute('role') === 'group');
+    assert.equal(f.validate(), false);
+    assert.equal(group.getAttribute('aria-invalid'), 'true', 'the group is marked invalid');
+    assert.equal(document.activeElement && document.activeElement.tagName, 'BUTTON', 'a chip takes the focus');
+    assert.equal(document.activeElement.textContent.trim(), 'Calm');
+    f.set('feel', ['tense']);
+    assert.equal(f.validate(), true);
+    assert.equal(group.getAttribute('aria-invalid'), null, 'no longer marked');
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
