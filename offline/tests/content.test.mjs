@@ -1,5 +1,6 @@
 // Lane content's Node tests (node:test, no dependencies). U-31a: the M0-M3 exercises of BUILD-PLAN 3.8 and the
 // checkpoint, the content-core safety asks (R-C-13, R-C-18), and Engine.validateContent over the loaded content.
+// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -151,4 +152,76 @@ test('content: R-C-13 safety asks and R-C-18', () => {
   }
   const labeling = C.catalogs.distortions.find((d) => d.id === 'labeling');
   assert.ok(!/\baddicts?\b/i.test(labeling.example), 'the labelling example has no noun');
+});
+
+// U-31b: the rest of the 3.8 list, the m4-m10 checkpoint questions and the payload keys the Engine reads.
+const ALL_IDS = M0_M3_IDS.concat(['clear-space', 'exercise-plan', 'network-review', 'assertive-script', 'expand-network',
+  'should-i-go', 'triggers', 'red-flags', 'trap-pairs', 'spiral', 'craving-signature', 'trial', 'cog-vs-beh', 'distractions',
+  'body-scan', 'breathing', 'everyday-mindful', 'sober-practice', 'used-to-enjoy', 'should-want', 'activity-menu', 'obstacles',
+  'rewards', 'anger-signature', 'rewrite-scene', 'warning-signs', 'slip-review']);
+const PRACTICE_IDS = ['breathe', 'body-scan', 'sober', 'urge-surf', 'shower', 'eating', 'walking', 'beat'];
+
+test('content: every exercise of the 3.8 list is in Content.exercises', () => {
+  for (const id of ALL_IDS) assert.ok(byId(id), `${id} is in Content.exercises`);
+});
+
+test('content: every exercise id used by a lesson resolves', () => {
+  const tried = C.modules.flatMap((m) => m.lessons || []).filter((l) => l.tryIt && l.tryIt.exercise);
+  for (const l of tried) assert.ok(byId(l.tryIt.exercise), `${l.id}: tryIt.exercise ${l.tryIt.exercise} resolves`);
+  const routed = strings(C.modules).filter((s) => s.startsWith('#/exercise/')).map((s) => s.split('?')[0].slice(11));
+  for (const id of routed) assert.ok(byId(id), `route #/exercise/${id} resolves`);
+});
+
+test('content: example answers pick real options unless the field takes custom ones', () => {
+  for (const ex of exercises().filter((x) => x.id !== 'checkpoint')) {
+    for (const f of ex.fields) {
+      if (!['check', 'single'].includes(f.type) || f.allowCustom || !(f.id in ex.tutorial.example.values)) continue;
+      const ids = new Set((X ? X.optionsFor(f, null, C) : (f.options || [])).map((o) => o.id));
+      if (!ids.size) continue;
+      for (const v of [].concat(ex.tutorial.example.values[f.id])) assert.ok(ids.has(v), `${ex.id}.${f.id}: ${v} is an option`);
+    }
+  }
+});
+
+test('content: checkpoint has two questions for each of m4-m10, every option with a why and one helpful', () => {
+  const cp = byId('checkpoint');
+  for (const m of ['m4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10']) {
+    const qs = cp.modules[m];
+    assert.equal(qs.length, 2, `${m}: two questions`);
+    for (const q of qs) {
+      assert.ok(q.q && q.options.length >= 2 && q.options.every((o) => o.t && o.why && typeof o.ok === 'boolean'), `${m}: {q, options:[{t, ok, why}]}`);
+      assert.equal(q.options.filter((o) => o.ok).length, 1, `${m}: one helpful reading`);
+    }
+  }
+});
+
+test('content: the practice exercises name a Content.practices id and end with a helpful rating', () => {
+  for (const id of ['body-scan', 'breathing', 'everyday-mindful', 'sober-practice']) {
+    const ex = byId(id);
+    assert.equal(ex.kind, 'practice', `${id}: kind practice`);
+    assert.ok(ex.fields.some((f) => f.id === 'helpful' && f.type === 'rating'), `${id}: helpful rating`);
+    if (ex.practice) assert.ok(PRACTICE_IDS.includes(ex.practice), `${id}: practice ${ex.practice}`);
+  }
+  const which = byId('everyday-mindful').fields.find((f) => f.id === 'which').options.map((o) => o.id);
+  assert.deepEqual(which, ['shower', 'eating', 'walking']);
+});
+
+test('content: the field ids the Engine reads from M4-M10 responses', () => {
+  const ids = (id) => byId(id).fields.map((f) => f.id);
+  assert.ok(ids('trial').includes('thought') && ids('trial').includes('comeback'), 'trial thought/comeback');
+  assert.ok(ids('distractions').includes('distractions'), 'distractions');
+  assert.ok(ids('spiral').includes('thoughts') && ids('spiral').includes('replies'), 'spiral thoughts/replies');
+  for (const g of Object.keys(C.catalogs.triggers)) assert.ok(ids('triggers').includes(g), `triggers.${g}`);
+  assert.ok(ids('triggers').includes('frequent') && ids('triggers').includes('anger'), 'triggers frequent/anger');
+  const top = byId('warning-signs').fields.find((f) => f.id === 'top');
+  assert.equal(top.type, 'topN');
+  assert.equal(top.source, 'signs');
+  assert.ok(ids('slip-review').includes('support') && ids('expand-network').includes('support'), 'support');
+  assert.ok(ids('activity-menu').includes('wantTos'), 'activity-menu wantTos');
+});
+
+test('content: slip, anger and warning-sign exercises carry clinicalReview; slip-review is sensitive', () => {
+  for (const id of ['anger-signature', 'rewrite-scene', 'warning-signs', 'slip-review']) assert.equal(byId(id).clinicalReview, true, id);
+  assert.equal(byId('slip-review').sensitive, true);
+  assert.ok(!strings(exercises()).some((s) => /\breset/i.test(s)), 'no reset wording');
 });
