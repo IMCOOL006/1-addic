@@ -1,7 +1,8 @@
 ## engine (CORE, 1-addic offline build): the lane report
 
-State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base 655516dc. Tip 227a07a. Run time 2026-11-07 14:34 IST. (Earlier: READY-SLICE at 04fc0c1, 2026-11-07 07:29 IST.)
-Commits (655516dc..HEAD), 2026-11-07 14:34 IST:
+State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base 655516dc. Tip 57153d3. Run time 2026-11-07 16:36 IST (CONTINUED from 227a07a; FIX-RS4 built, check PASS). (Earlier: READY at 227a07a, 14:34 IST; READY-SLICE at 04fc0c1, 2026-11-07 07:29 IST.)
+Commits (655516dc..HEAD), 2026-11-07 16:36 IST:
+- 57153d3 test(engine, FIX-RS4): tryIt and knownRoute tests pass with and without Content.exercises
 - 227a07a feat(engine, U-08): export, import, migrate, .ics, AppError, validateContent
 - f269942 feat(engine, U-07): insights, radar, planner, review, SOS guide sequence, crisis keywords
 - b14c9a0 fix(engine, R-sample and R-outcome): CORE rulings of 10:45 built by name
@@ -12,6 +13,7 @@ Commits (655516dc..HEAD), 2026-11-07 14:34 IST:
 ### Turn caps
 - 07:29 run: builder [U-05]: steps_used 17, returned a note (yes). capHits 0.
 - 14:34 run: builder [U-07]: steps_used 24, note yes. Builder [U-08]: steps_used 17, note yes. capHits 0. (U-06 was built by the run before, stopped at the HUB's 10:42 pause.)
+- 16:36 run: builder [FIX-RS4]: steps_used 13, note yes. capHits 0.
 
 ### Units
 - U-05 (tier 1, built, 04fc0c1; files offline/src/engine.js, offline/tests/logic.test.mjs). For a person: nothing on a screen yet. The engine now computes from the append-only events the XP, skill mastery, six Harbor region lights, 14-day momentum, rank, 13 badges, lessons and modules done, and opt-in day counters (total, current run, milestones), which Today, the Harbor and Insights will show.
@@ -25,6 +27,7 @@ Commits (655516dc..HEAD), 2026-11-07 14:34 IST:
   Questions closed: crisisKeywords returns the matched phrases (string[]), not a boolean (10:45 ruling); guideSequence always starts with 'wave' because SOBER breathing runs inside the wave tool; 'I killed that workout' does not trigger.
 - U-08 (tier 1, built, 227a07a; offline/tests/engine-data.test.mjs). For a person: the backup file export, import checks (plain-language errors), older-backup migration and .ics calendar files are ready to be wired by Settings. validateContent returns [] on the base (validate gate GREEN).
   Questions closed: a string that is wholly one quotation is not the app's voice, so the person's own thought at content-core.js:323 ("I slipped, so I'm a hopeless addict.") passes; a quoted word inside a sentence still fails (see C3). npm test needs no change: build/offline-v1 scripts.test already runs every offline/tests/*.test.mjs; run in this worktree, 102/102 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__npm-test-proof.log).
+- FIX-RS4 (tier 1, built, 57153d3, 16:36; offline/tests/engine-data.test.mjs, 3 lines added, 2 removed). For a person: nothing changes; tests only, no src. R-S-4 closed: the tryIt test deletes exercises from its clone before the 'waits' half; the knownRoute test uses the real id #/exercise/quick-reasons and asserts #/exercise/not-one is unknown only when Content.exercises is present (under Node engine.js loads content-exercises.js into the cached content module, so trunk 9b319256 has it, this branch does not). Against the trunk archive the file runs 15/15 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__FIX-RS4.trunk.log).
 - Held or blocked: none.
 - Still to build on this lane: none.
 
@@ -41,13 +44,21 @@ All on `Engine` (browser global; require('offline/src/engine.js') under Node). N
   - Engine.sosOutcome (R-outcome).
 
 ### Gates
+VERIFIED (check run at 57153d3, 16:36 IST):
+- test GREEN, 102 pass, 0 fail, 4 files. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261107-164216.log
+- validate GREEN, 1 pass. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261107-164218.log
+- guards GREEN, 2 pass, 3 skip (no build.mjs, styles.css, ui files). log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261107-164218.log
+- build SKIP: build.mjs absent. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261107-164216.log
+ASSUMED (16:36): browser gate not run (no browser tests); trunk evidence is only the builder's archive run, not the full suite on the merged tree.
+Earlier block:
 VERIFIED (check run at 227a07a, 14:34 IST):
 - test GREEN, 102 pass, 0 fail across 4 files. log C:\Users\ruchi\1-addic-wt\_logs\gates\engine\test-20261107-151456.log
 - validate GREEN, validateContent returns [] on the base (errors=0). log C:\Users\ruchi\1-addic-wt\_logs\gates\engine\validate-20261107-151459.log
 - guards GREEN, 2 pass (csp, theme parity, tutorial targets skipped: no build, styles.css or ui-*.js). log C:\Users\ruchi\1-addic-wt\_logs\gates\engine\guards-20261107-151501.log
 - build SKIP: offline/build.mjs absent on the branch, as in the baseline. log C:\Users\ruchi\1-addic-wt\_logs\gates\engine\build-20261107-151456.log
 - Earlier (04fc0c1): test GREEN 33 (test-20261107-073550.log), guards GREEN (guards-20261107-073553.log), build SKIP, validate SKIP.
-ASSUMED: browser and docs gates do not apply to this lane (no browser tests; the brief says so). Not run: npm test through package.json on the branch (none at 655516dc); the builder's proof is engine__npm-test-proof.log.
+ASSUMED: browser and docs gates do not apply to this lane (no browser tests; the brief says so). Not run: npm test through package.json on the branch (none at 655516dc); the builder's proof is engine__npm-test-proof.log, engine__FIX-RS4.trunk.log.
+Territory (16:36 IST): engine 655516dc..HEAD: 5 files, all the lane's own, 0 shared, 0 nobody's, 0 errors, no warnings; since 227a07a only offline/tests/engine-data.test.mjs; no src change. 57153d3 carries both trailers.
 Territory (14:34 IST): check_territory engine 655516dc..HEAD: 5 files, all the lane's own (engine.js, logic.test.mjs, engine-data, engine-insights, engine-roadmap tests); 0 shared, 0 nobody's, 0 errors, no warnings. No package.json, build.mjs, content or browser-test edits. No logs, node_modules or scratch in the commits after 04fc0c1. All five commits carry both trailers.
 
 ### Review gates
@@ -62,6 +73,8 @@ None. Not a flagged lane (reviewGates empty).
 - C3 LOW (U-08, engine.js:1427,1470 WHOLE_QUOTE_RE; base text content-core.js:323): the tone rule says never "addict" as a noun; validateContent skips any string wholly one quotation, so any future quoted line passes the same way. Deliberate builder exemption, asserted at engine-data.test.mjs:256-262. No fix SHA; open, for the content owner to confirm.
 - C4 LOW (U-07, contracts/engine.md:26,44; brief engine.md:54): the contract still says crisisKeywords returns boolean and the brief says SOBER always present; code returns string[] and puts 'wave' first. No code fix; CORE to write the contract change above. Evidence: engine.js:1164-1200; engine-insights.test.mjs:264-304.
 Not checked: browser gate; npm test through package.json; line-by-line review of U-06 artifact and prefill helpers (spot-checked only); clinical review of CRISIS_PATTERNS (needs the clinical reviewer; compared only with the RS2/RS10 lists, which it covers).
+2026-11-07 16:36 IST: Verdict PASS at 57153d3 (judged commits after 227a07a). U-05 to U-08 present, unchanged since the earlier run. FIX-RS4 present, both R-S-4 fixes done. No findings (none open, none fixed).
+Not checked (16:36): browser gate; U-05 to U-08 again; the full suite on the trunk tree after merge; product rules (tests only, no src).
 
 ### Review
 Not a flagged lane: no reviewers run. Open review findings: 0.
@@ -72,11 +85,13 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 ### Requests for other lanes
 - actions-sos: use Engine.guideSequence and Engine.SOS_TOOLS, and crisisKeywords as string[].
 - workbook-settings: call validateBackup before migrateBackup; pass meta to exportBackup.
+- HUB: at the merge lift the two baselined names (engine-data 'validateContent: the tryIt exercise check waits for Content.exercises, then runs' and 'knownRoute: the 3.5 route table, by path').
 - CORE: write the U-07 and U-08 contract lines above into contracts/engine.md (C4).
 
 ### Docs owed
 - tracks/CORE/contracts/engine.md (the lane cannot write there): the 07:29 notes (counters.total counts COMPLETED local dates; a banked day stays counted; current is the only number a slip restarts; reached milestones never un-reach; no XP for days; SkillUsed.helpful boolean, reader accepts true/false and 0/1; xpFromEvents.byType lists XP types only; events parameters accept a view) plus the 14:34 Contract changes above.
 - validateContent skips the tryIt-exercise check while Content.exercises is absent.
+- FIX-RS4: none owed.
 - offline/README.md, the guide, CLAUDE.md lines: none owed.
 
 ### Open questions
@@ -94,5 +109,6 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 - Conflicts to expect: none; only offline/src/engine.js and the tests logic.test.mjs, engine-data, engine-insights, engine-roadmap.
 - Territory warnings: none.
 - Browser tests for the quiet window: none from this lane.
+- FIX-RS4 is test-only: passes on the branch (102) and against trunk 9b319256 content (15/15 in engine-data); lift the two baselined names.
 - After merge run npm test on build/offline-v1 (102 expected).
 - Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__units.md, engine__progress.md, engine__npm-test-proof.log.
