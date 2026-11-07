@@ -1,0 +1,43 @@
+{
+ "lane": "game-tutorials",
+ "chat": "SCREENS",
+ "tier": 2,
+ "flagged": false,
+ "area": "The guidance engine (coach marks, tours, tutorials, tips, reveal), the game surfaces, and the tools and mini-games.",
+ "files": [
+  "offline/src/ui-game.js",
+  "offline/src/ui-guidance.js",
+  "offline/src/ui-tools.js",
+  "offline/tests/game-tutorials.test.mjs"
+ ],
+ "units": [
+  "U-27",
+  "U-26",
+  "U-28"
+ ],
+ "batches": [
+  [
+   "U-27"
+  ],
+  [
+   "U-26",
+   "U-28"
+  ]
+ ],
+ "unitTier": {
+  "U-27": 2,
+  "U-26": 2,
+  "U-28": 2
+ },
+ "unitNotes": {
+  "U-27": "Guidance engine (3 h): coach marks, first-run tour, JIT tutorials, Training drills (SOBER, quick log, Battle Plan, trial, refusal), tips, Explorer, reveal with 'Show now' and 'New' dots (the SOS drill itself lives in ui-sos.js). Done when every tutorial target exists (the guards gate) and nothing ever covers, gates or delays SOS.",
+  "U-26": "Game surfaces (2 h): XP, mastery per skill, badges, ranks, region light, celebrations under 300 ms. Done when they render from Engine derivations and none of them ever decreases.",
+  "U-28": "Tools and mini-games (4 h): Put It On Trial (courtroom -> Comeback), Distortion Sort, Spot the Red Flag, The Big Game (branching story, an original character), Refusal Rehearsal (scenes with feedback against catalogs.refusal), Rewrite the Scene, Should I go?, Problem Solver. Done when each plays from content data or is honestly a stub (O7)."
+ },
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (17:11 by date). Your worktree C:/Users/ruchi/1-addic-wt/game-tutorials is cut from BASE 9f3026c6 (NOT 1ef2482e: the brief's cites may have moved; re-find them in your tree). It holds the real ui-core.js, store.js, engine.js, actions.js, Today and Track (today-track merged, with their data-tour targets), Settings U-19 (its Help tab shows data-test tour-replay once a guidance API exists: expose GuidanceUI.replayTour() and the flow clicks [data-test=tour-replay]), and content U-31a; no stand-ins; toward offline-v1.1. Rulings: ExplorerCompleted: Actions.recordEvent('ExplorerCompleted', {}) is allowed once, on the first full completion (CORE R-C-21); progress is derived from Engine.explorer. Training drills (SOBER, quick log, Battle Plan, trial, refusal) are constants in ui-guidance.js; the SOS drill itself is ui-sos.js's (actions-sos, not merged): link #/sos?drill=1 only. The first-run tour starts after onboarding (profile.onboardedAt set) and never on #/sos* or #/lock or #/onboarding routes; coach marks, tips, tours and dots never cover, gate or delay the SOS button (it stays above any overlay and clickable), and Esc or one tap closes every overlay. Reveal: 'Show now' and 'New' dots from Engine.revealed/newDots, written through A.reveal. Tips: Today shows the tip of the day (today-track); you handle JIT tutorials and coach marks. Every tutorial step target named in Content.tutorials must exist on its screen (the guards gate): list any target that belongs to another lane's unmerged screen in for_the_chat instead of faking it. U-28 later: Content.games (content U-32 on build/content, not merged): flag.lines is [{who, t}] with why:[3]; bigGame has title, character {name, bio}, start, clinicalReview, and a choice with to: null ends; refusal scenes carry clinicalReview; games are honest stubs with one real action until it merges. Celebrations under 300 ms, none in Calm mode, under reduced motion or on SOS; nothing shown ever decreases. Styles in your own section at the end of styles.css from /* -- game-tutorials -- */ to /* -- end game-tutorials -- */. Pages register through UI.pages from your files. Content, Engine, Store via `typeof X !== 'undefined' ? X : null`. Node test offline/tests/game-tutorials.test.mjs walks the returned tree. Put the data-test hooks you add in for_the_chat. Commit each part with the unit in the message.",
+ "base": "9f3026c6",
+ "slot": 8,
+ "session": "6721d28e-5b48-49f1-9f7e-094b769e422f",
+ "now": "2026-11-07 17:11 IST",
+ "sliceRun": true
+}

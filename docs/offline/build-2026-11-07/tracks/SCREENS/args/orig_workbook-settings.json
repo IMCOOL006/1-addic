@@ -1,0 +1,53 @@
+{
+ "lane": "workbook-settings",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "Settings, the Reasons Card and Support Network, the workbook browser and the artifacts, and My Recovery Plan.",
+ "files": [
+  "offline/src/ui-settings.js",
+  "offline/src/ui-workbook.js",
+  "offline/src/ui-plan.js",
+  "offline/tests/workbook-settings.test.mjs"
+ ],
+ "units": [
+  "U-19",
+  "U-20a",
+  "U-20b",
+  "U-21"
+ ],
+ "batches": [
+  [
+   "U-19"
+  ],
+  [
+   "U-20a"
+  ],
+  [
+   "U-20b",
+   "U-21"
+  ]
+ ],
+ "unitTier": {
+  "U-19": 1,
+  "U-20a": 1,
+  "U-20b": 2,
+  "U-21": 2
+ },
+ "unitNotes": {
+  "U-19": "Settings (3 h). Done when every setting persists across a reload and every data action does exactly what it says.",
+  "U-20a": "Reasons Card and Support Network (1.5 h): the Reasons Card view (big SOS view, lock-screen image export via canvas), contacts CRUD with roles and strategies, 'I reached out'. Done when contacts are saved on the device only and the card opens from SOS.",
+  "U-20b": "Workbook browser and the other artifacts (2.5 h): the groups My Why, Know Myself, My People, My Joys; each artifact viewed, edited (exercise in workbook mode), with history, practise and print; risk factors behind a tap; Comebacks, Thought Journal, signatures with the body map, scripts with 'I said it', Activity Library, should/want balance, distraction deck, warning signs. Done when each artifact opens, edits and prints, or is honestly marked a stub (O7).",
+  "U-21": "My Recovery Plan (2 h): per 3.10, prefilled from the artifacts. Done when the plan prefills, edits and prints."
+ },
+ "done": [
+  "U-19"
+ ],
+ "diffFrom": "cc1f1ea",
+ "priorNote": "Slice U-19 done: 83aa85b (ui-settings.js: UI.pages.settings, seven tabs privacy, look, rhythm, names, help, about, your data), e0af4fd (offline/tests/workbook-settings.test.mjs: helpers, tab renders, memory-Store round trips), cc1f1ea (the export, import and erase controls also carry the base browser hooks data-testid settings-export, settings-import, settings-erase). Tip cc1f1ea READY-SLICE; check PASS; build, test 10/10, validate and browser GREEN; guards only the 15 baselined tour targets. styles.css: one section at the end from /* -- workbook-settings -- */ to /* -- end workbook-settings -- */. The one thing: offline/tests/helpers/hooks.mjs at BASE drives the browser flows through [data-testid=...] (tid()), not data-test; keep both attributes where a BASE hook exists; the PIN prompt is a sheet with input[type=password] and exactly one button.primary; the import control stays on #/settings/data after an erase. offline/1-addic.html is modified by the build gate: never commit it. Next: U-20a ui-workbook.js registering UI.pages.workbook (#/workbook/reasons, ?big=1, #/workbook/network; engine.js:684-698 reasonsCard and its section keys; actions.js:509-540 contacts), reuse the stand-in DOM and memory Store of the test file; U-20b the browser with ARTIFACTS/GROUPS and data-tour workbook-groups, workbook-card; U-21 ui-plan.js (PlanUI.view/merge/SECTIONS) with data-tour plan-sections, plan-print (Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save).",
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (16:31 by date). BASE 1ef2482e; the real modules in your worktree; no stand-ins; toward offline-v1.1. FIRST, before U-20a, the slice check's LOWs by name, each its own commit: C3 high contrast: until ui-core applies settings.highContrast on every render (asked of core by the chat), apply html[data-contrast=high] from your own file on every render you can reach WITHOUT editing ui-core.js (for example Store.subscribe at load plus one apply once the Store reports loaded, guarded with typeof), and test that a reload with highContrast: true sets the attribute before Settings is opened; if that cannot be done in your files, say so in for_the_chat and leave it; C4 the guard test at workbook-settings.test.mjs:133-136 either renders in the fresh context or its comment says it only loads; C1 stays open by name until actions-sos (eraseSample) and content U-33 (Content.sample) merge: keep the round trip gated on both and name it in your report. C2 is ruled: after a successful erase the page stays on #/settings/data with a 'Start again' link to #/onboarding and the import control (the browser flow needs it; 3.3 'erase and start from a backup'). Then U-20a (a batch of its own), then U-20b and U-21. Rules: contacts live on the device only, never exported to any service, no network; the big Reasons Card is #/workbook/reasons?big=1 with the lock-screen image made by canvas and UI.download (no network); 'I reached out' writes through A.contacts.reached; risk factors stay behind a tap, no scoring, no 'you are at risk' wording; an artifact whose exercise is not in Content.exercises yet (content U-31b is building now) is an honest stub naming what it will be, never a dead button; the plan prefills from Engine.prefillRecoveryPlan, saves with A.recoveryPlan.save and prints with UI.printDoc. Keep data-test and, where helpers/hooks.mjs at BASE names one, data-testid on the same control. Styles only in your section. Put the hook names you add in for_the_chat (tests-docs owns the browser suite). Commit each part with the unit in the message.",
+ "base": "1ef2482e",
+ "slot": 6,
+ "session": "6721d28e-5b48-49f1-9f7e-094b769e422f",
+ "now": "2026-11-07 16:31 IST"
+}

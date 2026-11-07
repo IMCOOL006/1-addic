@@ -1,0 +1,51 @@
+{
+ "lane": "actions",
+ "chat": "SCREENS",
+ "tier": 2,
+ "flagged": false,
+ "area": "The planner, Battle Plans, the Weekly Review, quests and to-dos, and the practices player.",
+ "files": [
+  "offline/src/ui-actions.js",
+  "offline/src/ui-practices.js",
+  "offline/tests/actions-ui.test.mjs"
+ ],
+ "units": [
+  "U-22",
+  "U-23",
+  "U-24",
+  "U-25"
+ ],
+ "batches": [
+  [
+   "U-22"
+  ],
+  [
+   "U-23",
+   "U-24",
+   "U-25"
+  ]
+ ],
+ "unitTier": {
+  "U-22": 2,
+  "U-23": 2,
+  "U-24": 2,
+  "U-25": 2
+ },
+ "unitNotes": {
+  "U-22": "Planner (3 h): the day planner per 3.9 with risky blocks. Done when blocks save through Actions, risky blocks are flagged with their Battle Plan, and nothing is ever overdue.",
+  "U-23": "Battle Plans with .ics and debrief (2 h). Done when a plan exports a valid .ics (engine U-08) and the debrief writes its event.",
+  "U-24": "Weekly Review with the forecast check (2.5 h). Done when the review reads the week's logs, checks last week's forecast and saves.",
+  "U-25": "Quests, rewards, Prediction Lab, to-dos, the practices player (script shown and read aloud, pause, timer, reflection, helpful rating, mindful minutes) (3 h). Done when each works or is honestly a stub (O7), with no random reward and no points for claimed sober days."
+ },
+ "laneNote": "RELAUNCH 18:32 by date as the CHECK only (start 'check') over 710502f...HEAD for U-23, U-24, U-25. Checker: run the gates through gates.py INCLUDING the browser gate (gates.py --lane actions build test validate guards browser) and report its failure names; a browser test that skips for a missing hook is not a failure of this lane. Judge the module-scope state (memory only: nothing about the person persists outside the Store, nothing leaves the device). A fix round commits by explicit path, never offline/1-addic.html. THE SCREENS CHAT'S WORD for the build (17:59 by date). Worktree C:/Users/ruchi/1-addic-wt/actions on build/actions at 710502f, cut base 9f3026c6: never rebase, never merge the trunk in. Content.practices is in the trunk (content READY 680f850, merged c8dc6716) but not in your tree: build the player at #/practice/<id> against its real shape (read git -C C:/Users/ruchi/1-addic show be0f806d:offline/src/content-practices.js: a map by id {breathe, 'body-scan', sober, 'urge-surf', shower, eating, walking, beat} of {id, title, minutes, intro, script:[{t, secs}], close}; sober also has steps: 5 strings), test with a stand-in of exactly that shape, and at runtime read typeof Content !== 'undefined' && Content.practices: when absent the player is an honest stub with one real action (O7). Practices credit ExerciseDone and MindfulMinute only (no SkillUsed); read-aloud only through UI.speak (device speech, O4), the script always on screen; pause and timer never block SOS. U-23 Battle Plans: data-tour bp-new and bp-form; the .ics through the Engine's U-08 helper and UI.download (no network); the debrief writes its event through Actions. U-24 Weekly Review: data-tour review-start; reads the week through Engine (weekSummary, forecastCheck: re-find them with grep); the reminder .ics at 18:00 on profile.reviewDay. U-25 quests, rewards, Prediction Lab, to-dos, the practices player: no random reward, no points for claimed sober days, nothing shown ever decreases; to-dos and plans are never 'overdue' or 'missed' and nothing turns red for a past item. Rules: crisis words in any typed text show the urgent-help line to #/sos/urgent (as the planner does); SOS stays one tap away and is never covered by a sheet or overlay; the screens carry exactly the baselined data-tour names; never a network call. Styles only inside your styles.css section (before /* -- end actions -- */). In the built page Content, Engine, Store are not globalThis properties: typeof X !== 'undefined' ? X : null. Node tests in offline/tests/actions-ui.test.mjs walk the returned tree. Keep data-test and add data-testid where the contract names one. Commit each part with the unit in the message, by explicit path, never offline/1-addic.html. Put the data-test hooks you add in for_the_chat (tests-docs owns the browser suite).",
+ "base": "9f3026c6",
+ "slot": 7,
+ "session": "d6887185-82d2-4a14-8c98-cee7cc2b525d",
+ "now": "2026-11-07 18:32 IST",
+ "done": [
+  "U-22"
+ ],
+ "diffFrom": "710502f",
+ "priorNote": "U-23 (42ce8aa, 25308cc), U-24 (bd8be70, 0894beb) and U-25 (40e3418, 7641b1b, 9ee68cf) were built by run wf_6effec68-3fd; the chat stopped it after the U-25 commit under the memory pause rule (a 3.2 GB row), as its checker started. The builders' gates: 18:13 build/test 23/23/validate GREEN; 18:26 build/test 32/32/validate GREEN; guards RED only on workbook-groups, workbook-card, plan-sections, plan-print (absent because the cut 9f3026c6 predates be0f806d); bp-new, bp-form, review-start now pass. Deviations the builders took as defaults: A.weeklyReview keys one event per Monday, so the review saves weekStart = this Monday and looks back over the 7 days ending today; the reminder rrule is FREQ=WEEKLY;BYDAY=<reviewDay>; the review payload's highlights is {lines, note} plus forecastNote and upcomingNote; the Battle Plan .ics never carries the buddy; ExerciseDone from breathe carries exerciseId 'breathing' (engine's explorer check) and every practice writes practiceId; MindfulMinute only for whole minutes >= 1; screen state that must survive a Store write lives at module scope (HELP_DATES, BP_HELP, DRAFTS, HELP_WEEKS, SESSIONS, HELP_PAGES; memory only); finishing a practice does not tick a quest; a to-do's due date is not editable (no todos.update). Notes C:/Users/ruchi/1-addic-wt/_logs/reports/actions/actions__units.md and __progress.md.",
+ "start": "check"
+}

@@ -1,0 +1,49 @@
+{
+ "done": [
+  {
+   "unit": "U-27",
+   "shas": [
+    "5af6665"
+   ]
+  }
+ ],
+ "tip": "5af6665",
+ "in_flight": "none. offline/1-addic.html is modified by the build gate and left uncommitted on purpose (it is a build output and not this lane's file). Tip 5af6665 is clean.",
+ "next": [
+  {
+   "unit": "U-26",
+   "first_step": "Read engine.js gameState (grep -n 'gameState\\|function badges\\|function rank' offline/src/engine.js in the worktree, because cites move from the brief's 1ef2482e), then write offline/src/ui-game.js with GameUI.model/xpBar/skillMastery/badgeShelf/rankCard/regionLight/celebrate/panel and data-tour 'game-panel'. Add its tests to offline/tests/game-tutorials.test.mjs."
+  },
+  {
+   "unit": "U-28",
+   "first_step": "Write offline/src/ui-tools.js, registering UI.pages.tools and UI.pages.games and dispatching on ctx.route.parts[1]. Distortion Sort and Spot the Red Flag play from Content.catalogs. Every Content.games screen is an honest stub until content U-32 merges. The Training routes #/tools/trial?drill=1 and #/games/refusal?drill=1 must render something."
+  }
+ ],
+ "files_touched": [
+  "C:/Users/ruchi/1-addic-wt/game-tutorials/offline/src/ui-guidance.js",
+  "C:/Users/ruchi/1-addic-wt/game-tutorials/offline/tests/game-tutorials.test.mjs",
+  "C:/Users/ruchi/1-addic-wt/game-tutorials/offline/src/styles.css",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/game-tutorials/game-tutorials__units.md",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/game-tutorials/game-tutorials__progress.md"
+ ],
+ "shared_touched": [
+  "offline/src/styles.css: own section from /* -- game-tutorials -- */ (line 506) to /* -- end game-tutorials -- */ (line 544), at the end of the file; no token redefined"
+ ],
+ "one_thing": "The guards gate is RED by name only on 10 tour targets carried by screens that are not in this tree, and none of them is this lane's. Six come from actions (planner-day, planner-gaps, planner-add, bp-new, bp-form, review-start) and are baselined. Four come from workbook-settings U-20/21 (workbook-groups, workbook-card, plan-sections, plan-print): those merged at be0f806d, after this lane's cut base 9f3026c6, and are lifted on trunk. Never fake them. The Node test keeps the same list in its PENDING set. GuidanceUI is self-hooked on 'ui:rendered' and 'hashchange', and attaches UI.tour.start/replay itself without editing ui-core.js. Core's .coach-overlay has pointer-events: auto, but this lane's CSS sets it to none, so a capture-phase document click handler closes the popover instead. A tap toward SOS marks nothing.",
+ "evidence": [
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\game-tutorials\\build-20261107-174616.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\game-tutorials\\test-20261107-174619.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\game-tutorials\\validate-20261107-174621.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\game-tutorials\\guards-20261107-174622.log"
+ ],
+ "steps_used": 11,
+ "blocked": [],
+ "for_the_chat": [
+  "READY-SLICE game-tutorials 5af6665 (U-27). Gates: build, test (14) and validate GREEN. Guards are RED by name only on tour targets of other lanes' screens: the 6 actions targets are baselined, and the 4 workbook-settings targets (workbook-groups, workbook-card, plan-sections, plan-print) are absent only because this lane's cut 9f3026c6 is older than be0f806d. They should be green after the merge to trunk.",
+  "tests-docs (hooks.mjs): please add these data-test hooks: coach-overlay, coach-pop, coach-next, coach-skip, jit-bar, jit-show, jit-later, tip-card, tip-got-it, explorer-ring, explorer-hide, more-tools, show-now (with data-feature), new-dot (with data-feature). Also the data-tour names tips-card, explorer-ring and more-tools. UI.tour.start(id) and UI.tour.replay() are attached from ui-guidance.js at load.",
+  "workbook-settings: GuidanceUI.coach('tour', {replay:true}) and GuidanceUI.replayTour() both exist. training() returns [{id,name,route,kind}] with kind 'training' (5 drills), 'drill' (#/sos?drill=1), 'tour' (#/today?tour=1) and 'jit' (<feature route>?tutorial=<id>).",
+  "today-track: please embed GuidanceUI.tipCard(ctx), explorerRing(ctx), moreTools(ctx) and dot(featureId, ctx), each guarded by typeof GuidanceUI !== 'undefined'. Each returns a Node or null.",
+  "content lane (optional): Content.features has no route key, so ui-guidance.js keeps a FEATURE_ROUTES map. A Content.features[id].route, if added, wins over that map. Content.tutorials entries of kind 'training' that carry a route are merged into training().",
+  "Where the code and the brief differ: ExplorerCompleted is written once through Actions.recordEvent('ExplorerCompleted', {}) per CORE R-C-21, with no outbox request to actions-sos. The quick-log training is the coach-marked walk-through #/track?tutorial=quicklog, which saves nothing, not a separate drill route."
+ ]
+}

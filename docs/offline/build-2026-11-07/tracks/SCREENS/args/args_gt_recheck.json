@@ -1,0 +1,51 @@
+{
+ "lane": "game-tutorials",
+ "chat": "SCREENS",
+ "tier": 2,
+ "flagged": false,
+ "area": "The guidance engine (coach marks, tours, tutorials, tips, reveal), the game surfaces, and the tools and mini-games.",
+ "files": [
+  "offline/src/ui-game.js",
+  "offline/src/ui-guidance.js",
+  "offline/src/ui-tools.js",
+  "offline/tests/game-tutorials.test.mjs"
+ ],
+ "units": [
+  "U-27",
+  "U-26",
+  "U-28"
+ ],
+ "batches": [
+  [
+   "U-27"
+  ],
+  [
+   "U-26"
+  ],
+  [
+   "U-28"
+  ]
+ ],
+ "unitTier": {
+  "U-27": 2,
+  "U-26": 2,
+  "U-28": 2
+ },
+ "unitNotes": {
+  "U-27": "Guidance engine (3 h): coach marks, first-run tour, JIT tutorials, Training drills (SOBER, quick log, Battle Plan, trial, refusal), tips, Explorer, reveal with 'Show now' and 'New' dots (the SOS drill itself lives in ui-sos.js). Done when every tutorial target exists (the guards gate) and nothing ever covers, gates or delays SOS.",
+  "U-26": "Game surfaces (2 h): XP, mastery per skill, badges, ranks, region light, celebrations under 300 ms. Done when they render from Engine derivations and none of them ever decreases.",
+  "U-28": "Tools and mini-games (4 h): Put It On Trial (courtroom -> Comeback), Distortion Sort, Spot the Red Flag, The Big Game (branching story, an original character), Refusal Rehearsal (scenes with feedback against catalogs.refusal), Rewrite the Scene, Should I go?, Problem Solver. Done when each plays from content data or is honestly a stub (O7)."
+ },
+ "laneNote": "RELAUNCH @NOW@ by date (second time; the first check returned FIX, see knownFindings) as the CHECK only (start 'check') over 5af6665...HEAD for U-26 and U-28. Checker: run the gates through gates.py INCLUDING the browser gate: gates.py --lane game-tutorials build test validate guards browser. The browser gate MUST run even though the lane adds no browser test: it runs the base flows (tour complete, tour skip and the rest) over the built file and fails on any console error or non-file request, which is exactly what the new ui-guidance.js, ui-game.js and ui-tools.js could cause. Report its pass, fail and skip counts and any failure names; a test that skips for a missing hook is not a failure of this lane. A fix round commits by explicit path, never offline/1-addic.html. THE SCREENS CHAT'S WORD for the build (18:01 by date). Worktree C:/Users/ruchi/1-addic-wt/game-tutorials on build/game-tutorials at 5af6665, cut base 9f3026c6: never rebase, never merge the trunk in. Content.games and Content.practices are in the trunk (content READY 680f850, merged c8dc6716) but not in your tree: build against their real shape, read with git -C C:/Users/ruchi/1-addic show be0f806d:offline/src/content-practices.js (and content-core.js for catalogs), and test with stand-ins of exactly that shape; at runtime read typeof Content !== 'undefined' && Content.games, and when absent each game is an honest stub with one real action (O7). The shapes: flag.lines is [{who, t}] with why:[3]; bigGame has title, character {name, bio}, start, clinicalReview, and a choice with to: null ends; refusal scenes carry clinicalReview; re-read the file for the rest, never invent fields. U-26: GameUI renders from Engine.gameState and its derivations only; nothing shown ever decreases (XP, mastery, badges, total days, region light from the append-only log; a slip restarts only the opt-in current run); no streak resets, no random rewards, no points for claimed sober days; celebrations under 300 ms, none in Calm mode, under reduced motion or on SOS. Expose GameUI.panel(ctx) returning a Node or null (Today embeds it later behind typeof GameUI !== 'undefined'; do not edit ui-today.js). U-28: tools and games pages through UI.pages from ui-tools.js; Put It On Trial ends in a Comeback; Distortion Sort and Spot the Red Flag play from Content.catalogs (in your tree); Refusal Rehearsal gives feedback against catalogs.refusal; the Big Game's character is original; crisis or substance content stays brief and clinical, never how to get, prepare or take anything; the Training routes #/tools/trial?drill=1 and #/games/refusal?drill=1 render and save nothing. SOS stays one tap away on every page and is never covered. Styles only inside your styles.css section (before /* -- end game-tutorials -- */). Commit each part with the unit in the message, by explicit path, never offline/1-addic.html. Put the data-test hooks you add in for_the_chat (tests-docs owns the browser suite).",
+ "base": "9f3026c6",
+ "slot": 8,
+ "session": "d6887185-82d2-4a14-8c98-cee7cc2b525d",
+ "now": "2026-11-07 18:33 IST",
+ "done": [
+  "U-27"
+ ],
+ "diffFrom": "5af6665",
+ "priorNote": "U-26 (0f611e5, game surfaces ui-game.js) and U-28 (8dccbfb ui-tools.js, d4c49d1 its tests) were built by run wf_697f8fff-2d2; the chat stopped that run after the U-28 commit under the memory pause rule (a 3.9 GB row at the commit), before the builder's hand-off and before the check. The builder's gates at 18:25: build, test 25/25, validate GREEN, guards RED by name only on the 10 tour targets of other lanes' screens (planner-*, bp-*, review-start, workbook-*, plan-*), log C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/*-20261107-1825*.log. The U-26 builder's note: every GameUI number is read from Engine.gameState; momentum and counters.current are left out because both can fall (a slip restarts only the opt-in run). Progress notes C:/Users/ruchi/1-addic-wt/_logs/reports/game-tutorials/game-tutorials__progress.md and __units.md.",
+ "start": "check",
+ "knownFindings": "The check of 18:34 (run wf_2cdde478-7e9, verdict FIX) found one finding: C1 MEDIUM U-28 offline/src/ui-tools.js: the contract's hooks [data-test=game-card] and [data-test=trial-closing] were missing (the code used tool-link-<id> and tl-field-comeback). Its fix round committed 1ea2ebf 'fix(offline, U-28, C1): contract hooks game-card and trial-closing'; the chat stopped the run under the memory pause rule (a 3.3 GB row at that commit) before the re-check. Judge C1 at 1ea2ebf first (FIXED or not), then the rest of 5af6665...HEAD as a normal check."
+}

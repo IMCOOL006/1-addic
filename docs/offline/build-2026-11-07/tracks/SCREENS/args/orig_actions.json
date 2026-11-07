@@ -1,0 +1,46 @@
+{
+ "lane": "actions",
+ "chat": "SCREENS",
+ "tier": 2,
+ "flagged": false,
+ "area": "The planner, Battle Plans, the Weekly Review, quests and to-dos, and the practices player.",
+ "files": [
+  "offline/src/ui-actions.js",
+  "offline/src/ui-practices.js",
+  "offline/tests/actions-ui.test.mjs"
+ ],
+ "units": [
+  "U-22",
+  "U-23",
+  "U-24",
+  "U-25"
+ ],
+ "batches": [
+  [
+   "U-22"
+  ],
+  [
+   "U-23",
+   "U-24",
+   "U-25"
+  ]
+ ],
+ "unitTier": {
+  "U-22": 2,
+  "U-23": 2,
+  "U-24": 2,
+  "U-25": 2
+ },
+ "unitNotes": {
+  "U-22": "Planner (3 h): the day planner per 3.9 with risky blocks. Done when blocks save through Actions, risky blocks are flagged with their Battle Plan, and nothing is ever overdue.",
+  "U-23": "Battle Plans with .ics and debrief (2 h). Done when a plan exports a valid .ics (engine U-08) and the debrief writes its event.",
+  "U-24": "Weekly Review with the forecast check (2.5 h). Done when the review reads the week's logs, checks last week's forecast and saves.",
+  "U-25": "Quests, rewards, Prediction Lab, to-dos, the practices player (script shown and read aloud, pause, timer, reflection, helpful rating, mindful minutes) (3 h). Done when each works or is honestly a stub (O7), with no random reward and no points for claimed sober days."
+ },
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (17:11 by date). Your worktree C:/Users/ruchi/1-addic-wt/actions is cut from BASE 9f3026c6 (NOT 9b319256 or 1ef2482e: the brief's cites at 1ef2482e may have moved a few lines; re-find them in your tree). It holds the real ui-core.js, store.js, engine.js, actions.js, Today and Track (today-track merged), Settings U-19, and content U-31a; no stand-ins; toward offline-v1.1. Today links to #/actions/battle and #/actions/quests: those routes are yours. Rulings on the scout's questions: Content.practices (content U-32, READY on build/content, not merged) is a map by id {breathe, 'body-scan', sober, 'urge-surf', shower, eating, walking, beat} of {id, title, minutes, intro, script:[{t, secs}], close} (secs is the pause after a line; sober also has steps: 5 strings); the player at #/practice/<id> reads that shape and is an honest stub with one real action while Content.practices is absent; practices credit ExerciseDone and MindfulMinute only (no SkillUsed); the weekly review reminder .ics at 18:00 on profile.reviewDay. Rules: the planner never says 'overdue' or 'missed' and nothing turns red for a past block; risky blocks carry their Battle Plan; the screens carry exactly the baselined data-tour names planner-day, planner-gaps, planner-add, bp-new, bp-form, review-start; no random reward, no points for claimed sober days; read-aloud only through UI.speak (device speech, O4), the script always on screen; never a network call. Styles in your own section at the end of styles.css from /* -- actions -- */ to /* -- end actions -- */ (close it with the end marker). Page registers through UI.pages from ui-actions.js. In the built page Content, Engine, Store are not globalThis properties: `typeof X !== 'undefined' ? X : null`. Node test offline/tests/actions-ui.test.mjs walks the returned tree (as today-track.test.mjs does). Put the data-test hooks you add in for_the_chat (tests-docs owns the browser suite). Commit each part with the unit in the message.",
+ "base": "9f3026c6",
+ "slot": 7,
+ "session": "6721d28e-5b48-49f1-9f7e-094b769e422f",
+ "now": "2026-11-07 17:11 IST",
+ "sliceRun": true
+}

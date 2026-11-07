@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:54 IST: no run live. actions READY 0977edd (complete, for the HUB). game-tutorials built at 1ea2ebf (C1 fixed), its re-check waits for a 7.0 GB row (args C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp/args_gt_recheck.json; stamp now and @NOW@). Claude Code stopped this chat's memory watch because the system was critically low on memory; the watch is not restarted, so the re-check launches when this chat is woken (or the next chat starts) on a 7.0 GB row
+STATE: HANDOVER   # 2026-11-07 19:11 IST: parked on the owner's word (usage limit; the first HUB stops the launcher loop; the owner restarts it). No run live. READY for the HUB: actions 0977edd (complete). game-tutorials at 1ea2ebf: the re-check first (tracks/SCREENS/args/args_gt_recheck.json, on a 7.0 GB row), then the browser gate by hand. Every other SCREENS lane MERGED. Run record 'Resume here' 2026-11-07 19:11 IST
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions READY 0977edd   # U-23..U-25 complete (slice 710502f merged 18:02); run wf_04c1d56e-d49 check FIX -> C1 FIXED 0977edd; test 32/32, validate GREEN, browser GREEN 9/0/10 (by me); lifts bp-new, bp-form, review-start; the lane is complete
-LANE: game-tutorials CHECKING   # PAUSED for memory at 1ea2ebf (18:41, a 3.3 GB row): the check wf_2cdde478-7e9 said FIX (C1 MEDIUM: hooks game-card, trial-closing) and its fix round committed 1ea2ebf; the re-check (with the browser gate) on the next 7.0 GB row (tmp/args_gt_recheck.json)
+LANE: game-tutorials CHECKING   # parked at 1ea2ebf (on origin): U-26, U-28 built; check FIX C1 fixed 1ea2ebf; the re-check not run (memory pause): first thing for the fresh chat (tracks/SCREENS/args/args_gt_recheck.json); slice 5af6665 merged 17:57
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:54 IST
+UPDATED: 2026-11-07 19:11 IST
 
 # 2026-11-07 18:48 IST · actions READY 0977edd (U-23..U-25; the lane is complete)
 

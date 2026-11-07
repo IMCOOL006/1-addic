@@ -1,0 +1,50 @@
+{
+ "done": [
+  {
+   "unit": "U-22",
+   "shas": [
+    "84b92be",
+    "3de2d32"
+   ]
+  }
+ ],
+ "tip": "3de2d32",
+ "in_flight": "none (worktree clean at 3de2d32; the build's offline/1-addic.html output was restored, never committed by the lane)",
+ "next": [
+  {
+   "unit": "U-23",
+   "first_step": "In ui-actions.js page(): route sub 'battle' to a new battlePage(ctx) in place of stubPage; add data-tour bp-new (New Battle Plan button) and bp-form (the form element), export battlePlanIcsItem(plan) in PURE; the planner already links #/actions/battle?plan=<id>"
+  },
+  {
+   "unit": "U-24",
+   "first_step": "Route sub 'review' in page() to reviewPage(ctx) with a data-tour review-start button; read E.weekSummary/E.forecastCheck (engine.js ~1098/1118); export reviewIcsItem(profile, now)"
+  },
+  {
+   "unit": "U-25",
+   "first_step": "Route quests/predictions/todos in page(); create offline/src/ui-practices.js registering UI.pages.practice, reading Content.practices as a map by id {id,title,minutes,intro,script:[{t,secs}],close} (sober also steps: 5 strings), an honest stub while absent; export practiceScript(Content,id)"
+  }
+ ],
+ "files_touched": [
+  "C:/Users/ruchi/1-addic-wt/actions/offline/src/ui-actions.js",
+  "C:/Users/ruchi/1-addic-wt/actions/offline/src/styles.css",
+  "C:/Users/ruchi/1-addic-wt/actions/offline/tests/actions-ui.test.mjs"
+ ],
+ "shared_touched": [
+  "offline/src/styles.css: one section appended at the end, /* -- actions -- */ line 505 to /* -- end actions -- */ line 529; no token redefined"
+ ],
+ "one_thing": "The planner's form is inline in the page (not a UI.form sheet), built with ui-actions.js's own h(), so the Node test drives it on the stand-in DOM. A page's root node carries its own data-test, and the fake DOM's all() walks only children, so check the root with getAttribute. The other Actions sub-routes (battle, review, quests, predictions, todos) are stubs from stubPage() in page(); each later unit replaces its branch there.",
+ "evidence": [
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\actions\\build-20261107-172316.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\actions\\test-20261107-172318.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\actions\\validate-20261107-172506.log",
+  "C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\actions\\guards-20261107-172507.log"
+ ],
+ "blocked": [],
+ "for_the_chat": [
+  "READY-SLICE actions 3de2d32 (U-22). Gates: build, test (11 pass) and validate GREEN. Guards RED only on names already in baselines.md (bp-new, bp-form, review-start, workbook-groups, workbook-card, plan-sections, plan-print). planner-day, planner-gaps and planner-add now pass, so the HUB can lift baselines.md lines 29-31.",
+  "tests-docs: please add to hooks.mjs the data-test hooks of the planner: planner-add-btn, planner-form, planner-f-title, planner-f-kind, planner-f-date, planner-f-start, planner-f-end, planner-f-activity, planner-f-risky, planner-f-reward, planner-f-error, planner-save, planner-cancel, planner-day, planner-block (with data-id and data-status), planner-risky, planner-bp, planner-bp-add, planner-bp-edit, planner-unmarked, planner-done, planner-skip, planner-status, planner-undo, planner-edit, planner-remove, planner-remove-yes, planner-remove-no, planner-gaps, planner-gap, planner-gap-add, planner-ideas, planner-idea, planner-idea-add, planner-date, planner-prev, planner-today, planner-next, planner-help, planner-help-go, actions-hub, actions-hub-<id>, actions-open-planner, actions-stub, actions-back, actions-to-planner. The contract's proposed planner-add-btn and planner-block are kept as named.",
+  "Differs from the brief (default built): 'Add a block' opens an inline form in the page, not a UI.form sheet, so SOS is never covered. Remove asks inline in two steps, not with UI.confirm. The planner route is not gated by the 'planner' reveal; Today already hides its links until the reveal. The brief and the code agree on the actions.js validation (bad-plan messages are shown as given).",
+  "today-track: #/actions/battle and #/actions/quests now render an honest 'being built' stub with Back to Actions until U-23 and U-25 land."
+ ],
+ "steps_used": 27
+}

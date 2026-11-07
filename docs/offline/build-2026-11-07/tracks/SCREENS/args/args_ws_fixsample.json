@@ -1,0 +1,48 @@
+{
+ "lane": "workbook-settings",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "Settings, the Reasons Card and Support Network, the workbook browser and the artifacts, and My Recovery Plan.",
+ "files": [
+  "offline/src/ui-settings.js",
+  "offline/src/ui-workbook.js",
+  "offline/src/ui-plan.js",
+  "offline/tests/workbook-settings.test.mjs"
+ ],
+ "units": [
+  "U-19",
+  "U-20a",
+  "U-20b",
+  "U-21",
+  "FIX-SAMPLE"
+ ],
+ "batches": [
+  [
+   "FIX-SAMPLE"
+  ]
+ ],
+ "unitTier": {
+  "U-19": 1,
+  "U-20a": 1,
+  "U-20b": 2,
+  "U-21": 2,
+  "FIX-SAMPLE": 1
+ },
+ "unitNotes": {
+  "FIX-SAMPLE": "The Settings sample stop-gap by name (HUB R-H-28, a tag condition for offline-v1.1; R-S-9). Done when Settings > Data offers Load sample data only on a notebook without an own profile, the tap re-checks before Actions.loadSample, and Node tests by name prove the three cases."
+ },
+ "done": [
+  "U-19",
+  "U-20a",
+  "U-20b",
+  "U-21"
+ ],
+ "diffFrom": "9cbf630",
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (17:58 by date). A fix by name on a complete lane. Worktree C:/Users/ruchi/1-addic-wt/workbook-settings, branch build/workbook-settings at 9cbf630; cut base 1ef2482e: never rebase, never merge the trunk in. FIX-SAMPLE (R-H-28; CORE R-C-28 asks Settings to keep this default until actions-sos's RS-SAMPLE merges): the risk is that Actions.loadSample writes the sample's profile 'me' (and settings 'app') over an onboarded person's own rows, and erasing the sample then removes them. In ui-settings.js (the data tab, around doLoadSample :555 and the sample card :587-609): an own profile is a profile row 'me' that exists and whose sample is not true (read it the way the page already reads the Store view, guarded with safe()). When one exists, the Load sample data button is disabled and one short line beside it (data-test load-sample-note) says why in plain words, grade 6-8, no blame: sample data is for a fresh notebook, and this one already holds the person's own profile; their entries stay as they are. Never a dead button (O7): disabled with its reason. doLoadSample re-checks at the moment of the tap and does not call A.loadSample when an own profile exists (a stale page cannot load over it); it says the same line. With no profile row, or a profile row with sample: true (the sample's own), the card behaves exactly as today. Shapes (on the trunk, not in your tree): content-sample.js at be0f806d:offline/src/content-sample.js:67-71 builds profile {key: 'me', name: 'Sample', ..., sample: true}; actions.js loadSample (be0f806d:offline/src/actions.js:881) puts every row and the meta row {key: 'sample', loadedAt}. Read them with git -C C:/Users/ruchi/1-addic show be0f806d:<path>. Your tree has no Content.sample: the tests use a stand-in Content.sample.generate and a stand-in Actions.loadSample, as the existing sample tests do. Node tests in offline/tests/workbook-settings.test.mjs, each its own name: an own profile disables Load sample data, shows the line, and a call to doLoadSample never reaches A.loadSample; no profile row: enabled, and doLoadSample calls A.loadSample once; a sample profile (sample: true): as before. Run the gates (build, test, validate, guards, browser). Commit by explicit path with the unit in the message (fix(workbook-settings, FIX-SAMPLE): ...; test(...)), never offline/1-addic.html (build output: restore it). Change nothing else. Put the hook name you add in for_the_chat (tests-docs owns the browser suite).",
+ "base": "1ef2482e",
+ "slot": 6,
+ "session": "d6887185-82d2-4a14-8c98-cee7cc2b525d",
+ "now": "2026-11-07 17:58 IST",
+ "priorNote": "The lane is complete and merged (READY 9cbf630, merged as be0f806d 17:39; check FIX -> C5 5e80f01, C6 9cbf630 FIXED; test 21/21). This run is one fix by name, FIX-SAMPLE, then the check over 9cbf630...HEAD. C1 (the eraseSample round trip) stays open by name: Actions.eraseSample and Content.sample are not in this tree."
+}
