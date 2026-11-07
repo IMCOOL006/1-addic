@@ -22,6 +22,14 @@
     return p;
   }
 
+  // The start-failure lines are crisis copy: short, the numbers first, kept in one block for the clinical review (C1).
+  var COPY = {
+    clinicalReview: true,
+    none: 'The app did not start. If you are in danger, call your local emergency number.',
+    some: 'The app did not start. For urgent help, call:',
+    verify: 'Please verify these numbers.',
+  };
+
   function showFailure() {
     try {
       var main = document.getElementById('main');
@@ -31,9 +39,9 @@
       box.setAttribute('role', 'alert');
       var list = numbers();
       if (!list.length) {
-        box.appendChild(line('The app did not start. If you are in danger, call your local emergency number.'));
+        box.appendChild(line(COPY.none));
       } else {
-        box.appendChild(line('The app did not start. For urgent help, call:'));
+        box.appendChild(line(COPY.some));
         for (var i = 0; i < list.length; i++) {
           var a = document.createElement('a');
           a.className = 'sos-target';
@@ -41,7 +49,7 @@
           a.textContent = (list[i].name ? list[i].name + ': ' : '') + list[i].number;
           box.appendChild(a);
         }
-        box.appendChild(line('Please verify these numbers.'));
+        box.appendChild(line(COPY.verify));
       }
       if (typeof main.replaceChildren === 'function') main.replaceChildren(box);
       else { main.textContent = ''; main.appendChild(box); }

@@ -1680,6 +1680,20 @@ describe('boot.js: a start failure shows one line and the urgent-help numbers', 
     assert.match(text(main), /The app did not start\. If you are in danger, call your local emergency number\./);
   });
 
+  test('C1: the start-failure lines live in one block marked clinicalReview: true, and the page shows them from it', (t) => {
+    const src = fs.readFileSync(BOOT, 'utf8');
+    const block = (src.match(/var COPY = \{([\s\S]*?)\n {2}\};/) || [])[1] || '';
+    assert.match(block, /clinicalReview: true/);
+    for (const s of ['The app did not start. If you are in danger, call your local emergency number.',
+      'The app did not start. For urgent help, call:', 'Please verify these numbers.']) {
+      assert.ok(block.includes(s), 'in the block: ' + s);
+      assert.equal(src.split(s).length, 2, 'written once: ' + s);
+    }
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const main = run({ boot() { throw new Error('start failed'); } }, Content);
+    assert.match(text(main), /For urgent help, call:/);
+  });
+
   test('no ui-core in the build: the bare shell stays, quietly', () => {
     const main = run(null, Content);
     assert.equal(main.children.length, 0);
