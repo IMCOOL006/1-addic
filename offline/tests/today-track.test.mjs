@@ -114,6 +114,19 @@ test('today: check-in kind by time and done-state', () => {
   assert.equal(T.checkinKind(v([e]), at(2026, 11, 7, 20), {}), null);
   assert.equal(T.checkinKind(v([checkinLog('evening', at(2026, 11, 6, 21))]), at(2026, 11, 7, 20), {}), 'evening', 'yesterday does not count');
   assert.equal(T.checkinKind(v([checkinLog('evening', at(2026, 11, 7, 18), { drill: true })]), at(2026, 11, 7, 20), {}), 'evening', 'a drill does not count');
+  // With the person's own times (profile.checkin 'HH:MM'): morning until the midpoint, evening from two hours before.
+  const own = { checkin: { morning: '06:00', evening: '22:00' } }; // midpoint 14:00, evening from 20:00
+  assert.deepEqual(T.checkinWindows(own), [14 * 60, 20 * 60]);
+  assert.deepEqual(T.checkinWindows({ checkin: { morning: null, evening: null } }), [12 * 60, 17 * 60], 'no times: the fixed rule');
+  assert.deepEqual(T.checkinWindows({ checkin: { morning: '07:00' } }), [12 * 60, 17 * 60], 'one time only: the fixed rule');
+  assert.equal(T.checkinKind(v([m]), at(2026, 11, 7, 13), own), null, 'before the midpoint: morning, and it is done');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 13, 59), own), 'morning');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 14), own), 'morning', 'between: the one not done');
+  assert.equal(T.checkinKind(v([m]), at(2026, 11, 7, 17), own), 'evening', 'between: morning done, so evening');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 20), own), 'evening', 'from two hours before the evening time');
+  assert.equal(T.checkinKind(v([e]), at(2026, 11, 7, 21), own), null);
+  const close = { checkin: { morning: '08:00', evening: '09:00' } }; // evening-2h falls before the midpoint
+  assert.deepEqual(T.checkinWindows(close), [8 * 60 + 30, 8 * 60 + 30]);
   globalThis.document = fakeDom();
   try {
     const { root } = render({ logs: [] }, { now: at(2026, 11, 7, 18) });
