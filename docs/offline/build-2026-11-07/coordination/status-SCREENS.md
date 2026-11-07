@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 04:27 IST: MEMORY 2.2 GB (04:25). content V-10 PAUSED 5bdf5ab: the builder committed and handed off (it read 2.84 GB before its browser gate and skipped it); I stopped wf_02dbd88e-f4a at 04:25 as its check started. today-track V-43 HELD (not started). Both resume on the first row at or above 4.0 GB: the content check (lane.js start 'check' with the browser gate) first, then V-43
-LANE: content PAUSED 5bdf5ab   # V3 V-10 committed 5bdf5ab on 3bd5bf5d (builder gates: build, test 33/33, validate GREEN; guards RED by name on status-change, status-watch only at this cut, both in the trunk since 486288f1; territory 2 own, 0 errors; browser not run). wf_02dbd88e-f4a stopped 04:25 before its check (memory). Resume: the check, with the browser gate. R-S-24 to CORE: '#/status' in ROUTE_PATHS
-LANE: today-track BUILDING 486288f1   # V-01b MERGED 486288f1 (04:19). V-43 HELD for memory (not started): branch and worktree fast-forwarded da9bb6b..486288f1 with --ff-only at 04:20, clean; args args/v3_tt_v43.json (base and diffFrom 486288f1); launches on slot 6 at the first row at or above 4.0 GB
+STATE: BUILDING   # 2026-11-08 04:38 IST: nothing of SCREENS runs (memory under 4.0 GB). R-H-43: no baseline; content stays PAUSED 5bdf5ab until engine V-40c merges, then V-10r (the route flip) and the check (args/v3_content_v10r.json). V-43 launches on the first row at or above 4.0 GB, fast-forwarded to cb356d9c (args/v3_tt_v43.json)
+LANE: content PAUSED 5bdf5ab   # V3 V-10 committed 5bdf5ab on 3bd5bf5d; R-H-43: no baseline; after engine V-40c (R-C-57, '#/status' in ROUTE_PATHS) merges: V-10r flips features.status.route and the help route to '#/status' (one commit), then the check with the browser gate, then READY-SLICE <tip> (args/v3_content_v10r.json, <V40C_TIP> to fill)
+LANE: today-track BUILDING 486288f1   # V-01a, V-01b MERGED (486288f1). V-43 HELD for memory: at launch fast-forward build/today-track and its worktree to cb356d9c (engine V-40b growthItems merged; merge base cb356d9c); args/v3_tt_v43.json is filled for cb356d9c; slot 6
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:32 IST
+UPDATED: 2026-11-08 04:38 IST
 
 # 2026-11-08 04:32 IST · from the HUB · engine V-40b merged (trunk cb356d9c); R-H-43: no baseline, V-40c first, then V-10r
 

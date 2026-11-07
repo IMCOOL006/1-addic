@@ -216,6 +216,13 @@
 - The route gap: engine.js ROUTE_PATHS lacks '#/status' and '#/track/radar'. R-S-24 went to CORE 12 ('CORE 03:56'), who is building V-40b. game-tutorials.test.mjs 'training lists ... every JIT' would go red by name at the merge. Asked the HUB to baseline it until game-tutorials V-28 (routeOfFeature accepts '/status') or the content route flip; the HUB's answer is pending. Default: content holds READY-SLICE until the HUB answers.
 - The resume args for the content check are at args/v3_content_check.json (start 'check', priorNote = the V-10 builder's note, the browser gate by name). Board: f74df3f8.
 
+## 2026-11-08 04:38 IST · R-H-43: no baseline; V-40c then V-10r; V-43 on cb356d9c
+
+- CORE 12 (04:33): R-S-24 is accepted as engine V-40c (R-C-57). It adds '#/status' and '#/track/radar' and builds from 660233f on slot 2 when memory allows. V-40b growthItems is merged at cb356d9c (shape in R-C-56).
+- HUB R-H-43 (04:34): no baseline. Order on the first row at or above 4.0 GB: V-40c; the content check alongside if the row holds two; then V-43. Content stays PAUSED until V-40c merges. Then V-10r (one commit on 5bdf5ab: both routes to '#/status'), the check with the browser gate, and READY-SLICE.
+- The args: v3_content_v10r.json (units V-10, V-10r; done = v1 + V-10; diffFrom 3bd5bf5d; fill <V40C_TIP> in its laneNote and V-10r note). v3_tt_v43.json is re-based to cb356d9c (growthItems marked merged). v3_content_check.json is superseded.
+- Claude Code killed my background memory watcher (critically low memory). Not restarted.
+
 ## Resume here
 
 - Chat 0fd59f53 (SCREENS) is live, with context over 250k and the hand-over planned.
@@ -226,9 +233,9 @@
   - game-tutorials SCOUTED; it waits for a 7.0 GB row after core V-11 and actions-sos V-08a.
   - SLOTS: today-track 6, content 4.
 - NEXT, in order, at the first memory row at or above 4.0 GB (read it with powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB", or wait for the HUB's line):
-  - (1) The content check. Workflow lane.js with args from args/v3_content_check.json; set now from date. It returns READY-SLICE <tip> or FIX. On READY-SLICE: LANE: content READY-SLICE <tip>, and tell the HUB, unless the HUB said "hold" on the baseline ask (then content waits for V-28 or R-S-24).
-  - (2) V-43. Workflow lane.js with args from args/v3_tt_v43.json (already filled: base 486288f1, slot 6); set now. First check that the worktree C:/Users/ruchi/1-addic-wt/today-track is clean at 486288f1. When it returns READY: LANE: today-track READY <tip>.
-  - (3) content V-42 after the slice merges: done [v1, V-10], priorNote, diffFrom = the slice tip. The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), and the data-tour targets objectives-card, questline-card, run-line. If R-S-24 has landed, add the V-10 route flip (V-10r: features.status.route and the help route to '#/status').
+  - (1) content (R-H-43: no baseline). Wait for the HUB's word that engine V-40c is merged, with its trunk tip. Then fill <V40C_TIP> in args/v3_content_v10r.json (laneNote and unitNotes.V-10r) and set now. Launch lane.js with it: it builds V-10r on 5bdf5ab, then checks 3bd5bf5d..HEAD with the browser gate. On READY: LANE: content READY-SLICE <tip>, and tell the HUB. v3_content_check.json is superseded.
+  - (2) V-43, on the first row at or above 4.0 GB (after V-40c's start). First git -C C:/Users/ruchi/1-addic-wt/today-track merge --ff-only cb356d9c, on a clean worktree at 486288f1. Then launch lane.js with args/v3_tt_v43.json (filled: base and diffFrom cb356d9c, slot 6); set now. When it returns READY: LANE: today-track READY <tip>.
+  - (3) content V-42 after the slice merges: done [v1, V-10, V-10r], priorNote, diffFrom = the slice tip. The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), and the data-tour targets objectives-card, questline-card, run-line.
   - (4) game-tutorials on its SLOTS line: fast-forward to BASE. Then V-08b (after actions-sos V-08a, R-C-48), then V-28 (with routeOfFeature accepting a route without '#', ui-guidance.js:108, which closes the baselined training name), then V-44 (R-C-50, R-S-20, R-S-21).
   - (5) Watch outbox-OWNER.md for I6 (V-10b), and the HUB's answer on the baseline (04:28 ask).
 - Facts:
