@@ -802,6 +802,7 @@ const Actions = (() => {
         const prev = tx.get('recoveryPlan', 'plan') || {};
         const plan = tx.put('recoveryPlan', Object.assign({ graduatedAt: null }, prev, {
           key: 'plan', sections: s, confirmedAt: prev.confirmedAt || (o.confirm === true ? at : null), lastReviewAt: at,
+          graduatedAt: prev.graduatedAt || (o.confirm === true ? at : null), // set once, with RecoveryPlanConfirmed; never cleared
         }));
         if (o.confirm === true && !tx.has('RecoveryPlanConfirmed')) tx.event('RecoveryPlanConfirmed', {});
         return { plan, events: tx.events };

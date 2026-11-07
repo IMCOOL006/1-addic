@@ -1649,5 +1649,20 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.ok(Date.now() > t0, 'time still moves');
     assert.equal(new Date(2026, 0, 2).getDate(), 2, 'a Date with arguments is untouched');
   });
+  test('GRAD: recoveryPlan.graduatedAt is set once, with RecoveryPlanConfirmed, and never cleared', async () => {
+    const a = await Actions.recoveryPlan.save({ motivation: { items: ['x'] } });
+    assert.equal(a.plan.graduatedAt, null, 'not confirmed: not set');
+    const b = await Actions.recoveryPlan.save({ motivation: { items: ['y'] } }, { confirm: true });
+    assert.deepEqual(b.events.map((e) => e.type), ['RecoveryPlanConfirmed']);
+    assert.ok(ISO_RE.test(String(b.plan.graduatedAt)), 'set with the confirm');
+    assert.equal(b.plan.graduatedAt, b.events[0].at);
+    await tick();
+    const c = await Actions.recoveryPlan.save({ motivation: { items: ['z'] } }, { confirm: true });
+    const d = await Actions.recoveryPlan.save({}, { confirm: false });
+    assert.equal(c.plan.graduatedAt, b.plan.graduatedAt, 'set once');
+    assert.equal(d.plan.graduatedAt, b.plan.graduatedAt, 'never cleared');
+    assert.equal(S().view.get('recoveryPlan', 'plan').graduatedAt, b.plan.graduatedAt);
+    assert.equal(events('RecoveryPlanConfirmed').length, 1);
+  });
   // -- FIX-ONB-EMO tests end --
 });
