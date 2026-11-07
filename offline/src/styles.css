@@ -378,3 +378,45 @@ html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-si
 /* -- end core -- */
 /* Other lanes append their own section after this line, headed by a comment naming the lane
    (for example a comment reading "-- learn --"). Tokens are never redefined there. */
+
+/* -- workbook-settings -- */
+/* Settings (U-19). Tokens are only read here, never redefined. */
+.ws-settings { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.ws-settings h1 { margin: 0; }
+.ws-tabs { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ws-tab {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: var(--radius);
+  border: 1px solid hsl(var(--border)); background: hsl(var(--surface)); color: hsl(var(--text)); text-decoration: none; font-weight: 600;
+}
+.ws-tab:hover { background: hsl(var(--surface-2)); }
+.ws-tab[aria-current="page"] { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-text)); }
+.ws-tab:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.ws-body > h2 { margin: 0; }
+.ws-card { display: flex; flex-direction: column; gap: var(--space-2); }
+.ws-setting { margin: 0; }
+.ws-settings fieldset.choices { border: 0; padding: 0; margin: 0 0 var(--space-2); min-width: 0; }
+.ws-settings select { min-height: 44px; }
+.ws-lead { font-weight: 600; margin: 0; }
+.ws-flash { margin: 0; padding: var(--space-2) var(--space-3); border-radius: var(--radius); border: 1px solid hsl(var(--border)); background: hsl(var(--surface)); }
+.ws-flash-warn { border-color: hsl(var(--danger)); color: hsl(var(--text)); font-weight: 600; }
+.ws-flash-ok { border-color: hsl(var(--primary)); }
+.ws-file { min-height: 44px; max-width: 100%; }
+.ws-file:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.ws-help summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.ws-help summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.ws-help p { margin: 0 0 var(--space-2); }
+.ws-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.ws-refs { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.ws-refs p { margin: 0; overflow-wrap: anywhere; }
+.ws-sample-on { margin: 0; font-weight: 600; }
+.ws-danger { border-color: hsl(var(--danger)); }
+.ws-pin-form .row { justify-content: flex-end; }
+.ws-print-table { width: 100%; border-collapse: collapse; }
+.ws-print-table th, .ws-print-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid #999; vertical-align: top; }
+/* High contrast (settings.highContrast; set as html[data-contrast=high]): stronger text, borders and focus. */
+:root[data-contrast="high"] .muted, :root[data-contrast="high"] .field-hint { color: hsl(var(--text)); }
+:root[data-contrast="high"] .btn, :root[data-contrast="high"] .card, :root[data-contrast="high"] .ws-tab,
+:root[data-contrast="high"] input, :root[data-contrast="high"] select, :root[data-contrast="high"] textarea { border-width: 2px; border-color: hsl(var(--text)); }
+:root[data-contrast="high"] a:not(.btn):not(.ws-tab) { text-decoration: underline; }
+:root[data-contrast="high"] :focus-visible { outline-width: 4px; }
+/* -- end workbook-settings -- */
