@@ -464,6 +464,7 @@ const Actions = (() => {
 
   /* ── responses (append-only; the latest non-draft is the artifact) ───────────────────────── */
   const DONE_KINDS = ['practice', 'reflect', 'tool'];
+  const ARTIFACT_KINDS = ['build', 'assess', 'plan']; // 3.7: ArtifactSaved for these, ExerciseDone for DONE_KINDS, neither for another kind (RC17)
   function exerciseKind(exerciseId) {
     const ex = getContent().exercises;
     if (!ex) return { known: isId(exerciseId), kind: null };
@@ -489,8 +490,8 @@ const Actions = (() => {
     return write(`response ${exerciseId}`, at, (tx) => {
       const response = tx.put('responses', responseRow(exerciseId, p, at, mode, draft));
       if (!draft) {
-        const type = DONE_KINDS.includes(ex.kind) ? 'ExerciseDone' : 'ArtifactSaved';
-        tx.event(type, { exerciseId, kind: ex.kind, responseId: response.id });
+        const type = DONE_KINDS.includes(ex.kind) ? 'ExerciseDone' : ARTIFACT_KINDS.includes(ex.kind) ? 'ArtifactSaved' : null;
+        if (type) tx.event(type, { exerciseId, kind: ex.kind, responseId: response.id });
       }
       return { response, events: tx.events };
     });

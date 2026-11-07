@@ -64,7 +64,7 @@ function savedType(exerciseId) {
   const row = Array.isArray(ex) ? ex.find((x) => x && x.id === exerciseId) : ex && ex[exerciseId];
   const kind = row ? row.kind || null : null;
   if (['build', 'assess', 'plan'].includes(kind)) return 'ArtifactSaved';
-  return kind ? 'ExerciseDone' : null; // null: Content gives no kind yet, so a test does not pin the type
+  return ['practice', 'reflect', 'tool'].includes(kind) ? 'ExerciseDone' : null; // null: no kind, or one 3.7 names in neither list (RC17)
 }
 // Content.sample may be loaded (content-sample.js, BUILD-PLAN 3.1): a test that sets it, or needs it absent, puts it back after.
 async function withSample(sample, fn) {
@@ -421,7 +421,7 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     assert.equal(d.events.length, 0, 'a draft earns nothing');
     const s = await Actions.saveResponse('quick-reasons', { reasons: ['health', 'family'] });
     const want = savedType('quick-reasons');
-    assert.deepEqual(s.events.map((e) => [want === null ? null : e.type, e.payload.exerciseId, e.payload.responseId]), [[want, 'quick-reasons', s.response.id]]);
+    assert.deepEqual(s.events.map((e) => [e.type, e.payload.exerciseId, e.payload.responseId]), want === null ? [] : [[want, 'quick-reasons', s.response.id]], 'RC17: a kind 3.7 does not name earns neither');
     assert.equal(list('responses').length, 2, 'append-only');
     await Actions.scriptUsed(s.response.id);
     assert.equal(events('ScriptUsed').length, 1);
@@ -1839,6 +1839,17 @@ describe('review round 2 fixes (RC14-RC20)', () => {
     const p = await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
     assert.ok(p.plan.confirmedAt && p.plan.graduatedAt, 'the verb writes the plan row with its event');
     assert.equal(events('RecoveryPlanConfirmed').length, 1);
+  });
+  test('RC17: ArtifactSaved only for build, assess and plan; ExerciseDone for practice, reflect and tool; neither for any other kind', async () => {
+    const had = Object.prototype.hasOwnProperty.call(C(), 'exercises');
+    const old = C().exercises;
+    C().exercises = ['build', 'assess', 'plan', 'practice', 'reflect', 'tool', 'log', null].map((kind) => (kind ? { id: 'ex-' + kind, kind } : { id: 'ex-none' }));
+    try {
+      for (const x of C().exercises) await Actions.saveResponse(x.id, { a: 1 });
+      assert.deepEqual(events('ArtifactSaved').map((e) => e.payload.exerciseId), ['ex-build', 'ex-assess', 'ex-plan']);
+      assert.deepEqual(events('ExerciseDone').map((e) => e.payload.exerciseId), ['ex-practice', 'ex-reflect', 'ex-tool']);
+      assert.equal(list('responses').length, 8, 'every answer is kept');
+    } finally { if (had) C().exercises = old; else delete C().exercises; }
   });
   // -- review round 2 tests end --
 });
