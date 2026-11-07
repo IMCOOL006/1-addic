@@ -37,6 +37,9 @@
     pinMismatch: 'The two PINs do not match.',
     pinHelp: 'Set a PIN before you write anything private.',
     pinDigits: 'Use 4 to 12 digits.',
+    sample: 'Look around with sample data',
+    sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
+    sampleFailed: 'The sample data could not load.',
   };
 
   // The eight steps of PLAN 5.1. Only the safety notice cannot be skipped.
@@ -275,7 +278,16 @@
         const notice = noticeOpen ? h('div', { class: 'card stack', dataset: tid('early-notice'), role: 'note' },
           h('p', { text: COPY.early }),
           btn('Got it', () => { noticeOpen = false; answers.earlyNoticeSeen = true; notice.remove(); }, { testid: 'early-notice-dismiss' })) : null;
-        return { body: [notice], read() {} };
+        // O6: a ghost button loads the marked, erasable sample; shown only when this version has one (never a dead button).
+        const canSample = !!(A && typeof A.loadSample === 'function') && safe(() => typeof C.sample.generate === 'function', false);
+        const sample = canSample ? btn(COPY.sample, async () => {
+          if (sample.disabled) return;
+          sample.disabled = true;
+          try { await A.loadSample(); } catch (err) { sample.disabled = false; toast(COPY.sampleFailed, 'warn'); return; }
+          toast(COPY.sampleLoaded, 'ok');
+          UI.go('#/today');
+        }, { ghost: true, testid: 'onb-sample' }) : null;
+        return { body: [notice, sample], read() {} };
       }
       if (id === 'privacy') {
         const p1 = h('input', Object.assign({}, PIN_ATTRS, { dataset: tid('onb-pin') }));

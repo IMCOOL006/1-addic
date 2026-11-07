@@ -1506,5 +1506,24 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     const lp = d.byId(d.UI.pages.lock({}), 'lock-pin');
     for (const k of ['type', 'inputmode', 'pattern', 'autocomplete']) assert.equal(lp.attrs[k], O.PIN_ATTRS[k], 'lock ' + k);
   });
+  test('SAMPLE: step 1 offers Look around with sample data (O6): marked rows, then Today; no sample in the version, no button', async () => {
+    const d = sosDom({ onboarding: true });
+    await withSample(undefined, async () => {
+      assert.equal(d.onb({}).querySelector('[data-testid="onb-sample"]'), null, 'never a dead button');
+    });
+    const lesson = firstModule().lessons[0].id;
+    await withSample({ generate: (now) => ({ stores: { events: [{ id: 'sample-e1', type: 'LessonCompleted', at: now, payload: { lessonId: lesson } }] } }) }, async () => {
+      const root = d.onb({});
+      assert.ok(root.querySelector('[data-testid="onb-sample"]'), 'the button is on step 1');
+      const b = d.byId(root, 'onb-sample');
+      assert.equal(b.textContent.trim(), 'Look around with sample data');
+      assert.ok(String(b.attrs.class).split(' ').includes('ghost'), 'a ghost button');
+      b.click();
+      await d.settle();
+      assert.ok(list('events').some((e) => e.id === 'sample-e1' && e.sample === true), 'the sample rows are marked');
+      assert.ok(S().view.get('meta', 'sample'), 'erasable: the meta sample row');
+      assert.deepEqual(d.go, ['#/today']);
+    });
+  });
   // -- FIX-ONB-EMO tests end --
 });
