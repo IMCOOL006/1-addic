@@ -751,12 +751,14 @@ const UI = (function () {
 
   function lockFallback() {
     const S = ns('Store');
-    const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
+    const msg = h('p', { class: 'field-error', hidden: true });
     // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
     const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg lock-where' });
     msg.id = 'lock-msg';
     // Without crypto, a second line says where the PIN still works, so 'not available' never reads as 'erase' (RS18).
     const where = h('p', { id: 'lock-where', class: 'field-hint', hidden: true });
+    // One alert holds both lines, on the page from the start, so the second is read out with the first (RS18).
+    const said = h('div', { class: 'lock-said', role: 'alert' }, msg, where);
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
       class: 'form stack', novalidate: true,
@@ -776,7 +778,7 @@ const UI = (function () {
         where.hidden = why !== 'NO_CRYPTO';
         pin.focus();
       },
-    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg, where), btn);
+    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, said), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
       h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)

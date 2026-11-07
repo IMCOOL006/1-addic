@@ -1136,6 +1136,31 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       'the first line, then this one, then the Forgot-PIN line');
   });
 
+  test('RS18-V11: the line on where the PIN works is read out with the first one, and the PIN field is described by both', async () => {
+    setup();
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true }),
+      lock: { unlock: async () => { const e = new Error('no crypto'); e.code = 'NO_CRYPTO'; throw e; } } };
+    at('#/lock');
+    await UI.render();
+    const all = () => main().all();
+    const pin = all().find((e) => e.id === 'lock-pin');
+    const msg = all().find((e) => e.id === 'lock-msg');
+    const where = all().find((e) => e.id === 'lock-where');
+    assert.equal(pin.getAttribute('aria-describedby'), 'lock-msg lock-where');
+    const region = (e) => { for (let n = e; n; n = n.parentNode) if (['alert', 'status'].includes(n.getAttribute && n.getAttribute('role'))) return n; return null; };
+    const said = region(msg);
+    assert.ok(said, 'the first line is in a live region');
+    assert.equal(region(where), said, 'the second line is in the same one');
+    assert.equal(said.getAttribute('role'), 'alert');
+    assert.equal(said.hidden, false, 'the region is on the page before the lines change, so the change is read out');
+    pin.value = '2468';
+    await all().find((e) => e.tagName === 'FORM').on.submit[0]({ preventDefault() {} });
+    assert.equal(msg.hidden, false);
+    assert.equal(where.hidden, false);
+    assert.match(said.textContent, /not available on this device\.\s+Open this file in the browser where you set your PIN\./);
+  });
+
   test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
     setup();
     t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'], now: Date.now() });

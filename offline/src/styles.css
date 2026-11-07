@@ -338,6 +338,7 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 [data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop,
 [data-route="sos"] #coach, [data-route="sos"] .coach-overlay { display: none !important; } /* the whole layer (RS9) */
 .lock-page { max-width: 420px; margin: 0 auto; }
+.lock-said { display: flex; flex-direction: column; gap: var(--space-1); } /* the PIN lines, one alert (RS18) */
 
 /* ── The harbor (placeholder box; the harbor lane draws the scene inside) ──────────────────── */
 .harbor {
