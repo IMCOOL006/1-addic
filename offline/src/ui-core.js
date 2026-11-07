@@ -677,7 +677,11 @@ const UI = (function () {
     if (discreet || settings.counters === false) root.setAttribute('data-counters', 'off'); else root.removeAttribute('data-counters');
     if (typeof settings.textSize === 'string' && settings.textSize) root.setAttribute('data-text-size', settings.textSize); else root.removeAttribute('data-text-size');
     if (settings.reducedMotion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion');
-    if (settings.highContrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast'); // (R-S-6)
+    // High contrast follows the settings row only while the row can be read: locked (the row is sealed) or before the
+    // Store has loaded, it stays as the session left it; no plain copy of it is kept on the device (RS19).
+    if (!locked && !(state.booted && !state.loaded)) {
+      if (settings.highContrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast'); // (R-S-6)
+    }
     if (document.body) document.body.classList.toggle('calm', !!settings.calm);
     root.setAttribute('data-route', key);
     const nav = byId('nav');

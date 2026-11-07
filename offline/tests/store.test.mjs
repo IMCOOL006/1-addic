@@ -1315,6 +1315,38 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(root().getAttribute('data-contrast'), null, 'no setting: off');
     assert.equal(box.size, 0, 'no new storage key');
   });
+
+  test('RS19: while the settings row is sealed, high contrast stays as the session left it; an erase turns it off', async () => {
+    setup();
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    const s = { locked: false, hasLock: true, row: { key: 'app', highContrast: true } };
+    globalThis.Store = {
+      view: { get: (st, id) => (!s.locked && st === 'settings' && id === 'app' ? s.row : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: s.hasLock, locked: s.locked }),
+      lock: { unlock: async () => false },
+    };
+    UI.pages.today = page('today');
+    const root = () => document.documentElement;
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high');
+    s.locked = true; // the auto-lock: the row is sealed now
+    for (const hash of ['#/lock', '#/sos/urgent', '#/sos', '#/today']) {
+      at(hash);
+      await UI.render();
+      assert.equal(root().getAttribute('data-contrast'), 'high', hash + ', locked: kept');
+    }
+    assert.equal(location.hash, '#/lock', 'a locked page goes to the lock screen');
+    assert.equal(box.size, 0, 'no plain copy on the device');
+    s.locked = false; s.hasLock = false; s.row = null; // Forgot PIN: the notebook is erased
+    await UI.render();
+    assert.equal(location.hash, '#/today');
+    assert.equal(root().getAttribute('data-contrast'), null, 'erased: off');
+    assert.equal(box.size, 0);
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
