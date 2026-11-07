@@ -16,5 +16,6 @@ See `CLAUDE.md` for how cloud sessions are configured. Dependencies are installe
 
 - `npm run build` builds the file from `offline/src/`.
 - `npm test` runs the Node tests; `npm run test:browser` runs the browser flows (Chrome or Chromium, offline, 390 px).
+- `npm run screens` writes the guide's screenshots to `offline/docs/images/` from the built file.
 - `npm run check` runs build, tests, the browser flows and the guide (`python offline/docs/build_guide.py`).
 - The guide: `offline/docs/1-addic-Guide.md`, built to `offline/docs/1-addic-Guide.docx`.

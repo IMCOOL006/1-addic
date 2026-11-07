@@ -74,7 +74,7 @@ In this build SOS shows the India urgent-help numbers, each one a tap to call, u
 | `npm run build` | Builds `offline/1-addic.html` |
 | `npm test` | Node tests in `offline/tests/*.test.mjs` (not the browser suite) |
 | `npm run test:browser` | Opens the built file in Chrome (or Chromium) offline at 390 px and runs the named flows; skips by name when a browser or a screen is missing |
-| `npm run screens` | Planned (U-35): writes the guide's screenshots to `offline/docs/images/` |
+| `npm run screens` | Writes the guide's screenshots to `offline/docs/images/` from the built file, seeded with the sample data: `<name>-phone.png` (390x844) and `<name>-desktop.png` (1280x800), each at 300 DPI; skips by name when the file, a browser or a screen is missing |
 | `npm run check` | Build, Node tests, browser suite and the guide, in that order |
 | `python offline/docs/build_guide.py` | Builds the guide `.docx` from `offline/docs/1-addic-Guide.md` |
 
