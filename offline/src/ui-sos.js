@@ -92,6 +92,11 @@
       'nothing to live for', 'no (reason|point)( (to|in|for))? (live|living|going on)',
       '(want(s|ed|ing)?|wish(es|ed|ing)?|rather|ready)( to)? be dead', '(want|wish)(s|es|ed|ing)? (it|it all|this|everything) to (end|be over)', // RS19
       'never (been )?born', 'disappear(s|ed|ing)? forever', 'better off without me',
+      // RS24: the re-checker's forms. A list always misses some wording, so Something else also keeps the numbers above the steps.
+      "(hop|wish)(e|es|ed|ing)? i (do not|don'?t|did not|didn'?t|will not|won'?t) wake up", 'wanna be dead',
+      'hop(e|es|ed|ing) (that )?i (will |would |could |just )?die', "wish(es|ed|ing)? i (had ?n'?t|had not|was ?n'?t|was not|were not) (been )?born",
+      'wish(es|ed|ing)? (it|this|everything)( all)? (would|could|will)( all)? (end|be over)',
+      "better off (if|when|once) i('?m| am| was| were) (gone|dead|not here|not around)", 'better off (if|when|once) i (die|died)',
     ],
   };
   const CRISIS_RE = new RegExp('\\b(' + CRISIS.patterns.join('|') + ')\\b', 'i');
@@ -107,6 +112,9 @@
     const s = String(text == null ? '' : text);
     return !!s.trim() && OVERDOSE_RE.test(crisisNorm(s));
   }
+  // RS24: a phrase list always misses some wording, so after typed text on Something else the next screen keeps the
+  // urgent line and two numbers one tap away above the steps. Crisis copy: short, for clinical review.
+  const LEAD = { clinicalReview: true, line: 'If you are not safe, call now.' };
 
   // The craving tools: route id, skill credited (Content.skills ids), label.
   const TOOLS = [
@@ -160,6 +168,15 @@
       overdose: texts(res.overdose),
       withdrawal: texts(res.withdrawal),
     };
+  }
+
+  // RS24: the two numbers above the steps: the region's emergency number and its first crisis line (elsewhere, the
+  // first two international lines with a number). The full list stays one tap away.
+  function leadList(region, C) {
+    const res = safe(() => C.resources, {}) || {};
+    const one = (arr) => (Array.isArray(arr) ? arr.map(urgentItem).filter((i) => i && i.name && i.tel) : []);
+    if (region === 'intl') return one(safe(() => res.intl.lines, [])).slice(0, 2);
+    return [].concat(one(safe(() => res.in.emergency, [])).slice(0, 1), one(safe(() => res.in.crisis, [])).slice(0, 1));
   }
 
   // The same rule as Actions.sosSession when no outcome is given.
@@ -345,8 +362,8 @@
   }
 
   const H = {
-    COPY, FALLBACK, CRISIS, OVERDOSE, TOOLS, FEEL_SKILLS, WAVE_MIN,
-    telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, isOverdoseText, parseSos, sessionFrom, guideOrder, soberSteps,
+    COPY, FALLBACK, CRISIS, OVERDOSE, LEAD, TOOLS, FEEL_SKILLS, WAVE_MIN,
+    telHref, urgentList, leadList, outcomeFrom, isCrisisEmotion, isCrisisText, isOverdoseText, parseSos, sessionFrom, guideOrder, soberSteps,
     reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, markHelped, meetingsFrom, activeContacts, planFor, planSections, clock, remaining, leaveSession,
   };
 
@@ -458,6 +475,17 @@
       } catch (e) { ok = false; }
     }
     toast(ok ? COPY.copied : 'Could not copy. It is ' + text + '.', ok ? 'ok' : 'warn');
+  }
+
+  // RS24: above the steps after typed text on Something else: the urgent line and its two numbers, each one tap.
+  function leadView(c) {
+    const items = leadList(safe(() => c.profile.region, 'in'), Cn());
+    return h('section', { class: 'stack sos-lead', 'aria-label': COPY.urgent.title, dataset: tid('sos-urgent-lead') },
+      h('p', { class: 'sos-line', text: LEAD.line }),
+      ...items.map((it, k) => h('div', { class: 'row' },
+        h('a', { class: 'sos-target', href: it.tel, dataset: tid('sos-lead-number-' + (k + 1)), 'aria-label': 'Call ' + it.name + ', ' + it.number },
+          h('span', { class: 'sos-target-name', text: it.name }), h('span', { class: 'sos-target-number', text: it.number })),
+        it.verify ? h('span', { class: 'sos-verify muted', text: COPY.verify }) : null)));
   }
 
   // The urgent numbers. Reads Content (and the region from the profile when unlocked) only. Shared with the lock screen.
@@ -686,7 +714,7 @@
 
     function other() {
       const input = h('input', { id: 'sos-feel-text', type: 'text', maxlength: '120', autocomplete: 'off', 'aria-label': COPY.feelOther.title, style: { minHeight: '44px', width: '100%' } });
-      const go = () => { if (isOverdoseText(input.value)) urgent(); else if (isCrisisText(input.value, c.E)) crisis(); else low(); }; // RS23: overdose first
+      const go = () => { if (isOverdoseText(input.value)) urgent(); else if (isCrisisText(input.value, c.E)) crisis(); else low(true); }; // RS23: overdose first; RS24: otherwise the numbers stay above the steps
       input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); go(); } });
       show(screen(COPY.feelOther.title, COPY.feelOther.line, input, btn('Next', go, { primary: true })));
     }
@@ -713,11 +741,12 @@
       }
     }
 
-    function low() {
-      show(soberView(use(FEEL_SKILLS.sober, () => {
+    function low(lead) { // lead: typed text on Something else (RS24)
+      const steps = soberView(use(FEEL_SKILLS.sober, () => {
         const lines = texts(safe(() => C.catalogs.reassuring, [])).concat(texts(safe(() => C.catalogs.acceptance, [])));
         show(cards(COPY.selfTalk.title, lines, '', use(FEEL_SKILLS.selfTalk, activity)));
-      }), 'Next'));
+      }), 'Next');
+      show(lead ? h('div', { class: 'stack' }, leadView(c), steps) : steps);
     }
 
     function activity() {

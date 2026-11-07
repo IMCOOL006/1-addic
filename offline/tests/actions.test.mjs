@@ -2319,3 +2319,56 @@ describe('review round 3 fixes (FIX-R3)', () => {
   });
   // -- FIX-R3 tests end --
 });
+
+// ── FIX-R4 (2026-11-07, rulings 16:17): the safety re-check's items RS24 to RS28 ──
+describe('review round 4 fixes (FIX-R4)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // the feeling flow's Something else, typed and sent with Next
+  const typedTo = (t) => {
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+  // every node under root, in document order
+  const order = (root) => { const out = []; const walk = (n) => { for (const k of n.kids) { out.push(k); walk(k); } }; walk(root); return out; };
+
+  const RS24_YES = [
+    "I hope I don't wake up", 'I hope I dont wake up tomorrow', "I wish I didn't wake up", 'I wanna be dead', 'I hope I die',
+    "I wish I hadn't been born", 'I wish it would all end', 'everyone would be better off if I was gone',
+    'they would be better off if I were dead',
+  ];
+  for (const t of RS24_YES) {
+    test('RS24: typed "' + t + '" goes to the numbers', () => { assert.equal(H.isCrisisText(t, null), true, t); });
+  }
+  test('RS24: whatever is typed on Something else, the next screen shows the urgent line and its numbers above the steps', () => {
+    for (const t of ['I feel strange today', 'my head is loud', 'something I cannot name', '']) {
+      const what = JSON.stringify(t);
+      const root = typedTo(t);
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]') && !root.querySelector('[data-testid="sos-urgent"]'), what + ': no match, no urgent view');
+      const lead = root.querySelector('[data-testid="sos-urgent-lead"]');
+      assert.ok(lead, what + ': the urgent line is on the next screen');
+      assert.ok(lead.textContent.includes(H.LEAD.line), what + ': its line');
+      const nums = lead.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+      assert.equal(nums.length, 2, what + ': two numbers, each one tap');
+      assert.ok(nums.every((a) => /^Call /.test(a.attrs['aria-label'] || '')), what + ': each says whom it calls');
+      const title = root.querySelector('.sos-title');
+      const all = order(root);
+      assert.ok(title && all.indexOf(lead) < all.indexOf(title), what + ': above the steps');
+      assert.equal(title.textContent.trim(), H.COPY.wave.title, what + ': the steps follow');
+    }
+    assert.deepEqual(H.leadList('in', C()).map((i) => i.number), ['112', '14416'], 'India: the emergency number and the first crisis line');
+    assert.ok(H.leadList('intl', C()).length <= 2 && H.leadList('intl', C()).every((i) => i.tel), 'elsewhere: at most two lines, each with a number');
+    assert.equal(H.LEAD.clinicalReview, true, 'marked for clinical review');
+    assert.ok(typedTo('I wanna be dead').querySelector('[data-testid="sos-crisis"]'), 'a match still opens the crisis view at once');
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    assert.ok(!root.querySelector('[data-testid="sos-urgent-lead"]'), 'a named feeling: the steps as before');
+  });
+  // -- FIX-R4 tests end --
+});
