@@ -988,8 +988,8 @@ function sosDom(opts) {
     tap: (root, label) => button(root, label).click(),
     tapId: (root, id) => byId(root, id).click(),
     rate: (root, n) => byId(root, 'sos-rating').querySelectorAll('button')[n].click(),
-    open(parts, query) {
-      const root = UI.pages.sos({ route: { parts, query: query || {} }, A: Actions, view: S().view, E: null,
+    open(parts, query, A) {
+      const root = UI.pages.sos({ route: { parts, query: query || {} }, A: A || Actions, view: S().view, E: null,
         profile: S().view.get('profile', 'me') || {} });
       body.replaceChildren(root);
       return root;
@@ -1784,6 +1784,23 @@ describe('review round 2 fixes (RC14-RC20)', () => {
       assert.equal(events('TutorialCompleted').length, 1);
       assert.equal(events('FeatureRevealed').length, 1);
     });
+  });
+  test('RC20: when the device refuses the session, Yes opens the slip flow unlogged, and Log it and go on saves the slip', async () => {
+    const d = sosDom();
+    const A = Object.assign({}, Actions, { sosSession: async () => { const e = new Error('The device refused the write.'); e.code = 'WRITE_FAILED'; throw e; } });
+    const root = d.open(['sos', 'craving'], {}, A);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-checkin');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(d.go, ['#/sos/slip'], 'never ?logged=1 when nothing was logged');
+    assert.ok(d.toasts.some((t) => t[1] === 'warn'), 'the person is told it was not saved');
+    assert.equal(events('SlipLogged').length, 0);
+    const slip = d.open(['sos', 'slip']);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    assert.equal(events('SlipLogged').length, 1, 'Log it and go on saves the slip');
   });
   // -- review round 2 tests end --
 });

@@ -593,8 +593,12 @@
       st.used = used;
       clearInterval(iv);
       const payload = sessionFrom(st);
-      if (A && typeof A.sosSession === 'function') await save(() => A.sosSession(payload));
-      if (used && !mode.drill) { UI.go('#/sos/slip?logged=1'); return; }
+      let refused = false;
+      if (A && typeof A.sosSession === 'function') {
+        const fn = () => A.sosSession(payload);
+        refused = !(await save(fn)) && !waiting.includes(fn); // RC20: neither saved nor kept for the unlock
+      }
+      if (used && !mode.drill) { UI.go(refused ? '#/sos/slip' : '#/sos/slip?logged=1'); return; } // refused: the slip flow logs it
       if (used && mode.drill) { UI.go('#/sos/slip?preview=1'); return; }
       const words = mode.drill ? COPY.drillDone : COPY.surfed;
       show(screen(words.title, words.line, link('Finish', '#/today', { primary: true, testid: 'sos-finish' })));
