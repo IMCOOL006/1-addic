@@ -285,3 +285,39 @@ test('actions: ui-actions.js inserts text as text, makes no network call and exp
   assert.ok(s > 0 && e > s, 'the actions section is closed');
   assert.doesNotMatch(css.slice(s, e), /^\s*--[a-z-]+\s*:/m, 'no token redefined');
 });
+
+test('planner: crisis words in a saved block keep the help line on screen, across the Store re-render', async () => {
+  await freshStore();
+  const DAY = '2026-11-20'; const FROM = '2026-11-21'; const TO = '2026-11-22';
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/planner', { date: DAY })));
+    assert.equal(byTest(root, 'planner-help').length, 0, 'no help line before');
+    await one(root, 'planner-add-btn').fire('click');
+    one(root, 'planner-f-title').value = "I can't go on";
+    one(root, 'planner-f-start').value = '20:00';
+    one(root, 'planner-f-end').value = '21:00';
+    await one(root, 'planner-form').fire('submit');
+    await until(() => Store.view.list('plans').length === 1);
+    assert.equal(one(root, 'planner-help-go').getAttribute('href'), '#/sos/urgent');
+    // ui-core re-renders from the Store one frame later: a new page, and the line is still there
+    const again = AU.page(ctxFor(Store.view, R('/actions/planner', { date: DAY })));
+    assert.equal(byTest(again, 'planner-help').length, 1, 'the line survives the re-render');
+    assert.equal(one(again, 'planner-help-go').getAttribute('href'), '#/sos/urgent');
+    // a block saved for another day: the line stays on the day it was saved from, and shows on its own day
+    const from = AU.page(ctxFor(Store.view, R('/actions/planner', { date: FROM })));
+    await one(from, 'planner-add-btn').fire('click');
+    one(from, 'planner-f-title').value = 'Evening';
+    one(from, 'planner-f-date').value = TO;
+    one(from, 'planner-f-start').value = '19:00';
+    one(from, 'planner-f-end').value = '20:00';
+    one(from, 'planner-f-activity').value = "I can't go on";
+    await one(from, 'planner-form').fire('submit');
+    await until(() => Store.view.list('plans').length === 2);
+    assert.equal(byTest(AU.page(ctxFor(Store.view, R('/actions/planner', { date: FROM }))), 'planner-help').length, 1);
+    assert.equal(byTest(AU.page(ctxFor(Store.view, R('/actions/planner', { date: TO }))), 'planner-help').length, 1);
+    // a block already in the Store (as after a reload) shows it too; a calm day does not
+    await Actions.plans.add({ date: '2026-11-24', start: '09:00', end: '10:00', title: 'Morning', kind: 'should', reward: "I can't go on" });
+    assert.equal(byTest(AU.page(ctxFor(Store.view, R('/actions/planner', { date: '2026-11-24' }))), 'planner-help').length, 1);
+    assert.equal(byTest(AU.page(ctxFor(Store.view, R('/actions/planner', { date: '2026-11-23' }))), 'planner-help').length, 0);
+  });
+});

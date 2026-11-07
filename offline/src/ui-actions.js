@@ -218,6 +218,11 @@ const ActionsUI = (() => {
     if (!eng || typeof eng.crisisKeywords !== 'function') return false;
     return texts.some((t) => safe(() => arr(eng.crisisKeywords(String(t || ''))).length > 0, false));
   };
+  /* The days whose planner showed the help line after a save, for this session only (memory, never stored). It lives
+     out here, not in the page, because ui-core builds a new page when the Store changes one frame after the save. */
+  const HELP_DATES = new Set();
+  /* The help line shows on a day that has a block with crisis words, or that a crisis save was made from. */
+  const helpOn = (E, rows, date) => HELP_DATES.has(date) || arr(rows).some((p) => crisisIn(E, p.title, p.activity, p.reward));
   /* The planner's date from the route (?date=), else today. */
   function plannerDate(route, now) {
     const q = route && isObj(route.query) ? route.query.date : '';
@@ -298,7 +303,7 @@ const ActionsUI = (() => {
                 { 'aria-label': `${TEXT.ideaAdd}: ${s.activity} at ${timeLabel(start)}` }));
           }))));
       }
-      if (state.help) root.appendChild(h('p', { class: 'tip act-help', 'data-test': 'planner-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'planner-help-go')));
+      if (helpOn(E, rows, date)) root.appendChild(h('p', { class: 'tip act-help', 'data-test': 'planner-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'planner-help-go')));
     };
 
     const openForm = (pre) => { state.form = Object.assign({ id: null, date, start: '', end: '', title: '', kind: 'should', activity: '', risky: null, reward: '', message: '' }, pre || {}); state.asking = null; paint(); focusFirst(); };
@@ -343,7 +348,7 @@ const ActionsUI = (() => {
           }
           state.form = null;
           toastMsg(TEXT.saved, 'ok');
-          state.help = crisisIn(E, values.title, values.activity, values.reward);
+          if (crisisIn(E, values.title, values.activity, values.reward)) { HELP_DATES.add(date); if (DATE_RE.test(str(values.date))) HELP_DATES.add(str(values.date)); }
           paint();
           focusOn('[data-tour="planner-add"]');
         } },
