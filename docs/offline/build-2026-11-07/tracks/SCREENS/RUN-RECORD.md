@@ -167,21 +167,29 @@
 - R-S-19 to HUB and CORE: the new SCREENS hooks use data-test, as in PLAN-V3 section 3 and the lanes' own files (the unitNotes say data-testid).
 - Fact: lane.js's scout prompt is v1-shaped (it reads _base at 655516dc, BUILD-PLAN section 5 and lane_args.json). The V3 runs override this through laneNote, which also reaches builders as "THE BUILD CHAT'S WORD". The build runs need a builder-focused laneNote (V3 facts) and the same brief and contract paths.
 
+## 2026-11-08 02:50 IST · V3 scouts done; V-01a running
+
+- Scouts returned:
+  - today-track: wf_ea78e1ac-572, brief 13205 B.
+  - content: wf_10d4cc97-c2a, brief 7299 B.
+  - game-tutorials: wf_39613665-fbc, brief 8990 B.
+  - All are at briefs/<lane>-v3.md and contracts/<lane>-v3.md, committed fb6c683c.
+- R-H-39 (02:45): data-test confirmed; the HUB corrected lane_args_v3.json and PLAN-V3 section 3 (1c068e5).
+- The V-01a slice was launched at 02:47 as wf_6851b095-834 (args tracks/SCREENS/args/v3_tt_slice.json: the corrected unitNotes plus the builder laneNote). Memory was 9.7 GB.
+
 ## Resume here
 
-- Chat 1c2cf086 (SCREENS), STATE BUILDING, V3 (PLAN-V3.md). Stamp: 2026-11-08 02:45 IST.
-- RUNNING (alive only while session 1c2cf086 is listed by claude agents --json):
-  - wf_ea78e1ac-572: today-track scout.
-  - wf_10d4cc97-c2a: content scout.
-  - wf_39613665-fbc: game-tutorials scout.
-  - Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/<run>/journal.jsonl.
+- Chat 1c2cf086 (SCREENS), STATE BUILDING, V3 (PLAN-V3.md). Stamp: 2026-11-08 02:50 IST.
+- RUNNING (alive only while session 1c2cf086 is listed by claude agents --json): wf_6851b095-834, the today-track V-01a slice (lane.js sliceRun; slot 6; worktree C:/Users/ruchi/1-addic-wt/today-track on build/today-track from f69bc68a). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/wf_6851b095-834/journal.jsonl. Builder progress: C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track__progress.md.
+- If this chat is gone and the run is not live, relaunch it from v3_tt_slice.json with now from date. If the branch has V-01a committed past f69bc68a, launch with start 'check' and diffFrom f69bc68a instead.
 - NEXT:
-  - (1) When the today-track scout returns, read briefs/today-track-v3.md (under 15 KB) and contracts/today-track-v3.md. Then launch lane.js with lanes.today-track of lane_args_v3.json plus: base f69bc68a, slot 6, session https://claude.ai/code/session_1c2cf086-eb79-481e-84f2-f24a31da7dcd, now from date, sliceRun true, done [U-15, U-16, U-17, U-18, FIX-EMBED], diffFrom f69bc68a, brief and contract at the -v3 paths, and a builder laneNote: V3; data-test hooks; PLAN-V3 section 3 binds; the defaults V-Q3..V-Q6.
-  - (2) When it returns: LANE: today-track READY-SLICE <tip>. Then the V-01b relaunch with done + [V-01a], priorNote, diffFrom <slice tip>.
-  - (3) content and game-tutorials: wait for their SLOTS lines on status-HUB.md. Then fast-forward each worktree to BASE (merge --ff-only) and run its slice.
+  - (1) When it returns READY-SLICE <tip>: verify the tip, the trailers and a clean worktree. Then write LANE: today-track READY-SLICE <tip> plus the slice report path, and send the HUB a line.
+  - (2) Then the V-01b run: the same args minus sliceRun, plus done + [V-01a], priorNote (the slice builder's note from the journal), diffFrom <the slice tip>.
+  - (3) content V-10 and game-tutorials V-08b/V-28 wait for their SLOTS lines. For each: fast-forward the worktree with merge --ff-only to BASE, then lane.js with the -v3 brief and contract paths and a builder laneNote like v3_tt_slice.json's.
 - Facts:
   - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume>.
   - hub_commit.py runs from the repo root, with repo-relative paths.
   - claude agents needs --json.
-  - The board's lane states are NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY, READY-SLICE, RED, MERGED, BLOCKED, PAUSED (tools/board.py:65).
+  - The board's states: tools/board.py:65.
+  - lane.js's scout prompt is v1-shaped; the V3 runs override it through laneNote.
   - Do not run a wait loop.
