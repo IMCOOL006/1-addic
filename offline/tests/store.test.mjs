@@ -827,6 +827,18 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.view.get('todos', 'n1').text, 'NEW-ROW');
     assert.equal(S.status().hasLock, true, 'the lock stays');
     assert.ok(!idb.dump().includes('NEW-ROW'), 'the new rows are sealed under it');
+    // C4: the lock row outlives the import: a reload is locked, a wrong PIN opens nothing, the same PIN opens it all
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().locked, true, 'a reload after the import is still locked');
+    assert.equal(R.view.get('todos', 'n1'), null);
+    assert.equal(await R.lock.unlock('1357'), false, 'a wrong PIN is refused');
+    assert.equal(R.status().locked, true);
+    assert.equal(R.view.get('todos', 'n1'), null, 'and opens nothing');
+    assert.equal(await R.lock.unlock('2468'), true, 'the same PIN opens the imported rows');
+    assert.equal(R.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.equal(R.view.count('events'), 0, 'replaced, never merged, after a reload too');
+    R.lock.lockNow();
     S.lock.lockNow();
     ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
     await S.resetAll(); // Forgot PIN: erase, then start again from a backup
