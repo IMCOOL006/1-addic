@@ -260,7 +260,10 @@ test('actions: the hub and the screens still being built are honest (no dead but
     assert.equal(one(hub, 'actions-open-planner').getAttribute('href'), '#/actions/planner');
     assert.equal(one(hub, 'actions-open-battle').getAttribute('href'), '#/actions/battle');
     assert.equal(one(hub, 'actions-open-review').getAttribute('href'), '#/actions/review');
-    for (const sub of ['quests', 'predictions', 'todos', 'elsewhere']) {
+    for (const sub of ['quests', 'predictions', 'todos']) {
+      assert.equal(AU.page(ctxFor(E.makeView({}), R('/actions/' + sub))).getAttribute('data-test'), sub, sub + ' is built (U-25)');
+    }
+    for (const sub of ['elsewhere']) {
       const root = AU.page(ctxFor(E.makeView({}), R('/actions/' + sub)));
       assert.equal(root.getAttribute('data-test'), 'actions-stub', sub);
       assert.match(root.textContent, /being built/);
@@ -604,4 +607,248 @@ test('review: the reminder goes to UI.download as text/calendar; crisis words sh
       for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
     });
   } finally { delete globalThis.UI; AU.forgetReviews(); }
+});
+
+// ── U-25: quests, Prediction Lab, to-dos and the practices player ─────────────────────────────────────────────
+const PR = vm.runInThisContext(`(function () {
+${readFileSync(src('ui-practices.js'), 'utf8')}
+return PracticesUI;
+})()`, { filename: src('ui-practices.js') });
+// A stand-in of exactly the content lane's shape (content-practices.js at be0f806d), not its words.
+const STANDIN = {
+  breathe: { id: 'breathe', title: 'Breathe test', minutes: 5, ladder: [5, 10, 15, 20, 25, 30], intro: 'Intro line.',
+    script: [{ t: 'Line one.', secs: 10 }, { t: 'Line two.', secs: 20 }, { t: 'Line three.', secs: 30 }], close: 'Close line.' },
+  sober: { id: 'sober', title: 'Sober test', minutes: 2, steps: ['S.', 'O.', 'B.', 'E.', 'R.'], intro: 'Five steps.',
+    script: [{ t: 'S.', secs: 10 }, { t: 'O.', secs: 25 }, { t: 'B.', secs: 30 }, { t: 'E.', secs: 25 }, { t: 'R.', secs: 15 }], close: 'Done.' },
+  walking: { id: 'walking', title: 'Walk test', minutes: 5, intro: 'Walk.', script: [{ t: 'Step.', secs: 30 }], close: 'End.' },
+};
+const withPractices = async (p, fn) => {
+  const had = Object.prototype.hasOwnProperty.call(globalThis.Content, 'practices');
+  const old = globalThis.Content.practices;
+  if (p === undefined) delete globalThis.Content.practices; else globalThis.Content.practices = p;
+  try { return await fn(); } finally { if (had) globalThis.Content.practices = old; else delete globalThis.Content.practices; PR.forgetSessions(); }
+};
+const eventsOf = (type) => Store.view.list('events').filter((e) => e.type === type);
+const noDeadButtons = (root) => {
+  for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+  for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+};
+
+test('practices: the script from the real shape, an array shape, or null; list order; minutes credited', () => {
+  const C = { practices: STANDIN };
+  const s = PR.practiceScript(C, 'breathe');
+  assert.deepEqual(s.steps, ['Line one.', 'Line two.', 'Line three.']);
+  assert.deepEqual(s.secs, [10, 20, 30]);
+  assert.equal(s.minutes, 5);
+  assert.deepEqual(s.ladder, [5, 10, 15, 20, 25, 30]);
+  assert.equal(s.intro, 'Intro line.');
+  assert.equal(s.close, 'Close line.');
+  assert.equal(PR.practiceScript(C, 'sober').steps.length, 5);
+  assert.equal(PR.practiceScript({ practices: [{ id: 'x', title: 'X', minutes: 3, steps: ['a', 'b'] }] }, 'x').steps.length, 2);
+  assert.equal(PR.practiceScript(C, 'body-scan'), null);
+  assert.equal(PR.practiceScript({}, 'breathe'), null);
+  assert.equal(PR.practiceScript(null, 'breathe'), null);
+  assert.equal(PR.practiceScript({ practices: { breathe: { id: 'breathe', script: [] } } }, 'breathe'), null);
+  assert.deepEqual(PR.practiceList(C).map((r) => r.id), ['breathe', 'sober', 'walking']);
+  assert.equal(PR.minutesCredit(59999), 0);
+  assert.equal(PR.minutesCredit(180000), 3);
+  assert.equal(PR.minutesCredit(10 ** 9), 600);
+});
+
+test('practices: the events of a finish; ExerciseDone always, MindfulMinute only for a whole minute; no SkillUsed', () => {
+  const a = PR.practiceEvents('breathe', { elapsedMs: 185000, helpful: '7', reflection: '  calmer  ' });
+  assert.deepEqual(a, [['ExerciseDone', { exerciseId: 'breathing', practiceId: 'breathe', kind: 'practice', minutes: 3, helpful: 7, reflection: 'calmer' }], ['MindfulMinute', { minutes: 3 }]]);
+  const b = PR.practiceEvents('walking', { elapsedMs: 20000, helpful: '11' });
+  assert.deepEqual(b, [['ExerciseDone', { exerciseId: 'walking', practiceId: 'walking', kind: 'practice', minutes: 0 }]]);
+  assert.ok(!a.concat(b).some(([t]) => t === 'SkillUsed'));
+});
+
+test('practices: no script is an honest stub with a real way back (O7)', async () => {
+  await withPractices(undefined, () => withDom(async () => {
+    const root = PR.page(ctxFor(Store.view, R('/practice/breathe')));
+    assert.ok(byTest(root, 'practice-stub').length || root.getAttribute('data-test') === 'practice-stub');
+    assert.match(root.textContent, /being written/);
+    assert.equal(byTest(root, 'practice-start').length, 0);
+    assert.equal(one(root, 'practice-back').getAttribute('href'), '#/practice');
+    noDeadButtons(root);
+    const list = PR.page(ctxFor(Store.view, R('/practice')));
+    assert.match(list.textContent, /being written/);
+    noDeadButtons(list);
+  }));
+});
+
+test('practices: start, read aloud (no voice says so), pause, finish, reflect; ExerciseDone and MindfulMinute appended', async () => {
+  await freshStore();
+  let t = 1000000;
+  const spoken = [];
+  let voice = true;
+  globalThis.UI = { speak: (x) => { spoken.push(x); return voice; }, stopSpeaking() { spoken.push('#stop'); }, toast() {} };
+  try {
+    await withPractices(STANDIN, () => withDom(async () => {
+      const ctx = ctxFor(Store.view, R('/practice/breathe'), { nowMs: () => t });
+      const root = PR.page(ctx);
+      assert.equal(one(root, 'practice-length').value, '5');
+      await one(root, 'practice-voice').fire('click');
+      assert.deepEqual(spoken, ['Intro line.']);
+      await one(root, 'practice-start').fire('click');
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line one.');
+      assert.equal(spoken[spoken.length - 1], 'Line one.');
+      assert.match(one(root, 'practice-timer').textContent, /5:00 left/);
+      await one(root, 'practice-next').fire('click');
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line two.');
+      t += 120000;
+      await one(root, 'practice-pause').fire('click');
+      assert.equal(spoken[spoken.length - 1], '#stop');
+      assert.match(one(root, 'practice-timer').textContent, /Paused/);
+      t += 600000; // paused time is not practice time
+      assert.match(one(root, 'practice-timer').textContent, /3:00 left/);
+      voice = false;
+      await one(root, 'practice-pause').fire('click'); // resume
+      assert.match(one(root, 'practice-novoice').textContent, /No voice on this device/);
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line two.', 'the script stays on screen');
+      t += 65000;
+      await one(root, 'practice-stop').fire('click');
+      one(root, 'practice-reflection').value = 'Felt steadier';
+      one(root, 'practice-helpful').value = '8';
+      await one(root, 'practice-finish').fire('click');
+      await until(() => eventsOf('MindfulMinute').length === 1);
+      const done = eventsOf('ExerciseDone');
+      assert.equal(done.length, 1);
+      assert.deepEqual(done[0].payload, { exerciseId: 'breathing', practiceId: 'breathe', kind: 'practice', minutes: 3, helpful: 8, reflection: 'Felt steadier' });
+      assert.deepEqual(eventsOf('MindfulMinute')[0].payload, { minutes: 3 });
+      assert.equal(eventsOf('SkillUsed').length, 0);
+      assert.match(one(root, 'practice-done').textContent, /3 minutes/);
+      assert.equal(byTest(root, 'practice-help').length, 0);
+      noDeadButtons(root);
+      // ui-core builds a new page after the Store changes: the saved screen survives it
+      const again = PR.page(ctx);
+      assert.equal(byTest(again, 'practice-done').length, 1);
+    }));
+  } finally { delete globalThis.UI; }
+});
+
+test('practices: a short practice writes ExerciseDone only; crisis words show the urgent-help line; sober links to SOS', async () => {
+  await freshStore();
+  let t = 0;
+  try {
+    globalThis.UI = { speak: () => false, stopSpeaking() {}, toast() {} };
+    await withPractices(STANDIN, () => withDom(async () => {
+      const root = PR.page(ctxFor(Store.view, R('/practice/sober'), { nowMs: () => t }));
+      assert.equal(one(root, 'practice-sos-go').getAttribute('href'), '#/sos');
+      await one(root, 'practice-start').fire('click');
+      t += 30000;
+      await one(root, 'practice-stop').fire('click');
+      one(root, 'practice-reflection').value = 'I want to end my life';
+      await one(root, 'practice-finish').fire('click');
+      await until(() => eventsOf('ExerciseDone').length === 1);
+      assert.equal(eventsOf('MindfulMinute').length, 0);
+      assert.equal(eventsOf('ExerciseDone')[0].payload.minutes, 0);
+      assert.equal(one(root, 'practice-help-go').getAttribute('href'), '#/sos/urgent');
+      assert.match(one(root, 'practice-done').textContent, /under a minute/);
+    }));
+  } finally { delete globalThis.UI; }
+});
+
+test('quests: cards from Engine.quests; manual tick only where a step does not tick itself; a tick is idempotent; badge on completion', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/quests')));
+    const crew = byTest(root, 'quest').find((n) => n.getAttribute('data-quest') === 'crew');
+    assert.equal(crew.all((n) => n.getAttribute && n.getAttribute('data-test') === 'quest-tick').length, 0, 'crew ticks itself');
+    const clear = byTest(root, 'quest').find((n) => n.getAttribute('data-quest') === 'clear-space');
+    assert.equal(clear.all((n) => n.getAttribute && n.getAttribute('data-test') === 'quest-tick').length, 3);
+    noDeadButtons(root);
+  });
+  const r1 = await AU.tickQuest(Actions, 'clear-space', 'list');
+  const r2 = await AU.tickQuest(Actions, 'clear-space', 'list');
+  assert.ok(r1.ok && r2.ok);
+  assert.equal(r1.row.ticks.list, r2.row.ticks.list, 'the second tick changes nothing');
+  assert.equal(Store.view.list('quests').length, 1);
+  const bad = await AU.tickQuest(Actions, 'clear-space', 'nope');
+  assert.equal(bad.ok, false);
+  assert.equal(bad.code, 'bad-quest');
+  await AU.tickQuest(Actions, 'clear-space', 'helper');
+  await AU.tickQuest(Actions, 'clear-space', 'done');
+  const cards = AU.questCards(E, globalThis.Content, Store.view);
+  const c = cards.find((x) => x.id === 'clear-space');
+  assert.equal(c.complete, true);
+  assert.equal(c.done, 3);
+  assert.equal(c.badge, 'Be Smart, Not Strong');
+  assert.equal(cards.find((x) => x.id === 'crew').badge, '');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/quests')));
+    assert.match(one(root, 'quest-badge').textContent, /Be Smart, Not Strong/);
+    assert.doesNotMatch(root.textContent, /\b(lost|lose|expired|random|points)\b/i);
+  });
+});
+
+test('predictions: add, complete in words; a result outside 0-10 is refused with the message kept', async () => {
+  await freshStore();
+  const bad0 = await AU.savePrediction(Actions, { activity: '', predicted: '3' });
+  assert.equal(bad0.ok, false);
+  assert.equal(bad0.code, 'bad-prediction');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/predictions')));
+    one(root, 'prediction-activity').value = 'Swim at the pool';
+    one(root, 'prediction-predicted').value = '3';
+    await one(root, 'prediction-form').fire('submit');
+    await until(() => Store.view.list('predictions').length === 1);
+    noDeadButtons(root);
+  });
+  const id = Store.view.list('predictions')[0].id;
+  const out = await AU.completePrediction(Actions, id, 11);
+  assert.equal(out.ok, false);
+  assert.equal(out.code, 'bad-prediction');
+  assert.equal((await AU.completePrediction(Actions, id, '')).ok, false);
+  assert.equal(Store.view.list('predictions')[0].actual, null);
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/predictions')));
+    await one(root, 'prediction-ask').fire('click');
+    one(root, 'prediction-actual').value = '6';
+    await one(root, 'prediction-complete').fire('click');
+    await until(() => Store.view.list('predictions')[0].actual === 6);
+  });
+  const rows = AU.predictionRows(Store.view);
+  assert.equal(rows.open.length, 0);
+  assert.equal(rows.done[0].words, 'You expected 3; it was 6. It went better than you guessed.');
+  assert.match(AU.predictionWords(5, 2), /less than you hoped/);
+});
+
+test('to-dos: add with a past due date, no overdue words; done; remove asks first; Go link for a route', async () => {
+  await freshStore();
+  await Actions.todos.add({ text: 'Call the clinic', due: '2026-11-01', route: '#/workbook' });
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    assert.match(one(root, 'todo-due-label').textContent, /For Sunday, 1 Nov 2026/);
+    assert.doesNotMatch(root.textContent, NO_OVERDUE);
+    assert.equal(one(root, 'todo-go').getAttribute('href'), '#/workbook');
+    one(root, 'todo-text').value = 'Buy fruit';
+    await one(root, 'todo-form').fire('submit');
+    await until(() => Store.view.list('todos').length === 2);
+    assert.equal(one(root, 'todo-add').getAttribute('data-testid'), 'todo-add');
+    noDeadButtons(root);
+  });
+  const bad = await AU.saveTodo(Actions, { text: '  ' });
+  assert.equal(bad.ok, false);
+  const rows = AU.todoRows(Store.view);
+  assert.deepEqual(rows.open.map((t) => t.text), ['Call the clinic', 'Buy fruit']);
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    await byTest(root, 'todo-done-btn')[0].fire('click');
+    await until(() => Store.view.list('todos').some((t) => t.done));
+    await byTest(root, 'todo-remove')[0].fire('click');
+    assert.equal(Store.view.list('todos').length, 2, 'remove asks first');
+    await one(root, 'todo-remove-yes').fire('click');
+    await until(() => Store.view.list('todos').length === 1);
+    assert.doesNotMatch(root.textContent, NO_OVERDUE);
+  });
+});
+
+test('actions hub: every card opens a working screen', async () => {
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions')));
+    const hrefs = root.all((n) => n.tagName === 'a').map((n) => n.getAttribute('href'));
+    for (const x of ['#/actions/quests', '#/actions/predictions', '#/actions/todos', '#/practice']) assert.ok(hrefs.includes(x), x);
+    assert.equal(byTest(root, 'actions-hub-quests')[0].all((n) => n.getAttribute && n.getAttribute('class') === 'act-soon').length, 0);
+  });
 });
