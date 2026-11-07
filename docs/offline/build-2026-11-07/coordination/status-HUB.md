@@ -1,19 +1,26 @@
 TRACK: HUB
-STATE: INTEGRATING   # 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB): engine pauses at its next commit; core's second slice (launched 07:40) runs
+STATE: BUILDING   # 2026-11-07 07:46 IST: two slices merged (core U-01, engine U-05), trunk 33d2a04f pushed; queue empty; free memory 5.6 GB at 07:46 (above the 4.0 GB floor): engine stays paused, no new grant; core's second slice [U-03,U-02] runs; tests-docs asks its slot and waits for memory
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: 655516dc (the trunk build/offline-v1 at BASE-READY: offline-plan's 1acf406 plus the two S-00 commits; base worktree C:\Users\ruchi\1-addic-wt\_base, read-only; integration worktree C:\Users\ruchi\1-addic-wt\_int, detached between merges)
+BASE: 33d2a04f (the trunk after the engine U-05 merge, 2026-11-07 07:44; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 2 (held at 2; the lowest of the last three rows at 07:38 is 3.4 GB, under the floor, so no grant moves; MEASURED: the two running slices took the free memory from 9.7 GB (07:25, no builder) to 3.4 (07:36, two builders and a checker), about 3 GB per running lane, not the 0.7 GB of the formula; slots 3 and 4 are re-granted only when a row shows at least 4.0 + 3.0 GB per lane to add; under 4.0 GB the newest lane pauses at its next commit)
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
 SLOTS: engine slot=2 granted 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write the hand-off note, start no new unit until this line says granted again; the HUB re-samples every five minutes while under the floor
 SLOTS: actions-sos slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1, flagged; next in line when memory allows)
 SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1; after actions-sos)
-MERGING: core READY-SLICE 8bf7b5c (U-01) since 07:38
-MERGE-QUEUE: core 8bf7b5c (being merged)
-MERGED: (none yet)
+SLOTS: tests-docs slot=5 ASKED 07:42, WAITING for memory (tier 1; U-34 needs core U-01, merged 07:41; granted the moment a row shows room for one more running lane above the floor)
+MERGING: none
+MERGE-QUEUE: (empty)
+MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
+MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 07:38 IST
+UPDATED: 2026-11-07 07:46 IST
+
+# 2026-11-07 07:46 · engine merged; the queue is empty; memory holds the grants
+
+- engine READY-SLICE 04fc0c1 (U-05: engine.js, logic.test.mjs) merged as 6089dad; trunk 33d2a04f pushed with build/engine. Gates: build GREEN 127289 B, test GREEN, validate SKIP (validateContent comes with U-08), guards GREEN by name, territory 0 errors. Two merges in eight minutes; the first slices came at 07:36 and 07:39, two hours ahead of the plan's 09:45.
+- Free memory 5.6 GB at 07:46. Running: core's second slice (the chain's U-03). Paused: engine (its next run [U-06,U-07],[U-08] waits). Waiting for a slot: tests-docs (asked 07:42), actions-sos, learn. The HUB grants from measurement (about 3 GB per running lane): the next grant goes when a row shows at least 7.0 GB free (4.0 + 3.0); engine's pause lifts at the same mark, tier 1 chain first (actions-sos U-09 before engine's U-06, then tests-docs U-34, then learn U-12).
 
 # 2026-11-07 07:38 · the first READY-SLICE, and the floor
 

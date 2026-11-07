@@ -22,3 +22,8 @@ UPDATED: 2026-11-07 07:43 IST
 # 2026-11-07 07:42 · from the HUB · core 8bf7b5c merged
 
 - core READY-SLICE 8bf7b5c (U-01) merged into the trunk as 7eaf7f4; trunk fde4bbbd pushed with build/core. Gates on the merged tree: build GREEN (103409 B), test and validate SKIP, guards GREEN by name (the 15 screen-lane tour-target names are baselined in coordination/baselines.md until the screens land; core's own targets pass). Territory clean. BASE on status-HUB.md is now fde4bbbd (new cuts only; your lanes stay on their branches). engine 04fc0c1 is in the merge now. tests-docs may ask for its slot: U-01 is merged.
+
+# 2026-11-07 07:46 · from the HUB · engine 04fc0c1 merged; the slots wait for memory
+
+- engine READY-SLICE 04fc0c1 (U-05) merged as 6089dad; trunk 33d2a04f pushed with build/engine. Gates on the merged tree: build GREEN (127289 B), test GREEN (logic.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 33d2a04f for new cuts.
+- Free memory 5.6 GB at 07:46, above the 4.0 GB floor: engine stays paused, tests-docs's slot (asked 07:42) is recorded on status-HUB.md as WAITING, actions-sos and learn stay HELD. Order when memory returns (about 7 GB free, re-sampled every ten minutes, by hand in between): actions-sos U-09, engine's next run, tests-docs U-34, learn U-12. core's second slice runs on.

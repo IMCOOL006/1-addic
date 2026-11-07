@@ -1,16 +1,18 @@
 ## For the owner
 
-STATE: BUILDING since 07:20 IST. The launcher runs (it started HUB session 2 and the CORE chat at 07:15); CORE is scouting its five lanes; no lane is cut yet; trunk build/offline-v1 at BASE 655516dc, pushed. Slots: 2 for now (core, engine); actions-sos and learn are held until free memory rises (lowest of the last three samples 5.7 GB; the pharma program holds most of the machine). SCREENS waits for memory too.
-NEEDS YOU: (1) decisions O1–O9 and Q10–Q13 (PLAN.md section 9) take their defaults at 08:25 unless you answer in one line, e.g. `O1-O9 default, Q10-Q13 default`; (2) keep the machine awake; (3) if the pharma program can spare memory before its tag, every 0.7 GB free is one more lane and 1.5 GB more starts SCREENS. The settings rows and the launcher are done: thank you.
-NEXT: CORE's scouts finish about 08:00–08:15, then core (U-01) and engine (U-05) are cut and built; the HUB merges each READY-SLICE as it appears (first ones about 09:45); actions-sos and learn start when memory allows; FREEZE 10:55, QUIET to 11:40, TAG offline-v1.0 about 11:55.
+STATE: BUILDING, 07:46 IST. Two slices are merged into the trunk (core U-01: the build pipeline and the shell; engine U-05: ids, dates, the game derivations, 33 tests green); trunk build/offline-v1 at 33d2a04f, pushed. core's second slice (the UI core and router, U-03, and tokens and components, U-02) is building. Free memory is 5.6 GB, under the 4 GB floor: engine is paused after its slice, and actions-sos, learn and tests-docs wait for memory.
+NEEDS YOU: (1) decisions O1–O9 and Q10–Q13 (PLAN.md section 9) take their defaults at 08:25 unless you answer in one line, e.g. `O1-O9 default, Q10-Q13 default`; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
+NEXT: the HUB merges core's second slice when it is READY-SLICE; the next slot goes to actions-sos (SOS and Actions, tier 1) when memory allows, then engine's next units, tests-docs (the browser harness), learn; FREEZE 10:55, QUIET to 11:40, TAG offline-v1.0 about 11:55.
 
 ## Merges
 
-(none yet; the queue is empty)
+- 07:41 core READY-SLICE 8bf7b5c (U-01) -> 7eaf7f4, trunk fde4bbbd. build GREEN 103409 B; guards GREEN by name (15 screen tour-target names baselined until the screens land).
+- 07:44 engine READY-SLICE 04fc0c1 (U-05) -> 6089dad, trunk 33d2a04f. build GREEN 127289 B; test GREEN (logic.test.mjs); validate SKIP until U-08.
+- Queue: empty.
 
 ## Blockers and questions
 
-- Memory is shared with the pharma program: samples 6.0 GB (06:26), 9.9 (06:42), 8.7 (06:52), 5.7 (07:11), 7.6 (07:15), 5.7 (07:17). Slots from the lowest of the last three (2 at 07:20). SCREENS needs about 7.6 GB with two lanes granted, 8.3 with three.
+- Memory is shared with the pharma program: rows 9.7 GB (07:25, no builder running), 3.4 (07:36, two builders), 2.4 (07:37), 5.6 (07:46). A running lane costs about 3 GB measured. Rule applied at 07:38: the newest lane (engine) paused at its next commit, which was its slice. Grants resume at about 7 GB free.
 - The planner chat (session e4492b2a) is at 630k context: not a track of this program; closing it frees memory for a lane.
 - Decisions: none answered yet; defaults apply at 08:25.
 
