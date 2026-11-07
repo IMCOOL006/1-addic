@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # session a29cd9a2; five briefs and contracts written 07:22-07:26 (tracks/CORE/briefs, contracts); core and engine slices running; actions-sos and learn HELD by the HUB (worktrees idle, R-C-1); tests-docs waits for a slot and core's U-01 merged
-LANE: core BUILDING   # slice U-01, run wf_d3373f18-c29 (launched 07:26), slot 1, worktree <wt>/core; then [U-03,U-02] as a second slice, then U-04 alone (flagged: two reviewers at the end)
+LANE: core READY-SLICE 8bf7b5c   # U-01 (one commit on build/core); check PASS (one LOW: boot.js leaves the bare shell with no UI, as the chat asked); gates: build GREEN 103409 B, test SKIP (no core tests yet), validate SKIP (no engine.js), guards RED only on the 15 screen-lane tour-target names baselines.md expects (csp, external-url, innerHTML, theme-parity and core's six targets pass); report tracks/CORE/lane-reports/core.md; next: second slice [U-03,U-02] from 8bf7b5c
 LANE: engine BUILDING   # slice U-05, run wf_8ebdb63c-428 (launched 07:29), slot 2, worktree <wt>/engine; the counters.total rule fixed by the chat 07:29 (a banked day stays counted)
 LANE: actions-sos SCOUTED   # brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built (R-C-1); slice U-09 starts the moment its SLOTS line says granted
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
 LANE: tests-docs SCOUTED   # brief 13.7 KB; no slot yet; slice U-34 needs core's U-01 merged
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 07:28 IST
+UPDATED: 2026-11-07 07:36 IST
 
 # 2026-11-07 07:23 · the CORE chat's first steps (session a29cd9a2)
 
