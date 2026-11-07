@@ -129,7 +129,7 @@ const Actions = (() => {
           return e;
         },
         has(type, field, value) {
-          return tx.list('events').some((e) => e && e.type === type && (field == null || (e.payload && e.payload[field] === value)));
+          return tx.list('events').some((e) => e && e.sample !== true && e.type === type && (field == null || (e.payload && e.payload[field] === value))); // sample rows never count (O6)
         },
       };
       out = fn(tx);
@@ -184,6 +184,7 @@ const Actions = (() => {
     if (has('substances') && !(Array.isArray(p.substances) && p.substances.length <= 20 && p.substances.every((s) => isName(s, 120)))) bad('substances');
     if (has('term') && !(typeof p.term === 'string' && known(C.terms, p.term))) bad('term');
     if (has('startDate') && !(p.startDate === null || p.startDate === '' || isDate(p.startDate))) bad('startDate');
+    if (has('startDate') && isDate(p.startDate) && p.startDate > localDate(stamp())) fail('FUTURE_DATE', 'A start date cannot be after today.');
     if (has('notSure') && !isBool(p.notSure)) bad('notSure');
     if (has('stage') && !(p.stage === null || (typeof p.stage === 'string' && known(C.stages, p.stage)))) bad('stage');
     if (has('region') && !['in', 'intl'].includes(p.region)) bad('region');
@@ -211,7 +212,7 @@ const Actions = (() => {
     const at = stamp();
     const p = clone(patch);
     return write('onboard', at, (tx) => {
-      const prev = tx.get('profile', 'me');
+      const prev = ownRow(tx, 'profile', 'me'); // RS-SAMPLE: a sample profile is not the person's: theirs starts fresh, unmarked
       const firstTerm = idsOf(getContent().terms);
       const base = { key: 'me', name: '', companion: '', substances: [], term: firstTerm ? firstTerm[0] : 'sober', startDate: null,
         notSure: false, stage: null, region: 'in', checkin: { morning: null, evening: null }, reviewDay: 0, pace: 'steady',
@@ -223,7 +224,7 @@ const Actions = (() => {
       profile.locale = 'en';
       profile.onboardedAt = (prev && prev.onboardedAt) || at;
       tx.put('profile', profile);
-      const settings = settingsRow(tx.get('settings', 'app'));
+      const settings = settingsRow(ownRow(tx, 'settings', 'app')); // RS-SAMPLE: nor sample settings
       tx.put('settings', settings);
       if (!tx.has('OnboardingCompleted')) tx.event('OnboardingCompleted', {});
       return { profile, settings, events: tx.events };
@@ -239,7 +240,7 @@ const Actions = (() => {
     const at = stamp();
     const p = clone(patch);
     return write('settings', at, (tx) => {
-      const prev = settingsRow(tx.get('settings', 'app'));
+      const prev = settingsRow(ownRow(tx, 'settings', 'app')); // RS-SAMPLE: a change over sample settings starts the person's own row
       const next = Object.assign({}, prev, p, { key: 'app' });
       /* milestones seen are a record: they only grow */
       if (own(p, 'milestonesSeen')) next.milestonesSeen = [...new Set([...(prev.milestonesSeen || []), ...p.milestonesSeen])].sort((a, b) => a - b);
@@ -249,7 +250,11 @@ const Actions = (() => {
   }
 
   /* ── recordEvent ─────────────────────────────────────────────────────────────────────────── */
+  // Each is written by its own verb, with the row or the rule it needs (RC19: a plan confirmed with no plan row, an
+  // onboarding with no profile row, a module whose lessons are not all done).
+  const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted'];
   async function recordEvent(type, payload) {
+    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson or checkpoint).`);
     if (!EVENT_TYPES.includes(type)) fail('bad-event', `Unknown event type "${type}".`);
     const pl = payload === undefined ? {} : payload;
     if (!isObj(pl) || jsonSize(pl) > 5000) fail('bad-event', 'An event payload must be a small object.');
@@ -368,7 +373,7 @@ const Actions = (() => {
   }
 
   /* ── SOS ─────────────────────────────────────────────────────────────────────────────────── */
-  const SOS_KEYS = ['kind', 'ratingBefore', 'ratingAfter', 'tools', 'delays', 'used', 'risky', 'outcome', 'drill'];
+  const SOS_KEYS = ['kind', 'ratingBefore', 'ratingAfter', 'tools', 'delays', 'used', 'risky', 'outcome', 'drill', 'emotion', 'date'];
   const OUTCOMES = ['passed', 'still', 'used'];
   function checkSession(s) {
     const code = 'bad-session';
@@ -380,6 +385,8 @@ const Actions = (() => {
     if (!absent(s, 'delays') && !isInt(s.delays, 0, 100)) fail(code, '"delays" is not valid.');
     for (const k of ['used', 'risky', 'drill']) if (!absent(s, k) && !isBool(s[k])) fail(code, `"${k}" must be true or false.`);
     if (!absent(s, 'outcome') && !OUTCOMES.includes(s.outcome)) fail(code, 'Unknown outcome.');
+    if (!absent(s, 'emotion') && !(s.emotion === null || (typeof s.emotion === 'string' && known(getContent().emotions, s.emotion)))) fail(code, 'Unknown emotion.');
+    if (!absent(s, 'date') && !isDate(s.date)) fail(code, 'The date must be today or earlier.'); // RC16
     const used = s.kind === 'slip' || s.used === true;
     if (!absent(s, 'outcome') && (s.outcome === 'used') !== used) fail(code, 'The outcome does not match "used".');
     const before = absent(s, 'ratingBefore') ? null : s.ratingBefore;
@@ -387,16 +394,17 @@ const Actions = (() => {
     let outcome = absent(s, 'outcome') ? null : s.outcome;
     if (!outcome) outcome = used ? 'used' : (before !== null && after !== null && after > 0 && after >= before) ? 'still' : 'passed';
     return { kind: s.kind, ratingBefore: before, ratingAfter: after, tools, delays: absent(s, 'delays') ? 0 : s.delays,
-      used, risky: s.risky === true, outcome, drill: s.drill === true };
+      used, risky: s.risky === true, outcome, drill: s.drill === true, emotion: absent(s, 'emotion') ? null : s.emotion, date: absent(s, 'date') ? null : s.date };
   }
   async function sosSession(s) {
     const v = checkSession(s);
     const at = stamp();
+    if (v.date && v.date > localDate(at)) fail('bad-session', 'The date must be today or earlier.'); // RC16: a save kept for the unlock keeps the day of the tap
     if (v.drill) {
       /* a rehearsal: no log, no skill, no XP for the session, no slip; only the drill's tutorial mark, once */
       const S = store();
       const seen = (S.view && typeof S.view.list === 'function' ? S.view.list('events') || [] : [])
-        .some((e) => e && e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'drill');
+        .some((e) => e && e.sample !== true && e.type === 'TutorialCompleted' && e.payload && e.payload.id === 'drill');
       if (seen) return { drill: true, events: [] };
       return write('sos drill', at, (tx) => {
         if (!tx.has('TutorialCompleted', 'id', 'drill')) tx.event('TutorialCompleted', { id: 'drill', skipped: false });
@@ -405,8 +413,10 @@ const Actions = (() => {
     }
     return write(`sos ${v.kind}`, at, (tx) => {
       const log = tx.put('logs', logRow(v.kind, at, {
+        ...(v.date ? { date: v.date } : {}), // RC16: the day of the tap when the save came later
         intensity: v.ratingBefore, skills: v.tools, used: v.used,
         sos: { ratingBefore: v.ratingBefore, ratingAfter: v.ratingAfter, delays: v.delays, risky: v.risky, outcome: v.outcome },
+        ...(v.emotion ? { emotion: v.emotion, feelings: [v.emotion] } : {}), // a feeling session keeps the feeling (09:33 ruling)
       }));
       tx.event('LogCreated', { logId: log.id, type: v.kind });
       for (const t of v.tools) tx.event('SkillUsed', { skillId: t.skillId, helpful: t.helpful, logId: log.id });
@@ -420,6 +430,7 @@ const Actions = (() => {
   const modules = () => (Array.isArray(getContent().modules) ? getContent().modules : []);
   const moduleOf = (moduleId) => modules().find((m) => m && m.id === moduleId) || null;
   const moduleOfLesson = (lessonId) => modules().find((m) => m && Array.isArray(m.lessons) && m.lessons.some((l) => l && l.id === lessonId)) || null;
+  // `plus`: the lesson this commit completes (a draft need not list the rows it has staged).
   function lessonsAllDone(tx, m, plus) {
     const ls = Array.isArray(m.lessons) ? m.lessons : [];
     return ls.every((l) => l.id === plus || tx.has('LessonCompleted', 'lessonId', l.id));
@@ -431,7 +442,7 @@ const Actions = (() => {
       if (!tx.has('LessonCompleted', 'lessonId', lessonId)) {
         tx.event('LessonCompleted', { lessonId });
         const m = moduleOfLesson(lessonId);
-        if (m && lessonsAllDone(tx, m) && tx.has('CheckpointCompleted', 'moduleId', m.id) && !tx.has('ModuleCompleted', 'moduleId', m.id)) {
+        if (m && lessonsAllDone(tx, m, lessonId) && tx.has('CheckpointCompleted', 'moduleId', m.id) && !tx.has('ModuleCompleted', 'moduleId', m.id)) {
           tx.event('ModuleCompleted', { moduleId: m.id });
         }
       }
@@ -453,6 +464,7 @@ const Actions = (() => {
 
   /* ── responses (append-only; the latest non-draft is the artifact) ───────────────────────── */
   const DONE_KINDS = ['practice', 'reflect', 'tool'];
+  const ARTIFACT_KINDS = ['build', 'assess', 'plan']; // 3.7: ArtifactSaved for these, ExerciseDone for DONE_KINDS, neither for another kind (RC17)
   function exerciseKind(exerciseId) {
     const ex = getContent().exercises;
     if (!ex) return { known: isId(exerciseId), kind: null };
@@ -478,8 +490,8 @@ const Actions = (() => {
     return write(`response ${exerciseId}`, at, (tx) => {
       const response = tx.put('responses', responseRow(exerciseId, p, at, mode, draft));
       if (!draft) {
-        const type = DONE_KINDS.includes(ex.kind) ? 'ExerciseDone' : 'ArtifactSaved';
-        tx.event(type, { exerciseId, kind: ex.kind, responseId: response.id });
+        const type = DONE_KINDS.includes(ex.kind) ? 'ExerciseDone' : ARTIFACT_KINDS.includes(ex.kind) ? 'ArtifactSaved' : null;
+        if (type) tx.event(type, { exerciseId, kind: ex.kind, responseId: response.id });
       }
       return { response, events: tx.events };
     });
@@ -506,6 +518,21 @@ const Actions = (() => {
     if (!row) fail(code, `${what} not found.`);
     return row;
   }
+  /* RS37R, RS38 (ruling 2026-11-07 22:52 IST): every update verb goes through claimRow. A patch that changes the value
+     of a field that is not a true/false flag makes a sample row the person's (the mark goes, so eraseSample keeps their
+     words); a patch that changes nothing, or only flags (a to-do ticked, a contact hidden or shown), keeps it. A null
+     patch: the verb always writes the person's words or score (a debrief, a prediction's result). */
+  function sameValue(a, b) {
+    const blank = (v) => v === undefined || v === null || v === '';
+    if (blank(a) || blank(b)) return blank(a) && blank(b);
+    if (typeof a !== 'object' || typeof b !== 'object') return a === b;
+    if (Array.isArray(a) !== Array.isArray(b)) return false;
+    return [...new Set([...Object.keys(a), ...Object.keys(b)])].every((k) => sameValue(a[k], b[k]));
+  }
+  function claimRow(prev, patch, next) {
+    if (next.sample === true && (patch === null || Object.keys(patch).some((k) => !isBool(patch[k]) && !sameValue(patch[k], prev[k])))) delete next.sample;
+    return next;
+  }
   const contacts = {
     async add(c) {
       checkContact(c, false);
@@ -521,11 +548,19 @@ const Actions = (() => {
       checkContact(patch, true);
       const p = clone(patch);
       if (typeof p.name === 'string') p.name = p.name.trim();
-      return write('contact update', stamp(), (tx) => tx.put('contacts', Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), p, { id })));
+      return write('contact update', stamp(), (tx) => {
+        const prev = needRow(tx, 'contacts', id, 'bad-contact', 'Contact');
+        // RS37, RS38: the person's edit makes a sample contact theirs (SOS shows it, eraseSample keeps it); a Save with
+        // no change, or Show again (active only), keeps the mark
+        return tx.put('contacts', claimRow(prev, p, Object.assign({}, prev, p, { id })));
+      });
     },
     async deactivate(id) {
       if (!isId(id)) fail('bad-contact', 'Contact not found.');
-      return write('contact deactivate', stamp(), (tx) => tx.put('contacts', Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), { active: false })));
+      return write('contact deactivate', stamp(), (tx) => {
+        const prev = needRow(tx, 'contacts', id, 'bad-contact', 'Contact');
+        return tx.put('contacts', claimRow(prev, { active: false }, Object.assign({}, prev, { active: false })));
+      });
     },
     async reached(id, how) {
       if (!isId(id)) fail('bad-contact', 'Contact not found.');
@@ -586,7 +621,8 @@ const Actions = (() => {
       checkPlan(patch, true);
       const p = clone(patch);
       return write('plan update', stamp(), (tx) => {
-        const plan = Object.assign({}, needRow(tx, 'plans', id, 'bad-plan', 'Plan item'), p, { id });
+        const prev = needRow(tx, 'plans', id, 'bad-plan', 'Plan item');
+        const plan = claimRow(prev, p, Object.assign({}, prev, p, { id }));
         if (!endsAfter(plan)) fail('bad-plan', 'The end time must be after the start time.');
         tx.put('plans', plan);
         if (plan.battlePlan && !tx.has('BattlePlanCreated', 'planId', id)) tx.event('BattlePlanCreated', { planId: id });
@@ -609,7 +645,8 @@ const Actions = (() => {
       if (!absent(d, 'how') && !isText(d.how, 1000)) fail('bad-plan', '"how" is too long.');
       const at = stamp();
       return write('plan debrief', at, (tx) => {
-        const plan = Object.assign({}, needRow(tx, 'plans', id, 'bad-plan', 'Plan item'), { debrief: { usedPlan: d.usedPlan, how: d.how || '', at } });
+        const prev = needRow(tx, 'plans', id, 'bad-plan', 'Plan item');
+        const plan = claimRow(prev, null, Object.assign({}, prev, { debrief: { usedPlan: d.usedPlan, how: d.how || '', at } }));
         tx.put('plans', plan);
         if (!tx.has('BattlePlanDebriefed', 'planId', id)) tx.event('BattlePlanDebriefed', { planId: id, usedPlan: d.usedPlan });
         return { plan, events: tx.events };
@@ -658,7 +695,7 @@ const Actions = (() => {
       const at = stamp();
       return write('todo done', at, (tx) => {
         const row = needRow(tx, 'todos', id, 'bad-plan', 'To-do');
-        return tx.put('todos', Object.assign({}, row, { done: true, doneAt: row.doneAt || at }));
+        return tx.put('todos', claimRow(row, { done: true }, Object.assign({}, row, { done: true, doneAt: row.doneAt || at })));
       });
     },
     async remove(id) {
@@ -706,10 +743,13 @@ const Actions = (() => {
       const at = stamp();
       return write('prediction complete', at, (tx) => {
         const row = needRow(tx, 'predictions', id, code, 'Prediction');
-        return tx.put('predictions', Object.assign({}, row, { actual: d.actual, completedAt: row.completedAt || at, notes: absent(d, 'notes') ? row.notes : d.notes }));
+        return tx.put('predictions', claimRow(row, null, Object.assign({}, row, { actual: d.actual, completedAt: row.completedAt || at, notes: absent(d, 'notes') ? row.notes : d.notes })));
       });
     },
   };
+  /* RC15: a row a sample load wrote under a Content id (quests, tutorials, reveals) is not the person's: their own act
+     starts a fresh, unmarked row in its place, so it is counted and eraseSample never takes it. */
+  const ownRow = (tx, name, id) => { const r = tx.get(name, id); return r && r.sample === true ? null : r; };
   const quests = {
     /* a tick is never taken back; completedAt is set once every step is ticked */
     async tick(questId, stepId) {
@@ -721,7 +761,7 @@ const Actions = (() => {
       if (!steps.includes(stepId)) fail(code, 'Unknown step.');
       const at = stamp();
       return write(`quest ${questId}`, at, (tx) => {
-        const row = Object.assign({ id: questId, startedAt: at, ticks: {}, completedAt: null }, tx.get('quests', questId) || {});
+        const row = Object.assign({ id: questId, startedAt: at, ticks: {}, completedAt: null }, ownRow(tx, 'quests', questId) || {});
         row.ticks = Object.assign({}, row.ticks);
         if (!row.ticks[stepId]) row.ticks[stepId] = at;
         if (!row.completedAt && steps.every((sid) => row.ticks[sid])) row.completedAt = at;
@@ -740,7 +780,7 @@ const Actions = (() => {
       const skipped = o.skipped === true;
       const at = stamp();
       return write(`tutorial ${id}`, at, (tx) => {
-        const prev = tx.get('tutorials', id);
+        const prev = ownRow(tx, 'tutorials', id);
         const row = tx.put('tutorials', Object.assign({ id, completedAt: null, skipped, replays: 0, stepsSeen: 0 }, prev || {}, {
           completedAt: (prev && prev.completedAt) || at, skipped: prev && prev.completedAt ? prev.skipped === true && skipped : skipped,
         }));
@@ -751,7 +791,7 @@ const Actions = (() => {
     async replay(id) {
       if (!tutorialKnown(id)) fail('bad-tutorial', 'Unknown tutorial.');
       return write(`tutorial replay ${id}`, stamp(), (tx) => {
-        const prev = tx.get('tutorials', id);
+        const prev = ownRow(tx, 'tutorials', id);
         const row = Object.assign({ id, completedAt: null, skipped: false, replays: 0, stepsSeen: 0 }, prev || {});
         row.replays = (Number(row.replays) || 0) + 1;
         return tx.put('tutorials', row);
@@ -767,7 +807,7 @@ const Actions = (() => {
     for (const k of ['seen', 'forced']) if (!absent(o, k) && !isBool(o[k])) fail('bad-feature', `"${k}" must be true or false.`);
     const at = stamp();
     return write(`reveal ${featureId}`, at, (tx) => {
-      const row = Object.assign({ id: featureId, revealedAt: at, seenAt: null, forced: o.forced === true }, tx.get('reveals', featureId) || {});
+      const row = Object.assign({ id: featureId, revealedAt: at, seenAt: null, forced: o.forced === true }, ownRow(tx, 'reveals', featureId) || {});
       if (o.seen === true && !row.seenAt) row.seenAt = at;
       tx.put('reveals', row);
       if (!tx.has('FeatureRevealed', 'featureId', featureId)) tx.event('FeatureRevealed', { featureId });
@@ -779,7 +819,7 @@ const Actions = (() => {
     const at = stamp();
     return write(`tip ${id}`, at, (tx) => {
       const tip = tx.put('tips', { id, shownAt: at });
-      tx.put('settings', Object.assign(settingsRow(tx.get('settings', 'app')), { lastTipDay: localDate(at) }));
+      tx.put('settings', Object.assign(settingsRow(ownRow(tx, 'settings', 'app')), { lastTipDay: localDate(at) })); // RS-SAMPLE
       return tip;
     });
   }
@@ -796,6 +836,7 @@ const Actions = (() => {
         const prev = tx.get('recoveryPlan', 'plan') || {};
         const plan = tx.put('recoveryPlan', Object.assign({ graduatedAt: null }, prev, {
           key: 'plan', sections: s, confirmedAt: prev.confirmedAt || (o.confirm === true ? at : null), lastReviewAt: at,
+          graduatedAt: prev.graduatedAt || (o.confirm === true ? at : null), // set once, with RecoveryPlanConfirmed; never cleared
         }));
         if (o.confirm === true && !tx.has('RecoveryPlanConfirmed')) tx.event('RecoveryPlanConfirmed', {});
         return { plan, events: tx.events };
@@ -854,7 +895,7 @@ const Actions = (() => {
     let errors;
     try {
       const r = E && typeof E.validateBackup === 'function' ? E.validateBackup(obj) : { ok: true, errors: [] };
-      errors = r && r.ok ? backupErrors(obj) : ((r && r.errors) || ['not valid']);
+      errors = r && r.ok === true ? backupErrors(obj) : (r && Array.isArray(r.errors) && r.errors.length ? r.errors : ['not valid']); // not ok is never ok
     } catch (e) { errors = ['not valid']; }
     if (errors.length) throw badBackup(errors);
     let next;
@@ -876,8 +917,12 @@ const Actions = (() => {
     await S.resetAll();
     return { erased: true };
   }
-  /* O6: sample rows come from Content.sample.generate(now) as {stores:{name: rows}} (or the map itself); the meta
-     'sample' row marks them, and eraseAll removes them with everything else. */
+  /* O6: sample rows come from Content.sample.generate(now) as {stores:{name: rows}} (or the map itself). Sample rows
+     never overwrite the person's own rows: of the keyed stores, only profile 'me' and settings 'app' come from a
+     sample, and only where the notebook has no own row (none, or one marked sample: true: RS-SAMPLE); meta and
+     recoveryPlan rows never do; a row whose id already exists is skipped. Every row written carries `sample: true`, and
+     the meta 'sample' row marks the load; eraseSample removes those rows only, eraseAll removes everything. */
+  const SAMPLE_KEYED = Object.freeze({ profile: 'me', settings: 'app' });
   async function loadSample() {
     const C = getContent();
     if (!C.sample || typeof C.sample.generate !== 'function') fail('no-sample', 'Sample data is not in this version yet.');
@@ -891,15 +936,36 @@ const Actions = (() => {
     const s = clone(stores);
     return write('load sample', at, (tx) => {
       let count = 0;
+      let skipped = 0;
       for (const [name, rows] of Object.entries(s)) {
+        const kp = map[name];
         for (const r of rows) {
-          if (name === 'meta' && r[map[name]] === 'lock') continue;
-          tx.put(name, r);
+          const prev = tx.get(name, r[kp]);
+          const skip = kp === 'key' ? !(own(SAMPLE_KEYED, name) && SAMPLE_KEYED[name] === r[kp]) || (prev != null && prev.sample !== true) : prev != null;
+          if (skip) { skipped += 1; continue; } // RS-SAMPLE: an own row, or a keyed row a sample never writes
+          tx.put(name, Object.assign(r, { sample: true }));
           count += 1;
         }
       }
       const meta = tx.put('meta', { key: 'sample', loadedAt: at });
-      return { sample: meta, count };
+      return { sample: meta, count, skipped };
+    });
+  }
+
+  /* Removes only the rows a sample load wrote (marked `sample: true`) and the meta 'sample' row; the person's own
+     rows stay exactly as they are. */
+  async function eraseSample() {
+    const map = storeMap();
+    return write('erase sample', stamp(), (tx) => {
+      let count = 0;
+      for (const name of Object.keys(map)) {
+        if (name === 'meta') continue; // RS-SAMPLE: the keyed sample rows go too (profile, settings); of meta, the 'sample' row below
+        for (const r of tx.list(name) || []) {
+          if (r && r.sample === true) { tx.del(name, r[map[name]]); count += 1; }
+        }
+      }
+      if (tx.get('meta', 'sample') != null) tx.del('meta', 'sample');
+      return { erased: count };
     });
   }
 
@@ -910,7 +976,7 @@ const Actions = (() => {
     contacts, plans, weeklyReview, todos,
     motivation, predictions, quests,
     tutorial, reveal, markTipShown,
-    recoveryPlan, scriptUsed, loadSample, eraseAll, importBackup,
+    recoveryPlan, scriptUsed, loadSample, eraseSample, eraseAll, importBackup,
   };
 })();
 

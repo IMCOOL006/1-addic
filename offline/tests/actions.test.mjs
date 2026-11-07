@@ -5,11 +5,21 @@
 import { describe, test, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
+// The test clock is pinned (FIX-ONB-EMO CLOCK): a fixed local noon that still ticks, so no run meets midnight, a new
+// week or a month end. A Date made with no argument, and Date.now, read it; a Date with arguments is untouched.
+const RealDate = Date;
+const PINNED_AT = new RealDate(2026, 2, 11, 12, 0, 0).getTime(); // Wednesday 11 March 2026, 12:00 local
+let CLOCK_SHIFT = PINNED_AT - RealDate.now(); // RC16 moves it on past a midnight and back (shiftClock)
+globalThis.Date = class PinnedDate extends RealDate {
+  constructor(...a) { if (a.length) super(...a); else super(RealDate.now() + CLOCK_SHIFT); }
+  static now() { return RealDate.now() + CLOCK_SHIFT; }
+};
+const shiftClock = (ms) => { CLOCK_SHIFT += ms; };
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
@@ -28,6 +38,27 @@ const STORES = () => S().STORES || E().STORES;
 const list = (store) => S().view.list(store) || [];
 const events = (type) => list('events').filter((e) => !type || e.type === type);
 const tick = () => new Promise((r) => setTimeout(r, 0));
+// FIX-R8 C-R7-1: a wait for a condition. The real Store (the merged trunk) makes a real key (PBKDF2) for lock.set,
+// unlock and remove, about a second and far longer than a settle. This looks every few ms, each look after a timer
+// (so the work a tap queued has run), and fails with msg when cond() does not hold within ms; a throw from cond()
+// fails at once. It never passes on its own.
+async function until(cond, msg, ms = 30000) {
+  const end = RealDate.now() + ms;
+  for (;;) {
+    await new Promise((r) => setTimeout(r, 3));
+    if (cond()) return;
+    if (RealDate.now() > end) assert.fail(`${msg} (not within ${ms} ms)`);
+  }
+}
+// FIX-R8 C-R7-1: the Store with its lock.set calls counted. On the real Store a PIN being set still reads as no lock,
+// so a refusal before the Store is proven by no call, not by a lock that has not come yet.
+function setSpy() {
+  const real = S();
+  const calls = [];
+  const store = Object.create(real);
+  store.lock = Object.assign(Object.create(real.lock), { set: (...a) => { calls.push(a[0]); return real.lock.set(...a); } });
+  return { store, calls };
+}
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 function sortStores(stores) {
   const out = {};
@@ -48,6 +79,41 @@ async function refused(promise, code) {
 }
 function daysAgo(n) { const d = new Date(); d.setDate(d.getDate() - n); return E().todayStr(d); }
 const firstModule = () => C().modules[0];
+// The event a saved response writes, from Content: ArtifactSaved only for the kinds build, assess and plan.
+function savedType(exerciseId) {
+  const ex = C().exercises;
+  const row = Array.isArray(ex) ? ex.find((x) => x && x.id === exerciseId) : ex && ex[exerciseId];
+  const kind = row ? row.kind || null : null;
+  if (['build', 'assess', 'plan'].includes(kind)) return 'ArtifactSaved';
+  return ['practice', 'reflect', 'tool'].includes(kind) ? 'ExerciseDone' : null; // null: no kind, or one 3.7 names in neither list (RC17)
+}
+// RS9T: fn runs with a stub Content, the real one's fields without `sample` (the real Content is never changed); the
+// real one goes back after
+async function withoutSample(fn) {
+  const real = globalThis.Content;
+  const stub = Object.assign({}, real);
+  delete stub.sample;
+  globalThis.Content = stub;
+  try { return await fn(); } finally { globalThis.Content = real; }
+}
+// Content.sample may be loaded (content-sample.js, BUILD-PLAN 3.1): a test that sets it, or needs it absent, puts it back after.
+async function withSample(sample, fn) {
+  const had = Object.prototype.hasOwnProperty.call(C(), 'sample');
+  const old = C().sample;
+  if (sample === undefined) delete C().sample; else C().sample = sample;
+  try { return await fn(); } finally { if (had) C().sample = old; else delete C().sample; }
+}
+// the trunk's Content.sample (content U-33, 42d2467d content-sample.js) by a stand-in of its shape: generate(nowIso)
+// gives {stores}, every row marked sample: true, the profile 'me' among them; a settings 'app' row too, as RS-SAMPLE names it
+const TRUNK_SAMPLE = { name: 'Sample', generate: (now) => ({ stores: {
+  profile: [{ key: 'me', name: 'Sample', companion: 'Kite', substances: ['Alcohol'], term: 'sober', startDate: daysAgo(28), notSure: false,
+    stage: 'action', region: 'in', checkin: { morning: '08:30', evening: '21:30' }, reviewDay: 0, pace: 'steady', customPerWeek: null,
+    roadmapStart: daysAgo(28), onboardedAt: now, medical: { heavyDaily: false, sedatives: false, opioids: false }, locale: 'en', sample: true }],
+  settings: [{ key: 'app', theme: 'light', sample: true }],
+  events: [{ id: 'smp-ev-1', type: 'OnboardingCompleted', at: now, payload: {}, sample: true }],
+  logs: [{ id: 'smp-log-1', type: 'craving', at: now, date: E().todayStr(now), hour: 20, intensity: 6, triggerIds: [], feelings: [], skills: [],
+    drill: false, sample: true }],
+} }) };
 async function someData() {
   await Actions.onboard({ name: 'Asha', startDate: daysAgo(12), substances: ['Alcohol'] });
   await Actions.sosSession({ kind: 'craving', ratingBefore: 7, ratingAfter: 3, tools: [{ skillId: 'ride-wave', helpful: true }] });
@@ -282,7 +348,7 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       [() => Actions.logActivity({ kind: 'nap', minutes: 10 }), 'bad-activity'],
       [() => Actions.logSlip({ date: 'yesterday' }), 'bad-slip'],
       [() => Actions.recordEvent('SoberDayClaimed', {}), 'bad-event'],
-      [() => Actions.recordEvent('SkillUsed', { skillId: 'ride-wave', helpful: 3 }), 'bad-event'],
+      [() => Actions.recordEvent('SkillUsed', { skillId: 'ride-wave', helpful: 3 }), 'USE_VERB'],
       [() => Actions.completeLesson('m99-l9'), 'unknown-lesson'],
       [() => Actions.checkpoint('m99', []), 'bad-checkpoint'],
       [() => Actions.saveResponse('quick-reasons', 'plain text'), 'bad-response'],
@@ -301,7 +367,8 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       [() => Actions.recoveryPlan.save('my plan'), 'bad-plan'],
       [() => Actions.scriptUsed('no-such-response'), 'bad-script'],
       [() => Actions.onboard({ admin: true }), 'bad-profile'],
-      [() => Actions.loadSample(), 'no-sample'],
+      [() => withoutSample(() => Actions.loadSample()), 'no-sample'], // RS9T: a stub Content without `sample`, whatever this tree loads
+      [() => withSample(TRUNK_SAMPLE, () => withoutSample(() => Actions.loadSample())), 'no-sample'], // and with the trunk's Content.sample there
     ];
     for (const [call, code] of cases) await refused(call(), code);
     await tick();
@@ -395,7 +462,8 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     const d = await Actions.saveResponse('quick-reasons', { reasons: ['health'] }, { mode: 'tutorial', draft: true });
     assert.equal(d.events.length, 0, 'a draft earns nothing');
     const s = await Actions.saveResponse('quick-reasons', { reasons: ['health', 'family'] });
-    assert.deepEqual(s.events.map((e) => [e.type, e.payload.exerciseId, e.payload.responseId]), [['ArtifactSaved', 'quick-reasons', s.response.id]]);
+    const want = savedType('quick-reasons');
+    assert.deepEqual(s.events.map((e) => [e.type, e.payload.exerciseId, e.payload.responseId]), want === null ? [] : [[want, 'quick-reasons', s.response.id]], 'RC17: a kind 3.7 does not name earns neither');
     assert.equal(list('responses').length, 2, 'append-only');
     await Actions.scriptUsed(s.response.id);
     assert.equal(events('ScriptUsed').length, 1);
@@ -453,9 +521,9 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
 
   test('sample data loads marked and erases with everything else', async () => {
     const at = new Date().toISOString();
-    C().sample = { generate: (now) => ({ stores: { logs: [{ id: 'sample-1', type: 'craving', at: now, date: E().todayStr(now), hour: 9,
+    const sample = { generate: (now) => ({ stores: { logs: [{ id: 'sample-1', type: 'craving', at: now, date: E().todayStr(now), hour: 9,
       intensity: 4, triggerIds: [], feelings: [], skills: [], drill: false }] } }) };
-    try {
+    await withSample(sample, async () => {
       const r = await Actions.loadSample();
       assert.equal(r.count, 1);
       assert.ok(S().view.get('meta', 'sample').loadedAt >= at.slice(0, 10));
@@ -463,8 +531,153 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       await Actions.eraseAll();
       assert.equal(S().view.get('meta', 'sample'), null);
       assert.equal(list('logs').length, 0);
-    } finally { delete C().sample; }
+    });
   });
+
+  test('sample never overwrites the person\'s rows and erases only its own', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5), substances: ['Alcohol'] });
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    const mine = await Actions.logCraving({ intensity: 6, triggerIds: ['evening'], skills: [] });
+    const before = { profile: S().view.get('profile', 'me'), settings: S().view.get('settings', 'app'),
+      plan: S().view.get('recoveryPlan', 'plan'), log: S().view.get('logs', mine.log.id) };
+    const row = (id, n) => ({ id, type: 'craving', at: n, date: E().todayStr(n), hour: 9, intensity: 2, triggerIds: [], feelings: [], skills: [], drill: false });
+    const sample = { generate: (now) => ({ stores: {
+      profile: [{ key: 'me', name: 'Sample person', startDate: daysAgo(90) }],
+      settings: [{ key: 'app', theme: 'light', showCurrentRun: true }],
+      recoveryPlan: [{ key: 'plan', sections: {} }],
+      meta: [{ key: 'lock', salt: 'x', check: 'y' }],
+      logs: [row(mine.log.id, now), row('sample-1', now)],
+    } }) };
+    await withSample(sample, async () => {
+      const r = await Actions.loadSample();
+      assert.equal(r.count, 1);
+      assert.deepEqual(S().view.get('profile', 'me'), before.profile);
+      assert.deepEqual(S().view.get('settings', 'app'), before.settings);
+      assert.deepEqual(S().view.get('recoveryPlan', 'plan'), before.plan);
+      assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
+      assert.equal(S().view.get('meta', 'lock'), null);
+      assert.equal(S().view.get('logs', 'sample-1').sample, true);
+      const eventsBefore = list('events').length;
+      const e = await Actions.eraseSample();
+      assert.equal(e.erased, 1);
+      assert.equal(S().view.get('logs', 'sample-1'), null);
+      assert.equal(S().view.get('meta', 'sample'), null);
+      assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
+      assert.deepEqual(S().view.get('profile', 'me'), before.profile);
+      assert.equal(list('events').length, eventsBefore);
+    });
+  });
+
+  test('RS-SAMPLE: an onboarded profile and settings survive loadSample then eraseSample unchanged', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5), substances: ['Alcohol'] });
+    await Actions.settings.patch({ theme: 'dark' });
+    const mine = { profile: S().view.get('profile', 'me'), settings: S().view.get('settings', 'app') };
+    assert.ok(mine.profile && mine.settings && mine.profile.sample !== true && mine.settings.sample !== true);
+    await withSample(TRUNK_SAMPLE, async () => {
+      await Actions.loadSample();
+      assert.deepEqual(S().view.get('profile', 'me'), mine.profile, 'loadSample leaves the own profile as it was');
+      assert.deepEqual(S().view.get('settings', 'app'), mine.settings, 'and the own settings');
+      assert.equal(S().view.get('logs', 'smp-log-1').sample, true, 'the rest of the sample loads');
+      await Actions.eraseSample();
+    });
+    assert.deepEqual(S().view.get('profile', 'me'), mine.profile, 'eraseSample leaves the own profile as it was');
+    assert.deepEqual(S().view.get('settings', 'app'), mine.settings, 'and the own settings');
+    assert.equal(S().view.get('logs', 'smp-log-1'), null, 'the sample rows are gone');
+  });
+
+  test("RS-SAMPLE: a fresh notebook gets the sample profile, marked, and eraseSample takes it; the person's own acts over sample rows are theirs and stay", async () => {
+    const tip = C().tips[0].id;
+    await withSample(TRUNK_SAMPLE, async () => {
+      await Actions.loadSample();
+      const p = S().view.get('profile', 'me');
+      assert.ok(p && p.name === 'Sample' && p.sample === true, 'a fresh store gets the sample profile, marked');
+      assert.equal(S().view.get('settings', 'app').sample, true, 'and the sample settings, marked');
+      await Actions.eraseSample();
+      assert.equal(S().view.get('profile', 'me'), null, 'eraseSample takes the sample profile');
+      assert.equal(S().view.get('settings', 'app'), null, 'and the sample settings');
+      const acts = [ // [what, the act, the keyed rows it writes]
+        ['onboarding', () => Actions.onboard({ name: 'Asha', startDate: daysAgo(3), substances: ['Alcohol'] }), [['profile', 'me'], ['settings', 'app']]],
+        ['a settings change', () => Actions.settings.patch({ theme: 'dark' }), [['settings', 'app']]],
+        ['a tip shown', () => Actions.markTipShown(tip), [['settings', 'app']]],
+      ];
+      for (const [what, act, rows] of acts) {
+        await S().resetAll();
+        await Actions.loadSample();
+        await act();
+        const kept = rows.map(([s, k]) => S().view.get(s, k));
+        rows.forEach(([s], i) => assert.ok(kept[i] && kept[i].sample !== true, what + ': the ' + s + ' row is the person\'s own, not marked'));
+        if (rows[0][0] === 'profile') {
+          assert.equal(kept[0].name, 'Asha');
+          assert.notEqual(kept[0].companion, 'Kite', what + ': nothing of the sample profile in it');
+        }
+        await Actions.eraseSample();
+        rows.forEach(([s, k], i) => assert.deepEqual(S().view.get(s, k), kept[i], what + ': eraseSample keeps the ' + s + ' row'));
+        assert.equal(S().view.get('logs', 'smp-log-1'), null, what + ': the sample rows are gone');
+      }
+    });
+  });
+
+  test('RC3: sample events never stand in for the person’s own once-only events', async () => {
+    const lesson = firstModule().lessons[0].id;
+    const ev = (id, type, payload) => ({ id, type, at: new Date().toISOString(), payload });
+    const sample = { generate: () => ({ stores: { events: [ev('sample-e1', 'LessonCompleted', { lessonId: lesson }),
+      ev('sample-e2', 'TutorialCompleted', { id: 'drill', skipped: false })] } }) };
+    await withSample(sample, async () => {
+      assert.equal((await Actions.loadSample()).count, 2);
+      await Actions.completeLesson(lesson);
+      await Actions.sosSession({ kind: 'craving', drill: true });
+      await Actions.eraseSample();
+    });
+    assert.deepEqual(events('LessonCompleted').map((e) => e.payload.lessonId), [lesson], 'the person’s own lesson stays when the sample goes');
+    assert.deepEqual(events('TutorialCompleted').map((e) => e.payload.id), ['drill'], 'and the drill mark');
+  });
+
+  test('RC9: a backup the engine calls not valid is refused, even with no reason given', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    const eng = E();
+    const had = Object.prototype.hasOwnProperty.call(eng, 'validateBackup');
+    const old = eng.validateBackup;
+    eng.validateBackup = () => ({ ok: false, errors: [] });
+    try { await refused(Actions.importBackup(backup), 'bad-backup'); } finally { if (had) eng.validateBackup = old; else delete eng.validateBackup; }
+  });
+
+  test('RC11: the last lesson completes its module even when the draft lists only the rows written before', async () => {
+    const m = firstModule();
+    const ids = m.lessons.map((l) => l.id);
+    for (const id of ids.slice(0, -1)) await Actions.completeLesson(id);
+    await Actions.checkpoint(m.id, [1, 0, 2]);
+    assert.equal(events('ModuleCompleted').length, 0);
+    const real = globalThis.Store;
+    globalThis.Store = Object.assign(Object.create(real), {
+      commit: (label, fn) => real.commit(label, (draft) => {
+        const seen = {};
+        return fn(Object.assign({}, draft, { list: (s) => (seen[s] = seen[s] || draft.list(s)) }));
+      }),
+    });
+    try { await Actions.completeLesson(ids[ids.length - 1]); } finally { globalThis.Store = real; }
+    assert.deepEqual(events('ModuleCompleted').map((e) => e.payload.moduleId), [m.id]);
+  });
+
+  test('RC12: an import never brings a lock row with it', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    backup.stores.meta = [...backup.stores.meta, { key: 'lock', salt: 'x', check: 'y' }];
+    await Actions.importBackup(backup);
+    assert.equal(S().view.get('meta', 'lock'), null);
+    assert.ok(list('logs').length > 0, 'the rest came in');
+  });
+
+  test('RC13: an SOS slip session is always a use and logs the slip', async () => {
+    const r = await Actions.sosSession({ kind: 'slip' });
+    assert.equal(r.log.used, true);
+    assert.equal(r.log.type, 'slip');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used']);
+    assert.equal(events('SlipLogged').length, 1);
+    await refused(Actions.sosSession({ kind: 'slip', outcome: 'passed' }), 'bad-session');
+  });
+
+  // -- fix round: U-09 tests above this line --
 });
 
 /* ── stand-ins, used only while the real file is absent ─────────────────────────────────────── */
@@ -535,9 +748,9 @@ function storeStandIn() {
   let pending = false;
   const subs = new Set();
   const lockSubs = new Set();
-  function notify() {
+  function notify(label) {
     if (depth) { pending = true; return; }
-    for (const fn of subs) fn();
+    for (const fn of subs) fn({ label }); // as the real Store: a subscriber gets { label } (C2)
   }
   function fromBackup(obj) {
     const next = empty();
@@ -586,17 +799,2193 @@ function storeStandIn() {
       if (locked) throw lockedError();
       data = fromBackup(obj);
       lastSavedAt = new Date().toISOString();
-      notify();
+      notify('replaceAll');
     },
-    async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify(); },
+    async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify('resetAll'); },
     lock: {
-      async set(p) { pin = String(p); },
-      async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; return true; } return false; },
+      async set(p) { const s = String(p); if (s.length < 4 || s.length > 64) throw Object.assign(new Error('A PIN has 4 to 64 characters.'), { code: 'BAD_PIN' }); pin = s; },
+      async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; notify(); return true; } return false; }, // the real Store notifies 'unlock'
       async verify(p) { return pin !== null && String(p) === pin; },
       async remove(p) { if (pin !== null && String(p) === pin) { pin = null; locked = false; return true; } return false; },
-      lockNow() { if (pin !== null) { locked = true; for (const fn of lockSubs) fn(); } },
+      lockNow() { if (pin !== null) { locked = true; for (const fn of lockSubs) fn({ reason: 'manual' }); } },
       touch() {},
       onLock(fn) { lockSubs.add(fn); return () => lockSubs.delete(fn); },
     },
   };
 }
+
+// ── U-10: the SOS screens' pure parts (offline/src/ui-sos.js loads in Node without UI or a DOM) ──────────────────
+describe('sos screens (U-10)', () => {
+  const H = require(src('ui-sos.js'));
+  const SOS_SRC = readFileSync(src('ui-sos.js'), 'utf8');
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('urgent list: India first, every number a tel link with please verify, then the international list', () => {
+    const m = H.urgentList('in', C());
+    assert.equal(m.region, 'in');
+    assert.deepEqual(m.sections.map((s) => s.id), ['in', 'intl']);
+    const india = m.sections[0];
+    const want = [...C().resources.in.emergency, ...C().resources.in.crisis].map((x) => x.number);
+    assert.deepEqual(india.items.map((i) => i.number), want, 'emergency then crisis, all from Content.resources');
+    assert.equal(india.items[0].number, '112');
+    for (const i of india.items) {
+      assert.match(i.tel, /^tel:\+?[0-9]+$/, i.name);
+      assert.equal(i.verify, true, i.name + ' carries verify');
+    }
+    assert.equal(H.telHref('1800-891-4416'), 'tel:18008914416');
+    assert.equal(H.telHref('+91 9999 666 555'), 'tel:+919999666555');
+    assert.equal(india.verifyNote, C().resources.in.verifyNote);
+    assert.ok(m.sections[1].items.length >= 3 && m.sections[1].items.every((i) => i.verify === true));
+    assert.ok(m.overdose.length >= 3 && m.withdrawal.length >= 2, 'overdose and withdrawal steps from Content');
+  });
+
+  test('urgent list: intl region leads with the international list; anything else means India', () => {
+    assert.deepEqual(H.urgentList('intl', C()).sections.map((s) => s.id), ['intl', 'in']);
+    assert.equal(H.urgentList(undefined, C()).region, 'in');
+    assert.equal(H.urgentList('xx', C()).region, 'in');
+    const bare = H.urgentList('in', {});
+    assert.deepEqual(bare.sections.map((s) => s.items.map((i) => i.number)), [['112']], 'no Content: only the built-in emergency number (Q-BUILTIN), no throw');
+  });
+
+  test('crisis routing: hopeless and crisis words go to the numbers at once', () => {
+    assert.equal(H.isCrisisEmotion('hopeless', C()), true);
+    for (const id of ['angry', 'sad', 'anxious', 'other', 'nope']) assert.equal(H.isCrisisEmotion(id, C()), false, id);
+    for (const t of ['I want to die', 'thinking about suicide', 'better off dead', 'I might kill myself']) assert.equal(H.isCrisisText(t, null), true, t);
+    for (const t of ['', 'tired and bored', 'I am angry at work']) assert.equal(H.isCrisisText(t, null), false, t);
+    assert.equal(H.isCrisisText('a quiet phrase', { crisisKeywords: (s) => s.includes('quiet') }), true, 'Engine.crisisKeywords is used when present');
+    assert.equal(H.isCrisisText('I want to die', { crisisKeywords: () => false }), true, 'the in-file list still applies: never fewer');
+  });
+
+  test('outcome and session payloads match Actions.sosSession', async () => {
+    assert.equal(H.outcomeFrom(7, 3, false), 'passed');
+    assert.equal(H.outcomeFrom(5, 6, false), 'still');
+    assert.equal(H.outcomeFrom(5, 0, false), 'passed');
+    assert.equal(H.outcomeFrom(null, null, false), 'passed');
+    assert.equal(H.outcomeFrom(2, 9, true), 'used');
+    const p = H.sessionFrom({ kind: 'craving', ratingBefore: 8, ratingAfter: 2, delays: 1, risky: true,
+      tools: [{ skillId: 'ride-wave', helpful: false }, { skillId: 'ride-wave', helpful: true }, { skillId: 'reasons', helpful: false }] });
+    assert.deepEqual(p.tools, [{ skillId: 'ride-wave', helpful: true }, { skillId: 'reasons', helpful: false }]);
+    assert.equal(p.outcome, 'passed');
+    const r = await Actions.sosSession(p);
+    assert.equal(r.log.sos.delays, 1);
+    assert.equal(events('SkillUsed').length, 2);
+    assert.equal(events('SosCompleted')[0].payload.outcome, 'passed');
+    const skills = new Set(C().skills.map((s) => s.id));
+    for (const t of H.TOOLS) assert.ok(skills.has(t.skillId), t.id + ' credits a known skill');
+    for (const k of Object.keys(H.FEEL_SKILLS)) assert.ok(skills.has(H.FEEL_SKILLS[k]), k);
+    const used = H.sessionFrom({ kind: 'craving', ratingBefore: 6, used: true });
+    assert.equal(used.outcome, 'used');
+    await Actions.sosSession(used);
+    assert.equal(events('SlipLogged').length, 1, 'used: the slip is logged by the session itself');
+  });
+
+  test('sos drill payload writes no log', async () => {
+    const p = H.sessionFrom({ kind: 'craving', ratingBefore: 6, ratingAfter: 2, drill: true, tools: [{ skillId: 'ride-wave', helpful: true }] });
+    assert.equal(p.drill, true);
+    await Actions.sosSession(p);
+    await Actions.sosSession(p);
+    assert.equal(list('logs').length, 0);
+    assert.equal(events('SkillUsed').length + events('SosCompleted').length + events('LogCreated').length, 0);
+    assert.equal(events('TutorialCompleted').length, 1);
+  });
+
+  test('routes: hub, flows, drill, preview', () => {
+    const r = (path, query) => H.parseSos({ parts: path.split('/').filter(Boolean), query: query || {} });
+    assert.deepEqual(r('sos'), { flow: 'hub', drill: false, preview: false, logged: false, kept: false });
+    assert.equal(r('sos/slip', { kept: '1' }).kept, true, 'RS21: kept for the unlock');
+    assert.equal(r('sos', { drill: '1' }).flow, 'craving');
+    assert.equal(r('sos', { drill: '1' }).drill, true);
+    assert.equal(r('sos/craving').drill, false);
+    assert.equal(r('sos/feeling').flow, 'feeling');
+    assert.equal(r('sos/slip', { preview: '1' }).preview, true);
+    assert.equal(r('sos/slip', { logged: '1' }).logged, true);
+    assert.equal(r('sos/urgent').flow, 'urgent');
+    assert.equal(r('sos/what').flow, 'hub');
+    assert.equal(H.parseSos(undefined).flow, 'hub');
+  });
+
+  test('the person’s lists: reasons, contacts, spiral replies, guide order, plan only when confirmed', async () => {
+    const view = S().view;
+    assert.deepEqual(H.reasonsFrom(view, null), []);
+    await Actions.saveResponse('quick-reasons', { reasons: ['my health', 'my kids'] });
+    assert.deepEqual(H.reasonsFrom(view, null), ['my health', 'my kids']);
+    const a = await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await Actions.contacts.add({ name: 'No phone', role: 'safetyNet' });
+    assert.deepEqual(H.activeContacts(view).map((x) => x.id), [a.id]);
+    await Actions.contacts.deactivate(a.id);
+    assert.equal(H.activeContacts(view).length, 0, 'an inactive contact is not offered');
+    const pairs = H.spiralPairs(view, null, C());
+    assert.equal(pairs.length, C().catalogs.spiral.filter((t) => !/hopeless/i.test(t) && !H.isCrisisText(t, null)).length, 'RS9 skips some');
+    assert.ok(pairs.every((p) => p.thought && p.reply), 'every thought has a reply');
+    assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
+    assert.deepEqual(H.spiralPairs(view, { spiralThoughts: () => [{ thought: 'mine', reply: 'my answer' }] }, C()), [{ thought: 'mine', reply: 'my answer' }]);
+    assert.deepEqual(H.guideOrder(view, null), ['wave', 'why', 'distract']);
+    assert.deepEqual(H.guideOrder(view, { sos: { guideSequence: () => ['distract', 'bogus', 'wave'] } }), ['distract', 'wave']);
+    assert.equal(H.planFor(view), null);
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: false });
+    assert.equal(H.planFor(view), null, 'a draft plan is not shown in SOS');
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    assert.deepEqual(H.planSections(H.planFor(view)), [{ id: 'motivation', items: ['my kids'] }]);
+    assert.ok(H.soberSteps(C()).length === 5 && H.deckFrom(view, null, C()).length > 3 && H.comebacksFrom(view, null).length > 0);
+  });
+
+  test('RC1: Talk back shows the reply, never the craving thought; the reasons card is read in full', () => {
+    const view = S().view;
+    const eng = {
+      comebacks: () => [{ thought: 'I need it now', response: 'I want it. I do not need it.', at: '2026-11-07T09:00:00.000Z' }, 'A plain line'],
+      reasonsCard: () => ({ quick: ['my health'], drawbacks: ['the arguments'], benefits: [{ text: 'more money' }], different: ['mornings with my kids'] }),
+    };
+    assert.deepEqual(H.comebacksFrom(view, eng), ['I want it. I do not need it.', 'A plain line']);
+    assert.deepEqual(H.reasonsFrom(view, eng), ['my health', 'the arguments', 'more money', 'mornings with my kids']);
+    assert.deepEqual(H.comebacksFrom(view, { comebacks: () => ['one', 'two'] }), ['one', 'two'], 'a list of strings (engine.md) still works');
+    assert.deepEqual(H.reasonsFrom(view, { reasonsCard: () => ['a', 'b'] }), ['a', 'b']);
+    assert.deepEqual(H.comebacksFrom(view, { comebacks: () => [{ thought: 'only a thought' }] }), H.FALLBACK.talkback, 'a thought with no reply is never shown');
+  });
+
+  test('wave timer counts 15 minutes down and never below zero', () => {
+    assert.equal(H.WAVE_MIN, 15);
+    assert.equal(H.clock(900), '15:00');
+    assert.equal(H.clock(61), '1:01');
+    assert.equal(H.remaining(0, 0), 900);
+    assert.equal(H.remaining(0, 65 * 1000), 835);
+    assert.equal(H.remaining(0, 3600 * 1000), 0);
+  });
+
+  test('sos copy: one title and at most one short line per screen, person-first', () => {
+    for (const [k, v] of Object.entries(H.COPY)) {
+      if (k === 'clinicalReview') continue;
+      if (typeof v === 'string') { assert.ok(v.length <= 60, k); continue; }
+      assert.ok(v.title && v.title.length <= 40, k + ' title');
+      for (const f of ['line', 'empty', 'none', 'drill']) if (v[f]) assert.ok(v[f].length <= 70, `${k}.${f} is short`);
+    }
+    assert.equal(H.COPY.clinicalReview, true);
+    assert.equal(H.FALLBACK.clinicalReview, true);
+    for (const t of [...H.FALLBACK.sober, ...H.FALLBACK.talkback, H.FALLBACK.spiralReply]) assert.ok(t.length <= 60, t);
+    assert.doesNotMatch(SOS_SRC, /\baddicts?\b/i);
+  });
+
+  test('sos is never gated and makes no network call', () => {
+    assert.doesNotMatch(SOS_SRC, /https?:\/\//, 'no web address in the file');
+    assert.doesNotMatch(SOS_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\.log/);
+    assert.doesNotMatch(SOS_SRC, /UI\.confirm|UI\.tour|lock\.(unlock|verify|set)|onboardedAt|markTipShown/, 'no PIN, tour, tip or confirm inside SOS');
+    assert.match(SOS_SRC, /data-tour': o\.tour|'data-tour'/);
+    for (const name of ['sos-urgent', 'sos-craving']) assert.match(SOS_SRC, new RegExp(`'data-tour': '${name}'`), name + ' tour target');
+  });
+});
+
+// ── U-10: in a browser each part is its own classic script, so Content and Engine are const globals, not globalThis properties ──
+describe('sos screens read const globals like a browser (U-10)', () => {
+  test('ui-sos finds Content and Engine declared by other scripts', () => {
+    const vm = require('node:vm');
+    const ctx = vm.createContext({});
+    vm.runInContext('var module = { exports: {} };', ctx);
+    vm.runInContext(readFileSync(src('content-core.js'), 'utf8').replace(/if \(typeof module[^\n]*\n?/g, ''), ctx, { filename: 'content-core.js' });
+    vm.runInContext('const Engine = { crisisKeywords: (s) => s === "only the engine knows" };', ctx);
+    vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
+    assert.equal(vm.runInContext('typeof globalThis.Content', ctx), 'undefined', 'the test scope is browser-like');
+    assert.equal(vm.runInContext('module.exports.isCrisisEmotion("hopeless")', ctx), true);
+    assert.equal(vm.runInContext('module.exports.isCrisisText("only the engine knows")', ctx), true);
+    assert.equal(vm.runInContext('module.exports.soberSteps(Content).length', ctx), 5);
+  });
+});
+
+// ── fix round (2026-11-07): the SOS flows themselves, run in Node in a small stand-in DOM (UI.h builds plain nodes; a tap calls the handler) ──
+function sosDom(opts) {
+  const o = opts || {};
+  const vm = require('node:vm');
+  const go = [];
+  const replaced = [];
+  const docOn = {};
+  const toasts = [];
+  class N {
+    constructor(tag) {
+      this.tag = tag; this.nodeType = tag === '#text' ? 3 : 1; this.kids = []; this.parent = null; this.own = '';
+      this.attrs = {}; this.dataset = {}; this.style = {}; this.on = {}; this.disabled = false; this.value = '';
+    }
+    get isConnected() { let n = this; while (n.parent) n = n.parent; return n === body; }
+    get textContent() { return [this.own, ...this.kids.map((k) => k.textContent)].join(' '); }
+    set textContent(v) { for (const k of this.kids) k.parent = null; this.kids = []; this.own = String(v); }
+    appendChild(c) { if (c.parent) c.remove(); c.parent = this; this.kids.push(c); return c; }
+    replaceChildren(...cs) { this.textContent = ''; for (const c of cs) if (c != null) this.appendChild(c); }
+    remove() { if (this.parent) { this.parent.kids = this.parent.kids.filter((k) => k !== this); this.parent = null; } }
+    setAttribute(k, v) { this.attrs[k] = String(v); }
+    getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
+    addEventListener(type, fn) { (this.on[type] = this.on[type] || []).push(fn); }
+    focus() { doc.activeElement = this; } // RS30: a test reads what has the focus
+    select() {}
+    matches(sel) {
+      if (sel.startsWith('.')) return String(this.attrs.class || '').split(' ').includes(sel.slice(1));
+      const m = /^\[data-([a-z-]+)(?:="([^"]*)")?\]$/.exec(sel);
+      if (!m) return this.tag === sel;
+      const k = m[1].replace(/-([a-z])/g, (x, ch) => ch.toUpperCase());
+      return Object.prototype.hasOwnProperty.call(this.dataset, k) && (m[2] === undefined || this.dataset[k] === m[2]);
+    }
+    querySelectorAll(sel) {
+      const out = [];
+      const walk = (n) => { for (const k of n.kids) { if (k.nodeType === 1 && k.matches(sel)) out.push(k); walk(k); } };
+      walk(this);
+      return out;
+    }
+    querySelector(sel) { return this.querySelectorAll(sel)[0] || null; }
+    click() { if (!this.disabled) for (const fn of this.on.click || []) fn({ preventDefault() {} }); }
+  }
+  const text = (s) => { const t = new N('#text'); t.own = String(s); return t; };
+  function h(tag, attrs, ...children) {
+    const n = new N(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') { const c = Array.isArray(v) ? v.filter(Boolean).join(' ') : String(v); if (c) n.attrs.class = c; }
+      else if (k === 'text') n.textContent = String(v);
+      else if (k === 'dataset') { for (const d of Object.keys(v)) if (v[d] != null) n.dataset[d] = String(v[d]); }
+      else if (k === 'style') Object.assign(n.style, v);
+      else if (/^on[A-Z]/.test(k) && typeof v === 'function') n.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (k === 'value' || k === 'disabled' || k === 'hidden') n[k] = v;
+      else n.attrs[k] = v === true ? '' : String(v);
+    }
+    const add = (c) => {
+      if (c == null || c === false || c === true) return;
+      if (Array.isArray(c)) c.forEach(add);
+      else if (typeof c === 'object' && typeof c.nodeType === 'number') n.appendChild(c);
+      else n.appendChild(text(c));
+    };
+    children.forEach(add);
+    return n;
+  }
+  const body = new N('body');
+  const UI = { h, pages: {}, go: (r, op) => { go.push(r); if (op && op.replace) replaced.push(r); }, toast: (m, tone) => { toasts.push([m, tone]); }, speak: () => false, stopSpeaking: () => {} };
+  const doc = { body, title: '', createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
+    addEventListener: (t, fn) => { (docOn[t] = docOn[t] || []).push(fn); } };
+  const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto, localStorage: o.localStorage,
+    setInterval: () => 0, clearInterval: () => {}, setTimeout, Date, Content: C(), Store: o.store || S(), module: { exports: {} } }); // Date: the pinned clock, one clock as in a browser (RC16)
+  vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
+  if (o.onboarding) vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
+  const byId = (root, id) => {
+    const n = root.querySelector(`[data-testid="${id}"]`);
+    if (!n) throw new Error(`no ${id} on: ${root.textContent.slice(0, 160)}`);
+    return n;
+  };
+  const button = (root, label) => {
+    const b = root.querySelectorAll('button').find((x) => x.textContent.trim() === label);
+    if (!b) throw new Error(`no "${label}" button on: ${root.textContent.slice(0, 160)}`);
+    return b;
+  };
+  return {
+    UI, go, replaced, toasts, byId, docOn, doc,
+    fire: (type, detail) => { for (const fn of docOn[type] || []) fn({ type, detail }); },
+    onb(c) {
+      const root = UI.pages.onboarding(Object.assign({ A: Actions, settings: {} }, c));
+      body.replaceChildren(root);
+      return root;
+    },
+    tap: (root, label) => button(root, label).click(),
+    tapId: (root, id) => byId(root, id).click(),
+    rate: (root, n) => byId(root, 'sos-rating').querySelectorAll('button')[n].click(),
+    open(parts, query, A) {
+      const root = UI.pages.sos({ route: { parts, query: query || {} }, A: A || Actions, view: S().view, E: null,
+        profile: S().view.get('profile', 'me') || {} });
+      body.replaceChildren(root);
+      return root;
+    },
+    // the feeling flow's calm path, tapped through to its closing rating
+    toRating(root) {
+      for (let k = 0; !root.querySelector('[data-testid="sos-rating"]'); k += 1) {
+        assert.ok(k < 30, 'the closing rating comes');
+        const b = root.querySelectorAll('button').find((x) => ['Next', 'Done'].includes(x.textContent.trim()));
+        assert.ok(b, 'a way on from: ' + root.textContent.slice(0, 160));
+        b.click();
+      }
+    },
+    calm: () => C().emotions.find((e) => e && e.crisisCheck !== true && e.id !== 'other' && e.tools !== 'anger').id,
+    settle: async () => { for (let k = 0; k < 5; k += 1) await new Promise((r) => setTimeout(r, 2)); },
+  };
+}
+
+describe('sos flows in a stand-in DOM (fix round)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS1: the crisis view shows the numbers at once and says little else', () => {
+    const d = sosDom();
+    const crisis = d.UI.sosUrgentView({}, { crisis: true });
+    assert.ok(crisis.querySelector('[data-testid="urgent-number-1"]'), 'the first number is there');
+    assert.ok(crisis.querySelectorAll('[data-testid="urgent-verify"]').length > 0, 'please verify still shows');
+    assert.equal(crisis.querySelectorAll('details').length, 0, 'no overdose or withdrawal reading in a crisis');
+    assert.equal(d.UI.sosUrgentView({}, {}).querySelectorAll('details').length, 2, 'the urgent page keeps both');
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + C().emotions.find((e) => e && e.crisisCheck === true).id);
+    const shown = d.byId(root, 'sos-crisis');
+    assert.equal(shown.querySelectorAll('details').length, 0);
+    assert.ok(shown.querySelector('[data-testid="urgent-number-1"]'));
+  });
+
+  test('RC4: a feeling session is one verb, rated or not, and keeps the feeling', async () => {
+    const d = sosDom();
+    const id = d.calm();
+    for (const n of [4, null]) {
+      const root = d.open(['sos', 'feeling']);
+      d.tapId(root, 'sos-feeling-' + id);
+      d.toRating(root);
+      if (n === null) d.tap(root, 'Skip'); else d.rate(root, n);
+      await d.settle();
+    }
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.kind, e.payload.ratingAfter]), [['feeling', 4], ['feeling', null]]);
+    assert.deepEqual(list('logs').map((l) => l.emotion), [id, id], 'the feeling is kept on both paths');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+    await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling' }), 'bad-session');
+  });
+
+  test('RC2: a second tap while the save runs writes nothing more', async () => {
+    const d = sosDom();
+    let root = d.open(['sos', 'craving']);
+    d.tap(root, 'Skip');
+    d.tap(root, 'Check in with the craving');
+    d.tapId(root, 'sos-reassess-passed');
+    const no = d.byId(root, 'sos-used-no');
+    no.click(); no.click();
+    await d.settle();
+    assert.equal(list('logs').length, 1, 'one craving log for one session');
+    assert.equal(events('SosCompleted').length, 1);
+    root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    d.toRating(root);
+    const four = d.byId(root, 'sos-rating').querySelectorAll('button')[4];
+    four.click(); four.click();
+    await d.settle();
+    assert.equal(list('logs').length, 2, 'one feeling log for one session');
+    assert.equal(events('SosCompleted').length, 2);
+    root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-continue');
+    d.tapId(root, 'sos-slip-safe');
+    d.tap(root, 'Continue');
+    d.tap(root, 'Done');
+    const todo = d.byId(root, 'sos-slip-todo');
+    todo.click(); todo.click();
+    await d.settle();
+    assert.equal(list('todos').length, 1, 'one to-do for one tap');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), [], 'every save went through');
+  });
+
+  test('RC5: It passed is what the session records', async () => {
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    d.rate(root, 6);
+    d.tap(root, 'Check in with the craving');
+    d.rate(root, 6);
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-no');
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.outcome, e.payload.ratingBefore, e.payload.ratingAfter]), [['passed', 6, 6]]);
+    assert.match(root.textContent, /Wave surfed/);
+    const again = d.open(['sos', 'craving']);
+    d.tap(again, 'Skip');
+    d.tap(again, 'Check in with the craving');
+    d.tapId(again, 'sos-reassess-passed');
+    d.tapId(again, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed', 'used'], 'a use after It passed is saved as used');
+    assert.equal(events('SlipLogged').length, 1);
+    assert.deepEqual(d.go, ['#/sos/slip?logged=1']);
+    assert.equal(d.UI.sosHelpers.sessionFrom({ kind: 'craving', outcome: 'passed', used: true }).outcome, 'used');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+  });
+
+  test('RC6: a lock inside SOS hides the person’s rows at once, the flow goes on, nothing navigates', async () => {
+    const d = sosDom();
+    await Actions.saveResponse('quick-reasons', { reasons: ['my health'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    await S().lock.set('2468');
+    const hub = d.open(['sos']);
+    assert.match(hub.textContent, /my kids/);
+    S().lock.lockNow();
+    assert.doesNotMatch(hub.textContent, /my kids/, 'My plan is hidden');
+    assert.match(hub.textContent, /Locked/);
+    assert.ok(await S().lock.unlock('2468'));
+    for (const [tool, own] of [['why', /my health/], ['call', /Ravi/]]) {
+      const root = d.open(['sos', 'craving']);
+      d.tap(root, 'Skip');
+      d.tapId(root, 'sos-tool-' + tool);
+      assert.match(root.textContent, own, tool);
+      S().lock.lockNow();
+      assert.doesNotMatch(root.textContent, own, tool + ': hidden while locked');
+      d.tap(root, 'Done');
+      assert.match(root.textContent, /Did that help/, 'the flow goes on');
+      assert.ok(await S().lock.unlock('2468'));
+    }
+    assert.deepEqual(d.go, [], 'a lock never moves the person out of SOS');
+  });
+
+  // -- fix round: stand-in DOM tests above this line --
+});
+
+// ── U-11: the lock screen and onboarding, their pure parts (offline/src/ui-onboarding.js loads in Node) ─────────────
+describe('lock screen and onboarding (U-11)', () => {
+  const O = require(src('ui-onboarding.js'));
+  const SOS = require(src('ui-sos.js'));
+  const ONB_SRC = readFileSync(src('ui-onboarding.js'), 'utf8');
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const fullAnswers = () => ({
+    earlyNoticeSeen: true, discreet: true, substances: ['Alcohol'], substanceOther: 'Gutka', term: 'clean', startDate: daysAgo(3), notSure: false,
+    stage: 'preparation', score: 7, medical: { heavyDaily: true, sedatives: false, opioids: false },
+    reasons: ['my health', '', 'my daughter'], contact: { name: 'Ravi', phone: '+91 98765 43210' }, region: 'intl',
+    checkin: { morning: '07:30', evening: '21:00' }, reviewDay: 0, pace: 'steady',
+  });
+
+  test('onboarding has eight steps and only the safety notice cannot be skipped', () => {
+    assert.deepEqual(O.STEPS.map((s) => s.n), [1, 2, 3, 4, 5, 6, 7, 8]);
+    assert.deepEqual(O.STEPS.filter((s) => !s.skip).map((s) => s.id), ['safety']);
+    for (const s of O.STEPS) assert.ok(O.COPY.steps[s.id].title && O.COPY.steps[s.id].line.length <= 80, s.id);
+    assert.match(ONB_SRC, /testid: 'onb-safety-ok'/);
+    assert.match(ONB_SRC, /step\.id === 'safety'\) \{\n\s*nav = \[btn\(COPY\.safetyOk/, 'the safety step offers "I understand" and no Skip');
+  });
+
+  test('onboarding full writes the profile, settings, reasons, contact and motivation', async () => {
+    const r = await O.finishOnboarding(Actions, fullAnswers(), C());
+    assert.equal(r.ok, true);
+    assert.deepEqual(r.errors, []);
+    const me = S().view.get('profile', 'me');
+    assert.equal(me.locale, 'en');
+    assert.equal(me.region, 'intl');
+    assert.deepEqual(me.substances, ['Alcohol', 'Gutka']);
+    assert.equal(me.term, 'clean');
+    assert.equal(me.stage, 'preparation');
+    assert.deepEqual(me.checkin, { morning: '07:30', evening: '21:00' });
+    assert.equal(me.medical.heavyDaily, true);
+    assert.ok(me.onboardedAt);
+    const set = S().view.get('settings', 'app');
+    assert.equal(set.discreet, true);
+    assert.equal(set.earlyNoticeSeen, true);
+    assert.equal(events('OnboardingCompleted').length, 1);
+    const resp = list('responses').filter((x) => x.exerciseId === 'quick-reasons');
+    assert.deepEqual(resp[0].payload.reasons, ['my health', 'my daughter']);
+    assert.deepEqual(list('contacts').map((x) => [x.name, x.role, x.active]), [['Ravi', 'safetyNet', true]]);
+    assert.deepEqual(list('motivation').map((x) => [x.stage, x.score]), [['preparation', 7]]);
+    assert.deepEqual(SOS.reasonsFrom(S().view, null), ['my health', 'my daughter'], 'SOS day 1: Remind me why has the reasons');
+  });
+
+  test('onboarding skip all lands with defaults and writes nothing extra', async () => {
+    const r = await O.finishOnboarding(Actions, {}, C());
+    assert.equal(r.ok, true);
+    const me = S().view.get('profile', 'me');
+    assert.equal(me.region, 'in');
+    assert.equal(me.locale, 'en');
+    assert.ok(me.onboardedAt);
+    for (const s of ['contacts', 'motivation', 'responses']) assert.equal(list(s).length, 0, s);
+    assert.equal(S().view.get('settings', 'app').earlyNoticeSeen, false, 'the notice shows again until dismissed');
+    await O.finishOnboarding(Actions, {}, C());
+    assert.equal(events('OnboardingCompleted').length, 1, 'once only');
+    assert.equal((await O.finishOnboarding(null, {}, C())).ok, false, 'no Actions: no throw');
+  });
+
+  test('onboarding answers that Actions would refuse are dropped, not sent', () => {
+    const p = O.buildPatch({ term: 'nope', stage: 'nope', score: 7, startDate: '2026-13-45', reasons: ['  ', 'x'.repeat(201)],
+      contact: { name: '  ', phone: '123' }, region: 'mars', checkin: { morning: '25:00' }, reviewDay: 9, pace: 'warp', medical: { opioids: 'yes' } }, C());
+    assert.deepEqual(p.profile, { medical: { heavyDaily: false, sedatives: false, opioids: false }, region: 'in' });
+    assert.equal(p.motivation, null, 'no stage, no motivation row');
+    assert.equal(p.reasons, null);
+    assert.equal(p.contact, null);
+    const unsure = O.buildPatch({ notSure: true, startDate: '2026-01-01' }, C()).profile;
+    assert.equal(unsure.notSure, true);
+    assert.equal(unsure.startDate, null, '"not sure yet" wins over a date');
+    assert.equal(O.needsMedicalCard({ sedatives: true }), true);
+    assert.equal(O.needsMedicalCard({ heavyDaily: false, sedatives: false, opioids: false }), false);
+    assert.equal(O.needsMedicalCard(undefined), false);
+  });
+
+  test('unlock: a wrong PIN pauses and says so; the right PIN opens', async () => {
+    await S().lock.set('2468', { autoLockMin: 5 });
+    S().lock.lockNow();
+    assert.equal(S().status().locked, true);
+    const t0 = Date.now();
+    const wrong = await O.attemptUnlock(S(), '1111', { delayMs: 40 });
+    assert.deepEqual(wrong, { ok: false, message: O.COPY.wrong });
+    assert.ok(Date.now() - t0 >= 35, 'the pause comes before the message');
+    assert.equal(S().status().locked, true);
+    assert.deepEqual(await O.attemptUnlock(S(), '', { delayMs: 0 }), { ok: false, message: O.COPY.wrong });
+    assert.deepEqual(await O.attemptUnlock(S(), '2468', { delayMs: 0 }), { ok: true, message: '' });
+    assert.equal(S().status().locked, false);
+    assert.equal(O.WRONG_PAUSE_MS, 1000);
+    const thrown = await O.attemptUnlock({ lock: { unlock: async () => { throw Object.assign(new Error('x'), { code: 'NO_CRYPTO' }); } } }, '9999', { delayMs: 0 });
+    assert.deepEqual(thrown, { ok: false, message: 'A PIN is not available on this device.' });
+    assert.equal(O.lockError({ code: 'BAD_PIN' }), 'Use 4 to 12 digits.');
+    assert.equal(O.lockError({ code: 'WRITE_FAILED' }), 'This device did not save it. Try again.');
+    await refused(S().lock.set('12'), 'BAD_PIN');
+  });
+
+  test('a locked person reaches urgent help and SOBER in one tap, from Content only', async () => {
+    await Actions.onboard({ region: 'intl' });
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const L = O.lockLabels(false, C());
+    assert.equal(L.urgent.href, '#/sos/urgent', 'one link, no PIN');
+    assert.equal(L.urgent.label, 'Urgent help');
+    const profile = S().view.get('profile', 'me') || {};
+    assert.deepEqual(profile, {}, 'nothing of the person is readable while locked');
+    const m = SOS.urgentList(profile.region, C());
+    assert.equal(m.sections[0].id, 'in');
+    assert.ok(m.sections[0].items.filter((i) => i.tel).length >= 5, 'the numbers are there without the PIN');
+    assert.equal(SOS.soberSteps(C()).length, 5, 'SOBER from content alone');
+    assert.match(ONB_SRC, /testid: 'lock-sober'/);
+    assert.match(ONB_SRC, /dataset: tid\('lock-urgent'\)/);
+    const D = O.lockLabels(true, C());
+    assert.deepEqual([D.title, D.urgent.label], [C().discreetName, 'Help']);
+    assert.equal(O.discreetFrom('1', false), true);
+    assert.equal(O.discreetFrom(null, false), false);
+  });
+
+  test('forgot PIN erases this device, then a backup restores', async () => {
+    await someData();
+    const backup = await S().exportJson();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    assert.equal(await O.forgetPin(S()), true);
+    assert.deepEqual(S().status().hasLock, false);
+    assert.equal(list('logs').length, 0);
+    await Actions.importBackup(backup);
+    assert.ok(list('logs').length > 0, 'the backup brings the notes back');
+    assert.equal(S().status().hasLock, false, 'an import never installs a PIN');
+  });
+
+  test('RC7: a Safety Net whose number Actions would refuse keeps the name, and the person is told', async () => {
+    for (const [phone, kept] of [['+91 98765 43210', true], ['(022) 2345-6789', true], ['call me at 5', false], ['1'.repeat(25), false]]) {
+      const p = O.buildPatch({ contact: { name: 'Ravi', phone } }, C());
+      assert.equal(p.contact.name, 'Ravi', phone);
+      assert.equal(p.phoneDropped, !kept, phone);
+      assert.equal(p.contact.phone === phone, kept, phone);
+      const accepted = await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone }).then(() => true, () => false);
+      assert.equal(accepted, kept, 'the same rule as Actions: ' + phone);
+    }
+    await S().resetAll();
+    const r = await O.finishOnboarding(Actions, { contact: { name: 'Ravi', phone: 'call me at 5' } }, C());
+    assert.deepEqual(r.errors, []);
+    assert.deepEqual(list('contacts').map((x) => [x.name, x.phone || '']), [['Ravi', '']]);
+    assert.match(ONB_SRC, /phoneDropped\) toast\(/, 'the finish says the number was not saved');
+  });
+
+  test('lock and onboarding make no network call and never keep the PIN', () => {
+    assert.doesNotMatch(ONB_SRC, /https?:\/\//);
+    assert.doesNotMatch(ONB_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\./);
+    assert.deepEqual(ONB_SRC.match(/localStorage\.\w+\([^)]*\)/g),
+      ['localStorage.getItem(DISCREET_KEY)', "localStorage.setItem(DISCREET_KEY, '1')", 'localStorage.removeItem(DISCREET_KEY)'],
+      'the device holds only the discreet flag, through a guard (RS12)');
+    assert.doesNotMatch(ONB_SRC, /(settings|patch|commit|answers)\.?[^\n]*\bpin\b(?!\s*=\s*h\()/i, 'the PIN never goes into rows or answers');
+    assert.match(ONB_SRC, /pin\.value = '';/, 'the field is cleared at once');
+    assert.ok(O.COPY.early.length <= 80, 'the early-access notice is short');
+    assert.equal(O.COPY.clinicalReview, true);
+    assert.doesNotMatch(ONB_SRC, /\baddicts?\b/i);
+  });
+});
+
+// ── FIX-SAFETY-AS (2026-11-07, rulings 10:45): the safety-copy findings RS2 to RS9 and the two copy rulings ──
+describe('safety fixes (FIX-SAFETY-AS)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS2: typed text with common crisis phrases goes to the numbers, any apostrophe', () => {
+    const yes = [
+      "I don't want to live anymore", 'I don’t want to live', 'i dont want to live', 'I do not want to be here',
+      'dont want to be here anymore', 'I don’t want to be alive', "I don't want to wake up", 'I dont wanna live',
+      "I can't go on", 'I can’t go on like this', 'i cant go on', 'I cannot go on', 'I want to end it', 'I want to end it all',
+      'thinking of ending my life', 'ending it', 'I will take my own life', 'taking my life', 'I wanna die', 'kms',
+      'I have nothing to live for', 'there is no reason to live', 'no point living', 'I want to hurt myself', 'I cut myself',
+      'I might hang myself', 'overdose on purpose', 'I want to die', 'thinking about suicide', 'better off dead', 'I might kill myself',
+    ];
+    for (const t of yes) assert.equal(H.isCrisisText(t, null), true, t);
+    const no = [
+      '', 'tired and bored', 'I am angry at work', 'I want to live well', 'I want to be here for my kids', 'a long weekend',
+      'I can go on a walk', 'I cut down on tea', 'I hurt my knee', 'killing time', 'I spend it on food', 'lonely tonight',
+    ];
+    for (const t of no) assert.equal(H.isCrisisText(t, null), false, t);
+    assert.equal(H.isCrisisText("I can't go on", { crisisKeywords: () => [] }), true, 'never fewer than this list');
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+  });
+
+  test('RS3: the withdrawal label names the substances and the doctor', () => {
+    assert.equal(H.COPY.withdrawal, 'Heavy daily drinking or sedatives: stop with a doctor.');
+    const d = sosDom();
+    const labels = d.UI.sosUrgentView({}, {}).querySelectorAll('summary').map((s) => s.textContent.trim());
+    assert.ok(labels.includes(H.COPY.withdrawal), labels.join(' | '));
+  });
+
+  test('RS4: only "Log it and go on" writes the slip; "Just reading" goes on and logs nothing', async () => {
+    assert.equal(H.slipLogs('log', false), true);
+    assert.equal(H.slipLogs('read', false), false);
+    assert.equal(H.slipLogs('log', true), false, 'a preview writes nothing');
+    const d = sosDom();
+    let root = d.open(['sos', 'slip']);
+    d.tap(root, 'Just reading');
+    await d.settle();
+    assert.ok(d.byId(root, 'sos-slip-safe'), 'the flow goes on');
+    assert.equal(list('events').length, 0, 'nothing is written');
+    root = d.open(['sos', 'slip']);
+    assert.equal(d.byId(root, 'sos-slip-continue').textContent.trim(), 'Log it and go on', 'the button says what it does');
+    d.tapId(root, 'sos-slip-continue');
+    await d.settle();
+    assert.equal(events('SlipLogged').length, 1);
+  });
+
+  test('RS5: with opioids ticked the safety card adds the tolerance line', () => {
+    const O = require(src('ui-onboarding.js'));
+    const w = [...C().resources.withdrawal];
+    assert.deepEqual(O.medicalLines({}, C()), [], 'nothing ticked: no card');
+    assert.deepEqual(O.medicalLines({ heavyDaily: true }, C()), w);
+    assert.deepEqual(O.medicalLines({ sedatives: true }, C()), w);
+    assert.equal(O.COPY.opioid, 'After a break, your tolerance drops. Never use alone. In an emergency, call for help.');
+    assert.deepEqual(O.medicalLines({ opioids: true }, { resources: { withdrawal: w } }), [...w, O.COPY.opioid], 'the built-in line');
+    assert.deepEqual(O.medicalLines({ opioids: true, heavyDaily: true }, { resources: { withdrawal: w, opioidSafety: ['From content.'] } }),
+      [...w, 'From content.'], 'Content.resources.opioidSafety wins when it is there');
+    assert.ok(!O.medicalLines({ heavyDaily: true }, C()).includes(O.COPY.opioid), 'no opioid line without the tick');
+  });
+
+  test('RS6: please verify shows beside each meetings group marked verify', async () => {
+    const m = H.meetingsFrom(C());
+    assert.ok(m.length > 0 && m.every((g) => g.verify === true), 'every group in content is marked verify');
+    assert.deepEqual(H.meetingsFrom({ resources: { in: { groups: [{ name: 'A', verify: true }, { name: 'B' }] } } }).map((g) => g.verify), [true, false]);
+    const d = sosDom();
+    const root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-reading');
+    d.tapId(root, 'sos-slip-safe');
+    d.tap(root, 'Continue');
+    await d.settle();
+    const shown = root.querySelectorAll('[data-testid="meetings-verify"]');
+    assert.equal(shown.length, m.length, 'one note per group');
+    assert.ok(shown.every((n) => n.textContent.trim() === H.COPY.verify));
+  });
+
+  test('RS7: the feeling flow asks What helped? once at its end; toggles start off and one left off is helpful:false', async () => {
+    assert.deepEqual(H.markHelped([{ skillId: 'sober', helpful: true }, { skillId: 'pleasant', helpful: true }], ['pleasant']),
+      [{ skillId: 'sober', helpful: false }, { skillId: 'pleasant', helpful: true }]);
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    for (let k = 0; !root.querySelector('[data-testid="sos-helped"]'); k += 1) {
+      assert.ok(k < 30, 'What helped? comes: ' + root.textContent.slice(0, 120));
+      root.querySelectorAll('button').find((x) => ['Next', 'Done'].includes(x.textContent.trim())).click();
+    }
+    const ask = d.byId(root, 'sos-helped');
+    assert.equal(ask.querySelector('.sos-title').textContent.trim(), 'What helped?');
+    const boxes = ask.querySelectorAll('input');
+    assert.ok(boxes.length >= 2 && boxes.every((b) => b.checked === false), 'every toggle starts off');
+    const picked = boxes[0].dataset.testid.slice('sos-helped-'.length);
+    boxes[0].checked = true;
+    d.tap(root, 'Next');
+    assert.ok(!root.querySelector('[data-testid="sos-helped"]'), 'asked once');
+    d.rate(root, 3);
+    await d.settle();
+    const used = events('SkillUsed').map((e) => [e.payload.skillId, e.payload.helpful]);
+    assert.deepEqual(used.filter(([, ok]) => ok === true).map(([s]) => s), [picked]);
+    assert.equal(used.filter(([, ok]) => ok === false).length, boxes.length - 1, 'a toggle left off writes helpful:false');
+  });
+
+  test('RS8: the discreet lock screen breathing panel is titled Breathe, and no step names the urge', () => {
+    const O = require(src('ui-onboarding.js'));
+    assert.equal(O.lockLabels(true, C()).sober.title, 'Breathe');
+    assert.equal(O.lockLabels(false, C()).sober.title, null);
+    assert.match(readFileSync(src('ui-onboarding.js'), 'utf8'), /UI\.sosSoberView\([^\n]*'Done', L\.sober\.title\)/, 'the lock screen passes it');
+    assert.equal(H.FALLBACK.sober[1], 'Observe. Notice what you feel in your body.');
+    for (const t of H.FALLBACK.sober) assert.doesNotMatch(t, /\b(urge|crav\w*|use|using|drink\w*)\b/i, t);
+    const d = sosDom();
+    assert.equal(d.UI.sosSoberView(() => {}, 'Done', 'Breathe').querySelector('.sos-title').textContent.trim(), 'Breathe');
+    assert.equal(d.UI.sosSoberView(() => {}, 'Done').querySelector('.sos-title').textContent.trim(), H.COPY.wave.title);
+  });
+
+  test('RS9: the slip flow skips a spiral thought that is crisis text or says hopeless', () => {
+    // FIX-R8 C-R7-2: the test brings its own line to skip, first, in a copy of Content (the shared catalog may hold
+    // none: the trunk's U-31a took it out); the real Content is never changed
+    const C9 = Object.assign({}, C(), { catalogs: Object.assign({}, C().catalogs, { spiral: ['I feel hopeless'].concat(C().catalogs.spiral || []) }) });
+    assert.ok(C9.catalogs.spiral.some((t) => /hopeless/i.test(t)), 'the catalog has one to skip');
+    const pairs = H.spiralPairs(null, null, C9);
+    assert.ok(pairs.length > 0);
+    assert.ok(pairs.every((p) => !/hopeless/i.test(p.thought)), pairs.map((p) => p.thought).join(' | '));
+    assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
+    const own = H.spiralPairs(null, { spiralThoughts: () => ['I want to die', 'I feel hopeless', "I can't go on", 'I blew it'] }, C());
+    assert.deepEqual(own.map((p) => p.thought), ['I blew it']);
+  });
+
+  test('TALKBACK: the waiting line lets the wave pass and never says decide then', () => {
+    assert.ok(H.FALLBACK.talkback.includes('I can wait 15 minutes and let this wave pass.'), H.FALLBACK.talkback.join(' | '));
+    assert.ok(H.FALLBACK.talkback.every((t) => !/decide then/i.test(t)));
+    assert.equal(H.FALLBACK.clinicalReview, true);
+  });
+
+  test('VERIFY: in crisis mode the verify note is one short line', () => {
+    assert.equal(H.COPY.crisisVerify, 'Please check these numbers.');
+    const note = C().resources.in.verifyNote;
+    assert.ok(note && note.length > 40, 'content has a long verify note');
+    const d = sosDom();
+    const crisis = d.UI.sosUrgentView({}, { crisis: true });
+    assert.equal(crisis.querySelectorAll('[data-testid="crisis-verify"]').length, 1, 'one line');
+    assert.equal(d.byId(crisis, 'crisis-verify').textContent.trim(), 'Please check these numbers.');
+    assert.ok(!crisis.textContent.includes(note), 'the long note is left out of a crisis');
+    const urgent = d.UI.sosUrgentView({}, {});
+    assert.ok(urgent.textContent.includes(note), 'the urgent page keeps it');
+    assert.equal(urgent.querySelectorAll('[data-testid="crisis-verify"]').length, 0);
+  });
+});
+
+describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const route = (path) => ({ path, parts: path.split('/').filter(Boolean), query: {} });
+
+  test('REDIRECT: a new person on #/ or #/today goes to onboarding once, with replace; never from SOS, the lock or another route', async () => {
+    const d = sosDom({ onboarding: true });
+    const O = d.UI.onboardingHelpers;
+    assert.equal(typeof O.shouldOnboard, 'function', 'the rule is a pure helper');
+    for (const p of ['/sos', '/sos/craving', '/sos/urgent', '/lock', '/learn', '/onboarding', '/settings']) assert.equal(O.shouldOnboard(route(p), S()), false, p);
+    assert.equal(O.shouldOnboard(route('/'), S()), true);
+    assert.equal(O.shouldOnboard(route('/today'), S()), true);
+    d.fire('ui:route', route('/sos'));
+    d.fire('ui:route', route('/lock'));
+    await d.settle();
+    assert.deepEqual(d.go, [], 'never from SOS or the lock');
+    d.fire('ui:route', route('/today'));
+    d.fire('ui:route', route('/'));
+    await d.settle();
+    assert.deepEqual(d.go, ['#/onboarding'], 'once');
+    assert.deepEqual(d.replaced, ['#/onboarding'], 'with replace');
+    const seen = sosDom({ onboarding: true });
+    seen.onb({});
+    seen.fire('ui:route', route('/today'));
+    await seen.settle();
+    assert.deepEqual(seen.go, [], 'a person who has seen onboarding in this visit is not sent back');
+    await Actions.onboard({ name: 'Asha' });
+    assert.equal(O.shouldOnboard(route('/today'), S()), false, 'onboarded: never');
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    assert.equal(O.shouldOnboard(route('/'), S()), false, 'locked: never');
+  });
+  test('REDIRECT (slow load): ui-core may draw Today before Store.load ends; the rule waits for the load, then asks again on the route the person is on now', async () => {
+    const real = S();
+    let loaded = false;
+    let gate = null;
+    let open = null;
+    const fresh = () => { loaded = false; gate = null; };
+    const slow = Object.assign(Object.create(real), {
+      load: () => gate || (gate = new Promise((r) => { open = r; }).then(() => { loaded = true; })), // idempotent, as Store.load is
+      view: { get: (s, id) => (loaded ? real.view.get(s, id) : null), list: (s) => (loaded ? real.view.list(s) : []), count: (s) => (loaded ? real.view.count(s) : 0) },
+      status: () => real.status(),
+    });
+    const at = (d, p) => { d.UI.route = () => route(p); };
+    // a returning person, drawn on Today before the load ends: never sent to onboarding
+    await Actions.onboard({ name: 'Asha' });
+    const back = sosDom({ onboarding: true, store: slow });
+    at(back, '/today');
+    back.fire('ui:route', route('/today'));
+    await back.settle();
+    assert.deepEqual(back.go, [], 'nothing is decided before the load ends');
+    open();
+    await back.settle();
+    assert.deepEqual(back.go, [], 'a returning person is never sent to onboarding');
+    // a new person who taps SOS while the load runs: never pulled out of SOS
+    await S().resetAll();
+    fresh();
+    const sos = sosDom({ onboarding: true, store: slow });
+    at(sos, '/today');
+    sos.fire('ui:route', route('/today'));
+    at(sos, '/sos/craving');
+    open();
+    await sos.settle();
+    assert.deepEqual(sos.go, [], 'moved to SOS meanwhile: stays in SOS');
+    // a new person who stays on Today: sent once, with replace, after the load
+    fresh();
+    const stay = sosDom({ onboarding: true, store: slow });
+    at(stay, '/today');
+    stay.fire('ui:route', route('/today'));
+    stay.fire('ui:route', route('/today'));
+    await stay.settle();
+    assert.deepEqual(stay.go, [], 'not before the load');
+    open();
+    await stay.settle();
+    assert.deepEqual(stay.replaced, ['#/onboarding'], 'once, with replace, after the load');
+    assert.deepEqual(stay.go, ['#/onboarding']);
+  });
+  test('EMO: sosSession keeps an optional emotion, rated or not; without one the log has none; an unknown one is refused', async () => {
+    const id = C().emotions.find((e) => e && e.crisisCheck !== true && e.id !== 'other').id;
+    await Actions.sosSession({ kind: 'feeling', emotion: id, tools: [] });
+    await Actions.sosSession({ kind: 'feeling', emotion: id, ratingAfter: 3, tools: [] });
+    await Actions.sosSession({ kind: 'feeling', tools: [] });
+    const logs = list('logs');
+    assert.deepEqual(logs.slice(0, 2).map((l) => l.emotion), [id, id], 'unrated and rated keep the feeling');
+    assert.ok(logs.slice(0, 2).every((l) => Array.isArray(l.feelings) && l.feelings.includes(id)));
+    assert.ok(!logs[2].emotion, 'no emotion given: none kept');
+    assert.equal(events('SosCompleted').length, 3);
+    await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling', tools: [] }), 'bad-session');
+    await Actions.sosSession({ kind: 'feeling', emotion: id, tools: [], drill: true });
+    assert.equal(list('logs').length, 3, 'a drill writes no log');
+  });
+  test('LOCKED: an SOS save refused by a lock is kept in memory and saved once after the next unlock', async () => {
+    const d = sosDom();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const root = d.open(['sos', 'craving']);
+    d.tap(root, 'Skip');
+    d.tap(root, 'Check in with the craving');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-no');
+    await d.settle();
+    assert.ok(d.byId(root, 'sos-finish'), 'SOS goes on while locked');
+    assert.ok(d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), 'the person is told it waits for the unlock');
+    assert.ok(await S().lock.unlock('2468'));
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed'], 'saved after the unlock');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(events('SosCompleted').length, 1, 'never twice');
+    assert.equal(list('logs').length, 1);
+  });
+  test('RC10: one outcome enum, passed, still or used; anything else is refused', async () => {
+    for (const outcome of ['passed', 'still']) await Actions.sosSession({ kind: 'craving', tools: [], outcome });
+    await Actions.sosSession({ kind: 'craving', tools: [], used: true, outcome: 'used' });
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed', 'still', 'used']);
+    for (const outcome of ['other', 'unknown', 'relapse', '']) await refused(Actions.sosSession({ kind: 'craving', tools: [], outcome }), 'bad-session');
+    const H2 = sosDom().UI.sosHelpers;
+    assert.deepEqual([H2.outcomeFrom(6, 2, false), H2.outcomeFrom(6, 7, false), H2.outcomeFrom(6, 2, true)], ['passed', 'still', 'used']);
+    assert.equal(events('SosCompleted').length, 3, 'a refused outcome writes nothing');
+  });
+  test('PIN: PIN fields are one-time-code, numeric, 4 to 12 digits, with the line about setting one first', async () => {
+    const O = require(src('ui-onboarding.js'));
+    assert.deepEqual(O.PIN_ATTRS, { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', minlength: '4', maxlength: '12' });
+    assert.equal(O.COPY.pinHelp, 'Set a PIN before you write anything private.');
+    assert.equal(typeof O.pinOk, 'function');
+    for (const p of ['1234', '123456789012']) assert.equal(O.pinOk(p), true, p);
+    for (const p of ['123', '1234567890123', 'abcd', '12 34', '', null]) assert.equal(O.pinOk(p), false, String(p));
+    const spy = setSpy(); // FIX-R8 C-R7-1
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} }, store: spy.store });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    for (const id of ['onb-pin', 'onb-pin2']) for (const [k, v] of Object.entries(O.PIN_ATTRS)) assert.equal(d.byId(root, id).attrs[k], v, id + ' ' + k);
+    assert.ok(root.textContent.includes(O.COPY.pinHelp), 'the PIN help line shows');
+    d.byId(root, 'onb-pin').value = '12ab'; d.byId(root, 'onb-pin2').value = '12ab';
+    d.tapId(root, 'onb-pin-set');
+    await d.settle();
+    assert.equal(S().status().hasLock, false, 'not 4 to 12 digits: refused before the Store');
+    assert.deepEqual(spy.calls, [], 'not 4 to 12 digits: refused before the Store');
+    assert.ok(root.textContent.includes('Use 4 to 12 digits.'));
+    d.byId(root, 'onb-pin').value = '2468'; d.byId(root, 'onb-pin2').value = '2468';
+    d.tapId(root, 'onb-pin-set');
+    await until(() => !root.textContent.includes(O.COPY.pinSetting), 'the PIN set ends'); // FIX-R8 C-R7-1: a real key on the real Store
+    assert.equal(S().status().hasLock, true);
+    const lp = d.byId(d.UI.pages.lock({}), 'lock-pin');
+    for (const k of ['type', 'inputmode', 'pattern', 'autocomplete']) assert.equal(lp.attrs[k], O.PIN_ATTRS[k], 'lock ' + k);
+  });
+  test('SAMPLE: step 1 offers Look around with sample data (O6): marked rows, then Today; no sample in the version, no button', async () => {
+    const d = sosDom({ onboarding: true });
+    await withSample(undefined, async () => {
+      assert.equal(d.onb({}).querySelector('[data-testid="onb-sample"]'), null, 'never a dead button');
+    });
+    const lesson = firstModule().lessons[0].id;
+    await withSample({ generate: (now) => ({ stores: { events: [{ id: 'sample-e1', type: 'LessonCompleted', at: now, payload: { lessonId: lesson } }] } }) }, async () => {
+      const root = d.onb({});
+      assert.ok(root.querySelector('[data-testid="onb-sample"]'), 'the button is on step 1');
+      const b = d.byId(root, 'onb-sample');
+      assert.equal(b.textContent.trim(), 'Look around with sample data');
+      assert.ok(String(b.attrs.class).split(' ').includes('ghost'), 'a ghost button');
+      b.click();
+      await d.settle();
+      assert.ok(list('events').some((e) => e.id === 'sample-e1' && e.sample === true), 'the sample rows are marked');
+      assert.ok(S().view.get('meta', 'sample'), 'erasable: the meta sample row');
+      assert.deepEqual(d.go, [], 'the safety step comes first (RS13)');
+      d.tapId(root, 'onb-safety-ok');
+      assert.deepEqual(d.go, ['#/today']);
+    });
+  });
+  test('DRILL: the drill says Nothing goes in your log.', () => {
+    const d = sosDom();
+    const root = d.open(['sos'], { drill: '1' });
+    assert.match(d.byId(root, 'sos-drill-banner').textContent, /Nothing goes in your log\./);
+    const W = d.UI.sosHelpers.COPY;
+    assert.match(W.drillDone.line, /Nothing goes in your log\./);
+    assert.doesNotMatch(W.drillBanner + ' ' + W.drillDone.line, /nothing is saved|nothing was saved/i, 'the drill keeps its own mark, so never nothing is saved');
+  });
+  test('SLIDER: the motivation slider has no value until moved; untouched, no motivation is saved', async () => {
+    const run = async (move) => {
+      await S().resetAll();
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-next');
+      const stage = root.querySelectorAll('input').find((i) => i.attrs.type === 'radio' && i.attrs.name === 'stage');
+      stage.checked = true;
+      const sl = root.querySelectorAll('input').find((i) => i.attrs.type === 'range');
+      assert.equal(sl.dataset.testid, 'onb-score');
+      assert.equal(sl.attrs['aria-valuetext'], 'Not set');
+      if (move) { sl.value = '8'; for (const fn of sl.on.input) fn({}); }
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-safety-ok');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+      assert.ok(S().view.get('profile', 'me').stage, 'the stage is saved either way');
+      return list('motivation').map((x) => x.score);
+    };
+    assert.deepEqual(await run(false), [], 'never moved: nothing saved');
+    assert.deepEqual(await run(true), [8], 'moved: saved');
+  });
+  test('FUTURE: a start date after today is refused with FUTURE_DATE and writes nothing; the date input has a max', async () => {
+    const today = E().todayStr(new Date());
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    await refused(Actions.onboard({ startDate: E().todayStr(t) }), 'FUTURE_DATE');
+    assert.ok(!S().view.get('profile', 'me'), 'nothing written');
+    await Actions.onboard({ startDate: today });
+    assert.equal(S().view.get('profile', 'me').startDate, today, 'today is fine');
+    const O = require(src('ui-onboarding.js'));
+    assert.notEqual(O.buildPatch({ startDate: '2999-01-01' }, C()).profile.startDate, '2999-01-01', 'dropped before the verb');
+    assert.equal(O.buildPatch({ startDate: today }, C()).profile.startDate, today);
+    const d = sosDom({ onboarding: true });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    d.tapId(root, 'onb-next');
+    const date = root.querySelectorAll('input').find((i) => i.attrs.type === 'date');
+    assert.match(String(date.attrs.max), /^\d{4}-\d{2}-\d{2}$/, 'the input has a max');
+  });
+  test('REACH: the slip flow shows Reach out', async () => {
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-reading');
+    d.tapId(root, 'sos-slip-safe');
+    const atPeople = () => root.textContent.includes(W.reach.title) || root.textContent.includes(W.call.title);
+    for (let k = 0; k < 4 && !atPeople(); k += 1) d.tap(root, 'Continue');
+    assert.ok(root.textContent.includes(W.reach.title), 'Reach out');
+    assert.ok(root.textContent.includes(W.reach.line));
+    assert.ok(!root.textContent.includes(W.call.title), 'not the craving words');
+  });
+  test('LEAVE: leaving a craving flow after a tool saves those tools as one still session, after the next screen draws', async () => {
+    const H2 = sosDom().UI.sosHelpers;
+    assert.equal(typeof H2.leaveSession, 'function');
+    const used = [{ skillId: 'ride-wave', helpful: true }];
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: [] }), null, 'no tool: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used, drill: true }), null, 'a drill: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used, finished: true }), null, 'already saved: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used }).outcome, 'still');
+    const why = H2.TOOLS.find((t) => t.id === 'why').skillId;
+    for (const [label, drawn] of [['Urgent help', true], ['Back to SOS', false]]) {
+      await S().resetAll();
+      const d = sosDom();
+      const root = d.open(['sos', 'craving']);
+      d.tap(root, 'Skip');
+      d.tapId(root, 'sos-tool-why');
+      d.tap(root, 'Done');
+      d.tap(root, 'It helped');
+      root.querySelectorAll('a').find((x) => x.textContent.trim() === label).click();
+      assert.equal(events('SosCompleted').length, 0, label + ': nothing before the next screen draws');
+      if (drawn) d.fire('ui:rendered', {}); else await new Promise((r) => setTimeout(r, 350));
+      await d.settle();
+      assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['still'], label);
+      assert.deepEqual(events('SkillUsed').map((e) => [e.payload.skillId, e.payload.helpful]), [[why, true]], label);
+    }
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    root.querySelectorAll('a').find((x) => x.textContent.trim() === 'Back to SOS').click();
+    await new Promise((r) => setTimeout(r, 350));
+    assert.equal(events('SosCompleted').length, 1, 'no tool used: leaving writes nothing');
+  });
+  test('USEVERB: recordEvent refuses the types each verb owns, with USE_VERB, and writes nothing', async () => {
+    for (const type of ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged']) await refused(Actions.recordEvent(type, {}), 'USE_VERB');
+    assert.equal(events().length, 0, 'nothing written');
+    await Actions.recordEvent('MindfulMinute');
+    assert.equal(events('MindfulMinute').length, 1, 'other types still work');
+  });
+  test('CLOCK: the test clock is pinned to a fixed local noon that still ticks', async () => {
+    assert.equal(E().todayStr(new Date()), '2026-03-11');
+    assert.equal(new Date().getHours(), 12, 'noon: far from midnight');
+    const t0 = Date.now();
+    await new Promise((r) => setTimeout(r, 5));
+    assert.ok(Date.now() > t0, 'time still moves');
+    assert.equal(new Date(2026, 0, 2).getDate(), 2, 'a Date with arguments is untouched');
+  });
+  test('GRAD: recoveryPlan.graduatedAt is set once, with RecoveryPlanConfirmed, and never cleared', async () => {
+    const a = await Actions.recoveryPlan.save({ motivation: { items: ['x'] } });
+    assert.equal(a.plan.graduatedAt, null, 'not confirmed: not set');
+    const b = await Actions.recoveryPlan.save({ motivation: { items: ['y'] } }, { confirm: true });
+    assert.deepEqual(b.events.map((e) => e.type), ['RecoveryPlanConfirmed']);
+    assert.ok(ISO_RE.test(String(b.plan.graduatedAt)), 'set with the confirm');
+    assert.equal(b.plan.graduatedAt, b.events[0].at);
+    await tick();
+    const c = await Actions.recoveryPlan.save({ motivation: { items: ['z'] } }, { confirm: true });
+    const d = await Actions.recoveryPlan.save({}, { confirm: false });
+    assert.equal(c.plan.graduatedAt, b.plan.graduatedAt, 'set once');
+    assert.equal(d.plan.graduatedAt, b.plan.graduatedAt, 'never cleared');
+    assert.equal(S().view.get('recoveryPlan', 'plan').graduatedAt, b.plan.graduatedAt);
+    assert.equal(events('RecoveryPlanConfirmed').length, 1);
+  });
+  test('IMPORT: every import goes through Actions.importBackup; no screen of this lane calls Store.replaceAll', () => {
+    for (const f of ['ui-sos.js', 'ui-onboarding.js']) assert.doesNotMatch(readFileSync(src(f), 'utf8'), /replaceAll\s*\(/, f);
+    const a = readFileSync(src('actions.js'), 'utf8');
+    assert.equal((a.match(/\.replaceAll\s*\(/g) || []).length, 1, 'actions.js calls it once');
+    const at = a.indexOf('async function importBackup(');
+    const end = a.indexOf('\n  async function ', at + 1);
+    assert.ok(at > 0 && a.slice(at, end).includes('S.replaceAll('), 'and only inside importBackup');
+  });
+  // -- FIX-ONB-EMO tests end --
+});
+
+describe('review round 2 fixes (RC14-RC20)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RC14: the craving flow walks by its hooks alone: rate, wave, helped, check in, still, a tool, check in, passed, No', async () => {
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    const has = (id) => root.querySelector(`[data-testid="${id}"]`);
+    const tap = (id) => { const n = has(id); assert.ok(n, `the hook ${id} is on: ${root.textContent.slice(0, 120)}`); n.click(); };
+    d.rate(root, 7);
+    tap('sos-tool-wave');
+    for (let k = 0; !has('sos-step-done'); k += 1) { assert.ok(k < 12, 'SOBER has a last step'); tap('sos-step-next'); }
+    tap('sos-step-done');
+    tap('sos-helped-yes');
+    tap('sos-checkin');
+    tap('sos-reassess-still');
+    tap('sos-tool-distract');
+    tap('sos-step-done');
+    tap('sos-helped-no');
+    tap('sos-checkin');
+    d.rate(root, 3);
+    tap('sos-reassess-passed');
+    tap('sos-used-no');
+    await d.settle();
+    assert.ok(has('sos-finish'), 'the flow ends on Finish');
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.outcome, e.payload.delays, e.payload.ratingBefore, e.payload.ratingAfter]), [['passed', 1, 7, 3]]);
+    assert.deepEqual(events('SkillUsed').map((e) => e.payload.helpful), [true, false]);
+    for (const tool of ['why', 'call', 'talkback']) {
+      const r = d.open(['sos', 'craving']);
+      const skip = r.querySelector('[data-testid="sos-rate-skip"]');
+      assert.ok(skip, 'the rating is skipped by its hook, and the tools come at once');
+      skip.click();
+      r.querySelector(`[data-testid="sos-tool-${tool}"]`).click();
+      assert.ok(r.querySelector('[data-testid="sos-step-done"]'), `${tool} ends on sos-step-done`);
+    }
+    for (const id of ['sos-step-next', 'sos-step-done', 'sos-helped-yes', 'sos-helped-no', 'sos-checkin', 'sos-rate-skip']) assert.ok(!id.startsWith('sos-tool-'), 'never under the prefix sosAnyTool matches');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+  });
+  test('RC15: a tick, tutorial or reveal on a row a sample wrote belongs to the person, and Erase sample keeps it', async () => {
+    const feature = Object.keys(C().features)[0];
+    await withSample({ generate: (now) => ({ stores: {
+      quests: [{ id: 'clear-space', startedAt: now, ticks: {}, completedAt: null }],
+      tutorials: [{ id: 'tour', completedAt: null, skipped: false, replays: 0, stepsSeen: 0 }],
+      reveals: [{ id: feature, revealedAt: now, seenAt: null, forced: false }],
+    } }) }, async () => {
+      assert.equal((await Actions.loadSample()).count, 3);
+      await Actions.quests.tick('clear-space', 'list');
+      await Actions.tutorial.done('tour');
+      await Actions.tutorial.replay('tour');
+      await Actions.reveal(feature, { seen: true });
+      for (const [store, id] of [['quests', 'clear-space'], ['tutorials', 'tour'], ['reveals', feature]]) {
+        assert.notEqual(S().view.get(store, id).sample, true, `${store} ${id} is the person's own row now`);
+      }
+      await Actions.eraseSample();
+      assert.ok(S().view.get('quests', 'clear-space') && S().view.get('quests', 'clear-space').ticks.list, 'the tick stays');
+      assert.ok(S().view.get('tutorials', 'tour') && S().view.get('tutorials', 'tour').completedAt, 'the tutorial stays done');
+      assert.equal(S().view.get('tutorials', 'tour').replays, 1);
+      assert.ok(S().view.get('reveals', feature) && S().view.get('reveals', feature).seenAt, 'the reveal stays seen');
+      assert.equal(events('TutorialCompleted').length, 1);
+      assert.equal(events('FeatureRevealed').length, 1);
+    });
+  });
+  test('RC20: when the device refuses the session, Yes opens the slip flow unlogged, and Log it and go on saves the slip', async () => {
+    const d = sosDom();
+    const A = Object.assign({}, Actions, { sosSession: async () => { const e = new Error('The device refused the write.'); e.code = 'WRITE_FAILED'; throw e; } });
+    const root = d.open(['sos', 'craving'], {}, A);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-checkin');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(d.go, ['#/sos/slip'], 'never ?logged=1 when nothing was logged');
+    assert.ok(d.toasts.some((t) => t[1] === 'warn'), 'the person is told it was not saved');
+    assert.equal(events('SlipLogged').length, 0);
+    const slip = d.open(['sos', 'slip']);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    assert.equal(events('SlipLogged').length, 1, 'Log it and go on saves the slip');
+  });
+  test('RC16: a session kept for the unlock keeps the day of the tap, though the unlock comes after midnight', async () => {
+    const d = sosDom();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const day = E().todayStr(new Date());
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-checkin');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(d.go, ['#/sos/slip?kept=1'], 'kept for the unlock: the slip is on its way, not in the log yet (RS21)');
+    const slip = d.open(['sos', 'slip']);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    shiftClock(14 * 3600 * 1000);
+    try {
+      assert.notEqual(E().todayStr(new Date()), day, 'the unlock comes on the next day');
+      assert.ok(await S().lock.unlock('2468'));
+      await d.settle();
+      await d.settle();
+      assert.deepEqual(list('logs').map((l) => l.date), [day, day], 'each save keeps the day of the tap');
+      assert.deepEqual(events('SlipLogged').map((e) => e.payload.date), [day, day]);
+      await refused(Actions.sosSession({ kind: 'craving', date: '2999-01-01' }), 'bad-session');
+      await refused(Actions.sosSession({ kind: 'craving', date: 'soon' }), 'bad-session');
+    } finally { shiftClock(-14 * 3600 * 1000); }
+  });
+  test('RC19: recordEvent refuses RecoveryPlanConfirmed, OnboardingCompleted and ModuleCompleted with USE_VERB, and writes nothing', async () => {
+    const before = await snapshot();
+    await refused(Actions.recordEvent('RecoveryPlanConfirmed', {}), 'USE_VERB');
+    await refused(Actions.recordEvent('OnboardingCompleted', {}), 'USE_VERB');
+    await refused(Actions.recordEvent('ModuleCompleted', { moduleId: firstModule().id }), 'USE_VERB');
+    assert.deepEqual(await snapshot(), before);
+    const p = await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    assert.ok(p.plan.confirmedAt && p.plan.graduatedAt, 'the verb writes the plan row with its event');
+    assert.equal(events('RecoveryPlanConfirmed').length, 1);
+  });
+  test('RC17: ArtifactSaved only for build, assess and plan; ExerciseDone for practice, reflect and tool; neither for any other kind', async () => {
+    const had = Object.prototype.hasOwnProperty.call(C(), 'exercises');
+    const old = C().exercises;
+    C().exercises = ['build', 'assess', 'plan', 'practice', 'reflect', 'tool', 'log', null].map((kind) => (kind ? { id: 'ex-' + kind, kind } : { id: 'ex-none' }));
+    try {
+      for (const x of C().exercises) await Actions.saveResponse(x.id, { a: 1 });
+      assert.deepEqual(events('ArtifactSaved').map((e) => e.payload.exerciseId), ['ex-build', 'ex-assess', 'ex-plan']);
+      assert.deepEqual(events('ExerciseDone').map((e) => e.payload.exerciseId), ['ex-practice', 'ex-reflect', 'ex-tool']);
+      assert.equal(list('responses').length, 8, 'every answer is kept');
+    } finally { if (had) C().exercises = old; else delete C().exercises; }
+  });
+  test('RC18: a sample that cannot be read is refused with no-sample and writes nothing', async () => {
+    await someData();
+    const before = await snapshot();
+    const broken = [
+      { generate: () => { throw new Error('broken'); } },
+      { generate: () => ({ stores: { logs: [{ type: 'craving', at: '2026-03-11T06:30:00.000Z' }] } }) },
+    ];
+    for (const sample of broken) await withSample(sample, () => refused(Actions.loadSample(), 'no-sample'));
+    assert.deepEqual(await snapshot(), before);
+  });
+  // -- review round 2 tests end --
+});
+
+// ── FIX-R2-SAFETY (2026-11-07, rulings 13:55): review round 2's open safety findings RS10 to RS14 ──
+describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
+  const H = require(src('ui-sos.js'));
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS10: typed crisis text in its inflected forms goes to the numbers; Next on Something else shows them', () => {
+    const yes = [
+      'I keep cutting myself', 'thinking about killing myself', 'I want to harm myself', 'I have been self harming', 'I keep wanting to die',
+      'thoughts of death', 'killing myself', 'hurting myself', 'harming myself', 'hanging myself', 'self-harming again', 'I self harmed',
+      'part of me wants to die', 'I wanted to die', 'thinking about death', 'thinking about dying', 'thoughts about suicide',
+      'life is not worth living', "life isn't worth living", 'life isn’t worth living', 'I hope I never wake up',
+    ];
+    for (const t of yes) assert.equal(H.isCrisisText(t, null), true, t);
+    for (const t of ['killing time', 'I hurt my knee', 'I want a life worth living', 'thinking about dinner', 'I woke up late', 'I cut down on tea']) {
+      assert.equal(H.isCrisisText(t, null), false, t);
+    }
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+    for (const t of ['I keep cutting myself', 'thoughts of death', 'I keep wanting to die']) {
+      const d = sosDom();
+      const root = d.open(['sos', 'feeling']);
+      d.tapId(root, 'sos-feeling-other');
+      root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+      d.tap(root, 'Next');
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    }
+  });
+  test('RS11: Next on the privacy step with a typed PIN sets it, or stays on the step and says why', async () => {
+    const spy = setSpy(); // FIX-R8 C-R7-1
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} }, store: spy.store });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    // FIX-R8 C-R7-1: Next waits until the PIN step ends (a real key on the real Store), then the margin it had
+    const typed = async (a, b) => { d.byId(root, 'onb-pin').value = a; d.byId(root, 'onb-pin2').value = b; d.tapId(root, 'onb-next'); await until(() => !root.textContent.includes(O.COPY.pinSetting), 'the PIN step ends'); await d.settle(); };
+    await typed('2468', '1357');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'two PINs that differ: still on step 2');
+    assert.ok(root.textContent.includes(O.COPY.pinMismatch), 'and it says why');
+    assert.equal(S().status().hasLock, false);
+    assert.deepEqual(spy.calls, [], 'two PINs that differ: never sent to the Store');
+    await typed('12ab', '12ab');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'not 4 to 12 digits: still on step 2');
+    assert.ok(root.textContent.includes(O.COPY.pinDigits));
+    assert.equal(S().status().hasLock, false);
+    assert.deepEqual(spy.calls, [], 'not 4 to 12 digits: never sent to the Store');
+    await typed('2468', '2468');
+    assert.equal(S().status().hasLock, true, 'Next set the typed PIN');
+    assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'then went on');
+    const again = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const r2 = again.onb({});
+    again.tapId(r2, 'onb-next');
+    again.tapId(r2, 'onb-next');
+    assert.ok(r2.querySelector('[data-testid="onb-step-3"]'), 'empty fields: Next goes on at once');
+  });
+  test('RS12: discreet chosen in onboarding sets the device flag; the lock screen and its title then read discreet', async () => {
+    const walk = async (d) => {
+      const root = d.onb({});
+      d.tapId(root, 'onb-next');
+      root.querySelectorAll('input').find((i) => i.attrs.name === 'discreet').checked = true;
+      d.tapId(root, 'onb-next');
+      for (let k = 0; !root.querySelector('[data-testid="onb-finish"]'); k += 1) {
+        assert.ok(k < 12, 'the last step comes');
+        d.tapId(root, root.querySelector('[data-testid="onb-safety-ok"]') ? 'onb-safety-ok' : 'onb-skip');
+      }
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+    };
+    const flags = new Map();
+    const localStorage = { getItem: (k) => (flags.has(k) ? flags.get(k) : null), setItem: (k, v) => { flags.set(k, String(v)); }, removeItem: (k) => { flags.delete(k); } };
+    const d = sosDom({ onboarding: true, localStorage });
+    await walk(d);
+    assert.equal(flags.get('1-addic:discreet'), '1', 'with no UI.applyDiscreet on the tree, the flag is set through the guard');
+    const lock = d.UI.pages.lock({});
+    const name = String(C().discreetName || 'Notebook');
+    assert.equal(lock.querySelector('h1').textContent.trim(), name);
+    assert.equal(d.byId(lock, 'lock-urgent').textContent.trim(), 'Help');
+    assert.equal(d.byId(lock, 'lock-sober').textContent.trim(), 'Breathe');
+    assert.equal(d.doc.title, name, 'the tab title is discreet while locked');
+    await S().resetAll();
+    const calls = [];
+    const d2 = sosDom({ onboarding: true, localStorage: { getItem: () => null, setItem: () => { calls.push('setItem'); }, removeItem: () => {} } });
+    d2.UI.applyDiscreet = (on) => { calls.push(on); return true; };
+    await walk(d2);
+    assert.deepEqual(calls, [true], 'with UI.applyDiscreet (core), it alone sets the flag');
+    const plain = sosDom({ onboarding: true, localStorage: { getItem: () => null } });
+    plain.UI.pages.lock({});
+    assert.equal(plain.doc.title, '', 'not discreet: the title is left to ui-core');
+  });
+  test('RS13: Look around with sample data shows the safety step, then Today after I understand', async () => {
+    const lesson = firstModule().lessons[0].id;
+    await withSample({ generate: (now) => ({ stores: { events: [{ id: 'sample-e1', type: 'LessonCompleted', at: now, payload: { lessonId: lesson } }] } }) }, async () => {
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      d.tapId(root, 'onb-sample');
+      await d.settle();
+      assert.deepEqual(d.go, [], 'not to Today yet');
+      assert.ok(root.querySelector('[data-testid="onb-step-5"]'), 'the safety step: ' + root.textContent.slice(0, 120));
+      assert.equal(root.querySelector('[data-testid="onb-skip"]'), null, 'it cannot be skipped');
+      const opioids = root.querySelectorAll('input').find((i) => i.attrs.name === 'medical' && i.value === 'heavyDaily');
+      opioids.checked = true;
+      for (const fn of opioids.on.change || []) fn({});
+      assert.equal(d.byId(root, 'onb-medical-card').hidden, false, 'the card shows');
+      d.tapId(root, 'onb-safety-ok');
+      assert.deepEqual(d.go, ['#/today']);
+    });
+  });
+  test("RS14: outside the drill, Call someone and Remind me why never show sample rows as the person's own", async () => {
+    await Actions.saveResponse('quick-reasons', { reasons: ['my kids'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const late = '2999-01-01T00:00:00.000Z';
+    await withSample({ generate: () => ({ stores: {
+      contacts: [{ id: 'sample-c1', name: 'Sample Sam', role: 'safetyNet', phone: '+91 90000 00001', active: true }],
+      responses: [{ id: 'sample-r1', exerciseId: 'quick-reasons', payload: { reasons: ['a sample reason'] }, at: late, updatedAt: late, draft: false }],
+    } }) }, () => Actions.loadSample());
+    assert.ok(list('contacts').some((x) => x.sample === true) && list('responses').some((x) => x.sample === true), 'the sample rows are in');
+    assert.deepEqual(H.activeContacts(S().view).map((x) => x.name), ['Ravi']);
+    assert.deepEqual(H.reasonsFrom(S().view, null), ['my kids']);
+    const eng = { reasonsCard: (v) => ({ quick: [].concat(...v.list('responses').map((r) => (r.payload && r.payload.reasons) || [])) }) };
+    assert.deepEqual(H.reasonsFrom(S().view, eng), ['my kids'], 'the engine is handed only the person\'s own rows');
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-tool-call');
+    const hrefs = root.querySelectorAll('a').map((a) => String(a.attrs.href || ''));
+    assert.ok(hrefs.some((x) => x.includes('919876543210')), 'their own person');
+    assert.ok(!hrefs.some((x) => x.includes('9000000001')), 'no tel: or sms: link to a sample number');
+    assert.doesNotMatch(root.textContent, /Sample Sam/);
+    const r2 = d.open(['sos', 'craving']);
+    d.tapId(r2, 'sos-rate-skip');
+    d.tapId(r2, 'sos-tool-why');
+    assert.match(r2.textContent, /my kids/);
+    assert.doesNotMatch(r2.textContent, /a sample reason/);
+  });
+  // -- FIX-R2-SAFETY tests end --
+});
+
+// ── FIX-R2-REST (2026-11-07, rulings 13:55): review round 2's RS15 to RS17 and the check's C2 and C3 ──
+describe('review round 2 rest (FIX-R2-REST)', () => {
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS15: while locked, Call someone and Remind me why say they are hidden, not empty; urgent help stays one tap away', async () => {
+    await Actions.saveResponse('quick-reasons', { reasons: ['my kids'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const urgent = (r) => r.querySelectorAll('a').some((a) => a.attrs.href === '#/sos/urgent');
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-tool-call');
+    assert.ok(!root.textContent.includes(W.call.none), 'never No Safety Net yet while the people are only sealed');
+    assert.ok(W.call.hidden && root.textContent.includes(W.call.hidden), 'it says they are hidden while locked');
+    assert.doesNotMatch(root.textContent, /Ravi/);
+    assert.ok(urgent(root), 'urgent help one tap away');
+    const r2 = d.open(['sos', 'craving']);
+    d.tapId(r2, 'sos-rate-skip');
+    d.tapId(r2, 'sos-tool-why');
+    assert.ok(!r2.textContent.includes(W.why.empty), 'never Add your reasons later while they are only sealed');
+    assert.ok(W.why.hidden && r2.textContent.includes(W.why.hidden), 'it says they are hidden while locked');
+    assert.doesNotMatch(r2.textContent, /my kids/);
+    assert.ok(urgent(r2));
+    assert.ok(await S().lock.unlock('2468'));
+    const r3 = d.open(['sos', 'craving']);
+    d.tapId(r3, 'sos-rate-skip');
+    d.tapId(r3, 'sos-tool-call');
+    assert.ok(!r3.textContent.includes(W.call.hidden), 'unlocked: the people show again');
+    assert.match(r3.textContent, /Ravi/);
+  });
+  test('RS16: #/sos/slip?logged=1 says It is in your log. and offers one Go on, never Just reading; nothing is logged twice', async () => {
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    const root = d.open(['sos', 'slip'], { logged: '1' });
+    assert.ok(root.textContent.includes('It is in your log.'), 'it says the slip is in the log');
+    assert.ok(!root.querySelector('[data-testid="sos-slip-reading"]'), 'no Just reading');
+    assert.ok(!root.textContent.includes(W.slipStart.read));
+    assert.ok(!root.textContent.includes(W.slipStart.log), 'no Log it and go on');
+    const on = root.querySelector('[data-testid="sos-slip-continue"]');
+    assert.ok(on, 'one way on');
+    assert.equal(on.textContent.trim(), 'Go on');
+    d.tapId(root, 'sos-slip-continue');
+    await d.settle();
+    assert.ok(root.querySelector('[data-testid="sos-slip-safe"]'), 'then the safety step');
+    assert.equal(events('SlipLogged').length, 0, 'logged before: nothing written again');
+    const plain = d.open(['sos', 'slip']);
+    assert.ok(plain.querySelector('[data-testid="sos-slip-reading"]'), 'not logged: both choices stay');
+    assert.ok(!plain.textContent.includes('It is in your log.'));
+  });
+  test('RS17: with a PIN set, the privacy step says so and shows no PIN fields; Next keeps the PIN as it was', async () => {
+    await S().lock.set('2468');
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'));
+    for (const id of ['onb-pin', 'onb-pin2', 'onb-pin-set']) assert.ok(!root.querySelector(`[data-testid="${id}"]`), 'no ' + id);
+    assert.ok(root.textContent.includes('A PIN is set. You can change it in Settings.'));
+    assert.equal(O.COPY.pinIsSet, 'A PIN is set. You can change it in Settings.');
+    d.tapId(root, 'onb-next');
+    await d.settle();
+    assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'Next goes on');
+    S().lock.lockNow();
+    assert.ok(await S().lock.unlock('2468'), 'the PIN is the one set before');
+    await S().resetAll();
+    const fresh = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const r2 = fresh.onb({});
+    fresh.tapId(r2, 'onb-next');
+    assert.ok(r2.querySelector('[data-testid="onb-pin"]'), 'no PIN yet: the fields stay');
+    assert.ok(!r2.textContent.includes(O.COPY.pinIsSet));
+  });
+  test('C2: a save kept for the unlock is dropped when the notebook is erased or replaced first, never written into the new one', async () => {
+    const cases = [['erase (Forgot PIN)', () => S().resetAll()], ['import', (backup) => Actions.importBackup(backup)]];
+    for (const [name, after] of cases) {
+      await S().resetAll();
+      await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+      const backup = S().exportJson();
+      let refusals = 2; // RS22: an unlocked notebook tries once more at once, so the device refuses twice to keep it
+      const A = Object.assign({}, Actions, { sosSession: (p) => {
+        if (refusals > 0) { refusals -= 1; const e = new Error('The data locked before this was saved.'); e.code = 'LOCKED'; return Promise.reject(e); }
+        return Actions.sosSession(p);
+      } });
+      const d = sosDom();
+      const root = d.open(['sos', 'craving'], null, A);
+      d.tap(root, 'Skip');
+      d.tap(root, 'Check in with the craving');
+      d.tapId(root, 'sos-reassess-passed');
+      d.tapId(root, 'sos-used-no');
+      await d.settle();
+      assert.ok(d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), name + ': kept for the unlock');
+      assert.equal(events('SosCompleted').length, 0, name + ': not saved yet');
+      await after(backup);
+      await d.settle();
+      assert.equal(events('SosCompleted').length, 0, name + ': the kept save is dropped, never written into the new notebook');
+      await Actions.settings.patch({ theme: 'dark' });
+      await d.settle();
+      assert.equal(events('SosCompleted').length, 0, name + ': and stays dropped');
+    }
+  });
+  test('C3: the slider has a confirm button that keeps the shown value; moving still saves; untouched, nothing', async () => {
+    const run = async (how) => {
+      await S().resetAll();
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-next');
+      const stage = root.querySelectorAll('input').find((i) => i.attrs.type === 'radio' && i.attrs.name === 'stage');
+      stage.checked = true;
+      const sl = root.querySelectorAll('input').find((i) => i.attrs.type === 'range');
+      const ok = root.querySelector('[data-testid="onb-score-ok"]');
+      assert.ok(ok, 'a confirm button by the slider');
+      assert.equal(ok.textContent.trim(), O.COPY.scoreOk);
+      if (how === 'confirm') { d.tapId(root, 'onb-score-ok'); assert.ok(root.textContent.includes('5 of 10'), 'the value is shown as chosen'); }
+      if (how === 'move') { sl.value = '8'; for (const fn of sl.on.input) fn({}); }
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-safety-ok');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+      return list('motivation').map((x) => x.score);
+    };
+    assert.deepEqual(await run('confirm'), [5], 'confirmed at 5: saved with no move away and back');
+    assert.deepEqual(await run('move'), [8], 'moved: saved');
+    assert.deepEqual(await run('none'), [], 'untouched: nothing saved');
+  });
+  // -- FIX-R2-REST tests end --
+});
+
+// ── FIX-R3 (2026-11-07, rulings 15:46): the safety re-check's new items RS19 to RS23 ──
+describe('review round 3 fixes (FIX-R3)', () => {
+  const H = require(src('ui-sos.js'));
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // the feeling flow's Something else, typed and sent with Next
+  const typedTo = (t) => {
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+
+  const RS19_YES = [
+    'I want to be dead', 'I wish to be dead', "I'd rather be dead", 'I’d rather be dead', 'I am ready to be dead', 'I would be better off dead',
+    'I wish I could go to sleep and not wake up', 'I want to go to sleep and never wake up', 'my life is no longer worth living',
+    'I want it all to end', 'I just want it to end', 'I want to end my life', 'I want to end it all', 'I wish I was never born',
+    "I wish I'd never been born", 'I want to disappear forever', 'everyone would be better off without me',
+    "they'd be better off without me", 'there is no reason to live',
+  ];
+  for (const t of RS19_YES) {
+    test('RS19: typed "' + t + '" goes to the numbers', () => { assert.equal(H.isCrisisText(t, null), true, t); });
+  }
+  test('RS19: dead tired, killing time and I hurt my knee stay out; Next on Something else shows the numbers at once', () => {
+    for (const t of ['dead tired', 'I am dead tired', 'killing time', 'I hurt my knee']) assert.equal(H.isCrisisText(t, null), false, t);
+    for (const t of ['I want to be dead', 'I wish I was never born', 'everyone would be better off without me', 'I want it all to end']) {
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    }
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+  });
+  test('RS23: typed overdose, overdosed, OD or took too much opens the full urgent view with the overdose card, not the crisis view', () => {
+    for (const t of ['overdose', 'I think I overdosed', 'my friend is overdosing', 'I think I OD’d', "he OD'd", 'I might OD', 'I took too much', "I've taken too much"]) {
+      assert.equal(H.isOverdoseText(t), true, t);
+    }
+    for (const t of ['I feel odd', 'oddly calm', 'good', 'I took too long', 'too much work', 'I took a walk', '']) assert.equal(H.isOverdoseText(t), false, t);
+    assert.equal(H.OVERDOSE.clinicalReview, true, 'marked for clinical review');
+    for (const t of ['I think I overdosed', 'I took too much', 'I might OD', 'I want to overdose on purpose']) {
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]'), t + ': the full urgent view');
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]'), t + ': not the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      assert.ok(root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), t + ': with the overdose card');
+    }
+    const crisis = typedTo('I want to be dead');
+    assert.ok(crisis.querySelector('[data-testid="sos-crisis"]'), 'crisis words without overdose words: the crisis view, as before');
+    assert.ok(!crisis.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'the crisis view says little else');
+  });
+  test('RS22: a save refused LOCKED because this tab locked and unlocked while it ran is tried once more, at once (the same lock row)', async () => {
+    // RS22 after RS26 (the 17:04 ruling): any change of the lock row drops a save, so the retry has one case left: this
+    // tab locks and unlocks again (the same PIN) while the save runs, and the store refuses the write that met the lock
+    const lockedErr = () => Object.assign(new Error('This tab locked while the save ran.'), { code: 'LOCKED' });
+    await S().lock.set('2468');
+    const refusing = (k) => {
+      const s = { calls: 0 };
+      s.A = Object.assign({}, Actions, { sosSession: async (p) => {
+        s.calls += 1;
+        if (s.calls > k) return Actions.sosSession(p);
+        S().lock.lockNow();
+        assert.equal(await S().lock.unlock('2468'), true, 'unlocked again, the same PIN');
+        throw lockedErr();
+      } });
+      return s;
+    };
+    const walk = (d, A, last) => {
+      const root = d.open(['sos', 'craving'], null, A);
+      for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', last]) d.tapId(root, id);
+      return root;
+    };
+    const kept = (d) => d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept);
+    // FIX-R8 C-R7-1: each refusal in the stub unlocks with a real key on the real Store; a save ends in a kept or a not saved toast
+    const ended = (x) => () => x.toasts.some((t) => t[0] === x.UI.sosHelpers.COPY.lockedKept || t[0] === x.UI.sosHelpers.COPY.notSaved);
+    const one = refusing(1);
+    const d = sosDom();
+    walk(d, one.A, 'sos-used-yes');
+    await until(() => d.go.length > 0, 'refused once: tried once more, at once');
+    assert.equal(one.calls, 2, 'refused once: tried once more, at once');
+    assert.equal(S().status().hasLock, true, 'the lock row the save began with');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, not at some later notify');
+    assert.equal(events('SlipLogged').length, 1, 'the slip is in the log');
+    assert.ok(!kept(d), 'never told it waits for an unlock');
+    assert.deepEqual(d.go, ['#/sos/slip?logged=1'], 'written: It is in your log. is true');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(events('SosCompleted').length, 1, 'nothing kept to write twice');
+    const two = refusing(2);
+    const d2 = sosDom();
+    walk(d2, two.A, 'sos-used-no');
+    await until(ended(d2), 'one retry, no more');
+    assert.equal(two.calls, 2, 'one retry, no more');
+    assert.ok(kept(d2), 'the retry refused too: kept for the unlock');
+    assert.equal(events('SosCompleted').length, 1);
+    await Actions.settings.patch({ theme: 'light' });
+    await until(() => events('SosCompleted').length >= 2, 'the kept one is saved once, at the next notify');
+    await d2.settle();
+    assert.equal(two.calls, 3);
+    assert.equal(events('SosCompleted').length, 2, 'the kept one is saved once, at the next notify');
+    S().lock.lockNow(); // really locked: the store refuses and this tab reads locked
+    const three = refusing(0);
+    const d3 = sosDom();
+    walk(d3, three.A, 'sos-used-no');
+    await until(ended(d3), 'really locked: no retry');
+    assert.equal(three.calls, 1, 'really locked: no retry');
+    assert.ok(kept(d3), 'kept for the unlock, as before');
+    assert.ok(await S().lock.unlock('2468'));
+    await until(() => three.calls >= 2, 'saved after the unlock');
+    assert.equal(three.calls, 2, 'saved after the unlock');
+  });
+  test('RS21: a slip save kept for the unlock never reads It is in your log.; it says It goes in your log when you unlock.', async () => {
+    const d = sosDom();
+    const W = d.UI.sosHelpers.COPY;
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const root = d.open(['sos', 'craving']);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) d.tapId(root, id);
+    await until(() => d.go.length > 0, 'kept for the unlock, not written yet: never ?logged=1'); // FIX-R8 C-R7-1
+    assert.deepEqual(d.go, ['#/sos/slip?kept=1'], 'kept for the unlock, not written yet: never ?logged=1');
+    assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: { kept: '1' } }).kept, true);
+    assert.equal(H.parseSos({ parts: ['sos', 'slip'], query: {} }).kept, false);
+    const slip = d.open(['sos', 'slip'], { kept: '1' });
+    assert.ok(!slip.textContent.includes('It is in your log.'), 'not in the log yet: it never says so');
+    assert.ok(slip.textContent.includes('It goes in your log when you unlock.'));
+    assert.equal(W.slipStart.kept.startsWith('It goes in your log when you unlock.'), true);
+    assert.ok(!slip.querySelector('[data-testid="sos-slip-reading"]'), 'one way on: the slip is on its way');
+    assert.equal(d.byId(slip, 'sos-slip-continue').textContent.trim(), W.slipStart.goOn);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    assert.ok(slip.querySelector('[data-testid="sos-slip-safe"]'), 'then the safety step');
+    assert.ok(await S().lock.unlock('2468'));
+    await until(() => events('SosCompleted').length > 0, 'saved after the unlock'); // FIX-R8 C-R7-1: sealed with the real key
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved after the unlock');
+    assert.equal(events('SlipLogged').length, 1, 'the kept session logs the slip once; Go on wrote nothing more');
+    const saved = sosDom();
+    const r2 = saved.open(['sos', 'craving']);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) saved.tapId(r2, id);
+    await until(() => saved.go.length > 0, 'written at once: It is in your log. is true'); // FIX-R8 C-R7-1
+    assert.deepEqual(saved.go, ['#/sos/slip?logged=1'], 'written at once: It is in your log. is true');
+  });
+  test('RS20: while the PIN is being set, Next and Skip wait and a line says so; no step is skipped unseen', async () => {
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    d.byId(root, 'onb-pin').value = '2468';
+    d.byId(root, 'onb-pin2').value = '2468';
+    d.tapId(root, 'onb-next');
+    assert.equal(d.byId(root, 'onb-next').disabled, true, 'Next waits while the key is made');
+    assert.equal(d.byId(root, 'onb-skip').disabled, true, 'Skip waits too');
+    assert.ok(typeof O.COPY.pinSetting === 'string' && root.textContent.includes(O.COPY.pinSetting), 'a short line says the PIN is being set');
+    for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-skip');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'), 'Skip does nothing meanwhile');
+    // FIX-R8 C-R7-1: on the real Store the key takes a real derivation (about a second); until the PIN is set, every
+    // look finds step 2, the line that says so, and the buttons waiting
+    const waits = (x, r, ids) => () => {
+      if (S().status().hasLock === true) return true;
+      assert.ok(r.querySelector('[data-testid="onb-step-2"]') && r.textContent.includes(O.COPY.pinSetting), 'until the PIN is set: step 2 and the line that says so');
+      for (const id of ids) assert.equal(x.byId(r, id).disabled, true, id + ' waits until the PIN is set');
+      return false;
+    };
+    await until(waits(d, root, ['onb-next', 'onb-skip']), 'the PIN is set');
+    assert.equal(S().status().hasLock, true, 'the PIN is set');
+    assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'then step 3 shows: none skipped unseen');
+    await S().resetAll();
+    const e = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const r2 = e.onb({});
+    e.tapId(r2, 'onb-next');
+    e.byId(r2, 'onb-pin').value = '1357';
+    e.byId(r2, 'onb-pin2').value = '1357';
+    e.tapId(r2, 'onb-pin-set');
+    assert.equal(e.byId(r2, 'onb-next').disabled, true, 'Set PIN: Next waits too');
+    assert.equal(e.byId(r2, 'onb-skip').disabled, true);
+    assert.equal(e.byId(r2, 'onb-pin-set').disabled, true, 'and Set PIN runs once');
+    e.tapId(r2, 'onb-skip');
+    assert.ok(r2.querySelector('[data-testid="onb-step-2"]'));
+    await until(waits(e, r2, ['onb-next', 'onb-skip', 'onb-pin-set']), 'the PIN is set'); // FIX-R8 C-R7-1
+    assert.equal(S().status().hasLock, true);
+    assert.ok(r2.textContent.includes(O.COPY.pinSet), 'it says the PIN is set');
+    assert.equal(e.byId(r2, 'onb-next').disabled, false, 'Next is back');
+    assert.equal(e.byId(r2, 'onb-skip').disabled, false, 'Skip is back');
+    e.tapId(r2, 'onb-next');
+    assert.ok(r2.querySelector('[data-testid="onb-step-3"]'), 'Next goes on to step 3');
+    await S().resetAll();
+    const real = S();
+    const failing = Object.create(real);
+    failing.lock = Object.assign(Object.create(real.lock), { set: () => Promise.reject(Object.assign(new Error('The device refused the write.'), { code: 'WRITE_FAILED' })) });
+    const f = sosDom({ onboarding: true, crypto: { subtle: {} }, store: failing });
+    const r3 = f.onb({});
+    f.tapId(r3, 'onb-next');
+    f.byId(r3, 'onb-pin').value = '2468';
+    f.byId(r3, 'onb-pin2').value = '2468';
+    f.tapId(r3, 'onb-next');
+    await f.settle();
+    assert.ok(r3.querySelector('[data-testid="onb-step-2"]'), 'a PIN that could not be set: still on step 2');
+    assert.ok(!r3.textContent.includes(O.COPY.pinSetting), 'the waiting line gives way to the reason');
+    assert.equal(f.byId(r3, 'onb-next').disabled, false, 'Next and Skip are back');
+    assert.equal(f.byId(r3, 'onb-skip').disabled, false);
+    assert.equal(f.byId(r3, 'onb-pin-set').disabled, false, 'Set PIN can be tried again');
+    assert.equal(real.status().hasLock, false, 'nothing set');
+  });
+  // -- FIX-R3 tests end --
+});
+
+// ── FIX-R4 (2026-11-07, rulings 16:17): the safety re-check's items RS24 to RS28 ──
+describe('review round 4 fixes (FIX-R4)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // the feeling flow's Something else, typed and sent with Next
+  const typedTo = (t) => {
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+  // every node under root, in document order
+  const order = (root) => { const out = []; const walk = (n) => { for (const k of n.kids) { out.push(k); walk(k); } }; walk(root); return out; };
+
+  const RS24_YES = [
+    "I hope I don't wake up", 'I hope I dont wake up tomorrow', "I wish I didn't wake up", 'I wanna be dead', 'I hope I die',
+    "I wish I hadn't been born", 'I wish it would all end', 'everyone would be better off if I was gone',
+    'they would be better off if I were dead',
+  ];
+  for (const t of RS24_YES) {
+    test('RS24: typed "' + t + '" goes to the numbers', () => { assert.equal(H.isCrisisText(t, null), true, t); });
+  }
+  test('RS24: whatever is typed on Something else, the next screen shows the urgent line and its numbers above the steps', () => {
+    for (const t of ['I feel strange today', 'my head is loud', 'something I cannot name', '']) {
+      const what = JSON.stringify(t);
+      const root = typedTo(t);
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]') && !root.querySelector('[data-testid="sos-urgent"]'), what + ': no match, no urgent view');
+      const lead = root.querySelector('[data-testid="sos-urgent-lead"]');
+      assert.ok(lead, what + ': the urgent line is on the next screen');
+      assert.ok(lead.textContent.includes(H.LEAD.line), what + ': its line');
+      const nums = lead.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+      assert.equal(nums.length, 2, what + ': two numbers, each one tap');
+      assert.ok(nums.every((a) => /^Call /.test(a.attrs['aria-label'] || '')), what + ': each says whom it calls');
+      const title = root.querySelector('.sos-title');
+      const all = order(root);
+      assert.ok(title && all.indexOf(lead) < all.indexOf(title), what + ': above the steps');
+      assert.equal(title.textContent.trim(), H.COPY.wave.title, what + ': the steps follow');
+    }
+    assert.deepEqual(H.leadList('in', C()).map((i) => i.number), ['112', '14416'], 'India: the emergency number and the first crisis line');
+    const intl = H.leadList('intl', C());
+    assert.ok(intl.length >= 1 && intl.length <= 2 && intl.every((i) => i.tel), 'elsewhere: one or two lines, each with a number, never none (RS24 remainder)');
+    assert.equal(H.LEAD.clinicalReview, true, 'marked for clinical review');
+    assert.ok(typedTo('I wanna be dead').querySelector('[data-testid="sos-crisis"]'), 'a match still opens the crisis view at once');
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + d.calm());
+    assert.ok(!root.querySelector('[data-testid="sos-urgent-lead"]'), 'a named feeling: the steps as before');
+  });
+  test('RS25: typed took too many pills, taken too many sleeping pills or used too much opens the full urgent view with the overdose card', () => {
+    for (const t of ['I took too many pills', "I've taken too many sleeping pills", 'I used too much', 'she took too many of her tablets', 'I’ve taken too many meds']) {
+      assert.equal(H.isOverdoseText(t), true, t);
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]'), t + ': the full urgent view');
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]'), t + ': not the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      assert.ok(root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), t + ': with the overdose card');
+    }
+    for (const t of ['I took too many breaks', 'I used to run', 'too many people', 'I took my pills']) assert.equal(H.isOverdoseText(t), false, t);
+  });
+  test('RS28: typed overdose words open the urgent view with the overdose card open and its first line announced', () => {
+    const card = (root) => root.querySelectorAll('details').find((x) => { const s = x.querySelector('summary'); return s && s.textContent.trim() === H.COPY.overdose; });
+    for (const t of ['I think I overdosed', 'I took too many pills', 'I want to overdose on purpose']) {
+      const root = typedTo(t);
+      assert.ok(card(root), t + ': the overdose card');
+      assert.equal(card(root).getAttribute('open'), '', t + ': open');
+      const line = root.querySelector('.sos-line');
+      assert.equal(line.textContent.trim(), H.COPY.urgent.line, t + ': the first line');
+      assert.equal(line.getAttribute('aria-live'), 'assertive', t + ': announced at once');
+    }
+    const plain = sosDom().open(['sos', 'urgent']);
+    assert.ok(card(plain) && card(plain).getAttribute('open') === null, 'Urgent help from the hub: the card stays closed');
+    assert.equal(plain.querySelector('.sos-line').getAttribute('aria-live'), null, 'and nothing is announced over the page');
+  });
+  // a craving session tapped through to No: its save comes at the end
+  const craving = (d, A) => {
+    const root = d.open(['sos', 'craving'], null, A);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-no']) d.tapId(root, id);
+    return root;
+  };
+  test('RS26: a save refused LOCKED after its notebook was erased or replaced is dropped, never retried or kept for it', async () => {
+    const stale = () => Object.assign(new Error('This changed in another tab, so nothing was saved here.'), { code: 'LOCKED' });
+    const told = (d, msg) => d.toasts.some((t) => t[0] === msg);
+    // another tab erased the PIN-protected notebook: this tab's store resyncs to no lock row, reads open, and refuses
+    await S().lock.set('2468');
+    let calls = 0;
+    const A = Object.assign({}, Actions, { sosSession: async (p) => { calls += 1; if (calls === 1) { await S().lock.remove('2468'); throw stale(); } return Actions.sosSession(p); } });
+    const d = sosDom();
+    craving(d, A);
+    // FIX-R8 C-R7-1: the stub's remove makes a real key on the real Store; wait for the refusal's end, then the margin it had
+    await until(() => told(d, H.COPY.notSaved) || told(d, H.COPY.lockedKept) || calls > 1, 'the refused save ends');
+    await d.settle();
+    assert.equal(calls, 1, 'the lock row went away: never tried again');
+    assert.equal(events('SosCompleted').length, 0, 'nothing written into the erased notebook');
+    assert.ok(told(d, H.COPY.notSaved) && !told(d, H.COPY.lockedKept), 'told it was not saved, never that it waits');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(calls, 1, 'nothing kept to write later');
+    // this tab's import (the C2 signal) came while the save was being refused
+    await S().resetAll();
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const backup = S().exportJson();
+    let n2 = 0;
+    const B = Object.assign({}, Actions, { sosSession: async (p) => { n2 += 1; if (n2 === 1) { await Actions.importBackup(backup); throw stale(); } return Actions.sosSession(p); } });
+    const d2 = sosDom();
+    craving(d2, B);
+    await d2.settle(); await d2.settle();
+    assert.equal(n2, 1, 'replaced in the meantime: never tried again');
+    assert.equal(events('SosCompleted').length, 0, 'nothing written into the imported notebook');
+    // kept while locked, then the lock row went away (erased in another tab) before the next notify
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d3 = sosDom();
+    craving(d3, Actions);
+    await d3.settle();
+    assert.ok(told(d3, H.COPY.lockedKept), 'kept for the unlock');
+    await S().lock.remove('2468');
+    await Actions.settings.patch({ theme: 'light' });
+    await d3.settle();
+    assert.equal(events('SosCompleted').length, 0, 'a kept save never moves into another notebook');
+    craving(sosDom(), Actions);
+    await d3.settle();
+    assert.equal(events('SosCompleted').length, 1, 'a save on the notebook as it is goes in');
+  });
+  test('RS27: a kept save dropped after the unlock says This was not saved., once; It goes in your log when you unlock. stays', async () => {
+    const count = (d, msg) => d.toasts.filter((t) => t[0] === msg).length;
+    assert.equal(H.COPY.keptLost, 'This was not saved.');
+    assert.ok(H.COPY.slipStart.kept.startsWith('It goes in your log when you unlock.'), 'the RS21 line stays');
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    let refuse = false;
+    const A = Object.assign({}, Actions, { sosSession: (p) => (refuse ? Promise.reject(Object.assign(new Error('The device refused the write.'), { code: 'WRITE_FAILED' })) : Actions.sosSession(p)) });
+    const d = sosDom();
+    craving(d, A);
+    await d.settle();
+    craving(d, A);
+    await d.settle();
+    assert.equal(count(d, H.COPY.lockedKept), 2, 'two saves kept for the unlock');
+    refuse = true;
+    assert.ok(await S().lock.unlock('2468'));
+    await d.settle(); await d.settle();
+    assert.equal(events('SosCompleted').length, 0, 'the device refused both after the unlock');
+    assert.equal(count(d, H.COPY.keptLost), 1, 'one toast says so');
+    // a kept save whose notebook went away (RS26) says so too
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d2 = sosDom();
+    craving(d2, Actions);
+    await d2.settle();
+    await S().lock.remove('2468');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d2.settle();
+    assert.equal(events('SosCompleted').length, 0);
+    assert.equal(count(d2, H.COPY.keptLost), 1, 'dropped at the notify: told once');
+  });
+  // -- FIX-R4 tests end --
+});
+
+// ── FIX-R5 (2026-11-07, rulings 17:04): the safety re-check's items at 5c2e7a7: RS24's remainder, RS29 to RS32, RS22's test ──
+describe('review round 5 fixes (FIX-R5)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // an SOS page with the profile given (its region is read while unlocked)
+  const page = (d, parts, profile) => {
+    const root = d.UI.pages.sos({ route: { parts, query: {} }, A: Actions, view: S().view, E: null, profile: profile || {} });
+    d.doc.body.replaceChildren(root);
+    return root;
+  };
+  // the feeling flow's Something else, typed and sent with Next
+  const typedIn = (d, t, profile) => {
+    const root = page(d, ['sos', 'feeling'], profile);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+  // the trunk's Content.resources.intl (SCREENS U-31a, 9b319256 content-core.js:443-450) by a stand-in of its shape:
+  // the local emergency line has tel, not number
+  const TRUNK_INTL = {
+    name: 'Elsewhere',
+    lines: [
+      { name: 'Find a Helpline (directory by country)', url: 'https://findahelpline.com', verify: true },
+      { name: 'Befrienders Worldwide (directory)', url: 'https://befrienders.org', verify: true },
+      { name: 'Your local emergency number', tel: '112', note: 'Usually 112, 911 or 999', verify: true },
+    ],
+  };
+  const trunkRes = () => Object.assign({}, C().resources, { intl: TRUNK_INTL });
+  // fn runs with Content.resources swapped (a page made inside keeps the stand-in); the real Content goes back after
+  const withResources = (resources, fn) => {
+    const real = globalThis.Content;
+    globalThis.Content = Object.assign({}, real, { resources });
+    try { return fn(); } finally { globalThis.Content = real; }
+  };
+  test('RS29: a Content line with tel and no number is one tap: Elsewhere on Urgent help, the lock screen and the crisis view, and the intl lead', () => {
+    withResources(trunkRes(), () => {
+      const sec = H.urgentList('intl', C()).sections.find((s) => s.id === 'intl');
+      assert.ok(sec && sec.items.some((i) => i.name === 'Your local emergency number' && i.number === '112' && i.tel === 'tel:112'), 'the model reads tel');
+      const d = sosDom();
+      const views = [
+        ['Urgent help', page(d, ['sos', 'urgent'], { region: 'intl' })],
+        ['the lock screen', d.UI.sosUrgentView({})],
+        ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region: 'intl' })],
+      ];
+      for (const [what, root] of views) {
+        const elsewhere = root.querySelectorAll('section').find((s) => s.attrs['aria-label'] === 'Elsewhere');
+        assert.ok(elsewhere, what + ': the Elsewhere section');
+        assert.ok(elsewhere.querySelectorAll('a').some((a) => a.attrs.href === 'tel:112'), what + ': its local emergency line is one tap');
+      }
+      const lead = typedIn(sosDom(), 'I feel strange today', { region: 'intl' }).querySelector('[data-testid="sos-urgent-lead"]');
+      const call = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+      assert.ok(call && call.textContent.includes('Your local emergency number'), 'the intl lead: the local emergency line, one tap');
+    });
+  });
+  test('RS24 remainder: the lead above the steps always has a number to tap, in every region and whatever Content holds, and All urgent help', () => {
+    const tels = (lead) => lead.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+    // FIX-R8 C-R7-3: Content.resources whose intl lines carry no number (number or tel, RS29), whatever this tree's
+    // Content holds: the trunk's has the local emergency line with tel, so the real one is no such case there
+    const noNumber = () => {
+      const r = C().resources || {};
+      const intl = r.intl || {};
+      return Object.assign({}, r, { intl: Object.assign({}, intl, { lines: (intl.lines || []).filter((l) => !(l && (l.number || l.tel))) }) });
+    };
+    const cases = [ // [what, Content.resources (null: the real one), region, the built-in number expected]
+      ['India', null, 'in', false],
+      ['Somewhere else, the real Content', null, 'intl', false],
+      ['Somewhere else, the trunk shape', trunkRes(), 'intl', false],
+      ['Somewhere else, no line with a number', noNumber(), 'intl', true],
+      ['India, Content.resources empty', {}, 'in', true],
+      ['Somewhere else, Content.resources empty', {}, 'intl', true],
+    ];
+    for (const [what, res, region, builtIn] of cases) {
+      const run = () => typedIn(sosDom(), 'I feel strange today', { region }).querySelector('[data-testid="sos-urgent-lead"]');
+      const lead = res ? withResources(res, run) : run();
+      assert.ok(lead, what + ': the lead');
+      const nums = tels(lead);
+      assert.ok(nums.length >= 1, what + ': at least one number, one tap');
+      assert.ok(nums.every((a) => /^Call /.test(a.attrs['aria-label'] || '')), what + ': each says whom it calls');
+      const all = lead.querySelectorAll('a').find((a) => a.textContent.trim() === H.COPY.leadAll);
+      assert.ok(all && all.attrs.href === '#/sos/urgent', what + ': All urgent help, one tap');
+      if (builtIn) {
+        assert.equal(nums[0].attrs.href, 'tel:112', what + ': the built-in emergency number');
+        assert.ok(lead.textContent.includes(H.COPY.checkOne), what + ': Please check this number.');
+      }
+    }
+    for (const region of ['in', 'intl']) {
+      for (const C2 of [{ resources: {} }, { resources: null }, null]) assert.ok(H.leadList(region, C2).length >= 1, region + ': the model is never empty');
+    }
+  });
+  // every node under root, in document order
+  const order = (root) => { const out = []; const walk = (n) => { for (const k of n.kids) { out.push(k); walk(k); } }; walk(root); return out; };
+  test('RS30: on Something else, the focused step title is described by the lead line, so the lead is read first', () => {
+    const d = sosDom();
+    const root = typedIn(d, 'I feel strange today');
+    const f = d.doc.activeElement;
+    assert.ok(f && String(f.attrs.class || '').split(' ').includes('sos-title'), 'a step title has the focus');
+    assert.equal(f.textContent.trim(), H.COPY.wave.title, 'the first SOBER step');
+    const all = order(root);
+    const desc = String(f.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean)
+      .map((id) => { const n = all.find((x) => x.attrs && x.attrs.id === id); return n ? n.textContent : ''; }).join(' ');
+    assert.ok(desc.includes(H.LEAD.line), 'its description includes the lead line: ' + JSON.stringify(desc));
+    const lead = root.querySelector('[data-testid="sos-urgent-lead"]');
+    assert.ok(lead && all.indexOf(lead) < all.indexOf(f), 'the lead keeps its place above the title');
+    const plain = sosDom();
+    plain.tapId(page(plain, ['sos', 'feeling']), 'sos-feeling-' + plain.calm());
+    const g = plain.doc.activeElement;
+    assert.ok(!g || g.getAttribute('aria-describedby') === null, 'a named feeling: no lead, nothing added');
+  });
+  const RS31_YES = [
+    'I took too many painkillers', 'I took too many paracetamol', 'I took too many medicines', "I've taken too many medications",
+    'he took too many capsules', 'I took a whole bottle of pills', 'she took a whole bottle of tablets', 'I swallowed all my pills',
+    'I swallowed all my tablets', 'I took a whole strip of sleeping tablets',
+  ];
+  for (const t of RS31_YES) {
+    test('RS31: typed "' + t + '" opens the full urgent view with the overdose card open', () => {
+      assert.equal(H.isOverdoseText(t), true, t);
+      const root = typedIn(sosDom(), t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]') && !root.querySelector('[data-testid="sos-crisis"]'), t + ': the full urgent view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      const card = root.querySelectorAll('details').find((x) => { const s = x.querySelector('summary'); return s && s.textContent.trim() === H.COPY.overdose; });
+      assert.ok(card && card.getAttribute('open') === '', t + ': the overdose card, open');
+    });
+  }
+  test('RS31: the negatives stay out; too much to drink keeps the numbers above the steps, with no overdose card', () => {
+    for (const t of ['I took my medicine', 'too many people', "I've had too much to drink", 'a whole bottle of water', 'I took my pills', 'I swallowed my pride']) {
+      assert.equal(H.isOverdoseText(t), false, t);
+    }
+    const root = typedIn(sosDom(), "I've had too much to drink");
+    assert.ok(!root.querySelector('[data-testid="sos-urgent"]') && !root.querySelector('[data-testid="sos-crisis"]'), 'no urgent view');
+    assert.ok(root.querySelector('[data-testid="sos-urgent-lead"]'), 'the numbers above the steps');
+    assert.ok(!root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'no overdose card');
+    assert.equal(H.OVERDOSE.clinicalReview, true, 'marked for clinical review');
+  });
+  const RS32_YES = [
+    "I hope that I don't wake up", 'I wish it would all just end', 'I wish it would just stop', 'I want it all to stop',
+    "I can't do this anymore", 'no one would miss me', "I'd be better off gone", 'I want to sleep forever',
+  ];
+  for (const t of RS32_YES) {
+    test('RS32: typed "' + t + '" opens the crisis view', () => {
+      assert.equal(H.isCrisisText(t, null), true, t);
+      const root = typedIn(sosDom(), t);
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    });
+  }
+  test('RS32: the crisis list stays marked for clinical review and leaves plain lines to the lead', () => {
+    assert.equal(H.CRISIS.clinicalReview, true);
+    for (const t of ['I could not sleep', 'I miss my friends', 'I can do this', 'I want to stop drinking']) assert.equal(H.isCrisisText(t, null), false, t);
+  });
+  // ── FIX-R6 (2026-11-07, rulings 17:22 and 17:57): RS33, Q-BUILTIN, Q-SPIRAL (RS-SAMPLE and RS9T sit with U-09) ──
+  describe('review round 6 fixes (FIX-R6)', () => {
+    beforeEach(async () => { await S().resetAll(); });
+    const NOTE = 'Usually 112, 911 or 999'; // the trunk's note beside its local emergency line (TRUNK_INTL)
+    test('RS33: a line shows its note with or without a number: Usually 112, 911 or 999 beside the one-tap 112 on Urgent help, the lock screen, the crisis view and the intl lead', () => {
+      withResources(trunkRes(), () => {
+        const d = sosDom();
+        const views = [
+          ['Urgent help', page(d, ['sos', 'urgent'], { region: 'intl' })],
+          ['the lock screen', d.UI.sosUrgentView({})],
+          ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region: 'intl' })],
+        ];
+        for (const [what, root] of views) {
+          const elsewhere = root.querySelectorAll('section').find((s) => s.attrs['aria-label'] === 'Elsewhere');
+          assert.ok(elsewhere, what + ': the Elsewhere section');
+          const note = elsewhere.querySelectorAll('span').find((s) => s.textContent.trim() === NOTE);
+          assert.ok(note, what + ': ' + NOTE + ' is shown');
+          const call = elsewhere.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+          assert.ok(call && note.attrs.id && call.attrs['aria-describedby'] === note.attrs.id, what + ': the one-tap 112 is described by its note');
+        }
+        const first = C().resources.in.emergency[0];
+        assert.ok(first.note && page(sosDom(), ['sos', 'urgent'], { region: 'in' }).textContent.includes(first.note), 'India: a line with a number shows its note too');
+        const lead = typedIn(sosDom(), 'I feel strange today', { region: 'intl' }).querySelector('[data-testid="sos-urgent-lead"]');
+        const lnote = lead && lead.querySelectorAll('span').find((s) => s.textContent.trim() === NOTE);
+        const lcall = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+        assert.ok(lnote && lcall && lcall.attrs['aria-describedby'] === lnote.attrs.id, 'the intl lead: the note beside its 112, and the link described by it');
+      });
+    });
+    test('Q-BUILTIN: with no number from Content, Urgent help, the crisis view and the lock screen list show the built-in 112 with Please check this number.', () => {
+      const links = { intl: { name: 'Elsewhere', lines: TRUNK_INTL.lines.filter((l) => !l.tel && !l.number) } };
+      for (const [what, res] of [['Content.resources empty', {}], ['Content.resources null', null], ['links only, no number', links]]) {
+        withResources(res, () => {
+          for (const region of ['in', 'intl']) {
+            const m = H.urgentList(region, C());
+            assert.equal(m.builtIn, true, what + ', ' + region + ': the model says built-in');
+            assert.equal(m.sections[0].items[0].number, '112', what + ', ' + region + ': the region list starts with it');
+            const views = [
+              ['Urgent help', page(sosDom(), ['sos', 'urgent'], { region })],
+              ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region })],
+              ['the lock screen', sosDom().UI.sosUrgentView({ profile: { region } })],
+            ];
+            for (const [where, root] of views) {
+              const label = what + ', ' + region + ', ' + where;
+              const tels = root.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+              assert.ok(tels.length >= 1 && tels[0].attrs.href === 'tel:112', label + ': the built-in number, one tap');
+              assert.ok(/^Call /.test(tels[0].attrs['aria-label'] || ''), label + ': it says whom it calls');
+              assert.ok(root.textContent.includes(H.COPY.checkOne), label + ': Please check this number.');
+              assert.ok(!root.textContent.includes(H.COPY.crisisVerify), label + ': said once');
+            }
+          }
+        });
+      }
+      const real = H.urgentList('in', C());
+      assert.equal(real.builtIn, false, 'with numbers from Content, no built-in');
+      assert.ok(real.sections.every((s) => s.items.every((i) => !i.builtIn)));
+    });
+    test('Q-SPIRAL: a crisis or hopeless thought the person answered in their own words keeps its pair; without a reply of theirs it is still skipped', () => {
+      const mine = [
+        { thought: "I can't do this anymore", reply: 'I can do the next hour.' },
+        { thought: 'No one would miss me if I drank', reply: 'My sister would.' },
+        { thought: 'I feel hopeless', reply: '' },
+        'I want to die',
+        { thought: 'I blew it', reply: 'One slip is not the whole road.' },
+      ];
+      assert.ok(H.isCrisisText(mine[0].thought, null) && H.isCrisisText(mine[1].thought, null), 'both are crisis text');
+      assert.deepEqual(H.spiralPairs(spiralView({ pairs: mine }), { spiralThoughts: () => mine }, C()), [ // RS35: their words are in their response
+        { thought: "I can't do this anymore", reply: 'I can do the next hour.' },
+        { thought: 'No one would miss me if I drank', reply: 'My sister would.' },
+        { thought: 'I blew it', reply: 'One slip is not the whole road.' },
+      ]);
+    });
+    // RS35: the trunk's Engine.spiralThoughts (42d2467d engine.js:719-728) by a stand-in of its behaviour: the latest
+    // spiral response's thoughts with their replies, a missing reply filled with a stock slipSelfTalk line.
+    const trunkSpiral = { spiralThoughts: (view) => {
+      const r = view ? view.list('responses').filter((x) => x.exerciseId === 'spiral' && !x.draft).pop() : null;
+      const p = (r && r.payload) || {};
+      const stock = C().catalogs.slipSelfTalk.map((x) => (typeof x === 'string' ? x : x.text));
+      const got = Array.isArray(p.pairs) ? p.pairs.map((x) => (typeof x === 'string' ? { thought: x, reply: '' } : { thought: x.thought, reply: x.reply || '' }))
+        : (p.thoughts || []).map((t, i) => ({ thought: t, reply: (p.replies || [])[i] || '' }));
+      return got.map((x, i) => ({ thought: x.thought, reply: x.reply || stock[i % stock.length] }));
+    } };
+    function spiralView(payload, extra) {
+      const at = '2026-11-01T10:00:00.000Z';
+      const rows = [Object.assign({ id: 'r1', exerciseId: 'spiral', mode: 'full', draft: false, at, payload }, extra)];
+      return { list: (s) => (s === 'responses' ? rows.slice() : []), get: () => null, count: (s) => (s === 'responses' ? rows.length : 0) };
+    }
+    test("RS35: on the trunk engine's shape, a crisis or hopeless thought never gets the stock line the engine fills in; only a reply the person saved keeps its pair", () => {
+      const stock = C().catalogs.slipSelfTalk.map((x) => (typeof x === 'string' ? x : x.text));
+      const ticked = spiralView({ thoughts: ['I want to die', 'No one would miss me', 'I feel hopeless', 'I blew it'] });
+      const filled = trunkSpiral.spiralThoughts(ticked);
+      assert.ok(filled.length === 4 && filled.every((x) => stock.includes(x.reply)), 'the stand-in fills every missing reply with a stock line');
+      assert.deepEqual(H.spiralPairs(ticked, trunkSpiral, C()), [{ thought: 'I blew it', reply: filled[3].reply }], 'no crisis or hopeless thought is paired with a stock line');
+      const answered = spiralView({ pairs: [{ thought: 'I want to die', reply: 'I will call my sister tonight.' }, { thought: 'I feel hopeless', reply: '' },
+        { thought: 'No one would miss me', reply: stock[0] }, 'I blew it'] });
+      assert.deepEqual(H.spiralPairs(answered, trunkSpiral, C()), [
+        { thought: 'I want to die', reply: 'I will call my sister tonight.' },
+        { thought: 'I blew it', reply: stock[3 % stock.length] },
+      ], 'the reply the person wrote keeps its pair; a stock line they saved is still a stock line');
+      const sample = spiralView({ pairs: [{ thought: 'I want to die', reply: 'I will call my sister tonight.' }] }, { sample: true });
+      assert.deepEqual(H.spiralPairs(sample, trunkSpiral, C()), [], "a sample row's reply is not the person's own words (O6)");
+      assert.deepEqual(H.spiralPairs(null, trunkSpiral, C()).map((p) => p.thought), C().catalogs.spiral.filter((t) => !/hopeless/i.test(t) && !H.isCrisisText(t, null)),
+        'with no view (a preview, or locked), the catalog without its crisis and hopeless thoughts');
+    });
+    test("RS37: the person's edit of a sample contact makes it theirs: unmarked, in SOS's Call someone, kept by eraseSample", async () => {
+      // the trunk's sample contacts (42d2467d content-sample.js:146-150) by a stand-in of their shape: invented, no phone number
+      const sc = { id: 'smp-con-1', name: 'Asha (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Sister. Calls back the same day.', active: true, sample: true };
+      const other = Object.assign({}, sc, { id: 'smp-con-2', name: 'Vikram (sample)', note: 'Friend from the walking group.' });
+      await withSample({ generate: () => ({ stores: { contacts: [sc, other] } }) }, () => Actions.loadSample());
+      assert.equal(S().view.get('contacts', sc.id).sample, true, 'loaded, marked');
+      await Actions.contacts.update(sc.id, { name: 'Asha', phone: '+91 98765 43210' });
+      const row = S().view.get('contacts', sc.id);
+      assert.notEqual(row.sample, true, "the edited contact is the person's own");
+      assert.deepEqual([row.name, row.phone, row.note, row.role, row.active], ['Asha', '+91 98765 43210', sc.note, 'safetyNet', true], 'the edit over the rest of the row');
+      assert.deepEqual(H.activeContacts(S().view).map((c) => c.name), ['Asha'], 'Call someone shows it');
+      await Actions.eraseSample();
+      assert.deepEqual(S().view.get('contacts', sc.id), row, 'eraseSample keeps it as it was');
+      assert.equal(S().view.get('contacts', other.id), null, 'and takes the sample contact nobody edited');
+    });
+    test("RS36: a sample profile is not the person's onboarding: after the sample on a fresh notebook, #/today still goes to onboarding once; their own onboarding ends it", async () => {
+      const route = (path) => ({ path, parts: path.split('/').filter(Boolean), query: {} });
+      await withSample(TRUNK_SAMPLE, async () => {
+        await Actions.loadSample();
+        const me = S().view.get('profile', 'me');
+        assert.ok(me && me.sample === true && me.onboardedAt, 'the sample profile carries onboardedAt, as the trunk sample does');
+        const d = sosDom({ onboarding: true });
+        const O = d.UI.onboardingHelpers;
+        assert.equal(O.shouldOnboard(route('/today'), S()), true, 'still a new person on Today');
+        assert.equal(O.shouldOnboard(route('/'), S()), true, 'and on #/');
+        d.fire('ui:route', route('/today'));
+        await d.settle();
+        assert.deepEqual(d.go, ['#/onboarding'], 'sent to onboarding, once');
+        const v = sosDom({ onboarding: true }); // Look around with sample data, then I understand: Today, not sent back in this visit
+        const root = v.onb({});
+        v.tapId(root, 'onb-sample');
+        await v.settle();
+        v.tapId(root, 'onb-safety-ok');
+        v.fire('ui:route', route('/today'));
+        await v.settle();
+        assert.deepEqual(v.go, ['#/today'], 'no loop back to onboarding in this visit');
+        await Actions.onboard({ name: 'Asha' });
+        assert.equal(O.shouldOnboard(route('/today'), S()), false, 'their own onboarding ends it');
+        await Actions.eraseSample();
+        assert.equal(O.shouldOnboard(route('/today'), S()), false, 'and it stays ended once the sample is erased');
+      });
+    });
+    // -- FIX-R6 tests end --
+  });
+  // ── FIX-R7 (2026-11-07, ruling 22:52): RS37R, RS38 (U-09), RS36R (U-10) ──
+  describe('review round 7 fixes (FIX-R7)', () => {
+    beforeEach(async () => { await S().resetAll(); });
+    // the trunk's sample rows (build/offline-v1 content-sample.js:146-172) by stand-ins of their shape
+    const ISO = '2026-03-05T20:00:00.000Z';
+    const smp = () => ({
+      contacts: [{ id: 'smp-con-1', name: 'Asha (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Sister. Calls back the same day.', active: true, sample: true }],
+      plans: [
+        { id: 'smp-plan-1', date: daysAgo(-3), start: '19:00', end: '22:00', status: 'planned', sample: true, title: 'Office farewell dinner', kind: 'risky', risky: true,
+          battlePlan: { situation: 'Office farewell dinner', plan: 'Order a lime soda first and sit with Vikram.', backups: ['Step outside and call Asha.', 'Leave by ten.'], buddyId: 'smp-con-1', exit: 'Leave after the speeches.' } },
+        { id: 'smp-plan-2', date: daysAgo(-1), start: '18:30', end: '19:15', status: 'planned', sample: true, title: 'Evening walk', kind: 'want', risky: false, activity: 'A walk at dawn or dusk', reward: 'A favourite film after.' },
+        { id: 'smp-plan-3', date: daysAgo(-2), start: '10:00', end: '11:00', status: 'planned', sample: true, title: 'Support group', kind: 'recovery', risky: false },
+      ],
+      todos: [{ id: 'smp-todo-1', text: 'Clear the space at home', source: 'lesson', route: '#/learn/m4', due: null, done: false, at: ISO, sample: true }],
+      predictions: [{ id: 'smp-pred-1', activity: 'Evening walk', predicted: 30, actual: 70, at: ISO, completedAt: ISO, notes: 'Better than I thought.', sample: true }],
+    });
+    const loadSmp = () => withSample({ generate: () => ({ stores: smp() }) }, () => Actions.loadSample());
+    const row = (s, id) => S().view.get(s, id);
+    test("RS37R: the person's change over a sample plan, a debrief or a prediction's result makes the row theirs: unmarked, kept by eraseSample", async () => {
+      await loadSmp();
+      for (const [s, id] of [['plans', 'smp-plan-1'], ['plans', 'smp-plan-3'], ['predictions', 'smp-pred-1']]) assert.equal(row(s, id).sample, true, id + ': loaded, marked');
+      await Actions.plans.update('smp-plan-1', { title: 'Dinner with my team on Friday' });
+      await Actions.plans.debrief('smp-plan-3', { usedPlan: true, how: 'I ordered a soda first and left at ten.' });
+      await Actions.predictions.complete('smp-pred-1', { actual: 8, notes: 'Calmer than I thought.' });
+      const mine = [row('plans', 'smp-plan-1'), row('plans', 'smp-plan-3'), row('predictions', 'smp-pred-1')];
+      assert.deepEqual(mine.map((r) => r.sample === true), [false, false, false], "each row is the person's own");
+      assert.deepEqual([mine[0].title, mine[1].debrief.how, mine[2].actual, mine[2].notes], ['Dinner with my team on Friday', 'I ordered a soda first and left at ten.', 8, 'Calmer than I thought.']);
+      await Actions.eraseSample();
+      assert.deepEqual([row('plans', 'smp-plan-1'), row('plans', 'smp-plan-3'), row('predictions', 'smp-pred-1')], mine, 'eraseSample keeps their words as they were');
+    });
+    test('RS37R: a patch that changes nothing, or only true/false flags, keeps the mark: a ticked to-do, a hidden contact, a plan with the same title and a flag; eraseSample takes them', async () => {
+      await loadSmp();
+      await Actions.todos.done('smp-todo-1');
+      await Actions.contacts.deactivate('smp-con-1');
+      await Actions.plans.update('smp-plan-2', { title: 'Evening walk', risky: true });
+      const got = [row('todos', 'smp-todo-1'), row('contacts', 'smp-con-1'), row('plans', 'smp-plan-2')];
+      assert.deepEqual(got.map((r) => r.sample), [true, true, true], "still the sample's words");
+      assert.deepEqual([got[0].done, got[1].active, got[2].risky], [true, false, true], 'the flags are written');
+      await Actions.eraseSample();
+      assert.deepEqual([row('todos', 'smp-todo-1'), row('contacts', 'smp-con-1'), row('plans', 'smp-plan-2')], [null, null, null], 'eraseSample takes them');
+    });
+    test('RS38: contacts.update keeps the sample mark for a patch that changes nothing (the same name; Save with no edit) or only a flag (Show again); eraseSample takes the contact', async () => {
+      await loadSmp();
+      const sc = smp().contacts[0];
+      await Actions.contacts.update(sc.id, { name: sc.name });
+      assert.equal(row('contacts', sc.id).sample, true, "the same name: still the sample's");
+      // the trunk's Save sends the whole form (ui-workbook.js:319, contactPayload :127-133): with no edit, the same values
+      await Actions.contacts.update(sc.id, { name: sc.name, role: sc.role, strategy: sc.strategy, phone: sc.phone, note: sc.note });
+      assert.equal(row('contacts', sc.id).sample, true, "Save with no edit: still the sample's");
+      await Actions.contacts.deactivate(sc.id);
+      await Actions.contacts.update(sc.id, { active: true }); // the trunk's showContact (ui-workbook.js:281)
+      assert.deepEqual([row('contacts', sc.id).sample, row('contacts', sc.id).active], [true, true], "Show again: shown, still the sample's");
+      await Actions.eraseSample();
+      assert.equal(row('contacts', sc.id), null, 'eraseSample takes it');
+    });
+    test("RS36R: SOS reads the stage from the person's own profile only: with the sample profile the feeling flow asks no motivation and writes none; with their own at stage action it asks", async () => {
+      await withSample(TRUNK_SAMPLE, () => Actions.loadSample());
+      assert.equal(S().view.get('profile', 'me').stage, 'action', 'the sample profile, at stage action, is the one handed to SOS (trunk ui-core.js:590)');
+      const toEnd = async (d, root) => { d.tapId(root, 'sos-feeling-' + d.calm()); d.toRating(root); d.rate(root, 3); await d.settle(); return root; };
+      const d = sosDom();
+      const sampleRoot = await toEnd(d, d.open(['sos', 'feeling']));
+      assert.ok(!sampleRoot.querySelector('[data-testid="sos-motivation"]'), "no motivation question from the sample's stage");
+      assert.ok(sampleRoot.querySelector('[data-testid="sos-finish"]'), 'the flow ends: Finish');
+      assert.equal(list('motivation').length, 0, 'no motivation row written');
+      const v = sosDom();
+      const ownRoot = await toEnd(v, page(v, ['sos', 'feeling'], { key: 'me', name: 'Asha', stage: 'action' }));
+      const ask = ownRoot.querySelector('[data-testid="sos-motivation"]');
+      assert.ok(ask, 'their own stage: the motivation question');
+      ask.querySelectorAll('button')[6].click();
+      await v.settle();
+      assert.deepEqual(list('motivation').map((m) => [m.stage, m.score, m.source, m.sample === true]), [['action', 6, 'sos', false]]);
+    });
+    test("RS36R: SOS reads the region from the person's own profile only, India by default: a sample profile's region orders no list and picks no lead number", () => {
+      // a stand-in sample profile away from the default ('intl'): the trunk's sample says 'in', the default, where it would not show
+      const d = sosDom();
+      const heads = (profile) => d.UI.sosUrgentView({ profile }, {}).querySelectorAll('h2').map((x) => x.textContent.trim());
+      const tels = (profile) => typedIn(sosDom(), 'I feel strange today', profile).querySelector('[data-testid="sos-urgent-lead"]')
+        .querySelectorAll('a').map((a) => String(a.attrs.href || '')).filter((x) => x.startsWith('tel:'));
+      assert.notDeepEqual(heads({ region: 'intl' }), heads({ region: 'in' }), "the person's own region orders the urgent lists");
+      assert.notDeepEqual(tels({ region: 'intl' }), tels({ region: 'in' }), 'and picks the lead numbers');
+      assert.deepEqual(heads({ region: 'intl', sample: true }), heads({ region: 'in' }), "a sample profile's region is not read: India first, the default");
+      assert.deepEqual(tels({ region: 'intl', sample: true }), tels({ region: 'in' }), "nor for the lead's numbers");
+      assert.deepEqual(heads({ region: 'intl', sample: true }), heads(undefined), 'the same as no profile');
+    });
+    // -- FIX-R7 tests end --
+  });
+  // -- FIX-R5 tests end --
+});
