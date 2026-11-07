@@ -29,9 +29,14 @@
 - content relaunched as wf_11307812-199 (16:26; args.now 16:27) with done [U-31a], diffFrom 065699b; the laneNote pins Content.practices (sober.steps 5 strings, read by ui-sos.js soberSteps), Content.games, the sample rules, the R-C-9 copy review as notes, and a neighbour-test sweep per batch.
 - Contract tracks/SCREENS/contracts/content.md: still lists Content.copy.early as new in U-31a, but it was ruled out (onboarding's built line stands): fix at the next contract touch.
 
+## 2026-11-07 16:31 IST · workbook-settings READY-SLICE cc1f1ea; relaunched
+
+- Slice wf_a8a3fbe3-437 returned 16:30: READY-SLICE cc1f1ea (U-19), check PASS, LOWs C1-C4; browser GREEN on the base settings flows (data-testid hooks). Relaunched as wf_34a731b5-17f (16:31) with done [U-19], diffFrom cc1f1ea: C3 (high contrast stop-gap in its own file), C4 first; C1 open until actions-sos and content U-33 merge; C2 ruled. R-S-6 to CORE (core: highContrast in ui-core; tests-docs: the Settings hooks).
+- styles.css: today-track and workbook-settings both append at the end (bannered): the HUB's merge keeps both regions.
+
 ## Resume here
 
-- 2026-11-07 16:26 IST: live runs (journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6721d28e-5b48-49f1-9f7e-094b769e422f/subagents/workflows/<run>/journal.jsonl): workbook-settings slice wf_a8a3fbe3-437 (U-19), today-track wf_f509ab5b-32d (C1, C2, U-16, U-17, U-18; diffFrom 13eba28), content wf_11307812-199 (U-31b, U-29, U-30, U-32, U-33; diffFrom 065699b).
-- For the HUB (status-SCREENS.md): READY-SLICE today-track 13eba28, READY-SLICE content 065699b (three neighbour test names, R-S-5).
-- Next: workbook-settings READY-SLICE -> line -> relaunch with done [U-19]. A full-lane return -> report under 20 KB -> LANE: <lane> READY <tip>. actions and game-tutorials (tier 2) wait for the HUB's grant.
+- 2026-11-07 16:31 IST: live runs (journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6721d28e-5b48-49f1-9f7e-094b769e422f/subagents/workflows/<run>/journal.jsonl): today-track wf_f509ab5b-32d (C1, C2, U-16, U-17, U-18; diffFrom 13eba28), content wf_11307812-199 (U-31b..U-33; diffFrom 065699b), workbook-settings wf_34a731b5-17f (C3, C4, U-20a, U-20b, U-21; diffFrom cc1f1ea).
+- For the HUB (status-SCREENS.md): READY-SLICE today-track 13eba28, content 065699b (three neighbour test names, R-S-5), workbook-settings cc1f1ea.
+- Next: a full-lane return -> its report under 20 KB in tracks/SCREENS/lane-reports/<lane>.md -> LANE: <lane> READY <tip>. A RED from the HUB: fix on the branch within the hour, before any new unit. actions and game-tutorials (tier 2) wait for the HUB's grant (no tier 1 lane may wait for a slot).
 - A fresh chat: `claude agents` for session 6721d28e; if it is gone, these runs died with it: relaunch each lane with done and priorNote from its branch's last commit and its progress notes (C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__progress.md).
