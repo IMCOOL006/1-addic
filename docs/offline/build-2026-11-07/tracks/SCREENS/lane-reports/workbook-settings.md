@@ -1,6 +1,6 @@
 ## workbook-settings (SCREENS, 1-addic offline build): the slice report
 
-State: READY. Branch build/workbook-settings. Base 1ef2482e. Tip 9cbf630 (was cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
+State: READY (run 3, 2026-11-07 17:58 IST, FIX-SAMPLE built, check PASS). Branch build/workbook-settings. Base 1ef2482e. Tip 0e76065 (was 9cbf630 after run 2, cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
 Commits:
 - 83aa85b feat U-19 Settings page, seven tabs
 - e0af4fd test U-19 helpers, tab renders, memory round trips
@@ -14,10 +14,14 @@ Run 2 (2026-11-07 16:31 IST), after cc1f1ea:
 - 9d96690 feat U-21 My Recovery Plan
 - 5e80f01 fix U-21 C5 erase/import drop an unsaved plan draft
 - 9cbf630 test U-20b C6 practise link checked both ways
+Run 3 (2026-11-07 17:58 IST), after 9cbf630:
+- 03c3631 fix FIX-SAMPLE Load sample data only on a notebook without an own profile
+- 0e76065 test FIX-SAMPLE own profile, no profile and sample profile, by name
 
 ### Turn caps
 Builder (U-19): steps_used 36, returned a note. capHits 0.
 Run 2 (2026-11-07): builder U-20a steps_used 33; builder U-20b+U-21 steps_used 44; check-fix builder (C5, C6) returned a note. capHits 0.
+Run 3 (2026-11-07 17:58 IST): builder FIX-SAMPLE steps_used 14. capHits 0.
 
 ### Units
 - U-19 Settings (83aa85b, e0af4fd, cc1f1ea). #/settings and #/settings/<tab> (privacy, look, rhythm, names, help, about, data; unknown goes to privacy). A person can: set, change, remove a PIN and the auto-lock (PIN asked first); toggle discreet mode; choose theme, text size, calm, high contrast, reduce motion, counters, current run; set check-in times, review day, pace; edit names; replay tour/drills (feature-detected, honest line if absent); read How do I; see About, credits, evidence; save and restore a backup (PIN asked for export; confirm on import; first three errors shown); print logs; load/erase sample (feature-detected, disabled with a plain line); erase everything (ERASE_PARTIAL text). Closes the chat's 16:15 questions: eraseSample/tutorial hooks feature-detected, auto-lock asks PIN, imports via Actions.importBackup, ERASE_PARTIAL said plainly, PIN help line, PIN field attributes.
@@ -28,9 +32,12 @@ Run 2 (2026-11-07 16:31 IST):
 - U-21 My Recovery Plan (9d96690). #/workbook/plan: prefilled, add, edit, reorder, remove, confirm per section, save (confirmedAt, RecoveryPlanConfirmed once), Refresh only adds, print lists only, "Still true?" after 30 days.
 - Questions closed: O7 honest stubs and empty state; code over brief on reasonsCardSections and ExerciseUI.exerciseFor/summarize.
 Held units run 2: none.
+Run 3 (2026-11-07 17:58 IST):
+- FIX-SAMPLE (03c3631, 0e76065; HUB R-H-28, R-S-9, CORE R-C-28). Settings > Your data > Sample data: when the notebook holds an own profile (row 'me', not sample: true), Load sample data is disabled and a line says why ("Sample data is for a fresh notebook. This one already holds your own profile, so the sample is not loaded. Your entries stay as they are."), tied by aria-describedby. A tap on a stale page is checked again and nothing is loaded. No profile or the sample's own profile: as before. Closes R-H-28 for Settings (stop-gap kept as a second check after actions-sos RS-SAMPLE merges; default keep). Held units run 3: none.
 - To build (earlier run): U-20a (ui-workbook.js: UI.pages.workbook, #/workbook/reasons, ?big=1, #/workbook/network; read engine.js:684-698 and actions.js:509-540), U-20b (artifact browser, ARTIFACTS/GROUPS, data-tour workbook-groups and workbook-card), U-21 (ui-plan.js: PlanUI.view/merge/SECTIONS, data-tour plan-sections and plan-print; Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save ~actions.js:870).
 
 ### Contract changes
+- (run 3) SettingsUI.hasOwnProfile(view) (pure, exported); SettingsUI.TEXT.sampleOwnProfile; doLoadSample returns false (refused) or true. New hook data-test="load-sample-note" (only with an own profile); tests-docs to add to helpers/hooks.mjs.
 - (run 2) UI.pages.workbook (#/workbook/reasons, reasons?big=1, network, plan, browser); WorkbookUI (ARTIFACTS, GROUPS, reasonsSections, exerciseKnown); PlanUI (view, merge, SECTIONS, reset); data-tour workbook-groups, workbook-card, plan-sections, plan-print. html[data-contrast] now applied by the lane (1097dad).
 - UI.pages.settings in ui-settings.js. Consumers: ui-core router, today (link), onboarding (PIN link).
 - SettingsUI global: page, doExport, doImport, doErase, doLoadSample, doEraseSample, printLogs; pure on module.exports: TABS, TEXT, ABOUT, ERASE_PARTIAL_TEXT, normalTab, pinOk, pinError, backupName, logRows, errorText, importErrorText, importedText. Consumer: tests.
@@ -40,6 +47,14 @@ Held units run 2: none.
 - Events, content keys, data-tour targets: none.
 
 ### Gates
+Run 3 (2026-11-07 17:58 IST), VERIFIED by the check at 0e76065, logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
+- build GREEN: build-20261107-180752.log
+- test GREEN 25/0 (FIX-SAMPLE tests ok 9-12): test-20261107-180754.log
+- validate GREEN: validate-20261107-180807.log
+- guards RED 11 failures, all other lanes' tour targets (bp-*, insights-*, review-start baselined; quicklog-*, planner-* lifted on trunk but absent from this older branch); the diff touches no data-tour: guards-20261107-180808.log
+ASSUMED (builder, not run by the check): browser GREEN 10 pass / 9 skip: browser-20261107-180341.log; builder build-20261107-180319, test-20261107-180323, validate-20261107-180339, guards-20261107-180340.
+Territory run 3, 1ef2482e..HEAD: 5 files, 4 own, 1 shared (styles.css, append point, earlier run), 0 nobody's, 0 errors, 0 warnings. Continuation commits touch only ui-settings.js and workbook-settings.test.mjs.
+
 Run 2 (2026-11-07 16:31 IST), VERIFIED by the check at 9d96690, and at 9cbf630 by the re-check; logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
 - build GREEN 559958B: build-20261107-170726.log; 9cbf630: build-20261107-172657.log
 - test GREEN 20/0: test-20261107-170729.log; 9cbf630 21 passed: test-20261107-172659.log
@@ -75,16 +90,20 @@ Run 2 (2026-11-07 16:31 IST): verdict FIX at 9d96690, clean at 9cbf630. Not chec
 - C5 MEDIUM U-21 ui-plan.js:107,118-122,241 / ui-settings.js:521-539: unsaved plan draft survived Erase everything and Import. Fix 5e80f01 (plan resets on Store labels resetAll/replaceAll). Re-check: FIXED.
 - C6 LOW U-20b test:594-595: practise-link check ran only if (pr), could not fail. Fix 9cbf630. Re-check: FIXED.
 - New findings: none blocking.
+Run 3 (2026-11-07 17:58 IST): verdict PASS at 0e76065 over 9cbf630...HEAD; FIX-SAMPLE present and meets R-H-28. Findings: none new; C1 stays OPEN by name (Actions.eraseSample and Content.sample not in this tree; tests use stand-ins). Not checked: browser gate (hook load-sample-note not yet in hooks.mjs); real Actions.loadSample round trip; U-19..U-21 before 9cbf630 not re-judged. Notes: C:/Users/ruchi/1-addic-wt/_logs/reports/workbook-settings/workbook-settings__check.md. The build gate left offline/1-addic.html modified in the worktree (uncommitted; builder restored it).
 
 ### Review
 Not a flagged lane: no reviewers run.
+Run 3: no review findings (not flagged).
 
 ### Safety and content marks
+- (run 3) FIX-SAMPLE: no crisis or medical line, no numbers; clinicalReview and verify none. Sample never overwrites an own profile.
 - (run 2) Reasons big view is ungated and calm; no new numbers or clinical claims; risks behind Show sensitive items; tel: links only.
 - clinicalReview: true: offline/src/ui-settings.js ABOUT (line 58): the "in danger, open SOS and tap Urgent help" line and the not-medical-advice line. The reviewer checks the wording and that it points to SOS and Urgent help.
 - verify: true: none (no numbers; Urgent help is a link to #/sos/urgent).
 
 ### Requests for other lanes
+- (run 3) tests-docs: add data-test="load-sample-note" to helpers/hooks.mjs. HUB/CORE: R-H-28 Settings stop-gap at 0e76065; keep as second check after actions-sos RS-SAMPLE.
 - (run 2) content U-31b: Content.exercises, then re-run node --test offline/tests/workbook-settings.test.mjs. HUB: lift baselines workbook-groups, workbook-card, plan-sections, plan-print. The core request for high contrast is moot: 1097dad applies it in-lane.
 - offline/src/ui-core.js (core): apply settings.highContrast (html[data-contrast]) on every render, beside textSize and reducedMotion at lines 645-646.
 - Actions.eraseSample (actions-sos) and Content.sample (content U-33): needed to enable the sample controls.
@@ -92,12 +111,14 @@ Not a flagged lane: no reviewers run.
 - offline/tests/helpers/hooks.mjs (tests-docs): contract names use data-test; BASE hooks use data-testid; both are on the controls.
 
 ### Docs owed
+- (run 3) none for FIX-SAMPLE.
 - (run 2) Guide: Reasons Card, Support Network, Workbook browser, My Recovery Plan. README: print of card and plan.
 - Guide (tests-docs): a Settings chapter covering the seven tabs.
 - offline/README.md: lines on backup (save and bring back), PIN (optional, forgot-PIN means erase then restore), and erase everything.
 - CLAUDE.md: none.
 
 ### Open questions
+6. (run 3) Keep the Settings own-profile guard after RS-SAMPLE merges? Default: keep. C1 open by name.
 4. (run 2) Brief says Engine does not export reasonsCardSections; it does (engine.js:1500); code used.
 5. (run 2) Stubs until Content.exercises exists; default: honest stub.
 1. Erase success: brief says #/onboarding; built stays on #/settings/data with Start again and the import control.
@@ -105,6 +126,7 @@ Not a flagged lane: no reviewers run.
 3. High contrast not applied by core on every render; asked of core.
 
 ### For the HUB at the merge
+- (run 3) Merge 0e76065 over be0f806d: two files (ui-settings.js, workbook-settings.test.mjs), no shared file. Never commit offline/1-addic.html.
 - (run 2) styles.css lane section now lines 382-470; ui-plan.js already in build.mjs parts (line 38); never commit offline/1-addic.html. This lane's four tour names pass guards.
 - Shared file: offline/src/styles.css, one section appended at the end (lines 382-422), no token redefined. Expect an append-point conflict if other lanes also append there.
 - package.json and package-lock.json: unchanged. ui-settings.js was already in build.mjs parts (line 33); build.mjs untouched.

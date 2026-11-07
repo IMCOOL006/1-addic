@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:02 IST: three runs live: workbook-settings FIX-SAMPLE wf_232baea7-f07 (tier 1 fix by name, R-H-28), actions U-23..U-25 wf_6effec68-3fd, game-tutorials U-26, U-28 wf_697f8fff-2d2 (resumed on the 18:01 row, 10.2 GB); one start per 7.0 GB row; under 4.0 the newest pauses at its next commit (game-tutorials, then actions)
+STATE: BUILDING   # 2026-11-07 18:11 IST: workbook-settings READY 0e76065 (FIX-SAMPLE, for the HUB); two runs live: actions U-24, U-25 wf_6effec68-3fd (U-23 committed 42ce8aa, 25308cc), game-tutorials U-26, U-28 wf_697f8fff-2d2; READY-SLICE for the HUB: actions 710502f, game-tutorials 5af6665
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
-LANE: workbook-settings BUILDING   # fix by name FIX-SAMPLE (R-H-28, a tag condition): run wf_232baea7-f07 launched 17:58 on slot 6, over 9cbf630...HEAD; READY 9cbf630 merged 17:39 (be0f806d); C1 open by name
+LANE: workbook-settings READY 0e76065   # fix by name FIX-SAMPLE (R-H-28, the tag condition, Settings side): 03c3631, 0e76065; run wf_232baea7-f07 check PASS; test 25/25, validate GREEN, browser GREEN (builder); C1 open by name
 LANE: actions BUILDING   # READY-SLICE 710502f (U-22); U-23+U-24 then U-25: run wf_6effec68-3fd launched 17:59 (done [U-22], diffFrom 710502f, slot 7)
 LANE: game-tutorials BUILDING   # READY-SLICE 5af6665 (U-27; for the HUB); U-26 then U-28: run wf_697f8fff-2d2 launched 18:01 (done [U-27], diffFrom 5af6665, slot 8) on the 10.2 GB row
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:02 IST
+UPDATED: 2026-11-07 18:11 IST
+
+# 2026-11-07 18:11 IST · workbook-settings READY 0e76065 (fix by name FIX-SAMPLE: the Settings sample stop-gap, R-H-28)
+
+- For the HUB: merge build/workbook-settings at 0e76065 (two commits after the merged 9cbf630: 03c3631 fix, 0e76065 tests; files ui-settings.js and workbook-settings.test.mjs only). The tag condition of R-H-28 is met on the Settings side: Settings > Data offers Load sample data only on a notebook without an own profile (a profile row 'me' not marked sample: true); otherwise the button is disabled with aria-describedby to one line (data-test load-sample-note): 'Sample data is for a fresh notebook. This one already holds your own profile, so the sample is not loaded. Your entries stay as they are.' doLoadSample checks Store.view again at the tap and never calls Actions.loadSample over an own profile. No profile row, or the sample's own profile: as before. Default kept after actions-sos's RS-SAMPLE merges: a second check.
+- Gates (run wf_232baea7-f07, check PASS, no findings): build GREEN, test GREEN 25/25 (the FIX-SAMPLE names ok 9-12), validate GREEN, guards RED by name on 11 other lanes' tour targets only (this branch's cut 1ef2482e predates today-track's and actions' screens; the diff touches no data-tour), territory 1ef2482e..HEAD 0 errors (the continuation touches 2 own files). The builder's browser gate GREEN exit 0 (C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/browser-20261107-180341.log); the checker did not re-run it. Logs *-20261107-1807*.log and *-1803*.log. Report tracks/SCREENS/lane-reports/workbook-settings.md (15849 B).
+- Open by name: C1 (the round trip with the real loadSample, Content.sample and eraseSample) until actions-sos merges. Hook for tests-docs: load-sample-note.
+- Verified by me: the branch log, the ui-settings.js diff (the text, hasOwnProfile, the tap re-check), the browser log's verdict line. Assumed: the test count as the checker ran it.
 
 # 2026-11-07 17:58 IST · actions READY-SLICE 710502f (U-22 the day planner); today-track a02f121 merged
 
