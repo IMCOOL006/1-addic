@@ -377,6 +377,24 @@ test('reduced motion adds no hb-grew class', () => withDom(() => {
   ST._reset();
 }));
 
+test('a redraw while the page is on screen keeps the change and pulses once', () => withDom(() => {
+  ST._reset();
+  const rows = baseRows();
+  const onScreen = (n) => { n.isConnected = true; return n; }; // as the real DOM reports a node not yet swapped out
+  const first = onScreen(render(rows));
+  assert.match(changeText(first), /Here is where you stand\./);
+  const rise = onScreen(render(withSkill(rows))); // a Store change re-renders the route
+  assert.ok(changeItems(rise).some((n) => n.getAttribute('data-kind') === 'region'));
+  assert.equal(grewNodes(rise).length, 1);
+  const again = onScreen(render(withSkill(rows))); // another re-render on the same visit
+  assert.ok(changeItems(again).some((n) => n.getAttribute('data-kind') === 'region'), 'the change stays while the page is shown');
+  assert.equal(grewNodes(again).length, 0, 'no second pulse');
+  again.isConnected = false; // the person leaves and comes back
+  const back = render(withSkill(rows));
+  assert.match(changeText(back), /Nothing new since you last looked\./);
+  ST._reset();
+}));
+
 test('strip has 14 dated days and no count', () => {
   const days = STP.strip(['2026-11-07', '2026-11-01', '2026-10-24', 'junk'], NOW);
   assert.equal(days.length, 14);

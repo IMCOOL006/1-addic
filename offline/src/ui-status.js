@@ -57,8 +57,10 @@ const StatusUI = (() => {
   };
   const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  /* The model of the last draw, in memory for this session only (like GameUI's seen): never stored. */
-  let lastDrawn = null;
+  /* The last draw, in memory for this session only (like GameUI's seen): never stored. `base` is the model the
+     person last looked at before this visit; a redraw while the page is still on screen (a Store change re-renders
+     the route before the old node is swapped out) keeps this visit's base, so a change shown is not wiped. */
+  const memo = { base: null, last: null, root: null, first: false };
   /* Explorer item -> where to try it (BUILD-PLAN 3.5 routes); an item not listed goes to Today. */
   const EXPLORER_HREF = {
     tour: '#/today?tour=1', drill: '#/sos?drill=1', reasons: '#/workbook/reasons', safetyNet: '#/workbook/network',
@@ -330,8 +332,13 @@ const StatusUI = (() => {
       h('a', { href: '#/sos', class: 'btn', 'data-test': 'status-sos', text: mode.discreet ? TEXT.help : TEXT.sos, 'aria-label': mode.discreet ? TEXT.help : TEXT.sosAria }));
     const head = h('header', { class: 'stack st-head' }, h('h1', { text: TEXT.title }), nav);
     if (!m) return h('section', { class: 'page stack st-page', 'data-test': 'status-page' }, head, h('p', { class: 'muted', text: TEXT.unavailable }));
-    const changed = lastDrawn ? diff(lastDrawn, m) : null; // memory only: no Store write, no event
-    lastDrawn = m;
+    // memory only: no Store write, no event
+    const sameVisit = !!(memo.root && memo.root.isConnected === true);
+    if (!sameVisit) { memo.first = memo.last === null; memo.base = memo.last || m; }
+    const total = diff(memo.base, m);
+    const changed = memo.first && !total.items.length ? null : total; // null: the first look, "Here is where you stand."
+    const fresh = memo.last ? diff(memo.last, m) : { items: [] }; // new since the previous draw: only these pulse
+    memo.last = m;
 
     const byId = new Map(m.regions.map((r) => [r.id, r]));
     const Hb = ns('HarborUI');
@@ -343,7 +350,7 @@ const StatusUI = (() => {
         if (r) openPlace(r, null);
       } }, sc) : null;
     // the place that grew pulses once; none when still (reduced motion, data-motion=reduce, an SOS route): the words carry it
-    const grew = new Set(changed ? changed.items.filter((i) => i.kind === 'region').map((i) => i.id) : []);
+    const grew = new Set(fresh.items.filter((i) => i.kind === 'region').map((i) => i.id));
     if (sc && grew.size && !(typeof Hb.still === 'function' && safe(() => Hb.still(c), true) !== false)) {
       walk(sc, (n) => {
         const id = n && typeof n.getAttribute === 'function' ? n.getAttribute('data-place') : null;
@@ -372,15 +379,17 @@ const StatusUI = (() => {
       m.next ? h('a', { href: m.next.href, class: 'btn primary', 'data-test': 'status-next-go', 'data-kind': m.next.kind, text: m.next.label })
         : h('p', { class: 'muted', text: TEXT.nextNone }));
 
-    return h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
+    const root = h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
       head, changeCard(changed, mode.calm), scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next,
       stripCard(gs, c.now), watchCard(c));
+    memo.root = root;
+    return root;
   }
 
   const PURE = ['TEXT', 'model', 'diff', 'nextStep', 'placeLines', 'strip'];
   return {
     TEXT, model, diff, nextStep, placeLines, strip, page, watchCard, PURE, EXPLORER_HREF,
-    _reset() { lastDrawn = null; }, // tests only: forget the last draw
+    _reset() { memo.base = null; memo.last = null; memo.root = null; memo.first = false; }, // tests only: forget the last draw
   };
 })();
 
