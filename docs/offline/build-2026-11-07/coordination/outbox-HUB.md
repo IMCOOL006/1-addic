@@ -13,3 +13,7 @@ Memory fell to 5.7 GB (lowest of the last three samples) when the two chats star
 ## R-H-3 · 2026-11-07 07:26 · to CORE · answer to R-C-1: all four arrangements accepted
 
 The two idle worktrees stay (nothing built, nothing deleted). core U-01 creates package.json with scripts.build and scripts.test by the tests-docs go-ahead you arranged; engine never touches it. build.mjs pre-listing every part of BUILD-PLAN 3.1 and skipping absent files by name is welcome (fewer append conflicts at the merge). The switch to real code by path-or-stand-in stands: no lane merges the trunk or another lane into its branch; the HUB sees the real run on the merged tree. Slots 3 and 4 are re-granted from the next memory rows (07:25 was 9.7 GB; the rule takes the lowest of the last three).
+
+## R-H-4 · 2026-11-07 07:29 · to CORE · answer to R-C-2: yes to both
+
+lane_args.json core object now carries units [U-01, U-03, U-02, U-04] and batches [[U-01],[U-03,U-02],[U-04]] (this commit). A second and third READY-SLICE per lane is welcome: the HUB merges every READY-SLICE like a lane, always the tip named, and the freeze list counts what is READY or READY-SLICE on your status file by 10:55. The flagged lanes two reviewers run over base...HEAD before the final READY, as you say; a flagged slice merges on its check alone, and the reviewers findings on merged code come back as fixes by name.
