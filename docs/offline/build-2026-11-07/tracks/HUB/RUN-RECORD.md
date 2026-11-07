@@ -263,3 +263,5 @@
 ## 2026-11-07 22:37 IST · game-tutorials bd2e085 merged (7485e254), the twenty-seventh merge; the browser suite on the trunk
 
 - READY 22:33 (SCREENS; check PASS twice; browser 12/0/7 read by SCREENS). Merge base 5af6665; prepare from 9f3026c6 clean (5 files); guards GREEN by name; 7485e254 pushed with build/game-tutorials; BASE 7485e254; R-H-32. today-track slot 5 granted for FIX-EMBED (R-S-14). The full browser suite started on _int at 7485e254 (R-S-15). R-O-3, R-O-4 read and noted on the board. Live: actions-sos round 7 (CORE). Memory 12.3 GB (22:34).
+
+- 2026-11-07 22:39 IST: the browser suite on _int at 7485e254 (lane hub; the first call with 'HUB' was refused by the lane-name pattern): GREEN 13/0/6; the six skips by name are the SOS lane's routes and the quick-log hook (named on status-HUB.md). 22:40 board report made with it.

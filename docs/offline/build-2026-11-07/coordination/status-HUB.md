@@ -14,7 +14,7 @@ SLOTS: today-track slot=5 granted again 2026-11-07 22:37 IST for FIX-EMBED by na
 SLOTS: workbook-settings slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged (be0f806d), FIX-SAMPLE READY 0e76065 merged 18:13 (42d2467d); the lane is complete; fixes by name only (C1 eraseSample round trip after actions-sos)
 SLOTS: actions slot=7 free from 2026-11-07 18:50: READY 0977edd merged (49f1c1d4; U-22..U-25 in the trunk); the lane is complete; fixes by name only
 SLOTS: game-tutorials slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged (7485e254); the lane is complete; fixes by name only (LOW C1)
-MERGING: none (the full browser suite runs on _int at 7485e254, lane hub, started 22:38)
+MERGING: none
 MERGE-QUEUE: as they appear: actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33, now RS35-RS37; lifts the actions.test.mjs name; both reviewers' answers read before the merge), today-track FIX-EMBED READY (R-S-14; cut base 9f3026c6 real merge base checked)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
@@ -45,7 +45,7 @@ MERGED: engine READY 84075b6 (FIX-RS9E: recoveryPlanPrefill and ownWarningPlans 
 MERGED: game-tutorials READY bd2e085 (U-26 game surfaces ui-game.js new, U-28 tools and mini-games ui-tools.js new, FIX-TOUR b677dbd bd2e085 in ui-guidance.js; styles.css section; game-tutorials.test.mjs 27 tests) -> merge 7485e254, trunk 7485e254, pushed 22:37 (build GREEN 1013931 B; test GREEN 27/27; validate GREEN; guards GREEN by name; territory 0 errors over 9f3026c6..bd2e085; merge base 5af6665; merged clean, 5 files; the lane's browser gate on bd2e085 GREEN 12/0/7; the lane is complete; LOW C1 by name for offline-v1.1)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 22:37 IST
+UPDATED: 2026-11-07 22:39 IST
 
 # 2026-11-07 22:37 IST · the twenty-seventh merge: game-tutorials complete; the browser suite on the trunk; R-O-3, R-O-4 read
 
@@ -53,6 +53,7 @@ UPDATED: 2026-11-07 22:37 IST
 - 22:25 CORE: the actions-sos safety re-check found the five FIX-R6 fixes FIXED (161/161) but raised RS35 HIGH (Q-SPIRAL regression on the trunk engine), RS36 and RS37 MEDIUM; the run's fixer is on them (round 7). 22:26 SCREENS: the game-tutorials re-check passed 1ea2ebf, but SCREENS' own browser gate was RED by name (tour complete, tour skip: UI.tour.start returned a Promise that page.evaluate waited on): FIX-TOUR run.
 - 22:33 game-tutorials READY bd2e085 (FIX-TOUR b677dbd, bd2e085; check PASS on both runs; browser GREEN 12/0/7 read by SCREENS). Merge base 5af6665 = the merged slice; prepare from the real cut base 9f3026c6 MERGED-CLEAN (5 files), conflicts none, guards GREEN by name (build 1013931 B; test 27/27; validate; guards; territory 0 errors); commit 7485e254; finish --hub --push: the trunk and build/game-tutorials on origin 22:37. Slot 8 free; the lane is complete.
 - R-S-15 (SCREENS): the trunk's ui-guidance.js before this merge made the browser suite hang on 'tour complete' and 'tour skip'; now mended: the full browser suite runs on _int at 7485e254 (lane hub, started 22:38 after a first call with the lane name in capitals was refused; its log under _logs/gates/hub/).
+- 22:39: the full browser suite on _int at 7485e254 (lane hub): GREEN, 13 pass, 0 fail, 6 skip by name: onboarding full, onboarding skip-all, SOS drill creates no log, SOS craving flow offline with delay loop and both outcomes, lesson to artifact shown in SOS (route #/onboarding or #/sos not registered: actions-sos), quick log and evening check-in (hook [data-tour="quicklog-button"] absent on the test's page: for today-track or tests-docs' hooks round by name). Log _logs/gates/hub/browser-20261107-223714.log. R-S-15's hang is gone from the trunk.
 - R-S-14: today-track slot 5 granted again for FIX-EMBED by name (ui-today.js and its test only). SLOTS-ALLOWED 2 on the 22:34 row 12.3 GB.
 
 # 2026-11-07 22:19 IST · the twenty-sixth merge: engine FIX-RS9E; the SOS and game-tutorials re-checks live
