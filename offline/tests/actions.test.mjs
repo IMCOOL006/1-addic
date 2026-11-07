@@ -805,7 +805,7 @@ describe('sos screens (U-10)', () => {
     await Actions.contacts.deactivate(a.id);
     assert.equal(H.activeContacts(view).length, 0, 'an inactive contact is not offered');
     const pairs = H.spiralPairs(view, null, C());
-    assert.equal(pairs.length, C().catalogs.spiral.length);
+    assert.equal(pairs.length, C().catalogs.spiral.filter((t) => !/hopeless/i.test(t) && !H.isCrisisText(t, null)).length, 'RS9 skips some');
     assert.ok(pairs.every((p) => p.thought && p.reply), 'every thought has a reply');
     assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
     assert.deepEqual(H.spiralPairs(view, { spiralThoughts: () => [{ thought: 'mine', reply: 'my answer' }] }, C()), [{ thought: 'mine', reply: 'my answer' }]);
@@ -1364,5 +1364,15 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     const d = sosDom();
     assert.equal(d.UI.sosSoberView(() => {}, 'Done', 'Breathe').querySelector('.sos-title').textContent.trim(), 'Breathe');
     assert.equal(d.UI.sosSoberView(() => {}, 'Done').querySelector('.sos-title').textContent.trim(), H.COPY.wave.title);
+  });
+
+  test('RS9: the slip flow skips a spiral thought that is crisis text or says hopeless', () => {
+    assert.ok(C().catalogs.spiral.some((t) => /hopeless/i.test(t)), 'the catalog has one to skip');
+    const pairs = H.spiralPairs(null, null, C());
+    assert.ok(pairs.length > 0);
+    assert.ok(pairs.every((p) => !/hopeless/i.test(p.thought)), pairs.map((p) => p.thought).join(' | '));
+    assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
+    const own = H.spiralPairs(null, { spiralThoughts: () => ['I want to die', 'I feel hopeless', "I can't go on", 'I blew it'] }, C());
+    assert.deepEqual(own.map((p) => p.thought), ['I blew it']);
   });
 });
