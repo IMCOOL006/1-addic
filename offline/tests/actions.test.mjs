@@ -1473,5 +1473,14 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.equal(events('SosCompleted').length, 1, 'never twice');
     assert.equal(list('logs').length, 1);
   });
+  test('RC10: one outcome enum, passed, still or used; anything else is refused', async () => {
+    for (const outcome of ['passed', 'still']) await Actions.sosSession({ kind: 'craving', tools: [], outcome });
+    await Actions.sosSession({ kind: 'craving', tools: [], used: true, outcome: 'used' });
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed', 'still', 'used']);
+    for (const outcome of ['other', 'unknown', 'relapse', '']) await refused(Actions.sosSession({ kind: 'craving', tools: [], outcome }), 'bad-session');
+    const H2 = sosDom().UI.sosHelpers;
+    assert.deepEqual([H2.outcomeFrom(6, 2, false), H2.outcomeFrom(6, 7, false), H2.outcomeFrom(6, 2, true)], ['passed', 'still', 'used']);
+    assert.equal(events('SosCompleted').length, 3, 'a refused outcome writes nothing');
+  });
   // -- FIX-ONB-EMO tests end --
 });
