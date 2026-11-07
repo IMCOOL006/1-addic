@@ -435,3 +435,29 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 .tr-list li { padding: var(--space-1) 0; }
 .tr-table { border-collapse: collapse; margin-top: var(--space-2); }
 .tr-table th, .tr-table td { text-align: left; padding: var(--space-1) var(--space-3) var(--space-1) 0; border-bottom: 1px solid hsl(var(--border)); }
+.hb-wrap { display: grid; gap: var(--space-2); }
+.hb-scene { display: block; width: 100%; height: auto; max-height: 240px; border-radius: var(--radius); }
+.hb-caption { margin: 0; font-size: 0.9em; }
+.hb-sky { fill: hsl(var(--surface-2)); }
+.hb-sea { fill: hsl(var(--primary) / 0.32); }
+.hb-wave { fill: none; stroke: hsl(var(--primary) / 0.5); stroke-width: 1.5; }
+.hb-stone { fill: hsl(var(--muted) / 0.7); }
+.hb-calm { fill: hsl(var(--primary) / 0.2); }
+.hb-hill { fill: hsl(var(--primary) / 0.22); }
+.hb-tower, .hb-mast, .hb-post, .hb-deck { fill: hsl(var(--muted)); }
+.hb-room { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1.5; }
+.hb-roof { fill: hsl(var(--accent)); }
+.hb-vane { fill: none; stroke: hsl(var(--muted)); stroke-width: 1.5; }
+.hb-light, .hb-beam, .hb-halo { fill: hsl(var(--gold)); }
+.hb-halo { opacity: 0.45; }
+.hb-lamp, .hb-bulb, .hb-flower, .hb-rose { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1; }
+.hb-lamp.hb-on, .hb-lit .hb-bulb, .hb-lit .hb-flower, .hb-rose.hb-on { fill: hsl(var(--gold)); stroke: hsl(var(--gold)); }
+@media (prefers-reduced-motion: no-preference) {
+  .hb-moving .hb-water { animation: hb-drift 9s ease-in-out infinite alternate; }
+  .hb-moving .hb-beam { transform-box: fill-box; transform-origin: 0% 50%; animation: hb-sweep 7s ease-in-out infinite alternate; }
+  .hb-moving .hb-halo { transform-box: fill-box; transform-origin: 50% 50%; animation: hb-flicker 2.6s ease-in-out infinite alternate; }
+}
+.hb-still *, [data-motion="reduce"] .hb-scene * { animation: none !important; }
+@keyframes hb-drift { from { transform: translateX(0); } to { transform: translateX(-24px); } }
+@keyframes hb-sweep { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+@keyframes hb-flicker { from { transform: scale(0.94); } to { transform: scale(1.06); } }
