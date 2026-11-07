@@ -402,6 +402,65 @@ html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-si
 .td-lamp { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1.5; }
 .td-glow { fill: hsl(var(--gold)); }
 html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
+.tr-head h1 { margin: 0; }
+.tr-quick { flex-wrap: wrap; gap: var(--space-2); }
+.tr-back { align-self: flex-start; }
+.tr-big { margin: 0; font-size: 1.4em; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tr-kinds { list-style: none; margin: 0; padding: 0; }
+.tr-kind { display: flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: none; }
+.tr-rows { list-style: none; margin: 0; padding: 0; }
+.tr-row { flex-wrap: wrap; align-items: baseline; gap: var(--space-2); min-height: 44px; padding: var(--space-2) 0; border-top: 1px solid hsl(var(--border)); }
+.tr-row:first-child { border-top: 0; }
+.tr-date { margin: 0; font-size: 1em; color: hsl(var(--muted)); }
+.tr-time { font-variant-numeric: tabular-nums; color: hsl(var(--muted)); }
+.tr-word { font-weight: 700; }
+.tr-tag { display: inline-block; padding: 0 var(--space-2); border: 1px solid hsl(var(--border)); border-radius: 999px; font-size: 0.85em; }
+.tr-slider-head { justify-content: space-between; align-items: baseline; }
+.tr-val { font-weight: 700; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+.tr-ends { justify-content: space-between; font-size: 0.85em; }
+.tr-more summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.tr-more summary:focus-visible, .tr-kind:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.tr-more .chips { margin-top: var(--space-2); }
+.tr-error:empty { display: none; }
+.tr-chart { display: block; width: 100%; height: auto; max-width: 480px; }
+.tr-grid { stroke: hsl(var(--border)); stroke-width: 1; }
+.tr-axis { fill: hsl(var(--muted)); font-size: 11px; }
+.tr-line { fill: none; stroke: hsl(var(--primary)); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.tr-dot { fill: hsl(var(--primary)); }
+.tr-bar { fill: hsl(var(--accent)); }
+.tr-heat { fill: hsl(var(--surface-2)); }
+.tr-heat-on { fill: hsl(var(--primary)); }
+.tr-caveat { margin: 0; font-size: 0.9em; }
+.tr-list { margin: 0; padding-left: 1.4em; }
+.tr-list li { padding: var(--space-1) 0; }
+.tr-table { border-collapse: collapse; margin-top: var(--space-2); }
+.tr-table th, .tr-table td { text-align: left; padding: var(--space-1) var(--space-3) var(--space-1) 0; border-bottom: 1px solid hsl(var(--border)); }
+.hb-wrap { display: grid; gap: var(--space-2); }
+.hb-scene { display: block; width: 100%; height: auto; max-height: 240px; border-radius: var(--radius); }
+.hb-caption { margin: 0; font-size: 0.9em; }
+.hb-sky { fill: hsl(var(--surface-2)); }
+.hb-sea { fill: hsl(var(--primary) / 0.32); }
+.hb-wave { fill: none; stroke: hsl(var(--primary) / 0.5); stroke-width: 1.5; }
+.hb-stone { fill: hsl(var(--muted) / 0.7); }
+.hb-calm { fill: hsl(var(--primary) / 0.2); }
+.hb-hill { fill: hsl(var(--primary) / 0.22); }
+.hb-tower, .hb-mast, .hb-post, .hb-deck { fill: hsl(var(--muted)); }
+.hb-room { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1.5; }
+.hb-roof { fill: hsl(var(--accent)); }
+.hb-vane { fill: none; stroke: hsl(var(--muted)); stroke-width: 1.5; }
+.hb-light, .hb-beam, .hb-halo { fill: hsl(var(--gold)); }
+.hb-halo { opacity: 0.45; }
+.hb-lamp, .hb-bulb, .hb-flower, .hb-rose { fill: hsl(var(--surface)); stroke: hsl(var(--muted)); stroke-width: 1; }
+.hb-lamp.hb-on, .hb-lit .hb-bulb, .hb-lit .hb-flower, .hb-rose.hb-on { fill: hsl(var(--gold)); stroke: hsl(var(--gold)); }
+@media (prefers-reduced-motion: no-preference) {
+  .hb-moving .hb-water { animation: hb-drift 9s ease-in-out infinite alternate; }
+  .hb-moving .hb-beam { transform-box: fill-box; transform-origin: 0% 50%; animation: hb-sweep 7s ease-in-out infinite alternate; }
+  .hb-moving .hb-halo { transform-box: fill-box; transform-origin: 50% 50%; animation: hb-flicker 2.6s ease-in-out infinite alternate; }
+}
+.hb-still *, [data-motion="reduce"] .hb-scene * { animation: none !important; }
+@keyframes hb-drift { from { transform: translateX(0); } to { transform: translateX(-24px); } }
+@keyframes hb-sweep { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+@keyframes hb-flicker { from { transform: scale(0.94); } to { transform: scale(1.06); } }
 /* -- workbook-settings -- */
 /* Settings (U-19). Tokens are only read here, never redefined. */
 .ws-settings { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }

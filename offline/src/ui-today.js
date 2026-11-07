@@ -165,14 +165,30 @@ const TodayUI = (() => {
     }
     return done;
   }
-  /* Morning before 12:00, evening from 17:00, between them whichever of today's two is not done. */
+  /* Minutes after midnight for 'HH:MM', else null. */
+  const minutesOf = (t) => {
+    const m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(str(t));
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+  };
+  /* The two switch points in minutes: [morning until, evening from]. With both profile.checkin times
+     set: morning until the midpoint of the two, evening from two hours before the evening time. Without
+     them (or when they make no sense): morning before 12:00, evening from 17:00. */
+  function checkinWindows(profile) {
+    const c = isObj(profile) && isObj(profile.checkin) ? profile.checkin : {};
+    const mo = minutesOf(c.morning); const evn = minutesOf(c.evening);
+    if (mo === null || evn === null || evn <= mo) return [12 * 60, 17 * 60];
+    const until = Math.floor((mo + evn) / 2);
+    return [until, Math.max(until, evn - 120)];
+  }
+  /* Morning before the first switch point, evening from the second, between them whichever of
+     today's two is not done. */
   function checkinKind(view, now, profile) {
-    void profile; // the times in profile.checkin set reminders; the card follows the clock (the chat's ruling)
     const d = toDate(now); if (!d) return null;
-    const hr = d.getHours();
+    const mins = d.getHours() * 60 + d.getMinutes();
+    const [until, from] = checkinWindows(profile);
     const done = checkinsDone(view, d);
-    if (hr < 12) return done.has('morning') ? null : 'morning';
-    if (hr >= 17) return done.has('evening') ? null : 'evening';
+    if (mins < until) return done.has('morning') ? null : 'morning';
+    if (mins >= from) return done.has('evening') ? null : 'evening';
     if (!done.has('morning')) return 'morning';
     if (!done.has('evening')) return 'evening';
     return null;
@@ -475,10 +491,10 @@ const TodayUI = (() => {
     return h('section', { class: 'page stack td-page', 'data-test': 'today-page' }, head, cards);
   }
 
-  const PURE = ['TEXT', 'localDate', 'greetingFor', 'checkinsDone', 'checkinKind', 'planToday', 'wantToday', 'activeQuests',
+  const PURE = ['TEXT', 'localDate', 'greetingFor', 'checkinsDone', 'checkinKind', 'checkinWindows', 'planToday', 'wantToday', 'activeQuests',
     'reasonOfDay', 'countersData', 'backupDue', 'milestoneDue', 'cardsFor'];
   return {
-    TEXT, localDate, greetingFor, checkinsDone, checkinKind, planToday, wantToday, activeQuests, reasonOfDay, countersData,
+    TEXT, localDate, greetingFor, checkinsDone, checkinKind, checkinWindows, planToday, wantToday, activeQuests, reasonOfDay, countersData,
     backupDue, milestoneDue, cardsFor, page, PURE,
     _resetTip() { tipState.day = ''; tipState.tip = null; tipState.marked = ''; tipState.dismissed = ''; },
   };

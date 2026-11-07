@@ -1,4 +1,5 @@
-// Lane today-track's Node tests (node:test, no dependencies). U-15: the Today screen in offline/src/ui-today.js
+// Lane today-track's Node tests (node:test, no dependencies). U-15: the Today screen in offline/src/ui-today.js; U-16: the
+// Track screen in offline/src/ui-track.js, saving through the real Actions over the real Store in Node memory mode.
 // (BUILD-PLAN 3.5 #/today, tracks/SCREENS/contracts/today-track.md "TodayUI"). The pure functions run directly; the
 // page renders on a tiny stand-in DOM and the test walks the node tree it returns (as learn.test.mjs does).
 import { test } from 'node:test';
@@ -22,6 +23,8 @@ ${readFileSync(src(file), 'utf8')}
 return ${name};
 })()`, { filename: src(file) });
 const TD = classic('ui-today.js', 'TodayUI');
+const TRK = require(src('ui-track.js'));
+const TR = classic('ui-track.js', 'TrackUI');
 const KNOWN = JSON.parse('[' + /const KNOWN = \[([^\]]+)\]/.exec(readFileSync(src('ui-core.js'), 'utf8'))[1].replace(/'/g, '"') + ']');
 
 const at = (y, mo, d, hr = 9, mi = 0) => new Date(y, mo - 1, d, hr, mi);
@@ -37,6 +40,7 @@ function fakeDom() {
     constructor(tag) { this.tagName = tag; this.nodeType = tag === '#text' ? 3 : 1; this.children = []; this.attrs = {}; this.on = {}; this.style = {}; this.hidden = false; this._text = ''; this.parentNode = null; }
     appendChild(c) { this.children.push(c); c.parentNode = this; return c; }
     setAttribute(k, v) { this.attrs[k] = String(v); if (k === 'hidden') this.hidden = true; }
+    removeAttribute(k) { delete this.attrs[k]; if (k === 'hidden') this.hidden = false; }
     getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
     addEventListener(t, fn) { (this.on[t] = this.on[t] || []).push(fn); }
     fire(t) { const e = { type: t, preventDefault() {}, key: '' }; (this.on[t] || []).forEach((fn) => fn(e)); }
@@ -114,6 +118,19 @@ test('today: check-in kind by time and done-state', () => {
   assert.equal(T.checkinKind(v([e]), at(2026, 11, 7, 20), {}), null);
   assert.equal(T.checkinKind(v([checkinLog('evening', at(2026, 11, 6, 21))]), at(2026, 11, 7, 20), {}), 'evening', 'yesterday does not count');
   assert.equal(T.checkinKind(v([checkinLog('evening', at(2026, 11, 7, 18), { drill: true })]), at(2026, 11, 7, 20), {}), 'evening', 'a drill does not count');
+  // With the person's own times (profile.checkin 'HH:MM'): morning until the midpoint, evening from two hours before.
+  const own = { checkin: { morning: '06:00', evening: '22:00' } }; // midpoint 14:00, evening from 20:00
+  assert.deepEqual(T.checkinWindows(own), [14 * 60, 20 * 60]);
+  assert.deepEqual(T.checkinWindows({ checkin: { morning: null, evening: null } }), [12 * 60, 17 * 60], 'no times: the fixed rule');
+  assert.deepEqual(T.checkinWindows({ checkin: { morning: '07:00' } }), [12 * 60, 17 * 60], 'one time only: the fixed rule');
+  assert.equal(T.checkinKind(v([m]), at(2026, 11, 7, 13), own), null, 'before the midpoint: morning, and it is done');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 13, 59), own), 'morning');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 14), own), 'morning', 'between: the one not done');
+  assert.equal(T.checkinKind(v([m]), at(2026, 11, 7, 17), own), 'evening', 'between: morning done, so evening');
+  assert.equal(T.checkinKind(v([]), at(2026, 11, 7, 20), own), 'evening', 'from two hours before the evening time');
+  assert.equal(T.checkinKind(v([e]), at(2026, 11, 7, 21), own), null);
+  const close = { checkin: { morning: '08:00', evening: '09:00' } }; // evening-2h falls before the midpoint
+  assert.deepEqual(T.checkinWindows(close), [8 * 60 + 30, 8 * 60 + 30]);
   globalThis.document = fakeDom();
   try {
     const { root } = render({ logs: [] }, { now: at(2026, 11, 7, 18) });
@@ -201,8 +218,9 @@ test('today: milestone shown once', async () => {
     await tick(); await tick(); await tick();
     const reached = E.gameState(ctx.view, NOW).counters.reached;
     const top = Math.max(...reached);
-    assert.deepEqual(ctx.A.calls[1], ['recordEvent', 'MilestoneSeen', { milestone: top }]);
-    assert.deepEqual(ctx.A.calls[2], ['settings.patch', { milestonesSeen: reached }]);
+    const callOf = (name) => ctx.A.calls.filter((x) => x[0] === name);
+    assert.deepEqual(callOf('recordEvent'), [['recordEvent', 'MilestoneSeen', { milestone: top }]], 'one MilestoneSeen');
+    assert.deepEqual(callOf('settings.patch'), [['settings.patch', { milestonesSeen: reached }]], 'one settings.patch');
     assert.equal(card[0].hidden, true);
     rows.settings = [settingsRow({ showCurrentRun: true, lastBackupAt: rows.settings[0].lastBackupAt, milestonesSeen: reached })];
     assert.equal(byTest(render(rows).root, 'today-milestone').length, 0, 'not shown again');
@@ -287,4 +305,396 @@ test('today: ui-today.js inserts text as text, makes no network call and exports
   assert.doesNotMatch(code, /globalThis\.(Content|Engine|Store|Actions|UI)\b/);
   assert.equal(T.page, undefined);
   for (const k of ['greetingFor', 'checkinKind', 'planToday', 'backupDue', 'milestoneDue']) assert.equal(typeof T[k], 'function', k);
+});
+
+/* ── U-16 Track ────────────────────────────────────────────────────────────────────────── */
+globalThis.Engine = E;
+globalThis.Store = require(src('store.js'));
+const Actions = require(src('actions.js'));
+const Store = globalThis.Store;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const until = async (fn, n = 200) => { for (let i = 0; i < n && !fn(); i++) await sleep(2); return fn(); };
+async function freshStore() { if (typeof Store.load === 'function') await Store.load(); await Store.resetAll(); }
+const trackCtx = (route, extra) => {
+  const view = Store.view;
+  const settings = view.get('settings', 'app') || {};
+  return Object.assign({ view, E, A: Actions, profile: view.get('profile', 'me') || {}, settings, now: new Date(), calm: false,
+    route: TR.routeOf ? Object.assign({ query: {} }, route) : route }, extra || {});
+};
+const R = (path, query) => ({ path, parts: path.split('/').filter(Boolean), query: query || {} });
+const tours = (root) => root.all((n) => n.getAttribute && n.getAttribute('data-tour') !== null).map((n) => n.getAttribute('data-tour'));
+const todayStr = () => T.localDate(new Date());
+const VALUES = () => ({
+  craving: { intensity: '7', triggerIds: [TRK.triggerOptions(Store.view, E)[0].id], thought: 'Maybe later', redFlag: true, tried: ['trial'], helped: ['trial'], notes: '' },
+  feeling: { emotion: 'angry', intensity: '4', triggerIds: [], tried: [], helped: [] },
+  checkin: { kind: 'evening', mood: '6', anxiety: '3', peakCraving: '2', pleasantCount: '3', used: 'no', sleep: '7', meeting: 'yes', intention: '' },
+  activity: { kind: 'exercise', minutes: '30', name: 'Walk', enjoyment: '7' },
+  slip: { date: todayStr(), substance: '', situation: 'After work', notes: '' },
+});
+
+test('track: each kind saves through Actions and is first on the timeline', async () => {
+  await freshStore();
+  const verbs = { craving: 'logCraving', feeling: 'logFeeling', checkin: 'checkin', activity: 'logActivity', slip: 'logSlip' };
+  for (const [type, values] of Object.entries(VALUES())) {
+    assert.equal(TRK.formToLog(type, values).verb, verbs[type], `${type}: its own verb`);
+    const r = await TRK.save(Actions, type, values);
+    assert.equal(r.ok, true, `${type}: ${r.message || ''}`);
+    const first = TRK.timeline(Store.view)[0].rows[0];
+    assert.equal(first.type, type);
+    assert.equal(first.id, r.log.id, `${type}: the new row is first`);
+    await sleep(3);
+  }
+  const rows = Store.view.list('logs');
+  const craving = rows.find((l) => l.type === 'craving');
+  assert.equal(craving.intensity, 7);
+  assert.equal(craving.redFlag, true);
+  assert.deepEqual(craving.skills, [{ skillId: 'trial', helpful: true }]);
+  assert.equal(rows.find((l) => l.type === 'feeling').emotion, 'angry');
+  assert.deepEqual(rows.find((l) => l.type === 'checkin').checkin, { kind: 'evening', mood: 6, anxiety: 3, peakCraving: 2, pleasantCount: 3, used: false, sleep: 7, meeting: true });
+  assert.deepEqual(rows.find((l) => l.type === 'activity').activity, { kind: 'exercise', minutes: 30, name: 'Walk', enjoyment: 7 });
+  // Through the page: the + and the tour names, a craving typed and saved, back on Track with the row on top.
+  globalThis.document = fakeDom();
+  try {
+    const home = TR.page(trackCtx(R('/track')));
+    assert.deepEqual(tours(home), ['quicklog-button']);
+    assert.equal(byTest(home, 'track-add')[0].getAttribute('href'), '#/track/log');
+    assert.equal(byTest(home, 'timeline-row')[0].getAttribute('data-type'), 'slip', 'the last saved is shown first');
+    let went = null;
+    const pg = TR.page(trackCtx(R('/track/log/craving'), { go: (r) => { went = r; } }));
+    assert.deepEqual(tours(pg).sort(), ['quicklog-intensity', 'quicklog-save']);
+    const slider = pg.all((n) => n.getAttribute && n.getAttribute('data-tour') === 'quicklog-intensity')[0];
+    slider.value = '8'; slider.fire('input');
+    byTest(pg, 'log-triggerIds')[0].children[0].fire('click');
+    pg.all((n) => n.tagName === 'form')[0].fire('submit');
+    assert.equal(await until(() => went !== null), true, 'it went somewhere');
+    assert.equal(went, '#/track');
+    const top = TRK.timeline(Store.view)[0].rows[0];
+    assert.equal(top.type, 'craving'); assert.equal(top.intensity, 8); assert.equal(top.triggerIds.length, 1);
+    assert.equal(byTest(TR.page(trackCtx(R('/track'))), 'timeline-row')[0].getAttribute('data-type'), 'craving');
+    // A check-in opened from Today with its kind; a slip goes to its kind words, then the next steps.
+    const ev = TR.page(trackCtx(R('/track/log/checkin', { kind: 'evening' })));
+    assert.equal(ev.getAttribute('data-kind'), 'evening');
+    assert.equal(byTest(ev, 'log-peakCraving').length, 1);
+    assert.equal(byTest(TR.page(trackCtx(R('/track/log/checkin', { kind: 'morning' }))), 'log-peakCraving').length, 0, 'morning asks less');
+    let slipWent = null;
+    const sp = TR.page(trackCtx(R('/track/log/slip'), { go: (r) => { slipWent = r; } }));
+    sp.all((n) => n.tagName === 'form')[0].fire('submit');
+    assert.equal(await until(() => slipWent !== null), true);
+    assert.equal(slipWent, '#/track/log/slip?saved=1');
+    const done = TR.page(trackCtx(R('/track/log/slip', { saved: '1' })));
+    assert.equal(byTest(done, 'slip-next')[0].getAttribute('href'), '#/sos/slip?logged=1');
+    assert.equal(byTest(done, 'slip-back')[0].getAttribute('href'), '#/track');
+  } finally { delete globalThis.document; }
+});
+
+test('track: validation messages shown, nothing written', async () => {
+  await freshStore();
+  const before = Store.view.list('logs').length;
+  const bad = await TRK.save(Actions, 'activity', { kind: 'exercise', minutes: '' });
+  assert.equal(bad.ok, false); assert.equal(bad.code, 'bad-activity'); assert.match(bad.message, /Minutes/);
+  assert.equal((await TRK.save(Actions, 'craving', { intensity: '11' })).code, 'bad-log');
+  assert.equal((await TRK.save(Actions, 'slip', { date: '2999-01-01' })).code, 'bad-slip');
+  assert.equal((await TRK.save(Actions, 'activity', { kind: '', minutes: '20' })).ok, false, 'a kind is needed');
+  assert.equal(Store.view.list('logs').length, before, 'nothing written');
+  const locked = await TRK.save({ logCraving: async () => { const e = new Error('Locked.'); e.code = 'LOCKED'; throw e; } }, 'craving', { intensity: '3' });
+  assert.equal(locked.code, 'LOCKED'); assert.equal(locked.message, TRK.TEXT.locked);
+  globalThis.document = fakeDom();
+  try {
+    let went = null;
+    const pg = TR.page(trackCtx(R('/track/log/activity'), { go: (r) => { went = r; } }));
+    const name = byTest(pg, 'log-name')[0]; name.value = 'Swim';
+    const err = byTest(pg, 'log-error')[0];
+    assert.equal(err.hidden, true);
+    pg.all((n) => n.tagName === 'form')[0].fire('submit');
+    assert.equal(await until(() => err.hidden === false), true, 'the error shows');
+    assert.ok(err.textContent.length > 0);
+    assert.equal(err.getAttribute('aria-live'), 'polite');
+    assert.equal(name.value, 'Swim', 'the form keeps its values');
+    assert.equal(went, null);
+    assert.equal(Store.view.list('logs').length, before);
+  } finally { delete globalThis.document; }
+});
+
+test('track: slip leaves counters.total and xp unchanged', async () => {
+  await freshStore();
+  const d = new Date(); d.setDate(d.getDate() - 20);
+  await Actions.onboard({ name: 'Asha', startDate: T.localDate(d) });
+  await Actions.settings.patch({ counters: true, showCurrentRun: true });
+  assert.equal((await TRK.save(Actions, 'craving', { intensity: '5' })).ok, true);
+  const g0 = E.gameState(Store.view, new Date());
+  assert.equal(g0.counters.tracking, true);
+  assert.ok(g0.counters.total >= 20);
+  assert.equal((await TRK.save(Actions, 'slip', { date: todayStr(), situation: 'A hard evening' })).ok, true);
+  const g1 = E.gameState(Store.view, new Date());
+  assert.equal(g1.counters.total, g0.counters.total, 'total days unchanged');
+  assert.ok(g1.xp >= g0.xp, 'xp never falls');
+  for (const k of Object.keys(g0.regions || {})) assert.ok(g1.regions[k] >= g0.regions[k], `region ${k} never falls`);
+  assert.equal(Store.view.get('profile', 'me').startDate, T.localDate(d), 'startDate untouched');
+  const settings = Store.view.get('settings', 'app');
+  assert.deepEqual(TRK.countersData(g1.counters, settings, false), { total: g0.counters.total, current: g1.counters.current });
+  assert.equal(TRK.countersData(g1.counters, Object.assign({}, settings, { counters: false }), false), null, 'opt-in only');
+  assert.equal(TRK.countersData(g1.counters, settings, true), null, 'hidden in discreet mode');
+  globalThis.document = fakeDom();
+  try {
+    const home = TR.page(trackCtx(R('/track')));
+    assert.match(byTest(home, 'track-counters')[0].textContent, new RegExp(`${g0.counters.total} in total`));
+    const sp = TR.page(trackCtx(R('/track/log/slip')));
+    const words = sp.textContent;
+    assert.doesNotMatch(words, /streak|reset|fail|relapse|clean|addict|should have|start over/i, 'kind words only');
+    assert.equal(byTest(sp, 'slip-steps')[0].getAttribute('href'), '#/sos/slip?preview=1');
+    assert.equal(byTest(sp, 'track-sos')[0].getAttribute('href'), '#/sos', 'SOS one tap away');
+  } finally { delete globalThis.document; }
+});
+
+test('track: timeline order and grouping', () => {
+  const iso = (dd, hr, mi = 0) => at(2026, 11, dd, hr, mi).toISOString();
+  const logs = [
+    { id: 'a', type: 'craving', at: iso(6, 9), intensity: 3 },
+    { id: 'b', type: 'activity', at: iso(7, 8), activity: { kind: 'exercise', minutes: 20 } },
+    { id: 'c', type: 'feeling', at: iso(7, 10), intensity: 5, emotion: 'sad', sample: true },
+    { id: 'd', type: 'craving', at: iso(7, 9), intensity: 6, drill: true },
+    { id: 'e', type: 'checkin', at: iso(5, 21), checkin: { kind: 'evening', mood: 4 } },
+  ];
+  const tl = TRK.timeline(viewOf({ logs }));
+  assert.deepEqual(tl.map((g) => g.date), ['2026-11-07', '2026-11-06', '2026-11-05']);
+  assert.deepEqual(tl[0].rows.map((r) => r.id), ['c', 'b'], 'newest first; a drill never shows');
+  assert.equal(TRK.timeline(viewOf({ logs }), 2).flatMap((g) => g.rows).length, 2, 'a limit');
+  assert.equal(TRK.rowText(logs[2]).sample, true);
+  assert.match(TRK.rowText(logs[2]).text, /Sad or low · 5 out of 10/);
+  assert.equal(TRK.rowText(logs[4]).word, 'Evening check-in');
+  globalThis.document = fakeDom();
+  try {
+    const many = Array.from({ length: 35 }, (_, i) => ({ id: 'm' + i, type: 'craving', at: at(2026, 11, 7, 0, i).toISOString(), intensity: i % 11 }));
+    const ctx = { view: viewOf({ logs: many.concat(logs) }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track') };
+    const home = TR.page(ctx);
+    assert.equal(byTest(home, 'timeline-row').length, 30, '30 at first');
+    const more = byTest(home, 'timeline-more')[0];
+    assert.equal(more.hidden, false);
+    more.fire('click');
+    assert.equal(byTest(home, 'timeline-row').length, 39, 'then the rest');
+    assert.equal(more.hidden, true);
+    assert.ok(byTest(home, 'timeline-row').some((r) => /Sample/.test(r.textContent)), 'the Sample mark');
+    assert.equal(byTest(home, 'track-counters').length, 0, 'counters only when opted in');
+    assert.equal(byTest(home, 'track-insights-link')[0].getAttribute('href'), '#/track/insights', 'insights after seven logs');
+    const few = TR.page(Object.assign({}, ctx, { view: viewOf({ logs }) }));
+    assert.match(byTest(few, 'insights-empty')[0].textContent, /after seven logs\. You have 2 so far/, 'sample rows and drills do not count (the engine rule)');
+    assert.equal(byTest(few, 'track-insights-link').length, 0);
+    const none = TR.page(Object.assign({}, ctx, { view: viewOf({}) }));
+    assert.equal(byTest(none, 'timeline-row').length, 0);
+    assert.equal(byTest(none, 'timeline-log-first')[0].getAttribute('href'), '#/track/log');
+  } finally { delete globalThis.document; }
+});
+
+test('track: chips list frequent triggers first', () => {
+  const stub = { triggerChips: () => [{ id: 'people:a', label: 'A' }, { id: 'places:b', label: 'B', frequent: true }, { id: 'x', label: '' }, { id: 'times:c', label: 'C', frequent: true }] };
+  assert.deepEqual(TRK.triggerOptions(viewOf({}), stub).map((c) => c.id), ['places:b', 'times:c', 'people:a']);
+  const real = TRK.triggerOptions(viewOf({}), E);
+  assert.ok(real.length > 0, 'the catalog gives chips');
+  assert.equal(TRK.triggerOptions(viewOf({}), null).length, 0, 'no engine: no chips, no crash');
+  globalThis.document = fakeDom();
+  try {
+    const pg = TR.page({ view: viewOf({}), E: stub, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track/log/craving') });
+    const chips = byTest(pg, 'log-triggerIds')[0].children.map((b) => b.textContent);
+    assert.deepEqual(chips, ['B', 'C', 'A']);
+  } finally { delete globalThis.document; }
+});
+
+test('track: every route renders with no dead button and SOS one tap away', () => {
+  globalThis.document = fakeDom();
+  try {
+    const paths = [R('/track'), R('/track/log'), R('/track/insights'), R('/track/log/slip', { saved: '1' }), R('/track/log/nope')]
+      .concat(TRK.KINDS.map((k) => R('/track/log/' + k)));
+    for (const r of paths) {
+      const root = TR.page({ view: viewOf({}), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: r });
+      assert.ok(root, r.path);
+      for (const a of root.all((n) => n.tagName === 'a')) {
+        const href = a.getAttribute('href');
+        assert.match(href, /^#\//, `${r.path}: ${href}`);
+        assert.ok(KNOWN.includes(href.slice(2).split(/[/?]/)[0]), `${r.path}: ${href} is a known route`);
+      }
+      for (const b of root.all((n) => n.tagName === 'button')) assert.ok(b.getAttribute('type') === 'submit' || (b.on.click || []).length, `${r.path}: a live button`);
+      assert.equal(byTest(root, 'track-sos')[0].getAttribute('href'), '#/sos');
+    }
+    assert.equal(byTest(TR.page({ view: viewOf({}), E, settings: { discreet: true }, route: R('/track') }), 'track-sos')[0].textContent, 'Help');
+  } finally { delete globalThis.document; }
+});
+
+test('track: ui-track.js inserts text as text, makes no network call and exports pure names only', () => {
+  const code = readFileSync(src('ui-track.js'), 'utf8');
+  assert.doesNotMatch(code, /\.innerHTML\s*=|outerHTML\s*=|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(code, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|https?:\/\//);
+  assert.doesNotMatch(code, /localStorage|sessionStorage|indexedDB|Math\.random/);
+  assert.doesNotMatch(code, /globalThis\.(Content|Engine|Store|Actions|UI)\b/);
+  assert.doesNotMatch(code, /\baddicts?\b(?!-)/i);
+  assert.equal(TRK.page, undefined);
+  for (const k of ['timeline', 'formToLog', 'save', 'triggerOptions', 'countersData']) assert.equal(typeof TRK[k], 'function', k);
+  const tourNames = [...new Set([...code.matchAll(/'(quicklog-[a-z]+|insights-(?:triggers|heatmap))'/g)].map((m) => m[1]))].sort();
+  assert.deepEqual(tourNames, ['insights-heatmap', 'insights-triggers', 'quicklog-button', 'quicklog-intensity', 'quicklog-save']);
+});
+
+/* ── U-17 Insights ─────────────────────────────────────────────────────────────────────── */
+/* UI.svg stand-in on the fake DOM: the real one (ui-core.js) needs createElementNS. */
+const uiStub = () => ({
+  svg: (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) if (v != null && v !== false) n.setAttribute(k, v === true ? '' : String(v));
+    for (const k of kids.flat(5)) if (k != null && k !== false && k !== true) n.appendChild(typeof k === 'object' ? k : document.createTextNode(String(k)));
+    return n;
+  },
+});
+function withDom(fn) {
+  globalThis.document = fakeDom();
+  globalThis.UI = uiStub();
+  try { return fn(); } finally { delete globalThis.document; delete globalThis.UI; }
+}
+const craving = (d, hr, intensity, triggerIds) => {
+  const when = at(2026, 11, d, hr);
+  return { id: 'c' + (++seq), type: 'craving', at: when.toISOString(), date: T.localDate(when), intensity, triggerIds: triggerIds || [] };
+};
+function synthLogs(n) {
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(craving(1 + (i % 7), 18 + (i % 3), 3 + (i % 5), i % 2 ? ['people:work-stress'] : ['place:bar', 'people:work-stress']));
+  return out;
+}
+const insightsAt = (logs) => TR.page({ view: viewOf({ logs }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track/insights') });
+
+test('insights: hidden below 7 logs', () => withDom(() => {
+  const root = insightsAt(synthLogs(6));
+  assert.equal(byTest(root, 'insights-empty').length, 1);
+  assert.match(byTest(root, 'insights-empty')[0].textContent, /appear after seven logs\. You have 6 so far/);
+  assert.equal(byTest(root, 'insights-card').length, 0);
+  assert.equal(root.all((n) => n.tagName === 'svg').length, 0, 'nothing drawn');
+  assert.equal(byTest(root, 'insights-log')[0].getAttribute('href'), '#/track/log');
+  const home = TR.page({ view: viewOf({ logs: synthLogs(6) }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track') });
+  assert.equal(byTest(home, 'track-insights-link').length, 0);
+  assert.equal(TRK.insightsView(viewOf({ logs: synthLogs(6) }), NOW, E).ready, false);
+}));
+
+test('insights: cards from synthetic logs (svg present, heatmap 7x24)', () => withDom(() => {
+  const logs = synthLogs(10);
+  const iv = TRK.insightsView(viewOf({ logs }), NOW, E);
+  assert.equal(iv.ready, true);
+  assert.equal(iv.heatmap.length, 7);
+  assert.ok(iv.heatmap.every((r) => r.length === 24));
+  assert.equal(iv.cravings, 10);
+  assert.equal(iv.triggers[0].count, 10, 'work stress is in every log');
+  const root = insightsAt(logs);
+  const names = byTest(root, 'insights-card').map((n) => n.getAttribute('data-card'));
+  for (const k of ['trend', 'triggers', 'heatmap']) assert.ok(names.includes(k), k);
+  const heat = byTest(root, 'insights-heat')[0];
+  assert.equal(heat.tagName, 'svg');
+  assert.equal(heat.all((n) => n.tagName === 'rect').length, 168, '7 x 24 cells');
+  for (const id of ['insights-trend', 'insights-bars', 'insights-heat']) {
+    const s = byTest(root, id)[0];
+    assert.equal(s.getAttribute('role'), 'img', id);
+    assert.match(s.getAttribute('aria-label'), /\d/, id + ' says its numbers');
+  }
+  assert.equal(byTest(root, 'insights-bars')[0].all((n) => n.tagName === 'rect').length, iv.triggers.length);
+  assert.ok(byTest(root, 'insights-heat-table')[0].all((n) => n.tagName === 'tr').length > 1, 'a text table alternative');
+  assert.deepEqual(tours(root).sort(), ['insights-heatmap', 'insights-triggers']);
+  const home = TR.page({ view: viewOf({ logs }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track') });
+  assert.equal(byTest(home, 'track-insights-link')[0].getAttribute('href'), '#/track/insights');
+  for (const a of root.all((n) => n.tagName === 'a')) assert.ok(KNOWN.includes(a.getAttribute('href').slice(2).split(/[/?]/)[0]));
+}));
+
+test('insights: caveat under 14', () => withDom(() => {
+  const few = insightsAt(synthLogs(10));
+  const cards = byTest(few, 'insights-card');
+  assert.ok(cards.length >= 3);
+  for (const c of cards) assert.equal(byTest(c, 'insights-caveat').length, 1, c.getAttribute('data-card'));
+  const many = insightsAt(synthLogs(15));
+  assert.ok(byTest(many, 'insights-card').length >= 3);
+  assert.equal(byTest(many, 'insights-caveat').length, 0);
+}));
+
+test('insights: without UI.svg the numbers still show as text', () => {
+  globalThis.document = fakeDom();
+  try {
+    const root = insightsAt(synthLogs(8));
+    assert.equal(root.all((n) => n.tagName === 'svg').length, 0);
+    assert.ok(byTest(root, 'insights-card').length >= 3);
+    assert.ok(byTest(root, 'insights-heat-table').length, 'the table stays');
+  } finally { delete globalThis.document; }
+});
+
+/* ── U-18 Harbor scene ─────────────────────────────────────────────────────────────────── */
+const HBM = require(src('ui-harbor.js'));
+const HB = classic('ui-harbor.js', 'HarborUI');
+const used = (skillId, d, hr) => ev('SkillUsed', { skillId, helpful: true }, at(2026, 11, d, hr));
+const harborRows = () => ({
+  profile: [{ key: 'me', name: 'Asha', startDate: '2026-10-01' }],
+  events: [used('trial', 1, 9), used('trial', 2, 9), used('trial', 3, 9), used('sober', 3, 10), used('call', 4, 11), used('reasons', 5, 9), used('log-craving', 6, 9)],
+});
+const harborCtx = (extra) => Object.assign({ view: viewOf(harborRows()), E, settings: {}, now: NOW, calm: false, route: R('/today') }, extra || {});
+
+test('harbor: levels never fall after a slip', () => {
+  const rows = harborRows();
+  const before = HBM.lightLevels(viewOf(rows), NOW, E);
+  assert.deepEqual(Object.keys(before), ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather']);
+  assert.equal(before.lighthouse, 2, 'three uses of a lighthouse skill');
+  assert.ok(before.cove >= 1 && before.pier >= 1 && before.compass >= 1 && before.weather >= 1);
+  const after = HBM.lightLevels(viewOf(Object.assign({}, rows, {
+    events: rows.events.concat([ev('SlipLogged', { date: TODAY }, at(2026, 11, 7, 8))]),
+    logs: [{ id: 'slip1', type: 'slip', at: at(2026, 11, 7, 8).toISOString(), date: TODAY }],
+  })), at(2026, 11, 30, 9), E);
+  for (const k of HBM.PLACES) assert.ok(after[k] >= before[k], `${k} does not fall after a slip or with time`);
+  for (let n = 0; n < 5; n++) assert.ok(HBM.lightOpacity(n + 1) > HBM.lightOpacity(n), 'the glow rises with each level');
+  assert.equal(HBM.lightOpacity(0), 0);
+  assert.equal(HBM.lightOpacity(5), 1);
+  assert.deepEqual(HBM.lightLevels(viewOf({}), NOW, null), { lighthouse: 0, cove: 0, garden: 0, pier: 0, compass: 0, weather: 0 }, 'no engine: all unlit');
+});
+
+test('harbor: renders 6 places', () => withDom(() => {
+  const root = HB.scene(harborCtx());
+  assert.ok(root);
+  const svgEl = byTest(root, 'harbor-scene')[0];
+  assert.equal(svgEl.getAttribute('role'), 'img');
+  const places = svgEl.all((n) => n.getAttribute && n.getAttribute('data-place') !== null);
+  assert.deepEqual(places.map((n) => n.getAttribute('data-place')).sort(), ['compass', 'cove', 'garden', 'lighthouse', 'pier', 'weather']);
+  const label = svgEl.getAttribute('aria-label');
+  assert.match(label, /Lit: The Lighthouse, level 2 of 5/);
+  assert.match(label, /Waiting for light: The Garden/);
+  const lh = places.find((n) => n.getAttribute('data-place') === 'lighthouse');
+  assert.equal(lh.getAttribute('data-level'), '2');
+  assert.equal(lh.all((n) => n.getAttribute && /hb-light/.test(n.getAttribute('class') || ''))[0].getAttribute('opacity'), String(HBM.lightOpacity(2)));
+  const pier = places.find((n) => n.getAttribute('data-place') === 'pier');
+  assert.equal(pier.all((n) => /hb-lit/.test((n.getAttribute && n.getAttribute('class')) || '')).length, Number(pier.getAttribute('data-level')), 'a lantern per level');
+  globalThis.HarborUI = HB;
+  try {
+    const { root: today } = render(sampleRows());
+    const card = byTest(today, 'today-harbor')[0];
+    assert.ok(card && byTest(card, 'harbor-scene').length === 1, 'Today shows the scene once HarborUI is loaded');
+    assert.equal(card.getAttribute('aria-hidden'), null);
+  } finally { delete globalThis.HarborUI; }
+}));
+
+test('harbor: null in calm mode', () => withDom(() => {
+  assert.equal(HB.scene(harborCtx({ calm: true })), null);
+  assert.equal(HB.scene(harborCtx({ settings: { calm: true } })), null);
+  assert.equal(HB.scene(harborCtx({ settings: { discreet: true } })), null, 'and in discreet mode');
+  assert.ok(HB.scene(harborCtx()));
+}));
+
+test('harbor: reduced-motion class', () => withDom(() => {
+  const cls = (extra) => byTest(HB.scene(harborCtx(extra)), 'harbor-scene')[0].getAttribute('class');
+  assert.match(cls(), /hb-moving/);
+  assert.match(cls({ settings: { reducedMotion: true } }), /hb-still/);
+  assert.match(cls({ route: R('/sos') }), /hb-still/, 'never animates in SOS');
+  globalThis.window = { matchMedia: (q) => ({ matches: /reduce/.test(q) }) };
+  try { assert.match(cls(), /hb-still/, 'the system setting'); } finally { delete globalThis.window; }
+  const css = readFileSync(src('styles.css'), 'utf8');
+  const sec = css.slice(css.indexOf('/* -- today-track -- */'));
+  assert.match(sec, /@media \(prefers-reduced-motion: no-preference\) \{\s*\.hb-moving/);
+  assert.match(sec, /\.hb-still \*[^{]*\{ animation: none !important; \}/);
+  for (const m of sec.matchAll(/@keyframes hb-[a-z]+ \{([^}]*\}){2} \}/g)) assert.doesNotMatch(m[0], /opacity/, 'motion never dims the light');
+}));
+
+test('harbor: ui-harbor.js inserts text as text, makes no network call and exports pure names only', () => {
+  const code = readFileSync(src('ui-harbor.js'), 'utf8');
+  assert.doesNotMatch(code, /\.innerHTML\s*=|outerHTML\s*=|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(code, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|https?:\/\//);
+  assert.doesNotMatch(code, /localStorage|sessionStorage|indexedDB|Math\.random/);
+  assert.doesNotMatch(code, /globalThis\.(Content|Engine|Store|Actions|UI)\b/);
+  assert.equal(HBM.scene, undefined);
+  for (const k of ['lightLevels', 'lightOpacity', 'ariaLabel']) assert.equal(typeof HBM[k], 'function', k);
 });
