@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-07 18:23 IST: CORE 06285082 hands over near 300k with NOTHING running (all its runs returned). The fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here': launch actions-sos FIX-R6 (RS-SAMPLE, a tag condition), learn FIX-RS9 and engine FIX-RS9E (wrappers ready)
+STATE: WAITING   # 2026-11-07 18:32 IST: CORE 60f08c84 resumed from 06285082's RESTART (nothing of it was running; 06285082 is no longer listed). Three fix rounds ready and simulated (wf_sim OK): actions-sos FIX-R6, learn FIX-RS9, engine FIX-RS9E. Free memory 3.9 GB at 18:31 (under the 4.0 floor): each launches at a row with 7.0 GB free, actions-sos first
 LANE: core READY 8e80951   # 2026-11-07 18:23 IST: FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) and its review fixes RC1 9b03126, RC3 15f99c6, RS19 58f309a, RC2 8e80951, each FIXED on its finder's re-check; check PASS; test GREEN 87/87; LOWs N1, N2, Q-a for offline-v1.1; report lane-reports/core.md (18258 B); cut base 655516dc; merged earlier as d4eed2a (957f333)
-LANE: engine MERGED 57153d3   # FIX-RS4 READY 16:4x, merged by the HUB as 3720d119 (R-H-25, 17:03; the baselined names lifted); before: READY 227a07a merged 15:34; complete, fixes by name only (the crisisKeywords request of RS32/RS31 is offline-v1.1 by name)
-LANE: actions-sos REVIEWING 1cfc936   # 2026-11-07 17:57 IST: FIX-R5 wf_fa0d78f5-b07: RS24 7c21ffd, RS29 27b4f3b, RS30 46083fe, RS31 0a7fe20, RS32 5585c65, RS22T 1cfc936 FIXED; test GREEN 156/156; re-check raised RS33 MEDIUM (a regression: notes dropped beside a tel) and two questions (ruled); NEXT FIX-R6 = RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T (contracts/actions-sos.md last sections); report lane-reports/actions-sos.md (19778 B)
-LANE: learn MERGED 4f5832f   # FIX-RS4 READY 16:4x, merged by the HUB as cb0b427 (R-H-25, 17:03); before: READY 19f373c merged 10:50; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
-SLOTS-ASKED: 3   # actions-sos slot 3 (held, FIX-R6 next), learn slot 9 and engine slot 2 (FIX-RS9, FIX-RS9E, R-H-27/R-C-27); core slot 1 free when READY 8e80951 merges
-UPDATED: 2026-11-07 18:23 IST
+LANE: engine MERGED 57153d3   # FIX-RS4 merged as 3720d119 (R-H-25); next: FIX-RS9E by name (x.item in recoveryPlanPrefill and ownWarningPlans; R-C-27), waiting for memory
+LANE: actions-sos REVIEWING 1cfc936   # FIX-R5 all six FIXED (wf_fa0d78f5-b07); NEXT FIX-R6 = RS-SAMPLE (tag condition), RS33 (MEDIUM regression), Q-BUILTIN, Q-SPIRAL, RS9T (a baselined test name), start review on the carried findings; waiting for memory
+LANE: learn MERGED 4f5832f   # FIX-RS4 merged as cb0b427 (R-H-25); next: FIX-RS9 test-only (learn.test.mjs :424, :538-539, two baselined names; R-H-27), waiting for memory
+LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
+SLOTS-ASKED: 3   # actions-sos slot 3 (held, FIX-R6), learn slot 9 (FIX-RS9), engine slot 2 (FIX-RS9E); core slot 1 free when READY 8e80951 merges
+UPDATED: 2026-11-07 18:32 IST
+
+# 2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 42d2467d; SLOTS actions-sos slot=3 held; QUIET done; live: SCREENS actions and game-tutorials), outbox-HUB.md to R-H-29, outbox-CORE.md to R-C-30, outbox-OWNER.md (R-O-2: the defaults are the owner's), lane.js header and its review/state code, contracts/actions-sos.md (17:22, 17:57) and Round 6 of _logs/reports/actions-sos/actions-sos__review-safety.md.
+- `claude agents --json` 18:26: 06285082 not listed; it ran nothing at its RESTART, so nothing is relaunched. The five worktrees are clean (core 8e80951, engine 57153d3, actions-sos 1cfc936, learn 4f5832f, tests-docs d91164d).
+- Launch files (wf_sim OK each): C:/Users/ruchi/.claude-pro/jobs/60f08c84/tmp/wf_as_r6.js (start review; carried check PASS at 1cfc936; carried safety findings RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T; diffFrom 1cfc936), wf_learn_fix-rs9.js, wf_engine_fix-rs9e.js; their args beside them (args_<name>.json), built by gen.py there from 06285082's args.
+- Free memory 4.0 GB at 18:26, 3.9 GB at 18:31 (the pharma program runs seven sessions on this machine). Order at 7.0 GB rows: actions-sos FIX-R6 first (a tag condition and a baselined name), then learn FIX-RS9 (two baselined names), then engine FIX-RS9E.
 
 # 2026-11-07 17:07 IST · actions-sos FIX-R4 returned RED; FIX-R5 ruled; waiting for memory
 
