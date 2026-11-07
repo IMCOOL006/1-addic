@@ -1,12 +1,25 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 02:42 IST: SCREENS 1c2cf086, V3 (PLAN-V3.md, R-H-38). today-track has slot 6 (V3 tier 1): fast-forwarded to BASE f69bc68a at 02:38 (no merge commit); its scout wf_ea78e1ac-572 is running, then the V-01a slice. Scouts for content (wf_10d4cc97-c2a) and game-tutorials (wf_39613665-fbc) are running too; their slots are asked, on the next 7.0 GB rows
-LANE: content NEW 680f850   # V3: V-10 (T1, after today-track's slice), V-23 (T2), V-10b (after the owner's I6); scout wf_10d4cc97-c2a (briefs/content-v3.md); slot asked. v1: MERGED 680f850
-LANE: today-track NEW f69bc68a   # V3 slot 6 granted 02:34; fast-forwarded 6b0184b..f69bc68a 02:38; scout wf_ea78e1ac-572 (brief tracks/SCREENS/briefs/today-track-v3.md); then V-01a slice, then V-01b. v1: MERGED 6b0184b (U-15..U-18, FIX-EMBED)
+STATE: BUILDING   # 2026-11-08 02:48 IST: SCREENS 1c2cf086, V3. today-track V-01a (the slice) is building on slot 6 as wf_6851b095-834 (lane.js sliceRun; args tracks/SCREENS/args/v3_tt_slice.json). The content and game-tutorials scouts are done (briefs/<lane>-v3.md); their slots are asked for the next 7.0 GB rows, after today-track's slice
+LANE: content SCOUTED 680f850   # V3 brief briefs/content-v3.md (7299 B): V-10 slice (features.status, reveal.m1, JIT tutorial, help entry), V-23 (T2), V-10b (waits for the owner's I6; default nothing cleared); slot asked. v1: MERGED 680f850
+LANE: today-track BUILDING f69bc68a   # V3 V-01a slice wf_6851b095-834 from 02:47 (slot 6; brief briefs/today-track-v3.md 13205 B, contract contracts/today-track-v3.md); then READY-SLICE <tip>, then V-01b. v1: MERGED 6b0184b
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials NEW bd2e085   # V3: V-08b (T1, after actions-sos V-08a; contract before), V-28 (T1), V-21 (T2); scout wf_39613665-fbc (briefs/game-tutorials-v3.md); slot asked. v1: MERGED bd2e085
+LANE: game-tutorials SCOUTED bd2e085   # V3 brief briefs/game-tutorials-v3.md (8990 B): V-08b slice (useSkill behind typeof; waits for actions-sos V-08a), V-28 (status dot and JIT; step text from content V-10), V-21 (T2); slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 02:42 IST
+UPDATED: 2026-11-08 02:48 IST
+
+# 2026-11-08 02:48 IST · V3 scouts done; today-track V-01a building (wf_6851b095-834)
+
+- Scouts (02:40-02:46):
+  - today-track: wf_ea78e1ac-572, brief 13205 B, contract 4218 B. V-01a needs no ui-harbor.js edit, since data-place and data-level already exist at ui-harbor.js:77-79 (f69bc68a). Today is unchanged in the slice.
+  - content: wf_10d4cc97-c2a, brief 7299 B.
+  - game-tutorials: wf_39613665-fbc, brief 8990 B.
+- The scouts' questions, defaults taken:
+  - today-track: the lesson link defaults to #/learn; the explorer item's route where known, else #/today; the strip is shown in Calm and discreet without counts.
+  - content: reveal.m1 = ['status'] gives the New dot. Engine.revealed (engine.js:589) reads any finished module's key, and the reveal keys at f69bc68a are m2-m10. The feature route is '/status', with no '#', as in FEATURE_ROUTES.
+  - game-tutorials: a refused useSkill shows the same neutral line; no Engine.newDots change; content places the tour step; a JIT aborts on leaving its feature's route; useSkill's signature from PLAN-V3 section 2 until CORE publishes the actions-sos V3 contract.
+- R-H-39 (02:45): the HUB confirmed data-test and corrected lane_args_v3.json and PLAN-V3.md section 3. The slice args were rebuilt from the corrected file.
+- Memory: 9.7 GB free at 02:47.
 
 # 2026-11-08 02:42 IST · V3: today-track slot 6, three scouts running (R-H-38)
 

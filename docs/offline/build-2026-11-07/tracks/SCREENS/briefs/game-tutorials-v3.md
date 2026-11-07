@@ -1,0 +1,47 @@
+# game-tutorials lane brief (V3, build chat SCREENS) - base f69bc68a (tag offline-v1.1)
+
+Goal. (1) A skill used in a game is credited through the new verb Actions.useSkill, not the refused recordEvent. (2) The new status page (#/status) is introduced: a tour step on its Today chip, a first-open JIT tutorial, a "New" dot while unseen. (3) The coach never paints a centred card over another screen: the tour ends as aborted when the route leaves Today; the narrow/flip popover branches get Node cases. Flagged: no. Estimate 1.9 h.
+
+## Files
+Owned: offline/src/ui-game.js (no planned edit), offline/src/ui-guidance.js, offline/src/ui-tools.js, offline/tests/game-tutorials.test.mjs. Shared at append points: none needed (styles.css only if a class is truly needed: new section "/* -- game-tutorials -- */" at the end). Do not touch: content-core.js (content V-10 adds Content.features.status, the tutorial text and the tour step), ui-today.js (today-track V-01b renders the chip with data-tour="status-open" and calls GuidanceUI.dot), ui-status.js (today-track), actions.js (actions-sos V-08a), ui-core.js, shell.html, helpers/hooks.mjs (tests-docs), docs/offline/.
+Hook attribute default: data-test for every new hook, data-tour for tour targets (tid() in helpers/hooks.mjs builds [data-testid] for CORE hooks only). This lane adds no new hook; the dot keeps data-test="new-dot" data-feature="status".
+
+## Order and slice
+V-08b (slice) -> V-28 (slice, tier 1) -> V-21 (tier 2). V-08b merges first once V-08a is merged; V-28 after today-track V-01b (or on a free slot behind typeof guards). One commit and one gate run per unit.
+
+## V-08b - credit a used skill (0.5 h, V3-08, tier 1)
+Today: ui-tools.js:307-322 helpedRow(ctx, skill) returns an empty box unless typeof A.recordEvent === 'function'; the click (:314-316) calls A.recordEvent('SkillUsed', {skillId, helpful}) in try/catch. actions.js:255 VERB_OWNED refuses SkillUsed through recordEvent, so nothing is credited (v1 Q4). helpedRow is used at :448, :493, :513, :546 with item.skill (ids at :66-75).
+Build: replace the call by A.useSkill({ skillId: skill, helpful }) behind typeof (no function: empty box as now; never fall back to recordEvent). {ok:true,event}: the existing "Noted" line (TEXT.noted, role=status). {ok:false} or a throw: the same neutral line, no error text, no red, no retry, no second path. The sent flag stays (a double tap sends once). Drill (isDrill(ctx)) records nothing. Remove the old call.
+Contract: Actions.useSkill({skillId, helpful}) -> {ok, event}; refusal throws nothing (PLAN-V3 section 2). Waits for actions-sos V-08a.
+Done when: "helped" calls useSkill once with {skillId, helpful:true}, "not now" with helpful:false; a refusal and a throw show nothing wrong; drill calls nothing; no recordEvent('SkillUsed') remains in ui-tools.js.
+Tests (Node, game-tutorials.test.mjs): "tools: a used skill is credited through Actions.useSkill with skillId and helpful"; "tools: a refused useSkill shows nothing wrong"; "tools: no useSkill, no row, no throw"; "tools: drill records nothing". Feeds browser tests that play a game and check XP (tests-docs).
+
+## V-28 - the status tour step, JIT and dot (0.4 h, V3-28, tier 1)
+Today: tutorials are Content.tutorials (content-core.js:227-); the tour has nav-today..sos-button (:228-235); targets are [data-tour] nodes found by targetOf (ui-guidance.js:~288-296); a missing target gives the centred card (place(), :309-316). featureOfRoute maps routes to features (:~68-105; Content.features[id].route wins, :90). jitFor (:161) offers a JIT for the feature of the current route when revealed and not done. dot(featureId, ctx) at :559 uses Engine.newDots(view) (engine.js:603), data-test new-dot. afterRender (:587-600) clears the dot on the first visit of a feature's route (Actions.reveal(f,{seen:true})).
+Build: (a) the tour step {target:'status-open', text} is content (V-10), text from Content.tutorials, never in code; this lane keeps the missing-target fallback working and the tour ending done/skipped. (b) JIT: Content.features.status (route '#/status') plus {kind:'jit', feature:'status'} from V-10; confirm featureOfRoute('/status') === 'status' (if neither the content route nor the built-in table at :68-95 gives it, add the entry there) and jitFor offers it on the first open once revealed. (c) Dot: GuidanceUI.dot('status', ctx) already works while Engine.newDots has 'status'; today-track calls it on the chip; afterRender clears it on the first #/status visit. No new export.
+Done when: guard "tour-target status-open" green after V-01b; featureOfRoute('/status') === 'status'; jitFor on '/status' returns the status tutorial once and not after it is done; dot('status') is a node only while unseen; the first visit marks it seen; a tour with a missing status-open target shows the centred card and finishes.
+Tests: "guidance: featureOfRoute maps /status"; "guidance: jitFor offers the status tutorial once"; "guidance: dot('status') only while unseen"; "guidance: a tour step with a missing target still ends". Feeds browser "status opens from Today in one tap" (V-01t).
+
+## V-21 - C1 and the coach after a route change (1 h, V3-21, tier 2)
+Today: coach() (ui-guidance.js:378-445) listens to hashchange and ui:rendered through onRoute (:406): it closes 'aborted' only for quiet paths (sos, lock, onboarding) or locked, else place(). A tour carried off Today re-places a step whose target is missing as a centred card over another screen's button (the board's 01:39 finding). place() (:298-340): below-target branch (vh - r.bottom > 200, :323-335: maxWidth when sos.left - 8 - left >= 200, else bottom-anchored above SOS), above-target branch (:336-340). v1 LOW C1: only the above-target branch has a Node test.
+Build: in onRoute, for a kind 'tour' tutorial, close('aborted') when !isTodayPath(pathOf(curHash())); it marks nothing, so the tour is offered again later. A JIT closes 'aborted' when featureOfRoute no longer matches its feature. Skip, Escape and tap-outside unchanged. Keep sosRect logic.
+Done when: a Node case routes a running tour to '#/track' and gets 'aborted', no TutorialCompleted write, layer removed; place() cases assert style values for (a) below-target overlapping #sos-btn with room beside (maxWidth set), (b) below-target with no room (bottom-anchored above SOS), (c) above-target.
+Tests: "coach: the tour aborts when the route leaves Today"; "coach: a JIT aborts on leaving its feature"; "coach place: narrow branch sets maxWidth"; "coach place: flip branch anchors above SOS"; "coach place: above-target unchanged". Feeds browser "tour complete", "tour skip", "tour replay" (stay green).
+
+## Contracts built on (BUILD-PLAN 3.x, PLAN-V3 sections 2, 3)
+3.2 Actions (useSkill is new, V-08a); 3.7 events and game rules (SkillUsed {skillId, helpful}; helpful false allowed; nothing decreases); 3.11 guidance (GuidanceUI: coach, replayTour, isOpen, maybeTour, featureOfRoute, training, dot); PLAN-V3 section 3 (chip hook status-open, dot "New"). Shapes for others: contracts/game-tutorials-v3.md.
+
+## Rules that bite
+SOS is never gated or interrupted by a tip or tutorial (a route to #/sos* closes the coach marking nothing; keep). Nothing decreases (a refused credit loses nothing and the person is not told "failed"). No clinical copy added or changed (content V-10 writes the tutorial words: original, grade 6 to 8, clinicalReview untouched). Text as text (no innerHTML with data). No network. Keyboard, focus restore on non-aborted close, 44 px targets, reduced motion as in v1.
+
+## Decisions that bite
+O1 names/titles unchanged. O7 no dead button: a missing chip means the centred-card fallback. O2-O6, O8: not touched. PLAN-V3 defaults: "Your Harbor"; no streak; no new write for "What just changed".
+
+## Open questions (default taken)
+1. useSkill refusal: neutral "Noted" line without a credit claim. 2. Engine.newDots for 'status': no change; content V-10 must declare the feature revealed with the Harbor. 3. Tour position of the status step is content's; this lane never reorders. 4. JIT abort rule as in V-21. 5. The actions-sos V3 contract was not in tracks/CORE/contracts at scouting: signature taken from PLAN-V3 section 2.
+
+## Gates and baselines
+python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/game-tutorials --lane game-tutorials build test validate guards (add browser --grep tour after V-21). Territory: python .../tools/check_territory.py game-tutorials f69bc68a..HEAD --wt C:/Users/ruchi/1-addic-wt/game-tutorials. Baselines (coordination/baselines.md): no named failure; a tour-target guard name is RED only until its screen merges (status-open until V-01b). The worktree is at bd2e085; fast-forward to the trunk tip when the slot is granted.
+
+## Go-aheads
+V-08b: actions-sos V-08a merged (or build behind the typeof guard with a stub). V-28: today-track V-01b and content V-10 merged for a green target guard; else guard and report. V-21: none.
