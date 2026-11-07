@@ -723,10 +723,11 @@ const UI = (function () {
         const tried = pin.value;
         pin.value = '';
         btn.disabled = true; pin.disabled = true;
-        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch(() => false);
+        let why = null;
+        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch((e) => { why = e && e.code; return false; });
         btn.disabled = false; pin.disabled = false;
         if (ok) { go('#/today', { replace: true }); return; }
-        msg.textContent = 'That PIN did not match. Try again.';
+        msg.textContent = why === 'NO_CRYPTO' ? 'A PIN is not available on this device.' : 'That PIN did not match. Try again.'; // (RC11)
         msg.hidden = false;
         pin.focus();
       },

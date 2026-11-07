@@ -1293,7 +1293,9 @@ const Store = (function () {
   // The key for this PIN, or null when it does not open the lock's check.
   async function keyFor(pin) {
     const L = state.lock;
-    if (!L || typeof pin !== 'string' || pin === '' || !subtle()) return null;
+    if (!L) return null;
+    if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be used in this browser.'); // never a wrong try (RC11)
+    if (typeof pin !== 'string' || pin === '') return null;
     try {
       const key = await derive(pin, unb64(L.salt), L.iterations || ITERATIONS);
       return (await unseal(key, 'meta', 'lock', L.check)) === CHECK ? key : null;
@@ -2681,10 +2683,11 @@ const UI = (function () {
         const tried = pin.value;
         pin.value = '';
         btn.disabled = true; pin.disabled = true;
-        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch(() => false);
+        let why = null;
+        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch((e) => { why = e && e.code; return false; });
         btn.disabled = false; pin.disabled = false;
         if (ok) { go('#/today', { replace: true }); return; }
-        msg.textContent = 'That PIN did not match. Try again.';
+        msg.textContent = why === 'NO_CRYPTO' ? 'A PIN is not available on this device.' : 'That PIN did not match. Try again.'; // (RC11)
         msg.hidden = false;
         pin.focus();
       },

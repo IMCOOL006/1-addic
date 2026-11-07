@@ -995,6 +995,21 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(group.getAttribute('aria-invalid'), null, 'no longer marked');
   });
 
+  test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
+    setup();
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true }),
+      lock: { unlock: async () => { const e = new Error('no crypto'); e.code = 'NO_CRYPTO'; throw e; } } };
+    at('#/lock');
+    await UI.render();
+    const form = main().all().find((e) => e.tagName === 'FORM');
+    main().all().find((e) => e.id === 'lock-pin').value = '2468';
+    await form.on.submit[0]({ preventDefault() {} });
+    const msg = main().all().find((e) => e.id === 'lock-msg');
+    assert.equal(msg.hidden, false);
+    assert.equal(msg.textContent, 'A PIN is not available on this device.');
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
@@ -1720,6 +1735,27 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(T.status().unreadable, 0, 'deleted on purpose, it is gone');
     await T.lock.set('2468');
     assert.equal(ev('b'), undefined, 'a deleted row is never written back');
+  });
+
+  test('RC11: without crypto.subtle, unlock, verify and remove reject with NO_CRYPTO, count no wrong try and change nothing', async () => {
+    const S = freshStore();
+    await S.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK }); });
+    await S.lock.set('2468');
+    S.lock.lockNow();
+    const real = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+    const c = globalThis.crypto;
+    Object.defineProperty(globalThis, 'crypto', { configurable: true, value: { getRandomValues: (b) => c.getRandomValues(b) } });
+    try {
+      for (const [name, call] of [['unlock', () => S.lock.unlock('2468')], ['verify', () => S.lock.verify('2468')], ['remove', () => S.lock.remove('2468')]]) {
+        await assert.rejects(call(), (e) => e.code === 'NO_CRYPTO', name);
+      }
+      assert.equal(S.status().locked, true);
+      assert.equal(S.status().hasLock, true);
+    } finally {
+      Object.defineProperty(globalThis, 'crypto', real);
+    }
+    assert.equal(await S.lock.unlock('2468'), true, 'with crypto back, the PIN opens as before');
+    assert.equal(S.view.get('events', 'e1').note, MARK);
   });
 
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {

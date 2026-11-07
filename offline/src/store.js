@@ -98,7 +98,9 @@ const Store = (function () {
   // The key for this PIN, or null when it does not open the lock's check.
   async function keyFor(pin) {
     const L = state.lock;
-    if (!L || typeof pin !== 'string' || pin === '' || !subtle()) return null;
+    if (!L) return null;
+    if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be used in this browser.'); // never a wrong try (RC11)
+    if (typeof pin !== 'string' || pin === '') return null;
     try {
       const key = await derive(pin, unb64(L.salt), L.iterations || ITERATIONS);
       return (await unseal(key, 'meta', 'lock', L.check)) === CHECK ? key : null;
