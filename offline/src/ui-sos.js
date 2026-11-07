@@ -75,8 +75,20 @@
     spiralReply: 'I can stop now. This does not erase my progress.',
     guide: ['wave', 'why', 'distract'],
   };
-  // Typed-text crisis check used only while Engine.crisisKeywords is absent: errs towards showing the numbers.
-  const CRISIS_RE = /\b(suicid\w*|kill (my ?self|me)|end (it all|my life)|want(ed)? to die|wish i (was|were) dead|better off dead|no (reason|point) (to|in) (live|living)|not want to (live|be here)|self[- ]?harm|hurt myself)\b/i;
+  // Typed-text crisis phrases (RS2), checked beside Engine.crisisKeywords, never instead of it: errs towards the numbers.
+  // The text is matched after crisisNorm: curly quotes become straight, spaces collapse; an apostrophe may be missing.
+  const CRISIS = {
+    clinicalReview: true,
+    patterns: [
+      'suicid\\w*', 'kill (my ?self|me)', 'kms', 'self[- ]?harm', '(hurt|cut|hang) my ?self', 'overdose on purpose',
+      '(want(ed)?|going) to die', 'wanna die', 'wish i (was|were) dead', 'better off dead',
+      "(do not|don'?t|not) (want|wanna)( to)? (live|be here|be alive|wake up)", "(can'?t|cannot) go on",
+      'end(ing)? (it|it all|things|my life)', 'tak(e|ing) my (own )?life',
+      'nothing to live for', 'no (reason|point)( (to|in|for))? (live|living|going on)',
+    ],
+  };
+  const CRISIS_RE = new RegExp('\\b(' + CRISIS.patterns.join('|') + ')\\b', 'i');
+  const crisisNorm = (s) => String(s).replace(/[‘’‛ʼ`´]/g, "'").replace(/\s+/g, ' ');
 
   // The craving tools: route id, skill credited (Content.skills ids), label.
   const TOOLS = [
@@ -153,9 +165,9 @@
     if (eng && typeof eng.crisisKeywords === 'function') {
       const v = safe(() => eng.crisisKeywords(s), null);
       if (v === true || (Array.isArray(v) && v.length > 0)) return true;
-      if (v === false || Array.isArray(v)) return CRISIS_RE.test(s); // the engine's list plus this one: never fewer
+      if (v === false || Array.isArray(v)) return CRISIS_RE.test(crisisNorm(s)); // the engine's list plus this one: never fewer
     }
-    return CRISIS_RE.test(s);
+    return CRISIS_RE.test(crisisNorm(s));
   }
 
   function parseSos(r) {
@@ -284,7 +296,7 @@
   }
 
   const H = {
-    COPY, FALLBACK, TOOLS, FEEL_SKILLS, WAVE_MIN,
+    COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
     telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
     reasonsFrom, deckFrom, comebacksFrom, spiralPairs, activeContacts, planFor, planSections, clock, remaining,
   };

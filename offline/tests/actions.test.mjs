@@ -1251,3 +1251,29 @@ describe('lock screen and onboarding (U-11)', () => {
     assert.doesNotMatch(ONB_SRC, /\baddicts?\b/i);
   });
 });
+
+// ── FIX-SAFETY-AS (2026-11-07, rulings 10:45): the safety-copy findings RS2 to RS9 and the two copy rulings ──
+describe('safety fixes (FIX-SAFETY-AS)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS2: typed text with common crisis phrases goes to the numbers, any apostrophe', () => {
+    const yes = [
+      "I don't want to live anymore", 'I don’t want to live', 'i dont want to live', 'I do not want to be here',
+      'dont want to be here anymore', 'I don’t want to be alive', "I don't want to wake up", 'I dont wanna live',
+      "I can't go on", 'I can’t go on like this', 'i cant go on', 'I cannot go on', 'I want to end it', 'I want to end it all',
+      'thinking of ending my life', 'ending it', 'I will take my own life', 'taking my life', 'I wanna die', 'kms',
+      'I have nothing to live for', 'there is no reason to live', 'no point living', 'I want to hurt myself', 'I cut myself',
+      'I might hang myself', 'overdose on purpose', 'I want to die', 'thinking about suicide', 'better off dead', 'I might kill myself',
+    ];
+    for (const t of yes) assert.equal(H.isCrisisText(t, null), true, t);
+    const no = [
+      '', 'tired and bored', 'I am angry at work', 'I want to live well', 'I want to be here for my kids', 'a long weekend',
+      'I can go on a walk', 'I cut down on tea', 'I hurt my knee', 'killing time', 'I spend it on food', 'lonely tonight',
+    ];
+    for (const t of no) assert.equal(H.isCrisisText(t, null), false, t);
+    assert.equal(H.isCrisisText("I can't go on", { crisisKeywords: () => [] }), true, 'never fewer than this list');
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+  });
+});
