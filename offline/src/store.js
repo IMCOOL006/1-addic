@@ -552,13 +552,16 @@ const Store = (function () {
       if (typeof pin !== 'string' || pin.length < 4 || pin.length > 64) throw fail('BAD_PIN', 'A PIN needs 4 to 64 characters.');
       if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be set in this browser.');
       const epoch = state.epoch;
+      // The rows are taken before the first wait: a lock while the key is derived empties state.rows, and a clear
+      // write of an empty set would erase every row (RC1, RS2).
+      const rows = state.rows;
       const salt = random(16);
       const key = await derive(pin, salt, ITERATIONS);
       const row = {
         key: 'lock', salt: b64(salt), iterations: ITERATIONS, check: await seal(key, 'meta', 'lock', CHECK),
         autoLockMin: minutes(opts && opts.autoLockMin), setAt: new Date().toISOString(),
       };
-      const puts = await sealAll(state.rows, key);
+      const puts = await sealAll(rows, key);
       puts.push(['meta', 'lock', row]);
       await write({ clear: true, puts, dels: [] });
       state.lock = row;

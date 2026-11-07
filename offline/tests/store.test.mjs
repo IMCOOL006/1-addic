@@ -982,4 +982,36 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.status().locked, true);
     assert.deepEqual(heard, ['auto', 'auto']);
   });
+
+  test('RC1, RS2: a lock while a new PIN is derived erases nothing; the change completes and the new PIN opens every row', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    await addRows(S);
+    await S.lock.set('1357');
+    const sub = globalThis.crypto.subtle;
+    let hook = () => S.lock.lockNow(); // the idle timer, or 'Lock now', fires while the new key is derived
+    sub.deriveKey = async function (...a) {
+      const k = await Object.getPrototypeOf(sub).deriveKey.apply(this, a);
+      const f = hook;
+      hook = null;
+      if (f) f();
+      return k;
+    };
+    try {
+      await S.lock.set('2468');
+    } finally {
+      delete sub.deriveKey;
+    }
+    assert.equal(hook, null, 'the lock fired inside the derivation');
+    assert.equal(S.status().locked, true);
+    assert.equal(idb.rows('events').length, 2, 'no row erased');
+    assert.ok(!idb.dump().includes(MARK), 'every row still sealed');
+    const R = freshStore(); // a reload
+    await R.load();
+    assert.equal(await R.lock.unlock('1357'), false, 'the old PIN no longer opens');
+    assert.equal(await R.lock.unlock('2468'), true);
+    assert.equal(R.view.get('profile', 'me').name, 'Asha ' + MARK);
+    assert.equal(R.view.count('events'), 2);
+  });
 });
