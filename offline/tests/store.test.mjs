@@ -852,6 +852,82 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     UI.applyTheme('system');
     assert.equal(theme(), 'light', 'SOS by day follows the device');
   });
+
+  // querySelector by tag (with one optional [attr]) inside this stand-in DOM, for the form tests only.
+  const findIn = (doc) => {
+    Object.getPrototypeOf(doc.body).querySelector = function (sel) {
+      const want = sel.split(',').map((s) => s.trim().match(/^([a-z]+)(?:\[([a-z-]+)\])?$/)).filter(Boolean);
+      return this.all().slice(1).find((e) => want.some(([, tag, attr]) => e.tagName === tag.toUpperCase() && (!attr || e.getAttribute(attr) !== null))) || null;
+    };
+  };
+
+  test('RC7: UI.form: validate marks every empty required field and focuses the first; number bounds; values() and set()', () => {
+    setup();
+    findIn(globalThis.document);
+    const f = UI.form({ fields: [
+      { name: 'name', type: 'text', label: 'Name', required: true },
+      { name: 'feel', type: 'chips', label: 'Feeling', required: true, options: [{ value: 'calm', label: 'Calm' }, { value: 'tense', label: 'Tense' }] },
+      { name: 'pick', type: 'radio', label: 'Pick one', required: true, options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] },
+      { name: 'agree', type: 'checkbox', label: 'I agree', required: true },
+      { name: 'n', type: 'number', label: 'How strong', min: 1, max: 10 },
+    ] });
+    const field = (name) => f.el.children.find((e) => e.dataset.name === name);
+    const ctl = (name) => field(name).all().find((e) => e.tagName === 'INPUT');
+    const shown = (name) => field(name).all().some((e) => e.getAttribute('class') === 'field-error' && !e.hidden);
+    f.set('n', null);
+    assert.equal(f.validate(), false);
+    for (const n of ['name', 'feel', 'pick', 'agree']) assert.equal(shown(n), true, n + ' says what is missing');
+    for (const n of ['name', 'pick', 'agree']) assert.equal(ctl(n).getAttribute('aria-invalid'), 'true', n + ' is marked invalid');
+    assert.equal(shown('n'), false, 'an empty number that is not required is fine');
+    assert.equal(document.activeElement, ctl('name'), 'the first failing field takes focus');
+    f.set('name', 'Asha');
+    f.set('feel', ['calm']);
+    f.set('pick', 'b');
+    f.set('agree', true);
+    f.set('n', 0);
+    assert.equal(f.validate(), false);
+    assert.match(field('n').textContent, /smallest is 1/);
+    assert.equal(document.activeElement, ctl('n'));
+    for (const n of ['name', 'pick', 'agree']) assert.equal(ctl(n).getAttribute('aria-invalid'), null, n + ' is no longer marked');
+    assert.equal(shown('feel'), false);
+    f.set('n', 11);
+    assert.equal(f.validate(), false);
+    assert.match(field('n').textContent, /largest is 10/);
+    f.set('n', 7);
+    assert.equal(f.validate(), true);
+    const all = { name: 'Asha', feel: ['calm'], pick: 'b', agree: true, n: 7 };
+    assert.deepEqual(f.values(), all);
+    f.set('nope', 'x'); // a name the form does not have changes nothing
+    assert.deepEqual(f.values(), all);
+  });
+
+  test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    const ask = () => UI.confirm({ title: 'Delete this line?', confirmLabel: 'Delete', cancelLabel: 'Keep it', danger: true });
+    let a = ask();
+    assert.equal(document.activeElement, button(dlg, 'Keep it'), 'focus starts on the safe answer');
+    button(dlg, 'Delete').on.click[0]();
+    dlg.flush();
+    assert.equal(await a, true, 'the confirm button');
+    a = ask();
+    button(dlg, 'Keep it').on.click[0]();
+    dlg.flush();
+    assert.equal(await a, false, 'Cancel');
+    a = ask();
+    dlg.all().find((e) => e.tagName === 'BUTTON' && e.getAttribute('aria-label') === 'Close').on.click[0]();
+    dlg.flush();
+    assert.equal(await a, false, 'the close button');
+    a = ask();
+    for (const fn of [].concat(dlg.on.click || [])) fn({ target: dlg });
+    dlg.flush();
+    assert.equal(await a, false, 'a tap on the backdrop');
+    a = ask();
+    dlg.escape();
+    dlg.flush();
+    assert.equal(await a, false, 'Esc');
+    assert.equal(dlg.open, false);
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
