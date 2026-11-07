@@ -10,6 +10,7 @@
     "build": "node offline/build.mjs",
     "test": "node -e \"const fs=require('fs'),d='offline/tests',f=fs.existsSync(d)?fs.readdirSync(d).filter(n=>n.endsWith('.test.mjs')&&n!=='browser.test.mjs').sort().map(n=>d+'/'+n):[];if(!f.length){console.log('no tests in '+d);process.exit(0)}const r=require('child_process').spawnSync(process.execPath,['--test',...f],{stdio:'inherit'});process.exit(r.status===null?1:r.status)\"",
     "test:browser": "node offline/tests/helpers/run-browser.mjs",
+    "screens": "node offline/tests/screens.mjs",
     "check": "npm run build && npm test && npm run test:browser && python offline/docs/build_guide.py"
   },
   "devDependencies": {

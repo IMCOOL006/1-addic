@@ -12,9 +12,10 @@ See `CLAUDE.md` for how cloud sessions are configured. Dependencies are installe
 
 ## Offline edition
 
-`offline/1-addic.html` is the whole app in one file: it opens from `file://` on a phone or a computer, works with no network, and is built to keep every record in that browser on that device (the data layer that saves them is planned). How to build it, put it on a phone, back it up and read the saved label: [`offline/README.md`](offline/README.md). The decision is [ADR 0022](docs/decisions/0022-offline-edition.md).
+`offline/1-addic.html` is the whole app in one file: it opens from `file://` on a phone or a computer, works with no network, and keeps every record in that browser on that device. How to build it, put it on a phone, back it up and read the saved label: [`offline/README.md`](offline/README.md). The decision is [ADR 0022](docs/decisions/0022-offline-edition.md).
 
 - `npm run build` builds the file from `offline/src/`.
 - `npm test` runs the Node tests; `npm run test:browser` runs the browser flows (Chrome or Chromium, offline, 390 px).
+- `npm run screens` writes the guide's screenshots to `offline/docs/images/` from the built file.
 - `npm run check` runs build, tests, the browser flows and the guide (`python offline/docs/build_guide.py`).
 - The guide: `offline/docs/1-addic-Guide.md`, built to `offline/docs/1-addic-Guide.docx`.

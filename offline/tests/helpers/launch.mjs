@@ -39,10 +39,10 @@ export async function launch({ headless = true } = {}) {
 export async function newPage(browser, opts = {}) {
   const {
     offline = true, viewport = PHONE, mobile = true, colorScheme = 'light', reducedMotion = 'reduce',
-    clock = false, print = true,
+    clock = false, print = true, scale = 2,
   } = opts;
   const context = await browser.newContext({
-    viewport, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 2, serviceWorkers: 'block',
+    viewport, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: scale, serviceWorkers: 'block',
     colorScheme, reducedMotion, acceptDownloads: true, locale: 'en-IN',
   });
   const problems = { console: [], pageerror: [], requests: [] };
