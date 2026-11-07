@@ -119,7 +119,7 @@
 - Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 22:33.
 - Per lane: content 680f850, today-track a02f121, workbook-settings 0e76065 and actions 0977edd are MERGED. game-tutorials bd2e085 is READY for the HUB (real cut base 9f3026c6; FIX-TOUR mends the trunk's tour hang, R-S-15). Every SCREENS unit is built.
 - NEXT, by name only:
-  - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track.
+  - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track. Args ready: tracks/SCREENS/args/args_tt_embed.json (replace @NOW@ in now and laneNote; base 1ef2482e, slot 5, diffFrom a02f121). Launch on the HUB's grant line on a 7.0 GB row.
   - workbook-settings C1 (the sample round trip) after actions-sos READY merges.
   - LOWs: game-tutorials C1, content C2-C4 (offline-v1.1).
   - Answer any red the HUB sends back within the hour, two rounds at most.
