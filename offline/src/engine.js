@@ -322,8 +322,9 @@ const Engine = (() => {
     }
     return out;
   }
-  /* The highest Content.ranks row whose `when` holds, or null. `explorer`: ExplorerCompleted.
-     U-06 adds the all-12-Explorer-items path through `view`. `mN`: module mN is done. */
+  /* The highest Content.ranks row whose `when` holds, or null. `explorer`: ExplorerCompleted (the
+     UI logs it when explorerDone(view) first holds; the 12 items alone are not used here, since a
+     removed plan would un-tick one and a rank never falls). `mN`: module mN is done. */
   function rank(events, view) {
     const ev = normEvents(events);
     const mods = modulesDone(ev);
@@ -480,6 +481,389 @@ const Engine = (() => {
     };
   }
 
+  /* ── shared readers for rows (U-06) ──────────────────────────────────────────────────────── */
+
+  /* Strings from a payload value: a string, a list, or rows carrying text/label/value/name. */
+  function textsOf(v, depth = 0) {
+    if (v == null || depth > 3) return [];
+    if (typeof v === 'string') return v.trim() ? [v.trim()] : [];
+    if (Array.isArray(v)) return v.flatMap((x) => textsOf(x, depth + 1));
+    if (typeof v === 'object') {
+      for (const k of ['text', 'label', 'value', 'name', 'reason', 'item']) if (typeof v[k] === 'string' && v[k].trim()) return [v[k].trim()];
+    }
+    return [];
+  }
+  function uniq(list) {
+    const seen = new Set();
+    return list.filter((s) => { const k = s.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+  }
+  /* The texts under the first of `keys` present in a payload (a bare list counts as the value). */
+  function pickTexts(payload, keys) {
+    if (Array.isArray(payload)) return uniq(textsOf(payload));
+    const p = (payload && typeof payload === 'object') ? payload : {};
+    return uniq(keys.flatMap((k) => (own(p, k) ? textsOf(p[k]) : [])));
+  }
+  function allTexts(payload) {
+    if (Array.isArray(payload)) return uniq(textsOf(payload));
+    const p = (payload && typeof payload === 'object') ? payload : {};
+    return uniq(Object.keys(p).flatMap((k) => textsOf(p[k])));
+  }
+  const strOf = (x) => (typeof x === 'string' ? x.trim() : '');
+  const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const weekday = (ds) => new Date(utcMs(ds)).getUTCDay();
+  /* Real logs only (a drill writes none, and any row marked drill is ignored), with date and hour. */
+  function logsOf(view) {
+    return rowsOf(view, 'logs').filter((l) => !l.drill && typeof l.type === 'string' && !isNaN(msOf(l.at))).map((l) => Object.assign({}, l, {
+      date: DATE_RE.test(String(l.date || '')) ? l.date : dateStr(l.at),
+      hour: (Number.isInteger(l.hour) && l.hour >= 0 && l.hour <= 23) ? l.hour : hourOf(l.at),
+    })).sort(byAt);
+  }
+  const checkinOf = (l) => ((l.checkin && typeof l.checkin === 'object') ? l.checkin : {});
+  const eveningCheckins = (view) => logsOf(view).filter((l) => l.type === 'checkin' && checkinOf(l).kind === 'evening');
+  const safetyNets = (view, activeOnly) => rowsOf(view, 'contacts').filter((c) => c.role === 'safetyNet' && (!activeOnly || c.active !== false));
+  const doneEvents = (view, type) => normEvents(view).filter((e) => e.type === type);
+
+  /* ── roadmap (BUILD-PLAN 3.2; the UI never says "overdue") ───────────────────────────────── */
+
+  function paceOf(profile) {
+    const p = profile || {};
+    const paces = arr(C.paces);
+    const pace = paces.find((x) => x.id === p.pace) || paces.find((x) => x.id === 'steady') || { id: 'steady', perWeek: 1 };
+    let perWeek = pace.perWeek;
+    if (perWeek === null || perWeek === undefined) perWeek = Number(p.customPerWeek) > 0 ? Number(p.customPerWeek) : 1;
+    return { id: pace.id, perWeek: Number(perWeek) || 0 };
+  }
+  /* Modules in Content order, `perWeek` per week from the week of roadmapStart. Free pace: the order
+     and progress only (no weeks, no dates). behindWeeks counts weeks since the current module's
+     planned week, never below 0. `lessonsDone` (optional) narrows focus.lessonsLeft. */
+  function roadmap(profile, modulesDoneSet, now, lessonsDoneSet) {
+    const p = profile || {};
+    const done = new Set(modulesDoneSet ? [...modulesDoneSet] : []);
+    const lessons = new Set(lessonsDoneSet ? [...lessonsDoneSet] : []);
+    const mods = arr(C.modules);
+    const order = mods.map((m) => m.id);
+    const pace = paceOf(p);
+    const free = pace.perWeek <= 0;
+    const todo = order.filter((id) => !done.has(id));
+    const current = todo[0] || null;
+    const next = todo[1] || null;
+    const cur = mods.find((m) => m.id === current);
+    const left = cur ? arr(cur.lessons).filter((l) => !lessons.has(l.id)) : [];
+    const focus = cur ? { moduleId: cur.id, lessonsLeft: left.length, minutes: left.reduce((s, l) => s + (Number(l.minutes) || 0), 0), practiceGoal: cur.practiceGoal || null }
+      : { moduleId: null, lessonsLeft: 0, minutes: 0, practiceGoal: null };
+    if (free) return { order, weeks: [], current, next, focus, behindWeeks: 0, free: true };
+    const today = todayStr(now);
+    const startDay = dateStr(p.roadmapStart || p.onboardedAt || today) || today;
+    const anchor = weekStart(startDay);
+    const weekOf = (i) => Math.floor(i / pace.perWeek + 1e-9);
+    const byWeek = new Map();
+    order.forEach((id, i) => {
+      const w = weekOf(i);
+      if (!byWeek.has(w)) byWeek.set(w, []);
+      byWeek.get(w).push(id);
+    });
+    const weeks = [...byWeek.keys()].sort((a, b) => a - b).map((w) => {
+      const ids = byWeek.get(w);
+      return { start: addDays(anchor, w * 7), moduleIds: ids, done: ids.every((id) => done.has(id)) };
+    });
+    const nowWeek = Math.floor(daysBetween(anchor, weekStart(today)) / 7);
+    const behindWeeks = current ? Math.max(0, nowWeek - weekOf(order.indexOf(current))) : 0;
+    return { order, weeks, current, next, focus, behindWeeks, free: false };
+  }
+  /* The first lesson, in module and lesson order, without a LessonCompleted; null when all are done. */
+  function nextLesson(view) {
+    const done = lessonsDone(view);
+    for (const m of arr(C.modules)) for (const l of arr(m.lessons)) if (!done.has(l.id)) return l;
+    return null;
+  }
+
+  /* ── progressive reveal (3.11) ───────────────────────────────────────────────────────────── */
+
+  function revealed(view) {
+    const rv = C.reveal || {};
+    const out = new Set(arr(rv.always));
+    for (const mid of modulesDone(view)) for (const f of arr(rv[mid])) out.add(f);
+    for (const r of rowsOf(view, 'reveals')) if (typeof r.id === 'string' && r.id) out.add(r.id);
+    const settings = rowOf(view, 'settings', 'app') || {};
+    if (settings.showAll === true) {
+      for (const f of Object.keys(C.features || {})) out.add(f);
+      for (const k of Object.keys(rv)) for (const f of arr(rv[k])) out.add(f);
+    }
+    return out;
+  }
+  function isRevealed(view, featureId) { return revealed(view).has(featureId); }
+  /* "New" dots: revealed features beyond the day-one set that have no seenAt yet. */
+  function newDots(view) {
+    const always = new Set(arr((C.reveal || {}).always));
+    const seen = new Set(rowsOf(view, 'reveals').filter((r) => r.seenAt).map((r) => r.id));
+    return new Set([...revealed(view)].filter((f) => !always.has(f) && !seen.has(f)));
+  }
+
+  /* ── Explorer checklist (3.11): the 12 items, each derived from rows and events ──────────── */
+
+  function tutorialDone(view, tid, allowSkipped) {
+    const row = rowsOf(view, 'tutorials').find((r) => r.id === tid);
+    if (row && row.completedAt && (allowSkipped || row.skipped !== true)) return true;
+    return doneEvents(view, 'TutorialCompleted').some((e) => pl(e).id === tid && (allowSkipped || pl(e).skipped !== true));
+  }
+  function explorer(view) {
+    const ev = normEvents(view);
+    const logs = logsOf(view);
+    const profile = rowOf(view, 'profile', 'me') || {};
+    const plans = rowsOf(view, 'plans');
+    const checks = {
+      tour: () => tutorialDone(view, 'tour', false),
+      drill: () => tutorialDone(view, 'drill', true),
+      reasons: () => responsesFor(view, 'quick-reasons').length > 0,
+      safetyNet: () => safetyNets(view, true).length > 0,
+      log: () => logs.some((l) => l.type === 'craving' || l.type === 'feeling') || ev.some((e) => e.type === 'LogCreated' && ['craving', 'feeling'].includes(pl(e).type)),
+      checkin: () => logs.some((l) => l.type === 'checkin' && checkinOf(l).kind === 'evening') || ev.some((e) => e.type === 'CheckinCompleted' && pl(e).kind === 'evening'),
+      lesson: () => ev.some((e) => e.type === 'LessonCompleted'),
+      workbook: () => rowsOf(view, 'reveals').some((r) => r.id === 'workbook' && r.seenAt),
+      plan: () => plans.length > 0,
+      breathe: () => ev.some((e) => e.type === 'ExerciseDone' && pl(e).exerciseId === 'breathing'),
+      wantTo: () => plans.some((x) => x.kind === 'want'),
+      pace: () => typeof profile.pace === 'string' && profile.pace !== '',
+    };
+    return arr(C.explorer).map((it) => ({ id: it.id, label: it.label, done: own(checks, it.id) ? checks[it.id]() === true : false }));
+  }
+  /* Done once ExplorerCompleted is logged (append-only, so it stays done) or all 12 items hold. */
+  function explorerDone(view) {
+    if (doneEvents(view, 'ExplorerCompleted').length) return true;
+    const items = explorer(view);
+    return items.length > 0 && items.every((x) => x.done);
+  }
+
+  /* ── quests (Content.quests): ticked steps, plus the steps the data proves ───────────────── */
+
+  function questDerived(view) {
+    const nights = new Set(eveningCheckins(view).map((l) => l.date)).size;
+    const preds = rowsOf(view, 'predictions').filter((x) => x.completedAt || (x.actual !== null && x.actual !== undefined)).length;
+    const reached = doneEvents(view, 'ContactReached').length;
+    const meeting = logsOf(view).some((l) => (l.type === 'activity' && l.activity && l.activity.kind === 'meeting') || (l.type === 'checkin' && checkinOf(l).meeting === true));
+    const d = {
+      'seven-days': {}, 'prediction-lab': {},
+      /* nets counts Safety Nets ever added, as net-weaver does, so a step never un-ticks */
+      crew: { nets: safetyNets(view, false).length >= 3, reach1: reached >= 1, reach2: reached >= 2, meeting },
+    };
+    for (let i = 1; i <= 7; i++) d['seven-days']['c' + i] = nights >= i;
+    for (let i = 1; i <= 5; i++) d['prediction-lab']['p' + i] = preds >= i;
+    return d;
+  }
+  function quests(view) {
+    const derived = questDerived(view);
+    const out = {};
+    for (const q of arr(C.quests)) {
+      const row = rowsOf(view, 'quests').find((r) => r.id === q.id) || {};
+      const ticks = (row.ticks && typeof row.ticks === 'object') ? row.ticks : {};
+      const dq = derived[q.id] || {};
+      const steps = arr(q.steps).map((s) => ({ id: s.id, label: s.label, done: Boolean(ticks[s.id]) || dq[s.id] === true }));
+      const done = steps.filter((s) => s.done).length;
+      out[q.id] = { steps, done, total: steps.length, complete: Boolean(row.completedAt) || (steps.length > 0 && done === steps.length) };
+    }
+    return out;
+  }
+
+  /* ── artifacts: the latest non-draft response is the artifact ────────────────────────────── */
+
+  function latest(view, exerciseId) {
+    const rows = responsesFor(view, exerciseId);
+    return rows.length ? rows[rows.length - 1] : null;
+  }
+  function history(view, exerciseId) { return responsesFor(view, exerciseId).slice().reverse(); }
+  const payloadOf = (r) => (r && r.payload && typeof r.payload === 'object') ? r.payload : {};
+  /* The Reasons Card in its four lists (3.2): quick reasons, drawbacks of using and benefits of
+     changing (balance), and what would be different (four-lenses). */
+  function reasonsCardSections(view) {
+    const q = latest(view, 'quick-reasons');
+    const b = payloadOf(latest(view, 'balance'));
+    const f = payloadOf(latest(view, 'four-lenses'));
+    let quick = pickTexts(q && q.payload, ['reasons', 'quick', 'items', 'list']);
+    if (!quick.length && q) quick = allTexts(q.payload);
+    return {
+      quick,
+      drawbacks: pickTexts(b, ['drawbacks', 'usingCons', 'cons']),
+      benefits: pickTexts(b, ['benefits', 'changePros', 'pros']),
+      different: pickTexts(f, ['different', 'differences', 'future']),
+    };
+  }
+  /* The contract shape SOS reads (CORE 09:33): every reason as one list, in the 3.2 order. */
+  function reasonsCard(view) {
+    const s = reasonsCardSections(view);
+    return uniq([...s.quick, ...s.drawbacks, ...s.benefits, ...s.different]);
+  }
+  /* Comebacks from Put It On Trial: the closing statement answers the thought; newest first. */
+  function comebackRows(view) {
+    return history(view, 'trial').map((r) => {
+      const p = payloadOf(r);
+      const response = strOf(p.comeback) || strOf(p.closing) || strOf(p.verdict) || strOf(p.response) || strOf(p.reply);
+      return { thought: strOf(p.thought), response, at: r.at };
+    }).filter((c) => c.response);
+  }
+  function comebacks(view) { return uniq(comebackRows(view).map((c) => c.response)); }
+  /* The person's own distractions, else the catalog's. */
+  function distractionDeck(view) {
+    const r = latest(view, 'distractions');
+    let own = pickTexts(r && r.payload, ['distractions', 'deck', 'picks', 'items', 'own', 'custom']);
+    if (!own.length && r) own = allTexts(r.payload);
+    return own.length ? own : uniq(textsOf(C.catalogs && C.catalogs.distractions));
+  }
+  /* The person's spiral thoughts with their replies; a missing reply takes a slip self-talk line. */
+  function spiralThoughts(view) {
+    const p = payloadOf(latest(view, 'spiral'));
+    const replies = textsOf(C.catalogs && C.catalogs.slipSelfTalk);
+    let pairs = arr(p.pairs).map((x) => (typeof x === 'string' ? { thought: x.trim(), reply: '' }
+      : { thought: strOf(x && x.thought), reply: strOf(x && (x.reply || x.rebuttal || x.answer)) }));
+    if (!pairs.length) {
+      const own = arr(p.replies);
+      pairs = pickTexts(p, ['thoughts', 'items', 'checked', 'picks']).map((t, i) => ({ thought: t, reply: strOf(own[i]) }));
+    }
+    return pairs.filter((x) => x.thought).map((x, i) => ({ thought: x.thought, reply: x.reply || replies[i % (replies.length || 1)] || '' }));
+  }
+  /* Trigger chips: the catalog plus the person's own, flagged from the latest `triggers` response
+     (experienced = mine, frequent = starred, anger = tagged); frequent first, then mine, then the rest. */
+  function triggerChips(view) {
+    const cat = (C.catalogs && C.catalogs.triggers) || {};
+    const chips = [];
+    const byKey = new Map();
+    const add = (kind, label) => {
+      const l = strOf(label);
+      if (!l) return null;
+      const key = kind + ':' + slug(l);
+      if (!byKey.has(key)) { const c = { id: key, label: l, kind, frequent: false, anger: false, mine: false }; byKey.set(key, c); chips.push(c); }
+      return byKey.get(key);
+    };
+    for (const kind of Object.keys(cat)) for (const l of textsOf(cat[kind])) add(kind, l);
+    const p = payloadOf(latest(view, 'triggers'));
+    const lists = { frequent: new Set(pickTexts(p, ['frequent', 'starred']).map((s) => s.toLowerCase())), anger: new Set(pickTexts(p, ['anger', 'angerTriggers']).map((s) => s.toLowerCase())) };
+    const mark = (c, x) => {
+      if (!c) return;
+      c.mine = true;
+      if ((x && x.frequent === true) || lists.frequent.has(c.label.toLowerCase())) c.frequent = true;
+      if ((x && x.anger === true) || lists.anger.has(c.label.toLowerCase())) c.anger = true;
+    };
+    for (const x of arr(p.items)) if (x && typeof x === 'object') mark(add(strOf(x.kind) || 'custom', x.label || x.text), x);
+    for (const kind of Object.keys(cat).concat(['custom'])) for (const x of arr(p[kind])) mark(add(kind, typeof x === 'string' ? x : x && (x.label || x.text)), typeof x === 'object' ? x : null);
+    for (const c of chips) if (!c.mine && (c.frequent || c.anger)) c.mine = true;
+    const rank = (c) => (c.frequent ? 0 : c.mine ? 1 : 2);
+    return chips.map((c, i) => [c, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map((x) => x[0]);
+  }
+
+  /* ── skill ranking (shared by the plan prefill and U-07 insights): mean helpful x ln(uses+1);
+     a skill never rated counts as 0.5 (neutral) so a used skill is not dropped for lack of a rating */
+  function rankSkills(view) {
+    const m = mastery(view);
+    return Object.keys(m).map((sid) => {
+      const s = arr(C.skills).find((x) => x.id === sid) || {};
+      const h = m[sid].helpfulAvg === null ? 0.5 : m[sid].helpfulAvg;
+      return { skillId: sid, name: s.name || sid, kind: s.kind || null, region: s.region || null, uses: m[sid].uses, helpfulAvg: m[sid].helpfulAvg,
+        score: Math.round(h * Math.log(m[sid].uses + 1) * 1000) / 1000 };
+    }).sort((a, b) => (b.score - a.score) || (b.uses - a.uses) || cmpStr(a.skillId, b.skillId));
+  }
+  /* Trigger ids counted over craving logs, most frequent first (ties by first seen). */
+  function triggerCounts(view) {
+    const counts = new Map();
+    for (const l of logsOf(view)) if (l.type === 'craving') for (const t of arr(l.triggerIds)) if (typeof t === 'string' && t) counts.set(t, (counts.get(t) || 0) + 1);
+    return [...counts.entries()].map(([tid, count], i) => ({ id: tid, count, i })).sort((a, b) => (b.count - a.count) || (a.i - b.i)).map(({ id: tid, count }) => ({ id: tid, count }));
+  }
+  function chipLabel(chips, tid) {
+    const c = chips.find((x) => x.id === tid);
+    return c ? c.label : String(tid).replace(/^[a-z]+:/, '').replace(/-/g, ' ');
+  }
+
+  /* ── tips (3.11): one a day, Today only, never on an SOS route, switchable, none repeated
+     within 14 days; the first rule that holds, in content order ──────────────────────────── */
+
+  const TIP_RULES = {
+    /* a red-flag craving log in the last 14 days and no trial response since it */
+    redFlagLogNoTrial: (x) => {
+      const flagged = x.logs.filter((l) => l.type === 'craving' && (l.redFlag || strOf(l.thought)) && l.date >= x.minus(13));
+      if (!flagged.length) return false;
+      const last = flagged[flagged.length - 1];
+      return !responsesFor(x.view, 'trial').some((r) => msOf(r.at) >= msOf(last.at));
+    },
+    /* 3 or more craving logs from 18:00 in the last 14 days and nothing planned for today */
+    eveningCravings: (x) => x.logs.filter((l) => l.type === 'craving' && l.hour >= 18 && l.date >= x.minus(13)).length >= 3
+      && !rowsOf(x.view, 'plans').some((p) => p.date === x.today),
+    /* fewer than 3 reasons on the Reasons Card */
+    thinReasons: (x) => reasonsCard(x.view).length < 3,
+    /* exactly one active Safety Net */
+    oneSafetyNet: (x) => safetyNets(x.view, true).length === 1,
+    /* no practice (ExerciseDone of kind practice, or MindfulMinute) in the last 7 days */
+    noPractice: (x) => !x.ev.some((e) => (e.type === 'MindfulMinute' || (e.type === 'ExerciseDone' && pl(e).kind === 'practice')) && dateStr(e.at) >= x.minus(6)),
+    /* 10 or more rows worth keeping and no backup in the last 30 days */
+    noBackup: (x) => (x.ev.length + x.logs.length) >= 10 && (!x.settings.lastBackupAt || isNaN(msOf(x.settings.lastBackupAt)) || dateStr(x.settings.lastBackupAt) < x.minus(29)),
+    /* fewer than 3 days of momentum, for someone who has started (at least one event) */
+    lowMomentum: (x) => x.ev.length > 0 && momentum(x.ev, x.now).days < 3,
+    /* no want-to planned for today or the next 6 days */
+    noWantTo: (x) => !rowsOf(x.view, 'plans').some((p) => p.kind === 'want' && p.date >= x.today && p.date <= addDays(x.today, 6)),
+    /* today is the review day and no Weekly Review in the last 6 days */
+    reviewDue: (x) => weekday(x.today) === (Number.isInteger(x.profile.reviewDay) ? x.profile.reviewDay : 0)
+      && !x.ev.some((e) => e.type === 'WeeklyReviewCompleted' && dateStr(e.at) >= x.minus(6)),
+  };
+  function pickTip(view, now, ctx) {
+    const route = ctx && typeof ctx.route === 'string' ? ctx.route : '';
+    if (route.startsWith('#/sos')) return null;
+    const settings = rowOf(view, 'settings', 'app') || {};
+    const today = todayStr(now);
+    if (settings.tips === false || settings.lastTipDay === today) return null;
+    const shown = rowsOf(view, 'tips').filter((t) => !isNaN(msOf(t.shownAt)));
+    if (shown.some((t) => dateStr(t.shownAt) === today)) return null;
+    const recent = new Set(shown.filter((t) => daysBetween(dateStr(t.shownAt), today) < 14).map((t) => t.id));
+    const x = { view, now, today, settings, profile: rowOf(view, 'profile', 'me') || {}, ev: normEvents(view), logs: logsOf(view), minus: (k) => addDays(today, -k) };
+    for (const tip of arr(C.tips)) {
+      if (recent.has(tip.id) || !own(TIP_RULES, tip.when)) continue;
+      if (TIP_RULES[tip.when](x) === true) return Object.assign({}, tip);
+    }
+    return null;
+  }
+
+  /* ── My Recovery Plan prefill (3.10): nine sections, each a list of strings, unconfirmed ─── */
+
+  const ROLE_WORD = { safetyNet: 'Safety Net', sponsor: 'sponsor', therapist: 'therapist' };
+  function prefillRecoveryPlan(view, now) {
+    const sec = (items) => ({ items: uniq(items.filter((s) => typeof s === 'string' && s.trim()).map((s) => s.trim())), confirmed: false });
+    const ranked = rankSkills(view).filter((s) => s.score > 0);
+    const topKind = (kind, n) => ranked.filter((s) => s.kind === kind).slice(0, n).map((s) => s.name);
+    const mot = rowsOf(view, 'motivation').filter((r) => !isNaN(msOf(r.at))).sort(byAt);
+    const lastPlus = [...mot].reverse().map((r) => strOf(r.plusOne)).find(Boolean);
+    const people = rowsOf(view, 'contacts').filter((c) => c.active !== false && own(ROLE_WORD, c.role) && strOf(c.name))
+      .map((c) => `${strOf(c.name)} (${ROLE_WORD[c.role]})`);
+    const chips = triggerChips(view);
+    const triggers = chips.filter((c) => c.frequent).map((c) => c.label).concat(triggerCounts(view).slice(0, 5).map((t) => chipLabel(chips, t.id)));
+    const ws = payloadOf(latest(view, 'warning-signs'));
+    const signs = arr(C.catalogs && C.catalogs.warningSigns);
+    const warnings = arr(ws.top || ws.picks || ws.topN).slice(0, 3).map((x) => {
+      const sid = typeof x === 'string' ? x : x && (x.id || x.sign || x.signId);
+      const label = (signs.find((s) => s.id === sid) || {}).label || strOf(x && x.label) || strOf(sid);
+      const plan = strOf(x && x.plan);
+      return label ? (plan ? `${label}: ${plan}` : label) : '';
+    });
+    const risky = new Map();
+    for (const pi of rowsOf(view, 'plans').filter((p) => p.battlePlan && typeof p.battlePlan === 'object')) {
+      const situation = strOf(pi.battlePlan.situation) || strOf(pi.title);
+      if (!situation) continue;
+      const k = situation.toLowerCase();
+      const cur = risky.get(k) || { situation, plan: '', count: 0, date: '' };
+      cur.count += 1;
+      if (String(pi.date || '') >= cur.date) { cur.date = String(pi.date || ''); cur.plan = strOf(pi.battlePlan.plan) || cur.plan; }
+      risky.set(k, cur);
+    }
+    const battlePlans = [...risky.values()].sort((a, b) => (b.count - a.count) || cmpStr(b.date, a.date)).map((r) => (r.plan ? `${r.situation}: ${r.plan}` : r.situation));
+    const support = pickTexts(payloadOf(latest(view, 'slip-review')), ['support']).concat(pickTexts(payloadOf(latest(view, 'expand-network')), ['support']));
+    return {
+      motivation: sec(reasonsCard(view).concat(lastPlus ? [lastPlus] : [])),
+      wellness: sec(topKind('wellness', 6)),
+      situation: sec(topKind('situation', 6)),
+      people: sec(people),
+      mood: sec(topKind('mood', 3)),
+      triggers: sec(triggers),
+      warnings: sec(warnings),
+      battlePlans: sec(battlePlans),
+      support: sec(support),
+    };
+  }
+
   /* ── views ───────────────────────────────────────────────────────────────────────────────── */
 
   /* A Store.view-shaped object over plain rows: {get(store,id), list(store), count(store)}. */
@@ -500,6 +884,9 @@ const Engine = (() => {
     id, todayStr, dateStr, addDays, daysBetween, weekStart, fmtDate, fmtTime, fmtDateTime, hourOf, isNight,
     term, greeting, companionName,
     xpFromEvents, mastery, regionLevels, momentum, rank, badges, modulesDone, lessonsDone, counters, gameState,
+    roadmap, nextLesson, revealed, isRevealed, newDots, explorer, explorerDone, pickTip, quests,
+    latest, history, reasonsCard, reasonsCardSections, comebacks, comebackRows, distractionDeck, spiralThoughts, triggerChips,
+    prefillRecoveryPlan,
     makeView, STORES,
   };
 })();
