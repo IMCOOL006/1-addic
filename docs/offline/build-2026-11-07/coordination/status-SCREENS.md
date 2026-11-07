@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: HANDOVER   # 2026-11-07 19:11 IST: parked on the owner's word (usage limit; the first HUB stops the launcher loop; the owner restarts it). No run live. READY for the HUB: actions 0977edd (complete). game-tutorials at 1ea2ebf: the re-check first (tracks/SCREENS/args/args_gt_recheck.json, on a 7.0 GB row), then the browser gate by hand. Every other SCREENS lane MERGED. Run record 'Resume here' 2026-11-07 19:11 IST
+STATE: BUILDING   # 2026-11-07 22:11 IST: SCREENS 4d443a20 resumes (the launcher started it 22:04 on the owner's --start; the duplicate ea937cfa was stopped by the launcher 22:06:35; confirmed by the owner's window afc0ccd2). NEXT: the game-tutorials re-check from 1ea2ebf (tracks/SCREENS/args/args_gt_recheck.json, slot 8) on a 7.0 GB row once CORE's tier 1 starts are in (actions-sos FIX-R6 live; engine FIX-RS9E next), then the browser gate by hand, then READY. Every other SCREENS lane MERGED
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
-LANE: actions READY 0977edd   # U-23..U-25 complete (slice 710502f merged 18:02); run wf_04c1d56e-d49 check FIX -> C1 FIXED 0977edd; test 32/32, validate GREEN, browser GREEN 9/0/10 (by me); lifts bp-new, bp-form, review-start; the lane is complete
-LANE: game-tutorials CHECKING   # parked at 1ea2ebf (on origin): U-26, U-28 built; check FIX C1 fixed 1ea2ebf; the re-check not run (memory pause): first thing for the fresh chat (tracks/SCREENS/args/args_gt_recheck.json); slice 5af6665 merged 17:57
+LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
+LANE: game-tutorials CHECKING 1ea2ebf   # U-26 0f611e5, U-28 8dccbfb d4c49d1 built; check wf_2cdde478-7e9 FIX -> C1 (hooks game-card, trial-closing) fixed 1ea2ebf; the re-check is next (start 'check', diffFrom 5af6665); slice 5af6665 merged 17:57; real cut base 9f3026c6
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 19:11 IST
+UPDATED: 2026-11-07 22:11 IST
+
+# 2026-11-07 22:11 IST · SCREENS 4d443a20 resumes after the park
+
+- Started by the launcher at 22:04 on the owner's --start. Two SCREENS chats were started at 22:04 (ea937cfa, then this one). By the earliest-start tie-break this chat first stood down. Then the launcher stopped ea937cfa (22:06:35) and kept this one, with HUB 0a13fa1c and CORE 93bffdb7. The owner's window afc0ccd2 confirmed this. Neither SCREENS chat had launched or written anything before 22:11.
+- The board at 22:10: BASE ce691c21 (learn 75eb8e5 merged); SLOTS-ALLOWED 3, tier 1 first (CORE's actions-sos FIX-R6 re-check live as wf_4b67e91f-df4; engine FIX-RS9E next), then the game-tutorials re-check. Memory 13.8 GB at 22:10.
+- actions READY 0977edd was merged by the HUB at 18:50 (49f1c1d4): MERGED.
+- The game-tutorials worktree is clean at 1ea2ebf, which is also on origin. d6887185 died at the park, so the re-check never ran: this chat runs it next.
 
 # 2026-11-07 18:48 IST · actions READY 0977edd (U-23..U-25; the lane is complete)
 
