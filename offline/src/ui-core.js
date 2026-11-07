@@ -9,6 +9,8 @@ const UI = (function () {
   'use strict';
 
   const THEME_KEY = '1-addic:theme';
+  // Discreet mode's device flag ('1' on, absent off): the lock screen reads it, since a sealed settings row cannot be.
+  const DISCREET_KEY = '1-addic:discreet';
   const SVG_NS = 'http://www.w3.org/2000/svg';
   // First segments of BUILD-PLAN 3.5. A known page that nobody has registered yet shows an honest "coming soon".
   const KNOWN = ['today', 'learn', 'lesson', 'workbook', 'exercise', 'track', 'actions', 'practice', 'tools',
@@ -577,12 +579,35 @@ const UI = (function () {
     return state.theme;
   }
 
-  function chrome(key) {
+  // Discreet mode. With a PIN the settings row is sealed, so while locked (or before the Store has loaded) the plain
+  // device flag decides; it holds nothing personal. An unlocked render keeps the flag equal to settings.discreet.
+  function setDiscreetFlag(on) {
+    safe(() => { if (on) localStorage.setItem(DISCREET_KEY, '1'); else localStorage.removeItem(DISCREET_KEY); }, null);
+  }
+  function discreetNow(locked) {
+    const flag = safe(() => localStorage.getItem(DISCREET_KEY) === '1', false);
+    const S = ns('Store');
+    if (locked || !S || !S.view || typeof S.view.get !== 'function' || (state.booted && !state.loaded)) return flag;
+    let row;
+    try { row = S.view.get('settings', 'app'); } catch (e) { return flag; } // unreadable: the flag decides
+    const on = !!(row && row.discreet);
+    if (on !== flag) setDiscreetFlag(on);
+    return on;
+  }
+  function applyDiscreet(on) {
+    const v = !!on;
+    setDiscreetFlag(v);
+    if (hasDOM()) chrome(pageKey(route()), v);
+    return v;
+  }
+
+  function chrome(key, discreetNext) {
     if (!hasDOM()) return;
     const C = ns('Content');
     const settings = ctx().settings;
     const root = document.documentElement;
-    const discreet = !!settings.discreet;
+    const locked = isLocked();
+    const discreet = typeof discreetNext === 'boolean' ? discreetNext : discreetNow(locked);
     const name = discreet ? (safe(() => C.discreetName, null) || 'Notebook') : '1-addic';
     document.title = name;
     const appName = byId('app-name');
@@ -593,7 +618,6 @@ const UI = (function () {
     if (settings.reducedMotion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion');
     if (document.body) document.body.classList.toggle('calm', !!settings.calm);
     root.setAttribute('data-route', key);
-    const locked = isLocked();
     const nav = byId('nav');
     if (nav) {
       nav.hidden = locked;
@@ -887,7 +911,7 @@ const UI = (function () {
 
   return {
     h, svg, icon, toast, sheet, confirm, form, card, tile, chips, ring, meter, empty,
-    go, route, render, pages, ctx, applyTheme, night, speak, stopSpeaking, printDoc, download, boot,
+    go, route, render, pages, ctx, applyTheme, applyDiscreet, night, speak, stopSpeaking, printDoc, download, boot,
     savedText, parse,
   };
 })();

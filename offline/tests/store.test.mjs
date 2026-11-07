@@ -21,7 +21,7 @@ describe('ui-core (U-03)', () => {
 
   test('loads in Node with no DOM and exposes the contract names', () => {
     const names = ['h', 'svg', 'icon', 'toast', 'sheet', 'confirm', 'form', 'card', 'tile', 'chips', 'ring', 'meter',
-      'empty', 'go', 'route', 'render', 'ctx', 'applyTheme', 'night', 'speak', 'stopSpeaking', 'printDoc', 'download', 'boot'];
+      'empty', 'go', 'route', 'render', 'ctx', 'applyTheme', 'applyDiscreet', 'night', 'speak', 'stopSpeaking', 'printDoc', 'download', 'boot'];
     for (const n of names) assert.equal(typeof UI[n], 'function', 'UI.' + n);
     assert.equal(typeof UI.pages, 'object');
     assert.equal(UI.toast('hello'), null, 'no #toasts in Node: nothing to do, no throw');
@@ -364,6 +364,70 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.documentElement.getAttribute('data-counters'), 'off');
   });
 
+  test('C5: discreet mode while locked: the device flag 1-addic:discreet keeps the lock screen Notebook and Help', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    const looks = () => [document.title, document.getElementById('app-name').textContent.trim(),
+      document.getElementById('sos-btn').textContent.trim()];
+    const sheetLink = () => {
+      const s = UI.sheet('About', page('about')());
+      const t = dlg.all().find((e) => e.tagName === 'A' && e.getAttribute('href') === '#/sos').textContent.trim();
+      s.close();
+      dlg.flush();
+      return t;
+    };
+    globalThis.Store = lockedStore('2468'); // the sealed settings row reads null while locked
+    box.set('1-addic:discreet', '1');
+    at('#/lock');
+    await UI.render();
+    assert.match(main().textContent, /Locked/);
+    assert.deepEqual(looks(), ['Notebook', 'Notebook', 'Help'], 'locked, the flag keeps discreet mode');
+    assert.equal(document.getElementById('sos-btn').getAttribute('aria-label'), 'Help');
+    assert.equal(sheetLink(), 'Help', 'a sheet link says Help too');
+    box.delete('1-addic:discreet');
+    await UI.render();
+    assert.deepEqual(looks(), ['1-addic', '1-addic', 'SOS'], 'no flag: the plain name');
+    assert.equal(sheetLink(), 'SOS');
+    // Unlocked, settings.discreet is the record and the flag follows it.
+    let settings = { key: 'app', discreet: true };
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? settings : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: false }),
+    };
+    UI.pages.today = page('today');
+    at('#/today');
+    await UI.render();
+    assert.equal(box.get('1-addic:discreet'), '1', 'an unlocked render sets the flag from settings');
+    assert.deepEqual(looks(), ['Notebook', 'Notebook', 'Help']);
+    settings = { key: 'app', discreet: false };
+    await UI.render();
+    assert.equal(box.has('1-addic:discreet'), false, 'and removes it when discreet mode is off');
+    assert.deepEqual(looks(), ['1-addic', '1-addic', 'SOS']);
+    assert.equal(UI.applyDiscreet(true), true);
+    assert.equal(box.get('1-addic:discreet'), '1');
+    assert.deepEqual(looks(), ['Notebook', 'Notebook', 'Help'], 'applyDiscreet repaints at once');
+    assert.equal(UI.applyDiscreet(false), false);
+    assert.equal(box.has('1-addic:discreet'), false);
+    assert.deepEqual(looks(), ['1-addic', '1-addic', 'SOS']);
+    box.set('1-addic:discreet', '1');
+    globalThis.Store.view.get = () => { throw new Error('sealed'); };
+    await UI.render();
+    assert.equal(box.get('1-addic:discreet'), '1', 'an unreadable settings row never clears the flag');
+    assert.deepEqual(looks(), ['Notebook', 'Notebook', 'Help']);
+    Object.defineProperty(globalThis, 'localStorage', { configurable: true, get() { throw new Error('SecurityError'); } });
+    globalThis.Store = lockedStore('2468');
+    at('#/lock');
+    await UI.render();
+    assert.deepEqual(looks(), ['1-addic', '1-addic', 'SOS'], 'blocked storage: the plain name, nothing throws');
+    assert.equal(UI.applyDiscreet(true), true);
+    assert.deepEqual(looks(), ['Notebook', 'Notebook', 'Help']);
+    assert.equal(UI.applyDiscreet(false), false);
+  });
+
   test('C2: a sheet that replaces another is not closed by the first sheet’s queued close event', () => {
     setup();
     const dlg = dialogStandIn();
@@ -507,6 +571,34 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     const rule = (css.match(/\.sheet-sos\s*\{([^}]*)\}/) || [])[1] || '';
     assert.match(rule, /min-height:\s*44px/);
     assert.match(rule, /min-width:\s*44px/);
+  });
+
+  // Last in this group: UI.boot runs once per module, so it stays booted (and loaded) for any test after it.
+  test('C5: opened at #/sos before the Store has loaded, the discreet flag decides and is never cleared', async (t) => {
+    setup();
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const box = new Map([['1-addic:discreet', '1']]);
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    globalThis.window = { addEventListener() {} };
+    document.addEventListener = () => {};
+    let st = { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false };
+    let opened;
+    const loading = new Promise((res) => { opened = res; });
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 }, status: () => st, load: () => loading };
+    at('#/sos');
+    const booting = UI.boot();
+    await new Promise((r) => setImmediate(r));
+    assert.ok(main().textContent.length > 0, 'SOS draws before the Store loads');
+    assert.equal(document.title, 'Notebook', 'and the flag decides');
+    assert.equal(box.get('1-addic:discreet'), '1', 'an unloaded Store never clears the flag');
+    st = { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true };
+    opened();
+    await booting;
+    assert.equal(box.get('1-addic:discreet'), '1');
+    assert.equal(document.title, 'Notebook', 'loaded and locked: still Notebook');
+    assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
   });
 });
 
@@ -846,6 +938,26 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.view.count('todos'), 0);
     for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
     assert.equal(ls.getItem('1-addic:snapshot'), null);
+  });
+
+  test('C5: resetAll removes the discreet flag 1-addic:discreet, with IndexedDB and in the fallback', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    ls.setItem('1-addic:discreet', '1');
+    const S = freshStore();
+    await S.load();
+    await S.lock.set('2468');
+    S.lock.lockNow();
+    await S.resetAll(); // Forgot PIN: the flag goes with the data
+    assert.equal(ls.getItem('1-addic:discreet'), null);
+    globalThis.indexedDB = fakeIndexedDB();
+    globalThis.indexedDB.failOpen = true;
+    ls.setItem('1-addic:discreet', '1');
+    const T = freshStore();
+    await T.load();
+    assert.equal(T.status().persistence, 'localstorage');
+    await T.resetAll();
+    assert.equal(ls.getItem('1-addic:discreet'), null);
   });
 
   test('auto-lock after the idle minutes; touch keeps it open; a touch after the limit (a phone that slept) locks', async (t) => {

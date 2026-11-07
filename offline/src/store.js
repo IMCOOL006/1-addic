@@ -15,6 +15,7 @@ const Store = (function () {
   const DB_NAME = '1-addic';
   const DB_VERSION = 1;
   const SNAPSHOT = '1-addic:snapshot';
+  const DISCREET = '1-addic:discreet'; // ui-core's plain device flag for discreet mode; resetAll removes it
   const ITERATIONS = 310000;
   const CHECK = '1-addic:pin-check';
   const AUTO_LOCK = [0, 1, 5, 15]; // minutes idle before the lock closes; 0 is never
@@ -484,6 +485,8 @@ const Store = (function () {
         const ls = storage();
         if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
       }
+      const plain = storage();
+      if (plain) try { plain.removeItem(DISCREET); } catch (e) { /* nothing there */ }
       state.epoch += 1;
       state.rows = blank();
       state.lock = null;
