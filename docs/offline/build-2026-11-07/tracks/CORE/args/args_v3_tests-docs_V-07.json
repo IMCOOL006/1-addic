@@ -1,0 +1,62 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The screenshots, the guide, the browser harness and the hooks round, the offline docs true, the status layer's browser tests, the boot-time and contrast checks.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-35",
+  "V-07",
+  "V-03",
+  "V-06"
+ ],
+ "batches": [
+  [
+   "U-35"
+  ],
+  [
+   "V-07"
+  ],
+  [
+   "V-03",
+   "V-06"
+  ]
+ ],
+ "unitTier": {
+  "U-35": 1,
+  "V-07": 1,
+  "V-03": 1,
+  "V-06": 1
+ },
+ "unitNotes": {
+  "V-07": "Guide Parts 3 and 4 (2.5 h, V3-07): the 14 lessons marked U-36b written, Part 4 rows no longer 'Planned'; the Node and browser test counts and names as the trunk has them; the screenshots of U-35 referenced; python offline/docs/build_guide.py exit 0 with every image present. Original words only.",
+  "V-03": "The hooks round, test side (2.2 h, V3-03, V3-04, V3-05): facts first: sos-reassess-passed and sos-reassess-still exist (ui-sos.js:709-710, hooks.mjs:35-36); the skip is the flow's path: flows.mjs advanceUntil taps only Next/Continue/Start, while the app needs sos-helped-yes (ui-sos.js:675) then sos-checkin (:700) or Guide me (:676): the helper taps helped, then Check in. quicklog-button is a data-tour on #/track only (ui-track.js:452): the quick-log test gets start: '#/track', then #/today before the evening check-in. [The rest of this note: lane_args_v3.json lanes.tests-docs.unitNotes[\"V-03\"] and tracks/CORE/briefs/tests-docs/V-03.md: read both before you build.]",
+  "V-06": "Docs true again (1 h, V3-06): offline/README.md no longer says the data layer, PIN, export, Settings and the discreet switch are planned, nor that the label always says Not saved; the '## Offline edition' sections of README.md and CLAUDE.md match the file (what is merged, the commands, the tests by name and count); the release copy offline/releases/1-addic-v1.1.html named. Append-only sections in the shared files (territory.json)."
+ },
+ "laneNote": "Runs on from U-35 without a new cut (fast-forwarded to f69bc68a 02:03). Tier 1 first: U-35, V-07, then V-03 and V-06, then V-01t when today-track V-01b is merged; tier 2 after. Every hook that must be added to another lane's file is asked by outbox with the attribute name and the element (the owner adds the attribute only). Under 4.0 GB free the run pauses at its next commit (the floor was crossed 02:23). CORE CHAT'S WORD (2026-11-08 02:57 IST, CORE 11, session c2601cf1-5557-49d0-a65e-b1eddd04b48d): V3 (PLAN-V3.md) on the real code of the trunk (the worktree fast-forwarded to BASE; never merge or copy files in). The brief's '## V3' section and tracks/CORE/briefs/tests-docs/<unit>.md have the detail. A hook or shape needed in another lane's file: never edit it; a line in your note's requests (owner lane, file:line, element, attribute as that file uses it: data-test on the SCREENS files, data-testid on ui-sos.js; R-H-39). No new dependency, no npm install. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: c2601cf1-5557-49d0-a65e-b1eddd04b48d'; message from a file; add by path; never git add -A. One browser or screens run at a time. Under 4.0 GB free memory, stop at your next commit and say so in the note.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK"
+ ],
+ "base": "f69bc68a",
+ "session": "c2601cf1-5557-49d0-a65e-b1eddd04b48d",
+ "now": "2026-11-08 02:57 IST",
+ "diffFrom": "dfc2703",
+ "priorNote": "{\n \"done\": [\n  {\n   \"unit\": \"U-35\",\n   \"shas\": [\n    \"2f6ab78\",\n    \"dfc2703\"\n   ]\n  }\n ],\n \"tip\": \"dfc2703\",\n \"in_flight\": \"none (worktree clean at dfc2703)\",\n \"next\": [\n  {\n   \"unit\": \"U-36b\",\n   \"first_step\": \"Read offline/docs/1-addic-Guide.md Part 3 (the 14 `<!-- U-36b -->` markers) and open the images named in C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/tests-docs__units.md (U-35 section) to write each lesson against the real screens; take test counts from the gate logs below; flip STRICT_IMAGES in offline/docs/build_guide.py\"\n  }\n ],\n \"files_touched\": [\n  \"C:/Users/ruchi/1-addic-wt/tests-docs/offline/tests/screens.mjs\",\n  \"C:/Users/ruchi/1-addic-wt/tests-docs/offline/tests/helpers/launch.mjs\",\n  \"C:/Users/ruchi/1-addic-wt/tests-docs/package.json\",\n  \"C:/Users/ruchi/1-addic-wt/tests-docs/offline/docs/images/ (74 PNGs, 1.29 MB)\"\n ],\n \"shared_touched\": [\n  \"package.json: added scripts.screens = 'node offline/tests/screens.mjs' by JSON parse, between test:browser and check (line 13); no other key changed\"\n ],\n \"one_thing\": \"Sample rows never count toward Insights: ui-track's insightCount drops rows marked sample: true, so with only the sample loaded Insights shows the 'appear after seven logs, you have 0' empty state. That is why the extra shot insights-logs saves 8 craving logs of its own (numbers only, no words) through Actions.logCraving, a day apart, under page.clock.setFixedTime, before it opens #/track/insights. The run: 37 slugs at 2 sizes = 74 images, 0 skipped. Every image is 1x scale (newPage's new scale option; the browser suite keeps its default of 2). The Date is fixed at 2026-11-04 09:30 IST (timers still run), so the images come out the same on every run. Images I opened and checked: today-phone, sos-urgent-phone, insights-desktop, lock-discreet-phone, sos-craving-phone, insights-logs-phone, tour-phone, sos-craving-tool-desktop, onboarding-phone. Commit 2f6ab78's message says 36 shots; the real count is 37.\",\n \"evidence\": [\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/screens-20261108-021828.log (screens: 74 written, 0 skipped; exit 0; no FAIL line, so zero non-file requests and no console error)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/build-20261108-022028.log (build GREEN)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/test-20261108-022030.log (test GREEN 5/5)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/validate-20261108-022034.log (validate GREEN)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/guards-20261108-022035.log (guards GREEN 5/5)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261108-022036.log (browser GREEN 16/0/3; skips: SOS drill creates no log, SOS craving flow offline with delay loop and both outcomes, quick log and evening check-in)\",\n  \"C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/docs-20261108-022215.log (docs GREEN)\"\n ],\n \"steps_used\": 24,\n \"blocked\": [],\n \"for_the_chat\": [\n  \"READY tests-docs dfc2703 (U-35): screens 74 written, 0 skipped; images total 1.29 MB\",\n  \"To actions-sos (ui-sos.js): at 390 px the SOS craving rating's '10' button wraps onto two lines ('1' over '0'); see offline/docs/images/sos-craving-phone.png. A width or white-space fix belongs in their file.\",\n  \"Contract note for the HUB: when a shot fails, the screens summary line becomes 'screens: N written, M skipped, K failed' and the script exits 1. The contract's shape 'screens: N written, M skipped' is unchanged when nothing fails.\",\n  \"Question for U-36b (default taken): the Insights lesson uses insights-logs, and the guide says sample rows do not feed Insights. The plain insights image shows the honest empty state.\"\n ]\n}"
+}

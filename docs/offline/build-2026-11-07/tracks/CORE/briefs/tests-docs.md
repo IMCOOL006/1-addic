@@ -1,6 +1,8 @@
 # Brief - lane tests-docs - chat CORE - base 655516dc - scout 2026-11-07 07:19 IST
 
 ## What the lane is for
+(v1 unit sections U-34, U-37, U-36a, U-35, U-36b: tracks/CORE/briefs/tests-docs/v1-annex.md)
+
 Prove the file works (a Playwright harness that opens the built `offline/1-addic.html` offline at 390 px and runs the 3.13 flows by name), say so truthfully (offline/README.md, README and CLAUDE.md sections, ADR 0022, `npm run check`), and teach it (the guide .md/.docx and about 30 screenshots). Not flagged. Slice = U-34. Batches: [U-34], then [U-37, U-36a], then [U-35, U-36b].
 
 ## State at the base (655516dc)
@@ -17,28 +19,6 @@ Do not touch: any other lane's file, docs/offline/ (only the cp of brief/contrac
 - browser gate: runs `npm run test:browser [-- --grep PATTERN]` under the shared lock; needs a summary line (spec reporter `ℹ tests N`, or TAP `# tests N`), else VOID; zero tests = VOID. So `test:browser` = `node offline/tests/helpers/run-browser.mjs`, which sets ADDIC_BROWSER=1, maps `--grep X` to `--test-name-pattern X`, spawns `node --test --test-reporter=spec offline/tests/browser.test.mjs`, forwards the exit code. If no browser binary exists the suite still prints its skips with the reason and exits 0 (GREEN with skips; the chat reads the reasons). A failure prints `✖ name` and is judged by name: keep test names stable.
 - docs gate: `python offline/docs/build_guide.py`; exit 0 is green, no summary line needed; SKIP while absent.
 - Output never prints PINs or personal data.
-
-## U-34 Browser harness (tier 1, SLICE, 3 h) - waits for core U-01 merged
-Today: nothing. Build:
-1. package.json: `"test:browser": "node offline/tests/helpers/run-browser.mjs"`, `"devDependencies": {"playwright": "<exact version, no caret>"}`; `package-lock.json` from `npm install --save-exact -D playwright` (Q1). Do not download browser bundles into the repo.
-2. `helpers/launch.mjs`: `launch()` tries `chromium.launch({channel:'chrome'})`, then bundled `chromium.launch()`; returns `{browser}` or `{reason:'no Chrome or Chromium found'}`. `newPage(browser)`: context viewport 390x844, isMobile, hasTouch, deviceScaleFactor 2, serviceWorkers 'block'; load the file, then `context.setOffline(true)`; collect `console` errors, `pageerror`, and every request (`page.on('request')` plus `context.route('**/*')` aborting) whose URL does not start with `file://`, `data:` or `blob:`. `assertClean(t)` fails on any of these; every test ends with it.
-3. `helpers/hooks.mjs`: the selector table (see contract), `routeRegistered(page, seg)` = `typeof UI!=='undefined' && !!UI.pages[seg]`, `skipReason(page, {route, hooks})` returns a reason string or false.
-4. `browser.test.mjs`: one named test per 3.13 flow. Each probes its route and hooks and is skipped by name when missing, so the harness merges early and grows green as lanes land. Fresh context (empty storage) per test. Built file path from `import.meta.url`.
-5. Exact test names: "loads offline with zero console errors and zero network requests" · "phone viewport 390 px has no horizontal scroll" · "five tabs navigate by hash and back works" · "onboarding full" · "onboarding skip-all" · "tour complete" · "tour skip" · "tour replay from Settings Help" · "SOS drill creates no log" · "SOS craving flow offline with delay loop and both outcomes" · "SOS reachable and not gated before onboarding or on lock screen" · "quick log and evening check-in" · "lesson to artifact shown in SOS" · "PIN set lock unlock export" · "export erase import restores everything" · "dark theme applies and persists" · "print view of the plan" · "saved label is always shown".
-Acceptance (spec): `npm run test:browser` opens the built file offline at phone size and runs the 3.13 flows by name, failing on any console error or network request. Prove the assertion once by hand with a throwaway `page.addInitScript(() => fetch('https://x.test'))` (not committed).
-Rules that bite: SOS never gated, never interrupted (assert no tour overlay in `#/sos`, SOS button hidden inside SOS); drill writes nothing (compare exported rows before and after); nothing decreases (after the slip flow total days not lower); tests use their own throwaway PIN and sample data only. Feeds: 3.13 browser sentence. Closes: the slice.
-
-## U-37 Docs true (tier 1, 1 h)
-Today: no section, no ADR 0022 (0021 is last). Build: `offline/README.md` (build with `node offline/build.mjs`; copy `offline/1-addic.html` to the phone; open from Files or Chrome; if Files will not open it, type `file:///sdcard/Download/1-addic.html` in Chrome; "Not saved" means data lives only in memory, export a backup, versus "Saved on this device"; no network, no trackers; early-access notice; not clinical care; India numbers need verifying). Append `## Offline edition` to README.md and CLAUDE.md (build, test, test:browser, screens, check; file layout; rules: territory, no network). `docs/decisions/0022-offline-edition.md` in the format of 0020/0021 (read them): single file, no network, IndexedDB with memory fallback, optional PIN, original content, O1-O8 one line each. `scripts.check` = `npm run build && npm test && npm run test:browser && python offline/docs/build_guide.py` (validate and guards stay in the HUB's gates.py; add a guards script call only if one exists by then). Acceptance: `npm run check` runs every gate and the docs match the file: verify each claim against the built file; write only what is true on the day, mark the rest "planned". Tests: none of its own; check run once by hand is not required (the HUB runs gates).
-
-## U-36a Guide skeleton and pipeline (tier 1, 1.5 h)
-Build `offline/docs/1-addic-Guide.md` per 3.14: front matter (title, subtitle, accent, cover, toc, App/Prepared by/Date/Tested), SUMMARY callout, "How to use this guide" table, Part 1 (what it is, why, at a glance, when to use, what it is not, how it thinks: four layers and SOS, rules it follows, the screens), Part 2 (onboarding, Reasons Card, Safety Nets, first week's routine, moving to a phone, backups), Part 3 headings only for the 14 lessons (test drive with sample data; set up; SOS craving; SOS feeling and slip; quick log and check-in; learn a module; Workbook; Track and Insights; planner and Battle Plans; Weekly Review; My Recovery Plan; back up and restore; use it on a phone; lock and discreet mode), each with a one-line lead-in and the marker `<!-- U-36b -->`, Part 4 (troubleshooting, known quirks, how it was checked with the counts marked for U-36b, the privacy proof, a NEXT callout with a weekly routine). Terms footnoted `^[...]` for the auto-glossary. `build_guide.py` = Event Money's with names changed: renders via gen_docx.py, restarts numbering per section, moves page breaks onto headings, sizes Status tables; writes `offline/docs/1-addic-Guide.docx` (O8). Library check: python-docx 1.2.0 is installed (checked); if gen_docx.py needs another missing library, exit non-zero naming it; never pip install. Missing images: warn in skeleton mode (a `STRICT_IMAGES = False` constant); U-36b flips it to True. Acceptance: `python offline/docs/build_guide.py` exits 0. Content: original words, person-first, adult-to-adult, grade 6-8; substance use brief and clinical; crisis text only the numbers, marked `<!-- clinicalReview: true -->`; every number or link "please verify".
-
-## U-35 Screenshots (tier 2, 1.5 h) - after SCREENS tier 1 merges
-`screens.mjs` (`npm run screens` = `node offline/tests/screens.mjs`): shares helpers/launch.mjs; const `SHOTS` of about 30 {slug, route, setup, size}; writes `offline/docs/images/<slug>-desktop.png` (1280x800) and `<slug>-phone.png` (390x844) with a pHYs chunk at 300 DPI (11811 px/m, written by a small dependency-free PNG rewrite). Seeds through "Load sample data" (O6). Without ADDIC_BROWSER-style gating it runs when invoked, but exits 0 with a named reason if the file or browser is absent; skips a shot by name when its route is missing; prints `screens: N written, M skipped`. Reduced motion on, fixed clock where the UI allows. Acceptance: regenerates every image from the built file.
-
-## U-36b Guide Part 3 (tier 2, 2.5 h) - after U-35
-Write the 14 lessons against the real screens (names, buttons, order as built, check each image), one image per lesson with real alt text; "How this guide was checked" with the real Node and browser test counts (from the last runs; ask the chat if not in hand) and the privacy proof (zero network requests, CSP, no trackers). Flip STRICT_IMAGES to True. Acceptance: docs gate green, every referenced image exists.
 
 ## Decisions that bite
 O1 file `offline/1-addic.html`, title "1-addic", discreet title "Notebook". O2 PIN offered, never forced (a test covers skip). O3 India numbers "please verify" plus an international list. O4 read-aloud only by the device's speechSynthesis (the guide says so). O5 no Gujarati, locale 'en'. O6 "Load sample data" marked and erasable. O7 a tier-2 screen honestly working, stub or locked, never a dead button (the guide describes the state shown). O8 the .docx guide in the tag if its skeleton merges.
@@ -58,3 +38,32 @@ SOS works offline, is never gated and never interrupted by a tip or tutorial; ur
 
 ## Go-aheads
 Waits for core U-01 merged (package.json, build.mjs, built file). U-35 and U-36b wait for the SCREENS tier-1 merge. This lane gives core U-01 the go-ahead to write scripts.build and scripts.test; it adds test:browser, screens, check and the playwright devDependency and never another key.
+
+## V3 (2026-11-08 02:52 IST, PLAN-V3.md)
+v1 is merged (tag f69bc68a; 19 browser tests, last gate 02:48: 19 tests, 16 pass, 0 fail, 3 skipped). The v1 unit sections moved to tracks/CORE/briefs/tests-docs/v1-annex.md. Worktree build/tests-docs at dfc2703 (BASE + U-35: 79 images in offline/docs/images, 2 per route). Code paths below are the trunk's offline/ (unchanged in src since f69bc68a). Read the attribute per file: ui-*.js SCREENS files use `data-test`; ui-sos.js `data-testid`; `data-tour` targets; R-H-39. Notes per unit: briefs/tests-docs/<unit>.md.
+
+Order and batches: [U-35 done, dfc2703] -> [V-07] -> [V-03, V-06] -> [V-01t, after today-track V-01b merged] -> [V-22a, V-26b, V-27, V-29] (tier 2 only when no tier 1 lane waits). Slice = V-07 (READY-SLICE on the status file when committed and green by name).
+
+### V-07 Guide Parts 3 and 4 (2.5 h, tier 1)
+Today: offline/docs/1-addic-Guide.md:169-259 has 14 lessons, each body marked `<!-- U-36b -->`; Part 4 check table :295-301 says Planned; build_guide.py:27 `STRICT_IMAGES = False`. Build: write the 14 lessons against the real screens (names, buttons, order as built; one image each from images/*-phone.png, real alt text); table rows to the real result; "How this guide was checked" with the real counts (npm test total and browser 19/16/3 until V-03, then 19/19/0) and the privacy proof; set STRICT_IMAGES True. Acceptance: `python offline/docs/build_guide.py` exit 0, every image present, no `U-36b` marker left, no "Planned". Original words only. Detail: V-07.md.
+
+### V-03 Hooks round, test side (2.2 h, tier 1)
+Build hooks.mjs (today 4813 B, base and ASSUMED hooks only, :9-61) to name every R-S-6/R-S-11 hook with its file's attribute; flows.mjs `advanceUntil` (:46-55) taps helped then Check in; quick-log gets start '#/track'; new flows. Acceptance: `npm run test:browser` 0 skipped for "SOS drill creates no log", "SOS craving flow offline with delay loop and both outcomes", "quick log and evening check-in"; no test weakened. Detail: V-03.md. Ask: none needed (actions-open-planner exists, built as 'actions-open-' + c.id, ui-actions.js:378; unit test tests/actions-ui.test.mjs:260).
+
+### V-06 Docs true (1 h, tier 1)
+offline/README.md lines 31, 37, 43, 45, 58, 64-68, 77, 81 are stale; README.md:13-20 and CLAUDE.md "## Offline edition" (`npm run screens` "planned, U-35") need the merged facts; releases/ copy named. Append-only in shared files. Detail: V-06.md.
+
+### V-01t Status layer browser tests (1.5 h, tier 1, after V-01b)
+Four tests by name; hooks per PLAN-V3.md section 3 (data-test); guide lesson "Your Harbor" with a screenshot pair; screens.mjs adds `#/status`. Written first against the contract; run at the merge (skip by name 'route #/status not registered' before). Detail: V-01t.md.
+
+### Tier 2 (short; V-22a, V-26b, V-27, V-29 notes)
+V-22a: browser.test.mjs:58-66 markOnboarded does `Actions.onboard({})` then `Actions.tutorial.done('tour',{skipped:true})`: await both in order, one try. V-26b: a browser test "boots to the first render within the budget" (time from goto to first `ui:rendered`, printed, bound = 3 runs max x 2). V-27: offline/tests/contrast.test.mjs, pure Node, parse styles.css tokens both themes. V-29: one row in docs/decisions/README.md.
+
+### Rules that bite
+SOS never gated or interrupted (assert no overlay in #/sos; status page keeps #sos-btn and status-sos); clinicalReview untouched (no content edits); nothing decreases (the slip test compares every data-level before and after); original words; no network (the harness fails on any non-file request); throwaway PINs and sample data only, never print a PIN.
+
+### Gates
+`python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/tests-docs --lane tests-docs build test validate guards`, then `browser` (V-03, V-01t, V-26b) and `docs` (V-07, V-01t, V-06). Use `npm run test:browser -- --grep "<name>"` while iterating.
+
+### Open questions (defaults)
+1. Browser-test count in the guide: default the numbers of the last green gate on the merged file at write time. 2. Boot-time bound: default 3 runs on this machine, max x 2. 3. Contrast reds: default the test names the pair, is not skipped, and goes to the token owner by outbox; the lane does not edit styles.css. 4. V-01t before V-01b: default tests skip by name until the route exists.

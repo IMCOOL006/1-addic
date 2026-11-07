@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 02:52 IST: CORE 11 (c2601cf1). Running: tests-docs U-35 check wf_8b230dd4-364; the V3 scouts wf_51fbacce-d5f (tests-docs, core, actions-sos). R-C-47 (Actions.useSkill signature) to SCREENS. core and actions-sos fast-forwarded to BASE f69bc68a (02:51); each waits for its SLOTS line
-LANE: core NEW f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51; V3 scout running; waits for its SLOTS line. v1 MERGED 8e80951 (a3081f33)
+STATE: BUILDING   # 2026-11-08 03:03 IST: CORE 11 (c2601cf1). Running: the tests-docs U-35 check wf_8b230dd4-364. The V3 scouts are done (wf_51fbacce-d5f): briefs, unit notes and contracts for tests-docs, core, actions-sos. R-C-47 and R-C-48 (useSkill, a loaded sample is not a refusal; V-SOS10 in ui-sos.js) to SCREENS. Launch files ready (wf_sim OK): tracks/CORE/args/args_v3_<lane>_<unit>.json by gen6.py
+LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 8e80951 (a3081f33)
 LANE: engine MERGED 84075b6   # v1 complete (3ea2e13d). V3: V-19, V-30 (T2), only when no tier 1 lane waits
-LANE: actions-sos NEW f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; V3 scout running; waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
+LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs CHECKING dfc2703   # 2026-11-08 02:46 IST: U-35 check (lane.js start 'check', args tracks/CORE/args/args_td_check.json, diffFrom f69bc68a); then READY-SLICE; then V-07, V-03, V-06
 SLOTS-ASKED: 2   # 2026-11-08 02:52 IST: core V-11 (the slice) and actions-sos V-08a + V-SOS10, each on its 7.0 GB row after today-track's start (R-H-38); tests-docs holds slot 5
-UPDATED: 2026-11-08 02:52 IST
+UPDATED: 2026-11-08 03:03 IST
+
+# 2026-11-08 03:03 IST · the V3 scouts are back; the rulings; the launch files
+
+- wf_51fbacce-d5f returned all three (journal in the session's subagents/workflows folder): the briefs are now under 15 KB each (tests-docs 11.2 KB, core 9.5 KB, actions-sos 10.2 KB) because the v1 sections moved to tracks/CORE/briefs/<lane>/v1-annex.md. There is a note per V3 unit beside each brief, and a V3 section on each contract.
+- Rulings (R-C-48): useSkill does not refuse for a loaded sample, matching the other verbs. V-SOS10 is fixed in ui-sos.js, with no styles.css edit. V-11's words come only from boot.js COPY (COPY.none's tail, 112 as a tel: link, COPY.verify).
+- Launch files (gen6.py "<now>" <lane> '<batches>' <diffFrom> [priorNote-file]; wf_sim OK; builder prompts at most 11.9 KB of 12 KB): args_v3_tests-docs_V-07.json (batches V-07, then V-03 + V-06; diffFrom the slice tip; regenerate after the check with its tip), args_v3_core_V-11.json, args_v3_actions-sos_V-08a.json (both sliceRun, diffFrom f69bc68a, with the rulings in laneNote).
 
 # 2026-11-08 02:46 IST · CORE 11 (c2601cf1-5557-49d0-a65e-b1eddd04b48d) resumes; tests-docs U-35 check
 

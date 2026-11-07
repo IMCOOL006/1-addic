@@ -190,3 +190,15 @@ Rulings on the re-review's questions:
 ## 2026-11-08 02:50 IST · V3: Actions.useSkill (V-08a), published to game-tutorials (R-C-47)
 
 - `Actions.useSkill({ skillId, helpful }) -> Promise<{ ok: true, event } | { ok: false, code, message }>`; never throws; a refusal writes nothing. Writes one SkillUsed event (payload skillId, helpful; no logId) through the verb path (VERB_OWNED keeps refusing recordEvent('SkillUsed')). Refusals: skillId not an id (isId), helpful not a boolean (isBool), the notebook locked, the sample rule RS-SAMPLE. Consumer: game-tutorials V-08b (ui-tools.js:315, behind a typeof guard). Replaces the 'FIX-USE-SKILL' line above (Q4, line 175).
+
+## V3 (2026-11-08 02:52 IST)
+At BASE (f69bc68a): Actions.useSkill is NOT yet there (V-08a adds it; actions.js export list :973; signature in the 02:50 section above; consumer game-tutorials V-08b at ui-tools.js:315, behind typeof A.useSkill === 'function'). Codes it returns: the AppError code of the refusal ('bad-skill', 'bad-event', 'sample-mode', or the store's lock code). Event: SkillUsed {skillId, helpful}, no logId; counted by Engine XP (engine.js:180, :248-260) and skill history (ui-learn.js:211).
+Unchanged: recordEvent('SkillUsed') -> USE_VERB; VERB_OWNED actions.js:255.
+V-SOS10: no new name; hooks stay data-testid (sos-rating, data-value 0..10, R-H-39); CSS `.sos-rating .btn`, consumed by tests-docs' screenshot U-35.
+V-25: new hook data-testid 'lock-opening' (id lock-opening, aria-live polite) in ui-onboarding.js; consumer tests-docs hooks.mjs (HUB asked by outbox).
+V-18: no public change. V-17b: waits for core V-17a: Store.status().lockId (string; store.js:121 internal today); ui-sos.js consumes it; no new public shape.
+
+## 2026-11-08 03:01 IST · V3 rulings (CORE 11; R-C-48)
+
+- useSkill refusals: the argument not an object; skillId not an id (isId) or not in Content.skills; helpful not a boolean; the store's own refusal (locked, no store) passed through. A loaded sample is not a refusal (no verb refuses for one; RS-SAMPLE): the SkillUsed event is the person's own, unmarked. The drill records nothing (ui-tools.js isDrill, before the call). This replaces the sample clause of the 02:50 section.
+- V-SOS10: fixed in ui-sos.js ratingRow (the inline grid style, :440-444: the buttons keep '10' on one line at 390 px: nowrap and less inline padding); no styles.css edit; if unavoidable, a new `/* -- actions-sos -- */` section at the end of styles.css, never inside `/* -- actions -- */`.

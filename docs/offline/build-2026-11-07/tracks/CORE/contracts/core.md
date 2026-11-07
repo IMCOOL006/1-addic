@@ -118,3 +118,15 @@ Not core's: Q5 imports go through Actions.importBackup (actions-sos; workbook-se
 - **N2 (LOW):** a contenteditable node counts as a control (no tabindex -1, no role=group written on it).
 - **Q-a (ruled):** a native control returned as a custom field's node gets aria-labelledby the field label's id, like the non-control nodes.
 - High contrast now holds its last state while the settings row is sealed (RS19), as discreet does.
+
+## V3 (2026-11-08 02:52 IST)
+Adds or relies on (all at base f69bc68a unless marked):
+- DOM: `<main id="main" tabindex="-1">` (shell.html:22) now holds a static `p.boot-line` (class hook; no data-test) with a `tel:112` link, replaced by the first render (ui-core.js:844) or by boot.js showFailure; consumers: tests-docs (no-JS check), SCREENS (render must keep replacing main's children; a lane that appends into main before render breaks it).
+- `Store.status()` returns also `lockId: string` ('' with no lock; opaque digest, changes when the lock row is created, removed or replaced; never the PIN); exists at base as status() store.js:509 without lockId (added by V-17a). Consumer: actions-sos V-17b (waits for V-17a merged).
+- UI field node rules (ui-core.js:370-410): N1 role=group only on plain div/span; N2 contenteditable is a control; Q-a native control node gets aria-labelledby <id>-label. Consumers: every lane's custom fields (no API change).
+- build.mjs prints per-part sizes (output only; parts list shape unchanged). Consumer: tests-docs (V-26 reads it).
+- Status-layer hooks (R-H-39) are data-test; core adds none of them. data-tour targets unchanged (nav-today, nav-learn, nav-workbook, nav-track, nav-actions, sos-button).
+
+## 2026-11-08 03:01 IST · V-11 ruling (CORE 11)
+
+- The static line in shell.html `<main>` takes its words from boot.js COPY only: the tail of COPY.none ('If you are in danger, call your local emergency number.'), 112 as a `tel:` link, then COPY.verify ('Please verify these numbers.'), because 112 is verify: true (content-core.js:421). There is no new copy. An HTML comment marks it clinicalReview and keeps it in step with boot.js. The first render replaces it (ui-core.js:844). Consumers: none; tests-docs may add a no-JS browser check (optional, by name).
