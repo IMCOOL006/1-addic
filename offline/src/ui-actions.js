@@ -2,8 +2,18 @@
    U-22: the day planner at #/actions/planner?date=YYYY-MM-DD. Blocks save through Actions (A.plans.*); the open stretches
    of 2 h or more come from Engine.gaps; risky blocks carry a flag and their Battle Plan (or a link to make one). A block
    is never overdue: a past block that was not marked just reads "Not marked yet", in the same calm colours as any other.
-   The other Actions screens (Battle Plans, Weekly Review, quests, Prediction Lab, to-dos) are honest stubs until their
-   units land (O7). Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
+   U-23: Battle Plans at #/actions/battle (list, ?new=1 form, ?plan=<id> attach/edit): each exports a .ics through
+   Engine.ics and UI.download (a file on the device, no network; the buddy is left out of it), and once the block has
+   ended asks "Did the plan show up?" (A.plans.debrief, warm either way, no score).
+   U-24: the Weekly Review at #/actions/review: a start screen, then five screens with Back/Next (the last seven days
+   from Engine.weekSummary, the forecast check from Engine.forecastCheck, a motivation re-rate, the week ahead, want-tos
+   and a focus skill). Answers stay in memory (this session only, never stored) until Save writes them through Actions
+   (A.weeklyReview once; WeeklyReviewCompleted once per week). A weekly reminder .ics at 18:00 on profile.reviewDay.
+   U-25: quests at #/actions/quests (Engine.quests' progress; a manual tick only for steps that do not tick themselves;
+   a finished quest names its badge; no timer, no loss, no random reward), the Prediction Lab at #/actions/predictions
+   (expected enjoyment 0-10, then "How was it?", then the two side by side in words) and to-dos at #/actions/todos
+   (add, done, remove; a due date shown plainly, never overdue). The practices player is ui-practices.js (#/practice).
+   Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
    read through typeof guards (they are not globalThis properties in the built page); ctx.E and ctx.A come first. */
 const ActionsUI = (() => {
   /* ── words ─────────────────────────────────────────────────────────────────────────────── */
@@ -65,18 +75,149 @@ const ActionsUI = (() => {
     keep: 'Keep it',
     help: 'If things feel heavy right now, help is one tap away.',
     helpGo: 'Get help now',
+    // U-23 Battle Plans
+    bpTitle: 'Battle Plans',
+    bpIntro: 'A Battle Plan is made ahead, for a time that could be hard. When that time comes, the plan is already there.',
+    bpNew: 'New Battle Plan',
+    bpBack: 'Back to Battle Plans',
+    bpUpcoming: 'Coming up',
+    bpPast: 'Looking back',
+    bpNone: 'No Battle Plans yet. Think of a time this week that could be hard, and make one.',
+    bpNoUpcoming: 'Nothing coming up right now.',
+    bpFormNew: 'New Battle Plan',
+    bpFormEdit: 'Battle Plan for this block',
+    bpFTitle: 'What is the time or place?',
+    bpFSituation: 'What makes it risky? (optional)',
+    bpFPlan: 'What I will do',
+    bpFBackups: 'Backups, if the first idea does not work (one per line, up to 10)',
+    bpFBuddy: 'Someone I can reach (optional)',
+    bpFNoBuddy: 'No one this time',
+    bpFExit: 'How I will leave if I need to (optional)',
+    bpNeedPlan: 'Write what you will do. One line is enough.',
+    bpSave: 'Save the plan',
+    bpSaved: 'Plan saved.',
+    bpMissing: 'That block is not here any more. You can make a new Battle Plan instead.',
+    bpIcs: 'Add to calendar',
+    bpIcsDone: 'Calendar file saved to this device.',
+    bpIcsNo: 'This browser could not save the file.',
+    bpDefaultTitle: 'Risky time',
+    bpSituation: (t) => `Risky because: ${t}`,
+    bpPlan: (t) => `I will: ${t}`,
+    bpBackups: (t) => `Backups: ${t}`,
+    bpBuddy: (t) => `Someone to reach: ${t}`,
+    bpExit: (t) => `My way out: ${t}`,
+    bpAsk: 'Did the plan show up when it counted?',
+    bpHow: 'How did it go? (optional)',
+    bpYes: 'Yes, it did',
+    bpNo: 'Not this time',
+    bpThanksYes: 'Good to know. The plan did its job.',
+    bpThanksNo: 'Thank you for looking back. It helps the next plan.',
+    bpDebriefed: (used) => (used ? 'You looked back: the plan showed up.' : 'You looked back: the plan did not show up this time.'),
+    bpLater: 'When this time has passed, you can look back on how it went.',
+    bpEdit: 'Change',
+    bpInPlanner: 'See the day',
+    // U-24 Weekly Review
+    rvTitle: 'Weekly Review',
+    rvIntro: 'Five short screens: look back at the last seven days, then plan the next ones. Nothing here is scored.',
+    rvStart: 'Start the review',
+    rvResume: 'Carry on where you left off',
+    rvSaved: 'This week\'s review is saved.',
+    rvAgain: 'Go through it again',
+    rvIcs: 'Add a weekly reminder',
+    rvIcsHint: (day) => `A calendar file that repeats every ${day} at 6 pm. You can change the day in Settings.`,
+    rvIcsTitle: 'Weekly review',
+    rvStep: (n) => `${n} of 5`,
+    rv1: 'The last seven days',
+    rvQuiet: 'A quiet week in the log. That is fine; the review still works.',
+    rvNote: 'Anything else that went well? (optional)',
+    rv2: 'The forecast check',
+    rv2Intro: 'You planned for some times to be hard. Here is what the log shows. Just notice what happened.',
+    rvNoForecast: 'No risky times were planned and nothing was logged. The next screens can help you plan ahead.',
+    rvPlanned: (t, s, e) => `Planned: ${t}, ${s} to ${e}`,
+    rvLogged: (type, time, n) => `Logged: a ${type} at ${time}${n == null ? '' : `, ${n}/10`}`,
+    rvForecastNote: 'What do you notice? (optional)',
+    rv3: 'Where you are now',
+    rv3Intro: 'There is no right number. It is a check-in with yourself.',
+    rvStage: 'Which fits best right now?',
+    rvChoose: 'Choose one',
+    rvScore: 'How ready do you feel to keep going, from 0 to 10?',
+    rvNotNow: 'Skip for now',
+    rvPlusOne: 'What would move it up by one? (optional)',
+    rvNeedStage: 'Choose the stage that fits best, or skip the number.',
+    rv4: 'The week ahead',
+    rv4Intro: 'Any time this week that could be hard? A Battle Plan made now is there when you need it.',
+    rvNoRisky: 'No risky times in the Planner for the next seven days.',
+    rvBpReady: 'Battle Plan ready',
+    rvUpcomingNote: 'Anything coming up that could be hard? (optional)',
+    rvMakeBp: 'Make a Battle Plan',
+    rv5: 'Want-tos and a focus',
+    rv5Intro: 'Up to three things you want to do this week, each with a small reward after.',
+    rvWant: (n) => `Want-to ${n}`,
+    rvWantWhat: 'What',
+    rvWantDay: 'Day',
+    rvWantTime: 'Time',
+    rvWantReward: 'Reward (optional)',
+    rvFocus: 'A skill to practise this week (optional)',
+    rvNoFocus: 'None for now',
+    rvBack: 'Back',
+    rvNext: 'Next',
+    rvSave: 'Save the review',
+    rvDone: 'Review saved.',
+    qTitle: 'Quests',
+    qIntro: 'Small steps that add up. Take them in any order, at your own pace.',
+    qProgress: (d, n) => `${d} of ${n} steps done`,
+    qComplete: 'Quest complete',
+    qBadge: (name) => `Badge: ${name}`,
+    qTick: 'Mark done',
+    qStepDone: 'Done',
+    qAuto: 'This ticks itself when you log it.',
+    plTitle: 'Prediction Lab',
+    plIntro: 'Guess how much you will enjoy something, do it, then check. Moods often guess low.',
+    plNew: 'A new experiment',
+    plActivity: 'What will you do?',
+    plExpect: 'How much do you expect to enjoy it? 0 is not at all, 10 is a lot',
+    plPick: 'Pick a number',
+    plSave: 'Save the prediction',
+    plOpenTitle: 'Waiting for a result',
+    plNoneOpen: 'Nothing waiting. Start an experiment above.',
+    plExpected: (n) => `You expected ${n} out of 10.`,
+    plHow: 'How was it?',
+    plSaveResult: 'Save the result',
+    plDoneTitle: 'Results',
+    plResult: (b, a) => `You expected ${b}; it was ${a}.`,
+    plBetter: 'It went better than you guessed.',
+    plLess: 'It was less than you hoped. That is useful to know too.',
+    plSame: 'Just as you guessed.',
+    plOpen: 'Open the Prediction Lab',
+    tdTitle: 'To-dos',
+    tdIntro: 'A short list of things to do, at your pace.',
+    tdNew: 'Add a to-do',
+    tdText: 'What to do',
+    tdDue: 'For a day (optional)',
+    tdAdd: 'Add',
+    tdOpenTitle: 'To do',
+    tdNone: 'Nothing on the list.',
+    tdFor: (d) => `For ${d}`,
+    tdDone: 'Done',
+    tdDoneMark: 'Done',
+    tdGo: 'Go',
+    tdRemove: 'Remove',
+    tdRemoveAsk: 'Remove this to-do?',
+    tdRemoveYes: 'Remove',
+    tdRemoveNo: 'Keep it',
+    tdDoneTitle: 'Done',
   };
   const KINDS = ['should', 'want', 'recovery', 'risky'];
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
   const HUB = [
     { id: 'planner', title: 'Planner', gist: 'Plan the day and see the open stretches.', href: '#/actions/planner', ready: true },
-    { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.' },
-    { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.' },
-    { id: 'quests', title: 'Quests', gist: 'Small steps that add up.' },
-    { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.' },
-    { id: 'todos', title: 'To-dos', gist: 'A short list of things to do, at your pace.' },
-    { id: 'practices', title: 'Practices', gist: 'Guided breathing and mindful minutes.' },
+    { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.', href: '#/actions/battle', ready: true },
+    { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.', href: '#/actions/review', ready: true },
+    { id: 'quests', title: 'Quests', gist: 'Small steps that add up.', href: '#/actions/quests', ready: true },
+    { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.', href: '#/actions/predictions', ready: true },
+    { id: 'todos', title: 'To-dos', gist: 'A short list of things to do, at your pace.', href: '#/actions/todos', ready: true },
+    { id: 'practices', title: 'Practices', gist: 'Guided breathing and mindful minutes.', href: '#/practice', ready: true },
   ];
 
   /* ── small helpers ─────────────────────────────────────────────────────────────────────── */
@@ -417,17 +558,784 @@ const ActionsUI = (() => {
     return root;
   }
 
+  /* ── pure data: Battle Plans (U-23) ────────────────────────────────────────────────────── */
+  /* A block whose time has passed (its day is before today, or today and its end has come). Its status does not matter. */
+  function planEnded(p, now) {
+    if (!isObj(p) || !DATE_RE.test(String(p.date || ''))) return false;
+    const today = localDate(now instanceof Date ? now : new Date());
+    return p.date < today || (p.date === today && TIME_RE.test(String(p.end || '')) && p.end <= nowHHMM(now));
+  }
+  /* The blocks that carry a Battle Plan: upcoming ones soonest first, past ones latest first (sample rows marked, O6). */
+  function battleLists(view, now) {
+    const rows = list(view, 'plans').filter((p) => battleOf(p))
+      .map((p) => Object.assign({}, p, { battlePlan: battleOf(p), sample: p.sample === true }));
+    const key = (p) => `${p.date || ''} ${p.start || ''} ${p.end || ''} ${p.id || ''}`;
+    return {
+      upcoming: rows.filter((p) => !planEnded(p, now)).sort((a, b) => key(a).localeCompare(key(b))),
+      past: rows.filter((p) => planEnded(p, now)).sort((a, b) => key(b).localeCompare(key(a))),
+    };
+  }
+  const backupList = (b) => arr(b).map(str).filter(Boolean);
+  /* The calendar note: the plan in the person's words. The buddy is left out on purpose (contacts never leave the device). */
+  function battleNotes(bp) {
+    const b = isObj(bp) ? bp : {};
+    return [str(b.situation) ? TEXT.bpSituation(str(b.situation)) : null, str(b.plan) ? TEXT.bpPlan(str(b.plan)) : null,
+      backupList(b.backups).length ? TEXT.bpBackups(backupList(b.backups).join('; ')) : null, str(b.exit) ? TEXT.bpExit(str(b.exit)) : null]
+      .filter(Boolean).join('\n');
+  }
+  /* One Engine.ics item for a block with a Battle Plan (contract: battlePlanIcsItem(plan)), or null. */
+  function battlePlanIcsItem(plan) {
+    if (!isObj(plan) || !DATE_RE.test(String(plan.date || ''))) return null;
+    return { id: 'battle-plan-' + String(plan.id || plan.date), date: plan.date, start: plan.start || null, end: plan.end || null,
+      title: str(plan.title) || TEXT.bpDefaultTitle, notes: battleNotes(plan.battlePlan) };
+  }
+  /* {filename, text} of the .ics for one plan (Engine U-08 writes it), or null when the Engine or the date is missing. */
+  function battleIcsFile(E, plan, now) {
+    const eng = E === undefined ? ns('Engine') : E;
+    const item = battlePlanIcsItem(plan);
+    if (!item || !eng || typeof eng.ics !== 'function') return null;
+    const text = safe(() => eng.ics([item], { now: now instanceof Date ? now : new Date() }), '');
+    return text ? { filename: `1-addic-battle-plan-${item.date}.ics`, text } : null;
+  }
+  /* The form's values -> the plan fields and the Battle Plan, for Actions.plans.add (new) or .update (attach/edit). */
+  function battleFromValues(v, attach) {
+    const o = isObj(v) ? v : {};
+    const backups = String(o.backups == null ? '' : o.backups).split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    const battlePlan = { situation: str(o.situation), plan: str(o.plan), backups, buddyId: str(o.buddyId) || null, exit: str(o.exit) };
+    const item = { date: str(o.date), start: str(o.start), end: str(o.end), title: str(o.title) || TEXT.bpDefaultTitle, risky: true, battlePlan };
+    if (!attach) item.kind = 'risky';
+    return item;
+  }
+  /* Save a Battle Plan through Actions: {ok:true, plan} or {ok:false, code, message} (nothing written on a refusal). */
+  async function saveBattle(A, values, id) {
+    const item = battleFromValues(values, !!id);
+    if (!item.battlePlan.plan) return { ok: false, code: 'bad-plan', message: TEXT.bpNeedPlan };
+    try {
+      if (!A || !A.plans) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      const r = id ? await A.plans.update(id, item) : await A.plans.add(item);
+      return { ok: true, plan: r && r.plan ? r.plan : null };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-plan' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  /* The debrief through Actions (BattlePlanDebriefed once per plan; the same small credit whatever the answer). */
+  async function debriefPlan(A, id, usedPlan, how) {
+    const d = { usedPlan: usedPlan === true };
+    if (str(how)) d.how = str(how);
+    return A.plans.debrief(id, d);
+  }
+  /* The help line on the Battle Plans screen after a save or debrief with crisis words (session memory, never stored). */
+  const BP_HELP = { on: false };
+  const contactsOf = (view) => list(view, 'contacts').filter((c) => c.active !== false && str(c.name));
+
+  /* ── DOM: Battle Plans (U-23) ──────────────────────────────────────────────────────────── */
+  function battlePage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const now = ctx && ctx.now instanceof Date ? ctx.now : new Date();
+    const today = localDate(now);
+    const q = ctx && ctx.route && isObj(ctx.route.query) ? ctx.route.query : {};
+    const view = () => (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-battle', 'data-test': 'battle' });
+    const planId = str(q.plan);
+    const target = planId ? list(view(), 'plans').find((p) => p.id === planId) || null : null;
+    const state = { mode: q.new || planId ? 'form' : 'list', form: null };
+    const toastMsg = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    if (state.mode === 'form') {
+      const bp = target && isObj(target.battlePlan) ? target.battlePlan : {};
+      const qd = DATE_RE.test(str(q.date)) && shiftDate(q.date, 0) === q.date ? q.date : today;
+      state.form = target
+        ? { date: target.date, start: target.start, end: target.end, title: str(target.title), situation: str(bp.situation), plan: str(bp.plan),
+          backups: backupList(bp.backups).join('\n'), buddyId: str(bp.buddyId), exit: str(bp.exit), message: '' }
+        : { date: qd, start: '', end: '', title: '', situation: '', plan: '', backups: '', buddyId: '', exit: '', message: '' };
+    }
+    const toList = () => {
+      state.mode = 'list'; state.form = null; paint();
+      const U = ns('UI');
+      if (U && typeof U.go === 'function') safe(() => U.go('#/actions/battle'), null);
+    };
+
+    const paint = () => {
+      clear(root);
+      root.appendChild(h('div', { class: 'row act-head' }, state.mode === 'form'
+        ? link('#/actions/battle', TEXT.bpBack, 'btn ghost', 'bp-back') : link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.bpTitle }));
+      if (state.mode === 'form') {
+        if (planId && !target) {
+          root.appendChild(h('p', { 'data-test': 'bp-missing', text: TEXT.bpMissing }));
+          root.appendChild(h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.bpNew, 'btn primary', 'bp-new-instead')));
+          return;
+        }
+        root.appendChild(formEl(state.form));
+        return;
+      }
+      root.appendChild(h('p', { class: 'muted', text: TEXT.bpIntro }));
+      root.appendChild(h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.bpNew, 'btn primary', 'bp-new', { 'data-tour': 'bp-new' })));
+      const { upcoming, past } = battleLists(view(), now);
+      const all = upcoming.concat(past);
+      if (BP_HELP.on || all.some((p) => crisisIn(E, p.title, p.battlePlan.situation, p.battlePlan.plan, p.battlePlan.exit, ...backupList(p.battlePlan.backups),
+        isObj(p.debrief) ? p.debrief.how : ''))) {
+        root.appendChild(h('p', { class: 'tip act-help', 'data-test': 'bp-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'bp-help-go')));
+      }
+      if (!all.length) { root.appendChild(h('p', { class: 'muted', 'data-test': 'bp-none', text: TEXT.bpNone })); return; }
+      root.appendChild(h('section', { class: 'card act-bp-list', 'data-test': 'bp-upcoming', 'aria-labelledby': 'act-bp-up-h' },
+        h('h2', { class: 'card-title', id: 'act-bp-up-h', text: TEXT.bpUpcoming }),
+        upcoming.length ? h('ul', { class: 'act-blocks' }, upcoming.map(cardEl)) : h('p', { class: 'muted', text: TEXT.bpNoUpcoming })));
+      if (past.length) {
+        root.appendChild(h('section', { class: 'card act-bp-list', 'data-test': 'bp-past', 'aria-labelledby': 'act-bp-past-h' },
+          h('h2', { class: 'card-title', id: 'act-bp-past-h', text: TEXT.bpPast }), h('ul', { class: 'act-blocks' }, past.map(cardEl))));
+      }
+    };
+
+    function cardEl(p) {
+      const bp = p.battlePlan;
+      const title = str(p.title) || TEXT.bpDefaultTitle;
+      const buddy = bp.buddyId ? list(view(), 'contacts').find((c) => c.id === bp.buddyId && str(c.name)) || null : null;
+      const howId = fid('how');
+      const how = h('textarea', { id: howId, name: 'how', maxlength: '1000', rows: '2', 'data-test': 'bp-how' });
+      const answer = async (used) => {
+        try {
+          await debriefPlan(A, p.id, used, how.value);
+          if (crisisIn(E, how.value)) BP_HELP.on = true;
+          toastMsg(used ? TEXT.bpThanksYes : TEXT.bpThanksNo, 'ok');
+        } catch (e) { if (typeof console !== 'undefined') console.warn('[actions] debrief failed', e && e.code); toastMsg(TEXT.error, 'warn'); }
+        paint();
+      };
+      const ics = () => {
+        const f = battleIcsFile(E, p, now);
+        const U = ns('UI');
+        const ok = !!f && !!U && typeof U.download === 'function' && safe(() => U.download(f.filename, f.text, 'text/calendar'), false) !== false;
+        toastMsg(ok ? TEXT.bpIcsDone : TEXT.bpIcsNo, ok ? 'ok' : 'warn');
+      };
+      let back;
+      if (isObj(p.debrief)) {
+        back = h('div', { class: 'act-debrief', 'data-test': 'bp-debriefed' }, h('p', { text: TEXT.bpDebriefed(p.debrief.usedPlan === true) }),
+          str(p.debrief.how) ? h('p', { class: 'muted', text: str(p.debrief.how) }) : null);
+      } else if (planEnded(p, now)) {
+        back = h('div', { class: 'act-debrief', role: 'group', 'aria-labelledby': howId + '-q', 'data-test': 'bp-debrief' },
+          h('p', { class: 'act-bp-title', id: howId + '-q', text: TEXT.bpAsk }),
+          h('div', { class: 'field' }, h('label', { class: 'field-label', for: howId, text: TEXT.bpHow }), how),
+          h('div', { class: 'row' },
+            button(TEXT.bpYes, () => answer(true), 'btn', 'bp-debrief-yes', { 'data-testid': 'bp-debrief-yes' }),
+            button(TEXT.bpNo, () => answer(false), 'btn', 'bp-debrief-no', { 'data-testid': 'bp-debrief-no' })));
+      } else {
+        back = h('p', { class: 'muted', text: TEXT.bpLater });
+      }
+      return h('li', { class: 'act-block act-risky act-bp-card', 'data-test': 'bp-card', 'data-id': p.id },
+        h('div', { class: 'row act-block-head' },
+          h('span', { class: 'act-when', text: `${dayLabel(p.date)} · ${timeLabel(p.start)} to ${timeLabel(p.end)}` }),
+          p.sample ? h('span', { class: 'badge act-sample', text: TEXT.sample }) : null),
+        h('h3', { class: 'act-title', text: title }),
+        str(bp.situation) ? h('p', { text: TEXT.bpSituation(str(bp.situation)) }) : null,
+        str(bp.plan) ? h('p', { text: TEXT.bpPlan(str(bp.plan)) }) : null,
+        backupList(bp.backups).length ? h('p', { text: TEXT.bpBackups(backupList(bp.backups).join('; ')) }) : null,
+        buddy ? h('p', { text: TEXT.bpBuddy(str(buddy.name)) }) : null,
+        str(bp.exit) ? h('p', { text: TEXT.bpExit(str(bp.exit)) }) : null,
+        h('div', { class: 'row act-tools' },
+          button(TEXT.bpIcs, ics, 'btn', 'bp-ics', { 'data-testid': 'bp-ics', 'aria-label': `${TEXT.bpIcs}: ${title}` }),
+          link('#/actions/battle?plan=' + encodeURIComponent(p.id), TEXT.bpEdit, 'btn ghost', 'bp-edit', { 'aria-label': `${TEXT.bpEdit}: ${title}` }),
+          link('#/actions/planner?date=' + p.date, TEXT.bpInPlanner, 'btn ghost', 'bp-planner')),
+        back);
+    }
+
+    function formEl(f) {
+      const ids = {};
+      for (const k of ['title', 'situation', 'plan', 'backups', 'buddyId', 'exit', 'date', 'start', 'end', 'err']) ids[k] = fid('bp-' + k);
+      const area = (k, max) => h('textarea', { id: ids[k], name: k, maxlength: String(max), rows: '3', 'data-test': 'bp-f-' + k, value: f[k] || '' });
+      const people = contactsOf(view());
+      const inp = {
+        title: h('input', { id: ids.title, name: 'title', type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'bp-f-title', value: f.title }),
+        situation: area('situation', 1000),
+        plan: area('plan', 1000),
+        backups: area('backups', 3100),
+        buddyId: people.length ? h('select', { id: ids.buddyId, name: 'buddyId', 'data-test': 'bp-f-buddy', value: f.buddyId || '' },
+          h('option', { value: '', text: TEXT.bpFNoBuddy }), people.map((c) => h('option', { value: c.id, text: str(c.name) }))) : null,
+        exit: area('exit', 1000),
+        date: h('input', { id: ids.date, name: 'date', type: 'date', required: true, 'data-test': 'bp-f-date', value: f.date }),
+        start: h('input', { id: ids.start, name: 'start', type: 'time', required: true, 'data-test': 'bp-f-start', value: f.start }),
+        end: h('input', { id: ids.end, name: 'end', type: 'time', required: true, 'data-test': 'bp-f-end', value: f.end }),
+      };
+      inp.plan.setAttribute('required', '');
+      const field = (k, label) => (inp[k] ? h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids[k], text: label }), inp[k]) : null);
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'bp-f-error', text: f.message || '' });
+      if (!f.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      const read = () => ({ title: inp.title.value, situation: inp.situation.value, plan: inp.plan.value, backups: inp.backups.value,
+        buddyId: inp.buddyId ? inp.buddyId.value : '', exit: inp.exit.value, date: inp.date.value, start: inp.start.value, end: inp.end.value });
+      const helpNow = f.help || crisisIn(E, f.title, f.situation, f.plan, f.backups, f.exit);
+      return h('form', { class: 'card form stack act-form', 'data-tour': 'bp-form', 'data-test': 'bp-form', novalidate: true, 'aria-labelledby': 'act-bp-form-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = read();
+          const crisis = crisisIn(E, values.title, values.situation, values.plan, values.backups, values.exit);
+          const r = await saveBattle(A, values, target ? target.id : null);
+          if (!r.ok) { state.form = Object.assign({}, f, values, { message: r.message, help: crisis }); paint(); focusOn('.act-form-error'); return; }
+          if (crisis) BP_HELP.on = true;
+          toastMsg(TEXT.bpSaved, 'ok');
+          toList();
+        } },
+      h('h2', { class: 'card-title', id: 'act-bp-form-h', text: target ? TEXT.bpFormEdit : TEXT.bpFormNew }),
+      field('title', TEXT.bpFTitle),
+      h('div', { class: 'row act-times' }, field('date', TEXT.fDate), field('start', TEXT.fStart), field('end', TEXT.fEnd)),
+      field('situation', TEXT.bpFSituation),
+      field('plan', TEXT.bpFPlan),
+      field('backups', TEXT.bpFBackups),
+      field('buddyId', TEXT.bpFBuddy),
+      field('exit', TEXT.bpFExit),
+      err,
+      helpNow ? h('p', { class: 'tip act-help', 'data-test': 'bp-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'bp-help-go')) : null,
+      h('div', { class: 'row form-actions' },
+        h('button', { type: 'submit', class: 'btn primary', 'data-test': 'bp-save', 'data-testid': 'bp-save', text: TEXT.bpSave }),
+        link('#/actions/battle', TEXT.cancel, 'btn ghost', 'bp-cancel')));
+    }
+
+    paint();
+    return root;
+  }
+
+  /* ── pure data: the Weekly Review (U-24) ───────────────────────────────────────────────── */
+  const BYDAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const dow = (ds) => { const [y, m, d] = String(ds).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)).getUTCDay(); };
+  /* The review's week: weekStart is this week's Monday (the key A.weeklyReview saves under, one per week); the look
+     back covers the last seven days, ending today (from..to), whatever the review day is. */
+  function reviewWeek(now) {
+    const today = localDate(now instanceof Date ? now : new Date());
+    return { today, weekStart: shiftDate(today, -((dow(today) + 6) % 7)), from: shiftDate(today, -6), to: today };
+  }
+  /* The next date (today counts) that falls on reviewDay (0 = Sunday ... 6 = Saturday; anything else is Sunday). */
+  function nextReviewDate(reviewDay, today) {
+    const day = Number.isInteger(reviewDay) && reviewDay >= 0 && reviewDay <= 6 ? reviewDay : 0;
+    return shiftDate(today, (day - dow(today) + 7) % 7);
+  }
+  /* The weekly reminder for Engine.ics (contract: reviewIcsItem(profile, now)): 18:00 to 18:15 on the review day, weekly. */
+  function reviewIcsItem(profile, now) {
+    const p = isObj(profile) ? profile : {};
+    const day = Number.isInteger(p.reviewDay) && p.reviewDay >= 0 && p.reviewDay <= 6 ? p.reviewDay : 0;
+    return { id: 'weekly-review', date: nextReviewDate(day, localDate(now instanceof Date ? now : new Date())), start: '18:00', end: '18:15',
+      title: TEXT.rvIcsTitle, rrule: `FREQ=WEEKLY;BYDAY=${BYDAY[day]}` };
+  }
+  /* The latest saved review for a week (a 'weekly-review' response), or null. */
+  function reviewSaved(view, weekStart) {
+    return list(view, 'responses').filter((r) => r.exerciseId === 'weekly-review' && isObj(r.payload) && r.payload.weekStart === weekStart)
+      .sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] || null;
+  }
+  /* The forecast check as rows to show: each day with something planned or logged; Engine's line where it has one. */
+  function forecastRows(E, view, from) {
+    const eng = E === undefined ? ns('Engine') : E;
+    if (!eng || typeof eng.forecastCheck !== 'function') return [];
+    return safe(() => arr(eng.forecastCheck(view, from)), []).filter((d) => isObj(d) && (arr(d.planned).length || arr(d.logged).length))
+      .map((d) => ({ date: d.date, line: typeof d.line === 'string' && d.line ? d.line : null,
+        rows: arr(d.planned).map((p) => TEXT.rvPlanned(str(p.title) || TEXT.bpDefaultTitle, timeLabel(p.start), timeLabel(p.end)))
+          .concat(arr(d.logged).map((l) => TEXT.rvLogged(l.type === 'feeling' ? 'feeling' : 'craving', str(l.time) || '?', Number.isInteger(l.intensity) ? l.intensity : null))) }));
+  }
+  /* A want-to row -> a plan item (kind want, an hour long, ending by 23:59). */
+  function wantToItem(w) {
+    const o = isObj(w) ? w : {};
+    const start = TIME_RE.test(str(o.start)) ? str(o.start) : '18:00';
+    const m = Math.min(Number(start.slice(0, 2)) * 60 + Number(start.slice(3)) + 60, 23 * 60 + 59);
+    return { date: str(o.date), start, end: `${pad(Math.floor(m / 60))}:${pad(m % 60)}`, title: str(o.title), kind: 'want', risky: false, reward: str(o.reward) || null };
+  }
+  const scoreOf = (d) => (d && d.score !== '' && d.score != null && Number.isInteger(Number(d.score)) ? Number(d.score) : null);
+  /* The response payload (contract: {weekStart, highlights, focusSkill, wantTos[], motivation}, plus the two notes). */
+  function reviewPayload(d, weekStart) {
+    const o = isObj(d) ? d : {};
+    const score = scoreOf(o);
+    return {
+      weekStart,
+      highlights: { lines: arr(o.lines).filter((x) => typeof x === 'string'), note: str(o.note) },
+      forecastNote: str(o.forecastNote),
+      upcomingNote: str(o.upcomingNote),
+      focusSkill: str(o.focusSkill) || null,
+      wantTos: arr(o.wants).filter((w) => isObj(w) && str(w.title)).map((w) => Object.assign(wantToItem(w), { planId: w.planId || null })),
+      motivation: score === null ? null : { stage: str(o.stage), score, plusOne: str(o.plusOne) },
+    };
+  }
+  /* Save: the want-tos (A.plans.add), the re-rate (A.motivation.add), then A.weeklyReview once. A retry after a refusal
+     never adds a want-to or a re-rate twice (the draft remembers what was written). {ok:true} or {ok:false, message}. */
+  async function saveReview(A, d, weekStart) {
+    const no = (message) => ({ ok: false, message });
+    if (!A || !A.plans || typeof A.weeklyReview !== 'function') return no(TEXT.error);
+    const score = scoreOf(d);
+    if (score !== null && !str(d.stage)) return no(TEXT.rvNeedStage);
+    try {
+      for (const w of arr(d.wants)) {
+        if (!isObj(w) || !str(w.title) || w.planId) continue;
+        const r = await A.plans.add(wantToItem(w));
+        w.planId = r && r.plan && r.plan.id ? r.plan.id : 'saved';
+      }
+      if (score !== null && !d.motSaved && A.motivation) {
+        const m = { stage: str(d.stage), score, source: 'weekly-review' };
+        if (str(d.plusOne)) m.plusOne = str(d.plusOne);
+        await A.motivation.add(m);
+        d.motSaved = true;
+      }
+      const r = await A.weeklyReview(reviewPayload(d, weekStart));
+      return { ok: true, response: r && r.response ? r.response : null };
+    } catch (err) {
+      return no(err && /^bad-/.test(String(err.code || '')) && err.message ? String(err.message) : TEXT.error);
+    }
+  }
+  /* The review's answers in memory, by week (this session only, never stored): leaving for a Battle Plan and coming
+     back resumes the same screen. HELP_WEEKS keeps the help line on after a save with crisis words. */
+  const DRAFTS = new Map();
+  const HELP_WEEKS = new Set();
+  const forgetReviews = () => { DRAFTS.clear(); HELP_WEEKS.clear(); if (typeof HELP_PAGES !== 'undefined') HELP_PAGES.clear(); };
+
+  /* ── DOM: the Weekly Review (U-24) ─────────────────────────────────────────────────────── */
+  function reviewPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const C = ns('Content');
+    const now = ctx && ctx.now instanceof Date ? ctx.now : new Date();
+    const wk = reviewWeek(now);
+    const ws = wk.weekStart;
+    const profile = ctx && isObj(ctx.profile) ? ctx.profile : {};
+    const view = () => (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-review', 'data-test': 'review' });
+    const stages = arr(C && C.stages).filter((s) => isObj(s) && s.id);
+    const skills = arr(C && C.skills).filter((s) => isObj(s) && s.id);
+    const toastMsg = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const newDraft = () => {
+      const latest = list(view(), 'motivation').slice().sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0];
+      const sum = E && typeof E.weekSummary === 'function' ? safe(() => E.weekSummary(view(), wk.from), null) : null;
+      const stage = [str(latest && latest.stage), str(profile.stage)].find((s) => s && stages.some((x) => x.id === s)) || '';
+      return { step: 1, lines: sum ? arr(sum.highlights).filter((x) => typeof x === 'string') : [], note: '', forecastNote: '', stage, score: '', plusOne: '',
+        upcomingNote: '', wants: [1, 2, 3].map((i) => ({ title: '', date: shiftDate(wk.today, i), start: '18:00', reward: '', planId: null })),
+        focusSkill: '', message: '', help: false, motSaved: false };
+    };
+    const draft = () => DRAFTS.get(ws) || null;
+    let collect = () => {};
+    const texts = (d) => [d.note, d.forecastNote, d.plusOne, d.upcomingNote].concat(arr(d.wants).map((w) => `${w.title} ${w.reward}`));
+    const go = (step) => {
+      const d = draft();
+      collect();
+      if (crisisIn(E, ...texts(d))) d.help = true;
+      d.step = step; d.message = '';
+      paint();
+      focusOn('.act-review h2');
+    };
+    const helpLine = () => h('p', { class: 'tip act-help', 'data-test': 'review-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'review-help-go'));
+    const area = (key, label, max, d) => {
+      const id = fid('rv-' + key);
+      const el = h('textarea', { id, name: key, maxlength: String(max), rows: '3', 'data-test': 'review-f-' + key, value: d[key] || '' });
+      return { el, node: h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: label }), el) };
+    };
+    const select = (key, label, options, value) => {
+      const id = fid('rv-' + key);
+      const el = h('select', { id, name: key, 'data-test': 'review-f-' + key, value: value == null ? '' : String(value) }, options.map((o) => h('option', { value: o.value, text: o.label })));
+      return { el, node: h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: label }), el) };
+    };
+
+    function startScreen() {
+      const saved = reviewSaved(view(), ws);
+      const d = draft();
+      const out = [h('p', { class: 'muted', text: TEXT.rvIntro })];
+      if (saved) {
+        const dayName = DAYS[Number.isInteger(profile.reviewDay) && profile.reviewDay >= 0 && profile.reviewDay <= 6 ? profile.reviewDay : 0];
+        out.push(h('section', { class: 'card act-review-saved', 'data-test': 'review-saved' },
+          h('p', { class: 'act-bp-title', text: TEXT.rvSaved }),
+          h('p', { class: 'muted', text: TEXT.rvIcsHint(dayName) }),
+          h('div', { class: 'row' }, button(TEXT.rvIcs, reminder, 'btn', 'review-ics', { 'data-testid': 'review-ics' }))));
+        if (HELP_WEEKS.has(ws)) out.push(helpLine());
+      }
+      out.push(h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-tour': 'review-start', 'data-test': 'review-start',
+        text: d && d.step > 0 ? TEXT.rvResume : saved ? TEXT.rvAgain : TEXT.rvStart,
+        onClick: () => { if (!draft()) DRAFTS.set(ws, newDraft()); const x = draft(); x.step = x.step > 0 ? x.step : 1; paint(); focusOn('.act-review h2'); } })));
+      return out;
+    }
+    function reminder() {
+      const U = ns('UI');
+      const text = E && typeof E.ics === 'function' ? safe(() => E.ics([reviewIcsItem(profile, now)], { now }), '') : '';
+      const ok = !!text && !!U && typeof U.download === 'function' && safe(() => U.download('1-addic-weekly-review.ics', text, 'text/calendar'), false) !== false;
+      toastMsg(ok ? TEXT.bpIcsDone : TEXT.bpIcsNo, ok ? 'ok' : 'warn');
+    }
+
+    function screen1(d) {
+      const n = area('note', TEXT.rvNote, 500, d);
+      collect = () => { d.note = n.el.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv1 }),
+        d.lines.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-highlights' }, d.lines.map((l) => h('li', { text: l })))
+          : h('p', { class: 'muted', 'data-test': 'review-quiet', text: TEXT.rvQuiet }),
+        n.node];
+    }
+    function screen2(d) {
+      const rows = forecastRows(E, view(), wk.from);
+      const n = area('forecastNote', TEXT.rvForecastNote, 1000, d);
+      collect = () => { d.forecastNote = n.el.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv2 }), h('p', { class: 'muted', text: TEXT.rv2Intro }),
+        rows.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-forecast' }, rows.map((r) => h('li', { 'data-test': 'review-forecast-day' },
+          h('p', { class: 'act-when', text: dayLabel(r.date) }),
+          r.line ? h('p', { 'data-test': 'review-forecast-line', text: r.line }) : r.rows.map((t) => h('p', { text: t })))))
+          : h('p', { class: 'muted', 'data-test': 'review-forecast-none', text: TEXT.rvNoForecast }),
+        n.node];
+    }
+    function screen3(d) {
+      const st = select('stage', TEXT.rvStage, [{ value: '', label: TEXT.rvChoose }].concat(stages.map((s) => ({ value: s.id, label: str(s.name) || s.id }))), d.stage);
+      const sc = select('score', TEXT.rvScore, [{ value: '', label: TEXT.rvNotNow }].concat(Array.from({ length: 11 }, (_, i) => ({ value: String(i), label: String(i) }))), d.score);
+      const id = fid('rv-plusOne');
+      const plus = h('input', { id, name: 'plusOne', type: 'text', maxlength: '500', autocomplete: 'off', 'data-test': 'review-f-plusOne', value: d.plusOne || '' });
+      collect = () => { d.stage = st.el.value; d.score = sc.el.value; d.plusOne = plus.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv3 }), h('p', { class: 'muted', text: TEXT.rv3Intro }), st.node, sc.node,
+        h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: TEXT.rvPlusOne }), plus)];
+    }
+    function screen4(d) {
+      const ahead = [];
+      for (let i = 0; i < 7; i++) for (const p of planRowsForDate(view(), shiftDate(wk.today, i))) if (p.risky && !pastUnmarked(p, now)) ahead.push(p);
+      const n = area('upcomingNote', TEXT.rvUpcomingNote, 1000, d);
+      collect = () => { d.upcomingNote = n.el.value; };
+      const keep = () => collect(); // a link away keeps the answers (memory) so the review resumes here
+      return [h('h2', { class: 'card-title', text: TEXT.rv4 }), h('p', { class: 'muted', text: TEXT.rv4Intro }),
+        ahead.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-ahead' }, ahead.map((p) => h('li', { class: 'row' },
+          h('span', { class: 'act-gap-text', text: `${dayLabel(p.date)}, ${timeLabel(p.start)}: ${str(p.title) || TEXT.bpDefaultTitle}` }),
+          p.battlePlan ? h('span', { class: 'badge', text: TEXT.rvBpReady })
+            : link('#/actions/battle?plan=' + encodeURIComponent(p.id), TEXT.battleAdd, 'btn ghost', 'review-bp-add', { onClick: keep }))))
+          : h('p', { class: 'muted', text: TEXT.rvNoRisky }),
+        n.node,
+        h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.rvMakeBp, 'btn', 'review-bp-new', { onClick: keep }))];
+    }
+    function screen5(d) {
+      const rows = d.wants.map((w, i) => {
+        const ids = { title: fid('rv-w-title'), date: fid('rv-w-date'), start: fid('rv-w-start'), reward: fid('rv-w-reward') };
+        const inp = {
+          title: h('input', { id: ids.title, type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'review-want-title', value: w.title, disabled: !!w.planId }),
+          date: h('input', { id: ids.date, type: 'date', 'data-test': 'review-want-date', value: w.date, disabled: !!w.planId }),
+          start: h('input', { id: ids.start, type: 'time', 'data-test': 'review-want-start', value: w.start, disabled: !!w.planId }),
+          reward: h('input', { id: ids.reward, type: 'text', maxlength: '200', autocomplete: 'off', 'data-test': 'review-want-reward', value: w.reward, disabled: !!w.planId }),
+        };
+        const f = (k, label) => h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids[k], text: label }), inp[k]);
+        return { inp, node: h('fieldset', { class: 'act-want', 'data-test': 'review-want' }, h('legend', { text: TEXT.rvWant(i + 1) }),
+          f('title', TEXT.rvWantWhat), h('div', { class: 'row act-times' }, f('date', TEXT.rvWantDay), f('start', TEXT.rvWantTime)), f('reward', TEXT.rvWantReward)) };
+      });
+      const fs = select('focusSkill', TEXT.rvFocus, [{ value: '', label: TEXT.rvNoFocus }].concat(skills.map((s) => ({ value: s.id, label: str(s.name) || s.id }))), d.focusSkill);
+      collect = () => {
+        rows.forEach((r, i) => { const w = d.wants[i]; if (w.planId) return; w.title = r.inp.title.value; w.date = r.inp.date.value; w.start = r.inp.start.value; w.reward = r.inp.reward.value; });
+        d.focusSkill = fs.el.value;
+      };
+      return [h('h2', { class: 'card-title', text: TEXT.rv5 }), h('p', { class: 'muted', text: TEXT.rv5Intro }), rows.map((r) => r.node), fs.node];
+    }
+    const SCREENS = [null, screen1, screen2, screen3, screen4, screen5];
+
+    async function save() {
+      const d = draft();
+      collect();
+      if (crisisIn(E, ...texts(d))) d.help = true;
+      const r = await saveReview(A, d, ws);
+      if (!r.ok) { d.message = r.message; paint(); focusOn('.act-form-error'); return; }
+      if (d.help) HELP_WEEKS.add(ws);
+      DRAFTS.delete(ws);
+      toastMsg(TEXT.rvDone, 'ok');
+      paint();
+      focusOn('[data-tour="review-start"]');
+    }
+
+    const paint = () => {
+      clear(root);
+      collect = () => {};
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.rvTitle }));
+      const d = draft();
+      if (!d || !(d.step >= 1 && d.step <= 5)) { for (const n of startScreen()) root.appendChild(n); return; }
+      const body = SCREENS[d.step](d);
+      const err = h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'review-error', text: d.message || '' });
+      if (!d.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('section', { class: 'card stack act-review-step', 'data-test': 'review-step', 'data-step': String(d.step), 'aria-label': TEXT.rvStep(d.step) },
+        h('p', { class: 'act-date', text: TEXT.rvStep(d.step) }), body, err, d.help ? helpLine() : null,
+        h('div', { class: 'row form-actions' },
+          button(TEXT.rvBack, () => go(d.step - 1), 'btn ghost', 'review-back'),
+          d.step < 5 ? button(TEXT.rvNext, () => go(d.step + 1), 'btn primary', 'review-next', { 'data-testid': 'review-next' })
+            : button(TEXT.rvSave, save, 'btn primary', 'review-save', { 'data-testid': 'review-save' }))));
+    };
+
+    paint();
+    return root;
+  }
+
+  /* ── U-25: quests ──────────────────────────────────────────────────────────────────────── */
+  /* Quests whose steps tick themselves from what is logged (engine.js questDerived): no manual tick for them. */
+  const DERIVED_QUESTS = { crew: true, 'seven-days': true, 'prediction-lab': true };
+  /* The quest cards: Content.quests with Engine.quests' progress; a step done stays done (ticks are never taken back,
+     derived counts only grow), and a finished quest names its badge when it has one. */
+  function questCards(E, C, view) {
+    const prog = safe(() => (E && typeof E.quests === 'function' ? E.quests(view) : {}), {}) || {};
+    const badges = arr(C && C.badges);
+    return arr(C && C.quests).filter((q) => isObj(q) && str(q.id)).map((q) => {
+      const p = isObj(prog[q.id]) ? prog[q.id] : {};
+      const doneIds = new Set(arr(p.steps).filter((s) => s && s.done).map((s) => s.id));
+      const steps = arr(q.steps).filter(isObj).map((s) => ({ id: s.id, label: str(s.label), done: doneIds.has(s.id), auto: !!DERIVED_QUESTS[q.id] }));
+      const done = steps.filter((s) => s.done).length;
+      const complete = p.complete === true || (steps.length > 0 && done === steps.length);
+      const b = q.badge ? badges.find((x) => x && x.id === q.badge) : null;
+      return { id: q.id, name: str(q.name) || q.id, gist: str(q.gist), steps, done, total: steps.length, complete, badge: complete && b ? str(b.name) : '' };
+    });
+  }
+  /* One tick through Actions: {ok} or {ok:false, message}. A second tick of the same step changes nothing. */
+  async function tickQuest(A, questId, stepId) {
+    try {
+      if (!A || !A.quests || typeof A.quests.tick !== 'function') throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      const row = await A.quests.tick(questId, stepId);
+      return { ok: true, row };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-quest' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  function questsPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-quests', 'data-test': 'quests' });
+    const cards = questCards(E, ns('Content'), view);
+    root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+    root.appendChild(h('h1', { class: 'page-title', text: TEXT.qTitle }));
+    root.appendChild(h('p', { class: 'muted', text: TEXT.qIntro }));
+    const note = h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'quests-error' });
+    note.hidden = true; note.setAttribute('hidden', '');
+    root.appendChild(note);
+    if (!cards.length) root.appendChild(h('p', { text: TEXT.soon }));
+    for (const q of cards) {
+      root.appendChild(h('section', { class: 'card stack act-quest' + (q.complete ? ' act-complete' : ''), 'data-test': 'quest', 'data-quest': q.id, 'aria-labelledby': 'act-q-' + q.id },
+        h('h2', { class: 'card-title', id: 'act-q-' + q.id, text: q.name }),
+        q.gist ? h('p', { class: 'muted', text: q.gist }) : null,
+        h('p', { class: 'act-status', 'data-test': 'quest-progress', text: q.complete ? TEXT.qComplete : TEXT.qProgress(q.done, q.total) }),
+        q.badge ? h('p', { class: 'act-badge', 'data-test': 'quest-badge', text: TEXT.qBadge(q.badge) }) : null,
+        h('ul', { class: 'act-steps' }, q.steps.map((s) => h('li', { class: 'row act-step' + (s.done ? ' act-step-done' : ''), 'data-test': 'quest-step', 'data-step': s.id },
+          h('span', { class: 'act-step-text', text: s.label }),
+          s.done ? h('span', { class: 'act-status', text: TEXT.qStepDone })
+            : s.auto ? h('span', { class: 'muted act-auto', text: TEXT.qAuto })
+              : button(TEXT.qTick, async () => {
+                const r = await tickQuest(A, q.id, s.id);
+                if (!r.ok) { note.textContent = r.message; note.hidden = false; note.removeAttribute('hidden'); safe(() => note.focus(), null); }
+              }, 'btn ghost', 'quest-tick', { 'aria-label': `${TEXT.qTick}: ${s.label}` })))),
+        q.id === 'prediction-lab' && !q.complete ? h('div', { class: 'row' }, link('#/actions/predictions', TEXT.plOpen, 'btn', 'quest-to-predictions')) : null));
+    }
+    return root;
+  }
+
+  /* ── U-25: Prediction Lab ──────────────────────────────────────────────────────────────── */
+  const plScore = (v) => (v === '' || v == null ? NaN : Number(v));
+  /* Open predictions (no result yet) newest first, then finished ones newest first, each with its sentence. */
+  function predictionRows(view) {
+    const rows = list(view, 'predictions');
+    const isDone = (p) => !!p.completedAt || (p.actual !== null && p.actual !== undefined);
+    const byAt = (a, b) => String(b.completedAt || b.at || '').localeCompare(String(a.completedAt || a.at || ''));
+    return {
+      open: rows.filter((p) => !isDone(p)).sort(byAt),
+      done: rows.filter(isDone).sort(byAt).map((p) => Object.assign({}, p, { words: predictionWords(p.predicted, p.actual) })),
+    };
+  }
+  /* "You expected 3; it was 6." and one calm line on what that means. */
+  function predictionWords(predicted, actual) {
+    const a = Number(actual), b = Number(predicted);
+    const first = TEXT.plResult(b, a);
+    return a > b ? `${first} ${TEXT.plBetter}` : a < b ? `${first} ${TEXT.plLess}` : `${first} ${TEXT.plSame}`;
+  }
+  async function savePrediction(A, v) {
+    const item = { activity: str(v && v.activity), predicted: plScore(v && v.predicted) };
+    try {
+      if (!A || !A.predictions) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.predictions.add(item) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-prediction' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  async function completePrediction(A, id, actual) {
+    try {
+      if (!A || !A.predictions) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.predictions.complete(id, { actual: plScore(actual) }) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-prediction' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  /* The help line shows after a save with crisis words, for this session only (memory, never stored). */
+  const HELP_PAGES = new Set();
+  const helpBox = (test) => h('p', { class: 'tip act-help', 'data-test': test }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', test + '-go'));
+  const scoreSelect = (id, test, value, withBlank) => h('select', { id, 'data-test': test, value: value == null ? '' : String(value) },
+    withBlank ? h('option', { value: '', text: TEXT.plPick }) : null, Array.from({ length: 11 }, (_, i) => h('option', { value: String(i), text: String(i) })));
+  function predictionsPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const state = { asking: null, message: '', values: { activity: '', predicted: '' }, askMsg: '' };
+    const root = h('div', { class: 'page stack act-page act-predictions', 'data-test': 'predictions' });
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const paint = () => {
+      clear(root);
+      const rows = predictionRows(view);
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.plTitle }));
+      root.appendChild(h('p', { class: 'muted', text: TEXT.plIntro }));
+      const ids = { a: fid('pla'), p: fid('plp'), err: fid('plerr') };
+      const act = h('input', { id: ids.a, type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'prediction-activity', value: state.values.activity });
+      const pre = scoreSelect(ids.p, 'prediction-predicted', state.values.predicted, true);
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'prediction-error', text: state.message });
+      if (!state.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('form', { class: 'card form stack act-form', 'data-test': 'prediction-form', novalidate: true, 'aria-labelledby': 'act-pl-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = { activity: act.value, predicted: pre.value };
+          const r = await savePrediction(A, values);
+          if (!r.ok) { state.values = values; state.message = r.message; paint(); focusOn('.act-form-error'); return; }
+          if (crisisIn(E, values.activity)) HELP_PAGES.add('predictions');
+          state.values = { activity: '', predicted: '' }; state.message = '';
+          paint();
+        } },
+      h('h2', { class: 'card-title', id: 'act-pl-h', text: TEXT.plNew }),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.a, text: TEXT.plActivity }), act),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.p, text: TEXT.plExpect }), pre),
+      err,
+      h('div', { class: 'row form-actions' }, h('button', { type: 'submit', class: 'btn primary', 'data-test': 'prediction-save', text: TEXT.plSave }))));
+      root.appendChild(h('section', { class: 'card stack', 'data-test': 'predictions-open', 'aria-labelledby': 'act-pl-open' },
+        h('h2', { class: 'card-title', id: 'act-pl-open', text: TEXT.plOpenTitle }),
+        rows.open.length ? h('ul', { class: 'act-blocks' }, rows.open.map((p) => {
+          const asking = state.asking === p.id;
+          const aid = fid('plact');
+          const sel = asking ? scoreSelect(aid, 'prediction-actual', '', true) : null;
+          return h('li', { class: 'act-block', 'data-test': 'prediction-open' },
+            h('p', { class: 'act-title', text: p.activity }),
+            h('p', { class: 'muted', text: TEXT.plExpected(p.predicted) }),
+            asking ? h('div', { class: 'stack act-ask' },
+              h('div', { class: 'field' }, h('label', { class: 'field-label', for: aid, text: TEXT.plHow }), sel),
+              state.askMsg ? h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'prediction-actual-error', text: state.askMsg }) : null,
+              h('div', { class: 'row form-actions' },
+                button(TEXT.plSaveResult, async () => {
+                  const r = await completePrediction(A, p.id, sel.value);
+                  if (!r.ok) { state.askMsg = r.message; paint(); focusOn('[data-test="prediction-actual-error"]'); return; }
+                  state.asking = null; state.askMsg = ''; paint();
+                }, 'btn primary', 'prediction-complete'),
+                button(TEXT.cancel, () => { state.asking = null; state.askMsg = ''; paint(); }, 'btn ghost', 'prediction-cancel')))
+              : h('div', { class: 'row' }, button(TEXT.plHow, () => { state.asking = p.id; state.askMsg = ''; paint(); focusOn('[data-test="prediction-actual"]'); }, 'btn', 'prediction-ask',
+                { 'aria-label': `${TEXT.plHow} ${p.activity}` })));
+        })) : h('p', { class: 'muted', text: TEXT.plNoneOpen })));
+      if (rows.done.length) {
+        root.appendChild(h('section', { class: 'card stack', 'data-test': 'predictions-done', 'aria-labelledby': 'act-pl-done' },
+          h('h2', { class: 'card-title', id: 'act-pl-done', text: TEXT.plDoneTitle }),
+          h('ul', { class: 'act-blocks' }, rows.done.map((p) => h('li', { class: 'act-block', 'data-test': 'prediction-done' },
+            h('p', { class: 'act-title', text: p.activity }), h('p', { text: p.words }))))));
+      }
+      if (HELP_PAGES.has('predictions') || rows.open.concat(rows.done).some((p) => crisisIn(E, p.activity))) root.appendChild(helpBox('predictions-help'));
+    };
+    paint();
+    return root;
+  }
+
+  /* ── U-25: to-dos ──────────────────────────────────────────────────────────────────────── */
+  /* Open to-dos (by due date, those without one last, then oldest first) and done ones (newest first). A due date is
+     shown plainly; nothing is ever overdue or late, and a past date looks like any other. */
+  function todoRows(view) {
+    const rows = list(view, 'todos');
+    const open = rows.filter((t) => !t.done).sort((a, b) => {
+      const da = DATE_RE.test(String(a.due || '')) ? a.due : '9999-99-99';
+      const db = DATE_RE.test(String(b.due || '')) ? b.due : '9999-99-99';
+      return da.localeCompare(db) || String(a.at || '').localeCompare(String(b.at || ''));
+    });
+    const done = rows.filter((t) => t.done).sort((a, b) => String(b.doneAt || '').localeCompare(String(a.doneAt || '')));
+    const shape = (t) => Object.assign({}, t, { dueLabel: DATE_RE.test(String(t.due || '')) ? TEXT.tdFor(dayLabel(t.due)) : '',
+      go: typeof t.route === 'string' && t.route.startsWith('#/') ? t.route : '' });
+    return { open: open.map(shape), done: done.map(shape) };
+  }
+  async function saveTodo(A, v) {
+    const item = { text: str(v && v.text) };
+    const due = str(v && v.due);
+    if (due) item.due = due;
+    try {
+      if (!A || !A.todos) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.todos.add(item) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-plan' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  function todosPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const state = { asking: null, message: '', values: { text: '', due: '' } };
+    const root = h('div', { class: 'page stack act-page act-todos', 'data-test': 'todos' });
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const write = async (fn) => {
+      try { await fn(); } catch (e) { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(TEXT.error, 'warn'), null); }
+      paint();
+    };
+    const paint = () => {
+      clear(root);
+      const rows = todoRows(view);
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.tdTitle }));
+      root.appendChild(h('p', { class: 'muted', text: TEXT.tdIntro }));
+      const ids = { t: fid('tdt'), d: fid('tdd'), err: fid('tderr') };
+      const txt = h('input', { id: ids.t, type: 'text', maxlength: '300', autocomplete: 'off', 'data-test': 'todo-text', value: state.values.text });
+      const due = h('input', { id: ids.d, type: 'date', 'data-test': 'todo-due', value: state.values.due });
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'todo-error', text: state.message });
+      if (!state.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('form', { class: 'card form stack act-form', 'data-test': 'todo-form', novalidate: true, 'aria-labelledby': 'act-td-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = { text: txt.value, due: due.value };
+          const r = await saveTodo(A, values);
+          if (!r.ok) { state.values = values; state.message = r.message; paint(); focusOn('.act-form-error'); return; }
+          if (crisisIn(E, values.text)) HELP_PAGES.add('todos');
+          state.values = { text: '', due: '' }; state.message = '';
+          paint();
+          focusOn('[data-test="todo-text"]');
+        } },
+      h('h2', { class: 'card-title', id: 'act-td-h', text: TEXT.tdNew }),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.t, text: TEXT.tdText }), txt),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.d, text: TEXT.tdDue }), due),
+      err,
+      h('div', { class: 'row form-actions' }, h('button', { type: 'submit', class: 'btn primary', 'data-test': 'todo-add', 'data-testid': 'todo-add', text: TEXT.tdAdd }))));
+      const item = (t, isOpen) => h('li', { class: 'act-block' + (isOpen ? '' : ' act-skipped'), 'data-test': isOpen ? 'todo' : 'todo-done' },
+        h('p', { class: 'act-title', text: t.text }),
+        t.dueLabel ? h('p', { class: 'muted', 'data-test': 'todo-due-label', text: t.dueLabel }) : null,
+        !isOpen ? h('p', { class: 'act-status', text: TEXT.tdDoneMark }) : null,
+        state.asking === t.id
+          ? h('div', { class: 'row act-ask' }, h('span', { text: TEXT.tdRemoveAsk }),
+            button(TEXT.tdRemoveYes, () => write(async () => { state.asking = null; await A.todos.remove(t.id); }), 'btn', 'todo-remove-yes'),
+            button(TEXT.tdRemoveNo, () => { state.asking = null; paint(); }, 'btn ghost', 'todo-remove-no'))
+          : h('div', { class: 'row act-tools' },
+            isOpen ? button(TEXT.tdDone, () => write(() => A.todos.done(t.id)), 'btn', 'todo-done-btn', { 'aria-label': `${TEXT.tdDone}: ${t.text}` }) : null,
+            isOpen && t.go ? link(t.go, TEXT.tdGo, 'btn ghost', 'todo-go', { 'aria-label': `${TEXT.tdGo}: ${t.text}` }) : null,
+            button(TEXT.tdRemove, () => { state.asking = t.id; paint(); focusOn('[data-test="todo-remove-no"]'); }, 'btn ghost', 'todo-remove', { 'aria-label': `${TEXT.tdRemove}: ${t.text}` })));
+      root.appendChild(h('section', { class: 'card stack', 'data-test': 'todos-open', 'aria-labelledby': 'act-td-open' },
+        h('h2', { class: 'card-title', id: 'act-td-open', text: TEXT.tdOpenTitle }),
+        rows.open.length ? h('ul', { class: 'act-blocks' }, rows.open.map((t) => item(t, true))) : h('p', { class: 'muted', text: TEXT.tdNone })));
+      if (rows.done.length) {
+        root.appendChild(h('section', { class: 'card stack', 'data-test': 'todos-done', 'aria-labelledby': 'act-td-done' },
+          h('h2', { class: 'card-title', id: 'act-td-done', text: TEXT.tdDoneTitle }),
+          h('ul', { class: 'act-blocks' }, rows.done.map((t) => item(t, false)))));
+      }
+      if (HELP_PAGES.has('todos') || rows.open.some((t) => crisisIn(E, t.text))) root.appendChild(helpBox('todos-help'));
+    };
+    paint();
+    return root;
+  }
+
   /* ── page ──────────────────────────────────────────────────────────────────────────────── */
   function page(ctx) {
     const parts = ctx && ctx.route && Array.isArray(ctx.route.parts) ? ctx.route.parts : [];
     const sub = parts[1] || '';
     if (!sub) return hubPage(ctx);
     if (sub === 'planner') return plannerPage(ctx);
+    if (sub === 'battle') return battlePage(ctx);
+    if (sub === 'review') return reviewPage(ctx);
+    if (sub === 'quests') return questsPage(ctx);
+    if (sub === 'predictions') return predictionsPage(ctx);
+    if (sub === 'todos') return todosPage(ctx);
+    if (sub === 'practices' || sub === 'practice') { const U = ns('UI'); if (U && typeof U.go === 'function') safe(() => U.go('#/practice'), null); }
     return stubPage(sub);
   }
 
-  const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel'];
-  return { page, TEXT, PURE, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel };
+  const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel',
+    'planEnded', 'battleLists', 'battleNotes', 'battlePlanIcsItem', 'battleIcsFile', 'battleFromValues', 'saveBattle', 'debriefPlan',
+    'reviewWeek', 'nextReviewDate', 'reviewIcsItem', 'reviewSaved', 'forecastRows', 'wantToItem', 'reviewPayload', 'saveReview',
+    'questCards', 'tickQuest', 'predictionRows', 'predictionWords', 'savePrediction', 'completePrediction', 'todoRows', 'saveTodo'];
+  return { page, TEXT, PURE, forgetReviews, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel,
+    planEnded, battleLists, battleNotes, battlePlanIcsItem, battleIcsFile, battleFromValues, saveBattle, debriefPlan,
+    reviewWeek, nextReviewDate, reviewIcsItem, reviewSaved, forecastRows, wantToItem, reviewPayload, saveReview,
+    questCards, tickQuest, predictionRows, predictionWords, savePrediction, completePrediction, todoRows, saveTodo };
 })();
 
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); ui-core.js is not changed.

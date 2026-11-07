@@ -616,4 +616,25 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 .act-form-error:focus { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
 .act-page .btn, .act-page select, .act-page input[type="text"], .act-page input[type="date"], .act-page input[type="time"] { min-height: 44px; }
 .act-page .choice input[type="checkbox"] { min-width: 24px; min-height: 24px; }
+/* U-23 Battle Plans */
+.act-page textarea { width: 100%; min-height: 44px; }
+.act-bp-card .act-title { font-size: 1.05rem; margin: var(--space-1) 0; }
+.act-debrief { margin-top: var(--space-2); }
+/* U-24 Weekly Review */
+.act-review-lines { padding-left: 1.2rem; }
+.act-review-lines > li { margin-bottom: var(--space-2); }
+.act-want { border: 0; padding: 0; margin: 0 0 var(--space-3); }
+.act-want legend { font-weight: 600; padding: 0; }
+/* U-25 quests, Prediction Lab, to-dos, practices */
+.act-steps, .prc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.act-step { justify-content: space-between; gap: var(--space-2); }
+.act-step-text { flex: 1 1 12rem; }
+.act-step-done .act-step-text { color: hsl(var(--muted)); }
+.act-auto { font-size: 0.875rem; }
+.act-badge { font-weight: 700; margin: 0; }
+.prc-timer { font-size: 1.25rem; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
+.prc-count { margin: 0; font-size: 0.875rem; }
+.prc-line { font-size: 1.25rem; line-height: 1.5; margin: var(--space-2) 0; }
+.prc-page select, .prc-page textarea { min-height: 44px; }
+.prc-done h2:focus { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
 /* -- end actions -- */

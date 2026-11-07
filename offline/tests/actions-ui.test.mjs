@@ -258,7 +258,12 @@ test('actions: the hub and the screens still being built are honest (no dead but
   await withDom(async () => {
     const hub = AU.page(ctxFor(E.makeView({}), R('/actions')));
     assert.equal(one(hub, 'actions-open-planner').getAttribute('href'), '#/actions/planner');
-    for (const sub of ['battle', 'review', 'quests', 'predictions', 'todos', 'elsewhere']) {
+    assert.equal(one(hub, 'actions-open-battle').getAttribute('href'), '#/actions/battle');
+    assert.equal(one(hub, 'actions-open-review').getAttribute('href'), '#/actions/review');
+    for (const sub of ['quests', 'predictions', 'todos']) {
+      assert.equal(AU.page(ctxFor(E.makeView({}), R('/actions/' + sub))).getAttribute('data-test'), sub, sub + ' is built (U-25)');
+    }
+    for (const sub of ['elsewhere']) {
       const root = AU.page(ctxFor(E.makeView({}), R('/actions/' + sub)));
       assert.equal(root.getAttribute('data-test'), 'actions-stub', sub);
       assert.match(root.textContent, /being built/);
@@ -332,5 +337,576 @@ test('planner: the contract\'s data-testid hooks sit beside data-test (planner-a
     assert.equal(tid('planner-add-btn')[0].getAttribute('data-test'), 'planner-add-btn');
     assert.equal(tid('planner-block').length, 1);
     assert.equal(tid('planner-block')[0].getAttribute('data-test'), 'planner-block');
+  });
+});
+
+// ── U-23 Battle Plans ──────────────────────────────────────────────────────────────────────
+const evs = (type) => Store.view.list('events').filter((e) => e.type === type);
+const bpFill = (root, o) => { for (const k of Object.keys(o)) one(root, 'bp-f-' + k).value = o[k]; };
+
+test('battle: a plan exports a valid .ics through Engine.ics (one VEVENT on its date, CRLF lines, no buddy)', () => {
+  const p = plan({ id: 'bp1', date: '2026-11-10', start: '19:00', end: '21:00', title: 'Work party', kind: 'risky', risky: true,
+    battlePlan: { situation: 'Old crew, open bar, a long evening with nothing else planned for after it ends', plan: 'Hold a soda; leave by nine',
+      backups: ['Text my sister', 'Step outside'], buddyId: 'c1', exit: 'A taxi at nine' } });
+  const item = P.battlePlanIcsItem(p);
+  assert.deepEqual(Object.keys(item).sort(), ['date', 'end', 'id', 'notes', 'start', 'title']);
+  assert.equal(item.date, '2026-11-10');
+  assert.doesNotMatch(item.notes, /Someone to reach|c1/, 'the buddy stays on the device');
+  const f = P.battleIcsFile(E, p, NOW);
+  assert.equal(f.filename, '1-addic-battle-plan-2026-11-10.ics');
+  assert.ok(f.text.startsWith('BEGIN:VCALENDAR\r\n'));
+  assert.match(f.text, /END:VCALENDAR\r\n$/);
+  assert.equal((f.text.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.match(f.text, /\r\nDTSTART:20261110T190000\r\n/);
+  assert.match(f.text, /\r\nDTEND:20261110T210000\r\n/);
+  assert.match(f.text, /\r\nSUMMARY:Work party\r\n/);
+  assert.doesNotMatch(f.text.replace(/\r\n/g, ''), /[\r\n]/, 'every line ends in CRLF');
+  assert.equal(P.battlePlanIcsItem({ date: 'soon' }), null);
+  assert.equal(P.battleIcsFile(null, p, NOW), null);
+});
+
+test('battle: the list carries bp-new; the form carries bp-form and saves a risky block with one BattlePlanCreated', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const empty = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.ok(tours(empty).includes('bp-new'));
+    assert.equal(one(empty, 'bp-new').getAttribute('href'), '#/actions/battle?new=1');
+    one(empty, 'bp-none');
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { new: '1' })));
+    assert.equal(one(root, 'bp-form').getAttribute('data-tour'), 'bp-form');
+    assert.equal(one(root, 'bp-f-date').value, TODAY, 'the day defaults to today');
+    bpFill(root, { title: 'Work party', date: '2026-11-10', start: '19:00', end: '21:00', plan: 'Hold a soda; leave by nine', backups: 'Text my sister\n\n Step outside ' });
+    await one(root, 'bp-form').fire('submit');
+    await until(() => Store.view.list('plans').length === 1);
+    const [p] = Store.view.list('plans');
+    assert.equal(p.kind, 'risky');
+    assert.equal(p.risky, true);
+    assert.equal(p.title, 'Work party');
+    assert.deepEqual(p.battlePlan.backups, ['Text my sister', 'Step outside']);
+    assert.equal(p.battlePlan.buddyId, null);
+    assert.equal(evs('BattlePlanCreated').length, 1);
+    assert.equal(byTest(root, 'bp-card').length, 1, 'the list shows the new plan');
+    assert.equal(byTest(root, 'bp-form').length, 0, 'the form is closed');
+  });
+});
+
+test('battle: an empty plan or an end before the start is refused with a message, and the input is kept', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { new: '1' })));
+    bpFill(root, { title: 'Late shift', start: '22:00', end: '21:00' });
+    await one(root, 'bp-form').fire('submit');
+    assert.match(one(root, 'bp-f-error').textContent, /what you will do/i);
+    assert.equal(one(root, 'bp-f-title').value, 'Late shift');
+    one(root, 'bp-f-plan').value = 'Go straight home';
+    await one(root, 'bp-form').fire('submit');
+    assert.match(one(root, 'bp-f-error').textContent, /end time must be after/i);
+    assert.equal(one(root, 'bp-f-plan').value, 'Go straight home');
+    assert.equal(Store.view.list('plans').length, 0);
+    assert.equal(evs('BattlePlanCreated').length, 0);
+  });
+});
+
+test('battle: ?plan=<id> attaches a Battle Plan to an existing block (no second block); a gone block is said plainly', async () => {
+  await freshStore();
+  const { plan: b } = await Actions.plans.add({ date: TODAY, start: '18:00', end: '20:00', title: 'Evening alone', kind: 'should' });
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    assert.equal(one(root, 'bp-f-title').value, 'Evening alone');
+    assert.equal(one(root, 'bp-f-start').value, '18:00');
+    one(root, 'bp-f-plan').value = 'Cook, then call a friend';
+    await one(root, 'bp-form').fire('submit');
+    await until(() => !!Store.view.list('plans')[0].battlePlan);
+    const rows = Store.view.list('plans');
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].risky, true);
+    assert.equal(rows[0].kind, 'should', 'the kind of an existing block is kept');
+    assert.equal(rows[0].battlePlan.plan, 'Cook, then call a friend');
+    assert.equal(evs('BattlePlanCreated').length, 1);
+    const gone = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: 'nope' })));
+    one(gone, 'bp-missing');
+    assert.equal(one(gone, 'bp-new-instead').getAttribute('href'), '#/actions/battle?new=1');
+  });
+});
+
+test('battle: the debrief, yes and no, each append one BattlePlanDebriefed; a second debrief adds none; no score', async () => {
+  await freshStore();
+  const mk = (date, title) => Actions.plans.add({ date, start: '19:00', end: '21:00', title, kind: 'risky', battlePlan: { plan: 'Walk it off' } });
+  const a = (await mk('2026-11-06', 'Friday evening')).plan;
+  const b = (await mk('2026-11-05', 'Thursday evening')).plan;
+  await mk('2026-11-09', 'Monday evening');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.equal(byTest(root, 'bp-card').length, 3);
+    assert.equal(byTest(root, 'bp-debrief').length, 2, 'only ended blocks ask');
+    assert.match(one(root, 'bp-upcoming').textContent, /When this time has passed/);
+    assert.equal(one(root, 'bp-debrief-yes').getAttribute('data-testid'), 'bp-debrief-yes');
+    one(root, 'bp-how').value = 'Called my brother';
+    await one(root, 'bp-debrief-yes').fire('click');
+    assert.equal(evs('BattlePlanDebriefed').length, 1);
+    assert.equal(Store.view.get('plans', a.id).debrief.usedPlan, true);
+    assert.equal(Store.view.get('plans', a.id).debrief.how, 'Called my brother');
+    assert.equal(byTest(root, 'bp-debrief').length, 1);
+    await one(root, 'bp-debrief-no').fire('click');
+    assert.equal(evs('BattlePlanDebriefed').length, 2);
+    assert.equal(Store.view.get('plans', b.id).debrief.usedPlan, false);
+    await P.debriefPlan(Actions, a.id, false, 'again');
+    assert.equal(evs('BattlePlanDebriefed').length, 2, 'once per plan');
+    const after = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.equal(byTest(after, 'bp-debriefed').length, 2);
+    assert.doesNotMatch(after.textContent, /\b(score|points|streak|failed|missed|overdue)\b/i);
+  });
+});
+
+test('battle: "Add to calendar" hands the .ics to UI.download as text/calendar; crisis words show the urgent-help line', async () => {
+  await freshStore();
+  await Actions.plans.add({ date: '2026-11-12', start: '20:00', end: '22:00', title: 'Payday', kind: 'risky', battlePlan: { plan: "I can't go on like this" } });
+  const calls = [];
+  globalThis.UI = { download: (...a) => { calls.push(a); return true; }, toast() {} };
+  try {
+    await withDom(async () => {
+      const root = AU.page(ctxFor(Store.view, R('/actions/battle')));
+      await one(root, 'bp-ics').fire('click');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0][0], '1-addic-battle-plan-2026-11-12.ics');
+      assert.ok(calls[0][1].startsWith('BEGIN:VCALENDAR\r\n'));
+      assert.equal(calls[0][2], 'text/calendar');
+      assert.equal(one(root, 'bp-help-go').getAttribute('href'), '#/sos/urgent');
+      for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+      for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+    });
+  } finally { delete globalThis.UI; }
+});
+
+// ── U-24 Weekly Review ─────────────────────────────────────────────────────────────────────
+const reviews = () => Store.view.list('responses').filter((r) => r.exerciseId === 'weekly-review');
+const step = (root) => Number(one(root, 'review-step').getAttribute('data-step'));
+const NO_SCORE = /\b(score|points|streak|failed|missed|overdue|late|behind|graded?)\b/i;
+
+test('review: the week, the next review day and the weekly reminder .ics at 18:00 on profile.reviewDay', () => {
+  assert.deepEqual(P.reviewWeek(NOW), { today: TODAY, weekStart: '2026-11-02', from: '2026-11-01', to: TODAY });
+  assert.equal(P.nextReviewDate(0, TODAY), '2026-11-08');
+  assert.equal(P.nextReviewDate(6, TODAY), TODAY, 'today counts');
+  assert.equal(P.nextReviewDate(9, TODAY), '2026-11-08', 'an unknown day is Sunday');
+  const item = P.reviewIcsItem({ reviewDay: 3 }, NOW);
+  assert.deepEqual(item, { id: 'weekly-review', date: '2026-11-11', start: '18:00', end: '18:15', title: 'Weekly review', rrule: 'FREQ=WEEKLY;BYDAY=WE' });
+  assert.equal(P.reviewIcsItem({}, NOW).date, '2026-11-08');
+  const text = E.ics([item], { now: NOW });
+  assert.match(text, /\r\nDTSTART:20261111T180000\r\nDTEND:20261111T181500\r\nRRULE:FREQ=WEEKLY;BYDAY=WE\r\n/);
+  assert.deepEqual(P.wantToItem({ title: 'Swim', date: '2026-11-08', start: '23:30' }), { date: '2026-11-08', start: '23:30', end: '23:59', title: 'Swim', kind: 'want', risky: false, reward: null });
+});
+
+test('review: a synthetic week renders the highlights and the forecast check line from Engine', async () => {
+  AU.forgetReviews();
+  const view = E.makeView({
+    plans: [plan({ id: 'r1', date: '2026-11-04', start: '19:00', end: '21:00', title: 'Payday evening', kind: 'risky', risky: true, battlePlan: { plan: 'Go to the gym' } }),
+      plan({ id: 'r2', date: '2026-11-09', start: '20:00', end: '22:00', title: 'Old friends visit', kind: 'risky', risky: true })],
+    logs: [{ id: 'l1', type: 'craving', at: at(2026, 11, 4, 19, 40).toISOString(), intensity: 6 }, { id: 'l2', type: 'feeling', at: at(2026, 11, 5, 9).toISOString(), intensity: 3 }],
+  });
+  const fc = E.forecastCheck(view, '2026-11-01').find((d) => d.date === '2026-11-04');
+  assert.ok(fc && fc.line, 'Engine has a line for the planned day');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(view, R('/actions/review')));
+    assert.ok(tours(root).includes('review-start'));
+    assert.match(root.textContent, /Nothing here is scored/);
+    await one(root, 'review-start').fire('click');
+    assert.equal(step(root), 1);
+    for (const l of E.weekSummary(view, '2026-11-01').highlights) assert.ok(root.textContent.includes(l), l);
+    await one(root, 'review-next').fire('click');
+    assert.equal(step(root), 2);
+    assert.equal(one(root, 'review-forecast-line').textContent, fc.line);
+    assert.match(one(root, 'review-forecast').textContent, /Logged: a feeling at/, 'a day without a line shows plain rows');
+    for (let s = 2; s < 5; s++) { assert.doesNotMatch(root.textContent, NO_SCORE, 'screen ' + s); await one(root, 'review-next').fire('click'); }
+    assert.equal(step(root), 5);
+    assert.doesNotMatch(root.textContent, NO_SCORE, 'screen 5');
+    await one(root, 'review-back').fire('click');
+    assert.equal(step(root), 4);
+    assert.match(one(root, 'review-ahead').textContent, /Old friends visit/);
+    assert.equal(one(root, 'review-bp-add').getAttribute('href'), '#/actions/battle?plan=r2');
+    assert.equal(one(root, 'review-bp-new').getAttribute('href'), '#/actions/battle?new=1');
+    // leaving for a Battle Plan and coming back resumes the same screen (memory only)
+    const back = AU.page(ctxFor(view, R('/actions/review')));
+    assert.equal(step(back), 4);
+  });
+  AU.forgetReviews();
+});
+
+test('review: Save writes one response, one WeeklyReviewCompleted, the want-tos and the re-rate; a second save adds no second event', async () => {
+  AU.forgetReviews();
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/review'), { profile: { reviewDay: 0 } }));
+    await one(root, 'review-start').fire('click');
+    one(root, 'review-f-note').value = 'Cooked twice';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    one(root, 'review-f-score').value = '7';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    byTest(root, 'review-want-title')[0].value = 'Swim';
+    byTest(root, 'review-want-reward')[0].value = 'A long shower';
+    one(root, 'review-f-focusSkill').value = 'trial';
+    await one(root, 'review-save').fire('click');
+    assert.match(one(root, 'review-error').textContent, /Choose the stage/, 'a number without a stage is asked about');
+    assert.equal(reviews().length, 0);
+    await one(root, 'review-back').fire('click');
+    await one(root, 'review-back').fire('click');
+    one(root, 'review-f-stage').value = 'action';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    assert.equal(byTest(root, 'review-want-title')[0].value, 'Swim', 'answers stay in memory between screens');
+    await one(root, 'review-save').fire('click');
+    await until(() => reviews().length === 1);
+    assert.equal(reviews().length, 1);
+    const p = reviews()[0].payload;
+    assert.equal(p.weekStart, '2026-11-02');
+    assert.equal(p.focusSkill, 'trial');
+    assert.equal(p.highlights.note, 'Cooked twice');
+    assert.deepEqual(p.motivation, { stage: 'action', score: 7, plusOne: '' });
+    assert.equal(p.wantTos.length, 1);
+    assert.equal(p.wantTos[0].title, 'Swim');
+    assert.equal(evs('WeeklyReviewCompleted').length, 1);
+    const plans = Store.view.list('plans');
+    assert.equal(plans.length, 1);
+    assert.deepEqual([plans[0].kind, plans[0].date, plans[0].start, plans[0].end, plans[0].reward], ['want', '2026-11-08', '18:00', '19:00', 'A long shower']);
+    assert.equal(Store.view.list('motivation').length, 1);
+    one(root, 'review-saved');
+    assert.equal(one(root, 'review-start').getAttribute('data-tour'), 'review-start');
+    // again, the same week: a second response, still one event, no second want-to or re-rate
+    await one(root, 'review-start').fire('click');
+    for (let s = 1; s < 5; s++) await one(root, 'review-next').fire('click');
+    await one(root, 'review-save').fire('click');
+    await until(() => reviews().length === 2);
+    assert.equal(evs('WeeklyReviewCompleted').length, 1, 'once per week');
+    assert.equal(Store.view.list('plans').length, 1);
+    assert.equal(Store.view.list('motivation').length, 1);
+  });
+  AU.forgetReviews();
+});
+
+test('review: the reminder goes to UI.download as text/calendar; crisis words show the urgent-help line; no dead button', async () => {
+  AU.forgetReviews();
+  await freshStore();
+  await Actions.weeklyReview({ weekStart: '2026-11-02', highlights: {} });
+  const calls = [];
+  globalThis.UI = { download: (...a) => { calls.push(a); return true; }, toast() {} };
+  try {
+    await withDom(async () => {
+      const root = AU.page(ctxFor(Store.view, R('/actions/review'), { profile: { reviewDay: 6 } }));
+      assert.match(one(root, 'review-saved').textContent, /every Saturday at 6 pm/);
+      await one(root, 'review-ics').fire('click');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0][0], '1-addic-weekly-review.ics');
+      assert.match(calls[0][1], /RRULE:FREQ=WEEKLY;BYDAY=SA\r\n/);
+      assert.equal(calls[0][2], 'text/calendar');
+      await one(root, 'review-start').fire('click');
+      one(root, 'review-f-note').value = "I can't go on";
+      await one(root, 'review-next').fire('click');
+      assert.equal(one(root, 'review-help-go').getAttribute('href'), '#/sos/urgent');
+      for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+      for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+    });
+  } finally { delete globalThis.UI; AU.forgetReviews(); }
+});
+
+// ── U-25: quests, Prediction Lab, to-dos and the practices player ─────────────────────────────────────────────
+const PR = vm.runInThisContext(`(function () {
+${readFileSync(src('ui-practices.js'), 'utf8')}
+return PracticesUI;
+})()`, { filename: src('ui-practices.js') });
+// A stand-in of exactly the content lane's shape (content-practices.js at be0f806d), not its words.
+const STANDIN = {
+  breathe: { id: 'breathe', title: 'Breathe test', minutes: 5, ladder: [5, 10, 15, 20, 25, 30], intro: 'Intro line.',
+    script: [{ t: 'Line one.', secs: 10 }, { t: 'Line two.', secs: 20 }, { t: 'Line three.', secs: 30 }], close: 'Close line.' },
+  sober: { id: 'sober', title: 'Sober test', minutes: 2, steps: ['S.', 'O.', 'B.', 'E.', 'R.'], intro: 'Five steps.',
+    script: [{ t: 'S.', secs: 10 }, { t: 'O.', secs: 25 }, { t: 'B.', secs: 30 }, { t: 'E.', secs: 25 }, { t: 'R.', secs: 15 }], close: 'Done.' },
+  walking: { id: 'walking', title: 'Walk test', minutes: 5, intro: 'Walk.', script: [{ t: 'Step.', secs: 30 }], close: 'End.' },
+};
+const withPractices = async (p, fn) => {
+  const had = Object.prototype.hasOwnProperty.call(globalThis.Content, 'practices');
+  const old = globalThis.Content.practices;
+  if (p === undefined) delete globalThis.Content.practices; else globalThis.Content.practices = p;
+  try { return await fn(); } finally { if (had) globalThis.Content.practices = old; else delete globalThis.Content.practices; PR.forgetSessions(); }
+};
+const eventsOf = (type) => Store.view.list('events').filter((e) => e.type === type);
+const noDeadButtons = (root) => {
+  for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+  for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+};
+
+test('practices: the script from the real shape, an array shape, or null; list order; minutes credited', () => {
+  const C = { practices: STANDIN };
+  const s = PR.practiceScript(C, 'breathe');
+  assert.deepEqual(s.steps, ['Line one.', 'Line two.', 'Line three.']);
+  assert.deepEqual(s.secs, [10, 20, 30]);
+  assert.equal(s.minutes, 5);
+  assert.deepEqual(s.ladder, [5, 10, 15, 20, 25, 30]);
+  assert.equal(s.intro, 'Intro line.');
+  assert.equal(s.close, 'Close line.');
+  assert.equal(PR.practiceScript(C, 'sober').steps.length, 5);
+  assert.equal(PR.practiceScript({ practices: [{ id: 'x', title: 'X', minutes: 3, steps: ['a', 'b'] }] }, 'x').steps.length, 2);
+  assert.equal(PR.practiceScript(C, 'body-scan'), null);
+  assert.equal(PR.practiceScript({}, 'breathe'), null);
+  assert.equal(PR.practiceScript(null, 'breathe'), null);
+  assert.equal(PR.practiceScript({ practices: { breathe: { id: 'breathe', script: [] } } }, 'breathe'), null);
+  assert.deepEqual(PR.practiceList(C).map((r) => r.id), ['breathe', 'sober', 'walking']);
+  assert.equal(PR.minutesCredit(59999), 0);
+  assert.equal(PR.minutesCredit(180000), 3);
+  assert.equal(PR.minutesCredit(10 ** 9), 600);
+});
+
+test('practices: the events of a finish; ExerciseDone always, MindfulMinute only for a whole minute; no SkillUsed', () => {
+  const a = PR.practiceEvents('breathe', { elapsedMs: 185000, helpful: '7', reflection: '  calmer  ' });
+  assert.deepEqual(a, [['ExerciseDone', { exerciseId: 'breathing', practiceId: 'breathe', kind: 'practice', minutes: 3, helpful: 7, reflection: 'calmer' }], ['MindfulMinute', { minutes: 3 }]]);
+  const b = PR.practiceEvents('walking', { elapsedMs: 20000, helpful: '11' });
+  assert.deepEqual(b, [['ExerciseDone', { exerciseId: 'walking', practiceId: 'walking', kind: 'practice', minutes: 0 }]]);
+  assert.ok(!a.concat(b).some(([t]) => t === 'SkillUsed'));
+});
+
+test('practices: no script is an honest stub with a real way back (O7)', async () => {
+  await withPractices(undefined, () => withDom(async () => {
+    const root = PR.page(ctxFor(Store.view, R('/practice/breathe')));
+    assert.ok(byTest(root, 'practice-stub').length || root.getAttribute('data-test') === 'practice-stub');
+    assert.match(root.textContent, /being written/);
+    assert.equal(byTest(root, 'practice-start').length, 0);
+    assert.equal(one(root, 'practice-back').getAttribute('href'), '#/practice');
+    noDeadButtons(root);
+    const list = PR.page(ctxFor(Store.view, R('/practice')));
+    assert.match(list.textContent, /being written/);
+    noDeadButtons(list);
+  }));
+});
+
+test('practices: start, read aloud (no voice says so), pause, finish, reflect; ExerciseDone and MindfulMinute appended', async () => {
+  await freshStore();
+  let t = 1000000;
+  const spoken = [];
+  let voice = true;
+  globalThis.UI = { speak: (x) => { spoken.push(x); return voice; }, stopSpeaking() { spoken.push('#stop'); }, toast() {} };
+  try {
+    await withPractices(STANDIN, () => withDom(async () => {
+      const ctx = ctxFor(Store.view, R('/practice/breathe'), { nowMs: () => t });
+      const root = PR.page(ctx);
+      assert.equal(one(root, 'practice-length').value, '5');
+      await one(root, 'practice-voice').fire('click');
+      assert.deepEqual(spoken, ['Intro line.']);
+      await one(root, 'practice-start').fire('click');
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line one.');
+      assert.equal(spoken[spoken.length - 1], 'Line one.');
+      assert.match(one(root, 'practice-timer').textContent, /5:00 left/);
+      await one(root, 'practice-next').fire('click');
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line two.');
+      t += 120000;
+      await one(root, 'practice-pause').fire('click');
+      assert.equal(spoken[spoken.length - 1], '#stop');
+      assert.match(one(root, 'practice-timer').textContent, /Paused/);
+      t += 600000; // paused time is not practice time
+      assert.match(one(root, 'practice-timer').textContent, /3:00 left/);
+      voice = false;
+      await one(root, 'practice-pause').fire('click'); // resume
+      assert.match(one(root, 'practice-novoice').textContent, /No voice on this device/);
+      assert.equal(one(root, 'practice-line').textContent.trim(), 'Line two.', 'the script stays on screen');
+      t += 65000;
+      await one(root, 'practice-stop').fire('click');
+      one(root, 'practice-reflection').value = 'Felt steadier';
+      one(root, 'practice-helpful').value = '8';
+      await one(root, 'practice-finish').fire('click');
+      await until(() => eventsOf('MindfulMinute').length === 1);
+      const done = eventsOf('ExerciseDone');
+      assert.equal(done.length, 1);
+      assert.deepEqual(done[0].payload, { exerciseId: 'breathing', practiceId: 'breathe', kind: 'practice', minutes: 3, helpful: 8, reflection: 'Felt steadier' });
+      assert.deepEqual(eventsOf('MindfulMinute')[0].payload, { minutes: 3 });
+      assert.equal(eventsOf('SkillUsed').length, 0);
+      assert.match(one(root, 'practice-done').textContent, /3 minutes/);
+      assert.equal(byTest(root, 'practice-help').length, 0);
+      noDeadButtons(root);
+      // ui-core builds a new page after the Store changes: the saved screen survives it
+      const again = PR.page(ctx);
+      assert.equal(byTest(again, 'practice-done').length, 1);
+    }));
+  } finally { delete globalThis.UI; }
+});
+
+test('practices: a short practice writes ExerciseDone only; crisis words show the urgent-help line; sober links to SOS', async () => {
+  await freshStore();
+  let t = 0;
+  try {
+    globalThis.UI = { speak: () => false, stopSpeaking() {}, toast() {} };
+    await withPractices(STANDIN, () => withDom(async () => {
+      const root = PR.page(ctxFor(Store.view, R('/practice/sober'), { nowMs: () => t }));
+      assert.equal(one(root, 'practice-sos-go').getAttribute('href'), '#/sos');
+      await one(root, 'practice-start').fire('click');
+      t += 30000;
+      await one(root, 'practice-stop').fire('click');
+      one(root, 'practice-reflection').value = 'I want to end my life';
+      await one(root, 'practice-finish').fire('click');
+      await until(() => eventsOf('ExerciseDone').length === 1);
+      assert.equal(eventsOf('MindfulMinute').length, 0);
+      assert.equal(eventsOf('ExerciseDone')[0].payload.minutes, 0);
+      assert.equal(one(root, 'practice-help-go').getAttribute('href'), '#/sos/urgent');
+      assert.match(one(root, 'practice-done').textContent, /under a minute/);
+    }));
+  } finally { delete globalThis.UI; }
+});
+
+test('quests: cards from Engine.quests; manual tick only where a step does not tick itself; a tick is idempotent; badge on completion', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/quests')));
+    const crew = byTest(root, 'quest').find((n) => n.getAttribute('data-quest') === 'crew');
+    assert.equal(crew.all((n) => n.getAttribute && n.getAttribute('data-test') === 'quest-tick').length, 0, 'crew ticks itself');
+    const clear = byTest(root, 'quest').find((n) => n.getAttribute('data-quest') === 'clear-space');
+    assert.equal(clear.all((n) => n.getAttribute && n.getAttribute('data-test') === 'quest-tick').length, 3);
+    noDeadButtons(root);
+  });
+  const r1 = await AU.tickQuest(Actions, 'clear-space', 'list');
+  const r2 = await AU.tickQuest(Actions, 'clear-space', 'list');
+  assert.ok(r1.ok && r2.ok);
+  assert.equal(r1.row.ticks.list, r2.row.ticks.list, 'the second tick changes nothing');
+  assert.equal(Store.view.list('quests').length, 1);
+  const bad = await AU.tickQuest(Actions, 'clear-space', 'nope');
+  assert.equal(bad.ok, false);
+  assert.equal(bad.code, 'bad-quest');
+  await AU.tickQuest(Actions, 'clear-space', 'helper');
+  await AU.tickQuest(Actions, 'clear-space', 'done');
+  const cards = AU.questCards(E, globalThis.Content, Store.view);
+  const c = cards.find((x) => x.id === 'clear-space');
+  assert.equal(c.complete, true);
+  assert.equal(c.done, 3);
+  assert.equal(c.badge, 'Be Smart, Not Strong');
+  assert.equal(cards.find((x) => x.id === 'crew').badge, '');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/quests')));
+    assert.match(one(root, 'quest-badge').textContent, /Be Smart, Not Strong/);
+    assert.doesNotMatch(root.textContent, /\b(lost|lose|expired|random|points)\b/i);
+  });
+});
+
+test('predictions: add, complete in words; a result outside 0-10 is refused with the message kept', async () => {
+  await freshStore();
+  const bad0 = await AU.savePrediction(Actions, { activity: '', predicted: '3' });
+  assert.equal(bad0.ok, false);
+  assert.equal(bad0.code, 'bad-prediction');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/predictions')));
+    one(root, 'prediction-activity').value = 'Swim at the pool';
+    one(root, 'prediction-predicted').value = '3';
+    await one(root, 'prediction-form').fire('submit');
+    await until(() => Store.view.list('predictions').length === 1);
+    noDeadButtons(root);
+  });
+  const id = Store.view.list('predictions')[0].id;
+  const out = await AU.completePrediction(Actions, id, 11);
+  assert.equal(out.ok, false);
+  assert.equal(out.code, 'bad-prediction');
+  assert.equal((await AU.completePrediction(Actions, id, '')).ok, false);
+  assert.equal(Store.view.list('predictions')[0].actual, null);
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/predictions')));
+    await one(root, 'prediction-ask').fire('click');
+    one(root, 'prediction-actual').value = '6';
+    await one(root, 'prediction-complete').fire('click');
+    await until(() => Store.view.list('predictions')[0].actual === 6);
+  });
+  const rows = AU.predictionRows(Store.view);
+  assert.equal(rows.open.length, 0);
+  assert.equal(rows.done[0].words, 'You expected 3; it was 6. It went better than you guessed.');
+  assert.match(AU.predictionWords(5, 2), /less than you hoped/);
+});
+
+test('to-dos: add with a past due date, no overdue words; done; remove asks first; Go link for a route', async () => {
+  await freshStore();
+  await Actions.todos.add({ text: 'Call the clinic', due: '2026-11-01', route: '#/workbook' });
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    assert.match(one(root, 'todo-due-label').textContent, /For Sunday, 1 Nov 2026/);
+    assert.doesNotMatch(root.textContent, NO_OVERDUE);
+    assert.equal(one(root, 'todo-go').getAttribute('href'), '#/workbook');
+    one(root, 'todo-text').value = 'Buy fruit';
+    await one(root, 'todo-form').fire('submit');
+    await until(() => Store.view.list('todos').length === 2);
+    assert.equal(one(root, 'todo-add').getAttribute('data-testid'), 'todo-add');
+    noDeadButtons(root);
+  });
+  const bad = await AU.saveTodo(Actions, { text: '  ' });
+  assert.equal(bad.ok, false);
+  const rows = AU.todoRows(Store.view);
+  assert.deepEqual(rows.open.map((t) => t.text), ['Call the clinic', 'Buy fruit']);
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    await byTest(root, 'todo-done-btn')[0].fire('click');
+    await until(() => Store.view.list('todos').some((t) => t.done));
+    await byTest(root, 'todo-remove')[0].fire('click');
+    assert.equal(Store.view.list('todos').length, 2, 'remove asks first');
+    await one(root, 'todo-remove-yes').fire('click');
+    await until(() => Store.view.list('todos').length === 1);
+    assert.doesNotMatch(root.textContent, NO_OVERDUE);
+  });
+});
+
+test('actions hub: every card opens a working screen', async () => {
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions')));
+    const hrefs = root.all((n) => n.tagName === 'a').map((n) => n.getAttribute('href'));
+    for (const x of ['#/actions/quests', '#/actions/predictions', '#/actions/todos', '#/practice']) assert.ok(hrefs.includes(x), x);
+    assert.equal(byTest(root, 'actions-hub-quests')[0].all((n) => n.getAttribute && n.getAttribute('class') === 'act-soon').length, 0);
+  });
+});
+
+test('the event log never shrinks: a to-do remove, a Battle Plan attach and edit, and a planner remove keep every event; XP is never lower', async () => {
+  await freshStore();
+  const snap = () => ({ ids: Store.view.list('events').map((e) => e.id), xp: E.gameState(Store.view, NOW).xp.total });
+  const kept = (before, step) => {
+    const now = snap();
+    const have = new Set(now.ids);
+    for (const id of before.ids) assert.ok(have.has(id), `${step}: event ${id} is still in the log`);
+    assert.ok(now.ids.length >= before.ids.length, `${step}: the log is not shorter`);
+    assert.ok(now.xp >= before.xp, `${step}: XP ${now.xp} is not lower than ${before.xp}`);
+    return now;
+  };
+  const { plan: past } = await Actions.plans.add({ date: '2026-11-06', start: '19:00', end: '21:00', title: 'Friday evening', kind: 'risky', battlePlan: { plan: 'Walk it off' } });
+  await P.debriefPlan(Actions, past.id, true, 'It held');
+  const { plan: b } = await Actions.plans.add({ date: TODAY, start: '18:00', end: '20:00', title: 'Evening alone', kind: 'should' });
+  await Actions.todos.add({ text: 'Call the clinic' });
+  let s = snap();
+  assert.ok(s.ids.length >= 2, 'the log starts with the plan events');
+  assert.ok(s.xp > 0, 'the start carries XP');
+  await withDom(async () => {
+    const todos = AU.page(ctxFor(Store.view, R('/actions/todos')));
+    await one(todos, 'todo-remove').fire('click');
+    await one(todos, 'todo-remove-yes').fire('click');
+    await until(() => Store.view.list('todos').length === 0);
+    assert.equal(Store.view.list('todos').length, 0);
+    s = kept(s, 'to-do remove');
+
+    const attach = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    one(attach, 'bp-f-plan').value = 'Cook, then call a friend';
+    await one(attach, 'bp-form').fire('submit');
+    await until(() => !!Store.view.get('plans', b.id).battlePlan);
+    assert.equal(evs('BattlePlanCreated').length, 2);
+    s = kept(s, 'Battle Plan attach');
+
+    const edit = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    one(edit, 'bp-f-plan').value = 'Cook, then call my brother';
+    await one(edit, 'bp-form').fire('submit');
+    await until(() => Store.view.get('plans', b.id).battlePlan.plan === 'Cook, then call my brother');
+    assert.equal(evs('BattlePlanCreated').length, 2, 'an edit adds no second BattlePlanCreated');
+    s = kept(s, 'Battle Plan edit');
+
+    const day = AU.page(ctxFor(Store.view, R('/actions/planner', { date: '2026-11-06' })));
+    await one(day, 'planner-remove').fire('click');
+    await one(day, 'planner-remove-yes').fire('click');
+    await until(() => !Store.view.get('plans', past.id));
+    assert.equal(Store.view.get('plans', past.id), null);
+    s = kept(s, 'planner remove of a debriefed Battle Plan');
+    assert.equal(evs('BattlePlanCreated').filter((e) => e.payload.planId === past.id).length, 1, 'its BattlePlanCreated stays');
+    assert.equal(evs('BattlePlanDebriefed').filter((e) => e.payload.planId === past.id).length, 1, 'its debrief stays');
+
+    const today = AU.page(ctxFor(Store.view, R('/actions/planner', { date: TODAY })));
+    await one(today, 'planner-remove').fire('click');
+    await one(today, 'planner-remove-yes').fire('click');
+    await until(() => Store.view.list('plans').length === 0);
+    assert.equal(Store.view.list('plans').length, 0);
+    kept(s, 'planner remove');
   });
 });
