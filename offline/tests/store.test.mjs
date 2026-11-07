@@ -1036,6 +1036,34 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(msg.textContent, 'A PIN is not available on this device.');
   });
 
+  test('RS18: without crypto the lock page says where the PIN still works, under the first line and before the Forgot-PIN line', async () => {
+    setup();
+    let none = false;
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true }),
+      lock: { unlock: async () => { if (!none) return false; const e = new Error('no crypto'); e.code = 'NO_CRYPTO'; throw e; } } };
+    at('#/lock');
+    await UI.render();
+    const all = () => main().all();
+    const form = all().find((e) => e.tagName === 'FORM');
+    const pin = all().find((e) => e.id === 'lock-pin');
+    const where = all().find((e) => e.id === 'lock-where');
+    pin.value = '1111';
+    await form.on.submit[0]({ preventDefault() {} });
+    assert.equal(where.hidden, true, 'a wrong PIN: no such line');
+    none = true;
+    pin.value = '2468';
+    await form.on.submit[0]({ preventDefault() {} });
+    const msg = all().find((e) => e.id === 'lock-msg');
+    assert.equal(msg.textContent, 'A PIN is not available on this device.');
+    assert.equal(where.hidden, false);
+    assert.equal(where.textContent.trim(), 'Open this file in the browser where you set your PIN.');
+    const forgot = all().find((e) => e.tagName === 'P' && e.textContent.trim().startsWith('Forgot your PIN?'));
+    const order = all();
+    assert.ok(order.indexOf(msg) < order.indexOf(where) && order.indexOf(where) < order.indexOf(forgot),
+      'the first line, then this one, then the Forgot-PIN line');
+  });
+
   test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
     setup();
     t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'], now: Date.now() });

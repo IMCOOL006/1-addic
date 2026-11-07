@@ -2715,8 +2715,10 @@ const UI = (function () {
     const S = ns('Store');
     const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
     // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
-    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg' });
+    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg lock-where' });
     msg.id = 'lock-msg';
+    // Without crypto, a second line says where the PIN still works, so 'not available' never reads as 'erase' (RS18).
+    const where = h('p', { id: 'lock-where', class: 'field-hint', hidden: true });
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
       class: 'form stack', novalidate: true,
@@ -2732,9 +2734,11 @@ const UI = (function () {
         if (ok) { go('#/today', { replace: true }); return; }
         msg.textContent = why === 'NO_CRYPTO' ? 'A PIN is not available on this device.' : 'That PIN did not match. Try again.'; // (RC11)
         msg.hidden = false;
+        where.textContent = why === 'NO_CRYPTO' ? 'Open this file in the browser where you set your PIN.' : ''; // (RS18)
+        where.hidden = why !== 'NO_CRYPTO';
         pin.focus();
       },
-    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg), btn);
+    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg, where), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
       h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)
