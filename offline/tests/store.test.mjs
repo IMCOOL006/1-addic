@@ -509,3 +509,353 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.match(rule, /min-width:\s*44px/);
   });
 });
+
+/* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
+const STORE_PATH = require.resolve('../src/store.js');
+function freshStore() {
+  delete require.cache[STORE_PATH];
+  return require(STORE_PATH);
+}
+const MARK = 'PRIVATE-MARKER-7f3a';
+
+// The smallest IndexedDB that store.js uses: open with one upgrade, transactions that apply all or nothing, getAll,
+// put, delete, clear. A stand-in of this file only. dump() is what DevTools would show.
+function fakeIndexedDB() {
+  const dbs = new Map();
+  const cp = (v) => JSON.parse(JSON.stringify(v));
+  const fake = { failOpen: false, failWrites: false, opened: 0 };
+  function makeDb(rec) {
+    return {
+      objectStoreNames: { contains: (n) => rec.stores.has(n) },
+      createObjectStore(n, o) { rec.stores.set(n, { keyPath: o.keyPath, rows: new Map() }); },
+      close() {},
+      transaction(names, mode) {
+        for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
+        const t = { error: null };
+        const ops = [];
+        const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
+        t.objectStore = (n) => {
+          const st = rec.stores.get(n);
+          return {
+            getAll: () => request(() => Array.from(st.rows.values()).map(cp)),
+            put: (row) => request(() => { st.rows.set(row[st.keyPath], cp(row)); }),
+            delete: (id) => request(() => { st.rows.delete(id); }),
+            clear: () => request(() => { st.rows.clear(); }),
+          };
+        };
+        setTimeout(() => {
+          if (fake.failWrites && mode === 'readwrite') { t.error = new Error('QuotaExceededError'); t.onerror && t.onerror(); return; }
+          for (const op of ops) op();
+          t.oncomplete && t.oncomplete();
+        }, 0);
+        return t;
+      },
+    };
+  }
+  fake.open = (name, version) => {
+    const r = {};
+    setTimeout(() => {
+      if (fake.failOpen) { r.error = new Error('InvalidStateError'); r.onerror && r.onerror(); return; }
+      fake.opened += 1;
+      let rec = dbs.get(name);
+      if (!rec) { rec = { version: 0, stores: new Map() }; dbs.set(name, rec); }
+      r.result = makeDb(rec);
+      if (rec.version < version) { rec.version = version; r.onupgradeneeded && r.onupgradeneeded(); }
+      r.onsuccess && r.onsuccess();
+    }, 0);
+    return r;
+  };
+  fake.rows = (store) => { const rec = dbs.get('1-addic'); return rec ? Array.from(rec.stores.get(store).rows.values()) : []; };
+  fake.storeNames = () => Array.from(dbs.get('1-addic').stores.keys());
+  fake.dump = () => JSON.stringify(Array.from(dbs.values()).map((rec) => Array.from(rec.stores).map(([n, st]) => [n, Array.from(st.rows.values())])));
+  return fake;
+}
+function fakeLocalStorage() {
+  const m = new Map();
+  return {
+    m, full: false,
+    getItem(k) { return m.has(k) ? m.get(k) : null; },
+    setItem(k, v) { if (this.full) throw new Error('QuotaExceededError'); m.set(k, String(v)); },
+    removeItem(k) { m.delete(k); },
+  };
+}
+
+describe('store (U-04): the person’s data, sealed with a PIN', () => {
+  const realNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  afterEach(() => {
+    for (const k of ['indexedDB', 'localStorage', 'window', 'Store']) delete globalThis[k];
+    if (realNavigator) Object.defineProperty(globalThis, 'navigator', realNavigator);
+  });
+  const addRows = (S) => S.commit('test', (d) => {
+    d.put('profile', { key: 'me', name: 'Asha ' + MARK });
+    d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK });
+    d.put('events', { id: 'e2', type: 'CravingLogged' });
+    return 'wrote';
+  });
+
+  test('memory mode in Node: round trip through commit, get, list and count; drafts are copies; bad rows refused', async () => {
+    const S = freshStore();
+    assert.deepEqual(S.STORES, { profile: 'key', settings: 'key', meta: 'key', events: 'id', logs: 'id', responses: 'id',
+      contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id',
+      reveals: 'id', tips: 'id', recoveryPlan: 'key' });
+    await S.load();
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false });
+    assert.equal(await addRows(S), 'wrote', 'commit resolves with what the rule returned');
+    assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
+    assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
+    assert.equal(S.view.count('events'), 2);
+    assert.equal(S.view.get('events', 'nope'), null);
+    assert.deepEqual(S.view.list('nope'), []);
+    await S.commit('edit', (d) => {
+      const me = d.get('profile', 'me');
+      me.name = 'changed';
+      assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK, 'a draft row is a copy until it is put');
+      d.put('profile', me);
+      d.del('events', 'e2');
+      assert.deepEqual(d.list('events').map((e) => e.id), ['e1'], 'the draft sees its own writes');
+    });
+    assert.equal(S.view.get('profile', 'me').name, 'changed');
+    assert.equal(S.view.count('events'), 1);
+    for (const [rule, code] of [[(d) => d.put('nope', { id: 'x' }), 'UNKNOWN_STORE'], [(d) => d.put('events', { type: 'x' }), 'BAD_ROW'],
+      [(d) => d.put('meta', { key: 'lock', salt: 'x' }), 'RESERVED']]) {
+      await assert.rejects(S.commit('bad', rule), (e) => e.code === code, code);
+    }
+    assert.equal(S.view.count('meta'), 0);
+  });
+
+  test('a thrown rule rolls the working set back, rejects and notifies no one; a failed save changes nothing', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    await addRows(S);
+    let heard = 0;
+    S.subscribe(() => { heard += 1; });
+    const before = indexedDB.dump();
+    await assert.rejects(S.commit('rule', (d) => { d.put('events', { id: 'e3' }); d.del('events', 'e1'); throw new Error('a rule said no'); }),
+      /a rule said no/);
+    assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
+    assert.equal(indexedDB.dump(), before, 'nothing written');
+    indexedDB.failWrites = true;
+    await assert.rejects(S.commit('full', (d) => d.put('events', { id: 'e4' })), (e) => e.code === 'WRITE_FAILED');
+    assert.equal(S.view.get('events', 'e4'), null, 'a save the browser refused never shows as saved');
+    assert.equal(indexedDB.dump(), before);
+    assert.equal(heard, 0);
+  });
+
+  test('one notification per commit and one per bulk; unsubscribe stops them', async () => {
+    const S = freshStore();
+    const heard = [];
+    const off = S.subscribe((info) => heard.push(info.label));
+    await S.commit('a', (d) => d.put('todos', { id: 't1' }));
+    await S.commit('b', (d) => d.put('todos', { id: 't2' }));
+    assert.deepEqual(heard, ['a', 'b']);
+    await S.bulk(async () => {
+      for (let i = 3; i < 8; i++) await S.commit('c' + i, (d) => d.put('todos', { id: 't' + i }));
+    });
+    assert.deepEqual(heard, ['a', 'b', 'bulk']);
+    assert.equal(S.view.count('todos'), 7);
+    off();
+    await S.commit('d', (d) => d.put('todos', { id: 't9' }));
+    assert.equal(heard.length, 3);
+  });
+
+  test('indexeddb: every store made in one upgrade; with a PIN the rows hold only their key, iv and ct; a reload keeps them locked', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    let persisted = 0;
+    Object.defineProperty(globalThis, 'navigator', { configurable: true, writable: true,
+      value: { storage: { persist: () => { persisted += 1; return Promise.resolve(true); } } } });
+    const S = freshStore();
+    await S.load();
+    assert.equal(S.status().persistence, 'indexeddb');
+    assert.deepEqual(idb.storeNames().sort(), Object.keys(S.STORES).sort());
+    await addRows(S);
+    assert.match(S.status().lastSavedAt, /^\d{4}-\d\d-\d\dT/);
+    assert.match(UI.savedText(S.status(), true), /^Saved on this device/);
+    assert.ok(idb.dump().includes(MARK), 'without a PIN the rows are plain (a PIN is offered, never forced)');
+    await S.lock.set('2468');
+    assert.equal(persisted, 1, 'storage persistence is asked for once, on the first write');
+    const dump = idb.dump();
+    assert.ok(!dump.includes(MARK) && !dump.includes('Asha') && !dump.includes('CravingLogged'), 'no plaintext of a row');
+    for (const r of idb.rows('events').concat(idb.rows('profile'))) {
+      assert.deepEqual(Object.keys(r).sort(), [r.id ? 'id' : 'key', 'enc'].sort());
+      assert.deepEqual(Object.keys(r.enc).sort(), ['ct', 'iv']);
+      assert.equal(Buffer.from(r.enc.iv, 'base64').length, 12);
+    }
+    const lockRow = idb.rows('meta').find((r) => r.key === 'lock');
+    assert.deepEqual(Object.keys(lockRow).sort(), ['autoLockMin', 'check', 'iterations', 'key', 'salt', 'setAt']);
+    assert.equal(lockRow.iterations, 310000);
+    assert.equal(Buffer.from(lockRow.salt, 'base64').length, 16);
+    assert.equal(lockRow.autoLockMin, 5, 'auto-lock defaults to 5 minutes');
+    const iv1 = idb.rows('events').find((r) => r.id === 'e1').enc.iv;
+    await S.commit('again', (d) => d.put('events', d.get('events', 'e1')));
+    assert.notEqual(idb.rows('events').find((r) => r.id === 'e1').enc.iv, iv1, 'a fresh iv for every row write');
+    const R = freshStore(); // the page reloads
+    await R.load();
+    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true });
+    assert.equal(R.view.get('profile', 'me'), null);
+    assert.equal(R.view.count('events'), 0);
+    assert.equal(await R.lock.unlock('2468'), true);
+    assert.equal(R.view.get('profile', 'me').name, 'Asha ' + MARK);
+    assert.equal(R.view.get('events', 'e1').note, MARK);
+  });
+
+  test('lock: lockNow drops the rows and tells onLock; locked reads are empty and writes refused; unlock restores', async () => {
+    const S = freshStore();
+    await addRows(S);
+    await assert.rejects(S.lock.set('12'), (e) => e.code === 'BAD_PIN');
+    assert.equal(S.status().hasLock, false, 'a refused PIN sets nothing');
+    S.lock.lockNow();
+    assert.equal(S.status().locked, false, 'with no PIN there is nothing to lock');
+    await S.lock.set('2468', { autoLockMin: 'never' });
+    const heard = [];
+    S.lock.onLock((info) => heard.push(info.reason));
+    S.lock.lockNow();
+    assert.deepEqual(heard, ['manual']);
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true });
+    assert.equal(S.view.get('profile', 'me'), null);
+    assert.deepEqual(S.view.list('events'), []);
+    assert.equal(S.view.count('events'), 0);
+    await assert.rejects(S.commit('x', (d) => d.put('todos', { id: 't1' })), (e) => e.code === 'LOCKED');
+    assert.throws(() => S.exportJson(), (e) => e.code === 'LOCKED');
+    await assert.rejects(S.replaceAll({ stores: {} }), (e) => e.code === 'LOCKED');
+    await assert.rejects(S.lock.set('1357'), (e) => e.code === 'LOCKED');
+    assert.equal(await S.lock.unlock('2468'), true);
+    assert.equal(S.status().locked, false);
+    assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
+    assert.equal(S.view.count('todos'), 0, 'the refused write never happened');
+  });
+
+  test('a wrong PIN is refused by unlock, verify and remove, and changes nothing; the right one removes the lock', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await addRows(S);
+    assert.equal(await S.lock.verify('2468'), false, 'no lock: nothing to verify');
+    await S.lock.set('2468');
+    const before = idb.dump();
+    assert.equal(await S.lock.verify('1111'), false);
+    assert.equal(await S.lock.remove('1111'), false);
+    assert.equal(S.status().hasLock, true);
+    assert.equal(idb.dump(), before);
+    S.lock.lockNow();
+    for (const wrong of ['1111', '', null, '24680']) assert.equal(await S.lock.unlock(wrong), false);
+    assert.equal(S.status().locked, true);
+    assert.equal(S.view.count('events'), 0);
+    assert.equal(idb.dump(), before, 'wrong PINs wrote nothing');
+    assert.equal(await S.lock.verify('2468'), true);
+    assert.equal(S.status().locked, true, 'verify never unlocks');
+    assert.equal(await S.lock.remove('2468'), true, 'remove works from the lock screen too');
+    assert.equal(S.status().hasLock, false);
+    assert.equal(S.status().locked, false);
+    assert.equal(S.view.get('events', 'e1').note, MARK);
+    assert.ok(idb.dump().includes(MARK), 'the rows are stored plain again');
+    assert.ok(!idb.rows('meta').some((r) => r.key === 'lock'), 'the lock row is gone');
+  });
+
+  test('localstorage fallback and memory: the label says where the data is; sealed rows stay sealed in the snapshot', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    idb.failOpen = true;
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await addRows(S);
+    assert.equal(S.status().persistence, 'localstorage');
+    assert.equal(UI.savedText(S.status(), true), 'Saved (fallback)');
+    assert.ok(ls.getItem('1-addic:snapshot').includes(MARK));
+    await S.lock.set('2468');
+    assert.ok(!ls.getItem('1-addic:snapshot').includes(MARK), 'no plaintext in the snapshot with a PIN');
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().locked, true);
+    assert.equal(await R.lock.unlock('2468'), true);
+    assert.equal(R.view.get('events', 'e1').note, MARK);
+    ls.full = true;
+    await assert.rejects(R.commit('full', (d) => d.put('todos', { id: 't1' })), (e) => e.code === 'WRITE_FAILED');
+    assert.equal(R.view.count('todos'), 0);
+    delete globalThis.localStorage; // nothing works: memory, said plainly
+    const M = freshStore();
+    await M.load();
+    assert.equal(M.status().persistence, 'memory');
+    assert.match(UI.savedText(M.status(), true), /^Not saved/);
+  });
+
+  test('snapshot adoption: an empty IndexedDB takes the snapshot’s rows as they are and the snapshot goes; a full one leaves it', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    idb.failOpen = true;
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const F = freshStore();
+    await addRows(F);
+    await F.lock.set('2468');
+    idb.failOpen = false; // the next visit, IndexedDB works
+    const S = freshStore();
+    await S.load();
+    assert.equal(S.status().persistence, 'indexeddb');
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'the snapshot is removed once adopted');
+    assert.equal(S.status().locked, true, 'sealed rows came across sealed, with their lock');
+    assert.ok(!idb.dump().includes(MARK));
+    assert.equal(await S.lock.unlock('2468'), true);
+    assert.equal(S.view.get('events', 'e1').note, MARK);
+    ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1, stores: { todos: [{ id: 'old' }] } }));
+    const T = freshStore();
+    await T.load();
+    assert.ok(ls.getItem('1-addic:snapshot'), 'a non-empty IndexedDB never overwrites or drops a snapshot');
+    await T.lock.unlock('2468');
+    assert.equal(T.view.get('todos', 'old'), null);
+  });
+
+  test('exportJson, replaceAll (replaces, never merges, keeps the lock) and resetAll (also the forgotten-PIN path)', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await addRows(S);
+    await S.lock.set('2468');
+    const out = S.exportJson();
+    assert.deepEqual(Object.keys(out), ['app', 'schemaVersion', 'exportedAt', 'stores']);
+    assert.equal(out.app, '1-addic');
+    assert.equal(out.schemaVersion, 1);
+    assert.ok(!Number.isNaN(Date.parse(out.exportedAt)));
+    assert.deepEqual(Object.keys(out.stores).sort(), Object.keys(S.STORES).sort());
+    assert.equal(out.stores.events.find((e) => e.id === 'e1').note, MARK, 'export holds the decrypted rows');
+    assert.equal(out.stores.meta.length, 0, 'never the lock row');
+    const heard = [];
+    S.subscribe((i) => heard.push(i.label));
+    await assert.rejects(S.replaceAll({ stores: { events: 'nope' } }), (e) => e.code === 'BAD_BACKUP');
+    await assert.rejects(S.replaceAll({ stores: { events: [{ type: 'no id' }] } }), (e) => e.code === 'BAD_ROW');
+    assert.equal(S.view.count('events'), 2, 'a refused backup changes nothing');
+    await S.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { todos: [{ id: 'n1', text: 'NEW-ROW' }],
+      meta: [{ key: 'lock', salt: 'x', check: 'x' }] } });
+    assert.deepEqual(heard, ['replaceAll']);
+    assert.equal(S.view.count('events'), 0, 'replaced, never merged');
+    assert.equal(S.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.equal(S.status().hasLock, true, 'the lock stays');
+    assert.ok(!idb.dump().includes('NEW-ROW'), 'the new rows are sealed under it');
+    S.lock.lockNow();
+    ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
+    await S.resetAll(); // Forgot PIN: erase, then start again from a backup
+    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false });
+    assert.equal(S.view.count('todos'), 0);
+    for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
+    assert.equal(ls.getItem('1-addic:snapshot'), null);
+  });
+
+  test('auto-lock after the idle minutes; touch keeps it open; a touch after the limit (a phone that slept) locks', async (t) => {
+    const S = freshStore();
+    await addRows(S);
+    await S.lock.set('2468', { autoLockMin: 1 });
+    const heard = [];
+    S.lock.onLock((info) => heard.push(info.reason));
+    t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: Date.now() });
+    S.lock.touch();
+    t.mock.timers.tick(59000);
+    S.lock.touch();
+    t.mock.timers.tick(59000);
+    assert.equal(S.status().locked, false, 'activity keeps it open');
+    t.mock.timers.tick(1000);
+    assert.equal(S.status().locked, true);
+    assert.deepEqual(heard, ['auto']);
+    assert.equal(S.view.count('events'), 0);
+    assert.equal(await S.lock.unlock('2468'), true);
+    t.mock.timers.setTime(Date.now() + 120000); // time passes without the timer running
+    S.lock.touch();
+    assert.equal(S.status().locked, true);
+    assert.deepEqual(heard, ['auto', 'auto']);
+  });
+});
