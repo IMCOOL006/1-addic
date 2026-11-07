@@ -3,7 +3,9 @@
    opens) with a lock-screen image drawn on a canvas on this device, and the Support Network (#/workbook/network):
    people by role, kept on this device only and in the backup file the person saves. Contacts are hidden, never deleted;
    "I reached out" writes through Actions.contacts.reached. No network call: a phone number becomes a tel: link only.
-   The rest of the workbook (the browser and the artifacts) is U-20b; until then those routes say so honestly (O7).
+   U-20b: the browser (#/workbook, four groups, the sensitive card behind a tap) and every artifact page: the latest
+   answer as text, Edit in workbook mode, read-only history, print, a practise link only when its page exists; an
+   artifact whose exercise is not in this version says what it will be (O7). #/workbook/plan is PlanUI (ui-plan.js).
    Text goes in as text only (UI.h), never as HTML. Nothing here gates SOS. */
 const WorkbookUI = (function () {
   'use strict';
@@ -17,6 +19,7 @@ const WorkbookUI = (function () {
       if (name === 'Content') return typeof Content !== 'undefined' ? Content : null;
       if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
       if (name === 'PlanUI') return typeof PlanUI !== 'undefined' ? PlanUI : null;
+      if (name === 'ExerciseUI') return typeof ExerciseUI !== 'undefined' ? ExerciseUI : null;
     } catch (e) { /* not loaded */ }
     return null;
   };
@@ -393,17 +396,232 @@ const WorkbookUI = (function () {
             onClick: () => { showContact(ct.id).catch((e) => toast(errText(e), 'warn')); } }))))) : null);
   }
 
-  /* ── the rest of the workbook, until U-20b: honest, never a dead button (O7) ─────────────── */
-  function laterPage(c, artifact) {
+  /* ── U-20b: the workbook browser and the artifacts (BUILD-PLAN 3.5, 3.8) ─────────────────── */
+  /* Artifact -> the exercises that fill it. `will` names what it becomes while its exercise is not in this version (O7).
+     `own` artifacts have their own page (the card, the network) or PlanUI (the plan). */
+  const ARTIFACTS = {
+    reasons: { title: 'My Reasons Card', group: 'why', exerciseIds: ['quick-reasons', 'balance', 'four-lenses'], own: true, blurb: 'Your reasons in one place, also shown in SOS.' },
+    balance: { title: 'Pros and cons', group: 'why', exerciseIds: ['balance', 'four-lenses'], blurb: 'What using costs you and what changing gives you, seen from four sides.', will: 'a side-by-side list of what using costs you and what changing gives you' },
+    motivation: { title: 'How ready I feel', group: 'why', exerciseIds: ['motivation'], blurb: 'How ready you feel to change, rated from time to time.', will: 'a short rating of how ready you feel, kept over time' },
+    signs: { title: 'Signs I noticed', group: 'why', exerciseIds: ['signs-check'], blurb: 'The signs that told you something needed to change.', will: 'a list of the signs that made you take a closer look' },
+    triggers: { title: 'My triggers', group: 'self', exerciseIds: ['triggers'], practiseRoute: '#/track/log/craving', blurb: 'People, places, feelings and times that set off cravings.', will: 'your own list of triggers, with the ones that come up most' },
+    redflags: { title: 'Red-flag thoughts', group: 'self', exerciseIds: ['red-flags', 'trap-pairs'], practiseRoute: '#/games/spot-red-flag', blurb: 'Thoughts that make using seem fine, and the thinking traps behind them.', will: 'the thoughts that make using seem fine, paired with the trap behind each' },
+    journal: { title: 'Thought Journal', group: 'self', exerciseIds: ['trial'], practiseRoute: '#/tools/trial', blurb: 'Thoughts you put on trial, and the comebacks you wrote.', will: 'the thoughts you put on trial and your comebacks' },
+    spiral: { title: 'The spiral', group: 'self', exerciseIds: ['spiral'], blurb: 'Thoughts that pull you down after a hard moment, and your replies.', will: 'the thoughts that pull you down, each with your reply' },
+    signature: { title: 'My craving signature', group: 'self', exerciseIds: ['craving-signature'], practiseRoute: '#/practice/urge-surf', blurb: 'Where a craving shows up in your body, and how it builds and fades.', will: 'a body map of where cravings show up, and how they build' },
+    anger: { title: 'My anger signature', group: 'self', exerciseIds: ['anger-signature'], practiseRoute: '#/practice/breathe', blurb: 'How anger builds for you, and what sets it off.', will: 'how anger builds for you and what sets it off' },
+    warnings: { title: 'My warning signs', group: 'self', exerciseIds: ['warning-signs'], blurb: 'Early signs that things are slipping, and a plan for each.', will: 'your top warning signs, each with a plan' },
+    risks: { title: 'Risk factors', group: 'self', exerciseIds: ['risk-factors'], sensitive: true, blurb: 'Things in your history and health worth knowing about. Private, and only for you.', will: 'a private list of things in your history and health worth knowing about' },
+    network: { title: 'My Support Network', group: 'people', exerciseIds: [], own: true, blurb: 'The people who help, and the ones you are careful around.' },
+    scripts: { title: 'What I will say', group: 'people', exerciseIds: ['assertive-script'], practiseRoute: '#/games/refusal', blurb: 'Words you practised for saying no, or asking for what you need.', will: 'the words you practised for saying no or asking for help' },
+    activities: { title: 'Activity Library', group: 'joys', exerciseIds: ['activity-menu', 'used-to-enjoy'], practiseRoute: '#/actions/planner', blurb: 'Things you enjoy, or used to enjoy, to fill your time.', will: 'a library of things you enjoy, or used to' },
+    'balance-sw': { title: 'Should and want', group: 'joys', exerciseIds: ['should-want'], practiseRoute: '#/actions/planner', blurb: 'The balance between what you have to do and what you want to do.', will: 'the balance between what you have to do and what you want to do' },
+    distractions: { title: 'Distraction deck', group: 'joys', exerciseIds: ['distractions'], practiseRoute: '#/sos/craving', blurb: 'Quick things to do while a craving passes.', will: 'your own deck of quick things to do while a craving passes' },
+    plan: { title: 'My Recovery Plan', group: null, exerciseIds: [], own: true, blurb: 'Your plan for staying on track, built from your notebook.' },
+  };
+  const GROUPS = [
+    { id: 'why', label: 'My Why', hint: 'What you are doing this for.' },
+    { id: 'self', label: 'Know Myself', hint: 'How cravings and hard moments work for you.' },
+    { id: 'people', label: 'My People', hint: 'Who helps, and what you say.' },
+    { id: 'joys', label: 'My Joys', hint: 'What fills your time and lifts you.' },
+  ];
+  Object.assign(TEXT, {
+    workbookTitle: 'Workbook',
+    workbookIntro: 'Everything you write in the exercises lives here. Open any page to read it, change it or print it.',
+    stub: (will) => 'Coming in a later version: ' + will + '.',
+    nothing: 'Nothing saved here yet.',
+    sensitiveShow: 'Show sensitive items',
+    sensitiveHide: 'Hide sensitive items',
+    sensitiveNote: 'Only you see this. Nothing here is a judgement.',
+    saidIt: 'Noted. You said it, and that takes nerve.',
+  });
+
+  /* `#/workbook?sensitive=1` shows the sensitive card; the order is the GROUPS order, then the ARTIFACTS order. */
+  function groupsFor(showSensitive) {
+    return GROUPS.map((g) => ({ id: g.id, label: g.label, hint: g.hint,
+      items: Object.keys(ARTIFACTS).filter((k) => ARTIFACTS[k].group === g.id && (showSensitive || !ARTIFACTS[k].sensitive)) }));
+  }
+  /* 'fooBarBaz' or 'foo-bar' -> 'Foo bar baz'. */
+  const humanize = (k) => { const s = String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]+/g, ' ').trim().toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); };
+  function valueText(v) {
+    if (v == null) return '';
+    if (typeof v === 'string') return v.trim();
+    if (typeof v === 'number') return isFinite(v) ? String(v) : '';
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+    if (Array.isArray(v)) return v.map(valueText).filter(Boolean).join('; ');
+    if (isObj(v)) return Object.keys(v).map((k) => { const t = valueText(v[k]); return t ? humanize(k) + ': ' + t : ''; }).filter(Boolean).join(', ');
+    return '';
+  }
+  /* A saved answer as readable lines [{label, text}]: the spec's own labels when the exercise is known (and
+     ExerciseUI.summarize when it is loaded), else a plain key and value list for a shape not known here. */
+  function readable(payload, spec, view) {
+    if (!isObj(payload)) { const t = valueText(payload); return t ? [{ label: 'Answer', text: t }] : []; }
+    const fields = spec && Array.isArray(spec.fields) ? spec.fields.filter((f) => isObj(f) && f.id) : [];
+    const EX = ns('ExerciseUI');
+    const out = [];
+    const done = new Set();
+    for (const f of fields) {
+      done.add(f.id);
+      if (!own(payload, f.id)) continue;
+      let t = '';
+      if (EX && typeof EX.summarize === 'function') t = safe(() => String(EX.summarize(f, payload[f.id], view, ns('Content'), spec, payload) || ''), '');
+      if (!t) t = valueText(payload[f.id]);
+      if (t) out.push({ label: f.label ? String(f.label) : humanize(f.id), text: t });
+    }
+    for (const k of Object.keys(payload)) {
+      if (done.has(k)) continue;
+      const t = valueText(payload[k]);
+      if (t) out.push({ label: humanize(k), text: t });
+    }
+    return out;
+  }
+  function specOf(id) {
+    const EX = ns('ExerciseUI');
+    if (EX && typeof EX.exerciseFor === 'function') return safe(() => EX.exerciseFor(id), null);
+    const C = ns('Content');
+    const ex = C && C.exercises;
+    if (Array.isArray(ex)) return ex.find((x) => isObj(x) && x.id === id) || null;
+    return isObj(ex) && own(ex, id) && isObj(ex[id]) ? Object.assign({ id }, ex[id]) : null;
+  }
+  /* Is the artifact a stub in this version: none of its exercises is in Content.exercises (O7). */
+  const isStub = (a) => !!a && !a.own && !a.exerciseIds.some(exerciseKnown);
+  /* A route is offered only when a page answers it (UI.pages[firstSegment]); never a link to nowhere. */
+  function routeLive(route) {
+    const seg = String(route || '').replace(/^#\//, '').split(/[/?]/)[0];
+    const U = ns('UI');
+    return !!seg && !!(U && U.pages && typeof U.pages[seg] === 'function');
+  }
+  const E_ = () => ns('Engine');
+  const latestOf = (view, id) => { const E = E_(); return E && view ? safe(() => E.latest(view, id), null) : null; };
+  const historyOf = (view, id) => { const E = E_(); return E && view ? safe(() => E.history(view, id), []) || [] : []; };
+  const dateText = (at) => { const d = new Date(at); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' }); };
+  /* The newest save across the artifact's exercises, or null. */
+  function lastSaved(view, a) {
+    let best = null;
+    for (const id of (a && a.exerciseIds) || []) { const r = latestOf(view, id); if (r && (!best || String(r.at) > String(best.at))) best = r; }
+    return best;
+  }
+
+  function cardStatus(view, key, a) {
+    if (key === 'reasons') { const n = flatReasons(reasonsSections(view)).length; return n ? n + (n === 1 ? ' reason' : ' reasons') : 'Empty for now'; }
+    if (key === 'network') { const n = safe(() => groupContacts(view.list('contacts')).reduce((s, g) => s + g.items.length, 0), 0); return n ? n + (n === 1 ? ' person' : ' people') : 'No one yet'; }
+    if (key === 'plan') { const p = safe(() => view.get('recoveryPlan', 'plan'), null); return p && p.sections ? 'Saved ' + dateText(p.lastReviewAt) : 'A first draft is ready'; }
+    const r = lastSaved(view, a);
+    if (r) return 'Saved ' + dateText(r.at);
+    return isStub(a) ? 'Coming in a later version' : TEXT.nothing;
+  }
+  function artifactCard(view, key, first, discreet) {
+    const a = ARTIFACTS[key];
+    const title = key === 'reasons' && discreet ? TEXT.discreetTitle : key === 'network' && discreet ? TEXT.discreetNetwork : a.title;
+    const tour = first ? { 'data-tour': 'workbook-card' } : null; // the first artifact card only
+    return h('li', null, h('a', Object.assign({ class: 'card wb-card wb-art-card', href: '#/workbook/' + key, 'data-test': 'workbook-card-' + key }, tour),
+      h('span', { class: 'wb-art-title', text: title }),
+      h('span', { class: 'muted wb-art-blurb', text: a.blurb }),
+      h('span', { class: 'wb-art-status', text: cardStatus(view, key, a) })));
+  }
+  function browserPage(c) {
+    const view = viewOf(c);
+    const q = (c.route && c.route.query) || {};
+    const show = q.sensitive === '1';
+    const discreet = discreetOf(c);
+    let first = true;
+    const groups = groupsFor(show).map((g) => h('section', { class: 'wb-group', 'data-test': 'workbook-group-' + g.id },
+      h('h2', { class: 'wb-section-title', text: g.label }), h('p', { class: 'muted', text: g.hint }),
+      h('ul', { class: 'wb-art-list' }, g.items.map((k) => { const n = artifactCard(view, k, first, discreet); first = false; return n; }))));
+    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-page' },
+      h('h1', { text: TEXT.workbookTitle }),
+      h('p', { class: 'muted', text: TEXT.workbookIntro }),
+      h('ul', { class: 'wb-art-list' }, artifactCard(view, 'plan', false, discreet)),
+      h('div', { class: 'stack', 'data-tour': 'workbook-groups' }, groups),
+      h('a', { class: 'btn ghost', href: show ? '#/workbook' : '#/workbook?sensitive=1', 'data-test': 'risks-reveal', text: show ? TEXT.sensitiveHide : TEXT.sensitiveShow }));
+  }
+
+  function linesNode(lines) {
+    return h('dl', { class: 'wb-lines' }, lines.map((l) => [h('dt', { text: l.label }), h('dd', { text: l.text })]));
+  }
+  /* The print view: the title, the date and the saved lines; no buttons, no chrome. */
+  function printNode(title, blocks, now) {
+    return h('article', { class: 'wb-print' },
+      h('h1', { text: title }),
+      h('p', { text: 'Printed ' + dateText(now || new Date()) }),
+      blocks.map((b) => h('section', null, h('h2', { text: b.title }), b.lines.length ? linesNode(b.lines) : h('p', { text: TEXT.nothing }))));
+  }
+  /* The extras some artifacts carry: the motivation ratings, the comebacks, the deck, "I said it". */
+  function extras(key, view) {
+    const E = E_();
+    if (key === 'motivation') {
+      const rows = safe(() => view.list('motivation'), []).filter((r) => isObj(r)).sort((x, y) => String(y.at).localeCompare(String(x.at))).slice(0, 6);
+      if (!rows.length) return null;
+      return h('section', { class: 'card wb-card', 'data-test': 'motivation-meter' }, h('h2', { class: 'card-title', text: 'My ratings, newest first' }),
+        h('ul', { class: 'wb-reasons' }, rows.map((r) => h('li', { text: dateText(r.at) + ': ' + valueText(r.score) + (valueText(r.plusOne) ? '. One step up: ' + valueText(r.plusOne) : '') }))));
+    }
+    if (key === 'journal') {
+      const list = E && typeof E.comebacks === 'function' ? safe(() => E.comebacks(view), []) : [];
+      return list.length ? h('section', { class: 'card wb-card', 'data-test': 'journal-comebacks' }, h('h2', { class: 'card-title', text: 'My comebacks' }),
+        h('ul', { class: 'wb-reasons' }, list.map((t) => h('li', { text: t })))) : null;
+    }
+    if (key === 'distractions') {
+      const list = E && typeof E.distractionDeck === 'function' ? safe(() => E.distractionDeck(view), []) : [];
+      const mine = !!latestOf(view, 'distractions');
+      return list.length ? h('section', { class: 'card wb-card', 'data-test': 'distraction-deck' }, h('h2', { class: 'card-title', text: mine ? 'My distraction deck' : 'Ideas to start with' }),
+        h('ul', { class: 'wb-reasons' }, list.map((t) => h('li', { text: t })))) : null;
+    }
+    if (key === 'scripts') {
+      const r = latestOf(view, 'assertive-script');
+      return r ? h('button', { type: 'button', class: 'btn', 'data-test': 'script-said', text: 'I said it',
+        onClick: () => { scriptSaid(r.id).then(() => toast(TEXT.saidIt), () => toast('That could not be noted on this device. Please try again.', 'warn')); } }) : null;
+    }
+    return null;
+  }
+  const scriptSaid = (responseId) => { const A = ns('Actions'); return A && typeof A.scriptUsed === 'function' ? A.scriptUsed(responseId) : Promise.reject(new Error('no actions')); };
+
+  function artifactPage(c, key) {
+    const a = ARTIFACTS[key];
+    const view = viewOf(c);
+    const stub = isStub(a);
+    let edit = true; let hist = true;
+    const blocks = [];
+    const parts = a.exerciseIds.map((id) => {
+      const spec = specOf(id);
+      const known = exerciseKnown(id);
+      const r = latestOf(view, id);
+      const name = spec && spec.title ? String(spec.title) : a.title;
+      const lines = r ? readable(r.payload, spec, view) : [];
+      if (r) blocks.push({ title: name, lines });
+      const versions = historyOf(view, id);
+      const editBtn = known ? h('a', { class: 'btn primary', href: '#/exercise/' + id + '?mode=workbook', 'data-test': edit ? 'artifact-edit' : 'artifact-edit-' + id, text: r ? 'Change it' : 'Fill it in' }) : null;
+      if (known) edit = false;
+      const histNode = versions.length ? h('details', { class: 'wb-history', 'data-test': hist ? 'artifact-history' : 'artifact-history-' + id },
+        h('summary', { text: 'History (' + versions.length + ')' }),
+        h('ol', { class: 'wb-history-list' }, versions.map((v) => h('li', null, h('p', { class: 'wb-art-status', text: dateText(v.at) }), linesNode(readable(v.payload, spec, view)))))) : null;
+      if (versions.length) hist = false;
+      if (!r && !known) return null;
+      return h('section', { class: 'card wb-card', 'data-test': 'artifact-part-' + id },
+        a.exerciseIds.length > 1 ? h('h2', { class: 'card-title', text: name }) : null,
+        r ? linesNode(lines) : h('p', { class: 'muted', text: TEXT.nothing }),
+        editBtn, histNode);
+    });
+    const live = a.practiseRoute && routeLive(a.practiseRoute);
+    return h('div', { class: 'wb-page stack', 'data-test': 'artifact-' + key },
+      h('a', { class: 'btn ghost wb-back', href: '#/workbook', text: 'All of my workbook' }),
+      h('h1', { text: a.title }),
+      h('p', { class: 'muted', text: a.blurb }),
+      a.sensitive ? h('p', { class: 'muted', text: TEXT.sensitiveNote }) : null,
+      stub ? h('p', { class: 'card wb-card', 'data-test': 'artifact-stub', text: TEXT.stub(a.will) }) : null,
+      parts,
+      !stub && !parts.some(Boolean) ? h('p', { text: TEXT.nothing }) : null,
+      extras(key, view),
+      h('div', { class: 'row wb-actions' },
+        live ? h('a', { class: 'btn', href: a.practiseRoute, 'data-test': 'artifact-practise', text: 'Practise with this' }) : null,
+        blocks.length ? h('button', { type: 'button', class: 'btn ghost', 'data-test': 'artifact-print', text: 'Print',
+          onClick: () => { const U = ns('UI'); if (U && typeof U.printDoc === 'function') U.printDoc(printNode(a.title, blocks, c.now)); } }) : null));
+  }
+
+  function planPage(c) {
     const P = ns('PlanUI');
-    if (artifact === 'plan' && P && typeof P.view === 'function') return P.view(c);
-    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-later' },
-      h('h1', { text: 'Workbook' }),
-      artifact ? h('p', { text: TEXT.later }) : null,
-      h('ul', { class: 'wb-links' },
-        h('li', null, h('a', { class: 'btn', href: '#/workbook/reasons', text: discreetOf(c) ? TEXT.discreetTitle : TEXT.cardTitle })),
-        h('li', null, h('a', { class: 'btn', href: '#/workbook/network', text: discreetOf(c) ? TEXT.discreetNetwork : TEXT.networkTitle }))),
-      artifact ? null : h('p', { class: 'muted', text: 'More of your workbook comes in a later version.' }));
+    if (P && typeof P.view === 'function') return P.view(c);
+    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-later' }, h('h1', { text: ARTIFACTS.plan.title }), h('p', { text: TEXT.later }),
+      h('a', { class: 'btn', href: '#/workbook', text: 'All of my workbook' }));
   }
 
   function page(ctx) {
@@ -414,16 +632,19 @@ const WorkbookUI = (function () {
     const q = r.query || {};
     if (artifact === 'reasons') return q.big === '1' ? bigPage(c) : reasonsPage(c);
     if (artifact === 'network') return networkPage(c);
-    return laterPage(c, artifact);
+    if (artifact === 'plan') return planPage(c);
+    if (own(ARTIFACTS, artifact)) return artifactPage(c, artifact);
+    return browserPage(c); // #/workbook and an unknown artifact
   }
 
   const PURE = ['ROLES', 'STRATEGIES', 'REACH', 'SECTIONS', 'TEXT', 'wrapLines', 'reasonsSections', 'flatReasons',
-    'contactPayload', 'contactError', 'groupContacts', 'hiddenContacts', 'exerciseKnown'];
+    'contactPayload', 'contactError', 'groupContacts', 'hiddenContacts', 'exerciseKnown', 'ARTIFACTS', 'GROUPS', 'groupsFor',
+    'readable', 'valueText', 'humanize', 'isStub'];
 
   return {
     ROLES, STRATEGIES, REACH, SECTIONS, TEXT, wrapLines, reasonsSections, flatReasons, contactPayload, contactError,
     groupContacts, hiddenContacts, exerciseKnown, telHref, drawCard, exportImage, saveContact, reachOut, hideContact,
-    showContact, page, PURE,
+    showContact, ARTIFACTS, GROUPS, groupsFor, readable, valueText, humanize, isStub, routeLive, printNode, scriptSaid, page, PURE,
   };
 })();
 
