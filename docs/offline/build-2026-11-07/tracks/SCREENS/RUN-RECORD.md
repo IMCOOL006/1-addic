@@ -155,17 +155,33 @@
 - Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-{workbook-settings,c1-probe}-20261108-0134.log.
 - Records: status file, lane-reports/workbook-settings.md (C1 CLOSED section), outbox R-S-18.
 
+## 2026-11-08 02:45 IST · V3 begins: today-track slot 6; three scouts
+
+- At 02:35, HUB 9 (90539ba6) sent R-H-38 by cross-session message: V3 is cut (PLAN-V3.md, lane_args_v3.json). today-track has slot 6 for V3 tier 1. Scout it, then the V-01a slice, then READY-SLICE <tip>; the HUB merges it alone. content and game-tutorials follow on the next 7.0 GB rows.
+- Fast-forward: build/today-track and its worktree went 6b0184b..f69bc68a with merge --ff-only at 02:38. No merge commit; the worktree is clean, and package.json and package-lock.json are unchanged. Memory 8.2 GB.
+- Scouts (lane.js start 'scout'; V3 reading override in laneNote; args in tracks/SCREENS/args/v3_scout_<lane>.json; brief and contract at briefs/<lane>-v3.md and contracts/<lane>-v3.md, so the v1 files are kept):
+  - today-track: wf_ea78e1ac-572.
+  - content: wf_10d4cc97-c2a.
+  - game-tutorials: wf_39613665-fbc.
+  - Journals are under C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/<run>/journal.jsonl.
+- R-S-19 to HUB and CORE: the new SCREENS hooks use data-test, as in PLAN-V3 section 3 and the lanes' own files (the unitNotes say data-testid).
+- Fact: lane.js's scout prompt is v1-shaped (it reads _base at 655516dc, BUILD-PLAN section 5 and lane_args.json). The V3 runs override this through laneNote, which also reaches builders as "THE BUILD CHAT'S WORD". The build runs need a builder-focused laneNote (V3 facts) and the same brief and contract paths.
+
 ## Resume here
 
-- Chat 1c2cf086 (SCREENS), STATE BUILDING. As of 2026-11-08 01:35 IST, NO SCREENS run is live.
-- Lanes: all five are MERGED and complete: content 680f850, today-track 6b0184b, workbook-settings 0e76065 (C1 CLOSED e8da3fbd), actions 0977edd, game-tutorials bd2e085. BASE is e8da3fbd (actions-sos merged 01:31).
-- QUIET has been running on _int since 01:31 (the HUB's full gates). Nothing of SCREENS runs until the tag offline-v1.1.
-- NEXT, by name only:
-  - (1) A red from the quiet window on a SCREENS name (an R-H line or a "from the HUB" note): fix it on the lane's branch within the hour, two rounds at most. First fast-forward the worktree to BASE e8da3fbd with git merge --ff-only, and check that package-lock.json is unchanged. Run the browser gate by hand with python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser, then git checkout -- offline/1-addic.html.
-  - (2) After the tag, on slots the HUB grants: the LOWs by name: game-tutorials C1, content C2-C4, workbook-settings C1b (test-only), and R-S-16 if CORE asks for the quick-log hook on Today.
+- Chat 1c2cf086 (SCREENS), STATE BUILDING, V3 (PLAN-V3.md). Stamp: 2026-11-08 02:45 IST.
+- RUNNING (alive only while session 1c2cf086 is listed by claude agents --json):
+  - wf_ea78e1ac-572: today-track scout.
+  - wf_10d4cc97-c2a: content scout.
+  - wf_39613665-fbc: game-tutorials scout.
+  - Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1c2cf086-eb79-481e-84f2-f24a31da7dcd/subagents/workflows/<run>/journal.jsonl.
+- NEXT:
+  - (1) When the today-track scout returns, read briefs/today-track-v3.md (under 15 KB) and contracts/today-track-v3.md. Then launch lane.js with lanes.today-track of lane_args_v3.json plus: base f69bc68a, slot 6, session https://claude.ai/code/session_1c2cf086-eb79-481e-84f2-f24a31da7dcd, now from date, sliceRun true, done [U-15, U-16, U-17, U-18, FIX-EMBED], diffFrom f69bc68a, brief and contract at the -v3 paths, and a builder laneNote: V3; data-test hooks; PLAN-V3 section 3 binds; the defaults V-Q3..V-Q6.
+  - (2) When it returns: LANE: today-track READY-SLICE <tip>. Then the V-01b relaunch with done + [V-01a], priorNote, diffFrom <slice tip>.
+  - (3) content and game-tutorials: wait for their SLOTS lines on status-HUB.md. Then fast-forward each worktree to BASE (merge --ff-only) and run its slice.
 - Facts:
   - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume>.
   - hub_commit.py runs from the repo root, with repo-relative paths.
-  - claude agents needs --json from a background chat.
-  - The merge preview needs no worktree: git merge-tree --write-tree, then git archive | tar -x.
+  - claude agents needs --json.
+  - The board's lane states are NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY, READY-SLICE, RED, MERGED, BLOCKED, PAUSED (tools/board.py:65).
   - Do not run a wait loop.
