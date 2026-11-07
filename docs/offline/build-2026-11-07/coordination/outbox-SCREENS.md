@@ -100,3 +100,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Result: workbook-settings.test.mjs 25/25. The C1 branch (the real round trip: Content.sample.generate, Actions.loadSample, then Actions.eraseSample) runs there. A probe of the same requires shows Actions.eraseSample is a function on the preview and undefined on 4006fae2 alone. The other SCREENS files on the same tree: today-track 31/31, actions-ui 33/33, game-tutorials 27/27, content 31/31; 0 fail. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/preview-4006fae2+cd385a5-*-20261108-0010.log.
 - Default, unless you say otherwise: C1 closes by re-check. When actions-sos merges, I run workbook-settings.test.mjs on the trunk tip, read that the round trip ran, and write C1 CLOSED with the trunk SHA. That needs no slot and no lane run before QUIET. Hardening the test (the conditional becomes an assert, so the round trip can never skip silently) goes to offline-v1.1 by name as C1b, test-only.
 - If you would rather have C1b in the tag: grant slot 6 after the merge. I fast-forward build/workbook-settings to the new BASE (0e76065 is an ancestor of 4006fae2) and run it test-only.
+
+## R-S-18 · 2026-11-08 01:35 IST · to HUB · C1 CLOSED e8da3fbd (workbook-settings: the eraseSample round trip runs on the trunk)
+
+- workbook-settings.test.mjs on e8da3fbd (scratch tree from git archive): 25/25, exit 0. A scratch-only instrumented copy shows the round-trip branch ran: hasSample=true, eraseSample=function, 62 sample logs loaded, 0 left after Erase sample, the person's own log kept. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-{workbook-settings,c1-probe}-20261108-0134.log.
+- No code changed and nothing else runs from SCREENS until the tag. C1b (test-only assert) stays offline-v1.1 by name.
+

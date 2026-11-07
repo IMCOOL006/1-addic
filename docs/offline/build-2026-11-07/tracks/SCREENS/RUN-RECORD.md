@@ -147,18 +147,25 @@
 - The board (00:38): BASE 4006fae2; SLOTS-ALLOWED 1, for actions-sos only; the HUB has read R-S-17 and its default stands. CORE R-C-40 (00:37): FIX-R8 wf_9d9b1d01-ce1 (test-only) is running on actions-sos; 8 of that lane's own tests are red on the merge preview, and no SCREENS test is among them.
 - Memory 8.5 GB free at 01:19. Status file rewritten. Nothing started.
 
+## 2026-11-08 01:35 IST · C1 CLOSED e8da3fbd
+
+- The HUB's message (01:33, R-H-35): actions-sos 7d9d557 is merged; BASE e8da3fbd, pushed; QUIET has been running on _int since 01:31. It asked for the C1 re-check: one Node file, no slot.
+- workbook-settings.test.mjs on e8da3fbd (scratch tree from git archive in jobs/1c2cf086/tmp/c1-e8da3fbd): 25/25, exit 0.
+- An instrumented scratch copy (c1-probe.test.mjs, not committed) shows the round trip ran: 62 sample logs loaded, 0 left after Erase sample, the person's own log kept.
+- Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-{workbook-settings,c1-probe}-20261108-0134.log.
+- Records: status file, lane-reports/workbook-settings.md (C1 CLOSED section), outbox R-S-18.
+
 ## Resume here
 
-- Chat 1c2cf086 (SCREENS), STATE BUILDING. As of 2026-11-08 01:19 IST, NO SCREENS run is live.
-- Lanes: all five are MERGED and complete: content 680f850, today-track 6b0184b (4006fae2), workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254).
+- Chat 1c2cf086 (SCREENS), STATE BUILDING. As of 2026-11-08 01:35 IST, NO SCREENS run is live.
+- Lanes: all five are MERGED and complete: content 680f850, today-track 6b0184b, workbook-settings 0e76065 (C1 CLOSED e8da3fbd), actions 0977edd, game-tutorials bd2e085. BASE is e8da3fbd (actions-sos merged 01:31).
+- QUIET has been running on _int since 01:31 (the HUB's full gates). Nothing of SCREENS runs until the tag offline-v1.1.
 - NEXT, by name only:
-  - (1) When status-HUB.md shows actions-sos merged (its MERGED line, and a new BASE), re-check C1. Run node --test offline/tests/workbook-settings.test.mjs on the new trunk tip: git archive <tip> offline package.json | tar -x -C <scratch>, with no worktree and no node_modules. Confirm that the round trip ran: Actions.eraseSample must be a function on that tree. Then write C1 CLOSED <trunk sha> in the status file and in lane-reports/workbook-settings.md, plus an outbox line. If the HUB grants slot 6 for C1b instead: git merge --ff-only <BASE> in <wt>/workbook-settings (check that package-lock.json is unchanged), then lane.js test-only with batches [[C1b]].
-  - (2) A red the HUB sends back for any SCREENS lane: fix it on the branch within the hour, two rounds at most. Run the browser gate by hand with python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser, then git checkout -- offline/1-addic.html.
-  - (3) R-S-16 (CORE, tests-docs): if CORE asks today-track for the quick-log hook on Today, add it by name.
-  - (4) LOWs for offline-v1.1: game-tutorials C1, content C2-C4, workbook-settings C1b.
+  - (1) A red from the quiet window on a SCREENS name (an R-H line or a "from the HUB" note): fix it on the lane's branch within the hour, two rounds at most. First fast-forward the worktree to BASE e8da3fbd with git merge --ff-only, and check that package-lock.json is unchanged. Run the browser gate by hand with python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser, then git checkout -- offline/1-addic.html.
+  - (2) After the tag, on slots the HUB grants: the LOWs by name: game-tutorials C1, content C2-C4, workbook-settings C1b (test-only), and R-S-16 if CORE asks for the quick-log hook on Today.
 - Facts:
-  - setlane.py takes "STATE:=STATE: ..." (its docstring is wrong about a bare STATE argument). rr.py <section> <resume> appends to this file.
-  - The merge preview needs no worktree: git merge-tree --write-tree A B, then git archive <tree> offline package.json | tar -x -C <scratch>. Node tests need no node_modules.
-  - Memory is one reading of (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory.
+  - setlane.py takes "STATE:=STATE: ..."; rr.py <section> <resume>.
+  - hub_commit.py runs from the repo root, with repo-relative paths.
   - claude agents needs --json from a background chat.
+  - The merge preview needs no worktree: git merge-tree --write-tree, then git archive | tar -x.
   - Do not run a wait loop.

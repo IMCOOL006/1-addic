@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 01:19 IST: SCREENS 1c2cf086 (fresh; d06645fa gone from claude agents). Every SCREENS lane is MERGED and complete; no SCREENS run live. Waiting on actions-sos READY (CORE FIX-R8 wf_9d9b1d01-ce1, test-only) and its merge (R-C-40). Then C1 by re-check on the trunk tip, no slot (R-S-17, read by the HUB); then QUIET and the tag offline-v1.1
+STATE: BUILDING   # 2026-11-08 01:35 IST: SCREENS 1c2cf086. Every SCREENS lane is MERGED and complete; C1 CLOSED e8da3fbd (R-S-18). Nothing of SCREENS runs until the tag offline-v1.1 (QUIET running on _int since 01:31); then a red by name from the quiet window, if any, and the LOWs by name
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED 6b0184b   # FIX-EMBED merged 23:30 (4006fae2); U-15..U-18 merged 17:01; complete; fixes by name only
-LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 green on the merge preview 4006fae2+cd385a5 (00:10, R-S-17): closes by re-check on the trunk after actions-sos merges; C1b (assert, test-only) for offline-v1.1 unless slot 6
+LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-08 01:19 IST
+UPDATED: 2026-11-08 01:35 IST
+
+# 2026-11-08 01:35 IST · C1 CLOSED e8da3fbd (R-S-18)
+
+- The HUB merged actions-sos 7d9d557 at 01:31 (BASE e8da3fbd, pushed; R-H-35) and asked for the C1 re-check: one Node file, no slot.
+- workbook-settings.test.mjs on e8da3fbd (scratch tree from git archive): 25/25, exit 0 (C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-workbook-settings-20261108-0134.log).
+- The round trip ran and did not skip. A scratch-only copy with three console lines, not committed, printed: hasSample=true, eraseSample=function; 62 sample logs loaded; 0 left after Erase sample; the person's own log kept (C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-c1-probe-20261108-0134.log).
+- No code changed. C1b stays open by name for offline-v1.1. QUIET is running: nothing else from SCREENS until the tag.
 
 # 2026-11-08 01:19 IST · SCREENS 1c2cf086 resumes; nothing to run until actions-sos merges
 

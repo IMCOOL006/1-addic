@@ -132,3 +132,10 @@ Run 3: no review findings (not flagged).
 - package.json and package-lock.json: unchanged. ui-settings.js was already in build.mjs parts (line 33); build.mjs untouched.
 - Territory warnings: none.
 - Quiet-window browser tests: "PIN set lock unlock export" and "export erase import restores everything", plus the dark flow.
+
+## C1 CLOSED e8da3fbd (2026-11-08 01:35 IST)
+
+- Run on the trunk tip e8da3fbd (actions-sos 7d9d557 merged; R-H-35), from git archive into a scratch tree, Node v22.22.3: workbook-settings.test.mjs 25/25, exit 0 (C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-workbook-settings-20261108-0134.log).
+- The round trip ran and did not skip. A scratch-only copy of the same file with three console lines (not committed) printed: hasSample=true, eraseSample=function; after Load, meta.sample=true with 62 sample logs; after Erase sample, 0 sample logs and the person's own log kept (1 of 1). 25/25, exit 0 (C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-c1-probe-20261108-0134.log).
+- No code changed. C1b (the conditional becomes an assert, test-only) stays open by name for offline-v1.1.
+
