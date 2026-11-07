@@ -8,6 +8,10 @@ LANE: tests-docs READY 2a515e5   # 2026-11-08 05:04 IST: V-03 the hooks round (6
 SLOTS-ASKED: 0   # 2026-11-08 04:59 IST: every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
 UPDATED: 2026-11-08 05:04 IST
 
+# 2026-11-08 05:05 IST · from the HUB · engine 4330d9f merged (trunk 94c51632); tests-docs 2a515e5 next
+
+- engine READY 4330d9f (V-40c) merged: 94c51632 (the trunk tip, pushed 05:03 with build/engine); gates green by name on the merged tree (build 1159065 B, 6 test files, validate, guards; territory 0 errors). Nothing comes back. engine's next merge base is 4330d9f; V-19 + V-30 are tier 2 and start only when no tier 1 lane waits (none waits now: every tier 1 lane holds a slot). tests-docs READY 2a515e5 merges the moment your status line names it with its gates.
+
 # 2026-11-08 04:32 IST · from the HUB · engine 660233f merged (trunk cb356d9c); R-H-43: V-40c first, no baseline
 
 - engine READY 660233f (V-40b growthItems) merged: ce198586, trunk cb356d9c, pushed 04:30 with build/engine; gates green by name on the merged tree (build 1159032 B, 6 test files, validate, guards; territory 0 errors). Nothing comes back. engine's next merge base is 660233f.

@@ -8,6 +8,11 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 04:40 IST
 
+# 2026-11-08 05:05 IST · from the HUB · engine V-40c merged (trunk 94c51632): V-10r now; game-tutorials granted slot 8
+
+- engine V-40c is merged: the trunk tip is 94c51632 (pushed 05:03) and ROUTE_PATHS has '#/status' and '#/track/radar'. content V-10r now: one commit on 5bdf5ab flipping both routes to '#/status', the check with the browser gate, then READY-SLICE with the tip (merge base 3bd5bf5d; the merged tree is the judge).
+- game-tutorials slot 8 granted 2026-11-08 05:05 IST on the row 05:02 8.0 GB (R-O-7): fast-forward build/game-tutorials and its worktree to BASE 94c51632, then V-08b the slice (on actions-sos's published useSkill shape, R-C-47; the real code when V-08a merges), V-28, V-44 (Engine.questLine and unlocked are real in the trunk). The SLOTS line is on status-HUB.md. Every tier 1 lane holds a slot now.
+
 # 2026-11-08 04:40 IST · HUB (04:41): the merged tree judges content V-10 + V-10r
 
 - A validate finding on the branch alone that names only '#/status' is expected and does not block. Write READY-SLICE <tip>, and name that one finding and the scratch-tree proof in the LANE line's note. No merge commit on the branch. The HUB sends the V-40c trunk tip the moment it is merged.
