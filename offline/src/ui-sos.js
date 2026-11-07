@@ -515,14 +515,14 @@
             verify));
       })),
       sec.verifyNote && !o.crisis ? h('p', { class: 'muted', text: sec.verifyNote }) : null));
-    const extra = (title, lines) => (lines.length ? h('details', { class: 'card' }, h('summary', { text: title, style: { minHeight: '44px' } }),
+    const extra = (title, lines, open) => (lines.length ? h('details', { class: 'card', open: open ? true : null }, h('summary', { text: title, style: { minHeight: '44px' } }),
       h('ol', null, lines.map((t) => h('li', { text: t })))) : null);
     return h('div', { class: 'stack', dataset: tid(o.crisis ? 'sos-crisis' : 'sos-urgent'), 'aria-live': o.crisis ? 'assertive' : null },
       h('h1', { tabindex: '-1', class: 'sos-title', text: words.title }),
-      h('p', { class: 'sos-line', text: words.line }),
+      h('p', { class: 'sos-line', text: words.line, 'aria-live': o.overdose ? 'assertive' : null }), // RS28: typed overdose words: said at once
       ...sections,
       o.crisis && sections.length ? h('p', { class: 'muted', dataset: tid('crisis-verify'), text: COPY.crisisVerify }) : null,
-      o.crisis ? null : extra(COPY.overdose, model.overdose), // a crisis: the numbers and little else
+      o.crisis ? null : extra(COPY.overdose, model.overdose, o.overdose), // a crisis: the numbers and little else; RS28: open after typed overdose words
       o.crisis ? null : extra(COPY.withdrawal, model.withdrawal));
   }
 
@@ -699,7 +699,7 @@
       h('div', { class: 'row' }, link('Urgent help', '#/sos/urgent'), link('Back to SOS', '#/sos')));
     const show = (node) => { safe(() => UI.stopSpeaking(), null); body.replaceChildren(node); focusTitle(body); };
     const crisis = () => show(urgentView(c, { crisis: true }));
-    const urgent = () => show(urgentView(c)); // RS23: the full view, with the overdose card
+    const urgent = () => show(urgentView(c, { overdose: true })); // RS23: the full view, with the overdose card (RS28: open)
     const use = (skill, then) => () => { st.tools.push({ skillId: skill, helpful: false }); then(); }; // helpful only when ticked (RS7)
 
     function pick() {

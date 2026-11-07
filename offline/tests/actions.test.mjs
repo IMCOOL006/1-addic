@@ -2381,5 +2381,19 @@ describe('review round 4 fixes (FIX-R4)', () => {
     }
     for (const t of ['I took too many breaks', 'I used to run', 'too many people', 'I took my pills']) assert.equal(H.isOverdoseText(t), false, t);
   });
+  test('RS28: typed overdose words open the urgent view with the overdose card open and its first line announced', () => {
+    const card = (root) => root.querySelectorAll('details').find((x) => { const s = x.querySelector('summary'); return s && s.textContent.trim() === H.COPY.overdose; });
+    for (const t of ['I think I overdosed', 'I took too many pills', 'I want to overdose on purpose']) {
+      const root = typedTo(t);
+      assert.ok(card(root), t + ': the overdose card');
+      assert.equal(card(root).getAttribute('open'), '', t + ': open');
+      const line = root.querySelector('.sos-line');
+      assert.equal(line.textContent.trim(), H.COPY.urgent.line, t + ': the first line');
+      assert.equal(line.getAttribute('aria-live'), 'assertive', t + ': announced at once');
+    }
+    const plain = sosDom().open(['sos', 'urgent']);
+    assert.ok(card(plain) && card(plain).getAttribute('open') === null, 'Urgent help from the hub: the card stays closed');
+    assert.equal(plain.querySelector('.sos-line').getAttribute('aria-live'), null, 'and nothing is announced over the page');
+  });
   // -- FIX-R4 tests end --
 });
