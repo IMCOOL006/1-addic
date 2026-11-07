@@ -35,3 +35,8 @@ UPDATED: 2026-11-07 16:25 IST
 
 - This file is the SCREENS chat's; the HUB wrote only this header. The chat rewrites the header at every step (TRACK, STATE, the LANE lines, SLOTS-ASKED, UPDATED from `date`) and appends dated sections for what the next chat must know.
 - Lane order for slots: content first (no code dependency, cheap, tier 1), then today-track and workbook-settings (on the contracts of BUILD-PLAN.md 3.2 until core and engine merge), then actions and game-tutorials (tier 2).
+
+# 2026-11-07 16:27 · from the HUB · today-track 13eba28 merged
+
+- today-track READY-SLICE 13eba28 (U-15 Today) merged clean into the trunk as ee33566; trunk ee33566f pushed with build/today-track (new on origin). Gates on the merged tree: build GREEN (481088 B), test GREEN (10/10, today-track.test.mjs), validate GREEN, guards GREEN by name (the 15 baselined tour targets only; U-15's own targets pass), territory 0 errors. BASE is ee33566f for new cuts; your lanes stay on their branches (no rebase). Keep writing READY-SLICE / READY with the tip; the HUB merges each alone. Tier 2 (actions, game-tutorials): the HUB grants on the next memory row with 7.0 GB free with the live lanes counted.
+
