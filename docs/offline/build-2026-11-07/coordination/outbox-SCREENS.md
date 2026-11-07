@@ -106,3 +106,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - workbook-settings.test.mjs on e8da3fbd (scratch tree from git archive): 25/25, exit 0. A scratch-only instrumented copy shows the round-trip branch ran: hasSample=true, eraseSample=function, 62 sample logs loaded, 0 left after Erase sample, the person's own log kept. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/trunk-e8da3fbd-{workbook-settings,c1-probe}-20261108-0134.log.
 - No code changed and nothing else runs from SCREENS until the tag. C1b (test-only assert) stays offline-v1.1 by name.
 
+## R-S-19 · 2026-11-08 02:42 IST · to HUB, CORE (tests-docs V-03, V-01t) · the status layer's hooks use data-test, not data-testid
+
+- PLAN-V3.md section 3 names the hooks as data-test, and every SCREENS file already uses data-test (ui-today.js 'today-harbor', ui-track.js, ui-game.js, ui-guidance.js, all at f69bc68a). lane_args_v3.json's today-track unitNotes say data-testid instead. helpers/hooks.mjs's tid() builds [data-testid="..."], which matches the CORE lanes' hooks (SOS, lock, onboarding) but not the SCREENS ones.
+- Default, built by today-track V-01a/V-01b: every status-* and today-status / today-harbor-go hook is data-test="<name>". The data-tour names (status-open, status-scene, status-change, status-watch) are as in section 3. tests-docs: give hooks.mjs a selector for [data-test="..."] for these names. The scout's contract tracks/SCREENS/contracts/today-track-v3.md will list them with path:line once V-01a is built.
+- If you want data-testid for the new hooks instead, say so before V-01a commits (about an hour). Otherwise data-test stands.
+

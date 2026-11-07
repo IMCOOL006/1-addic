@@ -1,12 +1,24 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 01:35 IST: SCREENS 1c2cf086. Every SCREENS lane is MERGED and complete; C1 CLOSED e8da3fbd (R-S-18). Nothing of SCREENS runs until the tag offline-v1.1 (QUIET running on _int since 01:31); then a red by name from the quiet window, if any, and the LOWs by name
-LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track MERGED 6b0184b   # FIX-EMBED merged 23:30 (4006fae2); U-15..U-18 merged 17:01; complete; fixes by name only
+STATE: BUILDING   # 2026-11-08 02:42 IST: SCREENS 1c2cf086, V3 (PLAN-V3.md, R-H-38). today-track has slot 6 (V3 tier 1): fast-forwarded to BASE f69bc68a at 02:38 (no merge commit); its scout wf_ea78e1ac-572 is running, then the V-01a slice. Scouts for content (wf_10d4cc97-c2a) and game-tutorials (wf_39613665-fbc) are running too; their slots are asked, on the next 7.0 GB rows
+LANE: content SCOUTING 680f850   # V3: V-10 (T1, after today-track's slice), V-23 (T2), V-10b (after the owner's I6); scout wf_10d4cc97-c2a (briefs/content-v3.md); slot asked. v1: MERGED 680f850
+LANE: today-track SCOUTING f69bc68a   # V3 slot 6 granted 02:34; fast-forwarded 6b0184b..f69bc68a 02:38; scout wf_ea78e1ac-572 (brief tracks/SCREENS/briefs/today-track-v3.md); then V-01a slice, then V-01b. v1: MERGED 6b0184b (U-15..U-18, FIX-EMBED)
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
-SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-08 01:35 IST
+LANE: game-tutorials SCOUTING bd2e085   # V3: V-08b (T1, after actions-sos V-08a; contract before), V-28 (T1), V-21 (T2); scout wf_39613665-fbc (briefs/game-tutorials-v3.md); slot asked. v1: MERGED bd2e085
+SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
+UPDATED: 2026-11-08 02:42 IST
+
+# 2026-11-08 02:42 IST · V3: today-track slot 6, three scouts running (R-H-38)
+
+- HUB 9 (90539ba6) sent R-H-38 at 02:35: V3 is cut (PLAN-V3.md). today-track has slot 6 for V3 tier 1: scout it, then run V-01a, the slice. Then READY-SLICE <tip>; the HUB merges it alone. content V-10 and game-tutorials V-08b/V-28 come after, on the next 7.0 GB rows.
+- today-track: build/today-track and its worktree were fast-forwarded 6b0184b..f69bc68a with merge --ff-only at 02:38. No merge commit; the worktree is clean, and package.json and package-lock.json are unchanged.
+- Scouts launched at 02:40 (lane.js start: 'scout', with the V3 reading in laneNote; args in tracks/SCREENS/args/v3_scout_<lane>.json):
+  - today-track: wf_ea78e1ac-572.
+  - content: wf_10d4cc97-c2a.
+  - game-tutorials: wf_39613665-fbc.
+  - The V3 briefs and contracts go to briefs/<lane>-v3.md and contracts/<lane>-v3.md, so the v1 files are kept.
+- Hook attribute (R-S-19): the new SCREENS hooks use data-test, as PLAN-V3.md section 3 and the lanes' own files do. lane_args_v3.json's unitNotes say data-testid.
+- Memory: 8.2 GB free at 02:38.
 
 # 2026-11-08 01:35 IST · C1 CLOSED e8da3fbd (R-S-18)
 

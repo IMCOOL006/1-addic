@@ -1,0 +1,46 @@
+{
+ "lane": "game-tutorials",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "The skill credit in tools, the status tour step and dot, the guidance LOWs.",
+ "files": [
+  "offline/src/ui-game.js",
+  "offline/src/ui-guidance.js",
+  "offline/src/ui-tools.js",
+  "offline/tests/game-tutorials.test.mjs"
+ ],
+ "units": [
+  "V-08b",
+  "V-28",
+  "V-21"
+ ],
+ "batches": [
+  [
+   "V-08b"
+  ],
+  [
+   "V-28"
+  ],
+  [
+   "V-21"
+  ]
+ ],
+ "unitTier": {
+  "V-08b": 1,
+  "V-28": 1,
+  "V-21": 2
+ },
+ "unitNotes": {
+  "V-08b": "ui-tools.js credits a used skill through Actions.useSkill({skillId, helpful}) (0.5 h, V3-08; after actions-sos V-08a merges; on the contract before: typeof-guarded, the old refused call removed); a test that the call is made with the right fields and that a refusal shows nothing wrong to the person.",
+  "V-28": "The status layer's tour step and dot (0.4 h, V3-28): a tour step on data-tour status-open (the Today chip; text from Content.tutorials), the JIT tutorial wiring for Content.features.status on the first open of #/status, GuidanceUI.dot on the chip while unseen; the data-tour target check stays green (the chip exists once today-track V-01b is merged: build on the contract, guard by typeof).",
+  "V-21": "C1 and the coach after a route change (1 h, V3-21): the tour ends as aborted when the route leaves Today (no centred card over another screen's button, the board's 01:39 finding); the narrow/flip branch (ui-guidance.js:329-335) gets a Node case for both branches."
+ },
+ "laneNote": "V3 SCOUT OVERRIDE (SCREENS 1c2cf086, 2026-11-08 02:40 IST; it replaces READ items 1 and 3 where they differ). This run scouts the lane's V3 units, cut 2026-11-08 02:25 IST by HUB 9 from the owner's R-O-5. READ: (a) C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/PLAN-V3.md whole: section 2 your lane's row and the chain; section 3 the status layer's contract with its fixed hook names; section 5 the decisions with their defaults (a page at #/status; the 14-day strip as dated dots without a count; 'What just changed' since the last draw this session, no new write; the name 'Your Harbor'; the India numbers keep 'please verify'; no clinical copy change before the reviewer's answers). (b) V3-IMPROVEMENTS.md in the same folder: section 2 and the rows of your units' candidates (the V3-xx ids). (c) tracks/HUB/workflows/lane_args_v3.json: its _readme and lanes.<your lane> (not lane_args.json). (d) THE CODE is the trunk at BASE f69bc68a (the tag offline-v1.1), read-only: git -C C:/Users/ruchi/1-addic show f69bc68a:<path> and git -C C:/Users/ruchi/1-addic grep -n <pattern> f69bc68a -- offline/ (cite path:line at f69bc68a). The _base worktree is v1's empty base 655516dc: never read code there. (e) The lane's v1 units are done and merged: its v1 brief tracks/SCREENS/briefs/<lane>.md and its report tracks/SCREENS/lane-reports/<lane>.md name the open LOWs by id; read only those lines. BUILD-PLAN.md sections 2 (the rules) and 3 (the contracts) still bind; its section 5 is v1's unit list (context only). (f) HOOK ATTRIBUTE: the SCREENS files use data-test (ui-today.js 'today-harbor', ui-track.js, ui-game.js, ui-guidance.js), and PLAN-V3.md section 3 names data-test; helpers/hooks.mjs's tid() builds [data-testid] for the CORE lanes' hooks; lane_args_v3.json's unitNotes say data-testid. Default: data-test for every new SCREENS hook (section 3 and the lane's own files win), data-tour for tour targets; state it in the contract so tests-docs (V-03, V-01t) writes against it. WRITE the brief and the contract to the V3 paths this run names (the -v3.md files), never over the v1 files. Keep the brief under 15 KB. V-08b waits for actions-sos V-08a (Actions.useSkill({skillId, helpful}) -> {ok, event}; on refusal nothing is thrown; read tracks/CORE/contracts/actions-sos.md for it, else PLAN-V3.md section 2's Dependencies line): build on the contract behind typeof guards; name where ui-tools.js marks a skill used today. V-28: the tour step on data-tour status-open (Today's chip, today-track V-01b), the JIT wiring and GuidanceUI.dot for Content.features.status (content V-10): name the tour steps list, the JIT registry and dot() at f69bc68a. V-21: C1 (the place() below-target, maxWidth and flip-above-SOS branches, ui-guidance.js) and the coach after a route change (the tour ends as aborted when the route leaves Today). The worktree C:/Users/ruchi/1-addic-wt/game-tutorials is at the v1 tip bd2e085, an ancestor of f69bc68a; it is fast-forwarded when the slot is granted. THE LANE ARGS NOTE: Starts after today-track's slice (V-01a) is merged, or on a free slot with typeof guards.",
+ "base": "f69bc68a",
+ "session": "https://claude.ai/code/session_1c2cf086-eb79-481e-84f2-f24a31da7dcd",
+ "now": "2026-11-08 02:40 IST",
+ "start": "scout",
+ "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/game-tutorials-v3.md",
+ "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/game-tutorials-v3.md"
+}

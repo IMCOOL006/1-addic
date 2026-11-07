@@ -1,0 +1,50 @@
+{
+ "lane": "content",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "The status feature's content, the India numbers, the content LOWs, the clinical-review fixes.",
+ "files": [
+  "offline/src/content-core.js",
+  "offline/src/content-lessons-a.js",
+  "offline/src/content-lessons-b.js",
+  "offline/src/content-lessons-c.js",
+  "offline/src/content-exercises.js",
+  "offline/src/content-practices.js",
+  "offline/src/content-sample.js",
+  "offline/tests/content.test.mjs"
+ ],
+ "units": [
+  "V-10",
+  "V-10b",
+  "V-23"
+ ],
+ "batches": [
+  [
+   "V-10"
+  ],
+  [
+   "V-23"
+  ],
+  [
+   "V-10b"
+  ]
+ ],
+ "unitTier": {
+  "V-10": 1,
+  "V-10b": 1,
+  "V-23": 2
+ },
+ "unitNotes": {
+  "V-10": "The status feature's content (0.3 h, V3-28): Content.features.status (revealed with the Harbor, never later than m1), its JIT tutorial for the first open and its help entry; original words, grade 6-8, no promise of outcomes; validateContent green; a content test that the feature, tutorial and help entry exist and read as text.",
+  "V-23": "C2 (both items so numbered in the lane report: the content-sample.js:6 header against plans 1-3 days ahead; the sample erase assertion), C3, C4 (0.3 h, V3-23): one comment, one assert, the 'guide' id note.",
+  "V-10b": "The India crisis numbers (0.5 h; only after the owner's I6 answer is in outbox-OWNER.md): the verify: true flags of content-core.js:421-432 cleared only for the numbers the owner confirms; the rest keep 'please verify'. Never a new number without the owner's word."
+ },
+ "laneNote": "V3 SCOUT OVERRIDE (SCREENS 1c2cf086, 2026-11-08 02:40 IST; it replaces READ items 1 and 3 where they differ). This run scouts the lane's V3 units, cut 2026-11-08 02:25 IST by HUB 9 from the owner's R-O-5. READ: (a) C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/PLAN-V3.md whole: section 2 your lane's row and the chain; section 3 the status layer's contract with its fixed hook names; section 5 the decisions with their defaults (a page at #/status; the 14-day strip as dated dots without a count; 'What just changed' since the last draw this session, no new write; the name 'Your Harbor'; the India numbers keep 'please verify'; no clinical copy change before the reviewer's answers). (b) V3-IMPROVEMENTS.md in the same folder: section 2 and the rows of your units' candidates (the V3-xx ids). (c) tracks/HUB/workflows/lane_args_v3.json: its _readme and lanes.<your lane> (not lane_args.json). (d) THE CODE is the trunk at BASE f69bc68a (the tag offline-v1.1), read-only: git -C C:/Users/ruchi/1-addic show f69bc68a:<path> and git -C C:/Users/ruchi/1-addic grep -n <pattern> f69bc68a -- offline/ (cite path:line at f69bc68a). The _base worktree is v1's empty base 655516dc: never read code there. (e) The lane's v1 units are done and merged: its v1 brief tracks/SCREENS/briefs/<lane>.md and its report tracks/SCREENS/lane-reports/<lane>.md name the open LOWs by id; read only those lines. BUILD-PLAN.md sections 2 (the rules) and 3 (the contracts) still bind; its section 5 is v1's unit list (context only). (f) HOOK ATTRIBUTE: the SCREENS files use data-test (ui-today.js 'today-harbor', ui-track.js, ui-game.js, ui-guidance.js), and PLAN-V3.md section 3 names data-test; helpers/hooks.mjs's tid() builds [data-testid] for the CORE lanes' hooks; lane_args_v3.json's unitNotes say data-testid. Default: data-test for every new SCREENS hook (section 3 and the lane's own files win), data-tour for tour targets; state it in the contract so tests-docs (V-03, V-01t) writes against it. WRITE the brief and the contract to the V3 paths this run names (the -v3.md files), never over the v1 files. Keep the brief under 15 KB. V-10 needs today-track's V-01a (the route #/status, its hooks) only for the wording's targets: name the shape of Content.features at f69bc68a (content-core.js: where features are listed, how and when they are revealed, by which module), the JIT tutorial shape that ui-guidance.js reads, and the help entries' shape, so V-10 adds Content.features.status (revealed with the Harbor, never later than m1), its JIT tutorial for the first open and its help entry. V-10b waits for the owner's I6 answer (default: nothing cleared). V-23 is C2, C3, C4 from the v1 lane report. The worktree C:/Users/ruchi/1-addic-wt/content is at the v1 tip 680f850, an ancestor of f69bc68a; it is fast-forwarded when the slot is granted. THE LANE ARGS NOTE: Tier 1 is V-10 (the status layer needs its feature and tutorial, house rule 5). The clinical-review fixes come by name after the reviewer's answers (V-09, the HUB's pack); hours by the answers.",
+ "base": "f69bc68a",
+ "session": "https://claude.ai/code/session_1c2cf086-eb79-481e-84f2-f24a31da7dcd",
+ "now": "2026-11-08 02:40 IST",
+ "start": "scout",
+ "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/content-v3.md",
+ "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/content-v3.md"
+}
