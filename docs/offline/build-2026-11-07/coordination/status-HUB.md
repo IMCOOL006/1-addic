@@ -1,8 +1,8 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 18:28 IST: HUB 5 (4b638c7b, context about 270k: hands over at the next safe point past about 290k); twenty-three merges, BASE a3081f33 pushed 18:27 (core FIX-V11: core complete again); CORE 06285082 at RESTART 18:23 with nothing running (the fresh CORE launches actions-sos FIX-R6 with RS-SAMPLE, learn FIX-RS9, engine FIX-RS9E); SCREENS 2: actions U-23.., game-tutorials U-26..; baselined: 3 tour-target names, 3 test names; tag conditions left: actions-sos READY merged (with RS-SAMPLE), the three test names lifted, a full-gates quiet run GREEN by name
+STATE: BUILDING   # 2026-11-07 18:32 IST: HUB 5 (4b638c7b, context about 268k); twenty-three merges, BASE a3081f33; MEMORY UNDER THE FLOOR WITH NOTHING RUNNING: rows 18:30 3.9, 18:31 3.5 GB free while no build run is live (SCREENS 2 paused actions at 9ee68cf and game-tutorials at d4c49d1 with U-23..U-25 and U-26, U-28 built, checks waiting; CORE 5 at RESTART, CORE 6 not yet stepped): other programs hold the memory; every start waits for a 7.0 GB row; the owner is asked on the board to close what is not this build
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: a3081f33 (the trunk after the core FIX-V11 merge, 2026-11-07 18:27; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 5 runs live from 17:10 (actions-sos FIX-R4, core FIX-V11, workbook-settings, actions, game-tutorials); nothing new starts until a row shows 7.0 GB free with the live runs counted (17:17: 4.5 GB); under 4.0 GB the newest run pauses at its next commit (game-tutorials, then actions); tests-docs tier 2 (U-35, U-36b) and its hooks round after actions-sos merges
+SLOTS-ALLOWED: 0 new starts while the rows stay under 7.0 GB (18:31: 3.5 GB free with no run live); the checks of actions and game-tutorials (one per 7.0 GB row), then CORE 6's actions-sos FIX-R6, learn FIX-RS9, engine FIX-RS9E (one per 7.0 GB row, actions-sos first: the tag condition); under 4.0 GB the newest run pauses at its next commit
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 granted again 2026-11-07 18:28 for FIX-RS9E by name (R-S-9: recoveryPlanPrefill and ownWarningPlans read x.item; CORE's wrapper ready), test-only or one-line; READY with the tip; the lane was complete at 57153d3
@@ -41,7 +41,11 @@ MERGED: workbook-settings READY 0e76065 (FIX-SAMPLE: Load sample data only witho
 MERGED: core READY 8e80951 (FIX-V11: high contrast on every render, custom-field focus, PIN-where line; review fixes RC1-RC3, RS19; store.test.mjs 87 tests) -> merge a3081f33, trunk a3081f33, pushed 18:27 (build GREEN, 1-addic.html rebuilt; test GREEN 87/87; validate GREEN; guards GREEN by name, the 3 baselined names only; territory 0 errors; merged clean, 4 files; flagged: both reviewers on the round, each finding FIXED on re-check)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 18:28 IST
+UPDATED: 2026-11-07 18:32 IST
+
+# 2026-11-07 18:32 · memory under the floor with no run live
+
+- Rows 18:30 3.9 GB (launcher), 18:31 3.5 GB (by hand) with no build run live: SCREENS 2 paused both tier 2 lanes at their commits (actions 9ee68cf after U-25, game-tutorials d4c49d1 after U-28; their checks wait for 7.0 GB rows); CORE 5 restarted with nothing running; CORE 6 has not stepped yet. The memory is held outside this build (the pharma program's chats, the planner chat e4492b2a at 630k context, the browser). Nothing of ours can pause further. Default: every start waits for a 7.0 GB row, one start per row, actions-sos FIX-R6 first when CORE 6 is up (the tag condition). Asked of the owner on the board: close what is not this build; the forecast slips an hour per hour the rows stay under 7.0.
 
 # 2026-11-07 18:28 · the twenty-third merge: core FIX-V11; CORE 5 hands over clean
 
