@@ -233,8 +233,13 @@ def cmd_prepare(lane, tip, base):
     lane_sha = g.sha(lane_ref)
     if not lane_sha:
         stop("MISMATCH", f"the branch {lane_ref} does not exist in this repository")
-    if not lane_sha.startswith(tip):
-        stop("MISMATCH", f"{lane_ref} is at {lane_sha[:12]} but the READY line says {tip}: the chat's status and the branch disagree", branchTip=lane_sha, tip=tip)
+    # The tip named on the READY line is what is merged. A lane continues on its branch after READY-SLICE (no rebase),
+    # so the branch may already sit past the tip: then the named commit is merged, never the branch head (16:52, HUB 5).
+    tip_sha = g.sha(tip)
+    if not tip_sha or not g.is_ancestor(tip_sha, lane_sha):
+        stop("MISMATCH", f"{lane_ref} is at {lane_sha[:12]} and the READY line says {tip}, which is not a commit on that branch: the chat's status and the branch disagree", branchTip=lane_sha, tip=tip)
+    branch_ahead = tip_sha != lane_sha
+    lane_sha = tip_sha
     int_branch = f"int/{lane}-{tip7}"
     if g.ref_exists(int_branch):
         stop("BLOCKED", f"the branch {int_branch} already exists (an earlier run of this merge): python merge_lane.py abort {lane} deletes it when it carries no commit (git branch -d); one with a merge commit the HUB inspects and removes itself", intBranch=int_branch)
@@ -250,7 +255,7 @@ def cmd_prepare(lane, tip, base):
         stop("BLOCKED", f"the base {base[:12]} is not an ancestor of {TRUNK} @ {trunk_sha[:12]}: the lane was not cut from the trunk's history", trunk=trunk_sha, base=base_sha)
     # ---- the two commands that change the worktree ----
     g.run("switch", "-c", int_branch, trunk_sha)
-    rc, so, se = g.run("merge", "--no-ff", "--no-commit", lane_ref, check=False, cfg=NO_DIFF3)
+    rc, so, se = g.run("merge", "--no-ff", "--no-commit", lane_sha, check=False, cfg=NO_DIFF3)
     conflicts = g.unmerged()
     merge_base = g.text("merge-base", trunk_sha, lane_sha)
     changed = [l for l in g.text("diff", "--name-only", "--no-renames", merge_base, lane_sha).splitlines() if l.strip()]
@@ -259,6 +264,7 @@ def cmd_prepare(lane, tip, base):
         "state": "CONFLICT" if conflicts else ("MERGED-CLEAN" if rc == 0 else "GIT-FAILED"),
         "lane": lane, "intBranch": int_branch, "tip": lane_sha, "trunk": trunk_sha, "base": base_sha, "mergeBase": merge_base,
         "conflicts": conflicts, "filesChanged": changed, "testFiles": tests, "mergeInProgress": g.merge_in_progress(),
+        "branchAhead": branch_ahead, "branchTip": g.sha(lane_ref),
         "log": str(g.log_path),
     }
     if rc != 0 and not conflicts:
@@ -494,7 +500,8 @@ def cmd_guards(lane, base):
             stop("BLOCKED", f"{t} is missing")
     log = LOGS / f"{lane}-{tip7}.guards.log"
     before = g.porcelain_paths()
-    t_rc, t_js, _ = run_tool([ct, lane, f"{base}..build/{lane}", "--wt", INT], log)
+    merged_tip = g.sha("MERGE_HEAD") or f"build/{lane}"  # the commit being merged (the READY tip), not a branch head that moved on
+    t_rc, t_js, _ = run_tool([ct, lane, f"{base}..{merged_tip}", "--wt", INT], log)
     g_rc, g_js, _ = run_tool([gp, "--wt", INT, "--lane", lane, "build", "test", "validate", "guards"], log)
     after = g.porcelain_paths()
     moved = [p for p, xy in after.items() if before.get(p) != xy]
