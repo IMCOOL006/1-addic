@@ -422,8 +422,11 @@ test('learn: map progress from events', () => {
   assert.equal(stops[1].complete, false);
   assert.equal(stops.filter((s) => s.current).length, 1, 'one stop is highlighted');
   assert.equal(stops[1].current, true, 'the first stop with lessons to go');
-  assert.equal(stops[4].loaded, false, 'M4 is not in this version: shown as coming, never locked');
-  assert.equal(stops[4].name, 'Set Yourself Up');
+  for (const s of stops) assert.equal(s.loaded, M.some((m) => m.id === s.id), `${s.id} is loaded when Content.modules has it`);
+  // A stop without content (a stub without M4, so this holds with or without the full content) shows as coming, never locked.
+  const noM4 = LX.mapData(viewOf(events, {}), NOW, Object.assign({}, Content, { modules: M.filter((m) => m.id !== 'm4') }), null);
+  assert.equal(noM4[4].loaded, false, 'a stop not in this version is shown as coming');
+  assert.equal(noM4[4].name, 'Set Yourself Up');
   assert.ok(stops[2].unlocks.includes('Glossary'), 'unlocks name Content.features');
   const more = LX.mapData(viewOf(events.concat([ev('SlipLogged', { date: '2026-11-06' }, t)]), {}), NOW, Content, null);
   assert.equal(more[0].done, stops[0].done, 'a slip never lowers progress');
@@ -535,8 +538,13 @@ test('learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted
     assert.match(mod.textContent, new RegExp(`${M[0].lessons.length} of ${M[0].lessons.length} lessons done`));
     const missing = LD.lessonPage({ route: { parts: ['lesson', 'm9-l9'], query: {} }, view, A, E: null });
     assert.match(missing.textContent, /Not available yet/);
-    const coming = LD.learnPage({ route: { parts: ['learn', 'm7'], query: {} }, view, A, E: null });
-    assert.match(coming.textContent, /coming in a future update/i);
+    // A stop without content: a stub Content without m7, so this holds with or without the full content.
+    const full = globalThis.Content;
+    globalThis.Content = Object.assign({}, full, { modules: M.filter((m) => m.id !== 'm7') });
+    try {
+      const coming = LD.learnPage({ route: { parts: ['learn', 'm7'], query: {} }, view, A, E: null });
+      assert.match(coming.textContent, /coming in a future update/i);
+    } finally { globalThis.Content = full; }
   } finally { delete globalThis.document; delete globalThis.UI; }
 });
 
