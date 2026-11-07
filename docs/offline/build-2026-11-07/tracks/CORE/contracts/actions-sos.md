@@ -1,0 +1,34 @@
+# Contract: lane actions-sos (BUILD-PLAN 3.2, 3.4, 3.5, 3.7). "wait" = not at base 655516dc (base has only content-core.js, content-lessons-a.js). Consumers named; "none yet" otherwise.
+
+## Actions (offline/src/actions.js, new; classic script `const Actions`, module.exports guard). All verbs async, return the written rows/events; failure = `AppError(message, code)`, nothing written.
+| Verb | Args | Writes | Events | Errors | Consumer |
+|---|---|---|---|---|---|
+| onboard(patch) | profile fields of 3.4 | profile `me`, settings `app` | OnboardingCompleted (once) | bad-profile | ui-onboarding |
+| settings.patch(patch) | 3.4 settings keys | settings `app` | none | bad-setting | workbook-settings |
+| recordEvent(type, payload) | known 3.7 type | events | that type | bad-event | game-tutorials, learn |
+| logCraving(e) / logFeeling(e) | {intensity 0-10, triggerIds[], thought?, redFlag?, feelings[], skills[], notes?, emotion?} | logs | LogCreated, SkillUsed per skill | bad-log | today-track |
+| checkin(kind, data) | 'morning'/'evening', mood, anxiety, peakCraving, pleasantCount, used, sleep, meeting, intention | logs type checkin | CheckinCompleted | bad-checkin | today-track |
+| logActivity(data) | {kind, minutes, name, enjoyment} | logs | ActivityDone | bad-activity | today-track, actions |
+| logSlip(data) | {date?, substance?, situation?, notes?} | logs type slip | SlipLogged | bad-slip | today-track, ui-sos |
+| sosSession(s) | {kind, ratingBefore, ratingAfter, tools:[{skillId, helpful}], delays, used, risky, outcome, drill} | logs (not drill) | LogCreated, SkillUsed*, SosCompleted, SlipLogged if used; drill: TutorialCompleted('drill') once only | bad-session | ui-sos |
+| completeLesson(id) | lessonId | none | LessonCompleted (once) | unknown-lesson | learn |
+| checkpoint(moduleId, answers) | answers[] | none | CheckpointCompleted (once), ModuleCompleted | bad-checkpoint | learn |
+| saveResponse(exerciseId, payload, {mode, draft}) | | responses (append-only) | ArtifactSaved or ExerciseDone by exercise kind; none when draft | unknown-exercise | learn, ui-onboarding |
+| contacts.add/update/deactivate(id) / reached(id, how) | Contact of 3.4 | contacts | ContactReached on reached | bad-contact | workbook-settings, ui-sos |
+| plans.add/update/remove, plans.debrief(id,{usedPlan,how}), weeklyReview(data), todos.add/done/remove | 3.4 | plans, todos | BattlePlanCreated, BattlePlanDebriefed, WeeklyReviewCompleted | bad-plan | actions |
+| motivation.add({stage, score, plusOne, source}) / predictions.add/complete / quests.tick(questId, stepId) | 3.4 | motivation, predictions, quests | none / none / none | bad-* | ui-onboarding, actions |
+| tutorial.done(id,{skipped}) / tutorial.replay(id) / reveal(featureId) / markTipShown(id) | | tutorials, reveals, tips | TutorialCompleted (once), FeatureRevealed | | game-tutorials |
+| recoveryPlan.save(sections,{confirm}) / scriptUsed(responseId) | | recoveryPlan `plan` | RecoveryPlanConfirmed (once), ScriptUsed | bad-plan | workbook-settings, ui-sos |
+| loadSample() / eraseAll() / importBackup(obj) | | meta `sample`; all; replaceAll | none | no-sample, bad-backup | workbook-settings |
+Event shape: `{id, type, at: ISO, payload}`. SlipLogged payload `{date, logId}`; SkillUsed `{skillId, helpful, logId}`; SosCompleted `{kind, outcome, ratingBefore, ratingAfter, delays, logId}`; TutorialCompleted `{id, skipped}`. Status: all wait for the file (U-09 slice).
+
+## Relied on, waiting for other lanes
+- Store (core U-04, wait): load, view.get/list/count, commit(label, fn), subscribe, bulk, status(), exportJson, replaceAll, resetAll, lock.set/unlock/verify/remove/lockNow/touch, STORES (3.2/3.3). Stand-in in actions.test.mjs.
+- Engine (engine U-05..U-08, wait): id, todayStr, dateStr, counters, AppError, validateBackup, migrateBackup, reasonsCard, distractionDeck, comebacks, spiralThoughts, guideSequence (as `Engine.sos.guideSequence` or flat; verify at switch-over), crisisKeywords.
+- UI core (core U-03, wait): UI.h, UI.go, UI.route, UI.pages, UI.ctx, UI.speak, UI.stopSpeaking, UI.night, UI.toast, UI.sheet, UI.confirm, UI.form. Optional `UI.tour.start(id)` (game-tutorials).
+- Content (base): resources.in {emergency, crisis, groups, treatment, verifyNote, context}, resources.intl.lines, resources.overdose[], resources.withdrawal[] (content-core.js:417-463); emotions with `hopeless.crisisCheck` (:36-45); terms (:15), stages (:28), paces (:47), substances (:22), discreetName (:12); catalogs.reassuring, acceptance, angerSelfTalk, assertiveLine, slipSelfTalk, spiral, distractions, activities (:300+); tutorials 'tour' and 'drill' (:227); xp (:113). Waiting: Content.practices (SOBER, give-it-a-beat), Content.sample.generate, early-access wording.
+
+## Added by U-10 / U-11 (ui-sos.js, ui-onboarding.js; new files, wait for core U-03)
+Routes: `#/sos`, `#/sos/craving`, `#/sos/feeling`, `#/sos/slip` (`?preview=1`), `#/sos/urgent`, `#/sos?drill=1`, `#/lock`, `#/onboarding`. Registered: `UI.pages.sos`, `UI.pages.lock`, `UI.pages.onboarding`. Exports: `UI.sosHelpers = {urgentList(region, Content), outcomeFrom(before, after, used), isCrisisEmotion(id)}`; `UI.sosUrgentView(ctx)` (the shared urgent node, used by the lock screen). Consumers: ui-core router (lock redirect), game-tutorials (drill is ours, tour theirs), tests-docs.
+DOM hooks (data-testid via `dataset`; stable): `sos-hub`, `sos-craving`, `sos-feeling`, `sos-slip`, `sos-urgent`, `sos-drill-banner` (drill mode shown), `sos-rating`, `sos-timer`, `sos-tool-<wave|why|call|distract|talkback|guide>`, `sos-reassess-passed`, `sos-reassess-still`, `sos-used-yes`, `sos-used-no`, `sos-finish`, `sos-feeling-<emotionId>`, `sos-crisis` (numbers block shown at once), `urgent-number-<n>` (tel link), `urgent-copy-<n>`, `urgent-verify` ("please verify" label), `lock-pin`, `lock-unlock`, `lock-urgent`, `lock-sober`, `onb-step-<1..8>`, `onb-next`, `onb-skip`, `onb-safety-ok`, `onb-finish`, `onb-tour-offer`, `early-notice`, `early-notice-dismiss`.
+data-tour targets this lane carries: `sos-urgent` (urgent entry on the SOS hub), `sos-craving` (the craving button). The `sos-button` itself and nav targets are core's. Consumers: tests-docs (browser), game-tutorials (tour). Status: all wait for U-10/U-11.
