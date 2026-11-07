@@ -371,7 +371,7 @@ const Actions = (() => {
   }
 
   /* ── SOS ─────────────────────────────────────────────────────────────────────────────────── */
-  const SOS_KEYS = ['kind', 'ratingBefore', 'ratingAfter', 'tools', 'delays', 'used', 'risky', 'outcome', 'drill', 'emotion'];
+  const SOS_KEYS = ['kind', 'ratingBefore', 'ratingAfter', 'tools', 'delays', 'used', 'risky', 'outcome', 'drill', 'emotion', 'date'];
   const OUTCOMES = ['passed', 'still', 'used'];
   function checkSession(s) {
     const code = 'bad-session';
@@ -384,6 +384,7 @@ const Actions = (() => {
     for (const k of ['used', 'risky', 'drill']) if (!absent(s, k) && !isBool(s[k])) fail(code, `"${k}" must be true or false.`);
     if (!absent(s, 'outcome') && !OUTCOMES.includes(s.outcome)) fail(code, 'Unknown outcome.');
     if (!absent(s, 'emotion') && !(s.emotion === null || (typeof s.emotion === 'string' && known(getContent().emotions, s.emotion)))) fail(code, 'Unknown emotion.');
+    if (!absent(s, 'date') && !isDate(s.date)) fail(code, 'The date must be today or earlier.'); // RC16
     const used = s.kind === 'slip' || s.used === true;
     if (!absent(s, 'outcome') && (s.outcome === 'used') !== used) fail(code, 'The outcome does not match "used".');
     const before = absent(s, 'ratingBefore') ? null : s.ratingBefore;
@@ -391,11 +392,12 @@ const Actions = (() => {
     let outcome = absent(s, 'outcome') ? null : s.outcome;
     if (!outcome) outcome = used ? 'used' : (before !== null && after !== null && after > 0 && after >= before) ? 'still' : 'passed';
     return { kind: s.kind, ratingBefore: before, ratingAfter: after, tools, delays: absent(s, 'delays') ? 0 : s.delays,
-      used, risky: s.risky === true, outcome, drill: s.drill === true, emotion: absent(s, 'emotion') ? null : s.emotion };
+      used, risky: s.risky === true, outcome, drill: s.drill === true, emotion: absent(s, 'emotion') ? null : s.emotion, date: absent(s, 'date') ? null : s.date };
   }
   async function sosSession(s) {
     const v = checkSession(s);
     const at = stamp();
+    if (v.date && v.date > localDate(at)) fail('bad-session', 'The date must be today or earlier.'); // RC16: a save kept for the unlock keeps the day of the tap
     if (v.drill) {
       /* a rehearsal: no log, no skill, no XP for the session, no slip; only the drill's tutorial mark, once */
       const S = store();
@@ -409,6 +411,7 @@ const Actions = (() => {
     }
     return write(`sos ${v.kind}`, at, (tx) => {
       const log = tx.put('logs', logRow(v.kind, at, {
+        ...(v.date ? { date: v.date } : {}), // RC16: the day of the tap when the save came later
         intensity: v.ratingBefore, skills: v.tools, used: v.used,
         sos: { ratingBefore: v.ratingBefore, ratingAfter: v.ratingAfter, delays: v.delays, risky: v.risky, outcome: v.outcome },
         ...(v.emotion ? { emotion: v.emotion, feelings: [v.emotion] } : {}), // a feeling session keeps the feeling (09:33 ruling)

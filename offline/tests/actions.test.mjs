@@ -14,11 +14,12 @@ const require = createRequire(import.meta.url);
 // week or a month end. A Date made with no argument, and Date.now, read it; a Date with arguments is untouched.
 const RealDate = Date;
 const PINNED_AT = new RealDate(2026, 2, 11, 12, 0, 0).getTime(); // Wednesday 11 March 2026, 12:00 local
-const CLOCK_SHIFT = PINNED_AT - RealDate.now();
+let CLOCK_SHIFT = PINNED_AT - RealDate.now(); // RC16 moves it on past a midnight and back (shiftClock)
 globalThis.Date = class PinnedDate extends RealDate {
   constructor(...a) { if (a.length) super(...a); else super(RealDate.now() + CLOCK_SHIFT); }
   static now() { return RealDate.now() + CLOCK_SHIFT; }
 };
+const shiftClock = (ms) => { CLOCK_SHIFT += ms; };
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
@@ -964,7 +965,7 @@ function sosDom(opts) {
   const doc = { body, createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
     addEventListener: (t, fn) => { (docOn[t] = docOn[t] || []).push(fn); } };
   const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto,
-    setInterval: () => 0, clearInterval: () => {}, setTimeout, Content: C(), Store: o.store || S(), module: { exports: {} } });
+    setInterval: () => 0, clearInterval: () => {}, setTimeout, Date, Content: C(), Store: o.store || S(), module: { exports: {} } }); // Date: the pinned clock, one clock as in a browser (RC16)
   vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
   if (o.onboarding) vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
   const byId = (root, id) => {
@@ -1801,6 +1802,33 @@ describe('review round 2 fixes (RC14-RC20)', () => {
     d.tapId(slip, 'sos-slip-continue');
     await d.settle();
     assert.equal(events('SlipLogged').length, 1, 'Log it and go on saves the slip');
+  });
+  test('RC16: a session kept for the unlock keeps the day of the tap, though the unlock comes after midnight', async () => {
+    const d = sosDom();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const day = E().todayStr(new Date());
+    const root = d.open(['sos', 'craving']);
+    d.tapId(root, 'sos-rate-skip');
+    d.tapId(root, 'sos-checkin');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-yes');
+    await d.settle();
+    assert.deepEqual(d.go, ['#/sos/slip?logged=1'], 'kept for the unlock: the slip is on its way');
+    const slip = d.open(['sos', 'slip']);
+    d.tapId(slip, 'sos-slip-continue');
+    await d.settle();
+    shiftClock(14 * 3600 * 1000);
+    try {
+      assert.notEqual(E().todayStr(new Date()), day, 'the unlock comes on the next day');
+      assert.ok(await S().lock.unlock('2468'));
+      await d.settle();
+      await d.settle();
+      assert.deepEqual(list('logs').map((l) => l.date), [day, day], 'each save keeps the day of the tap');
+      assert.deepEqual(events('SlipLogged').map((e) => e.payload.date), [day, day]);
+      await refused(Actions.sosSession({ kind: 'craving', date: '2999-01-01' }), 'bad-session');
+      await refused(Actions.sosSession({ kind: 'craving', date: 'soon' }), 'bad-session');
+    } finally { shiftClock(-14 * 3600 * 1000); }
   });
   // -- review round 2 tests end --
 });

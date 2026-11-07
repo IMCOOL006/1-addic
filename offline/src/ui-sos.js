@@ -405,6 +405,17 @@
     }
   }
 
+  // RC16: the person's local day at the tap. A save kept for the unlock keeps it (Actions takes it as `date`); the
+  // engine's todayStr when there is one, as actions.js reads the day.
+  function dayNow() {
+    const now = new Date();
+    const eng = glob('Engine');
+    const s = eng && typeof eng.todayStr === 'function' ? safe(() => eng.todayStr(now), null) : null;
+    if (typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    const p = (n) => String(n).padStart(2, '0');
+    return now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate());
+  }
+
   async function copyText(text) {
     let ok = false;
     try {
@@ -592,7 +603,7 @@
       st.finished = true;
       st.used = used;
       clearInterval(iv);
-      const payload = sessionFrom(st);
+      const payload = Object.assign(sessionFrom(st), { date: dayNow() }); // RC16: the day of the tap, kept when a lock delays the save
       let refused = false;
       if (A && typeof A.sosSession === 'function') {
         const fn = () => A.sosSession(payload);
@@ -610,6 +621,7 @@
       a.addEventListener('click', () => {
         const payload = leaveSession(st);
         if (!payload) return;
+        payload.date = dayNow(); // RC16: the day of the tap
         st.finished = true;
         clearInterval(iv);
         afterDraw(() => { if (A && typeof A.sosSession === 'function') save(() => A.sosSession(payload)); });
@@ -715,7 +727,8 @@
       if (A && typeof A.sosSession === 'function') { // one verb, rated or not: SosCompleted either way, and the feeling kept
         const s = { kind: 'feeling', tools: st.tools, emotion: st.emotion };
         if (isScoreN(intensity)) s.ratingAfter = intensity;
-        await save(() => A.sosSession(sessionFrom(s)));
+        const day = dayNow(); // RC16: the day of the tap, kept when a lock delays the save
+        await save(() => A.sosSession(Object.assign(sessionFrom(s), { date: day })));
       }
       const stage = safe(() => c.profile.stage, null);
       if (stage && A && A.motivation && typeof A.motivation.add === 'function') {
@@ -745,7 +758,7 @@
 
     function start() {
       const go = (choice) => () => {
-        if (!logged && slipLogs(choice, mode.preview) && A && typeof A.logSlip === 'function') { logged = true; save(() => A.logSlip({})); }
+        if (!logged && slipLogs(choice, mode.preview) && A && typeof A.logSlip === 'function') { logged = true; const day = dayNow(); save(() => A.logSlip({ date: day })); } // RC16: the day of the tap
         safety();
       };
       show(screen(COPY.slipStart.title, COPY.slipStart.line,
