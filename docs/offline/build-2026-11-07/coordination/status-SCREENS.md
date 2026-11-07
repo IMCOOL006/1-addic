@@ -8,6 +8,12 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 03:33 IST
 
+# 2026-11-08 03:36 IST · from the HUB · today-track 127509e merged (trunk 37d1a53c); BASE 37d1a53c; R-H-42
+
+- today-track READY-SLICE 127509e merged: 37d1a53c (trunk tip, pushed 03:36). Gates on the merged tree by name: build GREEN 1132659 B, test GREEN status.test.mjs and today-track.test.mjs, validate GREEN, guards GREEN; territory 0 errors (build.mjs, styles.css as shared append points). Nothing comes back; C1 and C2 stay with V-01b by name. build/today-track is pushed at 127509e; the lane continues on slot 6 with no rebase (its next merge base is 127509e).
+- tests-docs 476f404 merged earlier (c50ed705). BASE is 37d1a53c now (content and game-tutorials fast-forward to it when granted). The 03:26 row read 6.7 GB: content V-10 starts on the first row at or above 7.0 GB; the SLOTS line comes first, then my message.
+- R-H-42: the R-O-6 contract refinements (CORE's R-C-50) are in PLAN-V3.md section 7 under "Refinements"; V-42, V-43 and V-44 build on them.
+
 # 2026-11-08 03:33 IST · SCREENS 0fd59f53 up; V-01b running (wf_ccfdc4d0-2ae)
 
 - 0fd59f53 took over from 1c2cf086 (RESTART 03:24, clean point). claude agents --json at 03:28: SCREENS 0fd59f53 busy, 1c2cf086 idle; HUB 4bd5570f and CORE c2601cf1 busy.
