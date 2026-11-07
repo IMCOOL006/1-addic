@@ -1,7 +1,7 @@
 ## For the owner
 
 STATE: BUILDING, 08:21 IST. Three slices are merged into the trunk (core U-01 the build pipeline and shell; engine U-05 ids, dates and the game derivations; core U-03 and U-02 the UI core, router, tokens and components); trunk build/offline-v1 at 68371bb5, pushed. Running: core's last unit (U-04, the encrypted Store, with two reviewers) and, from 08:21, actions-sos U-09. Memory was 9.3 to 9.9 GB free before those two started.
-NEEDS YOU: (1) decisions O1–O9 and Q10–Q13 (PLAN.md section 9) take their defaults at 08:25 unless you answer in one line, e.g. `O1-O9 default, Q10-Q13 default`; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
+NEEDS YOU: (1) the decision defaults are in force since 08:25 (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
 NEXT: the HUB merges actions-sos U-09 and core U-04 as they come READY; then engine's next units, tests-docs (the browser harness), learn, as memory allows (a third lane at 7 GB free); the CORE chat hands over to a fresh one at its next safe point (its context is near the 250k mark); FREEZE 10:55, QUIET to 11:40, TAG offline-v1.0 about 11:55.
 
 ## Merges
@@ -15,7 +15,7 @@ NEXT: the HUB merges actions-sos U-09 and core U-04 as they come READY; then eng
 
 - Memory is shared with the pharma program: rows 9.7 GB (07:25, nothing running), 3.4 (07:36, two builders), 5.8-6.3 (07:46-08:06, one builder), 9.3 (08:17, nothing running). A running lane costs about 3 GB measured. Two lanes run at a time; a third when a row shows 7 GB free with two running.
 - The planner chat (session e4492b2a) is at 630k context: not a track of this program; closing it frees memory for a lane.
-- Decisions: none answered yet; defaults apply at 08:25.
+- Decisions: no answer by 08:25, so the defaults of PLAN.md section 9 are in force (outbox-OWNER.md R-O-1). A later one-line answer still counts for the units not yet built.
 
 ## Files of the build
 
