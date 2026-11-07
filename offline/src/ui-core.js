@@ -364,14 +364,19 @@ const UI = (function () {
         marked = on ? target() : null;
         if (marked) { marked.setAttribute('aria-invalid', 'true'); describedBy(marked, errId, true); }
       };
-      const done = finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
+      const done = finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', id: id + '-label', text: f.label }) : null, el), [hint, err], get, set, err,
         { focus: () => {
           const c = target();
           // A node with nothing to press is made focusable outside the tab order; a control or link the render
-          // returned keeps its own tab stop, also while it is disabled (RC1).
+          // returned keeps its own tab stop, also while it is disabled (RC1). Unless the page named that node, the
+          // field's label names it, as a group, as a chips group is named (RC3).
           const own = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName) || (el.tagName === 'A' && el.getAttribute('href') !== null);
           if (c === el && !own) {
             if (c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1');
+            if (f.label && c.getAttribute('aria-labelledby') === null && c.getAttribute('aria-label') === null) {
+              if (c.getAttribute('role') === null) c.setAttribute('role', 'group');
+              c.setAttribute('aria-labelledby', id + '-label');
+            }
           }
           if (c.focus) c.focus();
         } }, el);

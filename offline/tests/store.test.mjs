@@ -1087,10 +1087,23 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(box.getAttribute('tabindex'), '-1', 'it can take the focus, outside the tab order');
     assert.equal(box.getAttribute('aria-invalid'), 'true');
     assert.equal(box.getAttribute('aria-describedby'), errId, 'described by the error line');
+    const label = field.all().find((e) => e.id && e.id === box.getAttribute('aria-labelledby'));
+    assert.equal(label && label.textContent.trim(), 'Mood', 'named by the field label (RC3)');
+    assert.equal(box.getAttribute('role'), 'group', 'as a group, as a chips group is');
     f.set('mood', 'ok');
     assert.equal(f.validate(), true);
     assert.equal(box.getAttribute('aria-invalid'), null);
     assert.equal(box.getAttribute('aria-describedby'), null);
+    let named = null;
+    const g = UI.form({ fields: [{ name: 'mood', type: 'custom', label: 'Mood', required: true, render: () => {
+      named = globalThis.document.createElement('div');
+      named.setAttribute('aria-label', 'How you feel');
+      return { el: named, get: () => null, set() {} };
+    } }] });
+    assert.equal(g.validate(), false);
+    assert.equal(document.activeElement, named);
+    assert.equal(named.getAttribute('aria-labelledby'), null, 'a name the page gave is kept');
+    assert.equal(named.getAttribute('role'), null);
   });
 
   test('RC1: a custom field whose render returns a control: the control takes the focus and keeps its tab stop', () => {
