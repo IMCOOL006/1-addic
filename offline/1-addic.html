@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>1-addic</title>
-<script>(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);var q=null;try{q=localStorage.getItem('1-addic:discreet');}catch(e){}if(q==='1'){document.documentElement.setAttribute('data-discreet','');document.title='Notebook';}})();</script>
 <style>
 /* 1-addic · styles.css · the look (BUILD-PLAN 3.12), lane core. The paper harbor: deep teal, sand, terracotta and
    lantern gold by day; the lantern-lit night in dark. Red only for stuck or dangerous. System fonts.
@@ -276,6 +276,13 @@ dialog.sheet {
 dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sheet-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-1) var(--space-4); }
 .sheet-title { flex: 1; min-width: 0; margin: 0; font-size: 1.125rem; }
+/* Every sheet's own way to SOS (the page's SOS button is inert behind a modal). */
+.sheet-sos {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  min-width: 44px; min-height: 44px; padding: 0 14px; border-radius: 22px;
+  background: hsl(var(--accent)); color: hsl(var(--primary-text)); font-weight: 800; text-decoration: none;
+}
+.sheet-sos:focus-visible { outline-offset: 3px; }
 .sheet-body { padding: var(--space-2) var(--space-4) var(--space-4); }
 .sheet-actions { justify-content: flex-end; padding: 0 var(--space-4) var(--space-4); }
 @media (min-width: 720px) {
@@ -339,7 +346,8 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sos-target:hover { border-color: hsl(var(--primary)); }
 .sos-target-name { flex: 1 1 12em; min-width: 0; }
 .sos-target-number { font-weight: 700; font-size: 1.25rem; color: hsl(var(--primary)); white-space: nowrap; }
-[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop { display: none !important; }
+[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop,
+[data-route="sos"] #coach, [data-route="sos"] .coach-overlay { display: none !important; } /* the whole layer (RS9) */
 .lock-page { max-width: 420px; margin: 0 auto; }
 
 /* ── The harbor (placeholder box; the harbor lane draws the scene inside) ──────────────────── */
@@ -352,6 +360,10 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 /* ── Calm and discreet ────────────────────────────────────────────────────────────────────── */
 body.calm .xp, body.calm .badge, body.calm .harbor { display: none !important; }
 [data-counters="off"] .counter { display: none !important; }
+/* Discreet before ui-core paints the chrome (RS7): the head script sets html[data-discreet]; ui-core sets data-route. */
+html[data-discreet]:not([data-route]) #app-name, html[data-discreet]:not([data-route]) #sos-btn { font-size: 0; }
+html[data-discreet]:not([data-route]) #app-name::after { content: "Notebook"; font-size: 1rem; }
+html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-size: 1rem; }
 
 /* ── Motion ───────────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -1692,6 +1704,797 @@ const Engine = (() => {
 
 if (typeof module !== 'undefined' && module.exports) module.exports = Engine;
 </script>
+<script data-part="store.js">
+/* 1-addic · store.js · the person's data, on this device only (BUILD-PLAN 3.2 Store block, 3.3). Owned by lane core.
+   IndexedDB '1-addic' v1 with every store created in one upgrade; if it cannot open, the localStorage snapshot
+   '1-addic:snapshot'; else memory (also in Node, where indexedDB is undefined). With a PIN, every row outside the meta
+   store is sealed with AES-GCM-256 under a PBKDF2-HMAC-SHA256 key that lives in memory only. A PIN is offered, never
+   forced: without one the rows are stored plain. Nothing here makes a network request. Never log a PIN, a key or a row. */
+const Store = (function () {
+  'use strict';
+
+  const STORES = Object.freeze({
+    profile: 'key', settings: 'key', meta: 'key', events: 'id', logs: 'id', responses: 'id', contacts: 'id', plans: 'id',
+    todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id', reveals: 'id', tips: 'id',
+    recoveryPlan: 'key',
+  });
+  const NAMES = Object.keys(STORES);
+  const DB_NAME = '1-addic';
+  const DB_VERSION = 1;
+  const SNAPSHOT = '1-addic:snapshot';
+  const DISCREET = '1-addic:discreet'; // ui-core's plain device flag for discreet mode; resetAll removes it
+  const ITERATIONS = 310000;
+  const CHECK = '1-addic:pin-check';
+  const AUTO_LOCK = [0, 1, 5, 15]; // minutes idle before the lock closes; 0 is never
+  const OPEN_TIMEOUT = 10000; // a slow first open on a low-end phone must not split the data between two places
+  const utf8 = new TextEncoder();
+  const unutf8 = new TextDecoder();
+
+  const state = {
+    loading: null, mode: 'memory', backend: null, rows: blank(), unread: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
+    subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, asked: false, chain: Promise.resolve(), epoch: 0,
+    fails: 0, last: 0, timer: null, held: false,
+  };
+
+  function blank() {
+    const o = {};
+    for (const n of NAMES) o[n] = new Map();
+    return o;
+  }
+  function fail(code, message) {
+    const e = new Error(message);
+    e.code = code;
+    return e;
+  }
+  const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+  const has = (store) => Object.prototype.hasOwnProperty.call(STORES, store);
+  const isBrowser = () => typeof window !== 'undefined';
+  const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  function known(store) {
+    if (!has(store)) throw fail('UNKNOWN_STORE', 'There is no store named ' + String(store) + '.');
+    return STORES[store];
+  }
+  function checkId(store, id) {
+    if (typeof id !== 'string' || id === '') throw fail('BAD_ROW', 'A ' + store + ' row needs a text ' + STORES[store] + '.');
+    if (store === 'meta' && id === 'lock') throw fail('RESERVED', 'The lock row is kept by the store itself.');
+    return id;
+  }
+  const idOf = (store, row) => checkId(store, row && typeof row === 'object' ? row[known(store)] : undefined);
+
+  /* ── Crypto ───────────────────────────────────────────────────────────────────────────── */
+  function subtle() {
+    const c = globalThis.crypto;
+    return c && c.subtle ? c.subtle : null;
+  }
+  function random(n) {
+    const b = new Uint8Array(n);
+    globalThis.crypto.getRandomValues(b);
+    return b;
+  }
+  function b64(bytes) {
+    let s = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(s);
+  }
+  function unb64(s) {
+    const bin = atob(String(s));
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  async function derive(pin, salt, iterations) {
+    const s = subtle();
+    if (!s) throw fail('NO_CRYPTO', 'A PIN cannot be set in this browser.');
+    const base = await s.importKey('raw', utf8.encode(pin), 'PBKDF2', false, ['deriveKey']);
+    return s.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, base,
+      { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+  // The store and id are bound in as additional data, so a sealed row cannot be moved to another place and still open.
+  async function seal(key, store, id, value) {
+    const iv = random(12);
+    const ct = await subtle().encrypt({ name: 'AES-GCM', iv, additionalData: utf8.encode(store + '/' + id) },
+      key, utf8.encode(JSON.stringify(value)));
+    return { iv: b64(iv), ct: b64(new Uint8Array(ct)) };
+  }
+  async function unseal(key, store, id, box) {
+    const pt = await subtle().decrypt({ name: 'AES-GCM', iv: unb64(box.iv), additionalData: utf8.encode(store + '/' + id) },
+      key, unb64(box.ct));
+    return JSON.parse(unutf8.decode(pt));
+  }
+  // The key for this PIN, or null when it does not open the lock's check.
+  async function keyFor(pin) {
+    const L = state.lock;
+    if (!L) return null;
+    if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be used in this browser.'); // never a wrong try (RC11)
+    if (typeof pin !== 'string' || pin === '') return null;
+    try {
+      const key = await derive(pin, unb64(L.salt), L.iterations || ITERATIONS);
+      return (await unseal(key, 'meta', 'lock', L.check)) === CHECK ? key : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  // A wrong PIN changes nothing. In the browser each failed try waits a little longer (250 ms a try, at most 2 s).
+  async function refused() {
+    state.fails += 1;
+    if (isBrowser()) await sleep(Math.min(250 * state.fails, 2000));
+    return false;
+  }
+  // Two tabs of the file share the storage. Each write carries the lock row its tab knows, and the backend refuses
+  // it when the stored one differs (another tab set, changed or removed the PIN): no tab then writes plain rows beside
+  // a lock, seals a row under an old key or drops the lock row (RC2, RS3).
+  const lockOf = (all) => ((all && Array.isArray(all.meta) ? all.meta : []).find((r) => r && r.key === 'lock' && r.salt && r.check) || null);
+  const lockId = (L) => (L && L.salt && L.check ? String(L.salt) + '|' + JSON.stringify(L.check) : '');
+  const stale = () => fail('STALE', 'Another tab changed the lock.');
+  async function sealAll(rows, key) {
+    const jobs = [];
+    for (const n of NAMES) for (const [id, row] of rows[n]) jobs.push(stored(key, n, id, row).then((r) => [n, id, r]));
+    return Promise.all(jobs);
+  }
+  async function stored(key, store, id, row) {
+    if (!key || store === 'meta') return clone(row);
+    return { [STORES[store]]: id, enc: await seal(key, store, id, row) };
+  }
+  // The rows that open, and the rows that will not (damaged, or sealed under another key) kept as they are stored
+  // rather than failing the unlock (Q4). Each goes in its stored order, whatever order the decryptions end in (RC9).
+  // A sealed row is exactly {<key>, enc: {iv, ct}}, as stored() writes it. Any other row is plain data, even one with
+  // a field named enc: it opens, and the next lock.set seals it (RC17).
+  const isSealed = (row) => !!(row && row.enc && typeof row.enc === 'object' && typeof row.enc.iv === 'string'
+    && typeof row.enc.ct === 'string' && Object.keys(row).length === 2);
+  async function decode(all, key) {
+    const rows = blank();
+    const unread = blank();
+    const jobs = [];
+    for (const n of NAMES) {
+      for (const row of (all && all[n]) || []) {
+        const id = row && row[STORES[n]];
+        if (typeof id !== 'string' || (n === 'meta' && id === 'lock')) continue;
+        if (!isSealed(row)) jobs.push([n, id, row]);
+        else if (!key) jobs.push([n, id, undefined, row]);
+        else jobs.push(unseal(key, n, id, row.enc).then((v) => [n, id, v], () => [n, id, undefined, row]));
+      }
+    }
+    for (const [n, id, v, raw] of await Promise.all(jobs)) {
+      if (raw) unread[n].set(id, raw);
+      else rows[n].set(id, v);
+    }
+    return { rows, unread };
+  }
+  // lock.set, remove and replaceAll write the unread rows back as they are stored, unless the new rows hold the id.
+  function keep(rows, unread) {
+    const left = blank();
+    const puts = [];
+    for (const n of NAMES) for (const [id, r] of unread[n]) if (!rows[n].has(id)) { left[n].set(id, r); puts.push([n, id, clone(r)]); }
+    return { left, puts };
+  }
+  const byKey = (a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  const sorted = (m) => Array.from(m).sort(byKey).map((e) => e[1]); // key order, as IndexedDB gives it, in every mode
+
+  /* ── Backends: IndexedDB, the localStorage snapshot, memory ───────────────────────────── */
+  function idbFactory() {
+    try { return typeof indexedDB !== 'undefined' && indexedDB ? indexedDB : null; } catch (e) { return null; }
+  }
+  function storage() {
+    try {
+      const ls = globalThis.localStorage;
+      if (!ls) return null;
+      ls.setItem('1-addic:probe', '1');
+      ls.removeItem('1-addic:probe');
+      return ls;
+    } catch (e) {
+      return null;
+    }
+  }
+  function readSnapshot(ls) {
+    try {
+      const raw = ls.getItem(SNAPSHOT);
+      const o = raw ? JSON.parse(raw) : null;
+      return o && o.app === '1-addic' && o.stores && typeof o.stores === 'object' ? o.stores : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function listAll(m) {
+    const o = {};
+    for (const n of NAMES) o[n] = Array.from(m[n].values());
+    return o;
+  }
+
+  // Memory, or memory mirrored whole into the snapshot on every write. A failed save changes nothing. Another tab may
+  // have saved since, so with a snapshot every read and every write starts again from it.
+  function mirror(ls) {
+    const m = blank();
+    function seed(all) {
+      for (const n of NAMES) for (const r of Array.isArray(all[n]) ? all[n] : []) if (r && typeof r[STORES[n]] === 'string') m[n].set(r[STORES[n]], r);
+    }
+    const again = () => { if (!ls) return; Object.assign(m, blank()); const s = readSnapshot(ls); if (s) seed(s); };
+    return {
+      seed,
+      async readAll() { again(); return listAll(m); },
+      async write(w) {
+        again();
+        if ('expect' in w && lockId(lockOf(listAll(m))) !== lockId(w.expect)) throw stale();
+        const next = Object.assign({}, m);
+        const open = (n) => { if (next[n] === m[n]) next[n] = new Map(w.clear ? [] : m[n]); return next[n]; };
+        if (w.clear) for (const n of NAMES) open(n);
+        for (const [n, id] of w.dels) open(n).delete(id);
+        for (const [n, id, row] of w.puts) open(n).set(id, row);
+        if (ls) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: listAll(next) }));
+        Object.assign(m, next);
+      },
+      async erase() {
+        if (ls) ls.removeItem(SNAPSHOT);
+        Object.assign(m, blank());
+      },
+    };
+  }
+
+  function idb(db) {
+    function tx(mode, fill) {
+      return new Promise((res, rej) => {
+        let t;
+        try {
+          t = db.transaction(NAMES, mode);
+          fill(t);
+        } catch (e) {
+          rej(e);
+          return;
+        }
+        t.oncomplete = () => res();
+        t.onerror = () => rej(t.error || fail('WRITE_FAILED', 'The browser stopped the save.'));
+        t.onabort = () => rej(t.error || fail('WRITE_FAILED', 'The browser stopped the save.'));
+      });
+    }
+    return {
+      async readAll() {
+        const out = {};
+        await tx('readonly', (t) => {
+          for (const n of NAMES) {
+            const r = t.objectStore(n).getAll();
+            r.onsuccess = () => { out[n] = r.result || []; };
+          }
+        });
+        return out;
+      },
+      // Every touched row goes in ONE transaction. Rows are sealed before it opens: IndexedDB ends a transaction that
+      // waits on anything else.
+      // The stored lock row is read inside the same transaction, so no other tab can change it between the check and
+      // the write.
+      write(w) {
+        let refused = false;
+        return tx('readwrite', (t) => {
+          const apply = () => {
+            if (w.clear) for (const n of NAMES) t.objectStore(n).clear();
+            for (const [n, id] of w.dels) t.objectStore(n).delete(id);
+            for (const [n, , row] of w.puts) t.objectStore(n).put(row);
+          };
+          if (!('expect' in w)) { apply(); return; }
+          const g = t.objectStore('meta').get('lock');
+          g.onsuccess = () => {
+            if (lockId(g.result) === lockId(w.expect)) { apply(); return; }
+            refused = true;
+            t.abort();
+          };
+        }).catch((e) => { throw refused ? stale() : e; });
+      },
+      erase() { return this.write({ clear: true, puts: [], dels: [] }); },
+    };
+  }
+
+  function openDb(factory) {
+    return new Promise((res, rej) => {
+      let done = false;
+      const end = (f, v) => { if (!done) { done = true; clearTimeout(timer); f(v); } };
+      const timer = setTimeout(() => end(rej, fail('NO_DB', 'IndexedDB did not open.')), OPEN_TIMEOUT);
+      if (timer && typeof timer.unref === 'function') timer.unref();
+      let r;
+      try {
+        r = factory.open(DB_NAME, DB_VERSION);
+      } catch (e) {
+        end(rej, e);
+        return;
+      }
+      r.onupgradeneeded = () => {
+        const db = r.result;
+        for (const n of NAMES) if (!db.objectStoreNames.contains(n)) db.createObjectStore(n, { keyPath: STORES[n] });
+      };
+      r.onsuccess = () => {
+        const db = r.result;
+        if (done || !NAMES.every((n) => db.objectStoreNames.contains(n))) {
+          try { db.close(); } catch (e) { /* already closed */ }
+          end(rej, fail('NO_DB', 'IndexedDB is missing a store.'));
+          return;
+        }
+        end(res, db);
+      };
+      r.onerror = () => end(rej, r.error || fail('NO_DB', 'IndexedDB did not open.'));
+    });
+  }
+  // Deletes the database '1-addic' (resetAll in a session that runs without it, RS5). A tab that holds it open blocks
+  // the delete: the timeout then decides.
+  function dropDb(factory) {
+    return new Promise((res, rej) => {
+      let done = false;
+      const end = (f, v) => { if (!done) { done = true; clearTimeout(timer); f(v); } };
+      const timer = setTimeout(() => end(rej, fail('NO_DB', 'IndexedDB was not deleted.')), OPEN_TIMEOUT);
+      if (timer && typeof timer.unref === 'function') timer.unref();
+      let r;
+      try {
+        r = factory.deleteDatabase(DB_NAME);
+      } catch (e) {
+        end(rej, e);
+        return;
+      }
+      r.onsuccess = () => end(res);
+      r.onerror = () => end(rej, r.error || fail('NO_DB', 'IndexedDB was not deleted.'));
+      r.onblocked = () => {}; // another tab holds it open: wait for the timeout
+    });
+  }
+
+  async function boot() {
+    let all = null;
+    const factory = idbFactory();
+    if (factory) {
+      try {
+        const b = idb(await openDb(factory));
+        all = await b.readAll();
+        const ls = storage();
+        const snap = ls && readSnapshot(ls);
+        // Adoption: rows saved in the snapshot while IndexedDB was not available move into an empty IndexedDB as they
+        // are (sealed rows stay sealed), then the snapshot is removed. A non-empty IndexedDB leaves the snapshot alone.
+        if (snap && NAMES.every((n) => !(all[n] || []).length)) {
+          const puts = [];
+          for (const n of NAMES) for (const r of Array.isArray(snap[n]) ? snap[n] : []) {
+            if (r && typeof r[STORES[n]] === 'string') puts.push([n, r[STORES[n]], r]);
+          }
+          await b.write({ clear: false, puts, dels: [] });
+          try { ls.removeItem(SNAPSHOT); } catch (e) { /* kept: it is adopted already */ }
+          all = await b.readAll();
+        }
+        state.backend = b;
+        state.mode = 'indexeddb';
+      } catch (e) {
+        all = null;
+      }
+    }
+    if (!state.backend && (factory || isBrowser())) {
+      const ls = storage();
+      if (ls) {
+        const b = mirror(ls);
+        const snap = readSnapshot(ls);
+        if (snap) b.seed(snap);
+        state.backend = b;
+        state.mode = 'localstorage';
+        all = await b.readAll();
+      }
+    }
+    if (!state.backend) {
+      state.backend = mirror(null);
+      state.mode = 'memory';
+      all = await state.backend.readAll();
+    }
+    const L = (all.meta || []).find((r) => r && r.key === 'lock' && r.salt && r.check);
+    state.lock = L ? clone(L) : null;
+    state.locked = !!L;
+    state.key = null;
+    const d = L ? null : await decode(all, null);
+    state.rows = d ? d.rows : blank();
+    state.unread = d ? d.unread : blank();
+  }
+
+  function load() {
+    if (!state.loading) state.loading = boot();
+    return state.loading;
+  }
+
+  /* ── Writes, notifications ────────────────────────────────────────────────────────────── */
+  function run(task) {
+    const p = state.chain.then(task);
+    state.chain = p.catch(() => {});
+    return p;
+  }
+  async function write(w) {
+    try {
+      await state.backend.write(Object.assign({ expect: state.lock }, w));
+    } catch (e) {
+      if (e && e.code === 'STALE') {
+        try { await resync(); } catch (err) { /* the next write asks again */ }
+        throw fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
+      }
+      const f = fail('WRITE_FAILED', 'This could not be saved on this device.');
+      f.cause = e;
+      throw f;
+    }
+    if (state.mode !== 'memory') state.lastSavedAt = new Date().toISOString();
+    askPersist();
+  }
+  function askPersist() {
+    if (state.asked || state.mode === 'memory') return;
+    state.asked = true;
+    try {
+      const s = typeof navigator !== 'undefined' && navigator && navigator.storage;
+      if (s && typeof s.persist === 'function') Promise.resolve(s.persist()).catch(() => {});
+    } catch (e) { /* not offered here */ }
+  }
+  function call(set, arg) {
+    for (const fn of Array.from(set)) {
+      try { fn(arg); } catch (e) { if (typeof console !== 'undefined') console.error('[store] a listener failed:', e && e.name); }
+    }
+  }
+  function notify(label) {
+    if (state.bulk) { state.dirty = true; return; }
+    call(state.subs, { label });
+  }
+  function listen(set, fn) {
+    if (typeof fn !== 'function') return () => {};
+    set.add(fn);
+    return () => { set.delete(fn); };
+  }
+
+  function commit(label, fn) {
+    return run(async () => {
+      await load();
+      if (state.locked) throw fail('LOCKED', 'The data is locked.');
+      if (typeof fn !== 'function') throw new TypeError('Store.commit needs a function.');
+      const epoch = state.epoch;
+      const staged = new Map();
+      const slot = (store, id) => store + '\u0000' + id;
+      const draft = {
+        get(store, id) {
+          known(store);
+          const k = slot(store, String(id));
+          if (staged.has(k)) return clone(staged.get(k).row);
+          const r = state.rows[store].get(String(id));
+          return r === undefined ? null : clone(r);
+        },
+        list(store) {
+          known(store);
+          const out = new Map(state.rows[store]);
+          for (const s of staged.values()) if (s.store === store) { if (s.row === null) out.delete(s.id); else out.set(s.id, s.row); }
+          return clone(sorted(out)); // key order, staged rows too, as view.list gives them (RC15)
+        },
+        put(store, row) {
+          const id = idOf(store, row);
+          const copy = clone(row);
+          staged.set(slot(store, id), { store, id, row: copy });
+          return clone(copy);
+        },
+        del(store, id) {
+          known(store);
+          checkId(store, id);
+          staged.set(slot(store, id), { store, id, row: null });
+        },
+      };
+      const out = await fn(draft); // a throw here rejects the commit; the working set was never touched
+      if (!staged.size) return out;
+      if (state.locked || epoch !== state.epoch) throw fail('LOCKED', 'The data locked before this was saved.');
+      const key = state.key;
+      const puts = [];
+      const dels = [];
+      for (const s of staged.values()) {
+        if (s.row === null) dels.push([s.store, s.id]);
+        else puts.push([s.store, s.id, await stored(key, s.store, s.id, s.row)]);
+      }
+      await write({ clear: false, puts, dels });
+      if (epoch !== state.epoch) return out; // locked while saving: the rows are saved sealed, the working set stays empty
+      for (const s of staged.values()) {
+        state.unread[s.store].delete(s.id); // the stored row was replaced or deleted: never written back later
+        if (s.row === null) state.rows[s.store].delete(s.id);
+        else state.rows[s.store].set(s.id, s.row);
+      }
+      notify(label);
+      return out;
+    });
+  }
+
+  // Many commits, one notification (sample data, import). Await the commits inside fn.
+  async function bulk(fn) {
+    state.bulk += 1;
+    try {
+      return await fn();
+    } finally {
+      state.bulk -= 1;
+      if (!state.bulk && state.dirty) { state.dirty = false; notify('bulk'); }
+    }
+  }
+
+  // Rows from the view are the working set itself, frozen (Q3): read them, never change them (change rows through
+  // commit, whose drafts are copies).
+  const view = {
+    get(store, id) {
+      if (state.locked || !has(store)) return null;
+      const r = state.rows[store].get(String(id));
+      return r === undefined ? null : Object.freeze(r);
+    },
+    list(store) { return state.locked || !has(store) ? [] : sorted(state.rows[store]).map((r) => Object.freeze(r)); },
+    count(store) { return state.locked || !has(store) ? 0 : state.rows[store].size; },
+  };
+
+  // autoLockMin is the lock's idle minutes (1, 5 or 15; 0 is never; null without a PIN), so the settings screen can
+  // show the choice in force (RC3). unreadable counts the stored rows that did not open (0 while locked) (Q4).
+  function status() {
+    let unreadable = 0;
+    if (!state.locked) for (const n of NAMES) unreadable += state.unread[n].size;
+    return { persistence: state.mode, lastSavedAt: state.lastSavedAt, hasLock: !!state.lock, locked: state.locked,
+      autoLockMin: state.lock ? state.lock.autoLockMin : null, unreadable };
+  }
+
+  // Decrypted rows, in key order. When a lock exists the caller asks for the PIN first (Store.lock.verify).
+  function exportJson() {
+    if (state.locked) throw fail('LOCKED', 'The data is locked.');
+    const stores = {};
+    for (const n of NAMES) stores[n] = clone(sorted(state.rows[n]));
+    return { app: '1-addic', schemaVersion: 1, exportedAt: new Date().toISOString(), stores };
+  }
+
+  // Replaces every row (never merges), in one write; the current lock stays and the new rows are sealed under it.
+  function replaceAll(obj) {
+    return run(async () => {
+      await load();
+      if (state.locked) throw fail('LOCKED', 'The data is locked.');
+      const src = obj && typeof obj === 'object' && obj.stores && typeof obj.stores === 'object' ? obj.stores : null;
+      if (!src) throw fail('BAD_BACKUP', 'This is not a 1-addic backup.');
+      const next = blank();
+      for (const n of NAMES) {
+        const rows = src[n] == null ? [] : src[n];
+        if (!Array.isArray(rows)) throw fail('BAD_BACKUP', 'This backup is damaged.');
+        for (const r of rows) {
+          if (n === 'meta' && r && r.key === 'lock') continue;
+          next[n].set(idOf(n, r), clone(r));
+        }
+      }
+      const epoch = state.epoch;
+      const kept = keep(next, state.unread);
+      const puts = (await sealAll(next, state.key)).concat(kept.puts);
+      if (state.lock) puts.push(['meta', 'lock', clone(state.lock)]);
+      await write({ clear: true, puts, dels: [] });
+      if (state.mode === 'indexeddb') { // a stale snapshot is replaced too: a PIN set later never brings its rows back (RC14)
+        const ls = storage();
+        if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
+      }
+      if (epoch === state.epoch) { state.rows = next; state.unread = kept.left; }
+      notify('replaceAll');
+    });
+  }
+
+  // Erases everything on this device, the lock too. This is also what "Forgot PIN" does: start again from a backup.
+  function resetAll() {
+    return run(async () => {
+      await load();
+      try {
+        await state.backend.erase();
+      } catch (e) {
+        const f = fail('WRITE_FAILED', 'The data could not be erased.');
+        f.cause = e;
+        throw f;
+      }
+      if (state.mode === 'indexeddb') {
+        const ls = storage();
+        if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
+      }
+      // A session without IndexedDB (it did not open) may still have rows in it from an earlier visit: they go too.
+      let left = null;
+      const factory = state.mode !== 'indexeddb' ? idbFactory() : null;
+      if (factory) try { await dropDb(factory); } catch (e) { left = e; }
+      const plain = storage();
+      if (plain) try { plain.removeItem(DISCREET); } catch (e) { /* nothing there */ }
+      state.epoch += 1;
+      state.rows = blank();
+      state.unread = blank();
+      state.lock = null;
+      state.key = null;
+      state.locked = false;
+      state.fails = 0;
+      state.lastSavedAt = null;
+      disarm();
+      notify('resetAll');
+      if (left) {
+        const f = fail('ERASE_PARTIAL', 'This copy was erased, but an older copy may still be on this device.');
+        f.cause = left;
+        throw f;
+      }
+    });
+  }
+
+  /* ── The lock ─────────────────────────────────────────────────────────────────────────── */
+  // The numbers 1, 5 and 15 as they are; 0, null or 'never' is never; anything else is 5 (contract line 60), so a
+  // value that only coerces to 0 (false, '', '0') never turns the auto-lock off (RC13).
+  function minutes(v) {
+    if (v === null || v === 0 || v === 'never') return 0;
+    return typeof v === 'number' && AUTO_LOCK.includes(v) ? v : 5;
+  }
+  function disarm() {
+    if (state.timer) clearTimeout(state.timer);
+    state.timer = null;
+  }
+  function arm() {
+    disarm();
+    const min = state.lock && !state.locked && !state.held ? state.lock.autoLockMin : 0;
+    if (!min) return;
+    // To the limit from the last activity, so the time already idle when a hold ends still counts.
+    const wait = Math.max(0, state.last + min * 60000 - Date.now());
+    state.timer = setTimeout(() => { state.timer = null; lockNow('auto'); }, wait);
+    if (state.timer && typeof state.timer.unref === 'function') state.timer.unref();
+  }
+  function opened(key) {
+    state.key = key;
+    state.locked = false;
+    state.fails = 0;
+    state.last = Date.now();
+    arm();
+  }
+
+  function lockNow(reason) {
+    if (!state.lock || state.locked) return;
+    state.epoch += 1;
+    state.key = null;
+    state.rows = blank();
+    state.locked = true;
+    disarm();
+    call(state.lockSubs, { reason: reason === 'auto' ? 'auto' : 'manual' });
+    notify('lock');
+  }
+
+  // Activity keeps the lock open. A touch after the idle limit (a phone that slept) locks instead; during a hold (SOS)
+  // it never locks and leaves the idle clock where it was, so the end of the hold can tell (RC10, RS10).
+  function touch() {
+    if (!state.lock || state.locked) return;
+    const min = state.lock.autoLockMin;
+    const now = Date.now();
+    if (min && now - state.last >= min * 60000) { if (!state.held) lockNow('auto'); return; }
+    state.last = now;
+    arm();
+  }
+
+  // SOS holds the lock open: during a hold no auto-lock fires, neither the timer nor a late touch (the CORE chat's
+  // ruling Q1). The end of the hold checks the idle time at once and locks past the limit, so a page left on SOS for
+  // hours opens nothing else (RC10, RS10). Lock now still locks at once. Gives whether the data is locked.
+  function hold(on) {
+    state.held = !!on;
+    if (!state.lock || state.locked) return state.locked;
+    if (state.held) { disarm(); return false; }
+    const min = state.lock.autoLockMin;
+    if (min && Date.now() - state.last >= min * 60000) { lockNow('auto'); return true; }
+    arm();
+    return false;
+  }
+
+  function setLock(pin, opts) {
+    return run(async () => {
+      await load();
+      if (state.locked) throw fail('LOCKED', 'The data is locked.');
+      if (typeof pin !== 'string' || pin.length < 4 || pin.length > 64) throw fail('BAD_PIN', 'A PIN needs 4 to 64 characters.');
+      if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be set in this browser.');
+      const epoch = state.epoch;
+      // The rows are taken before the first wait: a lock while the key is derived empties state.rows, and a clear
+      // write of an empty set would erase every row (RC1, RS2).
+      const rows = state.rows;
+      const kept = keep(rows, state.unread);
+      const salt = random(16);
+      const key = await derive(pin, salt, ITERATIONS);
+      const row = {
+        key: 'lock', salt: b64(salt), iterations: ITERATIONS, check: await seal(key, 'meta', 'lock', CHECK),
+        autoLockMin: minutes(opts && opts.autoLockMin), setAt: new Date().toISOString(),
+      };
+      const puts = (await sealAll(rows, key)).concat(kept.puts);
+      puts.push(['meta', 'lock', row]);
+      await write({ clear: true, puts, dels: [] });
+      state.lock = row;
+      if (epoch !== state.epoch) return; // locked meanwhile: it opens with the new PIN
+      opened(key);
+      try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
+      notify('lock');
+    });
+  }
+
+  // A stale snapshot from a fallback session must not stay readable beside a PIN (RS1). When a key is in hand in
+  // IndexedDB (lock.set, unlock), the snapshot's rows this device lacks are sealed in and the snapshot goes; a row that
+  // will not open with this key stays behind in it, sealed. Without a PIN the snapshot is left as it is.
+  async function takeIn(key) {
+    const epoch = state.epoch;
+    const ls = state.mode === 'indexeddb' && key ? storage() : null;
+    const snap = ls && readSnapshot(ls);
+    if (!snap) return;
+    const puts = [];
+    const left = {};
+    for (const n of NAMES) {
+      for (const r of Array.isArray(snap[n]) ? snap[n] : []) {
+        const id = r && r[STORES[n]];
+        if (typeof id !== 'string' || (n === 'meta' && id === 'lock') || state.rows[n].has(id)) continue;
+        let v = r;
+        if (isSealed(r)) {
+          try { v = await unseal(key, n, id, r.enc); } catch (e) { (left[n] = left[n] || []).push(r); continue; }
+        }
+        puts.push([n, id, v, await stored(key, n, id, v)]);
+      }
+    }
+    if (puts.length) {
+      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] });
+      if (epoch === state.epoch) for (const [n, id, v] of puts) state.rows[n].set(id, v); // locked meanwhile: not in memory (RC18)
+    }
+    if (Object.keys(left).length) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: left }));
+    else ls.removeItem(SNAPSHOT);
+  }
+
+  // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
+  // lock is stored.
+  async function resync() {
+    const all = await state.backend.readAll();
+    const L = lockOf(all);
+    state.epoch += 1;
+    state.key = null;
+    disarm();
+    state.lock = L ? clone(L) : null;
+    state.locked = !!L;
+    const d = L ? null : await decode(all, null);
+    state.rows = d ? d.rows : blank();
+    state.unread = d ? d.unread : blank();
+    if (L) call(state.lockSubs, { reason: 'auto' });
+    notify(L ? 'lock' : 'unlock');
+  }
+
+  function unlock(pin) {
+    return run(async () => {
+      await load();
+      // The stored lock row decides: another tab may have changed the PIN since this tab loaded.
+      if (state.locked && lockId(lockOf(await state.backend.readAll())) !== lockId(state.lock)) await resync();
+      if (!state.lock) return false;
+      const key = await keyFor(pin);
+      if (!key) return refused();
+      if (!state.locked) { state.fails = 0; return true; }
+      const d = await decode(await state.backend.readAll(), key);
+      state.rows = d.rows;
+      state.unread = d.unread;
+      opened(key);
+      try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
+      notify('unlock');
+      return true;
+    });
+  }
+
+  async function verify(pin) {
+    await load();
+    if (!state.lock) return false;
+    if (!(await keyFor(pin))) return refused();
+    state.fails = 0;
+    return true;
+  }
+
+  function remove(pin) {
+    return run(async () => {
+      await load();
+      if (!state.lock) return false;
+      const key = await keyFor(pin);
+      if (!key) return refused();
+      const d = state.locked ? await decode(await state.backend.readAll(), key) : { rows: state.rows, unread: state.unread };
+      const rows = d.rows;
+      const kept = keep(rows, d.unread);
+      await write({ clear: true, puts: (await sealAll(rows, null)).concat(kept.puts), dels: [] });
+      state.epoch += 1;
+      state.rows = rows;
+      state.unread = kept.left;
+      state.lock = null;
+      state.key = null;
+      state.locked = false;
+      state.fails = 0;
+      disarm();
+      notify('unlock');
+      return true;
+    });
+  }
+
+  return {
+    STORES, load, view, commit, subscribe: (fn) => listen(state.subs, fn), bulk, status, exportJson, replaceAll, resetAll,
+    lock: {
+      set: setLock, unlock, verify, remove, lockNow: () => lockNow('manual'), touch, hold,
+      onLock: (fn) => listen(state.lockSubs, fn),
+    },
+  };
+})();
+
+if (typeof module !== 'undefined' && module.exports) module.exports = Store;
+</script>
 <script data-part="actions.js">
 /* 1-addic · ACTIONS · every write the app makes (BUILD-PLAN 3.2, 3.4, 3.7).
    Each verb checks its arguments first: a failure throws AppError(message, code) and writes nothing. Then it writes
@@ -2623,6 +3426,8 @@ const UI = (function () {
   'use strict';
 
   const THEME_KEY = '1-addic:theme';
+  // Discreet mode's device flag ('1' on, absent off): the lock screen reads it, since a sealed settings row cannot be.
+  const DISCREET_KEY = '1-addic:discreet';
   const SVG_NS = 'http://www.w3.org/2000/svg';
   // First segments of BUILD-PLAN 3.5. A known page that nobody has registered yet shows an honest "coming soon".
   const KNOWN = ['today', 'learn', 'lesson', 'workbook', 'exercise', 'track', 'actions', 'practice', 'tools',
@@ -2647,6 +3452,8 @@ const UI = (function () {
     clinicalReview: true,
     title: 'Urgent help',
     line: 'If you or someone else is in danger, call now.',
+    // Shown only when Content's list is empty or unreadable (RS8): one number to tap, whatever else failed.
+    builtIn: [{ name: 'Emergency', number: '112', verify: true }],
     note: 'India numbers: please verify. Elsewhere: your local emergency number (usually 112, 911 or 999).',
   };
   const EMPTY_VIEW = Object.freeze({ get() { return null; }, list() { return []; }, count() { return 0; } });
@@ -2654,7 +3461,7 @@ const UI = (function () {
   const pages = {};
   const state = {
     booted: false, loaded: false, seq: 0, lastPath: null, pending: 0, deferred: false, voices: null,
-    lastTouch: 0, theme: 'system',
+    lastTouch: 0, theme: 'system', held: false,
   };
 
   const hasDOM = () => typeof document !== 'undefined' && !!document.createElement;
@@ -2690,6 +3497,10 @@ const UI = (function () {
         }
       } else if (/^on[A-Z]/.test(k) && typeof v === 'function') {
         el.addEventListener(k.slice(2).toLowerCase(), v);
+      } else if (/^on/i.test(k)) {
+        continue; // never: a handler written as a string would run as code (e)
+      } else if ((k === 'href' || k === 'src' || k === 'xlink:href') && /^javascript:/i.test(String(v).replace(/[\u0000- ]/g, ''))) {
+        continue; // never: a javascript: link, in any case or spacing (e)
       } else if (k === 'html' || k === 'innerHTML' || k === 'outerHTML') {
         continue; // never: text is inserted as text
       } else if (!isSvg && (k === 'value' || k === 'checked' || k === 'selected' || k === 'indeterminate')) {
@@ -2798,8 +3609,15 @@ const UI = (function () {
     const onNativeClose = () => { if (!dlg.open) close('dismissed'); };
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
     const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
+    // A modal sheet makes the page behind it, and its SOS button, inert: so every sheet carries its own way to SOS,
+    // one tap, even a sheet that cannot be dismissed.
+    const discreet = document.documentElement.getAttribute('data-discreet') !== null;
+    const toSos = h('a', {
+      href: '#/sos', class: 'sheet-sos', text: discreet ? 'Help' : 'SOS', 'aria-label': discreet ? 'Help' : 'SOS: help right now',
+      onClick: (ev) => { if (ev && typeof ev.preventDefault === 'function') ev.preventDefault(); close('route'); go('#/sos'); },
+    });
     const head = h('div', { class: 'sheet-head' },
-      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }),
+      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }), toSos,
       o.dismissable === false ? null : h('button', {
         type: 'button', class: 'icon-btn sheet-close', 'aria-label': 'Close', onClick: () => close('dismissed'),
       }, icon('close', 22)));
@@ -2927,6 +3745,10 @@ const UI = (function () {
       body = [h('p', { class: 'field-label', id: id + '-label', text: f.label || f.name }), hint, input];
       input.setAttribute('aria-labelledby', id + '-label');
       input.setAttribute('aria-describedby', described);
+      // The group cannot take the focus: its chosen chip, or else its first, does; the group carries the mark (RC12).
+      const group = input;
+      const chip = () => { const kids = Array.from(group.children || []); return kids.find((c) => c.getAttribute('aria-pressed') === 'true') || kids[0] || null; };
+      return finish(f, null, body.concat(err), get, set, err, { focus: () => { const c = chip(); if (c && c.focus) c.focus(); } }, group);
     } else if (t === 'slider') {
       const min = f.min != null ? f.min : 0;
       const max = f.max != null ? f.max : 10;
@@ -2949,7 +3771,9 @@ const UI = (function () {
       const el = isNode ? made : (made && made.el) || h('div');
       get = isNode ? () => made.value : () => (made && typeof made.get === 'function' ? made.get() : undefined);
       set = isNode ? (v) => { made.value = v; } : (v) => { if (made && typeof made.set === 'function') made.set(v); };
-      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err, el);
+      // The custom node carries the mark and its first control takes the focus, as a chips group does (RC12).
+      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
+        { focus: () => { const c = firstFocusable(el); if (c && c.focus) c.focus(); } }, el);
     } else {
       const type = ['number', 'date', 'time'].includes(t) ? t : 'text';
       input = h('input', Object.assign({ type, min: f.min, max: f.max, step: f.step, inputmode: type === 'number' ? 'decimal' : null, autocomplete: f.autocomplete || 'off' }, common));
@@ -2960,10 +3784,25 @@ const UI = (function () {
     return finish(f, null, body.concat(err), get, set, err, input);
   }
 
-  function finish(f, lead, rest, get, set, err, focusEl) {
+  // The node itself or its first descendant that can take the focus: a control that is not disabled, a link, or a
+  // tabindex of 0 or more. A hidden or disabled branch is skipped (RC12).
+  function firstFocusable(node) {
+    if (!node || node.nodeType !== 1 || node.hidden || node.disabled) return null;
+    const tag = node.tagName;
+    const tab = node.getAttribute('tabindex');
+    if ((/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag) && node.getAttribute('type') !== 'hidden')
+      || (tag === 'A' && node.getAttribute('href') !== null) || (tab !== null && Number(tab) >= 0)) return node;
+    for (const k of Array.from(node.children || [])) {
+      const c = firstFocusable(k);
+      if (c) return c;
+    }
+    return null;
+  }
+
+  function finish(f, lead, rest, get, set, err, focusEl, ctl) {
     const el = h('div', { class: 'field field-' + (f.type || 'text'), dataset: { name: f.name } }, lead, rest);
     if (f.value !== undefined && f.type !== 'slider' && f.type !== 'chips') set(f.value);
-    return { name: f.name, field: f, el, get, set, err, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
+    return { name: f.name, field: f, el, get, set, err, ctl: ctl || null, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
   }
 
   function form(spec) {
@@ -2981,7 +3820,7 @@ const UI = (function () {
       x.err.textContent = msg || '';
       x.err.hidden = !msg;
       x.el.classList.toggle('invalid', !!msg);
-      const ctl = x.el.querySelector('input, select, textarea');
+      const ctl = x.ctl || x.el.querySelector('input, select, textarea'); // a chips group or a custom node carries the mark (RC12)
       if (ctl) { if (msg) ctl.setAttribute('aria-invalid', 'true'); else ctl.removeAttribute('aria-invalid'); }
     };
     const validate = () => {
@@ -3184,12 +4023,36 @@ const UI = (function () {
     return state.theme;
   }
 
-  function chrome(key) {
+  // Discreet mode. With a PIN the settings row is sealed, so while locked (or before the Store has loaded) the plain
+  // device flag decides; it holds nothing personal. An unlocked render keeps the flag equal to settings.discreet.
+  function setDiscreetFlag(on) {
+    safe(() => { if (on) localStorage.setItem(DISCREET_KEY, '1'); else localStorage.removeItem(DISCREET_KEY); }, null);
+  }
+  function discreetNow(locked) {
+    const flag = safe(() => localStorage.getItem(DISCREET_KEY) === '1', false);
+    const S = ns('Store');
+    if (locked || !S || !S.view || typeof S.view.get !== 'function' || (state.booted && !state.loaded)) return flag;
+    let row;
+    try { row = S.view.get('settings', 'app'); } catch (e) { return flag; } // unreadable: the flag decides
+    if (!row) return flag; // no settings row to read (none yet, or one that will not open, Q4): the flag decides (RS13)
+    const on = !!(row && row.discreet);
+    if (on !== flag) setDiscreetFlag(on);
+    return on;
+  }
+  function applyDiscreet(on) {
+    const v = !!on;
+    setDiscreetFlag(v);
+    if (hasDOM()) chrome(pageKey(route()), v);
+    return v;
+  }
+
+  function chrome(key, discreetNext) {
     if (!hasDOM()) return;
     const C = ns('Content');
     const settings = ctx().settings;
     const root = document.documentElement;
-    const discreet = !!settings.discreet;
+    const locked = isLocked();
+    const discreet = typeof discreetNext === 'boolean' ? discreetNext : discreetNow(locked);
     const name = discreet ? (safe(() => C.discreetName, null) || 'Notebook') : '1-addic';
     document.title = name;
     const appName = byId('app-name');
@@ -3200,7 +4063,6 @@ const UI = (function () {
     if (settings.reducedMotion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion');
     if (document.body) document.body.classList.toggle('calm', !!settings.calm);
     root.setAttribute('data-route', key);
-    const locked = isLocked();
     const nav = byId('nav');
     if (nav) {
       nav.hidden = locked;
@@ -3247,13 +4109,15 @@ const UI = (function () {
   }
 
   /* ── Built-in pages: Today placeholder, coming soon, lock fallback, urgent-help fallback ── */
+  // The word for SOS on screen: 'Help' in discreet mode, as on the button and the sheet link (RS14).
+  const sosWord = () => (hasDOM() && document.documentElement.getAttribute('data-discreet') !== null ? 'Help' : 'SOS');
   function todayPlaceholder() {
     return h('section', { class: 'page stack' },
       h('h1', { text: 'Today' }),
       h('p', { text: 'Today is coming together.' }),
       h('div', { class: 'row' },
         h('a', { class: 'btn primary', href: '#/learn', text: 'Go to Learn' }),
-        h('a', { class: 'btn', href: '#/sos', text: 'Open SOS' })));
+        h('a', { class: 'btn', href: '#/sos', text: 'Open ' + sosWord() })));
   }
   todayPlaceholder.placeholder = true;
 
@@ -3265,7 +4129,8 @@ const UI = (function () {
     const C = ns('Content');
     const res = safe(() => C.resources, null) || {};
     const local = res.in || {};
-    const lines = [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number);
+    const listed = safe(() => [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number), []);
+    const lines = listed.length ? listed : URGENT.builtIn;
     const tel = (n) => 'tel:' + String(n).replace(/[^0-9+]/g, '');
     return h('section', { class: 'page sos-page stack', 'aria-labelledby': 'urgent-title' },
       h('h1', { id: 'urgent-title', text: URGENT.title }),
@@ -3280,8 +4145,11 @@ const UI = (function () {
   function lockFallback() {
     const S = ns('Store');
     const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
-    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', autocomplete: 'off', 'aria-describedby': 'lock-msg' });
+    // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
+    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg lock-where' });
     msg.id = 'lock-msg';
+    // Without crypto, a second line says where the PIN still works, so 'not available' never reads as 'erase' (RS18).
+    const where = h('p', { id: 'lock-where', class: 'field-hint', hidden: true });
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
       class: 'form stack', novalidate: true,
@@ -3291,16 +4159,20 @@ const UI = (function () {
         const tried = pin.value;
         pin.value = '';
         btn.disabled = true; pin.disabled = true;
-        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch(() => false);
+        let why = null;
+        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch((e) => { why = e && e.code; return false; });
         btn.disabled = false; pin.disabled = false;
         if (ok) { go('#/today', { replace: true }); return; }
-        msg.textContent = 'That PIN did not match. Try again.';
+        msg.textContent = why === 'NO_CRYPTO' ? 'A PIN is not available on this device.' : 'That PIN did not match. Try again.'; // (RC11)
         msg.hidden = false;
+        where.textContent = why === 'NO_CRYPTO' ? 'Open this file in the browser where you set your PIN.' : ''; // (RS18)
+        where.hidden = why !== 'NO_CRYPTO';
         pin.focus();
       },
-    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg), btn);
+    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg, where), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
+      h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)
       h('div', { class: 'row' },
         h('a', { class: 'btn', href: '#/sos/urgent', text: 'Urgent help' }),
         h('a', { class: 'btn', href: '#/sos/craving', text: 'Ride the wave' })));
@@ -3308,7 +4180,8 @@ const UI = (function () {
 
   function failure(key) {
     if (key === 'sos') return urgentFallback();
-    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. SOS still works.' }));
+    if (key === 'lock') return lockFallback(); // a locked person can always type the PIN and reach urgent help (RS12)
+    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. ' + sosWord() + ' still works.' }));
   }
 
   /* ── Render ────────────────────────────────────────────────────────────────────────────── */
@@ -3324,8 +4197,13 @@ const UI = (function () {
     const seq = ++state.seq;
     let r = route();
     let key = pageKey(r);
+    keepOpen(key);
     const locked = isLocked();
+    if (locked) clearPrint(); // a document waiting to print is the person's too (a)
     if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
+    // A sheet belongs to the screen it opened on: a new route closes it (a pending confirm answers false), so a
+    // private sheet never stays on screen over #/sos or #/lock.
+    if (openSheet && state.lastPath !== null && r.path !== state.lastPath) openSheet.close('route');
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
     chrome(key);
@@ -3414,6 +4292,11 @@ const UI = (function () {
     if (s) safe(() => s.cancel(), null);
   }
 
+  function clearPrint() {
+    const root = byId('print-root');
+    if (root && root.firstChild) root.replaceChildren();
+  }
+
   function printDoc(node) {
     const root = byId('print-root');
     if (!root || typeof window === 'undefined') return;
@@ -3435,12 +4318,31 @@ const UI = (function () {
   }
 
   /* ── Boot ──────────────────────────────────────────────────────────────────────────────── */
+  // No auto-lock fires while the person is in SOS (the CORE chat's ruling Q1): an SOS route holds the Store's lock open
+  // (Store.lock.hold), with no ticks that would hide how long the page was left. Leaving SOS ends the hold, and the
+  // Store checks the idle time first: past the limit it locks, and the lock screen is drawn instead of the page
+  // (RC4, RC10, RS10). 'Lock now' still locks at once.
+  function keepOpen(key) {
+    const on = key === 'sos';
+    if (on === state.held) return;
+    state.held = on;
+    const S = ns('Store');
+    if (S && S.lock && typeof S.lock.hold === 'function') safe(() => S.lock.hold(on), null);
+  }
+
   function touch() {
     const S = ns('Store');
     const now = Date.now();
     if (now - state.lastTouch < 2000) return;
     state.lastTouch = now;
     if (S && S.lock && typeof S.lock.touch === 'function') safe(() => S.lock.touch(), null);
+  }
+  // A phone that slept or a page back from the back-forward cache: the Store checks the idle time at once and locks
+  // when the limit has passed (b). Never while the page is hidden.
+  function wake() {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+    state.lastTouch = 0;
+    touch();
   }
 
   async function boot() {
@@ -3455,6 +4357,9 @@ const UI = (function () {
     safe(() => window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => paintTheme(pageKey(route()))), null);
     document.addEventListener('pointerdown', touch, true);
     document.addEventListener('keydown', touch, true);
+    document.addEventListener('input', touch, true);
+    document.addEventListener('visibilitychange', wake);
+    window.addEventListener('pageshow', wake);
     const main = byId('main');
     if (main) main.addEventListener('focusout', (ev) => {
       if (state.deferred && !(ev.relatedTarget && main.contains(ev.relatedTarget))) { state.deferred = false; schedule(); }
@@ -3465,6 +4370,7 @@ const UI = (function () {
     const S = ns('Store');
     const sosFirst = pageKey(route()) === 'sos';
     if (sosFirst || !S) await render('route'); // SOS never waits for storage
+    else chrome(pageKey(route())); // the name and the button are discreet before the load ends (RS7)
     if (S) {
       if (typeof S.load === 'function') {
         const load = Promise.resolve().then(() => S.load()).catch((err) => {
@@ -3480,18 +4386,21 @@ const UI = (function () {
       if (typeof S.subscribe === 'function') safe(() => S.subscribe(schedule), null);
       if (S.lock && typeof S.lock.onLock === 'function') {
         safe(() => S.lock.onLock(() => {
+          clearPrint(); // also inside SOS, where the page is not drawn again (a)
           if (pageKey(route()) === 'sos') { chrome('sos'); return; } // never pull a person out of SOS
           go('#/lock', { replace: true });
         }), null);
       }
-      if (!sosFirst || state.lastPath === null) await render('route');
-      else chrome(pageKey(route()));
+      // Decided on the route as it is now (RS6): an SOS page already drawn is never drawn again, so a breathing or
+      // wave step the person started while the Store loaded goes on, and focus stays where it is.
+      if (pageKey(route()) === 'sos' && state.lastPath !== null) chrome('sos');
+      else await render('route');
     }
   }
 
   return {
     h, svg, icon, toast, sheet, confirm, form, card, tile, chips, ring, meter, empty,
-    go, route, render, pages, ctx, applyTheme, night, speak, stopSpeaking, printDoc, download, boot,
+    go, route, render, pages, ctx, applyTheme, applyDiscreet, night, speak, stopSpeaking, printDoc, download, boot,
     savedText, parse,
   };
 })();
@@ -5261,34 +6170,82 @@ if (typeof module !== 'undefined' && module.exports) {
 <script data-part="boot.js">
 /* 1-addic · boot.js · the last part: starts the app once the shell is in the page (BUILD-PLAN 3.1).
    Calls UI.boot() only when ui-core.js is in the build; without it the page stays the bare shell,
-   quietly (no console error). Loads in Node as a no-op. Owned by lane core. */
+   quietly (no console error). Loads in Node as a no-op. Owned by lane core.
+   A start failure (the CORE chat's ruling Q2) shows one short line and the urgent-help numbers from
+   Content.resources when they can be read, else the emergency sentence: help stays the first thing in reach. */
 (function () {
   'use strict';
   if (typeof document === 'undefined') return;
 
-  function showFailure() {
-    var main = document.getElementById('main');
-    if (!main) return;
+  function numbers() {
+    try {
+      var local = (typeof Content !== 'undefined' && Content && Content.resources && Content.resources.in) || {};
+      return [].concat(local.emergency || [], local.crisis || []).filter(function (x) { return x && x.number; });
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function line(text) {
     var p = document.createElement('p');
-    p.className = 'boot-failure';
-    p.setAttribute('role', 'alert');
-    p.textContent = 'The app could not start. Please reload the page.';
-    main.replaceChildren(p);
+    p.textContent = text;
+    return p;
+  }
+
+  // The start-failure lines are crisis copy: short, the numbers first, kept in one block for the clinical review (C1).
+  var COPY = {
+    clinicalReview: true,
+    none: 'The app did not start. If you are in danger, call your local emergency number.',
+    some: 'The app did not start. For urgent help, call:',
+    verify: 'Please verify these numbers.',
+  };
+
+  function showFailure() {
+    try {
+      var main = document.getElementById('main');
+      if (!main) return;
+      var box = document.createElement('div');
+      box.className = 'boot-failure';
+      box.setAttribute('role', 'alert');
+      var list = numbers();
+      if (!list.length) {
+        box.appendChild(line(COPY.none));
+      } else {
+        box.appendChild(line(COPY.some));
+        for (var i = 0; i < list.length; i++) {
+          var a = document.createElement('a');
+          a.className = 'sos-target';
+          a.href = 'tel:' + String(list[i].number).replace(/[^0-9+]/g, '');
+          a.textContent = (list[i].name ? list[i].name + ': ' : '') + list[i].number;
+          box.appendChild(a);
+        }
+        box.appendChild(line(COPY.verify));
+      }
+      if (typeof main.replaceChildren === 'function') main.replaceChildren(box);
+      else { main.textContent = ''; main.appendChild(box); }
+    } catch (e) {
+      /* nothing more can be shown */
+    }
+  }
+
+  function later(err) {
+    setTimeout(function () { throw err; }); // still reported in the console, after the help is on screen
   }
 
   function start() {
-    if (typeof UI === 'undefined' || !UI || typeof UI.boot !== 'function') return;
     var started;
     try {
+      if (typeof UI === 'undefined' || !UI || typeof UI.boot !== 'function') return;
       started = UI.boot();
     } catch (err) {
       showFailure();
-      throw err;
+      later(err);
+      return;
     }
     if (started && typeof started.then === 'function') {
       started.then(null, function (err) {
         showFailure();
-        setTimeout(function () { throw err; });
+        later(err);
       });
     }
   }

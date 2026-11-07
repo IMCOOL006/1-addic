@@ -9,6 +9,8 @@ const UI = (function () {
   'use strict';
 
   const THEME_KEY = '1-addic:theme';
+  // Discreet mode's device flag ('1' on, absent off): the lock screen reads it, since a sealed settings row cannot be.
+  const DISCREET_KEY = '1-addic:discreet';
   const SVG_NS = 'http://www.w3.org/2000/svg';
   // First segments of BUILD-PLAN 3.5. A known page that nobody has registered yet shows an honest "coming soon".
   const KNOWN = ['today', 'learn', 'lesson', 'workbook', 'exercise', 'track', 'actions', 'practice', 'tools',
@@ -33,6 +35,8 @@ const UI = (function () {
     clinicalReview: true,
     title: 'Urgent help',
     line: 'If you or someone else is in danger, call now.',
+    // Shown only when Content's list is empty or unreadable (RS8): one number to tap, whatever else failed.
+    builtIn: [{ name: 'Emergency', number: '112', verify: true }],
     note: 'India numbers: please verify. Elsewhere: your local emergency number (usually 112, 911 or 999).',
   };
   const EMPTY_VIEW = Object.freeze({ get() { return null; }, list() { return []; }, count() { return 0; } });
@@ -40,7 +44,7 @@ const UI = (function () {
   const pages = {};
   const state = {
     booted: false, loaded: false, seq: 0, lastPath: null, pending: 0, deferred: false, voices: null,
-    lastTouch: 0, theme: 'system',
+    lastTouch: 0, theme: 'system', held: false,
   };
 
   const hasDOM = () => typeof document !== 'undefined' && !!document.createElement;
@@ -76,6 +80,10 @@ const UI = (function () {
         }
       } else if (/^on[A-Z]/.test(k) && typeof v === 'function') {
         el.addEventListener(k.slice(2).toLowerCase(), v);
+      } else if (/^on/i.test(k)) {
+        continue; // never: a handler written as a string would run as code (e)
+      } else if ((k === 'href' || k === 'src' || k === 'xlink:href') && /^javascript:/i.test(String(v).replace(/[\u0000- ]/g, ''))) {
+        continue; // never: a javascript: link, in any case or spacing (e)
       } else if (k === 'html' || k === 'innerHTML' || k === 'outerHTML') {
         continue; // never: text is inserted as text
       } else if (!isSvg && (k === 'value' || k === 'checked' || k === 'selected' || k === 'indeterminate')) {
@@ -184,8 +192,15 @@ const UI = (function () {
     const onNativeClose = () => { if (!dlg.open) close('dismissed'); };
     const onBackdrop = (ev) => { if (ev.target === dlg && o.dismissable !== false) close('dismissed'); };
     const onCancel = (ev) => { if (o.dismissable === false) ev.preventDefault(); };
+    // A modal sheet makes the page behind it, and its SOS button, inert: so every sheet carries its own way to SOS,
+    // one tap, even a sheet that cannot be dismissed.
+    const discreet = document.documentElement.getAttribute('data-discreet') !== null;
+    const toSos = h('a', {
+      href: '#/sos', class: 'sheet-sos', text: discreet ? 'Help' : 'SOS', 'aria-label': discreet ? 'Help' : 'SOS: help right now',
+      onClick: (ev) => { if (ev && typeof ev.preventDefault === 'function') ev.preventDefault(); close('route'); go('#/sos'); },
+    });
     const head = h('div', { class: 'sheet-head' },
-      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }),
+      h('h2', { id: titleId, class: 'sheet-title', text: title || '' }), toSos,
       o.dismissable === false ? null : h('button', {
         type: 'button', class: 'icon-btn sheet-close', 'aria-label': 'Close', onClick: () => close('dismissed'),
       }, icon('close', 22)));
@@ -313,6 +328,10 @@ const UI = (function () {
       body = [h('p', { class: 'field-label', id: id + '-label', text: f.label || f.name }), hint, input];
       input.setAttribute('aria-labelledby', id + '-label');
       input.setAttribute('aria-describedby', described);
+      // The group cannot take the focus: its chosen chip, or else its first, does; the group carries the mark (RC12).
+      const group = input;
+      const chip = () => { const kids = Array.from(group.children || []); return kids.find((c) => c.getAttribute('aria-pressed') === 'true') || kids[0] || null; };
+      return finish(f, null, body.concat(err), get, set, err, { focus: () => { const c = chip(); if (c && c.focus) c.focus(); } }, group);
     } else if (t === 'slider') {
       const min = f.min != null ? f.min : 0;
       const max = f.max != null ? f.max : 10;
@@ -335,7 +354,9 @@ const UI = (function () {
       const el = isNode ? made : (made && made.el) || h('div');
       get = isNode ? () => made.value : () => (made && typeof made.get === 'function' ? made.get() : undefined);
       set = isNode ? (v) => { made.value = v; } : (v) => { if (made && typeof made.set === 'function') made.set(v); };
-      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err, el);
+      // The custom node carries the mark and its first control takes the focus, as a chips group does (RC12).
+      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
+        { focus: () => { const c = firstFocusable(el); if (c && c.focus) c.focus(); } }, el);
     } else {
       const type = ['number', 'date', 'time'].includes(t) ? t : 'text';
       input = h('input', Object.assign({ type, min: f.min, max: f.max, step: f.step, inputmode: type === 'number' ? 'decimal' : null, autocomplete: f.autocomplete || 'off' }, common));
@@ -346,10 +367,25 @@ const UI = (function () {
     return finish(f, null, body.concat(err), get, set, err, input);
   }
 
-  function finish(f, lead, rest, get, set, err, focusEl) {
+  // The node itself or its first descendant that can take the focus: a control that is not disabled, a link, or a
+  // tabindex of 0 or more. A hidden or disabled branch is skipped (RC12).
+  function firstFocusable(node) {
+    if (!node || node.nodeType !== 1 || node.hidden || node.disabled) return null;
+    const tag = node.tagName;
+    const tab = node.getAttribute('tabindex');
+    if ((/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag) && node.getAttribute('type') !== 'hidden')
+      || (tag === 'A' && node.getAttribute('href') !== null) || (tab !== null && Number(tab) >= 0)) return node;
+    for (const k of Array.from(node.children || [])) {
+      const c = firstFocusable(k);
+      if (c) return c;
+    }
+    return null;
+  }
+
+  function finish(f, lead, rest, get, set, err, focusEl, ctl) {
     const el = h('div', { class: 'field field-' + (f.type || 'text'), dataset: { name: f.name } }, lead, rest);
     if (f.value !== undefined && f.type !== 'slider' && f.type !== 'chips') set(f.value);
-    return { name: f.name, field: f, el, get, set, err, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
+    return { name: f.name, field: f, el, get, set, err, ctl: ctl || null, focus: () => { if (focusEl && focusEl.focus) focusEl.focus(); } };
   }
 
   function form(spec) {
@@ -367,7 +403,7 @@ const UI = (function () {
       x.err.textContent = msg || '';
       x.err.hidden = !msg;
       x.el.classList.toggle('invalid', !!msg);
-      const ctl = x.el.querySelector('input, select, textarea');
+      const ctl = x.ctl || x.el.querySelector('input, select, textarea'); // a chips group or a custom node carries the mark (RC12)
       if (ctl) { if (msg) ctl.setAttribute('aria-invalid', 'true'); else ctl.removeAttribute('aria-invalid'); }
     };
     const validate = () => {
@@ -570,12 +606,36 @@ const UI = (function () {
     return state.theme;
   }
 
-  function chrome(key) {
+  // Discreet mode. With a PIN the settings row is sealed, so while locked (or before the Store has loaded) the plain
+  // device flag decides; it holds nothing personal. An unlocked render keeps the flag equal to settings.discreet.
+  function setDiscreetFlag(on) {
+    safe(() => { if (on) localStorage.setItem(DISCREET_KEY, '1'); else localStorage.removeItem(DISCREET_KEY); }, null);
+  }
+  function discreetNow(locked) {
+    const flag = safe(() => localStorage.getItem(DISCREET_KEY) === '1', false);
+    const S = ns('Store');
+    if (locked || !S || !S.view || typeof S.view.get !== 'function' || (state.booted && !state.loaded)) return flag;
+    let row;
+    try { row = S.view.get('settings', 'app'); } catch (e) { return flag; } // unreadable: the flag decides
+    if (!row) return flag; // no settings row to read (none yet, or one that will not open, Q4): the flag decides (RS13)
+    const on = !!(row && row.discreet);
+    if (on !== flag) setDiscreetFlag(on);
+    return on;
+  }
+  function applyDiscreet(on) {
+    const v = !!on;
+    setDiscreetFlag(v);
+    if (hasDOM()) chrome(pageKey(route()), v);
+    return v;
+  }
+
+  function chrome(key, discreetNext) {
     if (!hasDOM()) return;
     const C = ns('Content');
     const settings = ctx().settings;
     const root = document.documentElement;
-    const discreet = !!settings.discreet;
+    const locked = isLocked();
+    const discreet = typeof discreetNext === 'boolean' ? discreetNext : discreetNow(locked);
     const name = discreet ? (safe(() => C.discreetName, null) || 'Notebook') : '1-addic';
     document.title = name;
     const appName = byId('app-name');
@@ -586,7 +646,6 @@ const UI = (function () {
     if (settings.reducedMotion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion');
     if (document.body) document.body.classList.toggle('calm', !!settings.calm);
     root.setAttribute('data-route', key);
-    const locked = isLocked();
     const nav = byId('nav');
     if (nav) {
       nav.hidden = locked;
@@ -633,13 +692,15 @@ const UI = (function () {
   }
 
   /* ── Built-in pages: Today placeholder, coming soon, lock fallback, urgent-help fallback ── */
+  // The word for SOS on screen: 'Help' in discreet mode, as on the button and the sheet link (RS14).
+  const sosWord = () => (hasDOM() && document.documentElement.getAttribute('data-discreet') !== null ? 'Help' : 'SOS');
   function todayPlaceholder() {
     return h('section', { class: 'page stack' },
       h('h1', { text: 'Today' }),
       h('p', { text: 'Today is coming together.' }),
       h('div', { class: 'row' },
         h('a', { class: 'btn primary', href: '#/learn', text: 'Go to Learn' }),
-        h('a', { class: 'btn', href: '#/sos', text: 'Open SOS' })));
+        h('a', { class: 'btn', href: '#/sos', text: 'Open ' + sosWord() })));
   }
   todayPlaceholder.placeholder = true;
 
@@ -651,7 +712,8 @@ const UI = (function () {
     const C = ns('Content');
     const res = safe(() => C.resources, null) || {};
     const local = res.in || {};
-    const lines = [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number);
+    const listed = safe(() => [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number), []);
+    const lines = listed.length ? listed : URGENT.builtIn;
     const tel = (n) => 'tel:' + String(n).replace(/[^0-9+]/g, '');
     return h('section', { class: 'page sos-page stack', 'aria-labelledby': 'urgent-title' },
       h('h1', { id: 'urgent-title', text: URGENT.title }),
@@ -666,8 +728,11 @@ const UI = (function () {
   function lockFallback() {
     const S = ns('Store');
     const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
-    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', autocomplete: 'off', 'aria-describedby': 'lock-msg' });
+    // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
+    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg lock-where' });
     msg.id = 'lock-msg';
+    // Without crypto, a second line says where the PIN still works, so 'not available' never reads as 'erase' (RS18).
+    const where = h('p', { id: 'lock-where', class: 'field-hint', hidden: true });
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
       class: 'form stack', novalidate: true,
@@ -677,16 +742,20 @@ const UI = (function () {
         const tried = pin.value;
         pin.value = '';
         btn.disabled = true; pin.disabled = true;
-        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch(() => false);
+        let why = null;
+        const ok = await Promise.resolve(safe(() => S.lock.unlock(tried), false)).catch((e) => { why = e && e.code; return false; });
         btn.disabled = false; pin.disabled = false;
         if (ok) { go('#/today', { replace: true }); return; }
-        msg.textContent = 'That PIN did not match. Try again.';
+        msg.textContent = why === 'NO_CRYPTO' ? 'A PIN is not available on this device.' : 'That PIN did not match. Try again.'; // (RC11)
         msg.hidden = false;
+        where.textContent = why === 'NO_CRYPTO' ? 'Open this file in the browser where you set your PIN.' : ''; // (RS18)
+        where.hidden = why !== 'NO_CRYPTO';
         pin.focus();
       },
-    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg), btn);
+    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg, where), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
+      h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)
       h('div', { class: 'row' },
         h('a', { class: 'btn', href: '#/sos/urgent', text: 'Urgent help' }),
         h('a', { class: 'btn', href: '#/sos/craving', text: 'Ride the wave' })));
@@ -694,7 +763,8 @@ const UI = (function () {
 
   function failure(key) {
     if (key === 'sos') return urgentFallback();
-    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. SOS still works.' }));
+    if (key === 'lock') return lockFallback(); // a locked person can always type the PIN and reach urgent help (RS12)
+    return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. ' + sosWord() + ' still works.' }));
   }
 
   /* ── Render ────────────────────────────────────────────────────────────────────────────── */
@@ -710,8 +780,13 @@ const UI = (function () {
     const seq = ++state.seq;
     let r = route();
     let key = pageKey(r);
+    keepOpen(key);
     const locked = isLocked();
+    if (locked) clearPrint(); // a document waiting to print is the person's too (a)
     if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
+    // A sheet belongs to the screen it opened on: a new route closes it (a pending confirm answers false), so a
+    // private sheet never stays on screen over #/sos or #/lock.
+    if (openSheet && state.lastPath !== null && r.path !== state.lastPath) openSheet.close('route');
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
     chrome(key);
@@ -800,6 +875,11 @@ const UI = (function () {
     if (s) safe(() => s.cancel(), null);
   }
 
+  function clearPrint() {
+    const root = byId('print-root');
+    if (root && root.firstChild) root.replaceChildren();
+  }
+
   function printDoc(node) {
     const root = byId('print-root');
     if (!root || typeof window === 'undefined') return;
@@ -821,12 +901,31 @@ const UI = (function () {
   }
 
   /* ── Boot ──────────────────────────────────────────────────────────────────────────────── */
+  // No auto-lock fires while the person is in SOS (the CORE chat's ruling Q1): an SOS route holds the Store's lock open
+  // (Store.lock.hold), with no ticks that would hide how long the page was left. Leaving SOS ends the hold, and the
+  // Store checks the idle time first: past the limit it locks, and the lock screen is drawn instead of the page
+  // (RC4, RC10, RS10). 'Lock now' still locks at once.
+  function keepOpen(key) {
+    const on = key === 'sos';
+    if (on === state.held) return;
+    state.held = on;
+    const S = ns('Store');
+    if (S && S.lock && typeof S.lock.hold === 'function') safe(() => S.lock.hold(on), null);
+  }
+
   function touch() {
     const S = ns('Store');
     const now = Date.now();
     if (now - state.lastTouch < 2000) return;
     state.lastTouch = now;
     if (S && S.lock && typeof S.lock.touch === 'function') safe(() => S.lock.touch(), null);
+  }
+  // A phone that slept or a page back from the back-forward cache: the Store checks the idle time at once and locks
+  // when the limit has passed (b). Never while the page is hidden.
+  function wake() {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+    state.lastTouch = 0;
+    touch();
   }
 
   async function boot() {
@@ -841,6 +940,9 @@ const UI = (function () {
     safe(() => window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => paintTheme(pageKey(route()))), null);
     document.addEventListener('pointerdown', touch, true);
     document.addEventListener('keydown', touch, true);
+    document.addEventListener('input', touch, true);
+    document.addEventListener('visibilitychange', wake);
+    window.addEventListener('pageshow', wake);
     const main = byId('main');
     if (main) main.addEventListener('focusout', (ev) => {
       if (state.deferred && !(ev.relatedTarget && main.contains(ev.relatedTarget))) { state.deferred = false; schedule(); }
@@ -851,6 +953,7 @@ const UI = (function () {
     const S = ns('Store');
     const sosFirst = pageKey(route()) === 'sos';
     if (sosFirst || !S) await render('route'); // SOS never waits for storage
+    else chrome(pageKey(route())); // the name and the button are discreet before the load ends (RS7)
     if (S) {
       if (typeof S.load === 'function') {
         const load = Promise.resolve().then(() => S.load()).catch((err) => {
@@ -866,18 +969,21 @@ const UI = (function () {
       if (typeof S.subscribe === 'function') safe(() => S.subscribe(schedule), null);
       if (S.lock && typeof S.lock.onLock === 'function') {
         safe(() => S.lock.onLock(() => {
+          clearPrint(); // also inside SOS, where the page is not drawn again (a)
           if (pageKey(route()) === 'sos') { chrome('sos'); return; } // never pull a person out of SOS
           go('#/lock', { replace: true });
         }), null);
       }
-      if (!sosFirst || state.lastPath === null) await render('route');
-      else chrome(pageKey(route()));
+      // Decided on the route as it is now (RS6): an SOS page already drawn is never drawn again, so a breathing or
+      // wave step the person started while the Store loaded goes on, and focus stays where it is.
+      if (pageKey(route()) === 'sos' && state.lastPath !== null) chrome('sos');
+      else await render('route');
     }
   }
 
   return {
     h, svg, icon, toast, sheet, confirm, form, card, tile, chips, ring, meter, empty,
-    go, route, render, pages, ctx, applyTheme, night, speak, stopSpeaking, printDoc, download, boot,
+    go, route, render, pages, ctx, applyTheme, applyDiscreet, night, speak, stopSpeaking, printDoc, download, boot,
     savedText, parse,
   };
 })();

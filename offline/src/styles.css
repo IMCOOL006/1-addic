@@ -265,6 +265,13 @@ dialog.sheet {
 dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sheet-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-1) var(--space-4); }
 .sheet-title { flex: 1; min-width: 0; margin: 0; font-size: 1.125rem; }
+/* Every sheet's own way to SOS (the page's SOS button is inert behind a modal). */
+.sheet-sos {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  min-width: 44px; min-height: 44px; padding: 0 14px; border-radius: 22px;
+  background: hsl(var(--accent)); color: hsl(var(--primary-text)); font-weight: 800; text-decoration: none;
+}
+.sheet-sos:focus-visible { outline-offset: 3px; }
 .sheet-body { padding: var(--space-2) var(--space-4) var(--space-4); }
 .sheet-actions { justify-content: flex-end; padding: 0 var(--space-4) var(--space-4); }
 @media (min-width: 720px) {
@@ -328,7 +335,8 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sos-target:hover { border-color: hsl(var(--primary)); }
 .sos-target-name { flex: 1 1 12em; min-width: 0; }
 .sos-target-number { font-weight: 700; font-size: 1.25rem; color: hsl(var(--primary)); white-space: nowrap; }
-[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop { display: none !important; }
+[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop,
+[data-route="sos"] #coach, [data-route="sos"] .coach-overlay { display: none !important; } /* the whole layer (RS9) */
 .lock-page { max-width: 420px; margin: 0 auto; }
 
 /* ── The harbor (placeholder box; the harbor lane draws the scene inside) ──────────────────── */
@@ -341,6 +349,10 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 /* ── Calm and discreet ────────────────────────────────────────────────────────────────────── */
 body.calm .xp, body.calm .badge, body.calm .harbor { display: none !important; }
 [data-counters="off"] .counter { display: none !important; }
+/* Discreet before ui-core paints the chrome (RS7): the head script sets html[data-discreet]; ui-core sets data-route. */
+html[data-discreet]:not([data-route]) #app-name, html[data-discreet]:not([data-route]) #sos-btn { font-size: 0; }
+html[data-discreet]:not([data-route]) #app-name::after { content: "Notebook"; font-size: 1rem; }
+html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-size: 1rem; }
 
 /* ── Motion ───────────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
