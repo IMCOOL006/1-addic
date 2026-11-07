@@ -3,7 +3,9 @@
    next small step. It only reads: Engine.gameState and the Explorer, quest and roadmap readers. Nothing here writes
    to the Store or the Engine, nothing shown ever decreases, and the opt-in current run never appears. A slip changes
    no level. Calm mode: no scene, XP or badges; the places as a plain list. Discreet mode: no scene, no days.
-   The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML. */
+   The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML.
+   V-01b: what just changed since the last draw this session (memory only), a 14-day strip of dated dots (no count),
+   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js). */
 const StatusUI = (() => {
   const MAX = 5;
   const PLACES = ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather'];
@@ -41,7 +43,22 @@ const StatusUI = (() => {
       quest: (n) => `${n} quest steps done.`,
       day: (n) => `Days in all: ${n}.`,
     },
+    changeTitle: 'What just changed',
+    first: 'Here is where you stand.',
+    none: 'Nothing new since you last looked.',
+    stripTitle: 'Your last 14 days',
+    stripLead: 'A filled dot marks a day you did something for your recovery.',
+    stripList: 'The last 14 days, oldest first',
+    stripDay: (label, active) => `${label}: ${active ? 'active' : 'no entry'}`,
+    watchTitle: 'What to watch',
+    watchLead: 'A few patterns in your own logs that may be worth a look. Each one comes with a plan.',
+    watchNone: 'Nothing to watch right now.',
+    plan: (p) => `Your plan: ${p}`,
   };
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  /* The model of the last draw, in memory for this session only (like GameUI's seen): never stored. */
+  let lastDrawn = null;
   /* Explorer item -> where to try it (BUILD-PLAN 3.5 routes); an item not listed goes to Today. */
   const EXPLORER_HREF = {
     tour: '#/today?tour=1', drill: '#/sos?drill=1', reasons: '#/workbook/reasons', safetyNet: '#/workbook/network',
@@ -191,6 +208,21 @@ const StatusUI = (() => {
     return lines;
   }
 
+  /* strip(dates, now) -> the 14 local days ending today, oldest first: {date, active, label}. A history, no count. */
+  function strip(dates, now) {
+    const on = new Set(arr(dates).filter((d) => typeof d === 'string'));
+    const t = now instanceof Date ? now : new Date(now);
+    const base = isFinite(t.getTime()) ? t : new Date(0);
+    const pad = (n) => String(n).padStart(2, '0');
+    const out = [];
+    for (let k = 13; k >= 0; k--) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() - k, 12);
+      const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      out.push({ date, active: on.has(date), label: `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}` });
+    }
+    return out;
+  }
+
   /* ── the page ──────────────────────────────────────────────────────────────────────────── */
 
   /* h: text through textContent only; on* keys become listeners; null/false attributes are skipped. */
@@ -242,6 +274,47 @@ const StatusUI = (() => {
     }
   }
 
+  /* Every node under n (the real DOM and the tests' fake one both have children). */
+  function walk(n, fn) {
+    if (!n) return;
+    fn(n);
+    for (const k of Array.from(n.children || [])) walk(k, fn);
+  }
+  /* The rises since the last draw; the first draw says where the person stands. Calm shows no XP, badge or rank. */
+  function changeCard(d, calm) {
+    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank'))) : [];
+    return h('section', { class: 'card stack st-change', 'data-test': 'status-change', 'data-tour': 'status-change', 'aria-label': TEXT.changeTitle },
+      h('h2', { class: 'card-title', text: TEXT.changeTitle }),
+      !d ? h('p', { class: 'muted', text: TEXT.first })
+        : items.length ? h('ul', { class: 'st-change-list' }, items.map((i) => h('li', { 'data-test': 'status-change-item', 'data-kind': i.kind, text: i.text })))
+          : h('p', { class: 'muted', text: TEXT.none }));
+  }
+  function stripCard(gs, now) {
+    const days = strip(isObj(gs.momentum) ? gs.momentum.dates : [], now);
+    return h('section', { class: 'card stack st-strip-card', 'data-test': 'status-strip', 'aria-label': TEXT.stripTitle },
+      h('h2', { class: 'card-title', text: TEXT.stripTitle }),
+      h('p', { class: 'muted', text: TEXT.stripLead }),
+      h('ol', { class: 'st-strip', 'aria-label': TEXT.stripList }, days.map((d) => h('li', {
+        class: d.active ? 'st-day st-on' : 'st-day', 'data-test': 'status-strip-day', 'data-date': d.date, 'data-active': d.active ? 'true' : 'false' },
+      h('span', { class: 'st-dot', 'aria-hidden': 'true' }), h('span', { class: 'sr-only', text: TEXT.stripDay(d.label, d.active) })))));
+  }
+  /* What to watch: the Engine's warning signs, each with its plan (the person's own plan already wins there).
+     Gentle: no score, no red. Also drawn by ui-track.js at #/track/radar. */
+  function watchCard(ctxIn) {
+    const x = ctxIn || {};
+    const E = x.E !== undefined ? x.E : ns('Engine');
+    const signs = E && typeof E.warningSigns === 'function' ? arr(safe(() => E.warningSigns(x.view, x.now || new Date()), [])) : [];
+    const list = signs.filter((s) => isObj(s) && typeof s.signId === 'string');
+    return h('section', { class: 'card stack st-watch', 'data-test': 'status-watch', 'data-tour': 'status-watch', 'aria-label': TEXT.watchTitle },
+      h('h2', { class: 'card-title', text: TEXT.watchTitle }),
+      list.length ? [h('p', { class: 'muted', text: TEXT.watchLead }),
+        h('ul', { class: 'st-watch-list' }, list.map((s) => h('li', { class: 'st-sign', 'data-test': 'status-watch-item', 'data-sign': s.signId, 'data-own': s.own === true ? 'true' : 'false' },
+          h('p', { class: 'st-sign-label', text: str(s.label) || s.signId }),
+          str(s.evidence) ? h('p', { class: 'muted', text: s.evidence }) : null,
+          str(s.plan) ? h('p', { class: 'st-plan', text: TEXT.plan(s.plan) }) : null)))]
+        : h('p', { class: 'muted', text: TEXT.watchNone }));
+  }
+
   function page(ctxIn) {
     const x = ctxIn || {};
     const c = {
@@ -257,6 +330,8 @@ const StatusUI = (() => {
       h('a', { href: '#/sos', class: 'btn', 'data-test': 'status-sos', text: mode.discreet ? TEXT.help : TEXT.sos, 'aria-label': mode.discreet ? TEXT.help : TEXT.sosAria }));
     const head = h('header', { class: 'stack st-head' }, h('h1', { text: TEXT.title }), nav);
     if (!m) return h('section', { class: 'page stack st-page', 'data-test': 'status-page' }, head, h('p', { class: 'muted', text: TEXT.unavailable }));
+    const changed = lastDrawn ? diff(lastDrawn, m) : null; // memory only: no Store write, no event
+    lastDrawn = m;
 
     const byId = new Map(m.regions.map((r) => [r.id, r]));
     const Hb = ns('HarborUI');
@@ -267,6 +342,14 @@ const StatusUI = (() => {
         const r = t ? byId.get(t.getAttribute('data-place')) : null;
         if (r) openPlace(r, null);
       } }, sc) : null;
+    // the place that grew pulses once; none when still (reduced motion, data-motion=reduce, an SOS route): the words carry it
+    const grew = new Set(changed ? changed.items.filter((i) => i.kind === 'region').map((i) => i.id) : []);
+    if (sc && grew.size && !(typeof Hb.still === 'function' && safe(() => Hb.still(c), true) !== false)) {
+      walk(sc, (n) => {
+        const id = n && typeof n.getAttribute === 'function' ? n.getAttribute('data-place') : null;
+        if (id && grew.has(id)) n.setAttribute('class', `${n.getAttribute('class') || ''} hb-grew`.trim());
+      });
+    }
     const places = h('ul', { class: 'st-places', 'aria-label': TEXT.places }, m.regions.map((r) => {
       const more = h('div', { class: 'st-more', hidden: true });
       const btn = h('button', { type: 'button', class: 'btn st-place', 'data-test': 'status-place', 'data-region': r.id, 'data-level': String(r.level),
@@ -290,11 +373,15 @@ const StatusUI = (() => {
         : h('p', { class: 'muted', text: TEXT.nextNone }));
 
     return h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
-      head, scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next);
+      head, changeCard(changed, mode.calm), scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next,
+      stripCard(gs, c.now), watchCard(c));
   }
 
-  const PURE = ['TEXT', 'model', 'diff', 'nextStep', 'placeLines'];
-  return { TEXT, model, diff, nextStep, placeLines, page, PURE, EXPLORER_HREF };
+  const PURE = ['TEXT', 'model', 'diff', 'nextStep', 'placeLines', 'strip'];
+  return {
+    TEXT, model, diff, nextStep, placeLines, strip, page, watchCard, PURE, EXPLORER_HREF,
+    _reset() { lastDrawn = null; }, // tests only: forget the last draw
+  };
 })();
 
 // The page registers from this file (ui-core.js's pageKey accepts any key in UI.pages); ui-core.js is not changed.

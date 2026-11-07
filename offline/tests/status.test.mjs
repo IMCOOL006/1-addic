@@ -301,10 +301,176 @@ test('status text goes in as text', () => {
 });
 
 test('status module has pure exports only', () => {
-  assert.deepEqual(Object.keys(STP).sort(), ['TEXT', 'diff', 'model', 'nextStep', 'placeLines']);
+  assert.deepEqual(Object.keys(STP).sort(), ['TEXT', 'diff', 'model', 'nextStep', 'placeLines', 'strip']);
   assert.equal(STP.page, undefined);
+  assert.equal(STP.watchCard, undefined);
   assert.equal(typeof globalThis.document, 'undefined');
   assert.ok(STP.model(E.gameState(viewOf({}), NOW), {}).regions.length === 6, 'runs without a DOM');
   for (const k of ST.PURE) assert.ok(k in STP, k);
   assert.equal(STP.TEXT.title, 'Your Harbor');
 });
+
+/* ── V-01b: what changed, the strip, what to watch, the way in ───────────────────────────── */
+const cls = (n) => (n.getAttribute && n.getAttribute('class')) || '';
+const grewNodes = (root) => root.all((n) => /\bhb-grew\b/.test(cls(n)));
+const changeItems = (root) => byTest(root, 'status-change-item');
+const changeText = (root) => byTest(root, 'status-change')[0].textContent;
+const baseRows = () => ({ profile: [{ key: 'me', startDate: '2026-10-01' }], settings: [settingsRow()], events: [], logs: [] });
+const withSkill = (rows) => Object.assign({}, rows, { events: rows.events.concat([ev('SkillUsed', { skillId: coveSkill, helpful: true })]) });
+const withSlip = (rows) => Object.assign({}, rows, {
+  events: rows.events.concat([ev('SlipLogged', { date: '2026-11-07' })]),
+  logs: rows.logs.concat([{ id: 'l-slip', type: 'slip', at: NOW.toISOString(), date: '2026-11-07' }]),
+});
+
+test('first open says where you stand, a second draw says nothing new', () => withDom(() => {
+  ST._reset();
+  const first = render(baseRows());
+  assert.equal(byTest(first, 'status-change').length, 1);
+  assert.equal(byTest(first, 'status-change')[0].getAttribute('data-tour'), 'status-change');
+  assert.match(changeText(first), /Here is where you stand\./);
+  assert.equal(changeItems(first).length, 0);
+  const second = render(baseRows());
+  assert.match(changeText(second), /Nothing new since you last looked\./);
+  assert.equal(changeItems(second).length, 0);
+  assert.equal(grewNodes(second).length, 0);
+}));
+
+test('diff after a quick log names the rise', () => withDom(() => {
+  ST._reset();
+  const rows = baseRows();
+  render(rows);
+  const after = render(withSkill(rows));
+  const items = changeItems(after);
+  const reg = items.filter((n) => n.getAttribute('data-kind') === 'region');
+  assert.equal(reg.length, 1);
+  assert.match(reg[0].textContent, /The Cove grew to level 1\./);
+  assert.ok(items.some((n) => n.getAttribute('data-kind') === 'xp'), 'the XP rise is named');
+  for (const n of items) assert.doesNotMatch(n.textContent, /down|lost|lower|streak/i);
+  const grew = grewNodes(after);
+  assert.equal(grew.length, 1, 'the place that grew pulses once');
+  assert.equal(grew[0].getAttribute('data-place'), 'cove');
+  assert.equal(byTest(after, 'status-place').find((n) => n.getAttribute('data-region') === 'cove').getAttribute('data-level'), '1');
+  // then a slip: nothing changes, nothing pulses, no level falls
+  const slip = render(withSlip(withSkill(rows)));
+  assert.equal(changeItems(slip).length, 0, 'a slip is not a change on this page');
+  assert.match(changeText(slip), /Nothing new since you last looked\./);
+  assert.equal(grewNodes(slip).length, 0);
+  assert.equal(byTest(slip, 'status-place').find((n) => n.getAttribute('data-region') === 'cove').getAttribute('data-level'), '1');
+  // Calm: the rise of a place is still named, XP is not
+  ST._reset();
+  const calmRows = Object.assign(baseRows(), { settings: [settingsRow({ calm: true })] });
+  render(calmRows);
+  const calm = changeItems(render(withSkill(calmRows)));
+  assert.deepEqual(calm.map((n) => n.getAttribute('data-kind')), ['region']);
+}));
+
+test('reduced motion adds no hb-grew class', () => withDom(() => {
+  for (const extra of [{ settings: settingsRow({ reducedMotion: true }) }, { route: { path: '/sos', parts: ['sos'], query: {} } }]) {
+    ST._reset();
+    const rows = baseRows();
+    render(rows, extra);
+    const after = render(withSkill(rows), extra);
+    assert.equal(byTest(after, 'status-scene').length, 1, 'the scene is drawn');
+    assert.equal(grewNodes(after).length, 0, 'no moving class');
+    assert.ok(changeItems(after).some((n) => n.getAttribute('data-kind') === 'region'), 'the words carry the change');
+  }
+  ST._reset();
+}));
+
+test('strip has 14 dated days and no count', () => {
+  const days = STP.strip(['2026-11-07', '2026-11-01', '2026-10-24', 'junk'], NOW);
+  assert.equal(days.length, 14);
+  assert.equal(days[0].date, '2026-10-25');
+  assert.equal(days[13].date, '2026-11-07');
+  assert.deepEqual(days.filter((d) => d.active).map((d) => d.date), ['2026-11-01', '2026-11-07']);
+  assert.equal(days[13].label, 'Sat 7 Nov');
+  withDom(() => {
+    const root = render(sampleRows());
+    const card = byTest(root, 'status-strip')[0];
+    const dots = byTest(card, 'status-strip-day');
+    assert.equal(dots.length, 14);
+    for (const d of dots) {
+      assert.match(d.getAttribute('data-date'), /^\d{4}-\d{2}-\d{2}$/);
+      assert.match(d.getAttribute('data-active'), /^(true|false)$/);
+    }
+    const on = dots.filter((d) => d.getAttribute('data-active') === 'true').map((d) => d.getAttribute('data-date'));
+    assert.deepEqual(on, E.gameState(viewOf(sampleRows()), NOW).momentum.dates);
+    assert.doesNotMatch(card.textContent, /\b\d+\s*(of 14|days? (active|in a row))|streak|run\b/i, 'a history, no count headline');
+    assert.match(dots[13].textContent, /^Sat 7 Nov: (active|no entry)$/);
+  });
+});
+
+test('watch card: own plan wins, empty state', () => withDom(() => {
+  const empty = render(baseRows());
+  const w = byTest(empty, 'status-watch');
+  assert.equal(w.length, 1);
+  assert.equal(w[0].getAttribute('data-tour'), 'status-watch');
+  assert.match(w[0].textContent, /Nothing to watch right now\./);
+  assert.equal(byTest(empty, 'status-watch-item').length, 0);
+  const signs = [{ signId: 'poorSleep', label: 'Short sleep', evidence: 'Less than 6 hours of sleep on 3 of your last 5 check-ins.', plan: 'Phone off at ten, then my wind-down list.', own: true },
+    { signId: 'noMeeting', label: 'No meetings lately', evidence: 'No meeting logged in the last 14 days.', plan: 'Find one meeting this week.', own: false }];
+  const stub = Object.assign({}, E, { warningSigns: () => signs });
+  const card = ST.watchCard({ view: viewOf({}), E: stub, now: NOW });
+  const items = byTest(card, 'status-watch-item');
+  assert.deepEqual(items.map((n) => n.getAttribute('data-sign')), ['poorSleep', 'noMeeting']);
+  assert.match(items[0].textContent, /Your plan: Phone off at ten, then my wind-down list\./, 'the own plan the Engine chose is shown');
+  assert.equal(items[0].getAttribute('data-own'), 'true');
+  for (const n of card.all(() => true)) assert.doesNotMatch(cls(n), /danger|error|red|warn/, 'gentle, never red');
+  assert.doesNotMatch(card.textContent, /score|risk level|\d+%/i, 'no score');
+  const broken = ST.watchCard({ view: viewOf({}), E: { warningSigns() { throw new Error('x'); } }, now: NOW });
+  assert.match(broken.textContent, /Nothing to watch right now\./);
+}));
+
+test('radar renders on #/track/radar', () => withDom(() => {
+  globalThis.StatusUI = ST;
+  try {
+    const TR = classic('ui-track.js', 'TrackUI');
+    const R = (path) => ({ path, parts: path.split('/').filter(Boolean), query: {} });
+    assert.deepEqual(TR.routeOf(R('/track/radar')), { view: 'radar' });
+    const base = { view: viewOf({}), E, A: {}, settings: {}, profile: {}, now: NOW };
+    const pg = TR.page(Object.assign({ route: R('/track/radar') }, base));
+    assert.equal(pg.getAttribute('data-test'), 'track-radar');
+    assert.equal(byTest(pg, 'status-watch').length, 1);
+    assert.equal(byTest(pg, 'track-back')[0].getAttribute('href'), '#/track');
+    const home = (features) => TR.page(Object.assign({ route: R('/track'), features }, base));
+    const go = byTest(home(new Set(['radar'])), 'track-radar-link');
+    assert.equal(go.length, 1, 'Track links the radar once it is revealed');
+    assert.equal(go[0].getAttribute('href'), '#/track/radar');
+    assert.equal(byTest(home(new Set()), 'track-radar-link').length, 0);
+    delete globalThis.StatusUI;
+    const bare = classic('ui-track.js', 'TrackUI').page(Object.assign({ route: R('/track/radar') }, base));
+    assert.match(bare.textContent, /cannot be shown right now/, 'without StatusUI the page says so, no dead link');
+  } finally { delete globalThis.StatusUI; }
+}));
+
+test('Today chip routes to #/status and the harbor card links', () => withDom(() => {
+  const TD = classic('ui-today.js', 'TodayUI');
+  const A = new Proxy({}, { get: (t, k) => (k === 'then' ? undefined : () => Promise.resolve(null)) });
+  const today = (rows, extra) => TD.page(ctxFor(rows, Object.assign({ A, route: { path: '/today', parts: ['today'], query: {} } }, extra || {})));
+  const root = today(sampleRows());
+  const chip = byTest(root, 'today-status');
+  assert.equal(chip.length, 1);
+  assert.equal(chip[0].getAttribute('href'), '#/status');
+  assert.equal(chip[0].getAttribute('data-tour'), 'status-open');
+  assert.equal(chip[0].textContent, 'Your harbor');
+  assert.match(cls(chip[0].parentNode), /\btd-quick\b/, 'in the quick row');
+  assert.ok(chip[0].parentNode.children.some((n) => n.getAttribute('data-test') === 'today-sos'), 'beside SOS');
+  const go = byTest(root, 'today-harbor-go');
+  assert.equal(go.length, 1);
+  assert.equal(go[0].getAttribute('href'), '#/status');
+  assert.equal(byTest(go[0], 'harbor-scene').length, 1, 'the scene is the link');
+  assert.equal(byTest(root, 'new-dot').length, 0, 'no dot before Content.features.status exists');
+  for (const s of [settingsRow({ calm: true }), settingsRow({ discreet: true })]) {
+    const r = today(Object.assign(sampleRows(), { settings: [s] }), { settings: s, calm: s.calm });
+    assert.equal(byTest(r, 'today-status').length, 1, 'the chip stays in Calm and discreet');
+    assert.equal(byTest(r, 'today-status')[0].textContent, 'Your harbor');
+  }
+  const had = Object.prototype.hasOwnProperty.call(Content.features, 'status');
+  Content.features.status = { name: 'Your Harbor' };
+  globalThis.GuidanceUI = { dot: (id) => { const n = document.createElement('span'); n.setAttribute('data-test', 'new-dot'); n.setAttribute('data-feature', id); return n; } };
+  try {
+    const d = byTest(byTest(today(sampleRows()), 'today-status')[0], 'new-dot');
+    assert.equal(d.length, 1);
+    assert.equal(d[0].getAttribute('data-feature'), 'status');
+  } finally { delete globalThis.GuidanceUI; if (!had) delete Content.features.status; }
+}));

@@ -9,6 +9,7 @@ const TodayUI = (() => {
     title: 'Today',
     logCraving: 'Log a craving',
     sos: 'SOS', help: 'Help',
+    statusChip: 'Your harbor', harborGo: 'Your harbor: see where you stand',
     companion: (n) => `${n} is here with you today.`,
     checkinTitle: (k) => (k === 'morning' ? 'Morning check-in' : 'Evening check-in'),
     checkinBody: (k) => (k === 'morning'
@@ -473,7 +474,9 @@ const TodayUI = (() => {
     const Hb = ns('HarborUI');
     if (Hb && typeof Hb.scene === 'function') {
       const n = safe(() => Hb.scene(c), null);
-      return n ? h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-label': TEXT.harbor }, n) : null;
+      // the whole scene is one link to the status page (V-01b); the svg keeps its own description
+      return n ? h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-label': TEXT.harbor },
+        h('a', { href: '#/status', class: 'td-harbor-go', 'data-test': 'today-harbor-go', 'aria-label': TEXT.harborGo }, n)) : null;
     }
     const U = ns('UI');
     if (!U || typeof U.svg !== 'function') return null;
@@ -484,6 +487,14 @@ const TodayUI = (() => {
       s('rect', { class: 'td-lamp', x: '53', y: '12', width: '14', height: '12', rx: '2' }),
       s('circle', { class: 'td-glow', cx: '60', cy: '18', r: '4' }));
     return h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-hidden': 'true' }, art);
+  }
+
+  /* The way in to Your Harbor (#/status), beside Log a craving and SOS; the same word in Calm and discreet mode.
+     The "New" dot only once Content.features.status exists (content V-10; the dot itself is GuidanceUI's). */
+  function statusChip(c) {
+    const C = ns('Content'); const G = ns('GuidanceUI');
+    const dot = C && isObj(C.features) && C.features.status && G && typeof G.dot === 'function' ? safe(() => G.dot('status', c.ctxIn || c), null) : null;
+    return h('a', { href: '#/status', class: 'btn td-status', 'data-test': 'today-status', 'data-tour': 'status-open', text: TEXT.statusChip }, dot);
   }
 
   /* ── the page ──────────────────────────────────────────────────────────────────────────── */
@@ -506,7 +517,8 @@ const TodayUI = (() => {
       maintenance ? h('p', { class: 'muted', 'data-test': 'today-maintenance', text: TEXT.maintenance }) : null,
       h('div', { class: 'row td-quick' },
         link('#/track/log/craving', TEXT.logCraving, 'btn primary', 'today-log-craving'),
-        link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos')));
+        link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos'),
+        statusChip(c)));
     const make = {
       milestone: () => milestoneCard(c, gs), checkin: () => checkinCard(c), plan: () => planCard(c, features),
       want: () => wantCard(c, features), learn: () => learnCard(c), quests: () => questsCard(c), reasons: () => reasonsCard(c),
