@@ -2748,6 +2748,21 @@ describe('review round 5 fixes (FIX-R5)', () => {
       assert.equal(real.builtIn, false, 'with numbers from Content, no built-in');
       assert.ok(real.sections.every((s) => s.items.every((i) => !i.builtIn)));
     });
+    test('Q-SPIRAL: a crisis or hopeless thought the person answered in their own words keeps its pair; without a reply of theirs it is still skipped', () => {
+      const mine = [
+        { thought: "I can't do this anymore", reply: 'I can do the next hour.' },
+        { thought: 'No one would miss me if I drank', reply: 'My sister would.' },
+        { thought: 'I feel hopeless', reply: '' },
+        'I want to die',
+        { thought: 'I blew it', reply: 'One slip is not the whole road.' },
+      ];
+      assert.ok(H.isCrisisText(mine[0].thought, null) && H.isCrisisText(mine[1].thought, null), 'both are crisis text');
+      assert.deepEqual(H.spiralPairs(null, { spiralThoughts: () => mine }, C()), [
+        { thought: "I can't do this anymore", reply: 'I can do the next hour.' },
+        { thought: 'No one would miss me if I drank', reply: 'My sister would.' },
+        { thought: 'I blew it', reply: 'One slip is not the whole road.' },
+      ]);
+    });
     // -- FIX-R6 tests end --
   });
   // -- FIX-R5 tests end --

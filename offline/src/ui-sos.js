@@ -326,13 +326,13 @@
     let raw = eng && typeof eng.spiralThoughts === 'function' ? listOf(safe(() => eng.spiralThoughts(view), null)) : [];
     if (!raw.length) raw = safe(() => C.catalogs.spiral, []) || [];
     const replies = texts(safe(() => C.catalogs.slipSelfTalk, []));
-    // RS9: a thought that is crisis text or says 'hopeless' is never answered by a stock reply here.
-    const keep = raw.map((x) => ({ x, thought: typeof x === 'string' ? x : toText(x) }))
-      .filter((p) => p.thought.trim() && !/hopeless/i.test(p.thought) && !isCrisisText(p.thought, eng || null));
-    return keep.map(({ x, thought }, i) => {
-      const own = x && typeof x === 'object' ? String(x.reply || x.rebuttal || x.answer || '') : '';
-      return { thought, reply: own.trim() || (i === 0 ? FALLBACK.spiralReply : replies[(i - 1) % (replies.length || 1)] || FALLBACK.spiralReply) };
-    }).filter((p) => p.thought.trim());
+    // RS9: a thought that is crisis text or says 'hopeless' is never answered by a stock reply here. Q-SPIRAL: one the
+    // person answered in their own words keeps its pair, with their reply.
+    const keep = raw.map((x) => ({ thought: typeof x === 'string' ? x : toText(x),
+      own: x && typeof x === 'object' ? String(x.reply || x.rebuttal || x.answer || '').trim() : '' }))
+      .filter((p) => p.thought.trim() && (p.own || (!/hopeless/i.test(p.thought) && !isCrisisText(p.thought, eng || null))));
+    return keep.map(({ thought, own }, i) => (
+      { thought, reply: own || (i === 0 ? FALLBACK.spiralReply : replies[(i - 1) % (replies.length || 1)] || FALLBACK.spiralReply) }));
   }
 
   // RS4: which first choice of the slip flow writes the slip. Only 'log' does, and never in a preview.
