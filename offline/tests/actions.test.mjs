@@ -921,7 +921,7 @@ function sosDom(opts) {
     setAttribute(k, v) { this.attrs[k] = String(v); }
     getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
     addEventListener(type, fn) { (this.on[type] = this.on[type] || []).push(fn); }
-    focus() {}
+    focus() { doc.activeElement = this; } // RS30: a test reads what has the focus
     select() {}
     matches(sel) {
       if (sel.startsWith('.')) return String(this.attrs.class || '').split(' ').includes(sel.slice(1));
@@ -2562,6 +2562,25 @@ describe('review round 5 fixes (FIX-R5)', () => {
     for (const region of ['in', 'intl']) {
       for (const C2 of [{ resources: {} }, { resources: null }, null]) assert.ok(H.leadList(region, C2).length >= 1, region + ': the model is never empty');
     }
+  });
+  // every node under root, in document order
+  const order = (root) => { const out = []; const walk = (n) => { for (const k of n.kids) { out.push(k); walk(k); } }; walk(root); return out; };
+  test('RS30: on Something else, the focused step title is described by the lead line, so the lead is read first', () => {
+    const d = sosDom();
+    const root = typedIn(d, 'I feel strange today');
+    const f = d.doc.activeElement;
+    assert.ok(f && String(f.attrs.class || '').split(' ').includes('sos-title'), 'a step title has the focus');
+    assert.equal(f.textContent.trim(), H.COPY.wave.title, 'the first SOBER step');
+    const all = order(root);
+    const desc = String(f.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean)
+      .map((id) => { const n = all.find((x) => x.attrs && x.attrs.id === id); return n ? n.textContent : ''; }).join(' ');
+    assert.ok(desc.includes(H.LEAD.line), 'its description includes the lead line: ' + JSON.stringify(desc));
+    const lead = root.querySelector('[data-testid="sos-urgent-lead"]');
+    assert.ok(lead && all.indexOf(lead) < all.indexOf(f), 'the lead keeps its place above the title');
+    const plain = sosDom();
+    plain.tapId(page(plain, ['sos', 'feeling']), 'sos-feeling-' + plain.calm());
+    const g = plain.doc.activeElement;
+    assert.ok(!g || g.getAttribute('aria-describedby') === null, 'a named feeling: no lead, nothing added');
   });
   // -- FIX-R5 tests end --
 });

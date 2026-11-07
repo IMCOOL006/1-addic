@@ -118,7 +118,7 @@
   }
   // RS24: a phrase list always misses some wording, so after typed text on Something else the next screen keeps the
   // urgent line and two numbers one tap away above the steps. Crisis copy: short, for clinical review.
-  const LEAD = { clinicalReview: true, line: 'If you are not safe, call now.' };
+  const LEAD = { clinicalReview: true, line: 'If you are not safe, call now.', id: 'sos-lead-line' }; // RS30: id: what describes the step title
 
   // The craving tools: route id, skill credited (Content.skills ids), label.
   const TOOLS = [
@@ -508,7 +508,7 @@
   function leadView(c) {
     const items = leadList(safe(() => c.profile.region, 'in'), Cn());
     return h('section', { class: 'stack sos-lead', 'aria-label': COPY.urgent.title, dataset: tid('sos-urgent-lead') },
-      h('p', { class: 'sos-line', text: LEAD.line }),
+      h('p', { class: 'sos-line', id: LEAD.id, text: LEAD.line }),
       ...items.map((it, k) => h('div', { class: 'row' },
         h('a', { class: 'sos-target', href: it.tel, dataset: tid('sos-lead-number-' + (k + 1)), 'aria-label': 'Call ' + it.name + ', ' + it.number },
           h('span', { class: 'sos-target-name', text: it.name }), h('span', { class: 'sos-target-number', text: it.number })),
@@ -774,6 +774,8 @@
         const lines = texts(safe(() => C.catalogs.reassuring, [])).concat(texts(safe(() => C.catalogs.acceptance, [])));
         show(cards(COPY.selfTalk.title, lines, '', use(FEEL_SKILLS.selfTalk, activity)));
       }), 'Next');
+      const first = lead ? steps.querySelector('.sos-title') : null; // RS30: the title that takes the focus is described
+      if (first) first.setAttribute('aria-describedby', LEAD.id); // by the lead line, so the lead is read first
       show(lead ? h('div', { class: 'stack' }, leadView(c), steps) : steps);
     }
 
