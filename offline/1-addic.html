@@ -1784,8 +1784,37 @@ const Store = (function () {
       state.lock = row;
       if (epoch !== state.epoch) return; // locked meanwhile: it opens with the new PIN
       opened(key);
+      try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
       notify('lock');
     });
+  }
+
+  // A stale snapshot from a fallback session must not stay readable beside a PIN (RS1). When a key is in hand in
+  // IndexedDB (lock.set, unlock), the snapshot's rows this device lacks are sealed in and the snapshot goes; a row that
+  // will not open with this key stays behind in it, sealed. Without a PIN the snapshot is left as it is.
+  async function takeIn(key) {
+    const ls = state.mode === 'indexeddb' && key ? storage() : null;
+    const snap = ls && readSnapshot(ls);
+    if (!snap) return;
+    const puts = [];
+    const left = {};
+    for (const n of NAMES) {
+      for (const r of Array.isArray(snap[n]) ? snap[n] : []) {
+        const id = r && r[STORES[n]];
+        if (typeof id !== 'string' || (n === 'meta' && id === 'lock') || state.rows[n].has(id)) continue;
+        let v = r;
+        if (r.enc) {
+          try { v = await unseal(key, n, id, r.enc); } catch (e) { (left[n] = left[n] || []).push(r); continue; }
+        }
+        puts.push([n, id, v, await stored(key, n, id, v)]);
+      }
+    }
+    if (puts.length) {
+      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] });
+      for (const [n, id, v] of puts) state.rows[n].set(id, v);
+    }
+    if (Object.keys(left).length) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: left }));
+    else ls.removeItem(SNAPSHOT);
   }
 
   // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
@@ -1814,6 +1843,7 @@ const Store = (function () {
       if (!state.locked) { state.fails = 0; return true; }
       state.rows = await decode(await state.backend.readAll(), key);
       opened(key);
+      try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
       notify('unlock');
       return true;
     });

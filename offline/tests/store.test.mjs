@@ -891,8 +891,9 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     const T = freshStore();
     await T.load();
     assert.ok(ls.getItem('1-addic:snapshot'), 'a non-empty IndexedDB never overwrites or drops a snapshot');
-    await T.lock.unlock('2468');
-    assert.equal(T.view.get('todos', 'old'), null);
+    assert.equal(await T.lock.unlock('2468'), true);
+    assert.deepEqual(T.view.get('todos', 'old'), { id: 'old' }, 'RS1: with the key in hand its rows are sealed in');
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'RS1: and the plain copy goes');
   });
 
   test('exportJson, replaceAll (replaces, never merges, keeps the lock) and resetAll (also the forgotten-PIN path)', async () => {
@@ -1071,5 +1072,44 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     await E.commit('t', (d) => d.put('events', { id: 'e6', type: 'CravingLogged' }));
     assert.equal(await D.lock.unlock('2468'), true);
     assert.equal(JSON.parse(ls.getItem('1-addic:snapshot')).stores.events.length, 3, 'a write keeps what the other tab saved');
+  });
+
+  test('RS1: a stale snapshot beside a PIN is sealed into IndexedDB when a key is in hand, and no plain copy stays', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await S.load();
+    await addRows(S);
+    await S.lock.set('2468');
+    const stale = (stores) => ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1, stores }));
+    // a fallback session, while IndexedDB would not open, saved plain rows in the snapshot
+    stale({ events: [{ id: 'f1', type: 'CravingLogged', note: MARK + '-fallback' }, { id: 'e1', type: 'CravingLogged', note: 'older' }],
+      profile: [{ key: 'me', name: 'older' }] });
+    const R = freshStore(); // the next visit: IndexedDB opens again
+    await R.load();
+    assert.equal(R.status().locked, true);
+    assert.equal(await R.lock.unlock('2468'), true);
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'no plain copy stays');
+    assert.equal(R.view.get('events', 'f1').note, MARK + '-fallback', 'its rows are kept');
+    assert.equal(R.view.get('events', 'e1').note, MARK, 'a row this device has wins');
+    assert.equal(R.view.get('profile', 'me').name, 'Asha ' + MARK);
+    assert.ok(!idb.dump().includes(MARK) && !idb.dump().includes('older'), 'sealed in IndexedDB');
+    const T = freshStore();
+    await T.load();
+    assert.equal(await T.lock.unlock('2468'), true);
+    assert.equal(T.view.count('events'), 3, 'a reload keeps them');
+
+    const idb2 = globalThis.indexedDB = fakeIndexedDB(); // without a PIN the contract leaves it, until a PIN is set
+    const U = freshStore();
+    await U.load();
+    await addRows(U);
+    stale({ events: [{ id: 'f2', type: 'CravingLogged', note: MARK }] });
+    const V = freshStore();
+    await V.load();
+    assert.ok(ls.getItem('1-addic:snapshot'), 'no PIN: left as it is');
+    await V.lock.set('1357');
+    assert.equal(ls.getItem('1-addic:snapshot'), null);
+    assert.equal(V.view.get('events', 'f2').note, MARK);
+    assert.ok(!idb2.dump().includes(MARK), 'sealed in IndexedDB');
   });
 });
