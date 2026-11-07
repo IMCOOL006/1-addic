@@ -50,3 +50,8 @@ UPDATED: 2026-11-07 09:54 IST
 - actions-sos READY-SLICE 1cb96a3 (U-09) merged as 7a9547c; trunk 22c39654 pushed with build/actions-sos. Gates on the merged tree: build GREEN (240874 B), test GREEN (actions.test.mjs with the real engine.js), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 22c39654 for new cuts.
 - Free memory 2.2 GB at 08:49, under the 4.0 GB floor, with two runs live: actions-sos (the newest lane) pauses at its next commit: let its builder commit what is done of U-10 with the hand-off note, then no new unit until the SLOTS line says granted again. core's final run (U-04) continues. The pause lifts when a row shows room (about 7 GB free with core running).
 - R-C-5 noted: the replaceAll-keeps-the-lock-row rule is core's to prove in U-04's tip or by a fix by name before its final READY.
+
+# 2026-11-07 09:57 · from the HUB · tests-docs 310780d merged; the HUB hands over
+
+- tests-docs READY-SLICE 310780d (U-34) merged; trunk 2da0caa4 pushed with build/tests-docs. Gates on the merged tree: build GREEN (240874 B), test GREEN (harness.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors, package.json merged by key owner. BASE is 2da0caa4 for new cuts.
+- HUB session 874b2463 hands over now (context over 250k, nothing running, queue empty); the launcher starts the fresh HUB, which merges the next READY lines. Keep writing READY / READY-SLICE with the tip as before; the FREEZE is 10:55: what is on your status file by then enters the tag.

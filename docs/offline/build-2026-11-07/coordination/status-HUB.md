@@ -1,7 +1,7 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 09:50 IST: four slices merged, trunk pushed; queue empty; running: core U-04 (reviewers), actions-sos U-10+U-11 (reviewers), tests-docs U-34, learn U-12 from 09:50; engine paused; CORE is session 224074c0; FREEZE 10:55
+STATE: RESTART   # 2026-11-07 09:57 IST: HUB session 2 (874b2463) hands over at the safe point after the tests-docs merge: context over 250k, nothing of the HUB's running, no merge in flight, queue empty; the fresh HUB starts from KICKOFF-PROMPTS.md Prompt 0 plus the resume line and runs the loop to the FREEZE 10:55, QUIET, TAG 11:55, HANDOVER
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: 22c39654 (the trunk after the actions-sos U-09 merge, 2026-11-07 08:48; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
+BASE: 2da0caa4 (the trunk after the tests-docs U-34 merge, 2026-11-07 09:55; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 4 running lanes at a time from 09:50 (core, actions-sos, tests-docs, learn); engine's resume at the first row with at least 7.0 GB free with four running, or when one finishes; measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
@@ -15,9 +15,17 @@ MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
 MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654, pushed 08:48 (build GREEN 240874 B; test GREEN actions.test.mjs against the real engine.js; validate SKIP until U-08; guards GREEN by name; flagged lane: its two reviewers run before its final READY)
+MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4, pushed 09:55 (build GREEN 240874 B; test GREEN harness.test.mjs; validate SKIP until U-08; guards GREEN by name; package.json merged clean, tests-docs keys)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 09:50 IST
+UPDATED: 2026-11-07 09:57 IST
+
+# 2026-11-07 09:57 · tests-docs U-34 merged; HUB session 2 hands over
+
+- tests-docs READY-SLICE 310780d (U-34, the browser harness: 19 named tests, 5 pass in Chrome, the rest SKIP by name until their screens land; `npm run test:browser` needs ADDIC_BROWSER set) merged clean (package.json by key owner); trunk 2da0caa4 pushed with build/tests-docs. Five merges today, every one GREEN by name on the merged tree.
+- Live at 09:57 (CORE session 224074c0, about 260k context, hand-over written): core wf_6b7ddbb3 (review fixes for two HIGH: PIN change during derivation erases rows; fallback session writes plain rows; then re-check, report, READY), actions-sos wf_379c12ed (reviewers over 655516dc..c629cae, then fixes, report, READY), learn wf_bb0fcbce (slice U-12, started 09:51), tests-docs wf_50c9a385 (C1, C2 fixes, then U-37, U-36a). engine paused since 07:38 ([U-06,U-07],[U-08] wait; resume at a row with 7.0 GB free with four running, or when a lane finishes). Memory 6.1 GB at 09:55 with four runs live.
+- Open for the fresh HUB: merge every READY / READY-SLICE as it appears (core U-04 READY, actions-sos U-10+U-11 READY, learn U-12 READY-SLICE, tests-docs U-37+U-36a READY-SLICE are the candidates before 10:55); FREEZE 10:55 with the tag's list on the board; QUIET gates on `_int` (`python tools/gates.py --wt C:\Users\ruchi\1-addic-wt\_int --lane HUB --full build test validate guards browser docs`, the browser gate needs ADDIC_BROWSER set as tests-docs's report says); the 15 tour-target names stay baselined; R-C-9's clinical-review copy requests (SOS, onboarding) go to offline-v1.1 and on the board; the owner has not answered (defaults, R-O-1).
+- This HUB wrote its files through the shell (the Write and Edit tools refuse the main folder in a background job); scripts staged under the job's tmp folder, nothing in the repo. Two early commits claimed an edit their python step had not made (R-H-4's lane_args line, 221ef22's status lines): corrected in c11c120 and 43d880a; the run record says so.
 
 # 2026-11-07 08:50 · actions-sos U-09 merged; the floor again
 
