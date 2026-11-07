@@ -927,6 +927,22 @@ describe('sos flows in a stand-in DOM (fix round)', () => {
     assert.ok(shown.querySelector('[data-testid="urgent-number-1"]'));
   });
 
+  test('RC4: a feeling session is one verb, rated or not, and keeps the feeling', async () => {
+    const d = sosDom();
+    const id = d.calm();
+    for (const n of [4, null]) {
+      const root = d.open(['sos', 'feeling']);
+      d.tapId(root, 'sos-feeling-' + id);
+      d.toRating(root);
+      if (n === null) d.tap(root, 'Skip'); else d.rate(root, n);
+      await d.settle();
+    }
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.kind, e.payload.ratingAfter]), [['feeling', 4], ['feeling', null]]);
+    assert.deepEqual(list('logs').map((l) => l.emotion), [id, id], 'the feeling is kept on both paths');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+    await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling' }), 'bad-session');
+  });
+
   // -- fix round: stand-in DOM tests above this line --
 });
 

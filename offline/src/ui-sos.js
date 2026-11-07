@@ -180,6 +180,7 @@
       seen.set(t.skillId, (seen.get(t.skillId) === true) || t.helpful === true); // one entry per skill; helpful wins
     }
     out.tools = [...seen].map(([skillId, helpful]) => ({ skillId, helpful }));
+    if (typeof s.emotion === 'string' && s.emotion) out.emotion = s.emotion; // a feeling session keeps the feeling
     out.outcome = s.outcome || outcomeFrom(out.ratingBefore, out.ratingAfter, used);
     return out;
   }
@@ -592,12 +593,10 @@
     }
 
     async function done(intensity) {
-      if (A) {
-        if (isScoreN(intensity) && typeof A.logFeeling === 'function') {
-          await save(() => A.logFeeling({ intensity, emotion: st.emotion, feelings: [st.emotion], skills: sessionFrom(st).tools }));
-        } else if (typeof A.sosSession === 'function') {
-          await save(() => A.sosSession(Object.assign(sessionFrom({ kind: 'feeling', tools: st.tools }), { outcome: 'passed' })));
-        }
+      if (A && typeof A.sosSession === 'function') { // one verb, rated or not: SosCompleted either way, and the feeling kept
+        const s = { kind: 'feeling', tools: st.tools, emotion: st.emotion };
+        if (isScoreN(intensity)) s.ratingAfter = intensity;
+        await save(() => A.sosSession(sessionFrom(s)));
       }
       const stage = safe(() => c.profile.stage, null);
       if (stage && A && A.motivation && typeof A.motivation.add === 'function') {
