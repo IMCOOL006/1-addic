@@ -4,9 +4,17 @@ LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8d
 LANE: today-track READY a02f121   # fix by name R-H-24: /* -- end today-track -- */ closes its styles.css section; build GREEN, territory 0 errors; U-15..U-18 merged 17:01 (9f3026c6), complete
 LANE: workbook-settings MERGED 9cbf630   # READY 9cbf630 merged 17:39 (be0f806d); complete; owed by name: Load sample data only without an own profile (R-H-28, a tag condition); C1 open by name
 LANE: actions CHECKING   # slot 7; cut 17:10 at 9f3026c6; U-22 built 84b92be, 3de2d32 (tip 3de2d32); the check relaunched 17:42 as wf_954d557f-237 (start check, sliceRun)
-LANE: game-tutorials BUILDING   # slot 8; cut 17:10 at 9f3026c6; U-27 relaunched 17:42 as wf_270cb2ea-a72 (sliceRun) over the stopped builder's uncommitted files
+LANE: game-tutorials READY-SLICE 5af6665   # U-27 guidance engine; run wf_270cb2ea-a72 check PASS; test 14/14, validate GREEN, guards baselined/by-cut names only; browser not run; PAUSED for memory (3.3 GB 17:53): U-26, U-28 on a 7.0 GB row
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:48 IST
+UPDATED: 2026-11-07 17:55 IST
+
+# 2026-11-07 17:55 IST · game-tutorials READY-SLICE 5af6665 (U-27 guidance engine); the lane pauses (memory 3.3 GB)
+
+- For the HUB: merge build/game-tutorials at 5af6665 (cut base 9f3026c6; one commit: offline/src/ui-guidance.js new, offline/tests/game-tutorials.test.mjs new, offline/src/styles.css its section /* -- game-tutorials -- */ to /* -- end game-tutorials -- */ at the end). Run wf_270cb2ea-a72 (it continued the stopped builder's uncommitted files), check PASS, no findings.
+- Gates on the branch (the checker): build GREEN, test GREEN 14/14, validate GREEN, guards RED by name on 10 tour targets of other lanes' screens: 6 actions names (planner-*, bp-*, review-start) still baselined (actions U-22 lifts planner-day, planner-gaps, planner-add on its branch), 4 workbook-settings names (workbook-groups, workbook-card, plan-sections, plan-print) absent only because the cut 9f3026c6 predates be0f806d: present on the merged tree. Territory 9f3026c6..5af6665: 2 own, 1 shared at its append point, 0 errors. Logs C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/*-20261107-1748*.log. Report tracks/SCREENS/lane-reports/game-tutorials.md (7428 B).
+- NOT run: the browser gate (the lane added no browser test; its hooks go to tests-docs by outbox). The tap-through past the coach layer to SOS and the 44 px sizes were checked only on the stand-in DOM and in the CSS. Contrast of .coach-sos and .gt-dot not measured.
+- What a person gets: coach marks and the first-run tour after onboarding (never on #/sos*, #/lock, #/onboarding); JIT 'Show me / Later' bars; Training drills (SOBER, quick log, Battle Plan, trial, refusal; the SOS drill links #/sos?drill=1); the tip card, the Explorer ring (ExplorerCompleted once, R-C-21), 'More tools' with 'Show now' and 'New' dots. The layer sits under the SOS button, carries its own SOS link, closes on Escape, one tap or any SOS route. UI.tour.start/replay attached from ui-guidance.js (Settings' tour-replay already calls GuidanceUI.coach('tour', {replay: true})).
+- Pause: free memory 3.3 GB at 17:53 (under 4.0): the lane's next batch (U-26, U-28) starts on the first 7.0 GB row. Verified by me: the commit, its files and trailers, the run's result and the checker's gate lines. Assumed: the node test count as the checker ran it.
 
 # 2026-11-07 17:48 IST · today-track READY a02f121 (fix by name R-H-24: the styles.css end marker)
 
