@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 22:16 IST: the game-tutorials re-check wf_b62ade63-a26 is live (launched 22:16 on a 14.9 GB row after CORE's engine FIX-RS9E start). Then the browser gate by hand and READY. Every other SCREENS lane MERGED
+STATE: BUILDING   # 2026-11-07 22:26 IST: game-tutorials FIX-TOUR wf_3aed1c64-86a live (the re-check passed 1ea2ebf, but my browser gate was RED by name: tour complete, tour skip). READY after its check and a browser GREEN. Every other SCREENS lane MERGED
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials CHECKING 1ea2ebf   # re-check wf_b62ade63-a26 live since 22:16 (start 'check', diffFrom 5af6665, C1 at 1ea2ebf judged first; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_b62ade63-a26/journal.jsonl); U-26 0f611e5, U-28 8dccbfb d4c49d1 built; slice 5af6665 merged 17:57; real cut base 9f3026c6
+LANE: game-tutorials BUILDING 1ea2ebf   # FIX-TOUR wf_3aed1c64-86a live since 22:26 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_3aed1c64-86a/journal.jsonl). Re-check wf_b62ade63-a26 PASS on 1ea2ebf (C1 FIXED; test 25/25; validate GREEN; guards only the 10 cut-age tour targets), but my browser gate on 1ea2ebf was RED: tour complete, tour skip time out (UI.tour.start returns the coach Promise; page.evaluate waits for it). Real cut base 9f3026c6
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 22:16 IST
+UPDATED: 2026-11-07 22:26 IST
+
+# 2026-11-07 22:26 IST · game-tutorials: re-check PASS, browser RED by name, FIX-TOUR live
+
+- Re-check wf_b62ade63-a26 (22:16-22:19): PASS on 1ea2ebf; C1 FIXED (ui-tools.js:303 game-card, :211/:327 trial-closing). Gates: build GREEN 699863 B, test GREEN 25/25, validate GREEN. guards RED only on the 10 tour-target names absent at the cut 9f3026c6 (all lifted on the trunk). Territory 4 own, 1 shared at its append point, 0 errors. The checker did not run the browser gate.
+- My browser gate on 1ea2ebf (22:19, C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/browser-20261107-221944.log): RED, pass 10, fail 2 (tour complete, tour skip: both time out at 120 s), skip 7 (other lanes' routes and hooks absent at the cut).
+- Cause, read in the code: ui-guidance.js:630 makes UI.tour.start return coach()'s Promise, which settles only when the tour closes. browser.test.mjs:134 awaits it through page.evaluate, which waits for a returned Promise. The trunk's ui-guidance.js is identical to 5af6665, so the trunk carries the same hang (R-S-15 to HUB).
+- FIX-TOUR by name (args tracks/SCREENS/args/args_gt_fixtour.json): UI.tour.start and UI.tour.replay return nothing, plus a Node test by name. The builder and the checker both run the browser gate.
 
 # 2026-11-07 22:11 IST · SCREENS 4d443a20 resumes after the park
 

@@ -1,0 +1,48 @@
+{
+ "lane": "game-tutorials",
+ "chat": "SCREENS",
+ "tier": 2,
+ "flagged": false,
+ "area": "The guidance engine (coach marks, tours, tutorials, tips, reveal), the game surfaces, and the tools and mini-games.",
+ "files": [
+  "offline/src/ui-game.js",
+  "offline/src/ui-guidance.js",
+  "offline/src/ui-tools.js",
+  "offline/tests/game-tutorials.test.mjs"
+ ],
+ "units": [
+  "U-27",
+  "U-26",
+  "U-28",
+  "FIX-TOUR"
+ ],
+ "batches": [
+  [
+   "FIX-TOUR"
+  ]
+ ],
+ "unitTier": {
+  "U-27": 2,
+  "U-26": 2,
+  "U-28": 2,
+  "FIX-TOUR": 2
+ },
+ "unitNotes": {
+  "U-27": "Guidance engine (3 h): coach marks, first-run tour, JIT tutorials, Training drills (SOBER, quick log, Battle Plan, trial, refusal), tips, Explorer, reveal with 'Show now' and 'New' dots (the SOS drill itself lives in ui-sos.js). Done when every tutorial target exists (the guards gate) and nothing ever covers, gates or delays SOS.",
+  "U-26": "Game surfaces (2 h): XP, mastery per skill, badges, ranks, region light, celebrations under 300 ms. Done when they render from Engine derivations and none of them ever decreases.",
+  "U-28": "Tools and mini-games (4 h): Put It On Trial (courtroom -> Comeback), Distortion Sort, Spot the Red Flag, The Big Game (branching story, an original character), Refusal Rehearsal (scenes with feedback against catalogs.refusal), Rewrite the Scene, Should I go?, Problem Solver. Done when each plays from content data or is honestly a stub (O7).",
+  "FIX-TOUR": "A fix by name of U-27, found by the SCREENS chat's own browser gate on 1ea2ebf at 22:19. 'tour complete' and 'tour skip' time out at 120 s. Done when UI.tour.start returns nothing, so the person's tour runs until it is closed while the caller is never kept waiting; the browser gate passes 'tour complete' and 'tour skip'; and a Node test by name proves that UI.tour.start(id) returns undefined (not a thenable) and still opens the coach layer."
+ },
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (22:27 IST by date). A fix by name on a complete lane: FIX-TOUR, then the check over 1ea2ebf...HEAD. Worktree C:/Users/ruchi/1-addic-wt/game-tutorials, branch build/game-tutorials at 1ea2ebf (U-26, U-28 checked PASS by run wf_b62ade63-a26 at 22:19); cut base 9f3026c6: never rebase, never merge the trunk in. THE DEFECT: offline/src/ui-guidance.js:630 attaches UI.tour = { start: (id) => coach(id || 'tour', { replay: true }), replay: replayTour }. coach() returns a Promise that settles only when the tour closes. The browser suite (offline/tests/browser.test.mjs:134, owned by tests-docs, which you never edit) calls `await page.evaluate(() => UI.tour.start('tour'))`. Playwright's evaluate waits for a returned Promise, so the call hangs until the 120 s test timeout. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/browser-20261107-221944.log (pass 10, fail 2: tour complete, tour skip; skip 7). THE FIX, inside ui-guidance.js only: UI.tour.start and UI.tour.replay start the tour and return undefined, as in `start: (id) => { coach(id || 'tour', { replay: true }); }` and `replay: () => { replayTour(); }`. GuidanceUI.coach and GuidanceUI.replayTour keep returning their Promise: their in-lane callers may await it. Update the comment above :630 to say UI.tour.* returns nothing and the end is the TutorialCompleted event. Change nothing else in the coach flow. Add a Node test by name in offline/tests/game-tutorials.test.mjs: 'guidance: UI.tour.start returns nothing and opens the coach'. VERIFY before your hand-off: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/game-tutorials --lane game-tutorials build test validate guards browser. Expected: browser with 'tour complete' and 'tour skip' passing, and no new failure by name. The only skips allowed are the other lanes' routes and hooks absent at this cut (#/onboarding, #/sos, quicklog-button, #/workbook). Guards RED only on the 10 tour-target names absent at this cut (planner-*, bp-new, bp-form, review-start, workbook-*, plan-*). If either tour test still fails, find out why from the log and fix it in your own files only; if the cause is in a file you do not own, stop and say so in for_the_chat. Commit by explicit path with FIX-TOUR in the message (`fix(offline, U-27, FIX-TOUR): ...`), never offline/1-addic.html (restore it with git checkout -- offline/1-addic.html after the gates). CHECKER: run the same gates INCLUDING browser (gates.py ... build test validate guards browser), report the browser pass, fail and skip counts and any failure names, and judge FIX-TOUR plus the rest of 1ea2ebf...HEAD.",
+ "base": "9f3026c6",
+ "slot": 8,
+ "session": "4d443a20-94db-42b7-b066-e28c753892de",
+ "now": "2026-11-07 22:27 IST",
+ "done": [
+  "U-27",
+  "U-26",
+  "U-28"
+ ],
+ "diffFrom": "1ea2ebf",
+ "priorNote": "The lane is complete: U-27 merged as slice 5af6665 (89976d80, 17:57). U-26 0f611e5 and U-28 8dccbfb, d4c49d1, 1ea2ebf were checked PASS by wf_b62ade63-a26 at 22:19: build GREEN 699863 B, test 25/25, validate GREEN, guards RED only on the 10 tour-target names absent at this cut, territory 0 errors. That checker did not run the browser gate. The SCREENS chat ran it by hand at 22:19 and it was RED: tour complete and tour skip time out (the FIX-TOUR defect). This run fixes it by name."
+}
