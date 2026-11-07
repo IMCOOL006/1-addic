@@ -1,38 +1,38 @@
-STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); the first offline-v1.1 merges are waiting (12:50). In the tag: the build pipeline and shell, UI core, router and components, the engine's logic, the Actions layer, the exercise engine, lesson player, roadmap and glossary, the browser harness, the docs and the guide skeleton with its .docx; every gate green by name. On their branches: the encrypted Store (core U-04, its two reviewers running now) and the SOS screens, lock screen and onboarding (actions-sos U-10, U-11, RED 1 on its own review: a HIGH safety finding and seven more still to fix because the fix builder ran out of turns). The CORE chat is about to hand over and the launcher is paused, so nothing more lands until you resume it.
-NEEDS YOU: (1) ONE LINE DECIDES THE REST OF THE BUILD: `python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --resume` starts a fresh CORE chat when the current one hands over (within minutes); without it the actions-sos fix run, engine U-07/U-08 and the whole SCREENS track wait. Default if you say nothing: the trunk stays at the tag (plus core's merge if its review returns in time), every branch is pushed, and the next day starts from the hand-off note. (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message. (3) The decision defaults are in force (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built. (4) Keep the machine awake while a round runs.
-NEXT: the HUB (session 4) merges core READY (U-04 plus the review fixes) when its review run returns, with its gates on the merged tree, trunk pushed. actions-sos needs a fix run by name (RS10 HIGH, RS11-RS17, RC14) before it can be READY. Then engine U-06..U-08 and the SCREENS track, once the launcher runs again and memory allows.
+STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); the lanes continue toward offline-v1.1 (13:48). In the tag: the build pipeline and shell, UI core, router and components, the engine's logic, the Actions layer, the exercise engine, lesson player, roadmap and glossary, the browser harness, the docs and the guide skeleton with its .docx; every gate green by name. On their branches, pushed: the encrypted Store (core, two MEDIUM review findings still open) and the SOS screens, lock screen and onboarding (actions-sos, one HIGH safety finding and seven more open). Both need one more fix run by name before they can be merged; a fresh CORE chat started at 13:43 to run them, core first.
+NEEDS YOU: (1) The build is continuing on its own past the planned 12:25 close: the launcher's 'day closed' pause did not hold (a tooling defect, recorded) and it started a fresh CORE chat at 13:43. Default: it continues (the plan says the lanes go on toward offline-v1.1 under the same gates). If you want it stopped now, run `python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --stop` (the loop ends; the chats that are running finish their step and hand over). (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message. (3) The decision defaults are in force (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built. (4) Keep the machine awake while a round runs.
+NEXT: the fresh CORE runs core's fix round by name (RC10, RC11, RC12), re-checks and report, READY; the HUB merges it with its gates on the merged tree and pushes the trunk. Then actions-sos (RS10 HIGH, RS11-RS17, RC14) the same way when memory allows a second lane; then engine U-06..U-08 and the SCREENS track.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 13:10 IST by `board.py`.
+Rewritten 2026-11-07 13:47 IST by `board.py`.
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 12:50 IST: HUB session 4 waits for the first offline-v1.1 merges. core REVIEWING (review run wf_96d6995e-023 live under CORE 06ee0d0d, which is at 288k and RESTARTs when it returns or at…
+- STATE: BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE 036d08b8 at 13:43: the launcher is ACTIVE (its 11:44 'day closed' pause did not hold…
 - BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
-- TRACKS-ALLOWED: CORE   # the launcher is paused since 11:44 (day closed): the owner's --resume brings a fresh CORE when 06ee0d0d hands over; SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
+- TRACKS-ALLOWED: CORE   # the launcher is active (its 11:44 pause did not hold); SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 13:10 IST
+- UPDATED: 2026-11-07 13:48 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 12:50 IST: HUB session 4 waits for the first offline-v1.1 merges. core REVIEWING (review run wf_96d6995e-023… | 150k | 2026-11-07 13:10 IST |
-| CORE | 06ee0d0d (launcher-started 2026-11-07 10:29) | BUILDING — 2026-11-07 12:46 IST: CORE 06ee0d0d at about 288k context, hand-over written (RUN-RECORD 'Resume here'); one live run… | 298k | 2026-11-07 12:46 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE… | 170k | 2026-11-07 13:48 IST |
+| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | RESTART — 2026-11-07 13:41 IST: CORE 06ee0d0d hands over at 305k context with nothing running (all its runs returned); the fresh… | 99k | 2026-11-07 13:41 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot ? | REVIEWING | GRANTED slot=1 PAUSE at its next commit from 2026-11-07 13:10 (rows…; every open finding built to cdfc0e9; check PASS at cdfc0e9 (LOW C1 boot.js clinicalReview… |
+| `core` | CORE | 1 | yes | slot 1 | RED 1 | GRANTED 2026-11-07 07:15 (tier 1, flagged); U-01..U-03 merged; U-04 and the review fixes on the branch at bda0f0f (pushed 13:43); RED 1 on its own review round… |
 | `engine` | CORE | 1 |  | slot ? | PAUSED | GRANTED slot=2 PAUSED since 2026-11-07 10:42 (6cb722e committed…; slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | RED 1 | GRANTED again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | RED 1 | GRANTED again 2026-11-07 08:56 (tier 1, flagged); U-09 merged; U-10, U-11 and the review fixes on the branch at fc0d038 (pushed 13:43); RED 1 on its own review… |
 | `learn` | CORE | 1 |  | slot 4 | READY | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
@@ -41,7 +41,7 @@ Rewritten 2026-11-07 13:10 IST by `board.py`.
 | `game-tutorials` | SCREENS | 2 |  | - | NEW | tier 2; slice U-27; files offline/src/ui-game.js, src/ui-guidance.js, src/ui-tools.js; starts only when no tier 1 lane waits for a slot |
 | `content` | SCREENS | 1 |  | - | NEW | tier 1 (U-31a) then tier 2; slice U-31a; files offline/src/content-lessons-b.js, content-lessons-c.js, content-exercises.js, content-practices.js… |
 
-Slots allowed: 1 running lane from 13:10 (core's review fix round), and it PAUSES at its next commit: rows 13:07 3.8 GB and 13:09 2.2 GB are under the 4.0 GB floor; actions-sos returned RED 1 at 12:45 (no run live); engine paused; nothing new starts until a row shows 7.0 GB free AND a CORE chat is live to launch it (the launcher is paused). Granted: 5 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
+Slots allowed: 1 running lane from 13:48 (the fix run of core first, chain order; the 13:42 row shows 6.2 GB free with nothing of ours running); a second lane (actions-sos) when a row shows 7.0 GB free with one running; engine after those; under 4.0 GB the newest lane pauses at its next commit. Granted: 5 lanes (`core` slot 1, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
 
 ## Merges
 
@@ -56,7 +56,7 @@ Slots allowed: 1 running lane from 13:10 (core's review fix round), and it PAUSE
 
 ## Blockers and questions
 
-- 12:50: the launcher is paused since the close of the day (11:44) and the CORE chat is at its context limit: when it hands over, no fresh CORE starts without the owner's `--resume`. actions-sos is RED 1 on its own review round (RS10 HIGH: see tracks/CORE/lane-reports/actions-sos.md) and needs a fix run that only a CORE chat launches.
+- 13:48: the launcher's `--pause "day closed"` (11:44) was lost when the running loop wrote its in-memory state back; the launcher is active and started CORE 036d08b8 at 13:43. Tooling fix for offline-v1.1: the loop re-reads the pause from disk each tick. Both flagged lanes are RED 1 on their own review rounds: core bda0f0f (RC10, RC11 MEDIUM, RC12; tracks/CORE/lane-reports/core.md) and actions-sos fc0d038 (RS10 HIGH, RS11-RS17, RC14; lane-reports/actions-sos.md); the fresh CORE runs their fix rounds, core first.
 
 - Memory is shared with the pharma program: rows 9.7 GB (07:25, nothing running), 3.4 (07:36, two builders), 5.8-6.3 (07:46-08:06, one builder), 9.3 (08:17, nothing), 5.9-6.1 (08:27-08:37, two builders), 2.4 (08:48, two builders and a checker). A running lane costs 2 to 3 GB measured. Rule applied twice (07:38 engine, 08:50 actions-sos): under 4 GB the newest lane pauses at its next commit.
 - The planner chat (session e4492b2a) is at 630k context: not a track of this program; closing it frees memory for a lane.
@@ -66,8 +66,8 @@ Slots allowed: 1 running lane from 13:10 (core's review fix round), and it PAUSE
 
 ## Machine
 
-- Free memory 3.8 GB of 31.8 GB at 2026-11-07 13:07 IST; claude 25, node 54 processes; 0 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 14024); its last launch: HUB ed0e0a4b at 2026-11-07 11:44.
+- Free memory 5.0 GB of 31.8 GB at 2026-11-07 13:38 IST; claude 25, node 52 processes; 1 slots by the rule (lane-widening.md).
+- The launcher loop: running (pid 14024); its last launch: CORE 036d08b8 at 2026-11-07 13:43.
 
 ## Files of the build
 
