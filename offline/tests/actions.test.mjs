@@ -1664,5 +1664,13 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.equal(S().view.get('recoveryPlan', 'plan').graduatedAt, b.plan.graduatedAt);
     assert.equal(events('RecoveryPlanConfirmed').length, 1);
   });
+  test('IMPORT: every import goes through Actions.importBackup; no screen of this lane calls Store.replaceAll', () => {
+    for (const f of ['ui-sos.js', 'ui-onboarding.js']) assert.doesNotMatch(readFileSync(src(f), 'utf8'), /replaceAll\s*\(/, f);
+    const a = readFileSync(src('actions.js'), 'utf8');
+    assert.equal((a.match(/\.replaceAll\s*\(/g) || []).length, 1, 'actions.js calls it once');
+    const at = a.indexOf('async function importBackup(');
+    const end = a.indexOf('\n  async function ', at + 1);
+    assert.ok(at > 0 && a.slice(at, end).includes('S.replaceAll('), 'and only inside importBackup');
+  });
   // -- FIX-ONB-EMO tests end --
 });
