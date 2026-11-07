@@ -1156,3 +1156,47 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.status().autoLockMin, null);
   });
 });
+
+/* ── boot.js (the CORE chat's ruling Q2): a start failure still shows urgent help ─────────────── */
+describe('boot.js: a start failure shows one line and the urgent-help numbers', () => {
+  const BOOT = require.resolve('../src/boot.js');
+  const el = (tag) => ({
+    tagName: tag.toUpperCase(), children: [], attrs: {}, textContent: '', href: '',
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    appendChild(c) { this.children.push(c); return c; },
+    replaceChildren(...c) { this.children = c; },
+  });
+  const run = (ui, content) => {
+    const main = el('main');
+    globalThis.document = { readyState: 'complete', createElement: el, getElementById: (id) => (id === 'main' ? main : null) };
+    if (ui) globalThis.UI = ui;
+    if (content) globalThis.Content = content;
+    delete require.cache[BOOT];
+    require(BOOT);
+    return main;
+  };
+  const text = (n) => [n.textContent].concat(n.children.map(text)).join(' ');
+  const links = (n) => n.children.flatMap((c) => (c.tagName === 'A' ? [c.href] : []).concat(links(c)));
+  afterEach(() => { for (const k of ['document', 'UI', 'Content']) delete globalThis[k]; });
+
+  test('UI.boot throws: the line, the urgent numbers as tel: links, marked please verify', (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] }); // the error is re-thrown later, for the console
+    const main = run({ boot() { throw new Error('start failed'); } }, Content);
+    assert.match(text(main), /The app did not start/);
+    assert.ok(links(main).length >= 1 && links(main).every((h) => /^tel:\+?\d+$/.test(h)), 'tel: links');
+    assert.match(text(main), /please verify/i);
+    assert.equal(main.children[0].attrs.role, 'alert');
+  });
+
+  test('UI.boot rejects and Content is unreadable: the line and the emergency sentence', async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const main = run({ boot: () => Promise.reject(new Error('start failed')) }, null);
+    await new Promise((res) => setImmediate(res));
+    assert.match(text(main), /The app did not start\. If you are in danger, call your local emergency number\./);
+  });
+
+  test('no ui-core in the build: the bare shell stays, quietly', () => {
+    const main = run(null, Content);
+    assert.equal(main.children.length, 0);
+  });
+});
