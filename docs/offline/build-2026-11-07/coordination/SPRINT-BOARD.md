@@ -6,7 +6,7 @@ NEXT: the SCREENS chat starts now (memory cleared its mark at 16:00): scouts for
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 16:05 IST by `board.py`.
+Rewritten 2026-11-07 16:06 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -20,15 +20,15 @@ FORECAST (from today's measured pace, written 14:45, corrected 16:00): core merg
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 16:06 IST
+- UPDATED: 2026-11-07 16:08 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 16:06: HUB 4 at 251k, hand-over written (RUN-RECORD 'Resume here' 16:06); it merges actions-sos READY if that line… | 253k | 2026-11-07 16:06 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 16:06: HUB 4 at 251k, hand-over written (RUN-RECORD 'Resume here' 16:06); it merges actions-sos READY if that line… | 258k | 2026-11-07 16:08 IST |
 | CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 15:47 IST: one run live: actions-sos fix round FIX-R3 wf_32a8784b-3af; core and engine MERGED | 290k | 2026-11-07 15:47 IST |
-| SCREENS | 6721d28e (launcher-started 2026-11-07 16:05) | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
+| SCREENS | 6721d28e (launcher-started 2026-11-07 16:05) | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… | 91k | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
@@ -39,13 +39,13 @@ FORECAST (from today's measured pace, written 14:45, corrected 16:00): core merg
 | `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at a8dce5a (15:47) RS10-RS17, C2, C3 FIXED and check PASS, but the safety reviewer's re-check… |
 | `learn` | CORE | 1 |  | slot 4 | MERGED | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
-| `today-track` | SCREENS | 1 |  | slot ? | NEW | GRANTED HELD (SCREENS, tier 1; slice U-15; starts on the real…; tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js… |
-| `workbook-settings` | SCREENS | 1 |  | slot ? | NEW | GRANTED HELD (SCREENS, tier 1; slice U-19; same rule; the R-C-13…; tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js… |
+| `today-track` | SCREENS | 1 |  | slot 5 | NEW | GRANTED 2026-11-07 16:08 (SCREENS, tier 1; the 16:04 row 15.7 GB free): cut from BASE 1ef2482e once its scout has written the brief; slice U-15 Today, then… |
+| `workbook-settings` | SCREENS | 1 |  | slot 6 | NEW | GRANTED 2026-11-07 16:08 (SCREENS, tier 1; the 16:04 row 15.7 GB free): cut from BASE 1ef2482e once its scout has written the brief; slice U-19 Settings, then… |
 | `actions` | SCREENS | 2 |  | - | NEW | tier 2; slice U-22; files offline/src/ui-actions.js, src/ui-practices.js; starts only when no tier 1 lane waits for a slot |
 | `game-tutorials` | SCREENS | 2 |  | - | NEW | tier 2; slice U-27; files offline/src/ui-game.js, src/ui-guidance.js, src/ui-tools.js; starts only when no tier 1 lane waits for a slot |
 | `content` | SCREENS | 1 |  | slot 4 | NEW | GRANTED 2026-11-07 16:03 (SCREENS, tier 1, no code dependency): cut from BASE 1ef2482e once its scout has written the brief; slice U-31a, then U-31b, U-29… |
 
-Slots allowed: 2 running lanes from 16:03 (actions-sos's third fix round live; content granted for the SCREENS chat once its scout has written the brief); today-track and workbook-settings HELD until a row shows 7.0 GB free with the live lanes counted (the HUB writes granted); tier 2 lanes (actions, game-tutorials) only when no tier 1 lane waits; under 4.0 GB the newest lane pauses at its next commit. Granted: 8 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5, `content` slot 4, `today-track` slot ?, `workbook-settings` slot ?).
+Slots allowed: 4 running lanes from 16:08 (actions-sos's third fix round live; content, today-track and workbook-settings granted for the SCREENS chat, each once its scout has written the brief; the 16:04 row shows 15.7 GB free with one lane live and the SCREENS chat just started); tier 2 lanes (actions, game-tutorials) only when no tier 1 lane waits; under 4.0 GB the newest lane pauses at its next commit. Granted: 8 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5, `content` slot 4, `today-track` slot 5, `workbook-settings` slot 6).
 
 ## Merges
 
