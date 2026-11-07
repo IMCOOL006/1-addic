@@ -1,0 +1,71 @@
+{
+ "review": null,
+ "check": {
+  "verdict": "FIX",
+  "tip": "cd385a57796c582b6123e724bfb897c41666bf32",
+  "territory": "PASS: check_territory.py actions-sos 655516dc..HEAD reports 4 files changed, all 4 the lane's own (actions.js, ui-onboarding.js, ui-sos.js, tests/actions.test.mjs), 0 shared, 0 nobody's, 0 errors, 0 warnings. Each of the 11 commits after 1cfc936 touches only those files.",
+  "findings": [
+   {
+    "id": "C-R7-1",
+    "severity": "MEDIUM",
+    "unit": "U-10/U-11 (lane tests, actions.test.mjs)",
+    "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:1626 (PIN), :1972 (RS11), :2260 (RS22), :2317 (RS21), :2347 (RS20), :2484 (RS26); the harness picks the real store at :29 (REAL_STORE) and passes crypto {subtle:{}} at :1633, :1973, :2348",
+    "expected": "After the merge the lane's own tests are green on the trunk's real store.js, or baselines.md lists them by name. Today 6 lock/PIN tests fail on the trunk preview: 'PIN: PIN fields are one-time-code...' (false !== true), 'RS11: Next on the privacy step with a typed PIN sets it...' ('Next set the typed PIN'), 'RS22: a save refused LOCKED because this tab locked and unlocked...' ('refused once: tried once more, at once' 1 !== 2), 'RS21: a slip save kept for the unlock...' ('saved after the unlock'), 'RS20: while the PIN is being set, Next and Skip wait...' ('the PIN is set'), and 'RS26: a save refused LOCKED after its notebook was erased or replaced...' ('told it was not saved, never that it waits'). These tests seem to rely on the worktree's store stand-in (a stub crypto.subtle and settle timing). None of them is in baselines.md. They were already red at 1cfc936 on the same trunk, so FIX-R6/R7 did not cause them, but merging the tip as it stands turns the trunk's test gate RED. RS26 passes on trunk 4006fae2, so it is timing-sensitive. Fix the tests so they hold on the real store (real WebCrypto, or wait for lock.set), or have CORE baseline them by name.",
+    "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log (lines 675, 823, 1037, 1059, 1088, 1193); C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7-old.log (same failures with the lane at 1cfc936); C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7-t0.log (trunk 4006fae2 + HEAD: 7 fail, RS26 passes)"
+   },
+   {
+    "id": "C-R7-2",
+    "severity": "MEDIUM",
+    "unit": "U-10 (RS9 test)",
+    "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:1474-1475",
+    "expected": "'RS9: the slip flow skips a spiral thought that is crisis text or says hopeless' should hold on the trunk's content. It asserts that C().catalogs.spiral contains a 'hopeless' line ('the catalog has one to skip'). The trunk's content-core.js catalog has none, so the test fails on the merge preview. The product is fine: no stock reply goes to a hopeless thought. The test should bring its own catalog stub (the way RS9T does with Content), or be baselined.",
+    "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log line 603 (error 'the catalog has one to skip', expected true, actual false)"
+   },
+   {
+    "id": "C-R7-3",
+    "severity": "MEDIUM",
+    "unit": "U-10 (RS24 remainder test, FIX-R5)",
+    "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:2623 (case 'Somewhere else, no line with a number', res null = the real Content), assertion :2638",
+    "expected": "The case's premise should hold on the trunk. With the real trunk Content, the intl line has tel '112', so the built-in 112 never appears and COPY.checkOne ('Please check this number.') is never drawn. The test fails even though the lead has a one-tap 112: the earlier tel:112 and count assertions passed, so this is a test defect, not a safety regression. Give that case a stub Content.resources with no number, or baseline the name.",
+    "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log line 1234 (error 'Somewhere else, no line with a number: Please check this number.')"
+   }
+  ],
+  "gates": [
+   "build SKIP (offline/build.mjs absent at the lane base; expected) log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/build-20261108-002157.log",
+   "test GREEN 169 pass / 0 fail / 0 skip log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-002157.log",
+   "validate SKIP (offline/src/engine.js absent at the lane base; expected) log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/validate-20261108-002211.log",
+   "guards RED 2 pass / 21 fail / 2 skip: all 21 are tour-target names (nav-today, nav-learn, nav-workbook, nav-track, nav-actions, sos-button, quicklog-button, quicklog-intensity, quicklog-save, planner-day, planner-gaps, planner-add, bp-new, bp-form, workbook-groups, workbook-card, insights-triggers, insights-heatmap, review-start, plan-sections, plan-print). They are the same by name as guards-20261107-173630.log (the 1cfc936 era) and guards-20261107-185804.log (87030e3), so none is new to this lane; csp and theme parity skipped (no build, no styles.css) log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261108-002211.log"
+  ],
+  "trunk_suite": "Scratch tree C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7 = trunk build/offline-v1 d62756a with the 4 lane files at cd385a5 copied over it. node offline/build.mjs built 1-addic.html (27 parts, none absent). Full Node suite without browser.test.mjs: 536 tests, 528 pass, 8 fail, 0 skipped. All 8 failures are the lane's own tests in actions.test.mjs: RS9 'the slip flow skips a spiral thought...'; PIN 'PIN fields are one-time-code...'; RS11 'Next on the privacy step with a typed PIN...'; RS22 'a save refused LOCKED because this tab locked and unlocked...'; RS21 'a slip save kept for the unlock...'; RS20 'while the PIN is being set...'; RS26 'a save refused LOCKED after its notebook was erased or replaced...'; RS24 remainder 'the lead above the steps always has a number to tap...'. None is listed in baselines.md, and none was introduced by FIX-R6/R7: the same set fails with the lane at 1cfc936 on the same trunk (514 pass / 9 fail, C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7-old.log). No other lane's test fails (ui-settings, ui-workbook and ui-today are all green), so there is no caller regression. The FIX-R6 and FIX-R7 describe blocks are ok on the trunk (log lines 1378-1453). Log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log. Mutation spot-checks in the scratch tree only, each file restored and cmp-verified: removing sameValue from claimRow turns RS38 red; reading c.profile.stage directly turns RS36R red; disabling the builtIn unshift turns Q-BUILTIN red; restoring the 'key' skip in eraseSample turns RS-SAMPLE red. Logs: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/mut-r7-002846-{RS38,RS36R,QBUILTIN,RSSAMPLE}.log. Commits: all 11 after 1cfc936 carry Co-Authored-By: Claude Fable 5.1 and the right Claude-Session (60f08c84 for 42f5a9a..87030e3, 93bffdb7 for ed34fc8..cd385a5); every fix id has its own commit. Rules in the changed code: the added lines have no innerHTML, URL, network call, clock or random. Notes are drawn via text: and copy comes from Content or the existing COPY. SOS stage and region default to none and 'in'. Urgent help keeps a one-tap number (the built-in 112 when Content has none). claimRow only removes a sample mark, and eraseSample removes only sample: true rows (meta handled separately). Notes: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__check-r7.md",
+  "not_checked": [
+   "Browser suite: not run, as the task asked (Node tests only)",
+   "Root cause of each trunk-only lock/PIN failure in C-R7-1: I traced it to the real store against the test's stub crypto and settle timing, not to product code; I did not drive the real PBKDF2 path",
+   "Whether the open questions in the safety review (the sample profile's startDate in Engine.counters; the engine telling a filled reply apart from the person's own) were ruled: outside 1cfc936..HEAD",
+   "Copy review for clinicalReview: no new crisis copy appears in the diff, so none was needed"
+  ]
+ },
+ "verdicts": [
+  {
+   "id": "C-R7-1",
+   "real": true,
+   "severity": "MEDIUM",
+   "reason": "The worktree has no offline/src/store.js, so the lane's tests run on its store stand-in. When HEAD's actions.test.mjs runs against the trunk's real store.js, all six named lock/PIN tests fail, and none of them is in baselines.md. Merging the tip as it stands would turn the trunk's test gate red. The cause is the test harness (for example the stub crypto {subtle:{}} at :1633, so the PIN is never set and hasLock stays false at :1646). It is not a product regression.",
+   "evidence": "The worktree has no offline/src/store.js, so REAL_STORE at actions.test.mjs:29 is false and the stand-in is used. The preview tree C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7 matches the trunk and HEAD by md5: its offline/src/store.js equals build/offline-v1:offline/src/store.js (dc3a4921...), and its offline/tests/actions.test.mjs equals HEAD cd385a5's (5ac9dbd2...). I reran only the six tests by name there (node --test --test-name-pattern), log C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__rc-verify-C-R7-1.rerun.log: '# pass 0 / # fail 6' (PIN, RS11, RS22, RS21, RS20, RS26). RS26 also failed in this isolated run. The PIN failure is at actions.test.mjs:1646, assert hasLock === true, after sosDom({crypto:{subtle:{}}}) at :1633. The same names fail in C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log at lines 675, 823, 1037, 1059, 1088 and 1193 (528 pass / 8 fail), and also in scratch/as-check-r7-old.log. In scratch/as-check-r7-t0.log RS26 passes and the other five fail. A grep of coordination/baselines.md for RS11, RS20, RS21, RS22, RS26 and one-time-code finds nothing. Out of scope: RS9 and the 'RS24 remainder' test also fail in these logs, but they are not part of this finding."
+  },
+  {
+   "id": "C-R7-2",
+   "real": true,
+   "severity": "MEDIUM",
+   "reason": "The finding is real. The RS9 test at actions.test.mjs:1475 first checks the shared content catalog, C().catalogs.spiral, for a 'hopeless' line. The trunk's U-31a commit 0bbb7e2 removed \"I'm hopeless.\" from that list, and the lane has not merged that change, so the test passes on the lane but fails on the merge preview. The product is fine: the spiralPairs filter still skips hopeless and crisis thoughts. The test should bring its own catalog stub or a person's own spiral thoughts instead of relying on the trunk's content. RS9 is not listed in baselines.md, so this is a new failure.",
+   "evidence": "The lane's test (git -C C:/Users/ruchi/1-addic-wt/actions-sos show HEAD:offline/tests/actions.test.mjs, line 1475) checks the catalog first: assert.ok(C().catalogs.spiral.some((t) => /hopeless/i.test(t)), 'the catalog has one to skip'). The lane's offline/src/content-core.js at HEAD line 314 still lists 'I\\'m hopeless.' in spiral. On the trunk (git -C C:/Users/ruchi/1-addic show build/offline-v1:offline/src/content-core.js, lines 313-316) the spiral list has no hopeless line. git log -G\"hopeless\" build/offline-v1 -- offline/src/content-core.js names 0bbb7e2 'feat(content, U-31a): content-core safety asks and the additions line' as the commit that changed it. The merge-preview log C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log shows 'not ok 8 - RS9...' at actions.test.mjs:1474, with error 'the catalog has one to skip', expected true, actual false. A grep for RS9 in C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/coordination/baselines.md finds nothing. I wrote no probe, because the preview log already decides it."
+  },
+  {
+   "id": "C-R7-3",
+   "real": true,
+   "severity": "MEDIUM",
+   "reason": "The finding is real. At HEAD cd385a5 the lane's content-core.js:448 gives the intl 'Your local emergency number' line no tel. The trunk's build/offline-v1 content-core.js:448 gives it tel '112'. On the merged code, leadList (ui-sos.js:196-202) therefore finds a Content line with a number and never falls back to the built-in item, so COPY.checkOne is never drawn, and the RS24 case \"Somewhere else, no line with a number\" (res null = the real Content, builtIn true) fails its checkOne assertion. The lead still has a one-tap tel:112 (the tel:112 assertion passed before the failing one), so this is a defect in the test's premise, not a safety regression. It still turns the test gate red after the merge, and baselines.md does not list it.",
+   "evidence": "- Test case: C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs at HEAD, inside the 'RS24 remainder' test. The case is ['Somewhere else, no line with a number', null, 'intl', true]; the failing assertion is assert.ok(lead.textContent.includes(H.COPY.checkOne)).\n- Lane content: git show HEAD:offline/src/content-core.js line 448 is { name: 'Your local emergency number', note: 'Usually 112, 911 or 999', verify: true }, with no tel.\n- Trunk content: git -C C:/Users/ruchi/1-addic show build/offline-v1:offline/src/content-core.js line 448 is { name: 'Your local emergency number', tel: '112', note: ..., verify: true }.\n- Lead logic: ui-sos.js:196-202, leadList returns the Content lines that have a tel, and returns BUILT_IN with builtIn:true only when there are none. checkOne is drawn only when it.builtIn is set (ui-sos.js:549).\n- Gate log: C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log around lines 1230-1245 shows \"not ok 2 - RS24 remainder\", error 'Somewhere else, no line with a number: Please check this number.', expected true, actual false. The RS29 test, which uses the trunk shape, passed in the same run.\n- Baselines: grep for 'RS24' and 'no line with a number' in C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/coordination/baselines.md finds no match, so the failure is not baselined.\n- No probe test was written, because the trunk-preview log already reproduces the failure."
+  }
+ ],
+ "lost": 0
+}

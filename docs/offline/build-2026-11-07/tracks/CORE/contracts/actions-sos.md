@@ -176,3 +176,7 @@ Rulings on the re-review's questions:
 - Q5: yes, RS-SAMPLE's "theirs starts fresh" is meant for settings as for the profile (dormant: the trunk sample has no settings row).
 - RC22 (LOW, a test gap: the feeling flow's and the leave path's kept-session date are untested): offline-v1.1 by name.
 
+## Rulings 2026-11-08 00:37 IST (CORE 11310a7c; the lane check wf_2b08aee9-a80, C-R7-1..3)
+
+- The lane's tests must hold on the merged tree as well as in the worktree: the real store.js (PBKDF2 at 310000 iterations: a PIN set, unlock or kept save takes far longer than a few ticks) and the trunk's content (no 'hopeless' line in catalogs.spiral; the intl 'Your local emergency number' line has tel '112'). FIX-R8 is test-only: a wait is a condition with a timeout that fails loudly; a test that needs a content shape brings it as a stub restored in a finally; no assertion weakened. No public shape changes: verbs, events, routes, UI.pages and hooks stay as in the 00:02 section.
+- Baselining these names instead was ruled out: they are the lane's own tests and the fix is small.

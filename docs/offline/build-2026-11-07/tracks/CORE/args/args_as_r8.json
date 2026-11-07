@@ -1,0 +1,29 @@
+{
+ "now": "2026-11-08 00:35 IST",
+ "findings": [
+  {
+   "id": "C-R7-1",
+   "severity": "MEDIUM",
+   "unit": "U-10/U-11 (lane tests, actions.test.mjs)",
+   "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:1626 (PIN), :1972 (RS11), :2260 (RS22), :2317 (RS21), :2347 (RS20), :2484 (RS26); the harness picks the real store at :29 (REAL_STORE) and passes crypto {subtle:{}} at :1633, :1973, :2348",
+   "expected": "After the merge the lane's own tests are green on the trunk's real store.js, or baselines.md lists them by name. Today 6 lock/PIN tests fail on the trunk preview: 'PIN: PIN fields are one-time-code...' (false !== true), 'RS11: Next on the privacy step with a typed PIN sets it...' ('Next set the typed PIN'), 'RS22: a save refused LOCKED because this tab locked and unlocked...' ('refused once: tried once more, at once' 1 !== 2), 'RS21: a slip save kept for the unlock...' ('saved after the unlock'), 'RS20: while the PIN is being set, Next and Skip wait...' ('the PIN is set'), and 'RS26: a save refused LOCKED after its notebook was erased or replaced...' ('told it was not saved, never that it waits'). These tests seem to rely on the worktree's store stand-in (a stub crypto.subtle and settle timing). None of them is in baselines.md. They were already red at 1cfc936 on the same trunk, so FIX-R6/R7 did not cause them, but merging the tip as it stands turns the trunk's test gate RED. RS26 passes on trunk 4006fae2, so it is timing-sensitive. Fix the tests so they hold on the real store (real WebCrypto, or wait for lock.set), or have CORE baseline them by name.",
+   "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log (lines 675, 823, 1037, 1059, 1088, 1193); C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7-old.log (same failures with the lane at 1cfc936); C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7-t0.log (trunk 4006fae2 + HEAD: 7 fail, RS26 passes)"
+  },
+  {
+   "id": "C-R7-2",
+   "severity": "MEDIUM",
+   "unit": "U-10 (RS9 test)",
+   "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:1474-1475",
+   "expected": "'RS9: the slip flow skips a spiral thought that is crisis text or says hopeless' should hold on the trunk's content. It asserts that C().catalogs.spiral contains a 'hopeless' line ('the catalog has one to skip'). The trunk's content-core.js catalog has none, so the test fails on the merge preview. The product is fine: no stock reply goes to a hopeless thought. The test should bring its own catalog stub (the way RS9T does with Content), or be baselined.",
+   "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log line 603 (error 'the catalog has one to skip', expected true, actual false)"
+  },
+  {
+   "id": "C-R7-3",
+   "severity": "MEDIUM",
+   "unit": "U-10 (RS24 remainder test, FIX-R5)",
+   "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:2623 (case 'Somewhere else, no line with a number', res null = the real Content), assertion :2638",
+   "expected": "The case's premise should hold on the trunk. With the real trunk Content, the intl line has tel '112', so the built-in 112 never appears and COPY.checkOne ('Please check this number.') is never drawn. The test fails even though the lead has a one-tap 112: the earlier tel:112 and count assertions passed, so this is a test defect, not a safety regression. Give that case a stub Content.resources with no number, or baseline the name.",
+   "evidence": "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-20261108-002223.log line 1234 (error 'Somewhere else, no line with a number: Please check this number.')"
+  }
+ ]
+}
