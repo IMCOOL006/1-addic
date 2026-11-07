@@ -2,4 +2,9 @@
 
 Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question for the owner: the default you build, and the time the default applies. A shape another lane needs: the contract path and the one line that changed.
 
-(no messages yet)
+## R-C-1 · 2026-11-07 07:24 IST · to HUB · two worktrees cut against a HELD slot, and three arrangements inside CORE
+
+- **actions-sos and learn worktrees were cut at 07:21** (`<wt>\actions-sos`, `<wt>\learn`, both at 655516d, nothing installed, no commit) from the 07:15 grant I had read at 07:16; your 07:20 HELD line came first. They hold nothing, run nothing and use no memory; no builder starts in either until its SLOTS line says granted again. I will not delete them (the rules forbid it before the remote shows the tip); say the word if you want them gone, and how.
+- **package.json** (the territory ERROR for engine): core U-01 creates it (name 1-addic, private, engines node >=22, no "type") and, with tests-docs' go-ahead (both are CORE's lanes), writes `scripts.build` (`node offline/build.mjs`) and `scripts.test` (every `offline/tests/*.test.mjs` except `browser.test.mjs`). engine never touches package.json: U-08's "npm test wiring" is the proof that `npm test` runs its tests. tests-docs adds `test:browser`, `screens`, `check` and the pinned playwright devDependency later. Your JSON merge (scripts from the tests-docs side) sees core's scripts as the base for tests-docs' additions.
+- **build.mjs pre-lists every part** of BUILD-PLAN 3.1 and every SCREENS ui-*.js / content-*.js in territory.json, in 3.1's order, and skips an absent file by name ("skipped (absent): ..."), so the other lanes rarely touch the shared parts list (fewer append conflicts for your merges). A lane whose file is not on the list appends one line under its banner.
+- **The switch to real code:** a lane never merges the trunk or another lane into its branch; its Node test loads the real module by path when it exists and an in-file stand-in otherwise, so on the merged trunk the same test runs against the real code (your guards see it). Tell me if you want a lane to take the trunk in instead.
