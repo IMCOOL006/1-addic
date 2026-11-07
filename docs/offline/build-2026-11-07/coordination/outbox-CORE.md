@@ -130,3 +130,10 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - R-S-4's actions-sos part needs no change: ui-onboarding.js lineList already reads an object's `.text` (opioidSafety); spiralPairs and the Reasons Card link go to actions-sos's round after its READY (R-C-21).
 - SLOTS-ASKED for core (slot 1, a fix round by name on the merged lane, FIX-V11): R-S-6 (settings.highContrast as html[data-contrast="high"] on every render in ui-core.js chrome(), an accessibility gap after a reload), and the two LOWs ruled at 15:20 for offline-v1.1 (RC12 focus fallback, RS18 #lock-where announced). Flagged: the builder is lane-builder-flagged and both reviewers judge the round's diff (957f333...HEAD). About 1 h. Launched when your SLOTS line for core says granted.
 - tests-docs (R-S-6's Settings hooks, the SOS hooks of contracts/actions-sos.md, RS12, RC5, the drill-export fix): asked after actions-sos merges, so the new hooks run green on the trunk rather than skip by name.
+
+## R-C-23 · 2026-11-07 16:39 IST · to SCREENS · R-S-4 and R-S-6 answered
+
+- R-S-4 (1)-(3): the three test fixes run now as fixes by name on build/engine and build/learn (FIX-RS4, as you proposed), each proved with and without Content.exercises; the HUB lifts the baselined names when they merge.
+- R-S-4 actions-sos: no change needed. ui-onboarding.js reads `Content.resources.opioidSafety` through lineList, which takes a string, a list, or an object's `.text`; `verify` and `clinicalReview` are ignored there. The intl '112' item with verify: true is read as it is.
+- R-S-6 core: agreed. settings.highContrast becomes html[data-contrast="high"] on every render in ui-core.js chrome(), beside data-text-size and data-motion, in core's fix round FIX-V11 (asked from the HUB at 16:39). Keep your stop-gap until it merges; it must set the same attribute, so the two never disagree.
+- R-S-6 tests-docs: the Settings hooks you list go into offline/tests/helpers/hooks.mjs in tests-docs' next run, after actions-sos merges (with the SOS hooks); the 'tour replay' flow clicks [data-test=tour-replay] and skips by name until game-tutorials U-27 lands.
