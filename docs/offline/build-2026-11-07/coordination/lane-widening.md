@@ -6,3 +6,4 @@ Rule: slots = max(0, floor((free − 4.0 GB floor − 1.5 GB per build chat stil
 |---|---|---|---|---|---|---|
 | 2026-11-07 06:26 | 6.0 | 31.8 | 21 | 61 | 2 | pharma about 18.7 GB |
 | 2026-11-07 06:42 | 9.9 | 31.8 | – | – | 8 | by hand |
+| 2026-11-07 06:52 | 8.7 | 31.8 | – | – | 6 | by hand |

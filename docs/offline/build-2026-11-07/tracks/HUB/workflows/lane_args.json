@@ -1,0 +1,191 @@
+{
+  "_readme": [
+    "The args each lane of the 1-addic offline edition build (7 November 2026) is launched with: Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js', args: {...lanes.<lane>, base, slot, session, now, start|sliceRun|done|priorNote|diffFrom|dryRun}}). Written 2026-11-07 06:46 IST from docs/offline/BUILD-PLAN.md section 2 (rules, lines 33-42), section 5 (units, lanes, hours, tiers, the slice and the chain, lines 238-301), section 7 (gates, 313-324) and section 9 (territory, 344-358).",
+    "How a build chat uses it: (1) copy its lane's object out of lanes; (2) fill base from the BASE line of coordination/status-HUB.md at the moment the lane is cut, never from another lane's tip; (3) cut the worktree once: python tracks/HUB/workflows/cut_lane.py <lane> <base>; (4) add slot (the lane's slot n on the SLOTS line of coordination/status-<chat>.md), session (the chat's session id, for the commit trailer Claude-Session:) and now (the clock's stamp); (5) add start, sliceRun, done, priorNote, diffFrom and the rest of the script's args as the run needs them. Before a real launch, test the args locally: node tracks/HUB/workflows/wf_sim.mjs tracks/HUB/workflows/lane.js tracks/HUB/workflows/lane_args.json --lane <lane> --with '{\"base\":\"<sha>\",\"sliceRun\":true,\"slot\":1,\"session\":\"<id>\",\"now\":\"<stamp>\"}'.",
+    "The slice rule: batches[0] is ONE unit, the unit marked with the star in section 5 (what the chain needs most); the chat launches with sliceRun: true, the script builds that batch only, runs the checker with one fix round and the slice report, no reviewers, and returns {state: 'READY-SLICE', tip}; the chat writes READY-SLICE <lane> <tip> on its status file, the HUB merges it like a lane, and the chat relaunches with done: [that unit], priorNote: <the slice builder's note> and diffFrom: <the slice tip>. Later batches hold two or three units, tier 1 before tier 2, and a tier boundary never sits inside a batch: so today-track's U-16 and workbook-settings' U-20a are batches of one (the last tier-1 unit before the tier-2 pair).",
+    "Fields: tier is the lane's lowest tier number (1 when any unit is tier 1); flagged is true for core (encryption) and actions-sos (safety copy) only: those lanes run lane-builder-flagged and get the two reviewers once at the end (contracts and tests; safety copy, privacy and the person's data); the others run lane-builder and no reviewers. area is the lane's files in words, files the list from sections 5 and 9; unitTier {unit: 1|2}; unitNotes {unit: title, hours, what done means}; laneNote: what the lane depends on, the BUILD-PLAN 3.x contracts it builds on, when it starts.",
+    "Unit ids are section 5's: U-01 to U-37 with the halves U-20a/U-20b, U-31a/U-31b and U-36a/U-36b. The tier-1 chain: U-01 -> U-03 -> U-05 -> U-09 -> U-04 -> U-12 -> U-10 -> U-15 -> U-16 -> U-19 -> U-20a -> U-11 -> U-13 -> U-14 -> U-31a -> U-34 -> U-37 -> U-36a. Hours: core 9, engine 9.5, actions-sos 10, learn 8.5, tests-docs 9.5, today-track 9.5, workbook-settings 9, actions 10.5, game-tutorials 9, content 11.5 (about 96; tier 1 about 54)."
+  ],
+  "lanes": {
+    "core": {
+      "lane": "core",
+      "chat": "CORE",
+      "tier": 1,
+      "flagged": true,
+      "area": "The build pipeline, the shell, the look, the UI core and router, and the encrypted store; root package.json except its scripts and devDependencies keys.",
+      "files": ["offline/build.mjs", "offline/src/shell.html", "offline/src/styles.css", "offline/src/ui-core.js", "offline/src/store.js", "offline/src/boot.js", "offline/tests/store.test.mjs", "package.json (initial; all but scripts and devDependencies)"],
+      "units": ["U-01", "U-03", "U-04", "U-02"],
+      "batches": [["U-01"], ["U-03", "U-04", "U-02"]],
+      "unitTier": { "U-01": 1, "U-03": 1, "U-04": 1, "U-02": 1 },
+      "unitNotes": {
+        "U-01": "Build pipeline and shell (1.5 h): build.mjs with the ordered parts list (// -- parts -- ... // -- end parts --) and the CSP head, shell.html, boot.js, package.json with build. Done when node offline/build.mjs writes offline/1-addic.html (title 1-addic, O1) that opens with no console error and reports its size.",
+        "U-03": "UI core and router (2.5 h): ui-core.js per 3.2: nav with data-tour, saved label, theme and night rule, speak() (device speechSynthesis only, O4), the UI.pages registry, UI.boot() rendering a Today placeholder. Done when the five tabs navigate by hash and the browser back button works.",
+        "U-04": "Store with encryption and lock (3 h; flagged: encryption): store.js per 3.3 with a Node memory mode; store.test.mjs (round-trip, wrong PIN refused, labels per mode, snapshot adoption). Done when data survives a reload in Chrome and is unreadable in DevTools when a PIN is set (the PIN offered, never forced: O2).",
+        "U-02": "Design tokens and components (2 h): styles.css per 3.12 with light/dark parity, components, the SOS layout, coach marks, lesson cards, print. Done when the parity guard passes and the 390 px layout has no horizontal scroll."
+      },
+      "laneNote": "Starts at hour 0 and depends on nothing; its slice U-01 opens the tier-1 chain (U-01 -> U-03 -> U-05 -> U-09 -> U-04), so U-03 comes straight after it and U-04 follows engine's U-05 and actions-sos' U-09 in the chain. Builds the contracts of BUILD-PLAN 3.1 (one file from parts, the parts order), 3.2 (the UI namespace and the UI.pages registry), 3.3 (storage, privacy and the lock), 3.5 (hash routes) and 3.12 (look). Every UI lane switches to the real ui-core.js and store.js when this lane merges, so U-03's and U-04's public shapes are the contract's. Owns the request-only files shell.html and ui-core.js and answers the other lanes' requests for them. Flagged: encryption (U-04)."
+    },
+    "engine": {
+      "lane": "engine",
+      "chat": "CORE",
+      "tier": 1,
+      "flagged": false,
+      "area": "The pure rules engine and its Node tests.",
+      "files": ["offline/src/engine.js", "offline/tests/logic.test.mjs", "offline/tests/engine-*.test.mjs"],
+      "units": ["U-05", "U-06", "U-07", "U-08"],
+      "batches": [["U-05"], ["U-06", "U-07", "U-08"]],
+      "unitTier": { "U-05": 1, "U-06": 1, "U-07": 1, "U-08": 1 },
+      "unitNotes": {
+        "U-05": "Time, ids, game derivations (3 h): 3.2 ids, dates and profile plus 3.7 in full. Done when logic.test.mjs has a test for every rule, for determinism, and for 'a slip lowers nothing' (nothing ever decreases), all green.",
+        "U-06": "Roadmap, reveal, Explorer, tips, quests, artifacts, Recovery Plan prefill (2.5 h): the rules of 3.2, 3.10 and 3.11. Done when every rule has a Node test and the tests are green.",
+        "U-07": "Insights, radar, planner, review, SOS guide sequence, crisis keywords (2.5 h): 3.9. Done when tests over synthetic logs cover every insight and rule, and the crisis keywords route to urgent help.",
+        "U-08": "Export/import/migrate/validate, .ics, validateContent, npm test wiring (1.5 h). Done when export then import round-trips identically, a bad import is refused, validateContent() reports zero errors on the base content, and npm test runs the Node suite."
+      },
+      "laneNote": "Starts at hour 0 and depends on nothing (pure functions, Node tests, an injected now: no clock inside a rule). Builds BUILD-PLAN 3.2 (ids, dates, profile), 3.4 (data rows), 3.7 (events and the game rules; the numbers live in Content.xp), 3.9 (insights, radar, planner, review), 3.10 (Recovery Plan prefill) and 3.11 (reveal, tips, Explorer rules). Its slice U-05 is third in the chain; actions-sos' U-09 builds on U-05's contract. U-08's npm test line sits in root package.json's scripts key, which is tests-docs': add it only with the build chat's go-ahead, else ask through for_the_chat. Owns engine.js (other lanes ask by request)."
+    },
+    "actions-sos": {
+      "lane": "actions-sos",
+      "chat": "CORE",
+      "tier": 1,
+      "flagged": true,
+      "area": "The Actions verbs, the SOS screens, the lock screen and onboarding.",
+      "files": ["offline/src/actions.js", "offline/src/ui-sos.js", "offline/src/ui-onboarding.js", "offline/tests/actions.test.mjs"],
+      "units": ["U-09", "U-10", "U-11"],
+      "batches": [["U-09"], ["U-10", "U-11"]],
+      "unitTier": { "U-09": 1, "U-10": 1, "U-11": 1 },
+      "unitNotes": {
+        "U-09": "Actions (3 h): every verb of 3.2 with validation and events; actions.test.mjs in Node memory mode. Done when the tests prove: an SOS session writes a log and SkillUsed events; a drill writes nothing; a slip restarts only the run; export -> reset -> import is identical.",
+        "U-10": "SOS screens (4.5 h; flagged: safety copy): the craving, feeling and slipped flows of docs/PLAN.md 5.2, urgent help (region file, call/copy, 'please verify' labels: O3), drill and preview modes, the night palette, 'My plan' when confirmed. Done when every flow works offline and one-handed with two lines of text per screen at most, crisis routing (hopeless, thoughts of death) shows the numbers at once, and nothing gates or interrupts SOS.",
+        "U-11": "Lock screen and onboarding (2.5 h): the lock with urgent help and SOBER reachable without the PIN; the eight onboarding steps of docs/PLAN.md 5.1 (skippable except the safety notice); the early-access notice. Done when a new person lands on Today with the tour offered and a locked person still reaches urgent help in one tap."
+      },
+      "laneNote": "Builds on the 3.2 verbs contract, engine's U-05 (events and derivations, 3.7) and the store's Node memory mode (3.3). U-09 is fourth in the chain: it starts when the engine slice's contract is in its brief, builds in Node memory mode and switches to the real modules when core and engine merge; U-10 and U-11 need core's U-03 (the router) merged and come after U-04 and U-12 in the chain. Flagged: safety copy (SOS, crisis routing, slips, the lock screen's urgent help). Owns actions.js (other lanes ask by request); the SOS drill lives here, in ui-sos.js."
+    },
+    "learn": {
+      "lane": "learn",
+      "chat": "CORE",
+      "tier": 1,
+      "flagged": false,
+      "area": "The exercise engine, the lesson player, the roadmap and the glossary page.",
+      "files": ["offline/src/ui-exercise.js", "offline/src/ui-learn.js"],
+      "units": ["U-12", "U-13", "U-14"],
+      "batches": [["U-12"], ["U-13", "U-14"]],
+      "unitTier": { "U-12": 1, "U-13": 1, "U-14": 1 },
+      "unitNotes": {
+        "U-12": "Exercise engine (3.5 h): every field type of 3.8, tutorial and workbook modes, examples and hints, 'finish later' drafts, the #/dev/fields gallery. Done when every field type renders in #/dev/fields, saves, and resumes a draft.",
+        "U-13": "Lesson player and checkpoint (2.5 h): moment, cards, checks with no fail state, try it (exercise or route), wrap ('Why this works' to the evidence card); LessonCompleted, ModuleCompleted, the checkpoint at module end. Done when M0 plays end to end and writes those events.",
+        "U-14": "Roadmap and glossary (2.5 h): map view (eleven stops as the harbor path, lessons done, skills, unlocks), plan view (weeks by pace, Custom and Free, never overdue, 'welcome back' re-plan), the weekly focus card component, the glossary page. Done when both views render from the event log and nothing is ever shown as overdue."
+      },
+      "laneNote": "Depends only on BUILD-PLAN 3.6 (lessons and modules), 3.7 (events) and 3.8 (exercises): starts at hour 0 against the contracts and switches to the real ui-core.js when core merges. U-12 sits in the chain after U-04; U-13 and U-14 after U-11. Reads content-core.js and content-lessons-a.js (M0-M3) at the base and content's U-31a exercises; the weekly focus card is used by today-track's Today."
+    },
+    "tests-docs": {
+      "lane": "tests-docs",
+      "chat": "CORE",
+      "tier": 1,
+      "flagged": false,
+      "area": "The browser harness, the screenshots, the offline docs and the guide; root package.json's scripts and devDependencies keys and package-lock.json; the '## Offline edition' sections of README.md and CLAUDE.md; ADR 0022.",
+      "files": ["offline/tests/browser.test.mjs", "offline/tests/screens.mjs", "offline/tests/helpers/*", "offline/docs/*", "offline/README.md", "README.md (append ## Offline edition)", "CLAUDE.md (append ## Offline edition)", "docs/decisions/0022-*.md", "package.json (scripts test:browser, screens, check; devDependencies)", "package-lock.json"],
+      "units": ["U-34", "U-37", "U-36a", "U-35", "U-36b"],
+      "batches": [["U-34"], ["U-37", "U-36a"], ["U-35", "U-36b"]],
+      "unitTier": { "U-34": 1, "U-37": 1, "U-36a": 1, "U-35": 2, "U-36b": 2 },
+      "unitNotes": {
+        "U-34": "Browser harness (3 h): Playwright pinned, channel 'chrome' with a fallback, the flows of 3.13 as named tests, console and network assertions, offline mode, the phone viewport. Done when npm run test:browser opens the built file offline at phone size and runs the 3.13 flows by name, failing on any console error or network request.",
+        "U-37": "Docs true (1 h): offline/README.md (copy to a phone, open from Files/Chrome, the file:///sdcard/Download/1-addic.html tip, what 'Not saved' means), the README and CLAUDE.md '## Offline edition' sections, ADR 0022, npm run check. Done when npm run check runs every gate and the docs match the file.",
+        "U-36a": "Guide skeleton and pipeline (1.5 h): the Markdown with Parts 1, 2 and 4 written and Part 3's lesson headings; build_guide.py; the .docx builds (O8). Done when python offline/docs/build_guide.py exits 0 (the docs gate).",
+        "U-35": "Screenshots (1.5 h): the script and about 30 images at two sizes with DPI metadata. Done when the script regenerates every image from the built file.",
+        "U-36b": "Guide, Part 3 (2.5 h): the tutorial lessons written against the real screens; every image referenced exists; 'How this guide was checked' with the real counts. Done when the docs gate is green."
+      },
+      "laneNote": "U-34 needs core's U-01 merged (it drives the built file); the scout can run earlier. Builds BUILD-PLAN 3.13 (tests and gates: the named flows) and 3.14 (the guide). U-34, U-37 and U-36a close the tier-1 chain; U-35 and U-36b need the screens and run last, after the SCREENS tier-1 merges. Owns package.json's scripts and devDependencies keys and package-lock.json (the pinned Playwright: the one new dependency), and the '## Offline edition' sections of README.md and CLAUDE.md. The full browser suite is the HUB's, in the quiet window."
+    },
+    "today-track": {
+      "lane": "today-track",
+      "chat": "SCREENS",
+      "tier": 1,
+      "flagged": false,
+      "area": "The Today screen, the Track screen with the quick log and insights, and the Harbor scene.",
+      "files": ["offline/src/ui-today.js", "offline/src/ui-track.js", "offline/src/ui-harbor.js"],
+      "units": ["U-15", "U-16", "U-17", "U-18"],
+      "batches": [["U-15"], ["U-16"], ["U-17", "U-18"]],
+      "unitTier": { "U-15": 1, "U-16": 1, "U-17": 2, "U-18": 2 },
+      "unitNotes": {
+        "U-15": "Today (3 h): greeting; check-in card by time of day; today's plan with risky blocks and their Battle Plans; want-to of the day; continue learning and weekly focus; active quests; Reasons Card peek; opt-in counters and Momentum ring; Explorer ring; tip of the day; backup reminder; milestone celebration; maintenance-mode variant. Done when Today renders every card from an empty and a sample profile with no dead button (O7).",
+        "U-16": "Track (2.5 h): the quick log (+) for craving, feeling, check-in (morning/evening), activity and slip with trigger, red-flag and skill chips; the timeline; the counters. Done when each log kind saves through Actions and shows on the timeline, and a slip lowers no total.",
+        "U-17": "Insights (2 h): the cards of 3.9 as inline SVG (trend line, bars, 7x24 heatmap, ranking), caveats, 'appears after seven logs'. Done when the cards render from synthetic logs and stay hidden below seven logs.",
+        "U-18": "Harbor scene (2 h): ui-harbor.js per 3.12, Calm mode, reduced motion; Today keeps a static placeholder until it merges. Done when the scene renders, respects reduced motion, and its light never dims."
+      },
+      "laneNote": "Builds on the BUILD-PLAN 3.2 contracts (UI, Actions, Engine) and 3.4 (data rows); starts against the contracts and switches to the real ui-core.js, store.js, engine.js and actions.js when core and engine merge (their slices U-01/U-03 and U-05 come first). U-15 and U-16 sit in the chain after actions-sos' U-10; U-17 builds on 3.9 (engine U-07), U-18 on 3.12 (core U-02). Today keeps a static Harbor placeholder until U-18 merges; the weekly focus card comes from learn's U-14."
+    },
+    "workbook-settings": {
+      "lane": "workbook-settings",
+      "chat": "SCREENS",
+      "tier": 1,
+      "flagged": false,
+      "area": "Settings, the Reasons Card and Support Network, the workbook browser and the artifacts, and My Recovery Plan.",
+      "files": ["offline/src/ui-settings.js", "offline/src/ui-workbook.js", "offline/src/ui-plan.js"],
+      "units": ["U-19", "U-20a", "U-20b", "U-21"],
+      "batches": [["U-19"], ["U-20a"], ["U-20b", "U-21"]],
+      "unitTier": { "U-19": 1, "U-20a": 1, "U-20b": 2, "U-21": 2 },
+      "unitNotes": {
+        "U-19": "Settings (3 h): privacy (PIN set/change/remove, auto-lock, discreet title 'Notebook': O1, O2), look (theme, Calm mode, text size, high contrast, reduced motion), rhythm, names, help and tutorials, about and evidence, your data (export, import, erase, print logs, sample data marked and erasable: O6, backup reminder), early-access notice, version. Done when every setting persists across a reload and every data action does exactly what it says.",
+        "U-20a": "Reasons Card and Support Network (1.5 h): the Reasons Card view (big SOS view, lock-screen image export via canvas), contacts CRUD with roles and strategies, 'I reached out'. Done when contacts are saved on the device only and the card opens from SOS.",
+        "U-20b": "Workbook browser and the other artifacts (2.5 h): the groups My Why, Know Myself, My People, My Joys; each artifact viewed, edited (exercise in workbook mode), with history, practise and print; risk factors behind a tap; Comebacks, Thought Journal, signatures with the body map, scripts with 'I said it', Activity Library, should/want balance, distraction deck, warning signs. Done when each artifact opens, edits and prints, or is honestly marked a stub (O7).",
+        "U-21": "My Recovery Plan (2 h): per 3.10, prefilled from the artifacts. Done when the plan prefills, edits and prints."
+      },
+      "laneNote": "Builds on BUILD-PLAN 3.2, 3.3 (PIN, auto-lock, discreet mode: core U-04), 3.4 and 3.10 (U-21; engine U-06's prefill); export, import and erase call engine U-08 and Actions. U-19 and U-20a sit in the chain after U-16; the lane starts against the contracts and switches to the real modules when core and engine merge. The tier-2 pair U-20b and U-21 comes after the tier-1 chain is merged; they use learn's exercise engine (U-12) in workbook mode."
+    },
+    "actions": {
+      "lane": "actions",
+      "chat": "SCREENS",
+      "tier": 2,
+      "flagged": false,
+      "area": "The planner, Battle Plans, the Weekly Review, quests and to-dos, and the practices player.",
+      "files": ["offline/src/ui-actions.js", "offline/src/ui-practices.js"],
+      "units": ["U-22", "U-23", "U-24", "U-25"],
+      "batches": [["U-22"], ["U-23", "U-24", "U-25"]],
+      "unitTier": { "U-22": 2, "U-23": 2, "U-24": 2, "U-25": 2 },
+      "unitNotes": {
+        "U-22": "Planner (3 h): the day planner per 3.9 with risky blocks. Done when blocks save through Actions, risky blocks are flagged with their Battle Plan, and nothing is ever overdue.",
+        "U-23": "Battle Plans with .ics and debrief (2 h). Done when a plan exports a valid .ics (engine U-08) and the debrief writes its event.",
+        "U-24": "Weekly Review with the forecast check (2.5 h). Done when the review reads the week's logs, checks last week's forecast and saves.",
+        "U-25": "Quests, rewards, Prediction Lab, to-dos, the practices player (script shown and read aloud, pause, timer, reflection, helpful rating, mindful minutes) (3 h). Done when each works or is honestly a stub (O7), with no random reward and no points for claimed sober days."
+      },
+      "laneNote": "Tier 2: starts when the SCREENS tier-1 units are merged (or a slot is free). Builds on BUILD-PLAN 3.2 (the Actions verbs: actions-sos U-09), 3.9 (planner and review rules: engine U-07) and engine U-08's .ics; the practices player reads content U-32's scripts and speaks through ui-core's speak() (device speechSynthesis only, O4)."
+    },
+    "game-tutorials": {
+      "lane": "game-tutorials",
+      "chat": "SCREENS",
+      "tier": 2,
+      "flagged": false,
+      "area": "The guidance engine (coach marks, tours, tutorials, tips, reveal), the game surfaces, and the tools and mini-games.",
+      "files": ["offline/src/ui-game.js", "offline/src/ui-guidance.js", "offline/src/ui-tools.js"],
+      "units": ["U-27", "U-26", "U-28"],
+      "batches": [["U-27"], ["U-26", "U-28"]],
+      "unitTier": { "U-27": 2, "U-26": 2, "U-28": 2 },
+      "unitNotes": {
+        "U-27": "Guidance engine (3 h): coach marks, first-run tour, JIT tutorials, Training drills (SOBER, quick log, Battle Plan, trial, refusal), tips, Explorer, reveal with 'Show now' and 'New' dots (the SOS drill itself lives in ui-sos.js). Done when every tutorial target exists (the guards gate) and nothing ever covers, gates or delays SOS.",
+        "U-26": "Game surfaces (2 h): XP, mastery per skill, badges, ranks, region light, celebrations under 300 ms. Done when they render from Engine derivations and none of them ever decreases.",
+        "U-28": "Tools and mini-games (4 h): Put It On Trial (courtroom -> Comeback), Distortion Sort, Spot the Red Flag, The Big Game (branching story, an original character), Refusal Rehearsal (scenes with feedback against catalogs.refusal), Rewrite the Scene, Should I go?, Problem Solver. Done when each plays from content data or is honestly a stub (O7)."
+      },
+      "laneNote": "Tier 2: starts when the SCREENS tier-1 units are merged (or a slot is free). Builds on BUILD-PLAN 3.7 (the game rules: engine U-05), 3.11 (tutorials, tips, reveal, Explorer: engine U-06; content in Content.tutorials/tips/explorer/reveal) and the data-tour targets of core U-03; the mini-games read content U-32's data. The SOS drill is actions-sos' (ui-sos.js)."
+    },
+    "content": {
+      "lane": "content",
+      "chat": "SCREENS",
+      "tier": 1,
+      "flagged": false,
+      "area": "The original content: exercises, lessons M4-M10, practices and games data, and the sample data; owner of content-core.js (others append after /* -- additions -- */).",
+      "files": ["offline/src/content-lessons-b.js", "offline/src/content-lessons-c.js", "offline/src/content-exercises.js", "offline/src/content-practices.js", "offline/src/content-sample.js", "offline/src/content-core.js (owner)"],
+      "units": ["U-31a", "U-31b", "U-29", "U-30", "U-32", "U-33"],
+      "batches": [["U-31a"], ["U-31b", "U-29"], ["U-30", "U-32", "U-33"]],
+      "unitTier": { "U-31a": 1, "U-31b": 2, "U-29": 2, "U-30": 2, "U-32": 2, "U-33": 2 },
+      "unitNotes": {
+        "U-31a": "Exercises M0-M3 need (1 h): quick-reasons, signs-check, risk-factors, help-request, program-questions, motivation, balance, four-lenses, checkpoint, with examples and hints from the cast; add the line /* -- additions -- */ to content-core.js. Done when every M0-M3 exercise id resolves with the 3.8 shape and the content validation gate is green (before engine U-08 merges: a Node check of the same).",
+        "U-31b": "The remaining exercises (2 h). Done when every lesson's exercise id resolves and content validation is green.",
+        "U-29": "Lessons M4-M6 (2.5 h): original lessons in the 3.6 shape, each citing a Content.references id. Done when content validation is green and no text comes from the source book.",
+        "U-30": "Lessons M7-M10 (2.5 h): as U-29, with section 2 rule 4 (content safety and restraint) applied with extra care in M9 and M10 and clinicalReview: true on every such passage. Done when content validation is green.",
+        "U-32": "Practices and games data (2 h): original guided scripts (body scan about 10 min, breathing with the 5->30 ladder and no pacing, SOBER, urge surfing, mindful shower/eating/walking, give it a beat) and the games' data (12 sortable thoughts, a dialogue with three red flags, a six-scene branching story, four refusal scenes with three responses each). Done when content validation is green.",
+        "U-33": "Sample data (1.5 h): a 'Sample' profile with four weeks of logs, check-ins, plans, responses, contacts and events relative to today, loadable and erasable, visibly marked (O6). Done when it loads, shows as sample, and erases completely."
+      },
+      "laneNote": "Depends only on BUILD-PLAN 3.6 (lessons and modules) and 3.8 (exercises); starts at hour 0. content-core.js and content-lessons-a.js (M0-M3) exist at the base; this lane owns content-core.js and adds /* -- additions -- */ in U-31a (other lanes append after it). U-31a sits in the chain before tests-docs' U-34; the tier-2 units follow. Original content only (docs/book/ notes are ideas, never wording); section 2 rule 4 with extra care in M9-M10; every resource carries verify: true; locale 'en' only (O5)."
+    }
+  }
+}
