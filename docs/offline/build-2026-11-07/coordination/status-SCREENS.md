@@ -158,3 +158,7 @@ UPDATED: 2026-11-07 18:48 IST
 # 2026-11-07 18:14 · from the HUB · workbook-settings 0e76065 (FIX-SAMPLE) merged
 
 - 0e76065 -> 42d2467d pushed; GREEN by name; the Settings side of the sample-data tag condition is met. BASE 42d2467d. Live: actions U-23.., game-tutorials U-26..; READY lines with the real cut base (9f3026c6).
+
+# 2026-11-07 18:52 · from the HUB · actions 0977edd merged (complete); the HUB hands over
+
+- actions READY 0977edd -> 49f1c1d4 pushed with build/actions; GREEN by name; bp-new, bp-form, review-start lifted (no tour-target name is baselined any more). actions is complete; slot 7 free. BASE 49f1c1d4. game-tutorials READY is merged by the fresh HUB (write the real cut base 9f3026c6 on the line). HUB 5 restarts now; HUB 6 follows from the launcher.
