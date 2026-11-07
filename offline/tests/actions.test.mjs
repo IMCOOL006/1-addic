@@ -1592,6 +1592,8 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
       await d.settle();
       assert.ok(list('events').some((e) => e.id === 'sample-e1' && e.sample === true), 'the sample rows are marked');
       assert.ok(S().view.get('meta', 'sample'), 'erasable: the meta sample row');
+      assert.deepEqual(d.go, [], 'the safety step comes first (RS13)');
+      d.tapId(root, 'onb-safety-ok');
       assert.deepEqual(d.go, ['#/today']);
     });
   });
@@ -1951,6 +1953,24 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
     const plain = sosDom({ onboarding: true, localStorage: { getItem: () => null } });
     plain.UI.pages.lock({});
     assert.equal(plain.doc.title, '', 'not discreet: the title is left to ui-core');
+  });
+  test('RS13: Look around with sample data shows the safety step, then Today after I understand', async () => {
+    const lesson = firstModule().lessons[0].id;
+    await withSample({ generate: (now) => ({ stores: { events: [{ id: 'sample-e1', type: 'LessonCompleted', at: now, payload: { lessonId: lesson } }] } }) }, async () => {
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      d.tapId(root, 'onb-sample');
+      await d.settle();
+      assert.deepEqual(d.go, [], 'not to Today yet');
+      assert.ok(root.querySelector('[data-testid="onb-step-5"]'), 'the safety step: ' + root.textContent.slice(0, 120));
+      assert.equal(root.querySelector('[data-testid="onb-skip"]'), null, 'it cannot be skipped');
+      const opioids = root.querySelectorAll('input').find((i) => i.attrs.name === 'medical' && i.value === 'heavyDaily');
+      opioids.checked = true;
+      for (const fn of opioids.on.change || []) fn({});
+      assert.equal(d.byId(root, 'onb-medical-card').hidden, false, 'the card shows');
+      d.tapId(root, 'onb-safety-ok');
+      assert.deepEqual(d.go, ['#/today']);
+    });
   });
   // -- FIX-R2-SAFETY tests end --
 });

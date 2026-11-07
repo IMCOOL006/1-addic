@@ -277,6 +277,7 @@
     const answers = {};
     let at = 0;
     let finishing = false;
+    let sampled = false; // RS13: the sample path goes from step 1 to the safety step, then Today
     const root = h('section', { class: 'page stack onboarding-page', dataset: tid('onboarding') });
     sentOnce = true; // seen in this visit: never sent back to it
     const settings = (c && c.settings) || {};
@@ -295,7 +296,9 @@
           sample.disabled = true;
           try { await A.loadSample(); } catch (err) { sample.disabled = false; toast(COPY.sampleFailed, 'warn'); return; }
           toast(COPY.sampleLoaded, 'ok');
-          UI.go('#/today');
+          sampled = true; // RS13: the one step that cannot be skipped comes first
+          at = STEPS.findIndex((s) => s.id === 'safety');
+          paint();
         }, { ghost: true, testid: 'onb-sample' }) : null;
         return { body: [notice, sample], read() {} };
       }
@@ -428,7 +431,7 @@
       const skip = () => { for (const k of STEP_KEYS[step.id]) if (k !== 'earlyNoticeSeen') delete answers[k]; at += 1; paint(); };
       let nav;
       if (step.id === 'safety') {
-        nav = [btn(COPY.safetyOk, forward, { primary: true, testid: 'onb-safety-ok' })];
+        nav = [btn(COPY.safetyOk, sampled ? () => { col.read(); UI.go('#/today'); } : forward, { primary: true, testid: 'onb-safety-ok' })];
       } else if (step.id === 'tour') {
         const hasTour = !!(UI.tour && typeof UI.tour.start === 'function');
         nav = [h('div', { class: 'stack', dataset: tid('onb-tour-offer') },
