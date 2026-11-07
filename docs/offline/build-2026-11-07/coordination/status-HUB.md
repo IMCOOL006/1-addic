@@ -1,16 +1,16 @@
 TRACK: HUB
-STATE: FROZEN   # 2026-11-07 10:51 IST: FREEZE 10:55; the tag's list on the board; QUIET window running; core U-04 and actions-sos U-10/U-11 not READY (reviewers' HIGH findings open) -> offline-v1.1; TAG offline-v1.0 at 11:55
+STATE: HANDOVER   # 2026-11-07 11:43 IST: offline-v1.0 tagged at 45473b2 (11:40) and pushed; hand-off note in tracks/HUB/RUN-RECORD.md; every lane branch pushed; the launcher paused ("day closed"); the lanes continue on their branches toward offline-v1.1 under the same gates; a fresh HUB (when the launcher is started again) merges READY lines from status-CORE.md with the loop of PLAN.md section 8
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 4 running lanes from 10:42 (core, actions-sos, learn finishing their rounds; engine paused at its next commit); under 4.0 GB free the newest lane pauses at its next commit; nothing new starts before the tag
-TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
+TRACKS-ALLOWED: CORE   # day closed 11:4x: the launcher is paused; when the owner starts it again, CORE resumes; SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free)
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
 SLOTS: engine slot=2 PAUSED again from 2026-11-07 10:42 (3.6 GB free at 10:41, under the 4.0 GB floor; the newest lane pauses at its next commit: let the builder commit what is done of U-06/U-07 with the hand-off note, then nothing new on engine until this line says granted; the QUIET window 10:55-11:40 needs the memory for the full suites; engine resumes after the tag at a row with 7.0 GB free)
 SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again at its next commit if a row goes under 4.0 GB)
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
 MERGING: none
-MERGE-QUEUE: (empty; FROZEN at 10:55: only fixes by name to merged units until the tag)
+MERGE-QUEUE: (empty; after the tag: core READY (U-04), actions-sos READY (U-10, U-11), engine READY-SLICE/READY (U-06..U-08) in that order, when they appear)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
@@ -19,9 +19,16 @@ MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4,
 MERGED: learn READY-SLICE a499dae (U-12 exercise engine) -> merge 4618e43c, trunk 4618e43c, pushed 10:18 (build GREEN 298714 B; test GREEN learn.test.mjs; validate SKIP until U-08; guards GREEN by name; merged clean, 2 files)
 MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide skeleton and .docx pipeline) -> merge f3775f1a, trunk f3775f1a, pushed 10:26 (build GREEN 298714 B; test GREEN; validate SKIP until U-08; guards GREEN by name; docs GREEN exit 0, the .docx reproducible; package.json by key owner; merged clean, 9 files)
 MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
-QUIET: done at 10:57, green by name   # full suites on _int at cc1d775 (= trunk f9de7023 plus docs): build GREEN (346637 B, CSP present) · test GREEN 99 pass, 0 fail, 0 skip in 4 files (actions, learn, logic, store .test.mjs) · validate SKIP by name (engine.js has no validateContent until U-08) · guards RED by count, GREEN by name (the 15 baselined tour-target names only; 4 other checks pass) · browser GREEN 5 pass, 0 fail, 14 skip by name (loads offline with zero console errors and zero network requests; 390 px no horizontal scroll; five tabs navigate by hash and back; dark theme applies and persists; saved label always shown; the 14 skips name global Store, Store.lock, UI.tour or route #/workbook absent) · docs GREEN exit 0, the .docx rebuilt reproducibly, tree clean; logs C:/Users/ruchi/1-addic-wt/_logs/gates/hub/*-20261107-105*.log; no fix needed; fixes by name still taken until 11:40; TAG 11:55
+QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:59 IST
+UPDATED: 2026-11-07 11:43 IST
+
+# 2026-11-07 11:43 · TAG offline-v1.0 (11:40) and HANDOVER
+
+- The quiet window closed at 11:40 with no fix by name posted. `git tag -a offline-v1.0` on the trunk at 45473b2 (code identical to cc1d775, the tree the quiet gates ran on: `git diff --quiet cc1d775 HEAD -- offline/ package.json` is clean), pushed to origin 11:40 (refs/tags/offline-v1.0 = b40235b1). The tag is 15 minutes before the plan's 11:55 because nothing was pending and the green had been read.
+- Lane branches pushed as backups 11:42: core=cdfc0e9, engine=6cb722e, actions-sos=fca2781, learn=19f373c, tests-docs=d91164d.
+- Hand-off note: tracks/HUB/RUN-RECORD.md (what is in by unit, the gates by name, the reviewers' open findings, how to merge, offline-v1.1's order, the owner's part). Board rewritten. The launcher paused with "day closed".
+- Live under CORE 06ee0d0d at the tag: core FIX-RULINGS, actions-sos FIX-ONB-EMO (their second batches), then checks and reviewers; engine stopped at its next commit (6cb722e pushed); learn done; tests-docs tier 2 waits. They continue on their branches; their READY lines are merged after the tag by the next HUB as the first of offline-v1.1.
 
 # 2026-11-07 10:59 · QUIET window: the full suites on the trunk are green by name
 

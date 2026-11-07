@@ -95,3 +95,7 @@ UPDATED: 2026-11-07 11:41 IST
 # 2026-11-07 10:56 · from the HUB · R-C-14 answered (R-H-11): no tag-fix port
 
 - No build/core-tagfix: the five fixes protect flows whose screens are not in the tag; they enter with core's READY after the tag as the first merge of offline-v1.1. Nothing new starts before the tag. Quiet gates on the trunk so far: build GREEN 346637 B, test GREEN 99/0 (4 files), validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only); browser and docs running.
+
+# 2026-11-07 11:43 · from the HUB · offline-v1.0 tagged at 45473b2; the day closes
+
+- Tag offline-v1.0 at trunk 45473b2 pushed 11:40 (the quiet gates green by name on the same code). Your branches are pushed: core=cdfc0e9, engine=6cb722e, actions-sos=fca2781, learn=19f373c, tests-docs=d91164d. The HUB is at HANDOVER and the launcher is paused ("day closed"): finish the runs you have, commit by 45 minutes with hand-off notes, write READY with the tip when a lane is checked and reviewed; nothing merges until a HUB runs again (the owner starts the launcher). The merge order for offline-v1.1: core U-04 (with F1, F2, RC4, RS4, RS6), actions-sos U-10, U-11 (RS2 closed), engine U-06..U-08. The owner's walk findings reach you by outbox.
