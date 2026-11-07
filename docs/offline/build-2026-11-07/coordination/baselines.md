@@ -20,3 +20,21 @@
 Add a line here only when a check is red on the base itself (`- <gate>: <failure name> (seen <stamp>, <log path>)`).
 
 - guards: tutorial data-tour targets (`FAIL guard: tour-target: <name>`) are expected RED by name until the screens that carry them land; the HUB baselines them here by name when a lane reports them (noted 2026-11-07 07:15, not yet seen).
+
+**Tour-target names expected RED until the screen lanes land (seen on the core U-01 merge, 2026-11-07 07:39; lifted one by one as the screens merge):**
+
+- guards: guard: tour-target quicklog-button (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target quicklog-intensity (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target quicklog-save (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target planner-day (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target planner-gaps (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target planner-add (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target bp-new (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target bp-form (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target workbook-groups (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target workbook-card (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target insights-triggers (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target insights-heatmap (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target review-start (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target plan-sections (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- guards: guard: tour-target plan-print (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)

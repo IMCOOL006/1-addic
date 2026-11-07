@@ -6,7 +6,7 @@ NEXT: CORE's scouts finish about 08:00–08:15, then core (U-01) and engine (U-0
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 07:38 IST by `board.py`.
+Rewritten 2026-11-07 07:41 IST by `board.py`.
 
 ## The HUB
 
@@ -22,8 +22,8 @@ Rewritten 2026-11-07 07:38 IST by `board.py`.
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | INTEGRATING — 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1… | 134k | 2026-11-07 07:38 IST |
-| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2; five briefs and contracts written 07:22-07:26 (tracks/CORE/briefs, contracts); core and engine slices… | 207k | 2026-11-07 07:37 IST |
+| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | INTEGRATING — 2026-11-07 07:38 IST: merging core READY-SLICE 8bf7b5c (U-01); memory under the 4 GB floor since 07:36 (3.4, 3.2, 3.1… | 148k | 2026-11-07 07:38 IST |
+| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2; core's second slice [U-03,U-02] running (wf_d2230fda-3a5); engine READY-SLICE and paused (memory… | 222k | 2026-11-07 07:39 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -31,7 +31,7 @@ Rewritten 2026-11-07 07:38 IST by `board.py`.
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | READY-SLICE | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); merging now; U-01 (one commit on build/core); check… |
-| `engine` | CORE | 1 |  | slot 2 | BUILDING | GRANTED 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write… |
+| `engine` | CORE | 1 |  | slot 2 | READY-SLICE | GRANTED 2026-11-07 07:15; PAUSE AT NEXT COMMIT from 07:38 (free memory 2.4 GB at 07:37, under the 4.0 GB floor; PLAN.md section 4): commit what is done, write… |
 | `actions-sos` | CORE | 1 | yes | slot ? | SCOUTED | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built… |
 | `learn` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice… |
 | `tests-docs` | CORE | 1 |  | - | SCOUTED | brief 13.7 KB; no slot yet; slice U-34 needs core's U-01 merged |
