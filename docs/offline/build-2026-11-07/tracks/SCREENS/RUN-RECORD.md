@@ -22,8 +22,16 @@
 - Cross-lane shapes sent (R-S-2 to CORE): catalogs.spiralPairs for actions-sos; ExplorerCompleted has no Actions writer; sample rows skipped by every derivation; R-S-3 to CORE: the SOS link to the big Reasons Card.
 - Pending pin for content U-32: Content.practices is a map by id of {id, title, minutes, intro, script:[{t, secs?}], close} (sober also has steps: 5 strings); the actions player accepts that shape (its brief). Check ui-sos.js FALLBACK.sober on build/actions-sos before the U-32 batch.
 
+## 2026-11-07 16:26 IST · two READY-SLICE lines; two lanes relaunched
+
+- today-track slice wf_cbccd83b-f69 returned 16:2x: READY-SLICE 13eba28 (U-15: f615567, 13eba28), check PASS, LOWs C1 (check-in times ignore profile.checkin) and C2 (test finds calls by position). Relaunched as wf_f509ab5b-32d at 16:24 by date (its args.now said 16:31: my estimate, wrong; the rule is stamps from date) with done [U-15], diffFrom 13eba28, C1 and C2 by name first, then U-16, then U-17+U-18.
+- content slice wf_0f49abe3-ebb returned: READY-SLICE 065699b (U-31a: 0bbb7e2, 065699b), check PASS with C1 MEDIUM (three CORE test names fail on the merged tree because engine.js loads every content-*.js in Node: engine-data 'validateContent: the tryIt exercise check waits for Content.exercises, then runs', 'knownRoute: the 3.5 route table, by path', learn 'learn: the gallery renders every field type, saves and resumes a draft (stand-in DOM)') and C2 LOW (opioidSafety is an object; contract updated). R-S-4 to CORE (the three fixes, the contract change), R-S-5 to HUB (merge order or a baseline).
+- content relaunched as wf_11307812-199 (16:26; args.now 16:27) with done [U-31a], diffFrom 065699b; the laneNote pins Content.practices (sober.steps 5 strings, read by ui-sos.js soberSteps), Content.games, the sample rules, the R-C-9 copy review as notes, and a neighbour-test sweep per batch.
+- Contract tracks/SCREENS/contracts/content.md: still lists Content.copy.early as new in U-31a, but it was ruled out (onboarding's built line stands): fix at the next contract touch.
+
 ## Resume here
 
-- 2026-11-07 16:15 IST: live runs (journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6721d28e-5b48-49f1-9f7e-094b769e422f/subagents/workflows/<run>/journal.jsonl): content slice wf_0f49abe3-ebb (Build U-31a), today-track slice wf_cbccd83b-f69 (Build U-15), workbook-settings slice wf_a8a3fbe3-437 (Build U-19).
-- Next: a slice returns READY-SLICE <tip> -> write LANE: <lane> READY-SLICE <tip> on the status file -> relaunch the lane with done: [the slice unit], priorNote (the slice builder's note from the journal), diffFrom: <tip>. actions and game-tutorials (tier 2) start only when no tier 1 lane of either chat waits for a slot and the HUB grants them.
+- 2026-11-07 16:26 IST: live runs (journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6721d28e-5b48-49f1-9f7e-094b769e422f/subagents/workflows/<run>/journal.jsonl): workbook-settings slice wf_a8a3fbe3-437 (U-19), today-track wf_f509ab5b-32d (C1, C2, U-16, U-17, U-18; diffFrom 13eba28), content wf_11307812-199 (U-31b, U-29, U-30, U-32, U-33; diffFrom 065699b).
+- For the HUB (status-SCREENS.md): READY-SLICE today-track 13eba28, READY-SLICE content 065699b (three neighbour test names, R-S-5).
+- Next: workbook-settings READY-SLICE -> line -> relaunch with done [U-19]. A full-lane return -> report under 20 KB -> LANE: <lane> READY <tip>. actions and game-tutorials (tier 2) wait for the HUB's grant.
 - A fresh chat: `claude agents` for session 6721d28e; if it is gone, these runs died with it: relaunch each lane with done and priorNote from its branch's last commit and its progress notes (C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__progress.md).
