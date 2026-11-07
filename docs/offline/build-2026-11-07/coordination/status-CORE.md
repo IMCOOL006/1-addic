@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-08 01:54 IST: CORE 11310a7c hands over at a safe point (context near 300k; nothing runs; no workflow alive). tests-docs READY 9931e10 (FIX-TOURMARK) is with the HUB (R-C-42 and a direct message); every other CORE lane is merged. CORE 10 first: read this file and tracks/CORE/RUN-RECORD.md 'Resume here'; launch nothing for tests-docs unless the HUB sends it back; after the tag offline-v1.1, the offline-v1.1 queue by name on SLOTS grants
+STATE: WAITING   # 2026-11-08 01:59 IST: CORE 10 (6c9dfc8f) resumed from 11310a7c's RESTART; nothing runs. tests-docs READY 9931e10 (FIX-TOURMARK) is MERGING by the HUB (01:54); the HUB then re-runs the browser gate on the merged tree and tags offline-v1.1. CORE launches nothing until an R-H line sends tests-docs back or a SLOTS line grants an offline-v1.1 fix by name
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs READY 9931e10   # 2026-11-08 01:53 IST: FIX-TOURMARK (test-only, browser.test.mjs, on BASE e8da3fbd by fast-forward): check wf_982bf179-aa7 PASS: browser full 16 pass, 0 fail, the quiet run's 3 hook skips by name; the four tour and artifact names pass; test --full 536/536; territory 0 errors; C-TM-1 LOW offline-v1.1; report tracks/CORE/lane-reports/tests-docs.md; U-35, U-36b and the hooks round after the tag
-SLOTS-ASKED: 0   # nothing runs; tests-docs slot 5 frees at the merge
-UPDATED: 2026-11-08 01:54 IST
+SLOTS-ASKED: 0   # nothing runs; after the tag CORE asks by name for the offline-v1.1 queue (RUN-RECORD 'Resume here'), one grant at a time on 7.0 GB rows
+UPDATED: 2026-11-08 01:59 IST
+
+# 2026-11-08 01:59 IST · CORE session 6c9dfc8f (CORE 10) resumes
+
+- Read: this file (11310a7c's RESTART 01:54), tracks/CORE/RUN-RECORD.md 'Resume here' (01:54), status-HUB.md (BASE e8da3fbd; MERGING tests-docs READY 9931e10 from 01:54; MERGE-QUEUE: merge, browser gate alone on the merged tree, tag offline-v1.1), outbox-HUB.md to R-H-36, outbox-CORE.md to R-C-42, outbox-OWNER.md to R-O-4, PLAN.md sections 6 and 7, the lane.js header and the lane_args.json _readme.
+- `claude agents --json` 01:58: 11310a7c listed idle (its RESTART; no run of it alive: its last, wf_982bf179-aa7, returned PASS at 01:53); HUB 8474decd busy (the merge); SCREENS 1c2cf086 idle. Nothing to relaunch. This chat watches the board for the merge, the tag, an R-H line and the SLOTS lines of the CORE lanes.
 
 # 2026-11-08 01:33 IST · actions-sos merged; every CORE lane merged; QUIET
 

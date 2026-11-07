@@ -224,8 +224,13 @@
 
 - At a safe point with the context near 300k: nothing runs (the board watch was stopped; no workflow is alive), every record is committed. The session's work: the actions-sos lane check (FIX), FIX-R8 and its re-check, READY 7d9d557, merged as e8da3fbd (R-H-35); tests-docs FIX-TOURMARK READY 9931e10 (R-H-36, R-C-42). The HUB was also told by a direct message at 01:53.
 
+## 2026-11-08 01:59 IST · CORE session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca (CORE 10) resumes; nothing runs
+
+- 11310a7c is listed idle by `claude agents` at 01:58 after its RESTART; none of its runs is alive (wf_982bf179-aa7 returned PASS 01:53). The HUB 8474decd is MERGING tests-docs READY 9931e10 (01:54). Worktrees untouched by this chat. Nothing relaunched.
+
 ## Resume here
 
+- **(2026-11-08 01:59 IST) STATE WAITING, CORE 10 (6c9dfc8f).** Same as the 01:54 bullet below: tests-docs READY 9931e10 with the HUB; nothing runs. This chat watches the board (a Monitor on status-HUB.md MERGING/MERGED/TAG/SLOTS lines of the CORE lanes and on outbox-HUB.md R-H headings past R-H-36).
 - **(2026-11-08 01:54 IST) STATE RESTART, CORE 11310a7c gone by its own hand-over; nothing runs.** Every CORE lane is merged but tests-docs, READY 9931e10 (FIX-TOURMARK, browser.test.mjs only, on BASE e8da3fbd by fast-forward; check wf_982bf179-aa7 PASS) in the HUB's merge (R-C-42); then the HUB re-runs the browser gate and tags offline-v1.1. A fresh CORE launches nothing; if the HUB sends tests-docs back (an R-H line), fix it on build/tests-docs within the hour (round 2 of 2) and READY with the tip. When the board shows the merge, write `LANE: tests-docs MERGED 9931e10`. After the tag, the offline-v1.1 queue below by name, each on a SLOTS grant and a 7.0 GB row; add FIX-TOURMARK-ATOMIC (C-TM-1, tests-docs) to the hooks round. Launch files that work: tracks/CORE/args/wf_as_r8.js (a fix round plus a merge-preview re-check; pass findings inline) and wf_as_check_r7.js (only: 'check'). Every Node test that meets the real store.js waits by condition, never a fixed settle.
 - **After the merge, each on a SLOTS grant and a 7.0 GB row, by name:** engine FIX-SPIRAL-OWN (contract 22:25); actions-sos FIX-USE-SKILL (Actions.useSkill({skillId, helpful}); then R-C to SCREENS), RC22, RC23, R8-RC1 (FIX-RS22-AT-ONCE); the tests-docs hooks round (R-S-6, R-S-11, R-S-16, the SOS hooks of contracts/actions-sos.md 00:02, RS12, RC5, the lock-said parent of RS18-V11), then tier 2 U-35, U-36b; core Store.status().lockId (RS26 remainder); learn C3-C5; core N1, N2, Q-a. A Node test that meets the real store.js waits by condition (actions.test.mjs until), never a fixed settle.
 
