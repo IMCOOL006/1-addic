@@ -2692,6 +2692,7 @@ const UI = (function () {
 
   function failure(key) {
     if (key === 'sos') return urgentFallback();
+    if (key === 'lock') return lockFallback(); // a locked person can always type the PIN and reach urgent help (RS12)
     return h('section', { class: 'page' }, h('p', { class: 'render-fallback', role: 'alert', text: 'This page could not open. SOS still works.' }));
   }
 

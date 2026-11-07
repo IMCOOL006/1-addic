@@ -922,6 +922,26 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  test('RS12: a lock page that throws or gives no node still shows the PIN field, Forgot PIN and urgent help', async (t) => {
+    setup();
+    t.after(() => { delete UI.pages.lock; });
+    const S = lockedStore('2468');
+    globalThis.Store = S;
+    for (const bad of [() => { throw new Error('lock boom'); }, () => 'not a node']) {
+      UI.pages.lock = bad;
+      at('#/lock');
+      await UI.render();
+      assert.ok(main().all().some((e) => e.id === 'lock-pin'), 'the PIN field is there');
+      assert.match(main().textContent, /Forgot your PIN/);
+      assert.ok(hrefs().includes('#/sos/urgent'), 'urgent help, no PIN needed');
+    }
+    const form = main().all().find((e) => e.tagName === 'FORM');
+    main().all().find((e) => e.id === 'lock-pin').value = '2468';
+    await form.on.submit[0]({ preventDefault() {} });
+    assert.equal(S.locked, false);
+    assert.equal(location.hash, '#/today');
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
