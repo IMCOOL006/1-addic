@@ -11718,6 +11718,7 @@ const SettingsUI = (function () {
     forgot: 'Forgot your PIN? It cannot be recovered. You can erase this notebook on the lock screen, then start again from a backup file.',
     eraseSampleLater: 'Erasing only the sample comes with the next update. Erase everything removes it too.',
     noSample: 'Sample data is not in this version yet.',
+    sampleOwnProfile: 'Sample data is for a fresh notebook. This one already holds your own profile, so the sample is not loaded. Your entries stay as they are.',
     tourLater: 'Replaying the tour comes with the tutorials update.',
     drillsLater: 'Training drills come with the tutorials update.',
     backupNote: 'The backup file is not locked by your PIN. Anyone who has the file can read it, so keep it somewhere private.',
@@ -12221,13 +12222,23 @@ const SettingsUI = (function () {
     return node;
   }
 
+  /* FIX-SAMPLE (R-H-28): the sample writes its own profile 'me' and settings 'app', so it is offered only on a notebook
+     without the person's own profile: a profile row 'me' that exists and is not marked sample: true. */
+  function hasOwnProfile(view) {
+    const p = safe(() => view.get('profile', 'me'), null);
+    return !!(p && typeof p === 'object' && p.sample !== true);
+  }
+
   async function doLoadSample() {
-    const A = ns('Actions');
+    const A = ns('Actions'); const S = ns('Store');
+    // Checked again at the tap: a page drawn before onboarding cannot load the sample over an own profile.
+    if (hasOwnProfile(safe(() => S.view, null))) { say('data', TEXT.sampleOwnProfile, 'info'); rerender(); return false; }
     try {
       const r = await A.loadSample();
       say('data', 'Sample data loaded: ' + ((r && r.count) || 0) + ' items, all marked as sample. Erase it any time.', 'ok');
     } catch (e) { say('data', errorText(e), 'warn'); }
     rerender();
+    return true;
   }
 
   async function doEraseSample() {
@@ -12256,6 +12267,8 @@ const SettingsUI = (function () {
     const sampleRow = safe(() => view.get('meta', 'sample'), null);
     const canLoad = !!(C && C.sample && typeof C.sample.generate === 'function') && !!(A && typeof A.loadSample === 'function');
     const canErase = !!(A && typeof A.eraseSample === 'function');
+    const ownProfile = hasOwnProfile(view);
+    const ownNoteId = nextId('sample-note');
     const eraseLine = !canErase ? TEXT.eraseSampleLater : (!sampleRow ? 'No sample data is loaded.' : null);
     return [
       h('section', { class: 'card ws-card' }, h('h3', { class: 'card-title', text: 'Backup' }),
@@ -12272,8 +12285,10 @@ const SettingsUI = (function () {
         sampleRow ? h('p', { class: 'ws-sample-on', 'data-test': 'sample-loaded', text: 'Sample data is loaded. It is marked as sample and you can erase it.' })
           : h('p', { class: 'muted', text: 'Try the app with made-up entries. They are marked as sample.' }),
         h('div', { class: 'row' },
-          h('button', { type: 'button', class: 'btn', 'data-test': 'load-sample', text: 'Load sample data', disabled: !canLoad, onClick: () => { if (canLoad) doLoadSample(); } }),
+          h('button', { type: 'button', class: 'btn', 'data-test': 'load-sample', text: 'Load sample data', disabled: !canLoad || ownProfile,
+            'aria-describedby': ownProfile ? ownNoteId : null, onClick: () => { if (canLoad && !ownProfile) doLoadSample(); } }),
           h('button', { type: 'button', class: 'btn', 'data-test': 'erase-sample', text: 'Erase sample data', disabled: !(canErase && sampleRow), onClick: () => { if (canErase && sampleRow) doEraseSample(); } })),
+        ownProfile ? h('p', { class: 'muted', id: ownNoteId, 'data-test': 'load-sample-note', text: TEXT.sampleOwnProfile }) : null,
         canLoad ? null : h('p', { class: 'muted', text: TEXT.noSample }),
         eraseLine ? h('p', { class: 'muted', 'data-test': 'erase-sample-note', text: eraseLine }) : null),
       h('section', { class: 'card ws-card ws-danger' }, h('h3', { class: 'card-title', text: 'Erase everything' }),
@@ -12303,10 +12318,10 @@ const SettingsUI = (function () {
       h('section', { class: 'stack ws-body', 'aria-labelledby': 'ws-tab-title' }, h('h2', { id: 'ws-tab-title', text: label }), body));
   }
 
-  const PURE = ['TABS', 'TEXT', 'ABOUT', 'ERASE_PARTIAL_TEXT', 'normalTab', 'pinOk', 'pinError', 'backupName', 'logRows', 'errorText', 'importErrorText', 'importedText'];
+  const PURE = ['TABS', 'TEXT', 'ABOUT', 'ERASE_PARTIAL_TEXT', 'normalTab', 'pinOk', 'pinError', 'backupName', 'logRows', 'errorText', 'importErrorText', 'importedText', 'hasOwnProfile'];
 
   return {
-    TABS, TEXT, ABOUT, ERASE_PARTIAL_TEXT, normalTab, pinOk, pinError, backupName, logRows, errorText, importErrorText, importedText,
+    TABS, TEXT, ABOUT, ERASE_PARTIAL_TEXT, normalTab, pinOk, pinError, backupName, logRows, errorText, importErrorText, importedText, hasOwnProfile,
     page, doExport, doImport, doErase, doLoadSample, doEraseSample, printLogs, PURE,
   };
 })();

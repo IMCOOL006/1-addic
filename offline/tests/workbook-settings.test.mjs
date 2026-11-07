@@ -295,6 +295,82 @@ test('workbook-settings: sample data is marked, and the buttons are honest (O6, 
   }
 });
 
+/* FIX-SAMPLE (R-H-28): the sample is offered only on a notebook without an own profile. This tree has no
+   Content.sample, so a stand-in generate and a stand-in Actions.loadSample count the calls. */
+async function withSampleStandIns(fn) {
+  const realActions = globalThis.Actions; const hadSample = Object.prototype.hasOwnProperty.call(Content, 'sample'); const realSample = Content.sample;
+  const seen = { loads: 0 };
+  Content.sample = { generate: () => ({ stores: {} }) };
+  globalThis.Actions = Object.assign({}, realActions, { loadSample: async () => { seen.loads += 1; return { sample: true, count: 2, skipped: 0 }; } });
+  try { await fn(seen); } finally {
+    globalThis.Actions = realActions;
+    if (hadSample) Content.sample = realSample; else delete Content.sample;
+  }
+}
+const putProfile = (row) => S().commit('test profile', (tx) => { tx.put('profile', row); });
+const message = () => (byTest(UI.pages.settings(ctx('data')), 'settings-message') || { textContent: '' }).textContent;
+
+test('workbook-settings FIX-SAMPLE: hasOwnProfile reads profile me and its sample mark (pure)', () => {
+  const v = (row) => ({ get: (s, k) => (s === 'profile' && k === 'me' ? row : null) });
+  assert.equal(P.hasOwnProfile(v(null)), false, 'no profile row');
+  assert.equal(P.hasOwnProfile(v({ key: 'me', name: 'Sam' })), true, 'an own profile');
+  assert.equal(P.hasOwnProfile(v({ key: 'me', name: 'Sample', sample: true })), false, 'the sample profile');
+  assert.equal(P.hasOwnProfile(v({ key: 'me', sample: 'yes' })), true, 'only sample: true marks the sample');
+  assert.equal(P.hasOwnProfile({ get: () => { throw new Error('locked'); } }), false);
+  assert.equal(P.hasOwnProfile(undefined), false);
+  assert.equal(P.TEXT.sampleOwnProfile, 'Sample data is for a fresh notebook. This one already holds your own profile, so the sample is not loaded. Your entries stay as they are.');
+});
+
+test('workbook-settings FIX-SAMPLE: an own profile disables Load sample data, says why, and doLoadSample never reaches Actions.loadSample', async () => {
+  await withSampleStandIns(async (seen) => {
+    await S().resetAll();
+    const stale = UI.pages.settings(ctx('data'));
+    assert.equal(byTest(stale, 'load-sample').getAttribute('disabled'), null, 'a fresh notebook: enabled');
+    await putProfile({ key: 'me', name: 'Sam', companion: 'Juno', term: 'sober' });
+    byTest(stale, 'load-sample').fire('click');
+    await tick(); await tick();
+    assert.equal(seen.loads, 0, 'a page drawn before the profile was saved cannot load over it');
+    assert.equal(message(), P.TEXT.sampleOwnProfile);
+    const page = UI.pages.settings(ctx('data'));
+    const load = byTest(page, 'load-sample'); const note = byTest(page, 'load-sample-note');
+    assert.notEqual(load.getAttribute('disabled'), null, 'disabled with its reason (O7)');
+    assert.ok(note, 'the reason is beside it');
+    assert.equal(note.textContent, P.TEXT.sampleOwnProfile);
+    assert.equal(load.getAttribute('aria-describedby'), note.getAttribute('id'));
+    load.fire('click');
+    assert.equal(await SUI.doLoadSample(), false);
+    assert.equal(seen.loads, 0, 'Actions.loadSample is never called over an own profile');
+    assert.equal(S().view.get('profile', 'me').name, 'Sam', 'the own profile stays');
+  });
+});
+
+test('workbook-settings FIX-SAMPLE: no profile row, Load sample data is enabled and doLoadSample calls Actions.loadSample once', async () => {
+  await withSampleStandIns(async (seen) => {
+    await S().resetAll();
+    const page = UI.pages.settings(ctx('data'));
+    assert.equal(byTest(page, 'load-sample').getAttribute('disabled'), null);
+    assert.equal(byTest(page, 'load-sample-note'), undefined);
+    assert.equal(await SUI.doLoadSample(), true);
+    assert.equal(seen.loads, 1);
+    assert.match(message(), /^Sample data loaded: 2 items, all marked as sample\./);
+  });
+});
+
+test('workbook-settings FIX-SAMPLE: the sample profile (sample: true) leaves the card as before', async () => {
+  await withSampleStandIns(async (seen) => {
+    await S().resetAll();
+    await putProfile({ key: 'me', name: 'Sample', companion: 'Kite', term: 'sober', sample: true });
+    const page = UI.pages.settings(ctx('data'));
+    assert.equal(byTest(page, 'load-sample').getAttribute('disabled'), null);
+    assert.equal(byTest(page, 'load-sample').getAttribute('aria-describedby'), null);
+    assert.equal(byTest(page, 'load-sample-note'), undefined);
+    byTest(page, 'load-sample').fire('click');
+    await until(() => seen.loads === 1);
+    assert.equal(await SUI.doLoadSample(), true);
+    assert.equal(seen.loads, 2, 'each tap loads, as today');
+  });
+});
+
 test('workbook-settings: print logs is a dated table, newest first', async () => {
   await S().resetAll();
   await Actions.logCraving({ intensity: 2, triggerIds: [], feelings: [], skills: [] });
