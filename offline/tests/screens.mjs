@@ -129,9 +129,10 @@ export const SHOTS = [
   { slug: 'weekly-review', route: '#/actions/review' },
   { slug: 'practice', route: '#/practice/breathe' },
   { slug: 'tools', route: '#/tools' },
-  // Settings (#/settings opens the Privacy tab, so settings-privacy is that picture)
-  { slug: 'settings-data', route: '#/settings/data' },
+  // Settings (#/settings opens the Privacy tab, so settings-privacy is that picture). Privacy goes first: opening
+  // another tab clears the seed's "Sample data loaded" line, so Your data shows as a person finds it.
   { slug: 'settings-privacy', route: '#/settings/privacy' },
+  { slug: 'settings-data', route: '#/settings/data' },
 ];
 
 /* ── PNG: chunks, CRC32 and the pHYs rewrite (no dependency) ─────────────────────────────────────────────── */
