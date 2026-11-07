@@ -541,4 +541,41 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 [data-route="sos"] .gt-jit, [data-route="sos"] #coach, [data-route="lock"] .gt-jit, [data-route="lock"] #coach { display: none !important; }
 [data-motion="reduce"] .coach-ring, [data-motion="reduce"] .coach-pop { transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .coach-ring, .coach-pop { transition: none !important; } }
+/* Game surfaces (U-26): numbers from the Engine only; celebrations under 300 ms, under the SOS button (60), never on SOS. */
+.gm-panel { display: grid; gap: var(--space-3); }
+.gm-h { margin: 0 0 var(--space-2); font-size: 1rem; }
+.gm-note { margin: 0; font-size: 0.9375rem; }
+.gm-rank-label { margin: 0; font-size: 0.875rem; }
+.gm-rank-name { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.gm-xp-head { margin: 0 0 var(--space-2); }
+.gm-xp-total { font-size: 1.5rem; }
+.gm-bar { height: 10px; border-radius: 999px; background: hsl(var(--surface-2)); border: 1px solid hsl(var(--border)); overflow: hidden; margin-bottom: var(--space-2); }
+.gm-bar-fill { display: block; height: 100%; background: hsl(var(--primary)); }
+.gm-list, .gm-regions, .gm-shelf { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.gm-regions { grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr)); }
+.gm-region { display: flex; flex-direction: column; gap: var(--space-1); min-height: 44px; padding: var(--space-2); border: 1px solid hsl(var(--border)); border-radius: var(--radius); }
+.gm-region-name { font-size: 0.875rem; font-weight: 600; }
+.gm-skill { display: grid; grid-template-columns: 1fr auto; gap: var(--space-1) var(--space-2); align-items: center; min-height: 44px; }
+.gm-skill-sub { grid-column: 1 / -1; font-size: 0.875rem; }
+.gm-pips { display: inline-flex; gap: 3px; }
+.gm-pip { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid hsl(var(--muted)); }
+.gm-pip.on { background: hsl(var(--gold)); border-color: hsl(var(--gold)); }
+.gm-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.gm-more summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.gm-badge { display: flex; gap: var(--space-2); align-items: flex-start; min-height: 44px; padding: var(--space-2); border-radius: var(--radius); border: 1px solid hsl(var(--border)); }
+.gm-badge.earned { border-color: hsl(var(--gold)); background: hsl(var(--gold) / 0.12); }
+.gm-badge-mark { font-size: 1.25rem; line-height: 1.2; color: hsl(var(--muted)); }
+.gm-badge.earned .gm-badge-mark { color: hsl(var(--gold)); }
+.gm-badge-body { display: flex; flex-direction: column; min-width: 0; }
+.gm-badge-sub { font-size: 0.875rem; }
+.gm-celebrate {
+  position: fixed; top: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 40; pointer-events: none;
+  max-width: calc(100vw - 32px); padding: var(--space-2) var(--space-4); border-radius: var(--radius);
+  background: hsl(var(--surface)); color: hsl(var(--text)); border: 2px solid hsl(var(--gold)); box-shadow: 0 4px 16px hsl(var(--shadow) / 0.25);
+  animation: gm-pop 240ms ease-out;
+}
+@keyframes gm-pop { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate { display: none !important; }
+[data-motion="reduce"] .gm-celebrate { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .gm-celebrate { animation: none !important; } }
 /* -- end game-tutorials -- */

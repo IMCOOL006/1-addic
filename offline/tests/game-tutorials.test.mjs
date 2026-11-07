@@ -365,3 +365,156 @@ test('guidance: a tap elsewhere closes the overlay and goes through; a tap towar
     assert.equal(await p3, 'skipped');
   } finally { cleanup(); }
 });
+
+/* ── U-26: the game surfaces (offline/src/ui-game.js), over the real Engine ─────────────────── */
+
+const GameUI = require(src('ui-game.js'));
+const RealEngine = require(src('engine.js'));
+const NOW = new Date('2026-11-07T12:00:00+05:30');
+let seq = 0;
+const ev = (type, at, payload) => ({ id: 'e' + (++seq), type, at, payload: payload || {} });
+function gameView(rows) {
+  const r = Object.assign({ events: [], logs: [], responses: [], contacts: [], quests: [], predictions: [], plans: [], profile: [], settings: [] }, rows || {});
+  return { rows: r, list: (s) => r[s] || [], get: (s, k) => (r[s] || []).find((x) => x.key === k || x.id === k) || null };
+}
+function gameWorld(opts) {
+  const o = opts || {};
+  const doc = fakeDom();
+  if (o.bodyClass) doc.body.setAttribute('class', o.bodyClass);
+  if (o.motion) doc.documentElement.setAttribute('data-motion', o.motion);
+  globalThis.document = doc;
+  globalThis.window = { addEventListener() {}, removeEventListener() {} };
+  globalThis.location = { hash: o.hash || '#/today' };
+  GameUI._reset();
+  return doc;
+}
+function gameCleanup() {
+  GameUI._reset();
+  for (const k of ['document', 'window', 'location']) delete globalThis[k];
+}
+function practisedView() {
+  const v = gameView({ profile: [{ key: 'me', startDate: '2026-10-20' }] });
+  const e = v.rows.events;
+  for (let i = 0; i < 8; i += 1) e.push(ev('SkillUsed', `2026-11-0${1 + (i % 6)}T10:0${i}:00+05:30`, { skillId: 'sober', helpful: true }));
+  e.push(ev('SkillUsed', '2026-11-02T09:00:00+05:30', { skillId: 'trial', helpful: false }));
+  e.push(ev('SosCompleted', '2026-11-03T21:00:00+05:30', { outcome: 'passed' }));
+  e.push(ev('LessonCompleted', '2026-11-04T08:00:00+05:30', { lessonId: 'm1-l1' }));
+  e.push(ev('SlipReviewed', '2026-11-05T08:00:00+05:30', {}));
+  return v;
+}
+const ctxOf = (view) => ({ view, E: RealEngine, now: NOW });
+
+test('game: xp, mastery, badges never decrease after SlipLogged', () => {
+  const v = practisedView();
+  const before = GameUI.model(RealEngine.gameState(v, NOW));
+  assert.ok(before.xp.total > 0, 'practice earns XP');
+  assert.ok(before.badges.some((b) => b.earned), 'a badge is earned');
+  // logged now (the log is append-only: a slip is written when it is told, never back in time)
+  v.rows.events.push(ev('SlipLogged', '2026-11-07T11:00:00+05:30', { date: '2026-11-06' }));
+  v.rows.events.push(ev('SlipLogged', '2026-11-07T11:05:00+05:30', { date: '2026-11-07' }));
+  v.rows.logs.push({ id: 'l1', type: 'slip', date: '2026-11-06', at: '2026-11-07T11:00:00+05:30' });
+  const after = GameUI.model(RealEngine.gameState(v, NOW));
+  assert.ok(after.xp.total >= before.xp.total, 'xp');
+  for (const s of before.skills) {
+    const a = after.skills.find((x) => x.id === s.id);
+    assert.ok(a.level >= s.level && a.uses >= s.uses, 'mastery of ' + s.id);
+  }
+  for (const r of before.regions) assert.ok(after.regions.find((x) => x.id === r.id).level >= r.level, 'region ' + r.id);
+  for (const b of before.badges.filter((x) => x.earned)) assert.ok(after.badges.find((x) => x.id === b.id).earned, 'badge ' + b.id);
+  assert.ok(after.days.total >= before.days.total, 'total days');
+  assert.deepEqual(after.rank, before.rank);
+  // a SlipLogged is worth no points: the slip itself adds nothing and takes nothing
+  assert.equal(after.xp.total, before.xp.total);
+  // the panel shows no run that a slip could reset
+  gameWorld();
+  try {
+    const p = GameUI.panel(ctxOf(v));
+    assert.ok(!/streak/i.test(p.textContent));
+    assert.equal(byTest(p, 'xp-total')[0].textContent, String(after.xp.total));
+  } finally { gameCleanup(); }
+});
+
+test('game: celebrate skipped in calm mode and on SOS', () => {
+  for (const o of [{ bodyClass: 'calm' }, { hash: '#/sos' }, { hash: '#/sos?drill=1' }, { motion: 'reduce' }]) {
+    const doc = gameWorld(o);
+    try {
+      assert.equal(GameUI.celebrate('badge', 'First Wave'), false, JSON.stringify(o));
+      assert.equal(byTest(doc.body, 'celebrate').length, 0);
+    } finally { gameCleanup(); }
+  }
+  const doc = gameWorld();
+  try {
+    assert.equal(GameUI.celebrate('badge', 'First Wave'), true);
+    const n = byTest(doc.body, 'celebrate');
+    assert.equal(n.length, 1);
+    assert.equal(n[0].getAttribute('role'), 'status');
+    assert.ok(n[0].textContent.includes('First Wave'));
+    GameUI.celebrate('rank', 'Explorer');
+    assert.equal(byTest(doc.body, 'celebrate').length, 1, 'one at a time');
+    // the 240 ms entrance stays under 300 ms, and the styles switch it off under reduced motion and in Calm mode
+    const css = readFileSync(src('styles.css'), 'utf8');
+    const sec = css.slice(css.indexOf('/* -- game-tutorials -- */'), css.indexOf('/* -- end game-tutorials -- */'));
+    const ms = /\.gm-celebrate\s*\{[^}]*animation:\s*gm-pop\s+(\d+)ms/.exec(sec);
+    assert.ok(ms && Number(ms[1]) < 300);
+    assert.ok(/\[data-motion="reduce"\] \.gm-celebrate \{ animation: none/.test(sec));
+    assert.ok(/body\.calm \.gm-panel, body\.calm \.gm-celebrate/.test(sec));
+  } finally { gameCleanup(); }
+});
+
+test('game: shelf lists every Content.badges', () => {
+  gameWorld();
+  try {
+    const v = practisedView();
+    const shelf = GameUI.badgeShelf(ctxOf(v));
+    const items = byTest(shelf, 'badge');
+    assert.deepEqual(items.map((n) => n.getAttribute('data-badge')), C.badges.map((b) => b.id));
+    const earned = new Set(RealEngine.badges(v, NOW).map((b) => b.id));
+    for (const n of items) {
+      const id = n.getAttribute('data-badge');
+      assert.equal(n.getAttribute('data-earned'), earned.has(id) ? 'true' : 'false', id);
+      if (!earned.has(id)) assert.ok(n.textContent.includes('How to earn: '), id);
+      assert.ok(!/\d+ (more|to go|left)/i.test(n.textContent), 'no countdown on ' + id);
+    }
+    for (const b of C.badges) assert.ok(Object.prototype.hasOwnProperty.call(GameUI.HOW, b.id), 'a how-to-earn line for ' + b.id);
+  } finally { gameCleanup(); }
+});
+
+test('game: regionLight 0..5', () => {
+  const empty = gameView();
+  for (const r of Object.keys(C.regions)) assert.equal(GameUI.regionLight(ctxOf(empty), r), 0);
+  const v = gameView();
+  for (let i = 0; i < 40; i += 1) v.rows.events.push(ev('SkillUsed', `2026-11-01T10:${String(i).padStart(2, '0')}:00+05:30`, { skillId: 'sober' }));
+  v.rows.events.push(ev('SkillUsed', '2026-11-02T10:00:00+05:30', { skillId: 'call' }));
+  const ctx = ctxOf(v);
+  for (const r of Object.keys(C.regions)) {
+    const l = GameUI.regionLight(ctx, r);
+    assert.ok(Number.isInteger(l) && l >= 0 && l <= 5, r + ' ' + l);
+    assert.equal(l, RealEngine.gameState(v, NOW).regions[r]);
+  }
+  assert.equal(GameUI.regionLight(ctx, 'cove'), 5);
+  assert.equal(GameUI.regionLight(ctx, 'pier'), 1);
+  assert.equal(GameUI.regionLight(ctx, 'nowhere'), 0);
+  assert.equal(GameUI.regionLight({ view: v, E: null, now: NOW }, 'cove') >= 0, true);
+});
+
+test('game: panel renders from the Engine, hides in Calm mode, celebrates only what is new', () => {
+  const doc = gameWorld();
+  try {
+    const v = practisedView();
+    assert.equal(GameUI.panel(Object.assign(ctxOf(v), { calm: true })), null);
+    const p = GameUI.panel(ctxOf(v));
+    assert.equal(p.getAttribute('data-tour'), 'game-panel');
+    assert.equal(byTest(p, 'region-light').length, Object.keys(C.regions).length);
+    assert.equal(byTest(p, 'badge').length, C.badges.length);
+    assert.ok(byTest(p, 'rank-card').length === 1 && byTest(p, 'game-xp').length === 1);
+    assert.equal(byTest(doc.body, 'celebrate').length, 0, 'the first panel only remembers');
+    v.rows.events.push(ev('WeeklyReviewCompleted', '2026-11-06T09:00:00+05:30'));
+    GameUI.panel(ctxOf(v));
+    assert.equal(byTest(doc.body, 'celebrate').length, 0, 'no new badge, no celebration');
+    for (let i = 0; i < 3; i += 1) v.rows.events.push(ev('WeeklyReviewCompleted', `2026-11-06T1${i}:00:00+05:30`));
+    GameUI.panel(ctxOf(v));
+    const c = byTest(doc.body, 'celebrate');
+    assert.equal(c.length, 1);
+    assert.ok(c[0].textContent.includes('Planner'));
+  } finally { gameCleanup(); }
+});
