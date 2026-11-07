@@ -1,0 +1,52 @@
+{
+ "lane": "today-track",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "The Today screen, the Track screen with the quick log and insights, and the Harbor scene.",
+ "files": [
+  "offline/src/ui-today.js",
+  "offline/src/ui-track.js",
+  "offline/src/ui-harbor.js",
+  "offline/tests/today-track.test.mjs"
+ ],
+ "units": [
+  "U-15",
+  "U-16",
+  "U-17",
+  "U-18",
+  "FIX-EMBED"
+ ],
+ "batches": [
+  [
+   "FIX-EMBED"
+  ]
+ ],
+ "unitTier": {
+  "U-15": 1,
+  "U-16": 1,
+  "U-17": 2,
+  "U-18": 2,
+  "FIX-EMBED": 2
+ },
+ "unitNotes": {
+  "U-15": "Today (3 h): greeting; check-in card by time of day; today's plan with risky blocks and their Battle Plans; want-to of the day; continue learning and weekly focus; active quests; Reasons Card peek; opt-in counters and Momentum ring; Explorer ring; tip of the day; backup reminder; milestone celebration; maintenance-mode variant. Done when Today renders every card from an empty and a sample profile with no dead button (O7).",
+  "U-16": "Track (2.5 h): the quick log (+) for craving, feeling, check-in (morning/evening), activity and slip with trigger, red-flag and skill chips; the timeline; the counters. Done when each log kind saves through Actions and shows on the timeline, and a slip lowers no total.",
+  "U-17": "Insights (2 h): the cards of 3.9 as inline SVG (trend line, bars, 7x24 heatmap, ranking), caveats, 'appears after seven logs'. Done when the cards render from synthetic logs and stay hidden below seven logs.",
+  "U-18": "Harbor scene (2 h): ui-harbor.js per 3.12, Calm mode, reduced motion; Today keeps a static placeholder until it merges. Done when the scene renders, respects reduced motion, and its light never dims.",
+  "FIX-EMBED": "Today embeds the guidance and game pieces of game-tutorials (contract tracks/SCREENS/contracts/game-tutorials.md lines 9 and 11), each behind typeof, so Today renders exactly as now when they are absent. Done when, with GuidanceUI and GameUI present, Today shows GameUI.panel once, GuidanceUI.explorerRing in place of its own Explorer card and GuidanceUI.moreTools once, with never two of a kind. With them absent, every existing Today test passes unchanged. Node tests by name prove both cases, and Calm, discreet and maintenance keep their card rules."
+ },
+ "laneNote": "THE SCREENS CHAT'S WORD for this run (@NOW@ by date). A fix by name on a complete, merged lane: FIX-EMBED, then the check over a02f121...HEAD. Worktree C:/Users/ruchi/1-addic-wt/today-track, branch build/today-track at a02f121; cut base 1ef2482e: never rebase, never merge the trunk in. GuidanceUI (ui-guidance.js) and GameUI (ui-game.js) are not in this tree: read their real code with git -C C:/Users/ruchi/1-addic show build/game-tutorials:offline/src/ui-guidance.js (and :offline/src/ui-game.js), and test with stand-ins of exactly that shape. In offline/src/ui-today.js only (plus its Node test file): (1) a 'game' card slot after 'momentum' renders GameUI.panel(ctx) when typeof GameUI !== 'undefined' && typeof GameUI.panel === 'function', null otherwise; it follows the momentum card's rules in cardsFor: gone in Calm mode; in discreet mode gone like harbor and counters. (2) The 'explorer' slot: when GuidanceUI.explorerRing is a function, render its result in place of Today's own explorerCard (null means the person finished or hid it: show nothing, never fall back to the own card then). When it is absent, keep explorerCard as now. (3) The 'tip' slot keeps Today's own tipCard: never render GuidanceUI.tipCard as well, since two tip cards and two markTipShown calls are the risk. (4) a 'more' slot after 'tip' renders GuidanceUI.moreTools(ctx) when present. (5) GuidanceUI.dot(featureId) beside a Today link only where a feature id maps one-to-one; otherwise leave it out and say so in for_the_chat. Pass each the page's ctx as received. Wrap each in safe() as the other cards are, so a throw in either module never breaks Today. SOS stays one tap away and nothing covers it. No new route, no new data-test unless the contract names it, no styles.css change, no copy change to existing text, original words only, grade 6-8. Gates: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/today-track --lane today-track build test validate guards browser. Browser skips for other lanes' routes and hooks at this cut are not failures. Commit by explicit path with FIX-EMBED in the message (`feat(offline, U-15, FIX-EMBED): ...`), never offline/1-addic.html (restore it after the gates). CHECKER: run the same gates INCLUDING browser, report the browser counts and failure names, and judge FIX-EMBED over a02f121...HEAD.",
+ "done": [
+  "U-15",
+  "U-16",
+  "U-17",
+  "U-18"
+ ],
+ "diffFrom": "a02f121",
+ "base": "1ef2482e",
+ "slot": 5,
+ "session": "4d443a20-94db-42b7-b066-e28c753892de",
+ "now": "@NOW@",
+ "priorNote": "The lane is complete and merged: U-15..U-18 READY 3f3001e (merged 9f3026c6, 17:01) and the R-H-24 end marker a02f121 (merged 71a65763, 17:51). This run is one fix by name, FIX-EMBED (owed since game-tutorials U-26/U-27; R-S-14). game-tutorials is READY at bd2e085 (GameUI.panel, GuidanceUI.explorerRing/moreTools/dot/tipCard)."
+}
