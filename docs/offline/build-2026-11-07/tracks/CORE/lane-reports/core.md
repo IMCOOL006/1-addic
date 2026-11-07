@@ -1,6 +1,6 @@
 ## core (CORE, 1-addic offline build): the slice report
 
-State: STOPPED (tip cdfc0e9; stop reason: two builders in a row made no progress, but FIX-RULINGS was in fact built in full, so the lane is complete and ready for the HUB). Earlier state READY-SLICE (tip 4a43190). Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. Tip cdfc0e9: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS all built. Date 2026-11-07 07:26 IST; continued 07:40; continued 2026-11-07 10:41 IST (from 98f872d).
+State: RED (2026-11-07 11:46 IST, continued from 98f872d; branch tip cdfc0e9: the two reviewers, contracts and safety, stopped at their cap and returned no result, so the whole lane 655516dc..HEAD is unreviewed; no known code defect; check tip 98f872d). Earlier line: STOPPED (tip cdfc0e9; stop reason: two builders in a row made no progress, but FIX-RULINGS was in fact built in full, so the lane is complete and ready for the HUB). Earlier state READY-SLICE (tip 4a43190). Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. Tip cdfc0e9: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS all built. Date 2026-11-07 07:26 IST; continued 07:40; continued 2026-11-07 10:41 IST (from 98f872d).
 Commits (655516dc..HEAD, tip cdfc0e9, newest first):
 - cdfc0e9 RC7: UI.form validate, values, set and confirm's answers, tested
 - 32061e2 RC6: the SOS night theme, tested
@@ -38,6 +38,7 @@ Earlier (slice):
 - 8bf7b5c U-01 (core): build pipeline and shell, the slice
 
 ### Turn caps
+- 2026-11-07 11:46 IST (continued from 98f872d): no builders ran (builders []; capHits 0); all 7 units were built by earlier runs. The two reviewers stopped at their cap.
 - Builder batch [U-01]: steps_used 17; returned a note (yes). capHits: 0.
 - 2026-11-07 07:40 IST: builder batch [U-03, U-02]: steps_used 42; returned a note (yes). capHits: 0.
 - 2026-11-07 10:41 IST run (continued from 98f872d): earlier runs built U-04 (06cdf34), FIX-C4-C5 and the review fixes. This run: builder [FIX-SAFETY] steps_used 45, note yes; builder [FIX-RULINGS] steps_used 36, note yes; relaunch [FIX-RULINGS] steps_used 5 (nothing redone, only re-ran gates). capHits: 0. Stopped: two builders in a row made no progress (the relaunch found the batch already done).
@@ -100,6 +101,8 @@ ASSUMED: browser gate not run (none exists); 390 px proof is the builder's at 50
 - C1 (this run) LOW, RS4/Q2 (1e9272c), offline/src/boot.js:34 and :36 (showFailure): crisis copy ('If you are in danger, call your local emergency number', 'For urgent help...') carries no clinicalReview: true, though brief core.md line 68 says any crisis string is clinicalReview. Fix SHA: none. Re-check: not run. Default: left; the CORE chat to rule.
 - Check notes: Q1 and (b) may conflict (a wake past the idle limit locks data while the SOS page stays drawn; SOS is not interrupted; core__units.md:360; the CORE chat's call). Builder defaults still to rule: aria-invalid on a required chips group (RC7), over-count by one in takeIn (Q4), draft.list order in commit (RC9).
 
+2026-11-07 11:46 IST VERIFIED/ASSUMED (continued run): the check judged only commits after 98f872d and returned no findings and no territory text (territory line: not recorded, 0 open). The builder's own gates at cdfc0e9 (11:42 IST) were build GREEN (build-20261107-114217.log), test GREEN 62/62 (test-20261107-114219.log), validate SKIP (validate-20261107-114400.log), guards RED by the 15 baselined tour-target names only (guards-20261107-114400.log), in _logs/gates/core; they are ASSUMED here (not run by the check).
+
 ### Review gates
 None (the two reviewers judged 655516dc..HEAD; no gate recorded, openReview 0).
 
@@ -115,6 +118,12 @@ Verdict PASS at 8bf7b5c.
 ### Review
 Slice: not run. 2026-11-07 10:41 IST: two reviewers judged 655516dc..HEAD; no review findings returned (their earlier re-checks died with their session; the earlier fixes RC1-RC4, RC8, RS1-RS8 are built, each with a test). openReview 0.
 
+### Check (2026-11-07 11:46 IST)
+Findings: none; openCheck 0. Earlier check C1 above (clinicalReview mark on start-failure copy) stands as written.
+
+### Review (2026-11-07 11:46 IST)
+Contracts and safety reviewers judged 655516dc...HEAD; both stopped at their cap: no result, no finding id, severity, fix SHA or re-check state to record; openReview 0 but the lane is unreviewed. Held units: none.
+
 ### Safety and content marks
 Slice: none. 2026-11-07 10:41 IST: URGENT.builtIn 112 in ui-core.js carries verify: true, inside the clinicalReview block, used only when the urgent list is empty or unreadable. Start-failure strings in boot.js have no clinicalReview mark (check C1). Forgotten-PIN line is the ruling's wording. h() drops string on* and javascript: attributes. SOS is never gated and never interrupted by auto-lock.
 
@@ -125,6 +134,7 @@ None recorded in the notes' for_the_chat beyond: the HUB baselines the 15 tour-t
 None for U-01, U-03, U-02 (README and guide belong to tests-docs). 2026-11-07 10:41 IST: guide/README owe the forgotten-PIN line, discreet title Notebook, Erase everything also removing the database, and an unreadable-row note (tests-docs).
 
 ### Open questions
+0. (11:46 IST) Rerun the two whole-lane reviews (contracts, safety) with a larger cap before the merge? Default: the HUB merges only after they return; until then the lane is RED, not for a code defect.
 1. 15 tour targets RED in guards. Default built: left to the screen lanes; HUB baselines them by name.
 2. Should a UI.boot() failure also show the urgent-help numbers (SOS never gated)? Default: no in U-01; U-03 may render #/sos/urgent content on the start-failure path.
 4. C4: should a sheet open on SOS close on lock? Default: no.
@@ -135,6 +145,7 @@ None for U-01, U-03, U-02 (README and guide belong to tests-docs). 2026-11-07 10
 8. Check C1 (clinicalReview mark on start-failure copy). Default: unmarked.
 
 ### For the HUB at the merge
+- 2026-11-07 11:46 IST: lane state RED only because the whole-lane review returned nothing; nothing new to merge since cdfc0e9. Rerun the reviewers before treating the lane as READY.
 - Shared files: package.json (new file; core owns all keys but scripts and devDependencies); offline/build.mjs parts list at lines 14-42 (core's own append point, pre-filled with all 27 parts).
 - package-lock.json: no change.
 - Conflicts to expect: none known; other lanes add files to the parts list only if not already listed.
