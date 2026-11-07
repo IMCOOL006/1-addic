@@ -1,5 +1,5 @@
 TRACK: HUB
-STATE: RESTART   # 2026-11-08 02:10 IST: HUB 8 (8474decd) hands over at a safe point (249k context; nothing of the HUB's runs; no merge in flight; _int detached at f69bc68 clean; the trunk pushed). The tag offline-v1.1 is at f69bc68 (01:59). R-O-5 (02:09, filed by the owner's window): the next edition is V3 (tag offline-v3.0 unless the owner says otherwise): the offline-v1.2 list (tests-docs tier 2, the hooks round, every open LOW by name, the tooling defects) plus an improvement review of the product and a dedicated visual status layer in the app (the person sees their recovery status and their actions take effect; built on the Harbor scene, the game surfaces and the guidance engine; the house rules apply); offline-v1.1 kept as offline/releases/1-addic-v1.1.html; no pause. The owner's window's read-only review agent writes <docs>/V3-IMPROVEMENTS.md (candidates with evidence, lanes, hours, tiers; the visual layer proposal; about 02:30-02:50). HUB 9 first: read this file whole and the run record's Resume here (02:01 and this one); merge tests-docs READY-SLICE (U-35 screenshots, CORE 10 wf_3e4ac20d-750 since 02:07) when it appears; then cut the V3 plan from V3-IMPROVEMENTS.md (a PLAN-V3.md beside PLAN.md or a new section: units, lanes by territory, the arithmetic from the rows, tier 1 = the visual status layer and the hooks round, the same gates and rules; questions to the owner with defaults on the board through the owner's window); grant slots from the rows, one start per 7.0 GB row; the launcher stays up
+STATE: BUILDING   # 2026-11-08 02:14 IST: HUB 9 (90539ba6) resumed from HUB 8's RESTART (02:10). Running: tests-docs U-35 screenshots (CORE 10, wf_3e4ac20d-750 since 02:07; its session is alive). MERGING none. Next: merge tests-docs READY-SLICE U-35 when it appears (merge base f69bc68a); cut PLAN-V3.md from V3-IMPROVEMENTS.md when the owner's window's review agent writes it (about 02:30-02:50; the HUB runs the review itself if it is not there by 03:05); then U-36b, the hooks round, the LOWs by name. R-O-5 (02:09) stands: V3 = the offline-v1.2 list + an improvement review + a dedicated visual status layer; offline-v1.1 kept as offline/releases/1-addic-v1.1.html; no pause
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f69bc68a (the trunk tip at the tag offline-v1.1, 2026-11-08 01:59 IST, after the tests-docs 9931e10 merge; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 1 (2026-11-08 02:01 IST: the row 01:52 12.1 GB free with nothing running; one start: tests-docs U-35 screenshots (tier 2, R-O-3 order) by CORE 10; the LOWs by name after it, one lane at a time on 7.0 GB rows; the 4.0 GB floor stands)
@@ -48,7 +48,7 @@ MERGED: actions-sos READY 7d9d557 (U-10 SOS screens ui-sos.js, U-11 lock screen 
 MERGED: tests-docs READY 9931e10 (FIX-TOURMARK, test-only: browser.test.mjs markOnboarded marks the tour skipped through Actions.tutorial.done; the two tour flows opt out; the SOS artifact flow rates the craving first) -> merge 25269353, trunk f69bc68a (the docs-only trunk commits folded in by finish), pushed 01:55 (build GREEN 1113578 B; test GREEN; validate GREEN; guards GREEN by name; territory 0 errors over e8da3fbd..9931e10; merge base e8da3fbd; merged clean, 1 file; then build and the full browser suite on _int at f69bc68: GREEN 16/0/3; the quiet window's one red lifted by name)
 QUIET: done 2026-11-08 01:31-01:57 on _int (e8da3fb: build, test 536/536, validate, guards, docs GREEN, browser one red by name; f69bc68 after the fix: browser GREEN 16/0/3); TAG offline-v1.1 at f69bc68 pushed 01:59. Earlier: QUIET done 2026-11-07 10:57; TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | FREEZE 10:55 | TAG offline-v1.0 11:40 | parked 19:11-22:04 (usage limit) | TAG offline-v1.1 2026-11-08 01:59 | the program runs on toward offline-v1.2 on R-O-3 (no fixed hour; slots from the rows)
-UPDATED: 2026-11-08 02:10 IST
+UPDATED: 2026-11-08 02:14 IST
 
 
 
@@ -56,6 +56,13 @@ UPDATED: 2026-11-08 02:10 IST
 
 
 
+
+# 2026-11-08 02:14 IST · HUB 9 (90539ba6) resumes; U-35 running; V3-IMPROVEMENTS.md awaited
+
+- Started by the launcher 02:11:07 on HUB 8's RESTART line (02:10). Read whole: PLAN.md, status-HUB.md, the run record's two Resume here notes (02:01, 02:10), status-CORE.md (02:08), status-SCREENS.md (01:35), the outboxes to R-O-5, R-C-43, R-S-18, R-H-37, board-notes.md, lane-widening.md, territory.json. S-00 and S-01 stand; nothing redone.
+- `claude agents --json` 02:12: CORE 10 6c9dfc8f busy (its U-35 run wf_3e4ac20d-750 is alive with it), SCREENS 1c2cf086 idle, the owner's window afc0ccd2 busy (its review agent writes V3-IMPROVEMENTS.md, not on disk yet), HUB 8 8474decd still listed (the launcher stops it once this chat has stepped). Nothing of the HUB's runs; no merge in flight; _int detached at f69bc68 clean; the trunk at f7ca0f3 fully pushed; every lane branch at its pushed tip.
+- Memory 8.4 GB free at 02:12 (one lane running): SLOTS-ALLOWED stays 1 (tests-docs). The launcher loop pid 25324 samples every ten minutes.
+- Plan for this session: (1) merge tests-docs READY-SLICE U-35 the moment it appears (merge base f69bc68a); (2) cut PLAN-V3.md from V3-IMPROVEMENTS.md when it lands; if it is not on disk by 03:05 IST (an hour after the owner's window's 02:05 message) the HUB runs the review itself with a read-only sub-agent; the parts that do not depend on it (the offline-v1.2 list, the hooks round, the LOWs by name, the tooling defects, the visual status layer's shape question) are drafted now; (3) the board at every event.
 
 # 2026-11-08 02:10 IST · R-O-5 read (V3); HUB 8 hands over at 249k
 
