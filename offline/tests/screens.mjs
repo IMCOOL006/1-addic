@@ -129,8 +129,7 @@ export const SHOTS = [
   { slug: 'weekly-review', route: '#/actions/review' },
   { slug: 'practice', route: '#/practice/breathe' },
   { slug: 'tools', route: '#/tools' },
-  // Settings
-  { slug: 'settings', route: '#/settings' },
+  // Settings (#/settings opens the Privacy tab, so settings-privacy is that picture)
   { slug: 'settings-data', route: '#/settings/data' },
   { slug: 'settings-privacy', route: '#/settings/privacy' },
 ];
