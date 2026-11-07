@@ -46,3 +46,7 @@
 - **Mechanics of this job:** the Write and Edit tools are refused in the main folder (background-job worktree guard; never enter a worktree: the trunk must stay in the main folder); write program files through Bash (printf, sed, python scripts staged under the job's tmp folder `C:\Users\ruchi\.claude-pro\jobs\<id>\tmp`); a long bash heredoc with quotes may fail to parse, a python script file does not; chain the commit after the edit with `&&` so a failed edit never commits a false claim. hub_commit.py wants repo-relative paths from the repo root. Stamps from `date`; CORE's stamps run a few minutes ahead of the clock.
 - **Owner's answers filed so far:** none (R-O-1 records the defaults in force at 08:25).
 
+
+## HUB session 3 (408a3f20, launcher, from 09:58)
+
+- 09:59-10:02 read everything named in Prompt 0 and the resume line; CORE 224074c0 alive (pid 432) with its four runs; lane tips core e26b958, actions-sos c629cae, learn 655516d, tests-docs 0019a3d, engine 04fc0c1. Memory 4.4 GB at 10:00 with four live. STATE BUILDING; board; d0647559 committed (its Claude-Session trailer carries a padded id, the later commits the full one); trunk pushed (CORE's aeddf7c went with it).
