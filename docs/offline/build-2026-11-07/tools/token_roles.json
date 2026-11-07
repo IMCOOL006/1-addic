@@ -1,4 +1,6 @@
 {
  "_readme": "session id (its first 8 characters) -> the chat's track (role: HUB, CORE or SCREENS) and a label; read by context_now.py, board.py, hook_context_restart.py and fresh_chat_launcher.py, which adds one line for every chat it launches ('(launcher)'). Add a chat opened by hand the same way, one line per session.",
- "26196777": {"role": "HUB", "label": "offline-v1 HUB (interactive, 07 Nov 06:25)"}
+ "26196777": {"role": "HUB", "label": "offline-v1 HUB (interactive, 07 Nov 06:25)"},
+ "874b2463": {"role": "HUB", "label": "offline-v1 HUB session 2, 07 Nov 07:15- (launcher)"},
+ "a29cd9a2": {"role": "CORE", "label": "offline-v1 CORE session 1, 07 Nov 07:15- (launcher)"}
 }

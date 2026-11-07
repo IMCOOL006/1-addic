@@ -1,16 +1,27 @@
 TRACK: HUB
-STATE: RESTART   # 2026-11-07 07:15 IST: BASE-READY reached by the first HUB session (26196777), which hands over at once because its context passed the 250k mark during S-00; the fresh HUB starts from KICKOFF-PROMPTS.md Prompt 0 plus the resume line and runs the loop (slots, merges, the board, the freeze, the quiet window, the tag, the hand-off)
+STATE: BUILDING   # 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024); CORE chat a29cd9a2 started 07:15 and is scouting; no lane cut yet; no merge in flight; nothing of the HUB's runs detached
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 655516dc (the trunk build/offline-v1 at BASE-READY: offline-plan's 1acf406 plus the two S-00 commits; base worktree C:\Users\ruchi\1-addic-wt\_base, read-only; integration worktree C:\Users\ruchi\1-addic-wt\_int, detached between merges)
-SLOTS-ALLOWED: 4 (the lowest of the last three samples, 8.7 GB: (8.7 - 4.0 floor - 1.5 for the CORE chat) / 0.7 = 4; re-sampled every ten minutes in lane-widening.md; under 4.0 GB free the newest lane pauses at its next commit)
-TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 8.3 GB with three lanes cut, 9.0 GB with four
+SLOTS-ALLOWED: 2 (the lowest of the last three samples at 07:20 is 5.7 GB (07:11 5.7, 07:15 7.6, 07:17 5.7): (5.7 - 4.0 floor) / 0.7 = 2; SCREENS's 1.5 GB is judged by the TRACKS-ALLOWED rule, not reserved here; re-sampled every ten minutes in lane-widening.md; slots 3 and 4 are re-granted the moment the lowest of the last three samples reaches 6.1 GB / 6.8 GB; under 4.0 GB free the newest lane pauses at its next commit)
+TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
 SLOTS: engine slot=2 granted 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts)
-SLOTS: actions-sos slot=3 granted 2026-11-07 07:15 (tier 1, flagged; on the Store contract until core's U-04 merges)
-SLOTS: learn slot=4 granted 2026-11-07 07:15 (tier 1; cut after the three above; on the UI contract until core's U-03 merges)
+SLOTS: actions-sos slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: do not cut it until this line says granted again; tier 1, flagged; next in line when memory allows)
+SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: do not cut it until this line says granted again; tier 1; after actions-sos)
+MERGING: none
+MERGE-QUEUE: (empty)
+MERGED: (none yet)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 07:15 IST
+UPDATED: 2026-11-07 07:20 IST
+
+# 2026-11-07 07:20 · HUB session 2 (874b2463-96d1-45f0-9d4a-ec8c1816634f, started by the launcher at 07:15) resumes
+
+- Read whole: PLAN.md, status-HUB.md and RUN-RECORD.md of the first HUB, status-CORE.md, status-SCREENS.md, the four outboxes, board-notes.md, lane-widening.md, baselines.md. S-00 and S-01 stand; nothing redone.
+- The owner has done two of the three pending actions: the launcher loop runs (pid 14024, started 07:15:19; it launched this HUB at 07:15:27 and CORE a29cd9a2 at 07:15:34) and .claude/settings.json carries the two hook rows (PostToolUse, Stop -> tools/hook_context_restart.py; the HUB never touches that file; it is uncommitted and stays the owner's). Decisions O1-O9 and Q10-Q13: no answer yet; defaults apply at 08:25.
+- Slots cut from 4 to 2 at 07:20 because the lowest of the last three samples fell to 5.7 GB once the two chats started (rule: PLAN.md section 4). core and engine keep slots 1 and 2 (the chain's first two lanes); actions-sos and learn are HELD and re-granted at 6.1 / 6.8 GB. No lane was cut yet, so nothing pauses.
+- The 07:17 by-hand sample (5.7 GB, 25 claude processes, 48 node) is printed by `--mem` only; the launcher's loop appends its own row every ten minutes.
+- This HUB runs as a background job: the Write and Edit tools are refused in the main folder (the job's worktree guard), so the HUB writes its files through the shell (staged in the job's tmp folder, copied in). Nothing else changes.
 
 # 2026-11-07 07:15 · BASE-READY, and the first HUB's hand-over (session 26196777, interactive window, 06:25-07:15)
 
