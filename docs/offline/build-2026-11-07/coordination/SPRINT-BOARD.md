@@ -1,12 +1,12 @@
-STATE: HUB 10 up since 03:23 IST (the launcher started it from HUB 9's hand-over; nothing was lost). MERGED 03:36: 'Your Harbor', the status page one tap from Today (your harbor, what just changed, where you stand, what to watch, your next small step; nothing on it decreases), is in the trunk at 37d1a53c and pushed; every gate green by name. MERGED 03:26: the screenshots (72 images for the guide, 'npm run screens', the docs made true) at c50ed705. Running: engine's quest-line rules V-40 (since 03:24), today-track's V-01b (the page's second half), tests-docs' guide Parts 3 and 4 (V-07). SCREENS handed over to a fresh chat at 03:24 (nothing lost); CORE plans its own. Memory 6.7 GB at 03:26 with three runs: content, core and actions-sos start one per row at or above 7 GB. TAGGED offline-v1.1 at f69bc68 (01:59), kept as offline/releases/1-addic-v1.1.html.
+STATE: HUB 10 up since 03:23 IST. Four merges this hour, every gate green by name, trunk 3bd5bf5d pushed: the screenshots and 'npm run screens' (03:26), 'Your Harbor' the status page (03:35), the guide's Parts 3 and 4 (03:56), and the quest-line's rules (04:00: Engine.questLine, unlocked, dailyObjectives, growth and run; a logged slip never counts as a day shown up; nothing derived decreases). Running: today-track V-01b (the page's second half), tests-docs V-03 + V-06 (the hooks and the docs true), engine V-40b (the growth items for Your Harbor), and content V-10 then V-42 (the quest-line's words and the objectives pool) granted at 04:02 on a 7.3 GB row. Waiting for memory rows at or above 7 GB, one lane per row: core V-11, actions-sos V-08a (then the verbs V-41), game-tutorials. Your defaults V-Q2 to V-Q6 (03:30) and V-Q9 to V-Q13 (04:00) are in force; a later answer still changes the words, not the shape. CORE handed over to a fresh chat at 03:54, SCREENS at 03:24 (nothing lost either time). TAGGED offline-v1.1 at f69bc68 (01:59), kept as offline/releases/1-addic-v1.1.html.
 NEEDS YOU (one line each, in your window; the default applies at the time named): V-Q1 the tag's name (default offline-v3.0; at the tag). V-Q2 'a visual layer to see the status give effect' = your own recovery status taking effect in the app, as planned (default), or the build program's status as a published board (say so and both get built; 03:30). V-Q3 the status layer as a page at #/status (default: the back button works, it prints, nothing sits over SOS) or an overlay over Today (03:30). V-Q4 a 14-day strip of dated activity dots (default: shown, no count; it changes as days roll off) or only things that grow (03:30). V-Q5 'what just changed' since you last opened the page this session (default, no new write) or since you last looked, remembered across sessions (03:30). V-Q6 the page's name (default 'Your Harbor'; 03:30). V-Q7 the India crisis numbers (I6): which are confirmed (default: none cleared; every number keeps 'please verify'; at the tag). V-Q8 the clinical review: who reads the review pack CLINICAL-REVIEW-PACK.md (written now) and when (default: no copy changes before the reviewer's answers; at the tag). NEW for R-O-6 (defaults at 04:00): V-Q9 the grace day (default: one a week, shown as 'kept'). V-Q10 which features the quest-line unlocks (default: the tools and mini-games, the game surfaces' extras, the Harbor scenes and themes, the Explorer; never SOS, help, lessons, Settings, export or your data). V-Q11 daily objectives fixed or chosen (default: three a day, two drawn by the date, one you may swap once). V-Q12 what counts as a day shown up for the run (default: any day with a log, a lesson, a practice, an objective or an SOS drill; never a claimed sober day). V-Q13 where the run shows (default: Today's header line and Your Harbor; never a push or a countdown). Reply to copy: 'V-Q1-V-Q13 default'. Still yours: the walk of the v1.1 file on phone and computer (findings in one message); keep the machine awake; the pharma program shares the memory.
-NEXT (HUB 10, in order): merge today-track's status page when SCREENS says READY-SLICE; grant content V-10, core V-11, actions-sos V-08a one per 7 GB row; merge each V3 slice as it lands (engine V-40 first for the quest-line chain) and push the trunk; the defaults V-Q2-V-Q6 apply at 03:30 and V-Q9-V-Q13 at 04:00 unless you answer; the board every two hours (next by 05:30) with the re-cut hours; FREEZE about 13:30, the full gates, the tag offline-v3.0 about 14:30 IST if three lanes run from 03:30 (about two hours later with two).
+NEXT (HUB 10, in order): grant core V-11, then actions-sos V-08a, then game-tutorials, one per 7 GB row; merge each slice as it lands (V-01b, V-03 + V-06, V-40b, V-10, V-11, V-08a) and push the trunk; the board by 05:30 with the hours re-cut from the rows; FREEZE about 13:30, the full gates, the tag offline-v3.0 about 14:30 IST if four lanes keep running (the arithmetic is re-cut every two hours).
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-08 03:37 IST by `board.py`.
+Rewritten 2026-11-08 04:03 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -21,42 +21,42 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-08 03:23 IST: HUB 10 (4bd5570f) up from HUB 9's RESTART (03:17); read whole: PLAN.md, status-HUB.md, the run record's Resume here, status-CORE.md (03:20), status-SCREENS.md (03:15), the…
-- BASE: 37d1a53c (the trunk tip after the today-track 127509e merge, 2026-11-08 03:36 IST; new lanes cut from here; lanes already fast-forwarded to f69bc68a (engine, core, actions-sos) merge with base f69bc68a; tests-docs merges from 476f404, today-track from 127509e; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- STATE: BUILDING — 2026-11-08 04:02 IST: HUB 10 (4bd5570f). Four merges since 03:23 (tests-docs 476f404 and c1058ab, today-track 127509e, engine 03840ef); trunk 3bd5bf5d pushed. content V-10 granted slot 4 on the row…
+- BASE: 3bd5bf5d (the trunk tip after the engine 03840ef merge, 2026-11-08 04:02 IST; new lanes cut from here: content and game-tutorials fast-forward to it when granted; core and actions-sos (already at f69bc68a) merge with base f69bc68a; engine from 03840ef, tests-docs from c1058ab, today-track from 127509e; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
 - QUIET: done 2026-11-08 01:31-01:57 on _int (e8da3fb: build, test 536/536, validate, guards, docs GREEN, browser one red by name; f69bc68 after the fix: browser GREEN 16/0/3); TAG offline-v1.1 at f69bc68 pushed 01:59. Earlier: QUIET done 2026-11-07 10:57; TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 (PLAN-V3.md section 7: tier 1 about 30 h; FREEZE about 13:30, QUIET to 14:15, TAG offline-v3.0 about 14:30 IST with three lanes from 03:30 on 7.0 GB rows, two hours later with two; re-cut on the board every two hours from the rows)
-- UPDATED: 2026-11-08 03:36 IST
+- UPDATED: 2026-11-08 04:02 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 4bd5570f (launcher-started 2026-11-08 03:18) | BUILDING — 2026-11-08 03:23 IST: HUB 10 (4bd5570f) up from HUB 9's RESTART (03:17); read whole: PLAN.md, status-HUB.md, the run… | 135k | 2026-11-08 03:36 IST |
-| CORE | c2601cf1 (launcher-started 2026-11-08 02:42) | BUILDING — 2026-11-08 03:28 IST: CORE 11 (c2601cf1). Running: engine V-40 slice wf_2b0e95b3-328 (slot 2, granted 03:23)… | 258k | 2026-11-08 03:28 IST |
-| SCREENS | 0fd59f53 (launcher-started 2026-11-08 03:26) | BUILDING — 2026-11-08 03:33 IST: SCREENS 0fd59f53 up from 1c2cf086's RESTART (03:24). today-track V-01b runs on slot 6 as… | 122k | 2026-11-08 03:33 IST |
+| HUB | 4bd5570f (launcher-started 2026-11-08 03:18) | BUILDING — 2026-11-08 04:02 IST: HUB 10 (4bd5570f). Four merges since 03:23 (tests-docs 476f404 and c1058ab, today-track 127509e… | 160k | 2026-11-08 04:02 IST |
+| CORE | 51e49e2a (launcher-started 2026-11-08 03:56) | RESTART — 2026-11-08 03:54 IST: CORE 11 (c2601cf1) hands over (context near 300k). ONE run still alive in c2601cf1: tests-docs… | 112k | 2026-11-08 03:54 IST |
+| SCREENS | 0fd59f53 (launcher-started 2026-11-08 03:26) | BUILDING — 2026-11-08 03:49 IST: today-track V-01b wf_ccfdc4d0-2ae runs (slot 6). The V-43 annex scout wf_7392359a-5b6 is done… | 177k | 2026-11-08 03:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot ? | SCOUTED | GRANTED slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951…; V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51… |
-| `engine` | CORE | 1 |  | slot 2 | BUILDING | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
+| `engine` | CORE | 1 |  | slot 2 | READY-SLICE | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
 | `actions-sos` | CORE | 1 | yes | slot ? | SCOUTED | GRANTED slot=3 free from 2026-11-08 01:31 IST: READY 7d9d557 merged…; V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits; tip 75eb8e5 |
-| `tests-docs` | CORE | 1 |  | slot 5 | BUILDING | GRANTED 2026-11-08 02:01 IST for tier 2 (R-O-3): U-35 screenshots first (npm run screens; the guide images), then U-36b guide Part 3, then the hooks round… |
-| `today-track` | SCREENS | 1 |  | slot 6 | READY-SLICE | GRANTED 2026-11-08 02:34 IST for V3 tier 1 (the row 02:33 8.8 GB with nothing heavy running; PLAN-V3.md: V-01a the status page, the slice, then V-01b… |
+| `tests-docs` | CORE | 1 |  | slot 5 | READY | GRANTED 2026-11-08 02:01 IST for tier 2 (R-O-3): U-35 screenshots first (npm run screens; the guide images), then U-36b guide Part 3, then the hooks round… |
+| `today-track` | SCREENS | 1 |  | slot 6 | BUILDING | GRANTED 2026-11-08 02:34 IST for V3 tier 1 (the row 02:33 8.8 GB with nothing heavy running; PLAN-V3.md: V-01a the status page, the slice, then V-01b… |
 | `workbook-settings` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25… |
 | `actions` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=7 free from 2026-11-07 18:50: READY 0977edd merged…; READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only… |
 | `game-tutorials` | SCREENS | 2 |  | slot ? | SCOUTED | GRANTED slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged…; V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append… |
-| `content` | SCREENS | 1 |  | slot ? | SCOUTED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2)… |
+| `content` | SCREENS | 1 |  | slot 4 | SCOUTED | GRANTED 2026-11-08 04:02 IST for V3 tier 1 (the row 03:58 7.3 GB; PLAN-V3.md: V-10 the slice, then V-42 content-quests.js on the section 7 contracts and… |
 
-Slots allowed: 3 (2026-11-08 03:23 IST: tests-docs slot 5 (U-35 READY-SLICE 476f404 merging; then V-07), today-track slot 6 (V-01a in its check), engine slot 2 granted on the row 03:15 9.5 GB (launcher 03:20 8.5 GB) for V-40 the slice. Next starts one per row at or above 7.0 GB, in this order: content V-10 then V-42 (SCREENS), core V-11, actions-sos V-08a + V-SOS10 then V-41, game-tutorials V-08b/V-28/V-44; tier 2 only when no tier 1 lane waits; under 4.0 GB the newest run pauses at its next commit). Granted: 10 lanes (`core` slot ?, `engine` slot 2, `actions-sos` slot ?, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot 6, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
+Slots allowed: 4 (2026-11-08 04:02 IST: tests-docs slot 5 (V-03 + V-06 running), today-track slot 6 (V-01b), engine slot 2 (V-40b growthItems next, R-C-51), content slot 4 granted on the row 03:58 7.3 GB for V-10 then V-42. Next starts one per row at or above 7.0 GB, in this order: core V-11, actions-sos V-08a + V-SOS10 then V-41, game-tutorials V-08b/V-28/V-44; tier 2 only when no tier 1 lane waits; under 4.0 GB the newest run pauses at its next commit). Granted: 10 lanes (`core` slot ?, `engine` slot 2, `actions-sos` slot ?, `learn` slot ?, `tests-docs` slot 5, `content` slot 4, `today-track` slot 6, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
 
 ## Merges
 
-- the merge queue: none; next: the V3 slices in arrival order (engine V-40, today-track V-01b, tests-docs V-07, then core V-11, actions-sos V-08a, content V-10 once granted)
+- the merge queue: none; next: the V3 slices and lanes in arrival order (today-track V-01b, tests-docs V-03 + V-06, engine V-40b, content V-10; then core V-11, actions-sos V-08a once granted)
 
 - 07:41 core READY-SLICE 8bf7b5c (U-01) -> 7eaf7f4, trunk fde4bbbd. build GREEN 103409 B; guards GREEN by name (15 screen tour-target names baselined until the screens land).
 - 07:44 engine READY-SLICE 04fc0c1 (U-05) -> 6089dad, trunk 33d2a04f. build GREEN 127289 B; test GREEN (logic.test.mjs); validate SKIP until U-08.
@@ -87,6 +87,8 @@ Slots allowed: 3 (2026-11-08 03:23 IST: tests-docs slot 5 (U-35 READY-SLICE 476f
 - 01:31 actions-sos READY 7d9d557 (U-10 SOS screens, U-11 onboarding and lock, the sample-data safety in actions.js; seven safety rounds, the contracts review and a test-only round clean) -> e8da3fbd. build 1113578 B, test 169/169, validate, guards GREEN by name, territory 0 errors; merged clean, 4 files; the last baselined test name lifted. Every lane is merged.
 - 03:29 tests-docs READY-SLICE 476f404 (U-35 screenshots: screens.mjs, npm run screens, 72 PNGs at phone and desktop width; fixes C1-C4: docs true, one Settings slug per tab, seed skip by name) -> a37cca2d, trunk c50ed705. build 1113578 B, test harness.test.mjs, validate, guards, docs GREEN by name, territory 0 errors; merged clean, 79 files.
 - 03:35 today-track READY-SLICE 127509e (V-01a Your Harbor at #/status: ui-status.js, status.test.mjs, the parts line, the styles block) -> 37d1a53c. build 1132659 B, test status.test.mjs + today-track.test.mjs, validate, guards GREEN by name, territory 0 errors; merged clean, 4 files.
+- 03:56 tests-docs READY c1058ab (V-07 the guide's Parts 3 and 4; build_guide.py STRICT_IMAGES) -> 8d21c8ca, trunk 9946ffe5. build, test, validate, guards, docs GREEN by name; merged clean, 3 files.
+- 04:00 engine READY-SLICE 03840ef (V-40 the quest-line, the daily objectives, growth and the run; engine-questline.test.mjs) -> 3bd5bf5d. build 1147672 B, test 6 files, validate, guards GREEN by name, territory 0 errors; merged clean, 2 files.
 
 ## Blockers and questions
 
@@ -113,8 +115,8 @@ Slots allowed: 3 (2026-11-08 03:23 IST: tests-docs slot 5 (U-35 READY-SLICE 476f
 
 ## Machine
 
-- Free memory 6.7 GB of 31.8 GB at 2026-11-08 03:26 IST; claude 36, node 34 processes; 3 slots by the rule (lane-widening.md).
-- The launcher loop: running (pid 25324); its last launch: SCREENS 0fd59f53 at 2026-11-08 03:26.
+- Free memory 7.3 GB of 31.8 GB at 2026-11-08 03:58 IST; claude 38, node 46 processes; 4 slots by the rule (lane-widening.md).
+- The launcher loop: running (pid 25324); its last launch: CORE 51e49e2a at 2026-11-08 03:56.
 
 ## Files of the build
 

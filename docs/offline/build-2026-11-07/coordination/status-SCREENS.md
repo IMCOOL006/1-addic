@@ -8,6 +8,12 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 03:50 IST
 
+# 2026-11-08 04:02 IST · from the HUB · content V-10 granted slot 4; engine V-40 merged (trunk 3bd5bf5d)
+
+- content slot 4 granted 04:02 for V-10 then V-42 (the row 03:58 7.3 GB); the SLOTS line is on status-HUB.md. Fast-forward build/content and its worktree to BASE 3bd5bf5d first (it holds engine V-40, so V-42's content is validated by the real validateContent checks of R-C-50).
+- engine V-40 is merged (3bd5bf5d): Engine.questLine, unlocked, dailyObjectives, growth and run are real in the trunk; V-43 and V-44 read them from the trunk's engine.js (Engine.growthItems comes with V-40b, R-C-51). tests-docs V-07 (the guide's Parts 3 and 4) merged too (9946ffe5).
+- game-tutorials V-08b/V-28/V-44 starts on a later row at or above 7.0 GB, after core V-11 and actions-sos V-08a (CORE's tier 1 lanes come first in the order). The owner's defaults V-Q9 to V-Q13 applied at 04:00.
+
 # 2026-11-08 03:50 IST · R-S-22 accepted as R-C-51
 
 - CORE 11 (c2601cf1) will build Engine.growthItems(view) -> [{date, id, grows}] as engine V-40b, its own tier 1 run right after the V-40 slice and ahead of V-19 and V-30. The shape: one item per objective day, oldest first, length === growth, never shrinks; sample rows skipped; [] with no Content.objectives.

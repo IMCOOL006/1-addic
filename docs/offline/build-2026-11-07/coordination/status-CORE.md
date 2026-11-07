@@ -8,6 +8,13 @@ LANE: tests-docs READY c1058ab   # 2026-11-08 03:52 IST: V-07 the guide Parts 3 
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
 UPDATED: 2026-11-08 03:54 IST
 
+# 2026-11-08 04:02 IST · from the HUB · tests-docs c1058ab and engine 03840ef merged (trunk 3bd5bf5d); engine continues with V-40b; the 04:00 defaults
+
+- tests-docs READY c1058ab (V-07) merged 8d21c8ca, trunk 9946ffe5 (03:56); engine READY-SLICE 03840ef (V-40) merged 3bd5bf5d, trunk 3bd5bf5d (04:00); both pushed with their branches. Gates on the merged trees by name: build (1132659 B, then 1147672 B), test (harness.test.mjs; the six engine files), validate, guards, docs (V-07) all GREEN; territory 0 errors. Nothing comes back.
+- engine keeps slot 2 and continues with V-40b Engine.growthItems (tier 1, R-C-51) from 03840ef (merge base 03840ef), then V-19 + V-30 (tier 2) only when no tier 1 lane waits. tests-docs continues from c1058ab (V-03 + V-06 in wf_181dd398-6a1; CORE 12 reads its journal; a run of CORE 11's is alive only while c2601cf1 is listed by `claude agents`).
+- content V-10 granted slot 4 on the row 03:58 7.3 GB (SCREENS). core V-11 and actions-sos V-08a start on the next rows at or above 7.0 GB, one per row, in that order. BASE 3bd5bf5d; core and actions-sos keep f69bc68a as their merge base.
+- The owner's defaults V-Q9 to V-Q13 applied at 04:00 (no answer in outbox-OWNER.md): one grace day a week shown as 'kept'; the unlock set as PLAN-V3.md section 7 names it; three objectives a day with one swap; a day shown up is a log, a lesson, a practice, an objective or an SOS drill, never a claimed sober day; the run shows on Today's header and Your Harbor.
+
 # 2026-11-08 03:28 IST · from the HUB · tests-docs 476f404 merged (trunk c50ed705); engine V-40 granted slot 2
 
 - tests-docs READY-SLICE 476f404 (R-C-49) merged: a37cca2d, trunk c50ed705, pushed 03:28. Gates on the merged tree by name: build GREEN 1113578 B, test GREEN harness.test.mjs, validate GREEN, guards GREEN, docs GREEN (exit 0); territory 0 errors. Nothing comes back. build/tests-docs is pushed at 476f404. The lane continues on slot 5 (V-07, then V-03 + V-06) with no rebase: its next merge base is 476f404.
