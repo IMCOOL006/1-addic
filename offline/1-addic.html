@@ -1335,10 +1335,586 @@ C_a.modules.push(
 
 if (typeof module !== 'undefined' && module.exports) module.exports = C_a;
 </script>
+<script data-part="content-lessons-b.js">
+/* 1-addic · CONTENT · lessons for modules M4–M6 (Set Yourself Up, Become a Self-Expert, Outsmart the Addicted Brain).
+   Original wording throughout (docs/book/ notes gave the ideas, never the words). `refs` cite Content.references ids.
+   `book` is metadata. Shape: BUILD-PLAN 3.6. */
+const C_b = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
+C_b.modules = C_b.modules || [];
+
+C_b.modules.push(
+{ id: 'm4', step: 2, name: 'Set Yourself Up', harbor: 'The Pier', book: 4,
+  blurb: 'Make your space, your week and your people work for your recovery. Be smart, not strong.',
+  unlocks: ['network', 'scripts', 'quests'], lessons: [
+  { id: 'm4-l1', title: 'Clear the space', minutes: 4,
+    moment: { cast: 'meera', text: 'Meera has not had a drink in three weeks. There is still a bottle behind the rice tin, and she knows exactly where it is. Some evenings she thinks about it more than she wants to.' },
+    cards: [
+      { title: 'Smart, not strong', text: 'Willpower runs low at the end of a hard day. Instead of testing yourself, make the easy choice the safe one. That is being smart, not weak.' },
+      { title: 'What counts as "stuff"', text: 'Bottles, pills, kit, hidden stashes, the cash set aside, the numbers of people who supply. Each one is a cue that can start a craving.' },
+      { title: 'Doing it', text: 'Pick a day and go room by room, including your bag, phone and vehicle. Ask someone who does not use to help if you like. For old medicines, a chemist can tell you how to get rid of them safely.' },
+    ],
+    checks: [ { q: 'Why remove the bottle instead of keeping it "just to prove I can"?', options: [
+      { t: 'Because every look at it is a small fight you do not need', ok: true, why: 'Yes. Fewer cues means fewer cravings, and more energy for everything else.' },
+      { t: 'Because you are not strong enough', ok: false, why: 'Strength is not the point. Smart choices protect you on the days strength runs out.' } ] } ],
+    tryIt: { exercise: 'clear-space' },
+    wrap: { built: 'A plan to clear out what pulls at you.', lives: 'Workbook, and the Clear the Space quest in Actions.', action: 'Pick the day you will clear the space.', todo: 'Clear the space at home' },
+    refs: ['R21', 'R1'] },
+  { id: 'm4-l2', title: 'Small decisions add up', minutes: 5,
+    moment: { cast: 'raj', text: 'Raj did not plan to smoke on Friday. He just took the short cut home, stopped for tea at the old stall, and his friends were there. By then it felt like it had already been decided.' },
+    cards: [
+      { title: 'Choices that look harmless', text: 'Many slips start with small choices that seem unrelated: a route home, who you sit with, keeping cash on you. Each one moves you a little closer to a risky spot.' },
+      { title: 'Catch it early', text: 'The earlier you notice the chain, the easier it is to step off. At the start, it is a five-minute detour. At the end, it is a hard craving in a room full of people using.' },
+      { title: 'A quick check', text: 'Ask: does this choice matter? List the options, even the boring ones. Weigh each, and pick the most protective one. If you still go, decide your exit and who you will call.' },
+      { title: 'Practise in a story', text: 'The Big Game lets you walk a character through a day of small choices and see where each one leads.', link: { route: '#/games/big-game', label: 'Play The Big Game' } },
+    ],
+    checks: [ { q: 'Which is a small decision that could matter?', options: [
+      { t: 'Walking home past the place where you used to buy', ok: true, why: 'Yes. It looks like just a route, but it puts you near a strong cue.' },
+      { t: 'Choosing what to cook for dinner', ok: false, why: 'Most everyday choices are fine. The ones to check bring you closer to using.' } ] } ],
+    tryIt: { exercise: 'should-i-go' },
+    wrap: { built: 'A way to check a small choice before it carries you along.', lives: 'Tools, Should I go?', action: 'Use Should I go? once this week before a plan you are unsure about.', todo: null },
+    refs: ['R1', 'R2'] },
+  { id: 'm4-l3', title: 'Move your body', minutes: 4,
+    moment: { cast: 'dev', text: 'Dev used pills to push through study nights. Now, at 4 pm, he feels flat and restless. His cousin keeps asking him to play badminton, and he keeps saying maybe.' },
+    cards: [
+      { title: 'Why it helps', text: 'Regular exercise is linked with less craving, better sleep and better mood. It also fills time that used to belong to using.' },
+      { title: 'Start small', text: 'A brisk walk counts. So does dancing in the kitchen. Over time, aim for about two and a half hours of moderate activity a week, built up slowly.' },
+      { title: 'Make it likely', text: 'Pick something you might enjoy, set a day and a time, and plan a small reward. Doing it with someone makes it more likely to happen. If you have a health condition, check with a doctor first.' },
+    ],
+    checks: [ { q: 'What is a good first exercise goal?', options: [
+      { t: 'Twenty minutes of something you like, on a set day', ok: true, why: 'Yes. Small and specific is easier to start and keep.' },
+      { t: 'Two hours at the gym every day from tomorrow', ok: false, why: 'Big plans often stall. Build up slowly.' } ] } ],
+    tryIt: { exercise: 'exercise-plan' },
+    wrap: { built: 'A first plan to move your body.', lives: 'Actions, the Try an Exercise quest.', action: 'Do your first session on the day you picked.', todo: 'Try my first exercise session' },
+    refs: ['R25', 'R27'] },
+  { id: 'm4-l4', title: 'Your crew', minutes: 5,
+    moment: { cast: 'farhan', text: 'Farhan\'s phone has two kinds of numbers in it. Some belong to people who ask how he is doing. Some belong to people who used to sell him pills. Seven months in, he is still sorting them.' },
+    cards: [
+      { title: 'Safety Nets', text: 'A Safety Net is someone who supports your recovery: they do not use around you, they listen, and they are there when it counts. Two or three is a strong start.' },
+      { title: 'Risky people', text: 'Some people make using more likely, even if you care about them. You can keep your distance, meet only in safe places, or tell them plainly what you need.' },
+      { title: 'Groups count too', text: 'Mutual-help groups such as AA, NA or SMART Recovery give you people who understand. Many find that going regularly helps them stay on track.' },
+      { title: 'Keep them close', text: 'Add your Safety Nets in Workbook, My People. Then Call someone in SOS has someone to call.', link: { route: '#/workbook/network', label: 'Open My People' } },
+    ],
+    checks: [ { q: 'Which person sounds most like a Safety Net?', options: [
+      { t: 'A cousin who does not drink and picks up when you call', ok: true, why: 'Yes. Someone sober, reliable and willing to listen.' },
+      { t: 'A friend who is fun but always brings a bottle', ok: false, why: 'You can still care about them. They are just not who you lean on in a craving.' } ] } ],
+    tryIt: { exercise: 'network-review' },
+    wrap: { built: 'A picture of who supports you, and who to keep at a distance.', lives: 'Workbook, Support Network.', action: 'Add at least one Safety Net to My People.', todo: 'Add a Safety Net in My People' },
+    refs: ['R22', 'R18'] },
+  { id: 'm4-l5', title: 'Say it straight', minutes: 4,
+    moment: { cast: 'kavita', text: 'Kavita\'s son brings beer when he visits and leaves the rest in her fridge. She has not said anything. She does not want a fight, so she says nothing and feels worse.' },
+    cards: [
+      { title: 'Three ways to say it', text: 'Passive means staying quiet and stewing. Aggressive means attacking. Assertive means saying clearly what you feel and need, while respecting the other person.' },
+      { title: 'A simple script', text: '"I feel [a feeling] when [what happens]. I need [what you ask for]." It is about you, not about blaming them, so it is easier to hear.' },
+      { title: 'Saying it well', text: 'Pick a calm moment. Keep your voice steady and look at them. Short is fine. You do not owe a long reason.' },
+    ],
+    checks: [ { q: 'Which line is assertive?', options: [
+      { t: '"I feel uneasy when there is alcohol at home. I need you to keep it out for now."', ok: true, why: 'Yes. A feeling, a situation and a clear ask, with no attack.' },
+      { t: '"You never think about anyone but yourself."', ok: false, why: 'That is an attack. It usually starts an argument, not a change.' },
+      { t: 'Saying nothing and hiding the bottles', ok: false, why: 'That is passive. The problem stays, and so does the stress.' } ] } ],
+    tryIt: { exercise: 'assertive-script' },
+    wrap: { built: 'A script for a conversation that matters.', lives: 'Workbook, Scripts.', action: 'Say your script out loud once before the real talk.', todo: null },
+    refs: ['R2', 'R5'] },
+  { id: 'm4-l6', title: 'Saying no, and growing your crew', minutes: 5,
+    moment: { cast: 'dev', text: 'At a friend\'s birthday, someone offers Dev a pill "to keep the party going". He says no, and they ask again. And again.' },
+    cards: [
+      { title: 'A clear no', text: 'A short "No, thanks", with eye contact, works better than a long excuse. If they keep offering, ask them to stop, or leave.' },
+      { title: 'Have a plan ready', text: 'Ask for something else to drink, suggest a different plan, or change the subject. Remind yourself why your recovery matters to you.' },
+      { title: 'Practise first', text: 'Saying no is easier when you have said it before, even in practice.', link: { route: '#/games/refusal', label: 'Practise in Refusal Rehearsal' } },
+      { title: 'New people, new places', text: 'Recovery often means spending less time with people who use. Look for new places to meet people: a club, a class, a group, volunteering. Get back in touch with people you lost along the way.' },
+    ],
+    checks: [ { q: 'Someone offers twice after you say no. What now?', options: [
+      { t: 'Ask them to stop offering, and leave if it continues', ok: true, why: 'Yes. You can protect your recovery without a long explanation.' },
+      { t: 'Take it so the evening is not awkward', ok: false, why: 'An awkward minute passes. Your recovery is worth more.' } ] } ],
+    tryIt: { exercise: 'expand-network' },
+    wrap: { built: 'Ready words for saying no, and a plan to grow your crew.', lives: 'Workbook, Scripts and Support Network; Actions, the Build Your Crew quest.', action: 'Take your first small step to meet someone new this week.', todo: 'Take one step to grow my crew' },
+    refs: ['R1', 'R22'] },
+] },
+
+{ id: 'm5', step: 3, name: 'Become a Self-Expert', harbor: 'The Weather Station', book: 5, milestone: 'self-expert',
+  blurb: 'Learn your own patterns: what sets off a craving, the thoughts that push you, and how a craving feels in you.',
+  unlocks: ['triggers', 'redFlags', 'insights'], lessons: [
+  { id: 'm5-l1', title: 'The chain', minutes: 4,
+    moment: { cast: 'raj', text: 'Raj thinks his evening smoke just happens. When he looks closer, there is a pattern: work ends, he is bored, he thinks "I deserve it", and then the craving is loud.' },
+    cards: [
+      { title: 'Links in a chain', text: 'A slip rarely comes out of nowhere. Usually there is a trigger, then a thought, then a craving, then a choice. Each link is a place to step in.' },
+      { title: 'Triggers', text: 'A trigger is anything that sets the chain going: a feeling, a person, a place, a time of day, an object. Some are easy to spot, some are sneaky.' },
+      { title: 'Know your own', text: 'Everyone\'s chain is a bit different. The more you know your own, the earlier you can step in. Logging cravings is how you learn it.' },
+    ],
+    checks: [ { q: 'Where can you step into the chain?', options: [
+      { t: 'At any link: the trigger, the thought, the craving or the choice', ok: true, why: 'Yes. Earlier is easier, but every link is a chance.' },
+      { t: 'Only before the trigger happens', ok: false, why: 'You cannot avoid every trigger. You can still step in later in the chain.' } ] } ],
+    tryIt: { route: '#/track/log/craving', label: 'Log a craving, even a small one' },
+    wrap: { built: 'A way to see a craving as a chain you can break.', lives: 'Track, the craving log.', action: 'Log your next craving, however small.', todo: null },
+    refs: ['R1', 'R3'] },
+  { id: 'm5-l2', title: 'Your triggers', minutes: 5,
+    moment: { cast: 'meera', text: 'For Meera, the empty flat after nine is the strongest trigger. But a good day can do it too: a compliment at work, and she wants to celebrate.' },
+    cards: [
+      { title: 'Inside and outside', text: 'Internal triggers are feelings and states: stress, boredom, loneliness, even happiness. External triggers are people, places, situations and things.' },
+      { title: 'The frequent ones', text: 'A few triggers usually do most of the work. Mark the ones that come up most often. They show first when you log a craving.' },
+      { title: 'Then plan for them', text: 'Some triggers you can avoid. Others, like stress, you cannot, so you plan a response. Later steps give you the tools.' },
+    ],
+    checks: [ { q: 'Can a happy feeling be a trigger?', options: [
+      { t: 'Yes, celebration and excitement can trigger cravings', ok: true, why: 'Yes. Many people used to celebrate, so good news can set off the chain too.' },
+      { t: 'No, only bad feelings are triggers', ok: false, why: 'Any feeling that was linked with using can become a trigger.' } ] } ],
+    tryIt: { exercise: 'triggers' },
+    wrap: { built: 'Your Trigger Profile.', lives: 'Workbook, Trigger Profile, and as chips in every log.', action: 'Notice one trigger this week as it happens.', todo: null },
+    refs: ['R1', 'R2'] },
+  { id: 'm5-l3', title: 'Red-flag thoughts', minutes: 4,
+    moment: { cast: 'farhan', text: 'Farhan\'s back aches after a long shift. A thought arrives, quiet and reasonable: "It\'s medical, so it doesn\'t count." He recognises it.' },
+    cards: [
+      { title: 'Thoughts that sound like decisions', text: 'Red-flag thoughts give you permission to use: "just one", "nobody has to know", "I deserve it". They feel true in the moment.' },
+      { title: 'Name it', text: 'Calling it a red flag puts a little space between you and the thought. You do not have to argue yet. Just notice: "That is a red flag."' },
+      { title: 'Make a list', text: 'Write down your own red-flag thoughts, in your own words. Step 4 shows you how to answer each one.' },
+    ],
+    checks: [ { q: '"I\'ve been good all week, I\'ve earned it." What is this?', options: [
+      { t: 'A red-flag thought giving permission', ok: true, why: 'Yes. It frames using as a reward. Noticing that is the skill.' },
+      { t: 'A fair reward for hard work', ok: false, why: 'Rewards are good. This one leads back to using. Pick a different reward.' } ] } ],
+    tryIt: { exercise: 'red-flags' },
+    wrap: { built: 'Your list of red-flag thoughts.', lives: 'Workbook, Red Flags and Comebacks.', action: 'When a red flag shows up, say "red flag" to yourself.', todo: null },
+    refs: ['R7', 'R1'] },
+  { id: 'm5-l4', title: 'Six thinking traps', minutes: 6,
+    moment: { cast: 'kavita', text: 'One customer complains about a late tiffin. By evening, Kavita has decided the whole business is failing and she is useless at it. Her mood drops, and the old pull comes back.' },
+    cards: [
+      { title: 'Common traps', text: 'Everyone falls into thinking traps. Six common ones: black-or-white thinking, discounting the good, jumping to conclusions, treating feelings as facts, blaming yourself for everything, and labelling yourself.' },
+      { title: 'Why they matter here', text: 'Traps make things look worse than they are. When things look hopeless, using can start to seem like the only relief.' },
+      { title: 'Spot and reword', text: 'Name the trap, then say it more fairly: "One order went wrong; forty went right." It does not have to be cheerful, just accurate.' },
+      { title: 'Practise sorting', text: 'Distortion Sort gives you thoughts to sort into the six traps.', link: { route: '#/games/distortion-sort', label: 'Play Distortion Sort' } },
+    ],
+    checks: [
+      { q: '"He didn\'t reply. He must be angry with me." Which trap?', options: [
+        { t: 'Jumping to conclusions', ok: true, why: 'Yes. It guesses what he thinks without evidence.' },
+        { t: 'Discounting the good', ok: false, why: 'That trap ignores good things. This one guesses at someone\'s mind.' } ] },
+      { q: 'What is a fairer version of "I always mess things up"?', options: [
+        { t: '"I messed this one up. I have done other things well."', ok: true, why: 'Yes. It is accurate, not just positive.' },
+        { t: '"I never make mistakes."', ok: false, why: 'That swaps one extreme for another. Aim for accurate.' } ] } ],
+    tryIt: { exercise: 'trap-pairs' },
+    wrap: { built: 'A few of your own thoughts, each with its trap and a fairer version.', lives: 'Workbook, Thought journal.', action: 'Catch one thinking trap this week and reword it.', todo: null },
+    refs: ['R7', 'R5'] },
+  { id: 'm5-l5', title: 'The spiral', minutes: 4, clinicalReview: true,
+    moment: { cast: 'farhan', text: 'Farhan has wondered what would happen if he slipped. He thinks the worst part would be the voice saying it was all for nothing.' },
+    cards: [
+      { title: 'A slip is not a fall', text: 'A slip is one use. What happens next depends a lot on the thoughts that follow. "I\'ve blown it, so I might as well keep going" can turn one slip into many.' },
+      { title: 'Answer them now', text: 'Write your answers to these thoughts while you are calm. If a slip ever happens, your own words are ready.' },
+      { title: 'Nothing is lost', text: 'In this app a slip wipes nothing. Total days, skills and everything you built stay. If you are ever unsafe, Urgent help in SOS is one tap away.', link: { route: '#/sos/urgent', label: 'Urgent help' } },
+    ],
+    checks: [ { q: 'After a slip, which thought helps most?', options: [
+      { t: '"This is one slip. I can stop here and call someone."', ok: true, why: 'Yes. It keeps one slip from becoming more.' },
+      { t: '"I\'ve ruined everything, so it doesn\'t matter now."', ok: false, why: 'That is the spiral talking. Everything you built is still there.' } ] } ],
+    tryIt: { exercise: 'spiral' },
+    wrap: { built: 'Your answers to spiral thoughts, ready if you need them.', lives: 'SOS, I slipped.', action: 'Read your answers once more this week.', todo: null },
+    refs: ['R4', 'R23'] },
+  { id: 'm5-l6', title: 'Your craving signature, and the logbook', minutes: 5,
+    moment: { cast: 'dev', text: 'Dev never thought of cravings as something in his body. Then he noticed: before an exam his legs get restless and his heart speeds up, long before he thinks of pills.' },
+    cards: [
+      { title: 'How a craving shows up', text: 'Cravings show up in the body, in feelings and in thoughts. Your mix is your craving signature. Knowing it helps you spot a craving early.' },
+      { title: 'Cravings pass', text: 'A craving usually rises, peaks and fades, often within about fifteen minutes. Spotting it early gives you time to reach for a tool.' },
+      { title: 'The logbook', text: 'A quick log after each craving notes the time, the place, the trigger and how strong it was. After a week or two, your Insights start to show patterns.', link: { route: '#/track/log/craving', label: 'Open the craving log' } },
+    ],
+    checks: [ { q: 'Why log cravings that you got through?', options: [
+      { t: 'They show your patterns, and that you can ride them out', ok: true, why: 'Yes. Every log adds to what you know about yourself.' },
+      { t: 'They do not count, so there is no need', ok: false, why: 'Cravings you got through are some of the most useful logs.' } ] } ],
+    tryIt: { exercise: 'craving-signature' },
+    wrap: { built: 'Your craving signature.', lives: 'Workbook, Craving Signature; Track, Insights.', action: 'Log every craving for one week.', todo: 'Log my cravings for a week' },
+    refs: ['R1', 'R12'] },
+] },
+
+{ id: 'm6', step: 4, name: 'Outsmart the Addicted Brain', harbor: 'The Lighthouse', book: 6, milestone: 'strategist',
+  blurb: 'Answer red-flag thoughts, ride out cravings, and plan your days so the risky hours are covered.',
+  unlocks: ['planner', 'battlePlans', 'talkBack'], lessons: [
+  { id: 'm6-l1', title: 'Put it on trial', minutes: 6,
+    moment: { cast: 'meera', text: 'It is Friday evening. "Just one glass won\'t hurt," says the thought. This time Meera does not argue in her head. She opens the app and writes it down.' },
+    cards: [
+      { title: 'A thought is not a fact', text: 'A red-flag thought is a claim. Like any claim, you can check the evidence. Putting it on trial means looking at it calmly instead of obeying it.' },
+      { title: 'The questions', text: 'What is the evidence for it? What is the evidence against it? Does it fall into a thinking trap? And then what happens next?' },
+      { title: 'Your closing statement', text: 'End with a short answer you can remember. That is your Comeback. SOS shows your Comebacks when you tap Talk back.' },
+    ],
+    checks: [ { q: 'What makes a good comeback?', options: [
+      { t: 'Short, true for you, and easy to remember', ok: true, why: 'Yes. In a craving, short words are the ones you can reach.' },
+      { t: 'A long argument that covers every point', ok: false, why: 'Long arguments are hard to recall in a hard moment. Keep the short version.' } ] } ],
+    tryIt: { exercise: 'trial' },
+    wrap: { built: 'Your first Comeback.', lives: 'Workbook, Red Flags and Comebacks; SOS, Talk back.', action: 'Put your loudest red flag on trial this week.', todo: null },
+    refs: ['R7', 'R6'] },
+  { id: 'm6-l2', title: 'True, but not the whole truth', minutes: 4,
+    moment: { cast: 'raj', text: '"Smoking helps me relax after work." Raj has to admit it is partly true. For an hour or so, it does.' },
+    cards: [
+      { title: 'A grain of truth', text: 'Some red-flag thoughts are partly true, which makes them hard to answer. Using may help you relax, sleep or feel social, for a short while.' },
+      { title: 'The rest of the story', text: 'Ask "and then what?" Play the story forward: the next morning, the next week, the next year. The short-term truth leaves out the cost.' },
+      { title: 'Another way to the same need', text: 'If a thought points to a real need, like rest or company, look for another way to meet it. That makes the comeback stronger.' },
+    ],
+    checks: [ { q: '"It helps me sleep." What is a good answer?', options: [
+      { t: '"It helps tonight, and I wake up worse. Let me try a different wind-down."', ok: true, why: 'Yes. It admits the grain of truth and tells the rest of the story.' },
+      { t: '"That is a lie."', ok: false, why: 'Denying the grain of truth makes the answer easy to dismiss.' } ] } ],
+    tryIt: { route: '#/tools/trial?mode=redflag', label: 'Put a half-true thought on trial' },
+    wrap: { built: 'A way to answer thoughts that are partly true.', lives: 'Tools, Put it on trial.', action: 'Ask "and then what?" the next time a red flag shows up.', todo: null },
+    refs: ['R7', 'R5'] },
+  { id: 'm6-l3', title: 'Thinking skills and doing skills', minutes: 4,
+    moment: { cast: 'kavita', text: 'Some evenings Kavita can talk herself out of a craving. Other evenings words do not help, and she just has to get up and do something.' },
+    cards: [
+      { title: 'Two kinds of tools', text: 'Thinking skills change how you see a thought: putting it on trial, spotting a trap. Doing skills change what you do: leaving, calling someone, going for a walk.' },
+      { title: 'Both work', text: 'When a craving is mild, a thinking skill may be enough. When it is strong, a doing skill often works faster. Most people use a mix.' },
+      { title: 'Know your mix', text: 'Notice which skills have helped you so far. You will use this when you build your plan.' },
+    ],
+    checks: [ { q: 'A craving is very strong right now. What tends to work fastest?', options: [
+      { t: 'A doing skill: leave, call, move', ok: true, why: 'Yes. Action gives the craving time to pass.' },
+      { t: 'Arguing with it until you win', ok: false, why: 'A long argument can keep you in the craving. Act first, think later.' } ] } ],
+    tryIt: { exercise: 'cog-vs-beh' },
+    wrap: { built: 'A note of the skills that work for you.', lives: 'Workbook, and later My Recovery Plan.', action: 'Try one doing skill the next time a craving is strong.', todo: null },
+    refs: ['R5', 'R2'] },
+  { id: 'm6-l4', title: 'Surf, distract, delay', minutes: 5,
+    moment: { cast: 'dev', text: 'It is 11 pm and Dev wants a pill to keep studying. He sets a timer for fifteen minutes and tells himself he will decide after that.' },
+    cards: [
+      { title: 'Ride the wave', text: 'Picture the craving as a wave. You do not have to fight it or obey it. Breathe, notice it rise and peak, and let it pass.', link: { route: '#/practice/urge-surf', label: 'Try urge surfing' } },
+      { title: 'Distract', text: 'Do something that takes your mind and hands: walk fast, call someone, cook, clean a drawer. Have a list ready so you do not have to think.' },
+      { title: 'Delay', text: 'Tell yourself you will wait fifteen minutes before deciding anything. By then, the craving has often eased.' },
+    ],
+    checks: [ { q: 'What does delay mean?', options: [
+      { t: 'Wait fifteen minutes before deciding anything', ok: true, why: 'Yes. Time is on your side. Most cravings ease if you wait.' },
+      { t: 'Promise yourself you can use later', ok: false, why: 'Delay is not a promise. It is time for the wave to pass.' } ] } ],
+    tryIt: { exercise: 'distractions' },
+    wrap: { built: 'Your own distraction list.', lives: 'SOS, Distract me.', action: 'Use one of the three next time a craving hits.', todo: null },
+    refs: ['R12', 'R1'] },
+  { id: 'm6-l5', title: 'Plan the day', minutes: 4,
+    moment: { cast: 'meera', text: 'Meera\'s hardest hours are 9 pm to midnight, when her husband is at work. When she leaves them empty, the bottle fills them.' },
+    cards: [
+      { title: 'Empty time is risky', text: 'Long stretches with nothing planned leave room for cravings. A simple plan for the day covers those gaps.' },
+      { title: 'Mark the risky hours', text: 'Look at when cravings usually hit. Put something in those hours: a call, a walk, a class, a meal with someone.' },
+      { title: 'Keep it loose', text: 'A plan is a guide, not a test. If the day changes, change the plan. The planner shows the gaps for you.' },
+    ],
+    checks: [ { q: 'Why plan your evenings?', options: [
+      { t: 'Covered time leaves less room for cravings', ok: true, why: 'Yes. A plan fills the risky hours before a craving does.' },
+      { t: 'To prove you are busy', ok: false, why: 'Busy is not the goal. Covered risky hours are.' } ] } ],
+    tryIt: { route: '#/actions/planner', label: 'Plan tomorrow in the planner' },
+    wrap: { built: 'A planned day, with the risky hours covered.', lives: 'Actions, Planner.', action: 'Plan tomorrow evening tonight.', todo: 'Plan tomorrow in the planner' },
+    refs: ['R1', 'R21'] },
+  { id: 'm6-l6', title: 'Battle Plans', minutes: 5,
+    moment: { cast: 'farhan', text: 'Farhan\'s cousin is getting married next month. There will be drinking, and the old crowd from the site will be there. He has four weeks to get ready.' },
+    cards: [
+      { title: 'Plan in calm weather', text: 'When you can see a risky situation coming, make a plan while you are calm. In the moment, a ready plan is easier than thinking on your feet.' },
+      { title: 'A plan and two backups', text: 'Write your main plan, then two backups in case it does not work. For example: stay with my brother; if he leaves, call my sponsor; if that fails, go home by ten.' },
+      { title: 'Look back after', text: 'After the event, take a minute to note what happened and what worked. That counts whatever the outcome, and makes the next plan better.' },
+    ],
+    checks: [ { q: 'Why two backups?', options: [
+      { t: 'Plans can fail, and a backup keeps you covered', ok: true, why: 'Yes. If one plan falls through, you already know your next step.' },
+      { t: 'In case the first plan was wrong', ok: false, why: 'The first plan can be a good one and still not work out. Backups are just cover.' } ] } ],
+    tryIt: { route: '#/actions/battle?new=1', label: 'Make your first Battle Plan' },
+    wrap: { built: 'Your first Battle Plan.', lives: 'Actions, Battle Plans.', action: 'Make a Battle Plan for the next risky event on your calendar.', todo: 'Make a Battle Plan' },
+    refs: ['R2', 'R3'] },
+] }
+);
+
+if (typeof module !== 'undefined' && module.exports) module.exports = C_b;
+</script>
+<script data-part="content-lessons-c.js">
+/* 1-addic · CONTENT · lessons for modules M7–M10 (Be Present, Rediscover Joy, Handle Hard Feelings, Your Recovery Plan).
+   Original wording throughout (docs/book/ notes gave the ideas, never the words). `refs` cite Content.references ids.
+   `book` is metadata. Shape: BUILD-PLAN 3.6. M9 and M10 touch feelings, anger, slips and warning signs: every such
+   lesson carries clinicalReview: true, and slip or crisis lines stay short and point to #/sos/urgent. */
+const C_c = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
+C_c.modules = C_c.modules || [];
+
+C_c.modules.push(
+{ id: 'm7', step: 5, name: 'Be Present', harbor: 'The Cove', book: 7, milestone: 'navigator',
+  blurb: 'Notice what is happening right now, without judging it. Then choose what you do next.',
+  unlocks: ['practices', 'training'], lessons: [
+  { id: 'm7-l1', title: 'What mindfulness is', minutes: 4,
+    moment: { cast: 'kavita', text: 'Kavita has been told to "just relax" more times than she can count. It never works. When her neighbour says mindfulness helped her, Kavita rolls her eyes, then asks what it actually is.' },
+    cards: [
+      { title: 'Paying attention, on purpose', text: 'Mindfulness means noticing what is happening right now, on purpose, without judging it. Your breath, your body, the sounds around you, your thoughts. You just notice.' },
+      { title: 'Not a relaxation trick', text: 'The goal is not to feel calm. Sometimes you will, sometimes you will feel restless or bored. Whatever comes up is fine to notice.' },
+      { title: 'Why it helps recovery', text: 'Stress is one of the biggest reasons people return to using. Noticing a craving or a hard feeling early gives you a gap, and in that gap you can choose.' },
+    ],
+    checks: [ { q: 'Your mind wanders ten times in five minutes. What does that mean?', options: [
+      { t: 'You noticed ten times, and each time you came back', ok: true, why: 'Yes. Noticing that your mind wandered is the practice. Every return counts.' },
+      { t: 'You are bad at mindfulness', ok: false, why: 'Everyone\'s mind wanders. There is no right or wrong way to do this.' } ] } ],
+    tryIt: { route: '#/practice/breathe', label: 'Try five quiet minutes' },
+    wrap: { built: 'A first taste of paying attention on purpose.', lives: 'Actions, Practices.', action: 'Sit for five minutes today and just notice your breath.', todo: 'Try five minutes of breathing' },
+    refs: ['R14', 'R12'] },
+  { id: 'm7-l2', title: 'Autopilot', minutes: 4,
+    moment: { cast: 'raj', text: 'Raj cannot remember the drive home from work. He was thinking about a fight with his supervisor the whole way. He only noticed where he was when he was already outside the old tea stall.' },
+    cards: [
+      { title: 'Doing without noticing', text: 'Most of us brush our teeth, shower and travel on autopilot, with our minds somewhere else. That is normal. The trouble is that using can run on autopilot too.' },
+      { title: 'Autopilot and cravings', text: 'A habit can carry you from a trigger to using before you have made a choice. Waking up to the moment lets you see the choice while it is still yours.' },
+      { title: 'Practise on small things', text: 'Pick one daily task: a shower, a meal or a short walk. Do it slowly and notice what you see, hear, smell and feel. That is training for the harder moments.' },
+    ],
+    checks: [ { q: 'Why practise on a shower or a meal?', options: [
+      { t: 'Easy moments build the skill for hard ones', ok: true, why: 'Yes. The more you practise when it is calm, the easier it is to notice in a craving.' },
+      { t: 'Because showers are a trigger', ok: false, why: 'They usually are not. They are just a simple, daily place to practise.' } ] } ],
+    tryIt: { exercise: 'everyday-mindful' },
+    wrap: { built: 'One everyday task done with your full attention.', lives: 'Actions, Practices, and your Workbook notes.', action: 'Choose one daily task to do mindfully this week.', todo: 'Do one everyday task mindfully' },
+    refs: ['R14', 'R13'] },
+  { id: 'm7-l3', title: 'The body scan', minutes: 5,
+    moment: { cast: 'farhan', text: 'Farhan\'s back still aches some days. He used to take a pill the moment he felt it. His counsellor suggested he try noticing his body first, slowly, from his feet up.' },
+    cards: [
+      { title: 'From feet to head', text: 'In a body scan, you move your attention slowly through your body. You notice each part: warm or cool, tight or loose, comfortable or not. You do not need to change anything.' },
+      { title: 'About ten minutes', text: 'Sit or lie somewhere quiet. The guided scan reads aloud, part by part, with pauses. If your mind drifts, gently bring it back to the part you were on.' },
+      { title: 'Uncomfortable is allowed', text: 'You may notice an ache or a tense spot. Just notice it. If something is too much, open your eyes and stop. You can try again another day.' },
+    ],
+    checks: [ { q: 'During the scan you notice a tight jaw. What do you do?', options: [
+      { t: 'Notice it, then move on to the next part', ok: true, why: 'Yes. The scan is about noticing, not fixing.' },
+      { t: 'Stop the scan because you are doing it wrong', ok: false, why: 'Noticing tension is the scan working. There is nothing wrong to fix.' } ] } ],
+    tryIt: { exercise: 'body-scan' },
+    wrap: { built: 'Your first body scan, and a note of what you noticed.', lives: 'Actions, Practices, Body scan.', action: 'Do the body scan once more this week.', todo: 'Do the body scan' },
+    refs: ['R12', 'R14'] },
+  { id: 'm7-l4', title: 'Breathing with awareness', minutes: 4,
+    moment: { cast: 'dev', text: 'Dev\'s mind races before every test. He used to reach for a pill to feel focused. This time he sits on his bed and just watches his breath for five minutes.' },
+    cards: [
+      { title: 'Just watch it', text: 'Breathe the way you normally do. Notice the air coming in, your chest or belly rising and falling, the air going out. You do not need to breathe in any special way.' },
+      { title: 'Start small, build up', text: 'Begin with five minutes. When that feels easy, try ten, then fifteen. Some people build up to thirty, but five is a real practice.' },
+      { title: 'An anchor you carry', text: 'Your breath is always with you. When a craving or a hard feeling hits, it is a place to come back to.' },
+    ],
+    checks: [ { q: 'How should you breathe during this practice?', options: [
+      { t: 'Normally, and just notice it', ok: true, why: 'Yes. The practice is watching your breath, not controlling it.' },
+      { t: 'As slowly and deeply as you can', ok: false, why: 'There is no special way to breathe here. Just notice the breath you have.' } ] } ],
+    tryIt: { exercise: 'breathing' },
+    wrap: { built: 'A breathing practice you can grow from five minutes.', lives: 'Actions, Practices, Breathing.', action: 'Breathe with awareness for five minutes on three days this week.', todo: 'Practise breathing for five minutes' },
+    refs: ['R12', 'R13'] },
+  { id: 'm7-l5', title: 'SOBER breathing', minutes: 5,
+    moment: { cast: 'meera', text: 'It is 9:30 pm and the flat is quiet. Meera feels the pull toward the kitchen. She remembers a short skill she can do in two minutes, right where she is.' },
+    cards: [
+      { title: 'Five steps, two minutes', text: 'Stop what you are doing. Observe what is happening in your body and mind. Breathe, with your attention on the breath. Expand that attention to your whole body, then Respond with care: choose what helps.' },
+      { title: 'A go-to skill', text: 'SOBER works in the moment, anywhere. It is in SOS, so it is always one tap away.', link: { route: '#/sos/craving', label: 'See SOBER in SOS' } },
+      { title: 'Practise before you need it', text: 'Try it first when calm, then with an imagined craving, then in a mildly stressful moment. Each round makes it easier to reach for when it counts.' },
+    ],
+    checks: [ { q: 'What does the R in SOBER mean?', options: [
+      { t: 'Respond with care, choosing what helps', ok: true, why: 'Yes. After you stop and notice, you choose your next step instead of reacting.' },
+      { t: 'Relax completely', ok: false, why: 'You do not have to feel relaxed. You only need to choose your response.' } ] } ],
+    tryIt: { exercise: 'sober-practice' },
+    wrap: { built: 'SOBER breathing, practised once.', lives: 'SOS, and Actions, Practices, SOBER.', action: 'Practise SOBER once a day this week, starting when calm.', todo: 'Practise SOBER breathing' },
+    refs: ['R12', 'R13'] },
+  { id: 'm7-l6', title: 'Acceptance and kindness', minutes: 4,
+    moment: { cast: 'kavita', text: 'On her husband\'s birthday, Kavita wakes up heavy with grief. Part of her wants to push the feeling away any way she can. Instead she sits with her tea and lets herself feel sad for a while.' },
+    cards: [
+      { title: 'Let it be there', text: 'The addicted brain says: get rid of this feeling now. Acceptance says: this is how things are right now, and it will change. A feeling you allow often passes faster than one you fight.' },
+      { title: 'Ride the wave', text: 'A craving rises, peaks and falls, like a wave. Urge surfing means watching it rise and fall without acting on it.', link: { route: '#/practice/urge-surf', label: 'Try urge surfing' } },
+      { title: 'Be kind to yourself', text: 'Talk to yourself the way you would talk to a friend who is struggling. Kindness is not letting yourself off. It is what helps people keep going.' },
+    ],
+    checks: [ { q: 'A strong craving arrives. What does acceptance look like?', options: [
+      { t: 'Noticing it, letting it rise and fall, without acting on it', ok: true, why: 'Yes. You allow the craving to be there, and you still choose what you do.' },
+      { t: 'Giving in, because you accept it', ok: false, why: 'Accepting a feeling is not obeying it. You let it be there and let it pass.' } ] } ],
+    tryIt: { route: '#/practice/urge-surf', label: 'Try urge surfing' },
+    wrap: { built: 'A way to let a feeling or craving pass without obeying it.', lives: 'Actions, Practices, Urge surfing.', action: 'Next time a craving comes, try riding it for ten minutes.', todo: null },
+    refs: ['R12', 'R1', 'R14'] },
+] },
+
+{ id: 'm8', step: 6, name: 'Rediscover Joy', harbor: 'The Garden', book: 8,
+  blurb: 'Fill your days with things you enjoy that do not pull you back. Joy is part of recovery, not a reward for later.',
+  unlocks: ['activities', 'rewards', 'predictions'], lessons: [
+  { id: 'm8-l1', title: 'Rewards and recovery', minutes: 4,
+    moment: { cast: 'raj', text: 'Raj used to play cricket every Sunday. Over the years, smoking slowly took the place of the game, the friends and the jokes after. Now his Sundays feel empty, and he is not sure what he even likes any more.' },
+    cards: [
+      { title: 'What got crowded out', text: 'Using takes time, money and energy. Bit by bit, it pushes out the things that used to make life good. Getting those back is a big part of staying well.' },
+      { title: 'Flat at first is normal', text: 'In early recovery, many people feel that nothing is fun. The brain is healing, and that takes time. Doing enjoyable things anyway helps the feeling come back.' },
+      { title: 'More choices, more strength', text: 'People with many drug-free sources of enjoyment find it easier to stay stopped. Every new one you find is a reason to keep going.' },
+    ],
+    checks: [ { q: 'Nothing feels fun in your first month. What helps?', options: [
+      { t: 'Doing enjoyable things anyway, and giving it time', ok: true, why: 'Yes. Enjoyment often returns slowly, and activity helps it along.' },
+      { t: 'Waiting until you feel like it', ok: false, why: 'Feeling like it often comes after doing it, not before.' } ] } ],
+    tryIt: { exercise: 'used-to-enjoy' },
+    wrap: { built: 'A list of things you used to enjoy.', lives: 'Workbook, Activity Library.', action: 'Pick one thing from your list to try this week.', todo: 'Try one thing I used to enjoy' },
+    refs: ['R17', 'R18'] },
+  { id: 'm8-l2', title: 'Track your days', minutes: 4,
+    moment: { cast: 'meera', text: 'Meera thinks her days are all work and worry. When she logs a week of activities, she sees something new. The evenings she video-called her sister were her best.' },
+    cards: [
+      { title: 'Look before you change', text: 'For a week, note what you do and how much you enjoyed it. Do not change anything yet. You are just collecting facts about your own days.' },
+      { title: 'Patterns appear', text: 'You may find that some activities lift you and others drain you. You may also see which hours feel empty or risky.' },
+      { title: 'Small is fine', text: 'A quick log twice a day is enough. Your Insights show the pattern once you have a few days.' },
+    ],
+    checks: [ { q: 'What is the point of tracking before changing anything?', options: [
+      { t: 'To see what actually lifts or drains you', ok: true, why: 'Yes. Your own data shows you where to start.' },
+      { t: 'To prove you are doing enough', ok: false, why: 'There is no score here. It is just information for you.' } ] } ],
+    tryIt: { route: '#/track/log/activity', label: 'Log an activity' },
+    wrap: { built: 'A first activity log.', lives: 'Track, and Insights.', action: 'Log your activities twice a day for a week.', todo: 'Log activities for a week' },
+    refs: ['R15', 'R16'] },
+  { id: 'm8-l3', title: 'Should-dos and want-tos', minutes: 4,
+    moment: { cast: 'kavita', text: 'Kavita\'s days are full of tiffins, bills and family errands. When she tries to list things she wants to do, she gets stuck after one. That is when she notices how much the balance has tipped.' },
+    cards: [
+      { title: 'Two kinds of task', text: 'Should-dos are things you have to do: work, chores, bills. Want-tos are things you do because you enjoy them. A good week has some of both.' },
+      { title: 'Too many shoulds', text: 'A life of only shoulds can feel heavy and unfair. That feeling can turn into "I deserve a drink." Adding want-tos takes away some of that pull.' },
+      { title: 'Find the gap', text: 'Make two lists and compare them. If one is much shorter, that is where to add something this week.' },
+    ],
+    checks: [ { q: 'Your want-to list is much shorter. What does that tell you?', options: [
+      { t: 'Where to add something small and enjoyable', ok: true, why: 'Yes. The gap shows you where to start.' },
+      { t: 'That you are lazy or selfish for wanting more', ok: false, why: 'Wanting enjoyment is healthy. It is part of staying well.' } ] } ],
+    tryIt: { exercise: 'should-want' },
+    wrap: { built: 'Your should-dos and want-tos, side by side.', lives: 'Workbook, Should and want.', action: 'Add one want-to to your week.', todo: 'Add one want-to this week' },
+    refs: ['R15', 'R18'] },
+  { id: 'm8-l4', title: 'Pleasant, not risky', minutes: 4,
+    moment: { cast: 'raj', text: 'A friend invites Raj to a concert by a band he only ever saw while high. He would love to go. He also knows the crowd and the music might pull hard.' },
+    cards: [
+      { title: 'One a day', text: 'Aim for one pleasant activity each day. It can be small: a walk, a song you love, cooking something new. What matters is doing it to enjoy yourself.' },
+      { title: 'Ask one question', text: 'Before you pick an activity, ask: could this make me want to use? Some places, people and music are tied to old habits.' },
+      { title: 'Make it safer, or pick another', text: 'If it is risky, you can bring a friend who does not use, plan your exit, or choose something else for now. What you enjoy may change, and that is part of finding out.' },
+    ],
+    checks: [ { q: 'A fun plan has a risk of triggering you. What can you do?', options: [
+      { t: 'Bring a support person and plan your exit, or choose another activity', ok: true, why: 'Yes. You can lower the risk or swap it, without giving up on fun.' },
+      { t: 'Never do anything fun again', ok: false, why: 'Fun is part of recovery. The aim is to find safe fun.' } ] } ],
+    tryIt: { exercise: 'activity-menu' },
+    wrap: { built: 'A menu of pleasant activities, each with a risk check.', lives: 'Workbook, Activity Library.', action: 'Plan one pleasant activity for each of the next three days.', todo: 'Plan a pleasant activity' },
+    refs: ['R15', 'R17', 'R1'] },
+  { id: 'm8-l5', title: 'Obstacles and predictions', minutes: 5,
+    moment: { cast: 'dev', text: 'Dev planned to go swimming three times this week. Each time, he told himself it would not be fun and he was too tired. He went once and, to his surprise, enjoyed it more than he expected.' },
+    cards: [
+      { title: 'Two kinds of obstacle', text: 'Some obstacles are practical: time, money, travel. Others are thoughts: "It won\'t be fun", "I\'m too tired". Both can be worked on.' },
+      { title: 'Solve it in three steps', text: 'List every way around the obstacle, even silly ones. Weigh them up and pick the best one or two. Try one, and see what happens.', link: { route: '#/tools/problem-solver', label: 'Open the Problem Solver' } },
+      { title: 'Test the prediction', text: 'Before an activity, guess how much you will enjoy it. Afterwards, rate how much you did. Often the real rating is higher than the guess.', link: { route: '#/actions/predictions', label: 'Open the Prediction Lab' } },
+    ],
+    checks: [ { q: 'You predict a walk will be no fun. What is the experiment?', options: [
+      { t: 'Go anyway, then compare how it felt with your guess', ok: true, why: 'Yes. Your own results show whether the prediction was right.' },
+      { t: 'Skip it, because your prediction says so', ok: false, why: 'A prediction is a guess, not a fact. Testing it is how you find out.' } ] } ],
+    tryIt: { exercise: 'obstacles' },
+    wrap: { built: 'A plan around one obstacle, and a prediction to test.', lives: 'Workbook, and Actions, Prediction Lab.', action: 'Make one prediction this week and test it.', todo: 'Test one enjoyment prediction' },
+    refs: ['R15', 'R7'] },
+  { id: 'm8-l6', title: 'Follow through and reward', minutes: 4,
+    moment: { cast: 'farhan', text: 'Farhan promised himself a new pair of walking shoes after a month of evening walks. On day thirty he bought them. He wore them on his walk the next evening.' },
+    cards: [
+      { title: 'Plan it, then do it', text: 'Choose a pleasant activity, put it on a day, and do it. Planning makes it much more likely to happen.' },
+      { title: 'Pick your own reward', text: 'Choose a real reward for following through: a favourite meal, a film, something small you have wanted. You decide what it is and when you have earned it.' },
+      { title: 'Rewards for doing', text: 'The app rewards practice, never sober days. Missing a plan does not take anything away. Just plan the next one.' },
+    ],
+    checks: [ { q: 'You miss a planned activity. What happens?', options: [
+      { t: 'Nothing is lost; you plan the next one', ok: true, why: 'Yes. Everything you have built stays. Just pick a new day.' },
+      { t: 'You lose your rewards', ok: false, why: 'Nothing is ever taken away here. Missing one plan is just a missed plan.' } ] } ],
+    tryIt: { exercise: 'rewards' },
+    wrap: { built: 'Three plans, each with a reward you chose.', lives: 'Actions, Rewards, and the Planner.', action: 'Follow through on one plan this week and enjoy your reward.', todo: 'Follow through on a plan and reward myself' },
+    refs: ['R19', 'R15'] },
+] },
+
+{ id: 'm9', step: 7, name: 'Handle Hard Feelings', harbor: 'The Breakwater', book: 9, milestone: 'builder',
+  blurb: 'Sadness, worry and anger are part of life. Learn to handle them without using.',
+  unlocks: ['feelingTools'], lessons: [
+  { id: 'm9-l1', title: 'Mood and recovery', minutes: 4, clinicalReview: true,
+    moment: { cast: 'kavita', text: 'Six weeks without a drink, and Kavita still feels low most mornings. She wonders if this is just how life is now. Her doctor asks her a few questions and listens.' },
+    cards: [
+      { title: 'Feelings and using are linked', text: 'Many people used to cope with sadness, worry or anger. When you stop, those feelings are still there. Learning to handle them is a big part of staying well.' },
+      { title: 'Early low mood', text: 'Feeling low in the first weeks is common and often lifts with time. Logging your feelings helps you see if it is changing.' },
+      { title: 'When to get help', text: 'If low mood or worry lasts for weeks, talk to a doctor or counsellor. Help for mood and help for addiction work well together.' },
+      { title: 'If you are not safe', text: 'If you have thoughts of harming yourself, get help now.', link: { route: '#/sos/urgent', label: 'Urgent help' } },
+    ],
+    checks: [ { q: 'Your low mood has lasted most days for a month. What is a good step?', options: [
+      { t: 'Talk to a doctor or counsellor about it', ok: true, why: 'Yes. Ongoing low mood is common and treatable, and help works.' },
+      { t: 'Keep it to yourself and wait', ok: false, why: 'You do not have to carry it alone. A doctor can help.' } ] } ],
+    tryIt: { route: '#/track/log/feeling', label: 'Log how you feel' },
+    wrap: { built: 'A first feeling log.', lives: 'Track, and Insights.', action: 'Log your feelings once a day this week.', todo: 'Log feelings daily this week' },
+    refs: ['R31', 'R28'] },
+  { id: 'm9-l2', title: 'The same traps', minutes: 4, clinicalReview: true,
+    moment: { cast: 'dev', text: 'Dev gets one low mark and thinks, "I\'m going to fail everything." By evening he feels hopeless about college. The thought feels like a fact.' },
+    cards: [
+      { title: 'Traps feed moods too', text: 'The thinking traps from M5 do not only feed cravings. They also feed sadness and worry. "Always", "never" and "everyone thinks" are clues.' },
+      { title: 'Put the mood on trial', text: 'Write the thought down. Look for evidence for and against it. Then write a fairer thought.', link: { route: '#/tools/trial?mode=mood', label: 'Put a thought on trial' } },
+      { title: 'Feelings are not facts', text: 'A strong feeling can make a thought seem true. Feeling like a failure does not make you one.' },
+    ],
+    checks: [ { q: '"I got one bad mark, so I\'ll fail everything." Which trap is it?', options: [
+      { t: 'Jumping to conclusions', ok: true, why: 'Yes. One mark does not tell you how everything will turn out.' },
+      { t: 'It is not a trap; it is just true', ok: false, why: 'One result is not proof about the future. Try putting it on trial.' } ] } ],
+    tryIt: { route: '#/tools/trial?mode=mood', label: 'Put a thought on trial' },
+    wrap: { built: 'A low-mood thought, put on trial.', lives: 'Tools, Put it on trial.', action: 'Catch one mood thought this week and put it on trial.', todo: null },
+    refs: ['R7', 'R5'] },
+  { id: 'm9-l3', title: 'Anger: give it a beat', minutes: 5, clinicalReview: true,
+    moment: { cast: 'kavita', text: 'A customer complains loudly about a late tiffin. Kavita feels the heat rise in her face. Years ago, that feeling ended the evening with a bottle.' },
+    cards: [
+      { title: 'Anger costs', text: 'Losing your temper can hurt people you care about and make it harder to get what you need. Angry moments are also a common lead-in to using.' },
+      { title: 'Know your signs', text: 'Anger often shows in the body first: a hot face, a tight jaw, clenched hands. Spotting your early signs gives you time to act.' },
+      { title: 'Give it a beat', text: 'When you notice the signs, pause before you speak or act. Step away, breathe, or count. The Give it a beat practice in Actions, Practices walks you through it.' },
+    ],
+    checks: [ { q: 'You feel your face getting hot in an argument. What do you do first?', options: [
+      { t: 'Pause and give it a beat before you answer', ok: true, why: 'Yes. A short pause lets you choose your words.' },
+      { t: 'Say everything now, before you forget', ok: false, why: 'Words said in the heat of anger are hard to take back. A pause helps.' } ] } ],
+    tryIt: { exercise: 'anger-signature' },
+    wrap: { built: 'Your anger signature: your triggers and early signs.', lives: 'Workbook, Anger, and SOS feeling tools.', action: 'Next time you notice an early sign, give it a beat.', todo: null },
+    refs: ['R12', 'R2'] },
+  { id: 'm9-l4', title: 'Rewrite the scene', minutes: 5, clinicalReview: true,
+    moment: { cast: 'farhan', text: 'Last week Farhan shouted at his son over a broken phone. He still feels bad about it. He wishes he had handled it differently.' },
+    cards: [
+      { title: 'Look back, kindly', text: 'Pick a time anger got the better of you. Write what happened, what you did, and how it turned out. Be honest and fair to yourself.' },
+      { title: 'Write a new ending', text: 'Now write what you could do next time: where you would pause, what you would say, who you could call. This is practice, not blame.' },
+      { title: 'Practise in a game', text: 'The Rewrite game lets you try a new ending on a made-up scene first.', link: { route: '#/games/rewrite', label: 'Play Rewrite the scene' } },
+    ],
+    checks: [ { q: 'Why rewrite a scene that already happened?', options: [
+      { t: 'To plan a better response for next time', ok: true, why: 'Yes. Rehearsing a new ending makes it easier to use for real.' },
+      { t: 'To prove you were wrong', ok: false, why: 'This is not about blame. It is about having a plan you like.' } ] } ],
+    tryIt: { exercise: 'rewrite-scene' },
+    wrap: { built: 'One scene, rewritten with a new ending.', lives: 'Workbook, Anger.', action: 'Read your new ending once before a situation you expect to be tense.', todo: null },
+    refs: ['R2', 'R7'] },
+  { id: 'm9-l5', title: 'Quick coping, then your why', minutes: 4, clinicalReview: true,
+    moment: { cast: 'meera', text: 'A hard call with her mother leaves Meera shaky and tearful. She opens SOS and taps "I\'m feeling". Ten minutes later she reads her Reasons Card.' },
+    cards: [
+      { title: 'Calm the body first', text: 'In a hard moment, start with something quick: SOBER, a short walk, cold water on your face, or a call to someone in your crew.', link: { route: '#/sos/feeling', label: 'Open feeling tools in SOS' } },
+      { title: 'Then come back to why', text: 'When the wave has eased a little, read your reasons for change. They remind you what the hard work is for.' },
+      { title: 'Build your own tools', text: 'Over time, keep the tools that helped you most. They show up first in SOS when you need them.' },
+    ],
+    checks: [ { q: 'What can you do first when a feeling hits hard?', options: [
+      { t: 'Use a quick coping skill, then read your reasons', ok: true, why: 'Yes. Settle the body first, then remind yourself why you are doing this.' },
+      { t: 'Push the feeling down and ignore it', ok: false, why: 'Pushed-down feelings tend to come back. Quick coping helps them pass.' } ] } ],
+    tryIt: { route: '#/workbook/reasons', label: 'Read your Reasons Card' },
+    wrap: { built: 'A quick coping plan that ends with your reasons.', lives: 'SOS, feeling tools, and Workbook, Reasons.', action: 'Pick two quick coping skills to try first next time.', todo: null },
+    refs: ['R12', 'R8'] },
+] },
+
+{ id: 'm10', step: null, name: 'Your Recovery Plan', harbor: 'The Harbor Office', book: 10, milestone: 'guide',
+  blurb: 'Put what you have learned into one plan: your warning signs, your skills, your people and what to do after a slip.',
+  unlocks: ['recoveryPlan', 'radar'], lessons: [
+  { id: 'm10-l1', title: 'One step ahead', minutes: 4, clinicalReview: true,
+    moment: { cast: 'farhan', text: 'Two years ago, Farhan went back to using after eight months. Looking back, he can see the signs started weeks before. He stopped calling his brother, skipped meetings and slept badly.' },
+    cards: [
+      { title: 'A slip is a process', text: 'Going back to using usually builds up over days or weeks. Stress grows, good habits slip, and old thoughts return. That means there is time to notice and act.' },
+      { title: 'Check in each week', text: 'A short look back each week helps you spot changes early. Are you sleeping, eating, seeing people, doing things you enjoy?', link: { route: '#/actions/review', label: 'Open the Weekly Review' } },
+      { title: 'Nothing you built is lost', text: 'Everything you have learned stays with you. If things get harder, you go back to the skills that worked.' },
+    ],
+    checks: [ { q: 'Why look for warning signs weeks ahead?', options: [
+      { t: 'Because a slip usually builds up over time, so there is time to act', ok: true, why: 'Yes. Spotting the build-up early gives you more choices.' },
+      { t: 'Because slips come out of nowhere', ok: false, why: 'They often feel sudden, but looking back, most have early signs.' } ] } ],
+    tryIt: { route: '#/actions/review', label: 'Try a Weekly Review' },
+    wrap: { built: 'A weekly habit of looking back.', lives: 'Actions, Weekly Review.', action: 'Pick a day for your Weekly Review.', todo: 'Do a Weekly Review' },
+    refs: ['R3', 'R2'] },
+  { id: 'm10-l2', title: 'Your warning signs', minutes: 5, clinicalReview: true,
+    moment: { cast: 'meera', text: 'Meera knows two of her warning signs well. When she skips dinner and stops answering her sister, trouble is close. She writes them down with a plan for each.' },
+    cards: [
+      { title: 'Signs are personal', text: 'Common signs include poor sleep, skipping support, pulling away from people, fewer enjoyable things, and old thoughts like "just one". Yours may be different.' },
+      { title: 'Pick your top three', text: 'Choose the three signs that matter most for you. For each, write one thing you will do when you notice it.' },
+      { title: 'A gentle radar', text: 'The Warning Sign Radar watches your own logs for some of these signs and reminds you of your plan. It never judges you.', link: { route: '#/track/insights', label: 'See your Insights' } },
+    ],
+    checks: [ { q: 'You notice one of your top warning signs. What now?', options: [
+      { t: 'Use the plan you wrote for that sign', ok: true, why: 'Yes. A ready plan makes acting easy.' },
+      { t: 'Wait to see if it gets worse', ok: false, why: 'Acting early is easier than acting late.' } ] } ],
+    tryIt: { exercise: 'warning-signs' },
+    wrap: { built: 'Your top three warning signs, each with a plan.', lives: 'Workbook, Warning signs, and the Radar in Track.', action: 'Read your three plans once this week.', todo: null },
+    refs: ['R3', 'R1'] },
+  { id: 'm10-l3', title: 'Stopping a slip', minutes: 4, clinicalReview: true,
+    moment: { cast: 'raj', text: 'After two months off, Raj smoked at a friend\'s wedding. The next morning he thought, "I\'ve blown it." Then he opened the app.' },
+    cards: [
+      { title: 'A slip is not the end', text: 'A slip does not undo what you have learned or built. It is a sign the plan needs a change.' },
+      { title: 'Stop and reach out', text: 'Stop as soon as you can, and tell someone in your crew. Then look at what led up to it.', link: { route: '#/sos/slip', label: 'Open slip help' } },
+      { title: 'If you are not safe', text: 'If you feel unwell or unsafe, get help now.', link: { route: '#/sos/urgent', label: 'Urgent help' } },
+    ],
+    checks: [ { q: 'After a slip, what helps most?', options: [
+      { t: 'Stop, reach out, and learn what led to it', ok: true, why: 'Yes. A slip is a lesson for the plan, not a verdict on you.' },
+      { t: 'Decide it is all over', ok: false, why: '"I\'ve blown it" is a thinking trap. What you have built is still there.' } ] } ],
+    tryIt: { exercise: 'slip-review' },
+    wrap: { built: 'A plan for what to do after a slip.', lives: 'SOS, Slip, and your Workbook.', action: 'Write down who you would tell first after a slip.', todo: null },
+    refs: ['R4', 'R23'] },
+  { id: 'm10-l4', title: 'Build my plan', minutes: 5, clinicalReview: true,
+    moment: { cast: 'dev', text: 'Dev\'s next exam season starts in a month. He wants everything that helps in one place. He opens My Recovery Plan and finds most of it already filled in.' },
+    cards: [
+      { title: 'All in one place', text: 'My Recovery Plan gathers your reasons, triggers, warning signs, go-to skills, people and slip plan. Much of it comes from what you have already done.' },
+      { title: 'Check and confirm', text: 'Read each part. Change what does not fit any more, then confirm the plan. You can update it any time.' },
+      { title: 'Keep it alive', text: 'Your plan grows as you do. Look at it in your Weekly Review, and after any hard week.' },
+    ],
+    checks: [ { q: 'When should you update your plan?', options: [
+      { t: 'Whenever something changes, and in your Weekly Review', ok: true, why: 'Yes. A plan that keeps up with your life is one you will use.' },
+      { t: 'Never; once it is written it is done', ok: false, why: 'Your life changes, so your plan can too.' } ] } ],
+    tryIt: { route: '#/workbook/plan', label: 'Open My Recovery Plan' },
+    wrap: { built: 'My Recovery Plan, confirmed.', lives: 'Workbook, My Recovery Plan.', action: 'Confirm your plan, and look at it again next week.', todo: 'Confirm My Recovery Plan' },
+    refs: ['R2', 'R3', 'R32'] },
+] }
+);
+
+if (typeof module !== 'undefined' && module.exports) module.exports = C_c;
+</script>
 <script data-part="content-exercises.js">
 /* 1-addic · CONTENT · exercises (BUILD-PLAN 3.8). An array of {id, title, book, kind, artifact?, repeat?, skill?,
    sensitive?, fields, tutorial:{example:{cast, values}, hints, built}, events}; field types are the 19 of
-   ExerciseUI.FIELD_TYPES. Original wording throughout; `book` is metadata. U-31a: modules M0-M3 and the checkpoint.
+   ExerciseUI.FIELD_TYPES. Original wording throughout; `book` is metadata. U-31a: modules M0-M3 and the checkpoint;
+   U-31b (the second block): M4-M10 and their checkpoint questions.
    Payload keys the Engine reads (engine.js reasonsCardSections): quick-reasons reasons/quick, balance
    drawbacks/benefits, four-lenses different. Keep those field ids. */
 const C_ex = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
@@ -1594,7 +2170,1074 @@ const C_ex = (typeof Content !== 'undefined') ? Content : require('./content-cor
   C_ex.exercises = (Array.isArray(C_ex.exercises) ? C_ex.exercises : []).concat(exercises);
 })();
 
+/* ── U-31b · the exercises of M4-M10 (BUILD-PLAN 3.8) and checkpoint questions for m4-m10. ─────────
+   Payload keys the Engine reads (engine.js): trial thought/comeback; distractions distractions/own;
+   spiral thoughts/replies (by index); triggers <group> label lists plus frequent/anger label lists;
+   warning-signs top (topN rows); slip-review and expand-network support; activity-menu activities/wantTos.
+   Practice exercises name their script in Content.practices by `practice`. */
+(function () {
+  const cat = (C_ex.catalogs || {});
+  const trig = cat.triggers || {};
+  // Every trigger label once, grouped, the label as the id (the Engine matches triggers by label).
+  const triggerLabels = Object.keys(trig).flatMap((g) => (trig[g] || []).map((t) => ({ id: t, label: t, group: g })));
+  const activityOptions = (cat.activities || []).flatMap((g) => (g.items || []).map((t) => ({ id: t, label: t, group: g.cat })));
+  const rate = { id: 'helpful', type: 'rating', label: 'How helpful was it, from 1 to 5?' };
+
+  const more = [
+    /* ── M4 · Set Yourself Up ────────────────────────────────────────────────────────────────── */
+    {
+      id: 'clear-space', title: 'Clear the space', book: { chapter: 4, exercise: '4.1' }, kind: 'plan',
+      fields: [
+        { id: 'items', type: 'check', label: 'What is still around that pulls at you?', allowCustom: true, options: [
+          { id: 'bottles', label: 'Bottles, glasses or cans' }, { id: 'kit', label: 'Papers, pipes, foil or other kit' },
+          { id: 'pills', label: 'Pill strips or old prescriptions' }, { id: 'stash', label: 'Hidden stashes' },
+          { id: 'numbers', label: 'Numbers of people who supply' }, { id: 'chats', label: 'Chats or apps you used to get it' },
+          { id: 'cash', label: 'Cash set aside for it' }] },
+        { id: 'how', type: 'textarea', label: 'How will you get rid of each one?' },
+        { id: 'helper', type: 'text', label: 'Who could help, or will you do it alone?', optional: true },
+        { id: 'when', type: 'date', label: 'When will you do it?', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: {
+          items: ['bottles', 'stash'],
+          how: 'Pour out the two bottles in the kitchen. Check the cupboard above the fridge and the bag in the wardrobe.',
+          helper: 'My sister, on Sunday morning',
+        } },
+        hints: {
+          items: 'Think of every room, your bag, your phone and your vehicle.',
+          how: 'Plain steps work best. For old medicines, ask a chemist how to dispose of them safely.',
+          helper: 'Someone who does not use is the best helper.',
+        },
+        built: 'Your clear-out plan is saved. Fewer cues at home means fewer fights with yourself.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'exercise-plan', title: 'Pick a way to move', book: { chapter: 4, exercise: '4.2' }, kind: 'plan', skill: 'exercise',
+      fields: [
+        { id: 'activities', type: 'list', label: 'Ways of moving you might enjoy', max: 5 },
+        { id: 'first', type: 'text', label: 'Which one will you try first?' },
+        { id: 'minutes', type: 'number', label: 'How many minutes, the first time?', min: 5, max: 120 },
+        { id: 'start', type: 'date', label: 'Which day?', optional: true },
+        { id: 'reward', type: 'text', label: 'A small reward for doing it', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'dev', values: {
+          activities: ['Badminton with my cousin', 'A walk round the lake', 'Cycling to college'],
+          first: 'A walk round the lake', minutes: 20, reward: 'A new episode of my show',
+        } },
+        hints: {
+          activities: 'Pick what you might like, not what you think you should do.',
+          minutes: 'Start small. Ten or twenty minutes counts.',
+        },
+        built: 'Your plan to move is saved. Moving often lifts mood and eases cravings.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'network-review', title: 'What a Safety Net looks like', book: { chapter: 4, exercise: '4.6' }, kind: 'build',
+      fields: [
+        { id: 'qualities', type: 'check', label: 'Which qualities matter most to you in a support person?', from: 'catalogs.safetyNetQualities' },
+        { id: 'who', type: 'textarea', label: 'Who in your life has several of these?' },
+        { id: 'risky', type: 'textarea', label: 'Is anyone risky for your recovery right now? What will you do about it?', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'farhan', values: {
+          qualities: ['Not using', 'A good listener', 'Reliable'],
+          who: 'My brother Imran. Bhai from the NA group, who picks up even at night.',
+          risky: 'Sunil from the old site still offers pills. I will not meet him alone.',
+        } },
+        hints: {
+          qualities: 'Pick the few that matter most. Nobody has all of them.',
+          who: 'Add these people in Workbook, My People, so SOS can call them.',
+        },
+        built: 'Saved. You know what to look for in the people you lean on.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'assertive-script', title: 'Say it straight', book: { chapter: 4, exercise: '4.5' }, kind: 'build', skill: 'assert',
+      fields: [
+        { id: 'situation', type: 'text', label: 'The conversation you want to be ready for' },
+        { id: 'script', type: 'template', label: 'Your script', parts: [
+          'I feel ', { blank: 'feel', label: 'a feeling' }, ' when ', { blank: 'when', label: 'what happens' },
+          '. I need ', { blank: 'need', label: 'what you ask for' }, '.'] },
+        { id: 'how', type: 'check', label: 'How will you say it?', optional: true, options: [
+          { id: 'calm', label: 'In a calm, steady voice' }, { id: 'eyes', label: 'Looking at them' },
+          { id: 'short', label: 'Short, without a long explanation' }, { id: 'time', label: 'At a calm time, not mid-argument' }] },
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: {
+          situation: 'My son keeps a bottle in the fridge when he visits',
+          script: { feel: 'uneasy', when: 'there is alcohol in my kitchen', need: 'you to keep it out of the house for now' },
+          how: ['calm', 'short'],
+        } },
+        hints: {
+          script: 'Talk about what you feel and need, not what they did wrong.',
+          how: 'Practise it out loud once before the real conversation.',
+        },
+        built: 'Your script is saved in Workbook, Scripts. Read it again before the talk.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'expand-network', title: 'Grow your crew', book: { chapter: 4, exercise: '4.7' }, kind: 'plan', skill: 'reach-out',
+      fields: [
+        { id: 'places', type: 'list', label: 'Places where you could meet people who do not use', max: 3 },
+        { id: 'people', type: 'list', label: 'People you could get back in touch with', max: 3, optional: true },
+        { id: 'support', type: 'list', label: 'Kinds of support you could ask for', max: 3 },
+        { id: 'first', type: 'text', label: 'Your first small step this week' },
+      ],
+      tutorial: {
+        example: { cast: 'dev', values: {
+          places: ['The college badminton club', 'An online SMART Recovery meeting'],
+          people: ['Ankit, my school friend'],
+          support: ['Someone to study with in the evening', 'A text check-in on Fridays'],
+          first: 'Message Ankit on Thursday',
+        } },
+        hints: {
+          places: 'Groups, classes, sports, a place of worship, volunteering.',
+          first: 'Small enough that you will actually do it.',
+        },
+        built: 'Your plan is saved. Each new person is a light on the Pier.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'should-i-go', title: 'Should I go?', book: { chapter: 4, exercise: '4.x' }, kind: 'tool', skill: 'should-i-go',
+      fields: [
+        { id: 'choice', type: 'text', label: 'What are you deciding?' },
+        { id: 'steps', type: 'check', label: 'Which steps did you go through?', from: 'catalogs.sid' },
+        { id: 'options', type: 'list', label: 'Your options, including the boring ones', max: 5 },
+        { id: 'pick', type: 'text', label: 'The most protective option' },
+        { id: 'exit', type: 'textarea', label: 'If you still go: your exit plan and who you will call', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'raj', values: {
+          choice: 'Take the short cut home past the tea stall where my old group sits',
+          steps: ['Notice: this small choice matters', 'List every option, including the boring ones', 'Pick the most protective one'],
+          options: ['The short cut', 'The main road, five minutes longer', 'Call my sister on the way'],
+          pick: 'The main road, with my sister on the phone',
+        } },
+        hints: {
+          choice: 'Small choices count: a route, a party, who you sit with.',
+          exit: 'Decide the time you leave and who you call, before you go.',
+        },
+        built: 'Done. Checking small choices early keeps you out of tight spots.',
+      },
+      events: ['ExerciseDone'],
+    },
+
+    /* ── M5 · Become a Self-Expert ───────────────────────────────────────────────────────────── */
+    {
+      id: 'triggers', title: 'My triggers', book: { chapter: 5, exercise: '5.1' }, kind: 'build', skill: 'notice-trigger',
+      fields: [
+        { id: 'internal', type: 'check', label: 'Feelings and states', from: 'catalogs.triggers.internal', allowCustom: true },
+        { id: 'people', type: 'check', label: 'People', from: 'catalogs.triggers.people', allowCustom: true, optional: true },
+        { id: 'places', type: 'check', label: 'Places', from: 'catalogs.triggers.places', allowCustom: true, optional: true },
+        { id: 'situations', type: 'check', label: 'Situations and times', from: 'catalogs.triggers.situations', allowCustom: true, optional: true },
+        { id: 'things', type: 'check', label: 'Things', from: 'catalogs.triggers.things', allowCustom: true, optional: true },
+        { id: 'frequent', type: 'check', label: 'Which ones come up most often?', options: triggerLabels, optional: true },
+        { id: 'anger', type: 'check', label: 'Which ones tend to make you angry?', options: triggerLabels, optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'raj', values: {
+          internal: ['Boredom', 'Stress'], people: ['Friends I used with'], places: ['My own room at night'],
+          situations: ['After work or college', 'Late at night'], frequent: ['Boredom', 'After work or college'],
+        } },
+        hints: {
+          internal: 'Feelings count as triggers too, good ones as well as hard ones.',
+          frequent: 'Pick two or three. They show first when you log a craving.',
+          anger: 'Optional. Lesson 9 comes back to these.',
+        },
+        built: 'Your Trigger Profile is saved. Your triggers now show as chips in every log.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'red-flags', title: 'My red-flag thoughts', book: { chapter: 5, exercise: '5.2' }, kind: 'build', skill: 'talk-back',
+      fields: [
+        { id: 'flags', type: 'check', label: 'Which of these thoughts show up for you?', from: 'catalogs.redFlags', allowCustom: true },
+        { id: 'loudest', type: 'text', label: 'Which one is the loudest?' },
+        { id: 'when', type: 'textarea', label: 'When does it usually show up?', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: {
+          flags: ['Just one.', 'I deserve it after all this.', 'Nobody has to know.'],
+          loudest: 'I deserve it after all this.',
+          when: 'After a long day at the office, when the flat is empty.',
+        } },
+        hints: {
+          flags: 'Add your own in your own words. They often sound like permission.',
+          loudest: 'This is the first one to put on trial in Step 4.',
+        },
+        built: 'Your red-flag list is saved. Spotting the thought is half the work.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'trap-pairs', title: 'Thought and trap', book: { chapter: 5, exercise: '5.2b' }, kind: 'build', skill: 'spot-trap',
+      fields: [
+        { id: 'pairs', type: 'rows', label: 'A thought you had, the trap it fits, and a fairer way to say it', max: 6, columns: [
+          { id: 'thought', label: 'The thought' }, { id: 'trap', label: 'The thinking trap' }, { id: 'fair', label: 'A fairer version' }] },
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: {
+          pairs: [
+            { thought: 'The order went wrong, so I am useless at this', trap: 'Black-or-white thinking', fair: 'One order went wrong. Forty went right this month.' },
+            { thought: 'My daughter did not call. She is ashamed of me.', trap: 'Jumping to conclusions', fair: 'She may just be busy. I can call her.' },
+          ],
+        } },
+        hints: { pairs: 'The six traps are in the lesson. A thought can fit more than one.' },
+        built: 'Saved. Naming the trap takes some of the power out of the thought.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'spiral', title: 'Stop the spiral', book: { chapter: 5, exercise: '5.2c' }, kind: 'build',
+      fields: [
+        { id: 'thoughts', type: 'check', label: 'Which thoughts could turn a slip into a spiral for you?', from: 'catalogs.spiral', allowCustom: true },
+        { id: 'replies', type: 'list', label: 'Your answer to each one, in the same order', max: 7 },
+      ],
+      tutorial: {
+        example: { cast: 'farhan', values: {
+          thoughts: ['I\'ve blown it, so I might as well keep going.', 'This proves I can\'t do it.'],
+          replies: ['One slip is one slip. I can stop here and call Bhai.', 'Seven months off says I can. A slip says I need my plan.'],
+        } },
+        hints: {
+          thoughts: 'These thoughts show up after a slip. Writing answers now helps later.',
+          replies: 'Write what you would say to a friend in the same place.',
+        },
+        built: 'Saved. If you ever tap "I slipped" in SOS, your own answers come first.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'craving-signature', title: 'My craving signature', book: { chapter: 5, exercise: '5.3' }, kind: 'build',
+      fields: [
+        { id: 'where', type: 'bodymap', label: 'Where do you notice a craving in your body?' },
+        { id: 'body', type: 'check', label: 'What do you notice there?', from: 'catalogs.cravingBody', allowCustom: true, optional: true },
+        { id: 'feelings', type: 'check', label: 'Feelings that come with it', from: 'catalogs.cravingEmotions', allowCustom: true, optional: true },
+        { id: 'thoughts', type: 'check', label: 'Thoughts that come with it', from: 'catalogs.cravingThoughts', allowCustom: true, optional: true },
+        { id: 'first', type: 'text', label: 'The very first sign, the earliest you notice' },
+      ],
+      tutorial: {
+        example: { cast: 'dev', values: {
+          where: ['chest', 'legs'], body: ['Racing heart', 'Restless legs'], feelings: ['Restless', 'Anxious'],
+          first: 'I start pacing around my room before an exam',
+        } },
+        hints: {
+          where: 'Tap each place. There is no right answer.',
+          first: 'The earlier you spot it, the easier it is to ride it out.',
+        },
+        built: 'Your craving signature is saved. Notice the first sign, then reach for a tool.',
+      },
+      events: ['ArtifactSaved'],
+    },
+
+    /* ── M6 · Outsmart the Addicted Brain ────────────────────────────────────────────────────── */
+    {
+      id: 'trial', title: 'Put it on trial', book: { chapter: 6, exercise: '6.1' }, kind: 'tool', skill: 'trial',
+      fields: [
+        { id: 'mode', type: 'single', label: 'What kind of thought is it?', optional: true, options: [
+          { id: 'redflag', label: 'A red-flag thought about using' }, { id: 'mood', label: 'A thought that pulls my mood down' }] },
+        { id: 'thought', type: 'text', label: 'The thought, word for word' },
+        { id: 'trap', type: 'single', label: 'Does it fall into a thinking trap?', from: 'catalogs.distortions', optional: true },
+        { id: 'against', type: 'textarea', label: 'The evidence against it' },
+        { id: 'thenWhat', type: 'textarea', label: 'And then what? Play the whole story forward.', optional: true },
+        { id: 'comeback', type: 'text', label: 'Your closing statement: what you say back to it' },
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: {
+          mode: 'redflag', thought: 'Just one glass won\'t hurt.',
+          against: 'Last time one glass turned into the whole bottle and a missed morning at work.',
+          thenWhat: 'One glass, then the second, then I wake up tired and ashamed.',
+          comeback: 'One is never one for me. I want the clear morning more.',
+        } },
+        hints: {
+          thought: 'Write it exactly as it sounds in your head.',
+          against: 'Facts only: what has happened before, not what you hope.',
+          comeback: 'Short enough to remember. It goes into your Comebacks.',
+        },
+        built: 'Your comeback is saved. SOS shows it when you tap Talk back.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'cog-vs-beh', title: 'Thinking skills and doing skills', book: { chapter: 6, exercise: '6.r' }, kind: 'reflect',
+      fields: [
+        { id: 'thinking', type: 'textarea', label: 'Which thinking skills have helped you so far?' },
+        { id: 'doing', type: 'textarea', label: 'Which doing skills have helped you so far?' },
+        { id: 'lean', type: 'single', label: 'Which do you reach for first?', options: [
+          { id: 'thinking', label: 'Thinking skills' }, { id: 'doing', label: 'Doing skills' }, { id: 'both', label: 'A mix of both' }] },
+      ],
+      tutorial: {
+        example: { cast: 'raj', values: {
+          thinking: 'Asking "and then what?" when I want to smoke after work.',
+          doing: 'Going for a walk with my sister instead of sitting in my room.',
+          lean: 'doing',
+        } },
+        hints: { lean: 'Neither is better. When a craving is strong, doing often works faster.' },
+        built: 'Saved. Knowing your go-to skills helps you build your plan later.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'distractions', title: 'My distraction list', book: { chapter: 6, exercise: '6.3b' }, kind: 'build', skill: 'distract',
+      fields: [
+        { id: 'distractions', type: 'check', label: 'Which of these could work for you?', from: 'catalogs.distractions', allowCustom: true },
+        { id: 'own', type: 'list', label: 'Your own ideas', max: 6, optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: {
+          distractions: ['Walk fast for ten minutes', 'Call someone, about anything', 'Cook something simple'],
+          own: ['Water the tulsi and the chillies on the terrace'],
+        } },
+        hints: { distractions: 'Pick ones you can do at home, at work and at night.' },
+        built: 'Your list is saved. SOS deals these out when you tap Distract me.',
+      },
+      events: ['ArtifactSaved'],
+    },
+
+    /* ── M7 · Be Present (each names its script in Content.practices) ────────────────────────── */
+    {
+      id: 'body-scan', title: 'Body scan', book: { chapter: 7, exercise: '7.1' }, kind: 'practice', skill: 'body-scan', practice: 'body-scan',
+      fields: [
+        { id: 'noticed', type: 'bodymap', label: 'Where did you notice tension or strong feeling?', optional: true },
+        { id: 'note', type: 'textarea', label: 'Anything you noticed?', optional: true },
+        rate,
+      ],
+      tutorial: {
+        example: { cast: 'farhan', values: { noticed: ['back', 'shoulders'], note: 'My lower back was tight. It eased a little by the end.', helpful: 4 } },
+        hints: { note: 'Noticing is the whole job. There is nothing to fix.' },
+        built: 'Practice logged. A light goes on in the Cove.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'breathing', title: 'Breathing with awareness', book: { chapter: 7, exercise: '7.3' }, kind: 'practice', skill: 'breathe', practice: 'breathe',
+      fields: [
+        { id: 'minutes', type: 'number', label: 'How many minutes did you sit?', min: 1, max: 60 },
+        { id: 'note', type: 'textarea', label: 'What pulled your attention away?', optional: true },
+        rate,
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: { minutes: 5, note: 'Work, mostly. I kept coming back to the breath.', helpful: 3 } },
+        hints: {
+          minutes: 'Start with five minutes. You can build up to thirty over time.',
+          note: 'A wandering mind is normal. Coming back is the practice.',
+        },
+        built: 'Practice logged. Each time you come back to the breath, the skill grows.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'everyday-mindful', title: 'Everyday mindfulness', book: { chapter: 7, exercise: '7.2' }, kind: 'practice', skill: 'everyday-mindful',
+      fields: [
+        { id: 'which', type: 'single', label: 'What did you do mindfully?', options: [
+          { id: 'shower', label: 'A shower' }, { id: 'eating', label: 'Eating something' }, { id: 'walking', label: 'A walk' }] },
+        { id: 'noticed', type: 'textarea', label: 'What did you notice that you usually miss?' },
+        rate,
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: { which: 'eating', noticed: 'The smell of the cardamom before the first sip of chai.', helpful: 4 } },
+        hints: { noticed: 'Sounds, smells, textures, temperature. Small details count.' },
+        built: 'Practice logged. Ordinary moments are good places to practise.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'sober-practice', title: 'SOBER practice', book: { chapter: 7, exercise: '7.4' }, kind: 'practice', skill: 'sober', practice: 'sober',
+      fields: [
+        { id: 'when', type: 'single', label: 'When did you practise?', options: [
+          { id: 'imagined', label: 'Calm, picturing a hard moment' }, { id: 'stress', label: 'When stressed' },
+          { id: 'feeling', label: 'During a hard feeling' }, { id: 'craving', label: 'During a craving' }] },
+        { id: 'noticed', type: 'textarea', label: 'What did you notice?', optional: true },
+        rate,
+      ],
+      tutorial: {
+        example: { cast: 'dev', values: { when: 'stress', noticed: 'My jaw was clenched. The craving was still there but smaller.', helpful: 4 } },
+        hints: { when: 'Practise when calm first, so it is ready when things are hard.' },
+        built: 'Practice logged. SOBER is also one tap away inside SOS.',
+      },
+      events: ['ExerciseDone'],
+    },
+
+    /* ── M8 · Rediscover Joy ─────────────────────────────────────────────────────────────────── */
+    {
+      id: 'used-to-enjoy', title: 'Things I used to enjoy', book: { chapter: 8, exercise: '8.0' }, kind: 'build',
+      fields: [
+        { id: 'enjoyed', type: 'list', label: 'Things you enjoyed before using took over', max: 10 },
+        { id: 'again', type: 'text', label: 'Which one could you try again soon?', optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'raj', values: { enjoyed: ['Sunday cricket', 'Drawing', 'Cooking with my mother'], again: 'Sunday cricket' } },
+        hints: { enjoyed: 'Go back as far as you like, even to childhood.' },
+        built: 'Saved. These seed your Activity Library.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'should-want', title: 'Shoulds and want-tos', book: { chapter: 8, exercise: '8.2' }, kind: 'build',
+      fields: [
+        { id: 'shoulds', type: 'list', label: 'Things you should do in a usual week', max: 10 },
+        { id: 'wants', type: 'list', label: 'Things you want to do in a usual week', max: 10 },
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: {
+          shoulds: ['Office accounts', 'Groceries', 'Pay the electricity bill'],
+          wants: ['Call my friend in Pune', 'Read on the balcony'],
+        } },
+        hints: { wants: 'If this list is short, that is useful to know. The next lessons help.' },
+        built: 'Saved. A week with some want-tos in it is easier to stay sober in.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'activity-menu', title: 'My activity menu', book: { chapter: 8, exercise: '8.3' }, kind: 'build', skill: 'pleasant',
+      fields: [
+        { id: 'activities', type: 'check', label: 'Which of these would you enjoy?', options: activityOptions, allowCustom: true },
+        { id: 'wantTos', type: 'list', label: 'Your own want-tos', max: 6, optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: {
+          activities: ['A walk at dawn or dusk', 'Yoga or stretching'],
+          wantTos: ['Teach my granddaughter to make thepla'],
+        } },
+        hints: { activities: 'Pick some that cost little and do not involve using.' },
+        built: 'Your activity menu is saved. The planner suggests from it.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'obstacles', title: 'Get past an obstacle', book: { chapter: 8, exercise: '8.4b' }, kind: 'tool', skill: 'problem-solve',
+      fields: [
+        { id: 'obstacle', type: 'text', label: 'What gets in the way of doing things you enjoy?' },
+        { id: 'options', type: 'rows', label: 'Ways around it, with the good and bad of each', max: 5, columns: [
+          { id: 'option', label: 'A way around it' }, { id: 'pros', label: 'Good points' }, { id: 'cons', label: 'Drawbacks' }] },
+        { id: 'pick', type: 'text', label: 'The one or two you will try' },
+      ],
+      tutorial: {
+        example: { cast: 'dev', values: {
+          obstacle: 'I am too tired after classes',
+          options: [
+            { option: 'Go in the morning instead', pros: 'More energy', cons: 'Early alarm' },
+            { option: 'Pick something short', pros: 'Easy to start', cons: 'Less fun' },
+          ],
+          pick: 'A short badminton game before lunch',
+        } },
+        hints: { options: 'List every idea first. Judge them after.' },
+        built: 'Done. Solving one obstacle makes the next one easier.',
+      },
+      events: ['ExerciseDone'],
+    },
+    {
+      id: 'rewards', title: 'Rewards for follow-through', book: { chapter: 8, exercise: '8.7' }, kind: 'plan', skill: 'reward',
+      fields: [
+        { id: 'rewards', type: 'rows', label: 'When I do this, I reward myself with that', max: 3, columns: [
+          { id: 'task', label: 'When I do this' }, { id: 'reward', label: 'I reward myself with' }] },
+      ],
+      tutorial: {
+        example: { cast: 'farhan', values: {
+          rewards: [{ task: 'Go to three NA meetings this week', reward: 'Biryani with my son on Sunday' }],
+        } },
+        hints: { rewards: 'Real, small, and nothing that involves using.' },
+        built: 'Saved. Rewards make the new habits stick.',
+      },
+      events: ['ArtifactSaved'],
+    },
+
+    /* ── M9 · Handle Hard Feelings ───────────────────────────────────────────────────────────── */
+    {
+      id: 'anger-signature', title: 'When I get angry', book: { chapter: 9, exercise: '9.3b' }, kind: 'build', clinicalReview: true,
+      fields: [
+        { id: 'where', type: 'bodymap', label: 'Where do you feel anger in your body?' },
+        { id: 'first', type: 'text', label: 'What do you notice first?' },
+        { id: 'does', type: 'textarea', label: 'What do you tend to do when you are angry?', optional: true },
+        { id: 'angerTriggers', type: 'list', label: 'What usually sets it off?', max: 5, optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'kavita', values: {
+          where: ['head', 'hands'], first: 'My face gets hot and I talk faster',
+          angerTriggers: ['Late payments from customers', 'Being told what to do'],
+        } },
+        hints: { first: 'The first sign is your cue to give it a beat.' },
+        built: 'Your anger signature is saved. Anger is allowed; this helps you choose what comes next.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'rewrite-scene', title: 'Replay and rewrite', book: { chapter: 9, exercise: '9.5' }, kind: 'reflect', skill: 'beat', clinicalReview: true,
+      fields: [
+        { id: 'scene', type: 'textarea', label: 'What happened, in a few lines?' },
+        { id: 'did', type: 'textarea', label: 'What did you do?' },
+        { id: 'rewrite', type: 'textarea', label: 'What would you like to do next time?' },
+      ],
+      tutorial: {
+        example: { cast: 'raj', values: {
+          scene: 'My supervisor blamed me for a late order in front of the floor.',
+          did: 'I shouted and walked out, then smoked behind the building.',
+          rewrite: 'Take a beat, say I will talk after the shift, and walk round the block.',
+        } },
+        hints: { rewrite: 'Keep it doable. One small change is enough.' },
+        built: 'Saved. Rehearsing a better ending makes it easier to find next time.',
+      },
+      events: ['ExerciseDone'],
+    },
+
+    /* ── M10 · Your Recovery Plan ────────────────────────────────────────────────────────────── */
+    {
+      id: 'warning-signs', title: 'My warning signs', book: { chapter: 10, exercise: '10.1' }, kind: 'build', skill: 'warning-check', clinicalReview: true,
+      fields: [
+        { id: 'signs', type: 'check', label: 'Which of these could be early warning signs for you?', from: 'catalogs.warningSigns' },
+        { id: 'top', type: 'topN', label: 'Pick your top three and write a plan for each', source: 'signs', max: 3 },
+      ],
+      tutorial: {
+        example: { cast: 'farhan', values: {
+          signs: ['groups-less', 'isolating', 'poor-sleep'],
+          top: [
+            { item: 'groups-less', plan: 'Tell my sponsor and go twice that week' },
+            { item: 'isolating', plan: 'Call my brother the same day' },
+          ],
+        } },
+        hints: {
+          signs: 'Think back: what changed in the weeks before a past slip?',
+          top: 'A plan is one action you can take the same day.',
+        },
+        built: 'Your warning signs are saved. The Radar watches for them in your own logs.',
+      },
+      events: ['ArtifactSaved'],
+    },
+    {
+      id: 'slip-review', title: 'Learn from a slip', book: { chapter: 10, exercise: '10.2' }, kind: 'reflect', skill: 'slip-review',
+      sensitive: true, clinicalReview: true,
+      fields: [
+        { id: 'situation', type: 'textarea', label: 'Where were you, and who was there?', optional: true },
+        { id: 'before', type: 'textarea', label: 'What came first: a thought, a feeling or a trigger?', optional: true },
+        { id: 'next', type: 'textarea', label: 'What will you do differently next time?' },
+        { id: 'support', type: 'list', label: 'Support you will ask for', max: 4, optional: true },
+      ],
+      tutorial: {
+        example: { cast: 'meera', values: {
+          before: 'A hard call with my mother, then the empty flat.',
+          next: 'Call my sister before the evening, and keep no bottle at home.',
+          support: ['Ask my sister to check in at 9 pm'],
+        } },
+        hints: {
+          next: 'One thing you can change is enough.',
+          support: 'If you feel unsafe, use SOS, Urgent help.',
+        },
+        built: 'Saved. Every day you built still counts.',
+      },
+      events: ['ExerciseDone'],
+    },
+  ];
+
+  const list = Array.isArray(C_ex.exercises) ? C_ex.exercises : [];
+  const have = new Set(list.map((x) => x && x.id));
+  C_ex.exercises = list.concat(more.filter((x) => !have.has(x.id)));
+
+  // Checkpoint questions for m4-m10: two each, one helpful reading, a why on every option.
+  const cp = C_ex.exercises.find((x) => x && x.id === 'checkpoint');
+  if (cp) Object.assign(cp.modules, {
+    m4: [
+      { q: 'Why clear alcohol or drugs out of your home?', options: [
+        { t: 'Fewer cues means fewer cravings to fight', ok: true, why: 'Yes. Being smart about your space saves willpower for the hard moments.' },
+        { t: 'To prove you are strong enough to resist', ok: false, why: 'Testing yourself is a risk you do not need. Smart beats strong.' }] },
+      { q: 'A friend keeps offering. What usually works best?', options: [
+        { t: 'A clear no, and asking them to stop offering', ok: true, why: 'Yes. Short and calm is enough. You do not owe a long reason.' },
+        { t: 'Taking it so they do not feel bad', ok: false, why: 'Your recovery matters more than one awkward moment.' }] },
+    ],
+    m5: [
+      { q: 'What is a red-flag thought?', options: [
+        { t: 'A thought that gives you permission to use', ok: true, why: 'Yes. It often sounds reasonable, like "just one" or "I deserve it".' },
+        { t: 'Any thought about the past', ok: false, why: 'Memories are not red flags by themselves. Red flags point you toward using.' }] },
+      { q: 'Why log cravings?', options: [
+        { t: 'To see your own patterns: times, places, feelings', ok: true, why: 'Yes. Patterns tell you where to plan ahead.' },
+        { t: 'So the app can judge how you are doing', ok: false, why: 'The app never judges. The log is for you.' }] },
+    ],
+    m6: [
+      { q: 'A craving hits. What does "delay" mean?', options: [
+        { t: 'Wait 15 minutes before deciding anything', ok: true, why: 'Yes. Most cravings peak and fade if you give them time.' },
+        { t: 'Use later instead of now', ok: false, why: 'Delay is not a promise to use. It gives the craving time to pass.' }] },
+      { q: 'What is a Battle Plan for?', options: [
+        { t: 'A risky situation you can see coming', ok: true, why: 'Yes. One plan and two backups, made in calm weather.' },
+        { t: 'Something you write after a slip', ok: false, why: 'It works best before. After a slip, the slip review helps.' }] },
+    ],
+    m7: [
+      { q: 'Your mind wanders during a breathing practice. What now?', options: [
+        { t: 'Notice it and gently come back to the breath', ok: true, why: 'Yes. Coming back is the practice itself.' },
+        { t: 'Stop, because you are doing it wrong', ok: false, why: 'Everyone\'s mind wanders. It is not a failure.' }] },
+      { q: 'What does acceptance mean here?', options: [
+        { t: 'Letting a feeling be there without acting on it', ok: true, why: 'Yes. You can notice a craving and still choose what you do.' },
+        { t: 'Giving up and giving in', ok: false, why: 'Acceptance is not giving up. It makes room to choose.' }] },
+    ],
+    m8: [
+      { q: 'Why plan things you enjoy?', options: [
+        { t: 'A life with good things in it needs less escape', ok: true, why: 'Yes. Pleasant activity lifts mood and lowers cravings for many people.' },
+        { t: 'To earn points', ok: false, why: 'The points are small. The real reward is a better week.' }] },
+      { q: 'You predict a walk will be no fun. What can you do?', options: [
+        { t: 'Try it and compare the prediction with what happened', ok: true, why: 'Yes. Early in recovery, low mood often predicts too low.' },
+        { t: 'Skip it, since you already know', ok: false, why: 'Mood can mislead. A small test gives you real data.' }] },
+    ],
+    m9: [
+      { q: 'Anger shows up. What is a good first step?', options: [
+        { t: 'Give it a beat before you act', ok: true, why: 'Yes. A short pause lets you choose what comes next.' },
+        { t: 'Push the feeling down', ok: false, why: 'Feelings are allowed. A pause helps you act on them well.' }] },
+      { q: 'A low mood says "nothing will get better". What helps?', options: [
+        { t: 'Treat it as a thought to put on trial', ok: true, why: 'Yes. Moods produce thoughts that feel like facts. You can check them.' },
+        { t: 'Accept it as the truth', ok: false, why: 'A feeling is real, but what it predicts is not always true.' }] },
+    ],
+    m10: [
+      { q: 'What is a warning sign?', options: [
+        { t: 'A change that can come weeks before a slip', ok: true, why: 'Yes. Spotting it early gives you time to act.' },
+        { t: 'Proof that a slip is coming', ok: false, why: 'A sign is a nudge to act, not a forecast.' }] },
+      { q: 'After a slip, what does the app keep?', options: [
+        { t: 'Everything: total days, skills, badges and your work', ok: true, why: 'Yes. Nothing you built is taken away.' },
+        { t: 'Only what you did since the slip', ok: false, why: 'Nothing is wiped. Total days and everything you built stay.' }] },
+    ],
+  });
+})();
+
 if (typeof module !== 'undefined' && module.exports) module.exports = C_ex;
+</script>
+<script data-part="content-practices.js">
+/* 1-addic · CONTENT · guided practices and games data (BUILD-PLAN 3.8; unit U-32).
+   Original wording throughout (docs/book/ notes gave the ideas, never the words). The scripts are read aloud by the
+   device's own speech (O4), so every line is a plain, short sentence. No pacing counts in the breathing practice:
+   people breathe the way they breathe. `secs` is the pause after a line, before the next one is read.
+   Shapes (pinned by the SCREENS chat, 16:27):
+   Content.practices = map by id {breathe, 'body-scan', sober, 'urge-surf', shower, eating, walking, beat}, each
+     {id, title, minutes, intro, script:[{t, secs?}], close}; sober also has steps: 5 plain strings (ui-sos.js reads
+     them); breathe has ladder [5,10,15,20,25,30] (minutes).
+   Content.games = {sort, flag, bigGame, refusal}; Content.comebacks = 3 strings. */
+const C_pr = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
+
+C_pr.practices = {
+  breathe: { id: 'breathe', title: 'Breathing with awareness', minutes: 5, ladder: [5, 10, 15, 20, 25, 30],
+    intro: 'Sit somewhere you can be still for a few minutes. You do not need to breathe in any special way. Just notice.',
+    script: [
+      { t: 'Settle into your seat.', secs: 10 },
+      { t: 'Feel where your body touches the chair and the floor.', secs: 20 },
+      { t: 'Now bring your attention to your breath.', secs: 15 },
+      { t: 'Notice the air as it comes in.', secs: 20 },
+      { t: 'Notice your chest or your belly as it moves.', secs: 25 },
+      { t: 'Notice the air as it goes out.', secs: 25 },
+      { t: 'You do not need to change anything. Just watch.', secs: 40 },
+      { t: 'If your mind wanders, that is fine.', secs: 10 },
+      { t: 'Notice where it went, and come back to the breath.', secs: 40 },
+      { t: 'Each time you come back, that is the practice.', secs: 45 },
+      { t: 'Stay with the breath for a little longer.', secs: 50 },
+    ],
+    close: 'When you are ready, open your eyes and look around the room. You can come back to your breath at any time.' },
+
+  'body-scan': { id: 'body-scan', title: 'Body scan', minutes: 10,
+    intro: 'Sit or lie down somewhere quiet. You will move your attention slowly through your body. There is nothing to fix. If anything feels like too much, open your eyes and stop.',
+    script: [
+      { t: 'Let your eyes close, or rest them on one spot.', secs: 15 },
+      { t: 'Notice your breath for a moment, just as it is.', secs: 40 },
+      { t: 'Feel where your body is held up: the chair, the bed or the floor.', secs: 30 },
+      { t: 'Bring your attention to your feet.', secs: 10 },
+      { t: 'Notice your toes, the soles of your feet, your heels.', secs: 30 },
+      { t: 'Are they warm or cool? Tight or loose? Just notice.', secs: 30 },
+      { t: 'Move your attention up to your ankles and lower legs.', secs: 30 },
+      { t: 'Now your knees, and the backs of your knees.', secs: 25 },
+      { t: 'Now your thighs. Notice their weight.', secs: 30 },
+      { t: 'Bring your attention to your hips and the base of your back.', secs: 30 },
+      { t: 'If your mind has wandered, that is fine. Come back to where you were.', secs: 15 },
+      { t: 'Now your belly. Notice it move as you breathe.', secs: 35 },
+      { t: 'Now your chest.', secs: 30 },
+      { t: 'Move to your back, from the bottom to the top.', secs: 35 },
+      { t: 'Notice your shoulders. If they are tight, just notice that.', secs: 35 },
+      { t: 'Move down your arms, to your elbows, your wrists and your hands.', secs: 35 },
+      { t: 'Notice your fingers, one by one.', secs: 25 },
+      { t: 'Now your neck and throat.', secs: 25 },
+      { t: 'Now your jaw, your mouth and your cheeks.', secs: 30 },
+      { t: 'Your eyes, your forehead, and the top of your head.', secs: 30 },
+      { t: 'Now notice your whole body at once, from head to feet.', secs: 45 },
+    ],
+    close: 'Slowly move your fingers and toes. Open your eyes when you are ready. Whatever you noticed was fine.' },
+
+  sober: { id: 'sober', title: 'SOBER breathing', minutes: 2,
+    steps: [
+      'Stop. Pause where you are.',
+      'Observe. Notice what is going on in your body and mind.',
+      'Breathe. Bring your attention to your breath.',
+      'Expand. Take in your whole body and the space around you.',
+      'Respond. Choose your next step with care.',
+    ],
+    intro: 'Five short steps. You can do this anywhere, in about two minutes.',
+    script: [
+      { t: 'Stop. Pause where you are.', secs: 10 },
+      { t: 'Observe. Notice what is going on in your body and mind.', secs: 25 },
+      { t: 'Breathe. Bring your attention to your breath.', secs: 30 },
+      { t: 'Expand. Take in your whole body and the space around you.', secs: 25 },
+      { t: 'Respond. Choose your next step with care.', secs: 15 },
+    ],
+    close: 'You stopped and chose. That is the skill.' },
+
+  'urge-surf': { id: 'urge-surf', title: 'Urge surfing', minutes: 10,
+    intro: 'A craving is like a wave. It rises, peaks and falls. You can watch it without acting on it.',
+    script: [
+      { t: 'Sit down, if you can.', secs: 10 },
+      { t: 'Notice the craving. Where do you feel it in your body?', secs: 30 },
+      { t: 'Give it a number from 0 to 10, in your head.', secs: 15 },
+      { t: 'Now bring your attention to your breath. Let it be your surfboard.', secs: 30 },
+      { t: 'Notice the craving again. Is it bigger, smaller, or the same?', secs: 40 },
+      { t: 'You do not have to do anything about it. Just watch.', secs: 60 },
+      { t: 'If thoughts come, let them pass like clouds.', secs: 60 },
+      { t: 'Check in with the craving again. Notice how it has changed.', secs: 60 },
+      { t: 'Stay with your breath while the wave moves.', secs: 90 },
+      { t: 'Give the craving a number again.', secs: 20 },
+    ],
+    close: 'Most waves pass within half an hour. Each one you ride makes the next easier.' },
+
+  shower: { id: 'shower', title: 'Mindful shower', minutes: 5,
+    intro: 'Next time you shower, use it as a short practice. Go slowly and notice.',
+    script: [
+      { t: 'Notice the sound of the water.', secs: 20 },
+      { t: 'Feel the temperature on your skin.', secs: 25 },
+      { t: 'Notice the smell of the soap.', secs: 25 },
+      { t: 'Feel your hands as they wash each part of you.', secs: 40 },
+      { t: 'If your mind runs ahead to your day, gently come back to the water.', secs: 40 },
+    ],
+    close: 'Notice how you feel as you step out. Write down one thing you noticed.' },
+
+  eating: { id: 'eating', title: 'Mindful eating', minutes: 5,
+    intro: 'Choose a small snack or the first few bites of a meal. Eat it more slowly than usual.',
+    script: [
+      { t: 'Look at the food. Notice its colours and shape.', secs: 20 },
+      { t: 'Notice the smell.', secs: 15 },
+      { t: 'Take one small bite. Do not chew yet.', secs: 15 },
+      { t: 'Now chew slowly. Notice the taste and how it changes.', secs: 40 },
+      { t: 'Notice the moment you swallow.', secs: 15 },
+      { t: 'Take another bite, just as slowly.', secs: 60 },
+    ],
+    close: 'Notice how it felt to eat this way. Write down one thing you noticed.' },
+
+  walking: { id: 'walking', title: 'Mindful walking', minutes: 5,
+    intro: 'Walk somewhere safe, at an easy pace. Keep your eyes open and stay aware of where you are.',
+    script: [
+      { t: 'Feel your feet as they touch the ground.', secs: 30 },
+      { t: 'Notice your legs as they move.', secs: 30 },
+      { t: 'Notice the air on your face and hands.', secs: 30 },
+      { t: 'Listen. What can you hear, near and far?', secs: 40 },
+      { t: 'Look around. Notice one thing you have not seen before.', secs: 40 },
+      { t: 'If your mind wanders, come back to your feet.', secs: 40 },
+    ],
+    close: 'Notice how you feel after the walk. Write down one thing you noticed.' },
+
+  beat: { id: 'beat', title: 'Give it a beat', minutes: 2,
+    intro: 'For when anger rises. A short pause gives you time to choose what you say and do.',
+    script: [
+      { t: 'Notice the signs: a hot face, a tight jaw, tight hands.', secs: 10 },
+      { t: 'Step away if you can. It is fine to say, I need a minute.', secs: 15 },
+      { t: 'Bring your attention to your breath.', secs: 20 },
+      { t: 'Count slowly to ten in your head.', secs: 15 },
+      { t: 'Ask yourself: what do I need right now?', secs: 20 },
+      { t: 'Choose one thing to say or do that you will not regret.', secs: 20 },
+    ],
+    close: 'You gave it a beat. That pause is a real skill.' },
+};
+
+C_pr.games = {
+  /* Distortion Sort: each thought goes in one of the six trap bins (Content.catalogs.distortions ids). */
+  sort: [
+    { id: 'st1', thought: 'I missed one meeting, so the whole week is a failure.', trap: 'black-white' },
+    { id: 'st2', thought: 'If I am not perfect at this, I have failed completely.', trap: 'black-white' },
+    { id: 'st3', thought: 'My boss only praised my work because she had to.', trap: 'discount' },
+    { id: 'st4', thought: 'Two good weeks do not count. Anyone could do that.', trap: 'discount' },
+    { id: 'st5', thought: 'They stopped talking when I came in. They must be talking about me.', trap: 'conclusions' },
+    { id: 'st6', thought: 'The party will be awful, so I may as well not try.', trap: 'conclusions' },
+    { id: 'st7', thought: 'I feel useless today, so I must be useless.', trap: 'feelings-facts' },
+    { id: 'st8', thought: 'I feel so nervous that something bad is sure to happen.', trap: 'feelings-facts' },
+    { id: 'st9', thought: 'My brother is upset, and it is all my fault.', trap: 'self-blame' },
+    { id: 'st10', thought: 'The family dinner went badly because of me.', trap: 'self-blame' },
+    { id: 'st11', thought: 'I forgot her birthday. I am a terrible person.', trap: 'labeling' },
+    { id: 'st12', thought: 'I slipped once, so I am a lost cause.', trap: 'labeling' },
+  ],
+
+  /* Spot the Red Flag: a short chat; the three red-flag thoughts are at the indexes in redFlags. */
+  flag: {
+    title: 'Friday after work',
+    lines: [
+      { who: 'Sunil', t: 'Long week. I finished the report at last.' },
+      { who: 'Sunil', t: 'I have been good all week. I deserve something.' },
+      { who: 'Friend', t: 'Want to come for food tonight?' },
+      { who: 'Sunil', t: 'Maybe. The old place is on the way.' },
+      { who: 'Sunil', t: 'Nobody would know if I stopped there first.' },
+      { who: 'Friend', t: 'We could try the new place near the bus stand.' },
+      { who: 'Sunil', t: 'Just one would not matter.' },
+      { who: 'Sunil', t: 'Actually, the new place sounds good. See you at eight.' },
+    ],
+    redFlags: [1, 4, 6],
+    why: [
+      '"I deserve something" can turn a good week into a reason to use.',
+      '"Nobody would know" hides the choice from the people who help you.',
+      '"Just one" is one of the most common lead-ins to a slip.',
+    ],
+  },
+
+  /* The Big Game: one evening, six scenes, with an original character. A choice with to: null ends the story. */
+  bigGame: {
+    title: 'Arjun\'s Saturday',
+    character: { name: 'Arjun', bio: 'Arjun is 30 and works in a phone repair shop. He stopped drinking two months ago.' },
+    clinicalReview: true,
+    start: 'bg1',
+    scenes: [
+      { id: 'bg1', text: 'It is Saturday afternoon. Arjun has the evening free. An old friend messages: a few people are meeting at the usual bar later.',
+        choices: [
+          { t: 'Reply that he will come along', to: 'bg2', note: 'A small yes. It puts Arjun in a strong-cue place.' },
+          { t: 'Suggest meeting for dinner instead', to: 'bg3', note: 'He keeps the friend and changes the place.' },
+        ] },
+      { id: 'bg2', text: 'On his way, Arjun walks past the bar. He could go in now, or wait outside for his friend.',
+        choices: [
+          { t: 'Go in and wait at the counter', to: 'bg4', note: 'Waiting at the counter is the riskiest spot in the room.' },
+          { t: 'Wait outside and message his friend', to: 'bg5', note: 'A pause outside keeps his options open.' },
+        ] },
+      { id: 'bg3', text: 'His friend agrees to dinner. At the restaurant, someone at the table orders drinks for everyone.',
+        choices: [
+          { t: 'Say, "Not for me. A lime soda, please."', to: 'bg6', note: 'A clear, short no. Most people move on fast.' },
+          { t: 'Say nothing and hope it goes away', to: 'bg4', note: 'Staying quiet often means a drink lands in front of you.' },
+        ] },
+      { id: 'bg4', text: 'A drink is in front of Arjun. He feels the pull and thinks, "Just one."',
+        choices: [
+          { t: 'Push it away and step outside to call his brother', to: 'bg6', note: 'Leaving the moment and calling someone breaks the chain, even late.' },
+          { t: 'Pick it up', to: null, note: 'The story ends here for today. A slip is a lesson for the plan, not the end. Arjun can stop, reach out and look at what led here.' },
+        ] },
+      { id: 'bg5', text: 'Outside, Arjun messages his friend: "Can we go somewhere else?" His friend says the group is staying.',
+        choices: [
+          { t: 'Go home and plan something for tomorrow', to: null, note: 'A safe evening. Arjun spotted the risk early and chose.' },
+          { t: 'Go in for ten minutes to say hello', to: 'bg4', note: 'Short visits to risky places often last longer than planned.' },
+        ] },
+      { id: 'bg6', text: 'Arjun is outside, or at the table with his soda. The craving is still there, but smaller.',
+        choices: [
+          { t: 'Use SOBER breathing and stay a while', to: null, note: 'He rode the wave and stayed with his friend. A good evening.' },
+          { t: 'Head home early and call it a win', to: null, note: 'Leaving early is a valid move. He kept his evening safe.' },
+        ] },
+    ],
+  },
+
+  /* Refusal practice: four scenes, three responses each, rated best | ok | weak with a reason. */
+  refusal: [
+    { id: 'rf1', clinicalReview: true, scene: 'At a cousin\'s wedding, an uncle holds out a glass and says, "Come on, just one for the couple."',
+      responses: [
+        { t: '"No, thank you. I\'ll toast with this juice."', rating: 'best', why: 'Clear and friendly, with something else in your hand.' },
+        { t: '"Maybe later."', rating: 'weak', why: '"Later" invites him to ask again.' },
+        { t: '"I\'m not drinking tonight."', rating: 'ok', why: 'Clear, but "tonight" can sound like next time is fine.' },
+      ] },
+    { id: 'rf2', clinicalReview: true, scene: 'A friend from the old crowd calls: "We\'re all at my place. Come over, it\'ll be like old times."',
+      responses: [
+        { t: '"I can\'t tonight."', rating: 'ok', why: 'It works for now, but does not stop the next call.' },
+        { t: '"I\'ve stopped, so I won\'t come if people are using. Want to get tea tomorrow?"', rating: 'best', why: 'Honest, sets a limit, and offers a safe plan instead.' },
+        { t: '"Yes, but I won\'t use."', rating: 'weak', why: 'Going into the old setting is a strong cue, however good the plan.' },
+      ] },
+    { id: 'rf3', clinicalReview: true, scene: 'A coworker offers you a pill before a big deadline: "It helps you focus. Everyone takes them."',
+      responses: [
+        { t: '"No, I don\'t take those."', rating: 'best', why: 'Short and firm. You do not owe a longer reason.' },
+        { t: '"Not right now, thanks."', rating: 'weak', why: '"Not right now" leaves the door open.' },
+        { t: '"No thanks. I\'ll take a short walk instead."', rating: 'ok', why: 'A good plan, but it may need a firmer no if they ask again.' },
+      ] },
+    { id: 'rf4', clinicalReview: true, scene: 'Your neighbour keeps offering to share a smoke every evening on the stairs.',
+      responses: [
+        { t: 'Make an excuse and go inside', rating: 'ok', why: 'It works today, but the offer will come again tomorrow.' },
+        { t: '"I\'ve quit. Please don\'t offer any more. I\'m happy to chat, though."', rating: 'best', why: 'Asks them to stop and keeps the friendship.' },
+        { t: 'Take it so they do not feel bad', rating: 'weak', why: 'Your recovery matters more than a moment of awkwardness.' },
+      ] },
+  ],
+};
+
+/* Three default comebacks for Talk back in SOS, until the person writes their own. */
+C_pr.comebacks = [
+  'This is a craving. It will rise, peak and pass.',
+  'Wanting it is not the same as needing it.',
+  'I can wait fifteen minutes and see how I feel then.',
+];
+
+if (typeof module !== 'undefined' && module.exports) module.exports = C_pr;
+</script>
+<script data-part="content-sample.js">
+/* 1-addic · CONTENT · the sample profile (O6; BUILD-PLAN 3.4; unit U-33).
+   Content.sample.generate(nowIso) -> {stores:{name: rows}}: four weeks of an invented person's notebook, relative to
+   nowIso, for "Load sample data". Actions.loadSample checks it with backupErrors, puts every row and adds the meta row
+   {key:'sample', loadedAt}. Rules: every row and every event has sample: true (the Engine skips them, so sample data
+   never awards or lowers anything); ids start with smp-; the same nowIso gives the same rows (a seeded generator,
+   never Math.random); the contacts are invented and carry no phone numbers; nothing is dated after nowIso. */
+const C_sm = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
+
+C_sm.sample = (function () {
+  const DAYS = 28;
+  const pad = (n) => String(n).padStart(2, '0');
+  const dateOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+  /* mulberry32: a small seeded generator, so the sample is the same every time for the same nowIso. */
+  function seeded(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const TRIGGERS = ['Stress', 'Boredom', 'After work or college', 'Late at night', 'Loneliness', 'Friends I used with'];
+  const EMOTIONS = ['anxious', 'bored', 'lonely', 'sad', 'angry'];
+  const CRAVING_SKILLS = ['sober', 'ride-wave', 'distract', 'call', 'talk-back', 'delay'];
+  const FEELING_SKILLS = ['breathe', 'self-kindness', 'beat', 'reach-out'];
+  const ACTIVITIES = [
+    { kind: 'exercise', name: 'Evening walk', minutes: 30 },
+    { kind: 'mindfulness', name: 'Body scan', minutes: 10 },
+    { kind: 'pleasant', name: 'Cooked dinner with music on', minutes: 45 },
+    { kind: 'meeting', name: 'Support group', minutes: 60 },
+    { kind: 'pleasant', name: 'Video call with my sister', minutes: 30 },
+  ];
+
+  function generate(nowIso) {
+    const now = new Date(nowIso);
+    if (isNaN(now.getTime())) throw new TypeError('sample: nowIso is not a date');
+    const rnd = seeded(20261107);
+    const pick = (list) => list[Math.floor(rnd() * list.length)];
+    const between = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));
+    const counter = {};
+    const id = (kind) => { counter[kind] = (counter[kind] || 0) + 1; return `smp-${kind}-${counter[kind]}`; };
+    /* A moment `back` days before today at hour:minute, local time; never later than now. */
+    const moment = (back, hour, minute) => {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - back, hour, minute || 0, 0, 0);
+      return d.getTime() > now.getTime() ? new Date(now.getTime() - 60000) : d;
+    };
+    const stamp = (d) => ({ at: d.toISOString(), date: dateOf(d), hour: d.getHours() });
+
+    const events = [];
+    const event = (type, d, payload) => {
+      events.push({ id: id('ev'), type, at: d.toISOString(), payload: Object.assign({}, payload), sample: true });
+    };
+    const logs = [];
+    const log = (type, d, extra) => {
+      const row = Object.assign({ id: id('log'), type }, stamp(d),
+        { triggerIds: [], feelings: [], skills: [] }, extra, { drill: false, sample: true });
+      logs.push(row);
+      return row;
+    };
+
+    const start = moment(DAYS, 9, 0);
+    const startDate = dateOf(start);
+    const profile = {
+      key: 'me', name: 'Sample', companion: 'Kite', substances: ['Alcohol'], term: 'sober', startDate, notSure: false,
+      stage: 'action', region: 'in', checkin: { morning: '08:30', evening: '21:30' }, reviewDay: 0, pace: 'steady',
+      customPerWeek: null, roadmapStart: startDate, onboardedAt: start.toISOString(),
+      medical: { heavyDaily: false, sedatives: false, opioids: false }, locale: 'en', sample: true,
+    };
+    event('OnboardingCompleted', start, {});
+
+    /* Cravings: 14 over four weeks, mostly in the evening, a little lower on average as the weeks go by. */
+    const cravingDays = [27, 26, 24, 22, 21, 19, 17, 15, 13, 11, 9, 6, 4, 2];
+    cravingDays.forEach((back, i) => {
+      const d = moment(back, between(18, 22), between(0, 59));
+      const intensity = Math.max(2, Math.min(9, 8 - Math.floor(i / 3) + between(-1, 1)));
+      const skills = [{ skillId: pick(CRAVING_SKILLS), helpful: rnd() > 0.25 }];
+      const row = log('craving', d, { intensity, emotion: pick(EMOTIONS), triggerIds: [pick(TRIGGERS), pick(TRIGGERS)].filter((t, j, a) => a.indexOf(t) === j), skills, used: false, notes: '' });
+      event('LogCreated', d, { logId: row.id, type: 'craving' });
+      for (const s of skills) event('SkillUsed', d, { skillId: s.skillId, helpful: s.helpful, logId: row.id });
+    });
+
+    /* Feelings: 8. */
+    [25, 20, 18, 14, 10, 7, 5, 1].forEach((back) => {
+      const d = moment(back, between(12, 20), between(0, 59));
+      const skills = [{ skillId: pick(FEELING_SKILLS), helpful: rnd() > 0.3 }];
+      const row = log('feeling', d, { intensity: between(3, 7), emotion: pick(EMOTIONS), skills, notes: '' });
+      event('LogCreated', d, { logId: row.id, type: 'feeling' });
+      for (const s of skills) event('SkillUsed', d, { skillId: s.skillId, helpful: s.helpful, logId: row.id });
+    });
+
+    /* Activities: 12, and the evening check-in counts the pleasant ones of that day. */
+    const pleasantOn = {};
+    [27, 25, 23, 20, 18, 16, 13, 11, 8, 6, 3, 1].forEach((back, i) => {
+      const a = ACTIVITIES[i % ACTIVITIES.length];
+      const d = moment(back, between(16, 19), between(0, 59));
+      const row = log('activity', d, { activity: { kind: a.kind, minutes: a.minutes, name: a.name, enjoyment: between(5, 9) } });
+      if (a.kind === 'pleasant' || a.kind === 'exercise') pleasantOn[back] = (pleasantOn[back] || 0) + 1;
+      event('LogCreated', d, { logId: row.id, type: 'activity' });
+      event('ActivityDone', d, { kind: a.kind, minutes: a.minutes, logId: row.id });
+    });
+
+    /* Check-ins: one each evening for the four weeks before today (28). */
+    for (let back = DAYS; back >= 1; back -= 1) {
+      const d = moment(back, 21, between(20, 50));
+      const week = Math.floor((DAYS - back) / 7);
+      const checkin = {
+        kind: 'evening', mood: Math.min(9, between(3, 6) + week), anxiety: Math.max(1, between(4, 7) - week),
+        peakCraving: Math.max(0, between(4, 8) - week), pleasantCount: pleasantOn[back] || 0, used: false,
+        sleep: between(5, 8), meeting: back % 7 === 3, intention: 'One thing at a time.',
+      };
+      const row = log('checkin', d, { checkin });
+      event('CheckinCompleted', d, { logId: row.id, kind: 'evening' });
+    }
+
+    /* Lessons of M0-M3, done in the first two weeks. */
+    const lessons = [];
+    for (const m of (C_sm.modules || []).filter((x) => ['m0', 'm1', 'm2', 'm3'].includes(x.id))) {
+      for (const l of m.lessons || []) lessons.push(l.id);
+    }
+    lessons.forEach((lessonId, i) => event('LessonCompleted', moment(DAYS - 1 - Math.floor(i / 2), 20, 5 + (i % 2) * 20), { lessonId }));
+
+    /* Responses: reasons, motivation, triggers, red flags and distractions. */
+    const responses = [];
+    const respond = (exerciseId, back, payload, type) => {
+      const d = moment(back, 20, 40);
+      const row = { id: id('resp'), exerciseId, schemaVersion: 1, payload, at: d.toISOString(), mode: 'workbook', draft: false, sample: true };
+      responses.push(row);
+      event(type || 'ArtifactSaved', d, { exerciseId, responseId: row.id });
+    };
+    respond('quick-reasons', 27, { reasons: 'Mornings with a clear head', quick: ['Being there for my daughter', 'Sleeping through the night', 'Saving for a trip with my sister'] });
+    respond('motivation', 26, { stage: 'action', score: 6, plusOne: 'A friend to walk with in the evenings.' });
+    respond('triggers', 12, { internal: ['Stress', 'Boredom', 'Loneliness'], people: ['Friends I used with'], places: [], situations: ['After work or college', 'Late at night'], things: [], frequent: ['Stress', 'Late at night'], anger: [] });
+    respond('red-flags', 10, { flags: ['Just one.', 'I deserve it after all this.', 'Nobody has to know.'], loudest: 'I deserve it after all this.', when: 'At the end of a long week, when the house is quiet.' });
+    respond('distractions', 9, { distractions: ['Walk fast for ten minutes', 'Call someone, about anything'], own: ['Water the plants on the balcony'] }, 'ExerciseDone');
+
+    const motivation = [
+      { id: id('mot'), at: moment(26, 20, 45).toISOString(), stage: 'action', score: 6, plusOne: 'A friend to walk with in the evenings.', source: 'exercise', sample: true },
+      { id: id('mot'), at: moment(12, 20, 45).toISOString(), stage: 'action', score: 7, plusOne: 'Seeing my sister more often.', source: 'checkin', sample: true },
+    ];
+
+    /* Contacts: invented, with no phone numbers. */
+    const contacts = [
+      { id: id('con'), name: 'Asha (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Sister. Calls back the same day.', active: true, sample: true },
+      { id: id('con'), name: 'Vikram (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Friend from the walking group.', active: true, sample: true },
+      { id: id('con'), name: 'Group leader (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Thursday support group.', active: true, sample: true },
+      { id: id('con'), name: 'Old drinking friend (sample)', role: 'risky', strategy: 'limit', phone: '', note: 'Meet only for lunch.', active: true, sample: true },
+    ];
+
+    /* Plans: three, the first a Battle Plan for a risky evening, all on or after today. */
+    const plan = (ahead, start, end, extra) => {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ahead);
+      return Object.assign({ id: id('plan'), date: dateOf(d), start, end, status: 'planned', sample: true }, extra);
+    };
+    const plans = [
+      plan(3, '19:00', '22:00', { title: 'Office farewell dinner', kind: 'risky', risky: true,
+        battlePlan: { situation: 'Office farewell dinner', plan: 'Order a lime soda first and sit with Vikram.', backups: ['Step outside and call Asha.', 'Leave by ten.'], buddyId: contacts[1].id, exit: 'Leave after the speeches.' } }),
+      plan(1, '18:30', '19:15', { title: 'Evening walk', kind: 'want', risky: false, activity: 'A walk at dawn or dusk', reward: 'A favourite film after.' }),
+      plan(2, '10:00', '11:00', { title: 'Support group', kind: 'recovery', risky: false }),
+    ];
+    event('BattlePlanCreated', moment(1, 20, 0), { planId: plans[0].id });
+
+    const todos = [
+      { id: id('todo'), text: 'Clear the space at home', source: 'lesson', route: '#/learn/m4', due: null, done: false, at: moment(5, 20, 0).toISOString(), sample: true },
+      { id: id('todo'), text: 'Plan tomorrow in the planner', source: 'lesson', due: null, done: true, at: moment(8, 20, 0).toISOString(), sample: true },
+    ];
+    const predictions = [
+      { id: id('pred'), activity: 'Evening walk', predicted: 30, actual: 70, at: moment(6, 17, 0).toISOString(), completedAt: moment(6, 19, 0).toISOString(), notes: 'Better than I thought.', sample: true },
+    ];
+
+    events.sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
+    return { stores: { profile: [profile], events, logs, responses, contacts, plans, todos, motivation, predictions } };
+  }
+
+  return { name: 'Sample', generate };
+})();
+
+if (typeof module !== 'undefined' && module.exports) module.exports = C_sm;
 </script>
 <script data-part="engine.js">
 /* ════════════════════════════════════════════════════════════════════════════════════════════
