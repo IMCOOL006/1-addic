@@ -1171,8 +1171,17 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(await S.lock.remove('2468'), false);
     for (const bad of ['123', 'x'.repeat(65), 2468, null]) await assert.rejects(S.lock.set(bad), (e) => e.code === 'BAD_PIN');
     assert.equal(S.status().hasLock, false);
-    await S.lock.set('x'.repeat(64)); // the longest PIN is taken
+    const realError = console.error;
+    const errs = [];
+    console.error = (...a) => errs.push(a.join(' '));
+    try {
+      await S.lock.set('x'.repeat(64)); // the longest PIN is taken, and its notification reaches only real listeners
+    } finally {
+      console.error = realError;
+    }
     assert.equal(S.status().hasLock, true);
+    assert.equal(heard, 1);
+    assert.deepEqual(errs, [], 'the listener that is not a function was never kept');
   });
 });
 
