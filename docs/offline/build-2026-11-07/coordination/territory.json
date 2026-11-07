@@ -1,0 +1,171 @@
+{
+  "about": "1-addic offline edition, build of 7 November 2026. From docs/offline/BUILD-PLAN.md section 5 (each lane's files) and section 9 (territory and append points). Read by tools/check_territory.py (OK / SHARED / ERROR / WARNING per changed path) and tools/gates.py (a lane's default test files). Paths are repo-relative with forward slashes; a glob's * stays inside one folder, ** crosses folders; an entry ending in / is a folder prefix. The HUB edits this file; lanes ask by outbox.",
+  "lanes": {
+    "core": {
+      "chat": "CORE",
+      "files": [
+        "offline/build.mjs",
+        "offline/src/shell.html",
+        "offline/src/styles.css",
+        "offline/src/ui-core.js",
+        "offline/src/store.js",
+        "offline/src/boot.js",
+        "offline/tests/store.test.mjs",
+        "package.json",
+        "offline/1-addic.html"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/store.test.mjs"]
+    },
+    "engine": {
+      "chat": "CORE",
+      "files": ["offline/src/engine.js", "offline/tests/logic.test.mjs"],
+      "globs": ["offline/tests/engine-*.test.mjs"],
+      "tests": ["offline/tests/logic.test.mjs", "offline/tests/engine-*.test.mjs"]
+    },
+    "actions-sos": {
+      "chat": "CORE",
+      "files": [
+        "offline/src/actions.js",
+        "offline/src/ui-sos.js",
+        "offline/src/ui-onboarding.js",
+        "offline/tests/actions.test.mjs"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/actions.test.mjs"]
+    },
+    "learn": {
+      "chat": "CORE",
+      "files": ["offline/src/ui-exercise.js", "offline/src/ui-learn.js", "offline/tests/learn.test.mjs"],
+      "globs": [],
+      "tests": ["offline/tests/learn.test.mjs"]
+    },
+    "tests-docs": {
+      "chat": "CORE",
+      "files": [
+        "offline/tests/browser.test.mjs",
+        "offline/tests/screens.mjs",
+        "offline/README.md",
+        "README.md",
+        "CLAUDE.md",
+        "package.json",
+        "package-lock.json"
+      ],
+      "globs": ["offline/tests/helpers/**", "offline/docs/**", "docs/decisions/0022-*.md"],
+      "tests": ["offline/tests/browser.test.mjs", "offline/tests/screens.mjs", "offline/tests/helpers/**"]
+    },
+    "today-track": {
+      "chat": "SCREENS",
+      "files": [
+        "offline/src/ui-today.js",
+        "offline/src/ui-track.js",
+        "offline/src/ui-harbor.js",
+        "offline/tests/today-track.test.mjs"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/today-track.test.mjs"]
+    },
+    "workbook-settings": {
+      "chat": "SCREENS",
+      "files": [
+        "offline/src/ui-settings.js",
+        "offline/src/ui-workbook.js",
+        "offline/src/ui-plan.js",
+        "offline/tests/workbook-settings.test.mjs"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/workbook-settings.test.mjs"]
+    },
+    "actions": {
+      "chat": "SCREENS",
+      "files": ["offline/src/ui-actions.js", "offline/src/ui-practices.js", "offline/tests/actions-ui.test.mjs"],
+      "globs": [],
+      "tests": ["offline/tests/actions-ui.test.mjs"]
+    },
+    "game-tutorials": {
+      "chat": "SCREENS",
+      "files": [
+        "offline/src/ui-game.js",
+        "offline/src/ui-guidance.js",
+        "offline/src/ui-tools.js",
+        "offline/tests/game-tutorials.test.mjs"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/game-tutorials.test.mjs"]
+    },
+    "content": {
+      "chat": "SCREENS",
+      "files": [
+        "offline/src/content-core.js",
+        "offline/src/content-lessons-a.js",
+        "offline/src/content-lessons-b.js",
+        "offline/src/content-lessons-c.js",
+        "offline/src/content-exercises.js",
+        "offline/src/content-practices.js",
+        "offline/src/content-sample.js",
+        "offline/tests/content.test.mjs"
+      ],
+      "globs": [],
+      "tests": ["offline/tests/content.test.mjs"]
+    }
+  },
+  "shared": {
+    "offline/build.mjs": {
+      "owner": "core",
+      "appendOnly": true,
+      "banner": "// -- parts --",
+      "rule": "append-only: one line per new file in the parts list between // -- parts -- and // -- end parts -- (in the order of 3.1); nothing else in build.mjs"
+    },
+    "offline/src/styles.css": {
+      "owner": "core",
+      "appendOnly": true,
+      "banner": "/* -- <lane> -- */",
+      "rule": "append-only: one new section at the end under the banner /* -- <lane> -- */; tokens are never redefined"
+    },
+    "offline/src/content-core.js": {
+      "owner": "content",
+      "appendOnly": true,
+      "banner": "/* -- additions -- */",
+      "rule": "content's file: append-only after the line /* -- additions -- */, each addition under /* -- <lane> -- */; other lanes ask by outbox first"
+    },
+    "package.json": {
+      "owner": "core",
+      "coOwners": ["tests-docs"],
+      "appendOnly": false,
+      "banner": "",
+      "rule": "tests-docs owns the scripts and devDependencies keys, core owns the rest; both commit it by path; the merge is JSON-aware (merge_lane.py conflicts); any other lane asks by outbox"
+    },
+    "README.md": {
+      "owner": "tests-docs",
+      "appendOnly": true,
+      "banner": "## Offline edition",
+      "rule": "append-only: a section under ## Offline edition (tests-docs' section); nothing above it changes"
+    },
+    "CLAUDE.md": {
+      "owner": "tests-docs",
+      "appendOnly": true,
+      "banner": "## Offline edition",
+      "rule": "append-only: a section under ## Offline edition (tests-docs' section); nothing above it changes"
+    },
+    "offline/1-addic.html": {
+      "owner": "core",
+      "appendOnly": false,
+      "banner": "",
+      "rule": "build output of node offline/build.mjs: only core commits it; the merge rebuilds it in the integration worktree and the merge commit carries it (merge_lane.py guards stages it)"
+    }
+  },
+  "protected": [
+    "docs/PLAN.md",
+    "docs/BUILD-GUIDE.md",
+    "docs/decisions/000*",
+    "docs/decisions/001*",
+    "docs/decisions/0020*",
+    "docs/decisions/0021*",
+    "docs/book/",
+    "docs/program/",
+    "docs/offline/",
+    "scripts/",
+    "data/",
+    ".claude/settings.json"
+  ]
+}
