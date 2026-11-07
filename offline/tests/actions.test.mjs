@@ -2478,3 +2478,62 @@ describe('review round 4 fixes (FIX-R4)', () => {
   });
   // -- FIX-R4 tests end --
 });
+
+// ── FIX-R5 (2026-11-07, rulings 17:04): the safety re-check's items at 5c2e7a7: RS24's remainder, RS29 to RS32, RS22's test ──
+describe('review round 5 fixes (FIX-R5)', () => {
+  const H = require(src('ui-sos.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // an SOS page with the profile given (its region is read while unlocked)
+  const page = (d, parts, profile) => {
+    const root = d.UI.pages.sos({ route: { parts, query: {} }, A: Actions, view: S().view, E: null, profile: profile || {} });
+    d.doc.body.replaceChildren(root);
+    return root;
+  };
+  // the feeling flow's Something else, typed and sent with Next
+  const typedIn = (d, t, profile) => {
+    const root = page(d, ['sos', 'feeling'], profile);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+  // the trunk's Content.resources.intl (SCREENS U-31a, 9b319256 content-core.js:443-450) by a stand-in of its shape:
+  // the local emergency line has tel, not number
+  const TRUNK_INTL = {
+    name: 'Elsewhere',
+    lines: [
+      { name: 'Find a Helpline (directory by country)', url: 'https://findahelpline.com', verify: true },
+      { name: 'Befrienders Worldwide (directory)', url: 'https://befrienders.org', verify: true },
+      { name: 'Your local emergency number', tel: '112', note: 'Usually 112, 911 or 999', verify: true },
+    ],
+  };
+  const trunkRes = () => Object.assign({}, C().resources, { intl: TRUNK_INTL });
+  // fn runs with Content.resources swapped (a page made inside keeps the stand-in); the real Content goes back after
+  const withResources = (resources, fn) => {
+    const real = globalThis.Content;
+    globalThis.Content = Object.assign({}, real, { resources });
+    try { return fn(); } finally { globalThis.Content = real; }
+  };
+  test('RS29: a Content line with tel and no number is one tap: Elsewhere on Urgent help, the lock screen and the crisis view, and the intl lead', () => {
+    withResources(trunkRes(), () => {
+      const sec = H.urgentList('intl', C()).sections.find((s) => s.id === 'intl');
+      assert.ok(sec && sec.items.some((i) => i.name === 'Your local emergency number' && i.number === '112' && i.tel === 'tel:112'), 'the model reads tel');
+      const d = sosDom();
+      const views = [
+        ['Urgent help', page(d, ['sos', 'urgent'], { region: 'intl' })],
+        ['the lock screen', d.UI.sosUrgentView({})],
+        ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region: 'intl' })],
+      ];
+      for (const [what, root] of views) {
+        const elsewhere = root.querySelectorAll('section').find((s) => s.attrs['aria-label'] === 'Elsewhere');
+        assert.ok(elsewhere, what + ': the Elsewhere section');
+        assert.ok(elsewhere.querySelectorAll('a').some((a) => a.attrs.href === 'tel:112'), what + ': its local emergency line is one tap');
+      }
+      const lead = typedIn(sosDom(), 'I feel strange today', { region: 'intl' }).querySelector('[data-testid="sos-urgent-lead"]');
+      const call = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+      assert.ok(call && call.textContent.includes('Your local emergency number'), 'the intl lead: the local emergency line, one tap');
+    });
+  });
+  // -- FIX-R5 tests end --
+});

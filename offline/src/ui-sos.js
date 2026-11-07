@@ -145,7 +145,8 @@
 
   function urgentItem(x) {
     if (!x || typeof x !== 'object') return null;
-    const number = x.number ? String(x.number) : null;
+    const raw = x.number || x.tel; // RS29: Content gives a line's number as number or as tel (trunk U-31a)
+    const number = raw ? String(raw).replace(/^tel:/i, '') : null;
     const alt = x.alt ? String(x.alt) : null;
     return {
       name: String(x.name || ''), number, tel: number ? telHref(number) : null, alt, altTel: alt ? telHref(alt) : null,
