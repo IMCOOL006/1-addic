@@ -4219,7 +4219,7 @@ const Engine = (() => {
     const ws = payloadOf(latest(view, 'warning-signs'));
     const signs = arr(C.catalogs && C.catalogs.warningSigns);
     const warnings = arr(ws.top || ws.picks || ws.topN).slice(0, 3).map((x) => {
-      const sid = typeof x === 'string' ? x : x && (x.id || x.sign || x.signId);
+      const sid = typeof x === 'string' ? x : x && (x.item || x.id || x.sign || x.signId);
       const label = (signs.find((s) => s.id === sid) || {}).label || strOf(x && x.label) || strOf(sid);
       const plan = strOf(x && x.plan);
       return label ? (plan ? `${label}: ${plan}` : label) : '';
@@ -4358,7 +4358,7 @@ const Engine = (() => {
     const ws = payloadOf(latest(view, 'warning-signs'));
     const plans = new Map();
     for (const x of arr(ws.top || ws.picks || ws.topN).slice(0, 3)) {
-      const sid = typeof x === 'string' ? x : x && (x.id || x.sign || x.signId);
+      const sid = typeof x === 'string' ? x : x && (x.item || x.id || x.sign || x.signId);
       if (typeof sid === 'string' && sid) plans.set(sid, strOf(x && x.plan));
     }
     return plans;
