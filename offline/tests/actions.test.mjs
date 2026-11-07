@@ -1525,5 +1525,13 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
       assert.deepEqual(d.go, ['#/today']);
     });
   });
+  test('DRILL: the drill says Nothing goes in your log.', () => {
+    const d = sosDom();
+    const root = d.open(['sos'], { drill: '1' });
+    assert.match(d.byId(root, 'sos-drill-banner').textContent, /Nothing goes in your log\./);
+    const W = d.UI.sosHelpers.COPY;
+    assert.match(W.drillDone.line, /Nothing goes in your log\./);
+    assert.doesNotMatch(W.drillBanner + ' ' + W.drillDone.line, /nothing is saved|nothing was saved/i, 'the drill keeps its own mark, so never nothing is saved');
+  });
   // -- FIX-ONB-EMO tests end --
 });

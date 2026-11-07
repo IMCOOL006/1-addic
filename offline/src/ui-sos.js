@@ -29,7 +29,7 @@
     reassess: { title: 'How strong is it now?', line: 'Tap 0 to 10, then choose.' },
     used: { title: 'Did you use?', line: 'Either answer is OK here.' },
     surfed: { title: 'Wave surfed.', line: 'You rode it out. That skill grows each time.' },
-    drillDone: { title: 'Drill done.', line: 'Nothing was saved. Now you know the way.' },
+    drillDone: { title: 'Drill done.', line: 'Nothing goes in your log. Now you know the way.' },
     feelPick: { title: 'What are you feeling?', line: 'Pick the closest one.' },
     feelOther: { title: 'Name it, if you like', line: 'A word or two is enough.' },
     beat: { title: 'Give it a beat', line: 'Step away if you can. Count to ten with me.' },
@@ -47,7 +47,7 @@
     slipDone: { title: 'You took the next step.', line: 'Come back here any time.' },
     urgent: { title: 'Urgent help', line: 'If you or someone else is in danger, call now.' },
     crisis: { title: 'Please call now.', line: 'You do not have to carry this alone.' },
-    drillBanner: 'Practice drill: nothing is saved.',
+    drillBanner: 'Practice drill. Nothing goes in your log.',
     previewBanner: 'Preview: nothing is saved.',
     overdose: 'If someone may have overdosed',
     withdrawal: 'Heavy daily drinking or sedatives: stop with a doctor.', // RS3, clinicalReview
