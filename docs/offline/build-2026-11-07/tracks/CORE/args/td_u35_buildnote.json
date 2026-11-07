@@ -1,0 +1,46 @@
+{
+ "done": [
+  {
+   "unit": "U-35",
+   "shas": [
+    "2f6ab78",
+    "dfc2703"
+   ]
+  }
+ ],
+ "tip": "dfc2703",
+ "in_flight": "none (worktree clean at dfc2703)",
+ "next": [
+  {
+   "unit": "U-36b",
+   "first_step": "Read offline/docs/1-addic-Guide.md Part 3 (the 14 `<!-- U-36b -->` markers) and open the images named in C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/tests-docs__units.md (U-35 section) to write each lesson against the real screens; take test counts from the gate logs below; flip STRICT_IMAGES in offline/docs/build_guide.py"
+  }
+ ],
+ "files_touched": [
+  "C:/Users/ruchi/1-addic-wt/tests-docs/offline/tests/screens.mjs",
+  "C:/Users/ruchi/1-addic-wt/tests-docs/offline/tests/helpers/launch.mjs",
+  "C:/Users/ruchi/1-addic-wt/tests-docs/package.json",
+  "C:/Users/ruchi/1-addic-wt/tests-docs/offline/docs/images/ (74 PNGs, 1.29 MB)"
+ ],
+ "shared_touched": [
+  "package.json: added scripts.screens = 'node offline/tests/screens.mjs' by JSON parse, between test:browser and check (line 13); no other key changed"
+ ],
+ "one_thing": "Sample rows never count toward Insights: ui-track's insightCount drops rows marked sample: true, so with only the sample loaded Insights shows the 'appear after seven logs, you have 0' empty state. That is why the extra shot insights-logs saves 8 craving logs of its own (numbers only, no words) through Actions.logCraving, a day apart, under page.clock.setFixedTime, before it opens #/track/insights. The run: 37 slugs at 2 sizes = 74 images, 0 skipped. Every image is 1x scale (newPage's new scale option; the browser suite keeps its default of 2). The Date is fixed at 2026-11-04 09:30 IST (timers still run), so the images come out the same on every run. Images I opened and checked: today-phone, sos-urgent-phone, insights-desktop, lock-discreet-phone, sos-craving-phone, insights-logs-phone, tour-phone, sos-craving-tool-desktop, onboarding-phone. Commit 2f6ab78's message says 36 shots; the real count is 37.",
+ "evidence": [
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/screens-20261108-021828.log (screens: 74 written, 0 skipped; exit 0; no FAIL line, so zero non-file requests and no console error)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/build-20261108-022028.log (build GREEN)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/test-20261108-022030.log (test GREEN 5/5)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/validate-20261108-022034.log (validate GREEN)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/guards-20261108-022035.log (guards GREEN 5/5)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261108-022036.log (browser GREEN 16/0/3; skips: SOS drill creates no log, SOS craving flow offline with delay loop and both outcomes, quick log and evening check-in)",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/docs-20261108-022215.log (docs GREEN)"
+ ],
+ "steps_used": 24,
+ "blocked": [],
+ "for_the_chat": [
+  "READY tests-docs dfc2703 (U-35): screens 74 written, 0 skipped; images total 1.29 MB",
+  "To actions-sos (ui-sos.js): at 390 px the SOS craving rating's '10' button wraps onto two lines ('1' over '0'); see offline/docs/images/sos-craving-phone.png. A width or white-space fix belongs in their file.",
+  "Contract note for the HUB: when a shot fails, the screens summary line becomes 'screens: N written, M skipped, K failed' and the script exits 1. The contract's shape 'screens: N written, M skipped' is unchanged when nothing fails.",
+  "Question for U-36b (default taken): the Insights lesson uses insights-logs, and the guide says sample rows do not feed Insights. The plain insights image shows the honest empty state."
+ ]
+}

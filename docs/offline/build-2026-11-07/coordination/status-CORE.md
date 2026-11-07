@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 02:08 IST: CORE 10 (6c9dfc8f). offline-v1.1 tagged at f69bc68 (R-H-37). tests-docs slot 5 granted for tier 2: U-35 screenshots (slice) running as wf_3e4ac20d-750, then U-36b guide Part 3, then the hooks round; the CORE LOWs by name after U-35, one lane at a time
+STATE: PAUSED   # 2026-11-08 02:25 IST: CORE 10 (6c9dfc8f). tests-docs U-35 built (2f6ab78 screens.mjs, dfc2703 74 images) and paused before its checker: the 02:23 row 2.0 GB free, slots 0 (PLAN.md section 4; the pharma program's tsc runs). Resume on the next 7.0 GB row: Workflow resumeFromRunId wf_3e4ac20d-750 (the builder cached; the check runs live) in this session, else start 'check'
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs BUILDING dfc2703   # 2026-11-08 02:24 IST: U-35 wf_3e4ac20d-750: images committed dfc2703 (74 PNG); screens.mjs, launch.mjs, package.json not yet; memory 1.9 GB by hand (pharma tsc): pauses at the next commit, before the checker (R-C-45); then U-36b, the hooks round
+LANE: tests-docs PAUSED dfc2703   # 2026-11-08 02:25 IST: U-35 built: screens 74 written, 0 skipped (37 slugs x 2 sizes, 1.29 MB, 300 DPI), the builder's gates green (browser 16/0/3, docs GREEN; logs _logs/gates/tests-docs/*-202611080218..0222*.log); the check not run yet (stopped at its start for memory). Note tracks/CORE/args/td_u35_buildnote.json. Then U-36b, the hooks round
 SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01, R-H-37); the CORE LOWs by name after U-35, one lane at a time, asked then
-UPDATED: 2026-11-08 02:24 IST
+UPDATED: 2026-11-08 02:25 IST
+
+# 2026-11-08 02:25 IST · tests-docs U-35 built; paused before its check (2.0 GB row)
+
+- wf_3e4ac20d-750: the builder returned (24 steps): 2f6ab78 (screens.mjs, npm run screens, launch.mjs scale option), dfc2703 (74 PNGs); worktree clean. Its runs: screens-20261108-021828.log 74 written, 0 skipped, exit 0; build, test 5/5, validate, guards GREEN; browser GREEN 16/0/3 (browser-20261108-022036.log); docs GREEN. These are the builder's logs, not yet the checker's.
+- The 02:23 row 2.0 GB free, slots 0: stopped at the checker's start (02:24), nothing lost (the builder's result is in the journal). The SOS rating '10' wraps at 390 px (sos-craving-phone.png): added to the actions-sos V3 round as V3-SOS10 (tier 1).
 
 # 2026-11-08 02:24 IST · V3-IMPROVEMENTS.md read; the CORE rounds re-staged under V3 ids; memory under the floor
 

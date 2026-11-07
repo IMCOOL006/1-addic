@@ -22,13 +22,15 @@
   "FIX-R7",
   "FIX-R8",
   "V3-08",
+  "V3-SOS10",
   "V3-17M",
   "V3-18",
   "V3-25"
  ],
  "batches": [
   [
-   "V3-08"
+   "V3-08",
+   "V3-SOS10"
   ],
   [
    "V3-17M",
@@ -48,17 +50,19 @@
   "FIX-R7": 1,
   "FIX-R8": 1,
   "V3-08": 1,
+  "V3-SOS10": 1,
   "V3-17M": 2,
   "V3-18": 2,
   "V3-25": 2
  },
  "unitNotes": {
   "V3-08": "V3-08 (tier 1; contracts/actions-sos.md line 175): Actions.useSkill({skillId, helpful}) writes SkillUsed {skillId, helpful, logId: null} with no log; skillId must be a skill in Content (else the lane's validation error, nothing written); helpful in the engine contract's one encoding; nothing in a preview or drill. Tests: written once, bad ids refused, the engine counts it. Name the verb and shape in your note (game-tutorials calls it from ui-tools.js :315).",
+  "V3-SOS10": "At 390 px the SOS craving rating's '10' button wraps, '1' over '0' (offline/docs/images/sos-craving-phone.png on build/tests-docs dfc2703, U-35): every rating button keeps its number on one line at 390 px with its 44 px target (nowrap and a width that fits two digits; ui-sos.js or actions-sos's own styles.css section). Prove it with a browser screenshot at 390 px, named in the note.",
   "V3-17M": "V3-17 actions-sos side (lines 111, 130): the save's mark (RS22's retry) also holds Store.status().lockId behind a feature check (no lockId field: today's behaviour); a retry whose lockId changed is dropped, never retried. Test with a stand-in store whose lockId changes between mark and retry, and one without the field.",
   "V3-18": "V3-18: RC23 (line 172: a plan's status change keeps the sample mark, a flag for claimRow; plans.update writes BattlePlanCreated only for the person's row); RC22 (line 177: tests of the kept-session date in the feeling flow and the leave path); R8-RC1 (line 183, test-only: RS22's retry asserted by count, calls === 2, settle by condition).",
   "V3-25": "V3-25: while unlock derives the key, the lock form shows an aria-live line 'Opening your notebook' (the set-PIN form's 'One moment' pattern, ui-onboarding.js :41 and :240-252), cleared on success or error; the urgent-help link stays usable. Test it."
  },
- "laneNote": "CORE CHAT'S WORD (2026-11-08 02:25 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/actions-sos/actions-sos__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:26 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/actions-sos/actions-sos__<id>.red.log) and green after; one commit per id, the id in the subject.",
  "done": [
   "U-09",
   "U-10",
@@ -75,7 +79,7 @@
  "diffFrom": "f69bc68a",
  "slot": 3,
  "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
- "now": "2026-11-08 02:25 IST",
+ "now": "2026-11-08 02:26 IST",
  "start": "build",
- "priorNote": "The lane is MERGED at 7d9d557 (e8da3fbd). This round: V3-08 (tier 1), then V3-17M, V3-18, V3-25 (tier 2). CORE 10 fast-forwarded build/actions-sos to f69bc68a (no merge commit; clean) before this run."
+ "priorNote": "The lane is MERGED at 7d9d557 (e8da3fbd). This round: V3-08 and V3-SOS10 (tier 1), then V3-17M, V3-18, V3-25 (tier 2). CORE 10 fast-forwarded build/actions-sos to f69bc68a (no merge commit; clean) before this run."
 }

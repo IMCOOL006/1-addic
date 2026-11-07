@@ -39,13 +39,16 @@ SPEC = {
  },
  'actions-sos': {
   'prior_done': ['FIX-SAFETY-AS', 'FIX-ONB-EMO', 'FIX-R4', 'FIX-R5', 'FIX-R6', 'FIX-R7', 'FIX-R8'],
-  'batches': [['V3-08'], ['V3-17M', 'V3-18', 'V3-25']],
-  'tiers': {'V3-08': 1, 'V3-17M': 2, 'V3-18': 2, 'V3-25': 2},
+  'batches': [['V3-08', 'V3-SOS10'], ['V3-17M', 'V3-18', 'V3-25']],
+  'tiers': {'V3-08': 1, 'V3-SOS10': 1, 'V3-17M': 2, 'V3-18': 2, 'V3-25': 2},
   'notes': {
    'V3-08': ("V3-08 (tier 1; contracts/actions-sos.md line 175): Actions.useSkill({skillId, helpful}) writes SkillUsed {skillId, helpful, "
      "logId: null} with no log; skillId must be a skill in Content (else the lane's validation error, nothing written); helpful in the "
      "engine contract's one encoding; nothing in a preview or drill. Tests: written once, bad ids refused, the engine counts it. Name the "
      "verb and shape in your note (game-tutorials calls it from ui-tools.js :315)."),
+   'V3-SOS10': ("At 390 px the SOS craving rating's '10' button wraps, '1' over '0' (offline/docs/images/sos-craving-phone.png on "
+     "build/tests-docs dfc2703, U-35): every rating button keeps its number on one line at 390 px with its 44 px target (nowrap and a width "
+     "that fits two digits; ui-sos.js or actions-sos's own styles.css section). Prove it with a browser screenshot at 390 px, named in the note."),
    'V3-17M': ("V3-17 actions-sos side (lines 111, 130): the save's mark (RS22's retry) also holds Store.status().lockId behind a feature "
      "check (no lockId field: today's behaviour); a retry whose lockId changed is dropped, never retried. Test with a stand-in store whose "
      "lockId changes between mark and retry, and one without the field."),
@@ -55,7 +58,7 @@ SPEC = {
    'V3-25': ("V3-25: while unlock derives the key, the lock form shows an aria-live line 'Opening your notebook' (the set-PIN form's 'One "
      "moment' pattern, ui-onboarding.js :41 and :240-252), cleared on success or error; the urgent-help link stays usable. Test it."),
   },
-  'prior': "The lane is MERGED at 7d9d557 (e8da3fbd). This round: V3-08 (tier 1), then V3-17M, V3-18, V3-25 (tier 2).",
+  'prior': "The lane is MERGED at 7d9d557 (e8da3fbd). This round: V3-08 and V3-SOS10 (tier 1), then V3-17M, V3-18, V3-25 (tier 2).",
  },
  'engine': {
   'prior_done': ['FIX-RS4', 'FIX-RS9E'],
