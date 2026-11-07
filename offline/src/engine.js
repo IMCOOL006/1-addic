@@ -244,14 +244,11 @@ const Engine = (() => {
   function levelFor(uses) {
     return arr(C.masteryThresholds).filter((t) => uses >= t).length;
   }
-  /* SkillUsed.helpful is written as a boolean (the contract); 0/1 and a 1-5 scale are tolerated. */
+  /* SkillUsed.helpful is written as a boolean (the contract); 0/1 is tolerated. Any other value
+     reads as null and is left out of helpfulAvg (CORE check C1). */
   function helpfulValue(v) {
-    if (v === true) return 1;
-    if (v === false) return 0;
-    if (typeof v === 'number' && isFinite(v)) {
-      if (v === 0 || v === 1) return v;
-      if (v >= 2 && v <= 5) return (v - 1) / 4;
-    }
+    if (v === true || v === 1) return 1;
+    if (v === false || v === 0) return 0;
     return null;
   }
   function mastery(events) {

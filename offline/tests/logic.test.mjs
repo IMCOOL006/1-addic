@@ -224,7 +224,12 @@ test('mastery: levels at 1/3/7/15/30 uses, helpfulAvg and lastAt', () => {
   }
   const m = E.mastery([ev('SkillUsed', { skillId: 'sober', helpful: true }, at(day(-2))), ev('SkillUsed', { skillId: 'sober', helpful: false }, at(day(-1))), ev('SkillUsed', { skillId: 'sober' })]);
   assert.deepEqual(m.sober, { uses: 3, level: 2, helpfulAvg: 0.5, lastAt: NOW });
-  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'x', helpful: 5 }), ev('SkillUsed', { skillId: 'x', helpful: 0 })]).x.helpfulAvg, 0.5);
+  /* C1: true/false and 1/0 only; any other value (3, a 1-5 rating) reads as null and is left out */
+  const hx = E.mastery(['true', 'false', 1, 0, 3].map((h) => ev('SkillUsed', { skillId: 'x', helpful: h === 'true' ? true : h === 'false' ? false : h })));
+  assert.equal(hx.x.uses, 5);
+  assert.equal(hx.x.helpfulAvg, 0.5);
+  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'z', helpful: 3 })]).z.helpfulAvg, null);
+  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'w', helpful: 1 }), ev('SkillUsed', { skillId: 'w', helpful: 5 })]).w.helpfulAvg, 1);
   assert.equal(E.mastery([ev('SkillUsed', { skillId: 'y' })]).y.helpfulAvg, null);
   assert.deepEqual(E.mastery([ev('SkillUsed', {})]), {});
 });
