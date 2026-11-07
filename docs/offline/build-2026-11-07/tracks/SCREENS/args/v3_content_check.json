@@ -1,0 +1,69 @@
+{
+ "lane": "content",
+ "chat": "SCREENS",
+ "tier": 1,
+ "flagged": false,
+ "area": "The status feature's content, the India numbers, the content LOWs, the clinical-review fixes.",
+ "files": [
+  "offline/src/content-core.js",
+  "offline/src/content-lessons-a.js",
+  "offline/src/content-lessons-b.js",
+  "offline/src/content-lessons-c.js",
+  "offline/src/content-exercises.js",
+  "offline/src/content-practices.js",
+  "offline/src/content-sample.js",
+  "offline/tests/content.test.mjs",
+  "offline/src/content-quests.js"
+ ],
+ "units": [
+  "V-10",
+  "V-42",
+  "V-23",
+  "V-10b"
+ ],
+ "batches": [
+  [
+   "V-10"
+  ],
+  [
+   "V-42"
+  ],
+  [
+   "V-23"
+  ],
+  [
+   "V-10b"
+  ]
+ ],
+ "unitTier": {
+  "V-10": 1,
+  "V-10b": 1,
+  "V-23": 2,
+  "V-42": 1
+ },
+ "unitNotes": {
+  "V-10": "The status feature's content (0.3 h, V3-28): Content.features.status (revealed with the Harbor, never later than m1), its JIT tutorial for the first open and its help entry; original words, grade 6-8, no promise of outcomes; validateContent green; a content test that the feature, tutorial and help entry exist and read as text.",
+  "V-23": "C2 (both items so numbered in the lane report: the content-sample.js:6 header against plans 1-3 days ahead; the sample erase assertion), C3, C4 (0.3 h, V3-23): one comment, one assert, the 'guide' id note.",
+  "V-10b": "The India crisis numbers (0.5 h; only after the owner's I6 answer is in outbox-OWNER.md): the verify: true flags of content-core.js:421-432 cleared only for the numbers the owner confirms; the rest keep 'please verify'. Never a new number without the owner's word.",
+  "V-42": "The quest-line and the daily objectives, in words (1.5 h, tier 1, R-O-6): new offline/src/content-quests.js (content's file; one parts line in build.mjs at the append point after the other content files) holding Content.questLine (8 to 12 steps in order: id, title, line, condition {event, count, within?}, reward (a feature id from Content.features in the unlockable set: tools and mini-games, game-surface extras, Harbor scenes and themes, the Explorer; never SOS, help, a lesson, Settings, export, the person's data), opened (one line saying what opened)); Content.objectives (a pool of about 20: id, title, line, doneBy {event} or 'tap', grows (the Harbor element: lantern, tree, boat, ...)); the run's words (the header line, 'kept', 'you came back'); Content.xp rows for ObjectiveDone and QuestLineStepDone (small, fixed, never for a claimed sober day); the JIT tutorials and help entries for the three features; the unlockable features' entries in Content.features where missing. Original words, grade 6 to 8, no promise of outcomes, no shame line; validateContent green; content.test.mjs checks the shapes and the protected set."
+ },
+ "laneNote": "V3 (PLAN-V3.md; SCREENS 0fd59f53). THIS RUN IS THE SLICE: V-10 only. The worktree C:/Users/ruchi/1-addic-wt/content was fast-forwarded from 680f850 to BASE 3bd5bf5d with merge --ff-only (no merge commit): the v1 units U-31a..U-33 are done and merged; base and diffFrom are 3bd5bf5d. BINDING: PLAN-V3.md section 3 (the status layer's contract: route #/status, data-tour names status-open (the Today chip), status-scene, status-change, status-watch) in C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/; the brief tracks/SCREENS/briefs/content-v3.md section 'V-10' is your unit's spec (the sections V-42, V-23, V-10b are later batches: do not build them). BUILD-PLAN.md sections 2 and 3.6-3.8 still bind; section 5 is v1's unit list. BUILD (content-core.js only, plus content.test.mjs): features.status = {name, gist, tab: 'today', route: '/status'} (route without '#', like ui-guidance.js FEATURE_ROUTES); reveal.m1 = ['status'] (a feature in 'always' never gets a New dot, and game-tutorials V-28 needs the dot; Engine.revealed at engine.js reads any finished module's key; if m1 is not a module id at the base, use 'always' and say so in for_the_chat); the JIT tutorial {id: 'status', name, kind: 'jit', feature: 'status', steps: [{target: 'status-scene', text}, {target: 'status-change', text}, {target: 'status-watch', text}]} (today-track's V-01a page is in the trunk with status-scene; status-change and status-watch arrive with V-01b: unmatched targets are skipped by the guidance engine); one help entry {q, a, route: '#/status'} near the Harbor entry. TESTS (content.test.mjs, by name): 'content: status feature, tutorial and help entry exist' and 'content: status words promise no outcome' as the brief states; Engine.validateContent stays []; content.test.mjs:234's unlocks check stays green. TERRITORY (coordination/territory.json): content owns content-*.js and content.test.mjs; ui-*.js, engine.js, actions.js, status.test.mjs, helpers/hooks.mjs and browser.test.mjs are other lanes': read, never edit; anything you need from them goes in for_the_chat. content-core.js after /* -- additions -- */ is the shared append point for others; your own entries go in their own objects. WORDS: original (never the source book's text), grade 6-8, person-first, adult-to-adult, no promise of outcomes, no streak, count or loss language ('lost', 'drops', 'down'); nothing on the page goes down; no clinical copy changes; the crisis entries and their verify flags are not touched (V-10b waits for the owner's I6). Unsure: write the shorter version. GATES: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/content --lane content build test validate guards, and browser once at the end of the batch; then git -C C:/Users/ruchi/1-addic-wt/content checkout -- offline/1-addic.html if the build left it changed (never commit the built file). Territory: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/check_territory.py content 3bd5bf5d..HEAD --wt C:/Users/ruchi/1-addic-wt/content. MEMORY: before each gate run read free memory once (powershell -NoProfile -Command \"(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB\"); under 4.0 GB stop at your next commit and say PAUSED in the note. COMMITS: message from a file, the unit in the message, ending with the two trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_0fd59f53-a9aa-480a-9878-1d10380b941a), by explicit path, never git add -A, never push. THE LANE ARGS NOTE: Tier 1 is V-10 (the status layer needs its feature and tutorial, house rule 5). The clinical-review fixes come by name after the reviewer's answers (V-09, the HUB's pack); hours by the answers. V-42 (R-O-6) is the second batch, right after V-10; The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. THE TRUNK AT 3bd5bf5d (04:02 IST) ALSO HOLDS engine V-40 (Engine.questLine, unlocked, dailyObjectives, growth, run, and the validateContent checks of R-C-50 for Content.questLine and Content.objectives when present): V-10 adds none of those, so validateContent must stay [] with them absent; V-42 (the next batch, not this run) fills them. RESUMED CHECK (SCREENS 0fd59f53, 2026-11-08 04:30 IST): the V-10 builder committed 5bdf5ab and PAUSED for memory (2.84 GB) before its browser gate; the run wf_02dbd88e-f4a was stopped as its check began. THE CHECKER: judge 3bd5bf5d..5bdf5ab and RUN THE BROWSER GATE (the builder did not), then git -C C:/Users/ruchi/1-addic-wt/content checkout -- offline/1-addic.html. Known by name, not a defect of V-10: guards 'tour-target status-change' and 'tour-target status-watch' are absent at this cut 3bd5bf5d and present in the trunk since today-track V-01b's merge 486288f1. The route choice: features.status.route '/status' and the help entry's route '#/today', because engine.js ROUTE_PATHS lacks '#/status' (R-S-24 to CORE). The full Node suite's game-tutorials.test.mjs 'guidance: training lists the drills, the SOS drill, the tour and every JIT' fails on 'status' because ui-guidance.js:108 routeOfFeature reads only '#/' routes: report it by name as a cross-lane finding for the HUB's baseline (game-tutorials V-28 or the content route flip closes it), not as a FIX for content.",
+ "base": "3bd5bf5d",
+ "slot": 4,
+ "session": "https://claude.ai/code/session_0fd59f53-a9aa-480a-9878-1d10380b941a",
+ "now": "<date at launch>",
+ "sliceRun": true,
+ "done": [
+  "U-31a",
+  "U-31b",
+  "U-29",
+  "U-30",
+  "U-32",
+  "U-33"
+ ],
+ "diffFrom": "3bd5bf5d",
+ "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/content-v3.md",
+ "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/content-v3.md",
+ "start": "check",
+ "priorNote": "{\"done\": [{\"unit\": \"V-10\", \"shas\": [\"5bdf5ab\"]}], \"tip\": \"5bdf5ab\", \"in_flight\": \"none (worktree clean at 5bdf5ab; the built offline/1-addic.html was restored, not committed). PAUSED: free memory read 2.84 GB before the gate run (under the 4.0 GB floor), so this run stopped at its commit and the end-of-batch browser gate was not run.\", \"next\": [{\"unit\": \"V-10 (browser gate)\", \"first_step\": \"When free memory is back above 4.0 GB and QUIET is not running: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/content --lane content browser, then git -C C:/Users/ruchi/1-addic-wt/content checkout -- offline/1-addic.html\"}, {\"unit\": \"V-10 route flip (after engine adds '#/status' to ROUTE_PATHS)\", \"first_step\": \"In offline/src/content-core.js set features.status.route to '#/status' and the help entry 'What is the status page?' route to '#/status' (the content test already accepts both values); rerun content gates\"}, {\"unit\": \"V-42\", \"first_step\": \"Read the brief section 'V-42' (tracks/SCREENS/briefs/content-v3.md line 61) and PLAN-V3.md section 7; create offline/src/content-quests.js\"}], \"files_touched\": [\"C:/Users/ruchi/1-addic-wt/content/offline/src/content-core.js\", \"C:/Users/ruchi/1-addic-wt/content/offline/tests/content.test.mjs\"], \"shared_touched\": [], \"one_thing\": \"Engine.validateContent's route table (engine.js:1378, ROUTE_PATHS) has no '#/status', and ui-guidance.js routeOfFeature (line 108) only reads a feature route that starts with '#/'. So no route value works for both at 3bd5bf5d. The slice uses features.status.route '/status' (which the build chat named) and sends the help entry to '#/today'. That keeps validateContent at []. The cost is that Guidance.training() leaves out the status JIT until engine adds '#/status'. After that, both routes flip to '#/status'.\", \"evidence\": [\"C:\\\\Users\\\\ruchi\\\\1-addic-wt\\\\_logs\\\\gates\\\\content\\\\build-20261108-042228.log\", \"C:\\\\Users\\\\ruchi\\\\1-addic-wt\\\\_logs\\\\gates\\\\content\\\\test-20261108-042234.log\", \"C:\\\\Users\\\\ruchi\\\\1-addic-wt\\\\_logs\\\\gates\\\\content\\\\validate-20261108-042237.log\", \"C:\\\\Users\\\\ruchi\\\\1-addic-wt\\\\_logs\\\\gates\\\\content\\\\guards-20261108-042240.log\", \"C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__units.md\", \"C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__progress.md\"], \"steps_used\": 27, \"blocked\": [], \"for_the_chat\": [\"PAUSED: free memory was 2.84 GB at the gate run, under the 4.0 GB floor. V-10 is committed at 5bdf5ab: build GREEN, test GREEN 33/33, validate GREEN, territory 2 own files and 0 errors. The browser gate has not run.\", \"For the HUB, to baseline by name until today-track V-01b merges: guards 'guard: tour-target status-change' and 'guard: tour-target status-watch' (guards log 20261108-042240), and game-tutorials.test.mjs 'guidance: every tutorial target is named as data-tour in ui-*.js or shell.html' (it lists the same two names). The status tutorial's steps need those two targets, which V-01b adds.\", \"For the engine lane (owner of engine.js): please add '#/status' to ROUTE_PATHS in engine.js:1378. Without it, validateContent rejects '#/status' both as the help route and as a '#/' feature route. Once it lands, content changes features.status.route and the status help route to '#/status'.\", \"For the HUB, to baseline in the full suite until engine's '#/status' lands: game-tutorials.test.mjs 'guidance: training lists the drills, the SOS drill, the tour and every JIT' fails on 'status'. ui-guidance.js routeOfFeature (line 108) only reads Content.features[id].route when it starts with '#/'. The brief's '/status' (no '#') is honoured only by featureOfRoute. The code beats the brief here: game-tutorials could also make routeOfFeature accept routes without '#'.\", \"Where the brief and the chat differ: the brief asks to add 'status' to m1.unlocks (content-lessons-a.js:58, now []). The chat's word limits V-10 to content-core.js, so m1.unlocks stays [] (reveal reads Content.reveal, not unlocks; only the Learn page's 'unlocks' list leaves it out). If wanted, it is a one-line change in a content file later.\", \"Open question with the default taken: m1 is a module id, so reveal.m1 = ['status'] is used rather than always, and the New dot works for game-tutorials V-28.\"]}"
+}
