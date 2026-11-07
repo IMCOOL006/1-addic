@@ -4,9 +4,9 @@ LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; F1, F2, U-04 06cdf34, F
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
 LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; C1 0699730; U-10 1507640, U-11 c629cae; check PASS at c629cae; run wf_379c12ed-2e4: two reviewers over 655516dc..c629cae, then report; a follow-up (onboarding redirect, sosSession emotion: the chat's rulings) after it
 LANE: learn BUILDING   # slot 4 granted 09:50; worktree cut 07:21 at 655516d; slice run wf_bb0fcbce-e1b (09:51, sliceRun, U-12)
-LANE: tests-docs CHECKING   # slice U-34 310780d; check PASS at 310780d; slice report being written (run wf_5eb3e38a-14f), then READY-SLICE
+LANE: tests-docs READY-SLICE 310780d   # U-34 browser harness (19 named tests; 5 pass in Chrome 157, the rest SKIP by name until their screens land); check PASS, LOWs C1 (sos-urgent should fail, not skip, once actions-sos merges) and C2 (the slip rule should Skip by name when Engine.gameState is absent): fixed first in the next run; report tracks/CORE/lane-reports/tests-docs.md; next [U-37, U-36a]
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 09:51 IST
+UPDATED: 2026-11-07 09:52 IST
 
 # 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
 
