@@ -24,3 +24,6 @@ Thumbs.db
 
 # Office lock files
 ~$*
+
+# Source books are copyrighted: keep them (and extracted text) out of git
+*.epub

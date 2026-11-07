@@ -19,6 +19,17 @@ One step usually means one session and one pull request. If a step feels too big
 
 ---
 
+## Running a step on your own computer
+
+Every prompt works the same in Claude Code on your own machine. Steps such as the Unity spike (0.6) only run there. Setup is in [`docs/START-HERE.md`](START-HERE.md).
+
+- **Before each step:** update `main` (`git switch main && git pull`), then make a branch for the step, for example `git switch -c step-0-6-unity-spike`.
+- **Run it:** start Claude Code in the repo folder and paste the step's prompt.
+- **After it:** push the branch and open a pull request on GitHub (or with `gh pr create`), then merge.
+- **Dependencies:** the session-start hook only runs in cloud sessions. On your computer, install dependencies with the commands in `CLAUDE.md` (for the web stack, `npm install` and `npx playwright install chromium`).
+
+---
+
 ## Rules for every step
 
 Every prompt below says "Follow the house rules in docs/BUILD-GUIDE.md." These are the house rules:
