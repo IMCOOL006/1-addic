@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 16:42 IST: four runs live: actions-sos FIX-R4 wf_157ff262-161, engine FIX-RS4 wf_c2c0444c-8dc, learn FIX-RS4 wf_f4494348-6f1, core FIX-V11 wf_37a1972d-79e (granted 16:42, R-H-23)
+STATE: BUILDING   # 2026-11-07 16:43 IST: learn FIX-RS4 READY 4f5832f; three runs live: actions-sos FIX-R4 wf_157ff262-161, engine FIX-RS4 wf_c2c0444c-8dc, core FIX-V11 wf_37a1972d-79e
 LANE: core BUILDING 957f333   # 2026-11-07 16:42 IST: MERGED lane, fix round by name FIX-V11 (R-S-6 high contrast on every render; RC12, RS18 follow-ups) run wf_37a1972d-79e slot 1 (granted 16:42); checker and both reviewers over 957f333...HEAD; was MERGED 957f333 (15:29, d4eed2a)
 LANE: engine BUILDING 227a07a   # 2026-11-07 16:39 IST: MERGED lane, fix by name FIX-RS4 (R-H-21/R-S-4 1-2, test-only, engine-data.test.mjs) run wf_c2c0444c-8dc slot 2; was MERGED 227a07a (15:34, trunk 1ef2482e)
 LANE: actions-sos REVIEWING 1131827   # 2026-11-07 16:21 IST: FIX-R4 run wf_157ff262-161 (start review, carried check PASS at 1131827, carried safety findings RS24 HIGH, RS25-RS26 MEDIUM, RS27-RS28 LOW; rulings contracts/actions-sos.md 16:17); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/06285082-1542-4c84-9b2f-a2d27df214fe/subagents/workflows/wf_157ff262-161/journal.jsonl; READY only when every id is FIXED and no new HIGH or MEDIUM
-LANE: learn BUILDING 19f373c   # 2026-11-07 16:39 IST: MERGED lane, fix by name FIX-RS4 (R-H-21/R-S-4 3, test-only, learn.test.mjs) run wf_f4494348-6f1 slot 9; was MERGED 19f373c (10:50, f9de7023); LOWs C3-C5 for offline-v1.1
+LANE: learn READY 4f5832f   # 2026-11-07 16:43 IST: FIX-RS4 (R-S-4 3) run wf_f4494348-6f1: 4f5832f test-only, 1 line of learn.test.mjs (open 'not-an-exercise'); check PASS; test GREEN 28/28 on the branch (_logs/gates/learn/test-20261107-164039.log) and 28/28 against the trunk 9b319256's content (_logs/reports/learn/learn__FIX-RS4.trunk.log); guards RED by count on the branch only because a 655516dc branch has no build (as at its 10:48 READY); report lane-reports/learn.md (13019 B); cut base 655516dc; lifts the baselined name learn.test.mjs :265
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 4   # all four granted and running: actions-sos slot 3 (FIX-R4), engine slot 2 and learn slot 9 (FIX-RS4, R-H-21), core slot 1 (FIX-V11, R-H-23)
-UPDATED: 2026-11-07 16:42 IST
+UPDATED: 2026-11-07 16:43 IST
 
 # 2026-11-07 16:39 IST · R-H-21 and R-S-4..6: engine and learn test fixes running; core FIX-V11 asked
 
