@@ -272,7 +272,7 @@ const ActionsUI = (() => {
       root.appendChild(nav);
       root.appendChild(h('p', { class: 'muted', text: TEXT.plannerIntro }));
 
-      const addBtn = h('button', { type: 'button', class: 'btn primary', 'data-tour': 'planner-add', 'data-test': 'planner-add-btn', text: TEXT.add,
+      const addBtn = h('button', { type: 'button', class: 'btn primary', 'data-tour': 'planner-add', 'data-test': 'planner-add-btn', 'data-testid': 'planner-add-btn', text: TEXT.add,
         'aria-expanded': state.form && !state.form.id ? 'true' : 'false', onClick: () => openForm({ date }) });
       root.appendChild(h('div', { class: 'row' }, addBtn));
       if (state.form) root.appendChild(formEl(state.form));
@@ -377,7 +377,7 @@ const ActionsUI = (() => {
       const asking = state.asking === p.id;
       const mark = (s) => write(() => A.plans.update(p.id, { status: s }));
       return h('li', { class: ['act-block', 'act-kind-' + (KINDS.includes(p.kind) ? p.kind : 'should'), p.risky ? 'act-risky' : '', 'act-' + status].filter(Boolean).join(' '),
-        'data-test': 'planner-block', 'data-id': p.id, 'data-status': status },
+        'data-test': 'planner-block', 'data-testid': 'planner-block', 'data-id': p.id, 'data-status': status },
       h('div', { class: 'row act-block-head' },
         h('span', { class: 'act-when', text: when }),
         h('span', { class: 'act-kind', text: TEXT.kinds[p.kind] || TEXT.kinds.should }),

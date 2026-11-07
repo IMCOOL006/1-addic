@@ -321,3 +321,16 @@ test('planner: crisis words in a saved block keep the help line on screen, acros
     assert.equal(byTest(AU.page(ctxFor(Store.view, R('/actions/planner', { date: '2026-11-23' }))), 'planner-help').length, 0);
   });
 });
+
+test('planner: the contract\'s data-testid hooks sit beside data-test (planner-add-btn, planner-block)', async () => {
+  await freshStore();
+  await Actions.plans.add({ date: TODAY, start: '11:00', end: '12:00', title: 'Tidy the desk', kind: 'should' });
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/planner', { date: TODAY })));
+    const tid = (v) => root.all((n) => n.getAttribute && n.getAttribute('data-testid') === v);
+    assert.equal(tid('planner-add-btn').length, 1);
+    assert.equal(tid('planner-add-btn')[0].getAttribute('data-test'), 'planner-add-btn');
+    assert.equal(tid('planner-block').length, 1);
+    assert.equal(tid('planner-block')[0].getAttribute('data-test'), 'planner-block');
+  });
+});
