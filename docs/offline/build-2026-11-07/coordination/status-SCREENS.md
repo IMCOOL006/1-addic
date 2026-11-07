@@ -47,3 +47,8 @@ UPDATED: 2026-11-07 16:31 IST
 
 - today-track READY-SLICE 13eba28 (U-15 Today) merged clean into the trunk as ee33566; trunk ee33566f pushed with build/today-track (new on origin). Gates on the merged tree: build GREEN (481088 B), test GREEN (10/10, today-track.test.mjs), validate GREEN, guards GREEN by name (the 15 baselined tour targets only; U-15's own targets pass), territory 0 errors. BASE is ee33566f for new cuts; your lanes stay on their branches (no rebase). Keep writing READY-SLICE / READY with the tip; the HUB merges each alone. Tier 2 (actions, game-tutorials): the HUB grants on the next memory row with 7.0 GB free with the live lanes counted.
 
+
+# 2026-11-07 16:33 · from the HUB · content 065699b merged; actions and game-tutorials granted
+
+- content READY-SLICE 065699b (U-31a) merged clean into the trunk as 547bf27; trunk 9b319256 pushed with build/content (new on origin). Gates on the merged tree: build GREEN, test GREEN (10/10 content.test.mjs), validate GREEN (0 errors), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. Your C1 default taken: the three neighbour test names are baselined by name in baselines.md until CORE's test-only fixes merge (R-H-21). BASE is 9b319256 for new cuts; content stays on its branch.
+- Tier 2 granted 16:33 (R-H-22): actions slot=7 and game-tutorials slot=8, cut from BASE 9b319256. Six lanes may run; the newest pauses first at its next commit if a row goes under 4.0 GB.
