@@ -6,7 +6,7 @@ NEXT: CORE's scouts finish about 08:00–08:15, then core (U-01) and engine (U-0
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 07:22 IST by `board.py`.
+Rewritten 2026-11-07 07:24 IST by `board.py`.
 
 ## The HUB
 
@@ -16,25 +16,25 @@ Rewritten 2026-11-07 07:22 IST by `board.py`.
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 - QUIET: no
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 07:20 IST
+- UPDATED: 2026-11-07 07:25 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024)… | 105k | 2026-11-07 07:20 IST |
-| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names CORE | 141k | 2026-11-07 06:50 IST |
+| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 07:20 IST: HUB session 2 (874b2463) resumed from the first HUB's hand-over; launcher loop live (pid 14024)… | 108k | 2026-11-07 07:25 IST |
+| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | SCOUTING — session a29cd9a2-1e58-46c2-8a88-796a0add87ed (started 07:16); five scouts running (lane.js start: 'scout'); worktrees… | 149k | 2026-11-07 07:24 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | NEW | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); tier 1, flagged (encryption, the person's data); slice… |
-| `engine` | CORE | 1 |  | slot 2 | NEW | GRANTED 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts); tier 1; slice U-05; files offline/src/engine.js, tests/logic.test.mjs… |
-| `actions-sos` | CORE | 1 | yes | slot ? | NEW | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; tier 1, flagged (safety copy); slice U-09; files offline/src/actions.js, src/ui-sos.js… |
-| `learn` | CORE | 1 |  | slot ? | NEW | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; tier 1; slice U-12; files offline/src/ui-exercise.js, src/ui-learn.js |
-| `tests-docs` | CORE | 1 |  | - | NEW | tier 1 harness and docs, tier 2 screenshots and Part 3; slice U-34 (needs U-01 merged); files offline/tests/browser.test.mjs, tests/screens.mjs… |
+| `core` | CORE | 1 | yes | slot 1 | NEW | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); scout wf_4b21626d-e18; slot 1; worktree cut 07:21 at… |
+| `engine` | CORE | 1 |  | slot 2 | NEW | GRANTED 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts); scout wf_7ceb0dd2-585; slot 2; worktree cut 07:21 at 655516d; slice U-05 |
+| `actions-sos` | CORE | 1 | yes | slot ? | NEW | GRANTED slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while…; scout wf_bd6b7205-030; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error (read the… |
+| `learn` | CORE | 1 |  | slot ? | NEW | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; scout wf_9b3634ad-c4d; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error: idle until… |
+| `tests-docs` | CORE | 1 |  | - | NEW | scout wf_59642865-7f0; no slot yet; U-34 needs core's U-01 merged |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
 | `workbook-settings` | SCREENS | 1 |  | - | NEW | tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js, src/ui-workbook.js, src/ui-plan.js |
 | `actions` | SCREENS | 2 |  | - | NEW | tier 2; slice U-22; files offline/src/ui-actions.js, src/ui-practices.js; starts only when no tier 1 lane waits for a slot |

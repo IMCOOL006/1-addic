@@ -6,14 +6,14 @@ SLOTS-ALLOWED: 2 (the lowest of the last three samples at 07:20 is 5.7 GB (07:11
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
 SLOTS: engine slot=2 granted 2026-11-07 07:15 (tier 1; depends only on the content files and the contracts)
-SLOTS: actions-sos slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: do not cut it until this line says granted again; tier 1, flagged; next in line when memory allows)
-SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: do not cut it until this line says granted again; tier 1; after actions-sos)
+SLOTS: actions-sos slot=3 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1, flagged; next in line when memory allows)
+SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1; after actions-sos)
 MERGING: none
 MERGE-QUEUE: (empty)
 MERGED: (none yet)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 07:20 IST
+UPDATED: 2026-11-07 07:25 IST
 
 # 2026-11-07 07:20 · HUB session 2 (874b2463-96d1-45f0-9d4a-ec8c1816634f, started by the launcher at 07:15) resumes
 
