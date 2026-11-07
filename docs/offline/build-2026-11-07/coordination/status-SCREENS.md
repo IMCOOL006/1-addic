@@ -1,12 +1,26 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 03:15 IST: SCREENS 1c2cf086, V3 with R-O-6 (PLAN-V3 section 7, R-H-40). today-track V-01a is built (50aae69, 758f8cb, 127509e; the builder's gates GREEN) and its check is running in wf_6851b095-834. Append scouts are running: content V-42 (wf_c5b05222-47a) and game-tutorials V-44 (wf_247f1e2a-70b). today-track's V-43 section comes before its third batch
+STATE: BUILDING   # 2026-11-08 03:23 IST: SCREENS 1c2cf086, V3. today-track READY-SLICE 127509e (V-01a; check PASS; merge base f69bc68a): for HUB 10 to merge alone. Next: V-01b on slot 6. content and game-tutorials SCOUTED (V-42 and V-44 appended); they wait for slots
 LANE: content SCOUTED 680f850   # V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2), V-10b (owner's I6); brief briefs/content-v3.md; slot asked (on a 7.0 GB row after engine V-40's start). v1: MERGED 680f850
-LANE: today-track CHECKING 127509e   # V3 V-01a slice in wf_6851b095-834: built 50aae69 (ui-status.js, status.test.mjs, the parts line), 758f8cb (styles block), 127509e (no days without a start date); builder gates build, test 43/43 (status 12/12), validate, guards 5/5, browser 16/0/3 GREEN (03:03-03:06); the lane-checker next; then READY-SLICE. Then V-01b, V-43 (R-O-6). v1: MERGED 6b0184b
+LANE: today-track READY-SLICE 127509e   # V3 V-01a 'Your Harbor' at #/status: 50aae69, 758f8cb, 127509e on f69bc68a (wf_6851b095-834; check PASS, LOWs C1 second banner pair in styles.css, C2 PURE adds placeLines and model adds ticks: for V-01b by name); report lane-reports/today-track.md; next V-01b, then V-43
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 03:15 IST
+UPDATED: 2026-11-08 03:23 IST
+
+# 2026-11-08 03:23 IST · today-track READY-SLICE 127509e (V-01a, for HUB 10)
+
+- For the HUB: merge build/today-track at 127509e alone. Merge base f69bc68a.
+  - 50aae69: ui-status.js, status.test.mjs and the build.mjs parts line 'ui-status.js' after 'ui-harbor.js'.
+  - 758f8cb: a styles.css block at the end under /* -- today-track -- */.
+  - 127509e: no days line for a person who set no start date.
+  - 4 files, +631. Territory: 2 own, 2 shared at their append points, 0 errors (check_territory, run by me).
+- Gates. The check wf_6851b095-834 returned PASS. The builder's gates (logs C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/*-20261108-030318..030331): build, test 43/43 (status.test.mjs 12/12), validate, guards 5/5 and browser 16/0/3, all GREEN.
+- Open by name for V-01b, both LOW:
+  - C1: a second /* -- today-track -- */ banner pair at styles.css:694-707 (beside v1's :383/:465). My args asked for that banner form.
+  - C2: ui-status.js PURE adds placeLines, and the model adds ticks {explorer, quests}; the brief's lists do not name them (ui-status.js:151, :296).
+- Verified by me: the branch and the three commits f69bc68a..127509e, both trailers on each, the territory check, and the worktree (offline/1-addic.html restored; now clean). Assumed: the gate counts as the builder and the checker ran them.
+- Report: tracks/SCREENS/lane-reports/today-track.md (19809 B; the V3 report replaced the v1 text there; the v1 report stays in git history).
 
 # 2026-11-08 03:15 IST · R-O-6 read (R-H-40); V-01a built, its check running
 
