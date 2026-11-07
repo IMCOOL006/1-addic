@@ -1198,7 +1198,7 @@ describe('lock screen and onboarding (U-11)', () => {
     assert.equal(O.WRONG_PAUSE_MS, 1000);
     const thrown = await O.attemptUnlock({ lock: { unlock: async () => { throw Object.assign(new Error('x'), { code: 'NO_CRYPTO' }); } } }, '9999', { delayMs: 0 });
     assert.deepEqual(thrown, { ok: false, message: 'A PIN is not available on this device.' });
-    assert.equal(O.lockError({ code: 'BAD_PIN' }), 'Use 4 to 64 characters.');
+    assert.equal(O.lockError({ code: 'BAD_PIN' }), 'Use 4 to 12 digits.');
     assert.equal(O.lockError({ code: 'WRITE_FAILED' }), 'This device did not save it. Try again.');
     await refused(S().lock.set('12'), 'BAD_PIN');
   });
@@ -1481,6 +1481,30 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     const H2 = sosDom().UI.sosHelpers;
     assert.deepEqual([H2.outcomeFrom(6, 2, false), H2.outcomeFrom(6, 7, false), H2.outcomeFrom(6, 2, true)], ['passed', 'still', 'used']);
     assert.equal(events('SosCompleted').length, 3, 'a refused outcome writes nothing');
+  });
+  test('PIN: PIN fields are one-time-code, numeric, 4 to 12 digits, with the line about setting one first', async () => {
+    const O = require(src('ui-onboarding.js'));
+    assert.deepEqual(O.PIN_ATTRS, { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', minlength: '4', maxlength: '12' });
+    assert.equal(O.COPY.pinHelp, 'Set a PIN before you write anything private.');
+    assert.equal(typeof O.pinOk, 'function');
+    for (const p of ['1234', '123456789012']) assert.equal(O.pinOk(p), true, p);
+    for (const p of ['123', '1234567890123', 'abcd', '12 34', '', null]) assert.equal(O.pinOk(p), false, String(p));
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    for (const id of ['onb-pin', 'onb-pin2']) for (const [k, v] of Object.entries(O.PIN_ATTRS)) assert.equal(d.byId(root, id).attrs[k], v, id + ' ' + k);
+    assert.ok(root.textContent.includes(O.COPY.pinHelp), 'the PIN help line shows');
+    d.byId(root, 'onb-pin').value = '12ab'; d.byId(root, 'onb-pin2').value = '12ab';
+    d.tapId(root, 'onb-pin-set');
+    await d.settle();
+    assert.equal(S().status().hasLock, false, 'not 4 to 12 digits: refused before the Store');
+    assert.ok(root.textContent.includes('Use 4 to 12 digits.'));
+    d.byId(root, 'onb-pin').value = '2468'; d.byId(root, 'onb-pin2').value = '2468';
+    d.tapId(root, 'onb-pin-set');
+    await d.settle();
+    assert.equal(S().status().hasLock, true);
+    const lp = d.byId(d.UI.pages.lock({}), 'lock-pin');
+    for (const k of ['type', 'inputmode', 'pattern', 'autocomplete']) assert.equal(lp.attrs[k], O.PIN_ATTRS[k], 'lock ' + k);
   });
   // -- FIX-ONB-EMO tests end --
 });

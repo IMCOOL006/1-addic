@@ -35,6 +35,8 @@
     tourLater: 'The guided tour is coming in a later version.',
     pinSet: 'PIN set. The notebook locks after 5 minutes away.',
     pinMismatch: 'The two PINs do not match.',
+    pinHelp: 'Set a PIN before you write anything private.',
+    pinDigits: 'Use 4 to 12 digits.',
   };
 
   // The eight steps of PLAN 5.1. Only the safety notice cannot be skipped.
@@ -130,7 +132,7 @@
 
   function lockError(err) {
     const code = err && err.code;
-    if (code === 'BAD_PIN') return 'Use 4 to 64 characters.';
+    if (code === 'BAD_PIN') return COPY.pinDigits;
     if (code === 'NO_CRYPTO') return 'A PIN is not available on this device.';
     if (code === 'WRITE_FAILED') return 'This device did not save it. Try again.';
     return 'Something went wrong. Try again.';
@@ -178,8 +180,12 @@
     return !(me && me.onboardedAt);
   }
 
+  // PIN fields: digits only, 4 to 12, the phone's one-time-code keyboard (the Store itself takes 4 to 64 characters).
+  const PIN_ATTRS = { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', minlength: '4', maxlength: '12' };
+  const pinOk = (pin) => typeof pin === 'string' && /^[0-9]{4,12}$/.test(pin);
+
   const O = { COPY, STEPS, STEP_KEYS, WRONG_PAUSE_MS, needsMedicalCard, medicalLines, buildPatch, finishOnboarding, lockError, attemptUnlock,
-    lockLabels, discreetFrom, forgetPin, shouldOnboard };
+    lockLabels, discreetFrom, forgetPin, shouldOnboard, PIN_ATTRS, pinOk };
   if (typeof module !== 'undefined' && module.exports) module.exports = O;
   if (typeof UI === 'undefined' || !UI || typeof document === 'undefined') return;
 
@@ -210,7 +216,8 @@
   function lockPage() {
     const S = getStore();
     const L = lockLabels(isDiscreet());
-    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', autocomplete: 'off', 'aria-describedby': 'lock-msg', dataset: tid('lock-pin') });
+    const pin = h('input', { id: 'lock-pin', type: PIN_ATTRS.type, inputmode: PIN_ATTRS.inputmode, pattern: PIN_ATTRS.pattern, autocomplete: PIN_ATTRS.autocomplete,
+      'aria-describedby': 'lock-msg', dataset: tid('lock-pin') });
     const msg = h('p', { id: 'lock-msg', class: 'field-error', role: 'alert', hidden: true });
     const unlock = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock', dataset: tid('lock-unlock') });
     const panel = h('div', { class: 'stack', hidden: true });
@@ -271,8 +278,8 @@
         return { body: [notice], read() {} };
       }
       if (id === 'privacy') {
-        const p1 = h('input', { type: 'password', inputmode: 'numeric', autocomplete: 'new-password', dataset: tid('onb-pin') });
-        const p2 = h('input', { type: 'password', inputmode: 'numeric', autocomplete: 'new-password', dataset: tid('onb-pin2') });
+        const p1 = h('input', Object.assign({}, PIN_ATTRS, { dataset: tid('onb-pin') }));
+        const p2 = h('input', Object.assign({}, PIN_ATTRS, { dataset: tid('onb-pin2') }));
         const out = h('p', { role: 'status', class: 'muted' });
         const S = getStore();
         const canPin = cryptoReady() && S && S.lock && typeof S.lock.set === 'function';
@@ -280,11 +287,12 @@
           const a = p1.value; const b = p2.value;
           p1.value = ''; p2.value = '';
           if (a !== b) { out.textContent = COPY.pinMismatch; return; }
+          if (!pinOk(a)) { out.textContent = COPY.pinDigits; return; }
           try { await S.lock.set(a, { autoLockMin: 5 }); out.textContent = COPY.pinSet; setBtn.disabled = true; } catch (err) { out.textContent = lockError(err); }
         }, { testid: 'onb-pin-set' });
         const disc = choice('checkbox', 'discreet', '1', 'Discreet mode: show "' + String(C.discreetName || 'Notebook') + '" instead of the app name', settings.discreet === true);
         return {
-          body: [canPin ? h('div', { class: 'stack' }, field('PIN (optional)', p1), field('Same PIN again', p2), setBtn, out)
+          body: [canPin ? h('div', { class: 'stack' }, field('PIN (optional)', p1, COPY.pinHelp), field('Same PIN again', p2), setBtn, out)
             : h('p', { class: 'muted', text: lockError({ code: 'NO_CRYPTO' }) }), disc.el],
           read() { answers.discreet = disc.input.checked; },
         };
