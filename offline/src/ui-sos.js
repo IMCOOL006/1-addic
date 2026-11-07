@@ -273,6 +273,13 @@
   // RS4: which first choice of the slip flow writes the slip. Only 'log' does, and never in a preview.
   function slipLogs(choice, preview) { return choice === 'log' && preview !== true; }
 
+  // RS6: the meetings list, each group keeping its verify flag ('please verify' shows beside it).
+  function meetingsFrom(C) {
+    const groups = safe(() => C.resources.in.groups, []);
+    return (Array.isArray(groups) ? groups : []).filter((g) => g && g.name)
+      .map((g) => ({ name: String(g.name), url: g.url ? String(g.url) : null, verify: g.verify === true }));
+  }
+
   function activeContacts(view) {
     const rows = safe(() => view.list('contacts'), []) || [];
     return rows.filter((c) => c && c.active !== false && c.phone && telHref(c.phone));
@@ -301,7 +308,7 @@
   const H = {
     COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
     telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
-    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, activeContacts, planFor, planSections, clock, remaining,
+    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, meetingsFrom, activeContacts, planFor, planSections, clock, remaining,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = H;
@@ -445,7 +452,7 @@
   function contactsView(c, drill, onDone) {
     const A = c.A;
     const people = drill || isLockedNow() ? [] : activeContacts(c.view);
-    const groups = safe(() => Cn().resources.in.groups, []) || [];
+    const groups = meetingsFrom(Cn());
     const reached = (id, how) => { if (!drill && A && A.contacts && A.contacts.reached) save(() => A.contacts.reached(id, how)); };
     const list = people.length
       ? mine(h('div', null, h('ul', { class: 'sos-list' }, people.map((p) => h('li', { class: 'row' },
@@ -457,7 +464,8 @@
       screen(COPY.call.title, drill ? COPY.call.drill : people.length ? COPY.call.line : COPY.call.none, list),
       groups.length ? h('details', { class: 'card' }, h('summary', { text: COPY.meetings.title, style: { minHeight: '44px' } }),
         h('ul', { class: 'sos-list' }, groups.map((g) => h('li', { class: 'row' }, h('span', { text: g.name }),
-          g.url ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy link', style: { width: 'auto' }, onClick: () => copyText(g.url) }) : null)))) : null,
+          g.url ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy link', style: { width: 'auto' }, onClick: () => copyText(g.url) }) : null,
+          g.verify ? h('span', { class: 'sos-verify muted', dataset: tid('meetings-verify'), text: COPY.verify }) : null)))) : null,
       btn('Done', onDone, { primary: true }));
   }
 

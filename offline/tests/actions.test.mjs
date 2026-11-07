@@ -1313,4 +1313,19 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
       [...w, 'From content.'], 'Content.resources.opioidSafety wins when it is there');
     assert.ok(!O.medicalLines({ heavyDaily: true }, C()).includes(O.COPY.opioid), 'no opioid line without the tick');
   });
+
+  test('RS6: please verify shows beside each meetings group marked verify', async () => {
+    const m = H.meetingsFrom(C());
+    assert.ok(m.length > 0 && m.every((g) => g.verify === true), 'every group in content is marked verify');
+    assert.deepEqual(H.meetingsFrom({ resources: { in: { groups: [{ name: 'A', verify: true }, { name: 'B' }] } } }).map((g) => g.verify), [true, false]);
+    const d = sosDom();
+    const root = d.open(['sos', 'slip']);
+    d.tapId(root, 'sos-slip-reading');
+    d.tapId(root, 'sos-slip-safe');
+    d.tap(root, 'Continue');
+    await d.settle();
+    const shown = root.querySelectorAll('[data-testid="meetings-verify"]');
+    assert.equal(shown.length, m.length, 'one note per group');
+    assert.ok(shown.every((n) => n.textContent.trim() === H.COPY.verify));
+  });
 });
