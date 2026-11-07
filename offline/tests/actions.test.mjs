@@ -2056,5 +2056,26 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
     assert.ok(plain.querySelector('[data-testid="sos-slip-reading"]'), 'not logged: both choices stay');
     assert.ok(!plain.textContent.includes('It is in your log.'));
   });
+  test('RS17: with a PIN set, the privacy step says so and shows no PIN fields; Next keeps the PIN as it was', async () => {
+    await S().lock.set('2468');
+    const d = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    assert.ok(root.querySelector('[data-testid="onb-step-2"]'));
+    for (const id of ['onb-pin', 'onb-pin2', 'onb-pin-set']) assert.ok(!root.querySelector(`[data-testid="${id}"]`), 'no ' + id);
+    assert.ok(root.textContent.includes('A PIN is set. You can change it in Settings.'));
+    assert.equal(O.COPY.pinIsSet, 'A PIN is set. You can change it in Settings.');
+    d.tapId(root, 'onb-next');
+    await d.settle();
+    assert.ok(root.querySelector('[data-testid="onb-step-3"]'), 'Next goes on');
+    S().lock.lockNow();
+    assert.ok(await S().lock.unlock('2468'), 'the PIN is the one set before');
+    await S().resetAll();
+    const fresh = sosDom({ onboarding: true, crypto: { subtle: {} } });
+    const r2 = fresh.onb({});
+    fresh.tapId(r2, 'onb-next');
+    assert.ok(r2.querySelector('[data-testid="onb-pin"]'), 'no PIN yet: the fields stay');
+    assert.ok(!r2.textContent.includes(O.COPY.pinIsSet));
+  });
   // -- FIX-R2-REST tests end --
 });

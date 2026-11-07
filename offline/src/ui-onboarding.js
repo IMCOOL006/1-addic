@@ -37,6 +37,7 @@
     pinMismatch: 'The two PINs do not match.',
     pinHelp: 'Set a PIN before you write anything private.',
     pinDigits: 'Use 4 to 12 digits.',
+    pinIsSet: 'A PIN is set. You can change it in Settings.', // RS17
     sample: 'Look around with sample data',
     sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
     sampleFailed: 'The sample data could not load.',
@@ -308,6 +309,7 @@
         const out = h('p', { role: 'status', class: 'muted' });
         const S = getStore();
         const canPin = cryptoReady() && S && S.lock && typeof S.lock.set === 'function';
+        const hasPin = safe(() => !!S.status().hasLock, false); // RS17: a set PIN changes in Settings, which asks for the current one
         // Set PIN and Next run the same check (RS11): true once it is set, false with the reason shown when it is not.
         const trySet = async () => {
           const a = p1.value; const b = p2.value;
@@ -319,11 +321,11 @@
         const setBtn = btn('Set PIN', () => { trySet(); }, { testid: 'onb-pin-set' });
         const disc = choice('checkbox', 'discreet', '1', 'Discreet mode: show "' + String(C.discreetName || 'Notebook') + '" instead of the app name', settings.discreet === true);
         return {
-          body: [canPin ? h('div', { class: 'stack' }, field('PIN (optional)', p1, COPY.pinHelp), field('Same PIN again', p2), setBtn, out)
+          body: [hasPin ? h('p', { class: 'muted', text: COPY.pinIsSet }) : canPin ? h('div', { class: 'stack' }, field('PIN (optional)', p1, COPY.pinHelp), field('Same PIN again', p2), setBtn, out)
             : h('p', { class: 'muted', text: lockError({ code: 'NO_CRYPTO' }) }), disc.el],
           read() {
             answers.discreet = disc.input.checked;
-            return canPin && (p1.value !== '' || p2.value !== '') ? trySet() : true; // RS11: never on with a typed one not set
+            return !hasPin && canPin && (p1.value !== '' || p2.value !== '') ? trySet() : true; // RS11: never on with a typed one not set
           },
         };
       }
