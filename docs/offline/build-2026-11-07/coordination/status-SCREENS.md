@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 22:11 IST: SCREENS 4d443a20 resumes (the launcher started it 22:04 on the owner's --start; the duplicate ea937cfa was stopped by the launcher 22:06:35; confirmed by the owner's window afc0ccd2). NEXT: the game-tutorials re-check from 1ea2ebf (tracks/SCREENS/args/args_gt_recheck.json, slot 8) on a 7.0 GB row once CORE's tier 1 starts are in (actions-sos FIX-R6 live; engine FIX-RS9E next), then the browser gate by hand, then READY. Every other SCREENS lane MERGED
+STATE: BUILDING   # 2026-11-07 22:16 IST: the game-tutorials re-check wf_b62ade63-a26 is live (launched 22:16 on a 14.9 GB row after CORE's engine FIX-RS9E start). Then the browser gate by hand and READY. Every other SCREENS lane MERGED
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials CHECKING 1ea2ebf   # U-26 0f611e5, U-28 8dccbfb d4c49d1 built; check wf_2cdde478-7e9 FIX -> C1 (hooks game-card, trial-closing) fixed 1ea2ebf; the re-check is next (start 'check', diffFrom 5af6665); slice 5af6665 merged 17:57; real cut base 9f3026c6
+LANE: game-tutorials CHECKING 1ea2ebf   # re-check wf_b62ade63-a26 live since 22:16 (start 'check', diffFrom 5af6665, C1 at 1ea2ebf judged first; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_b62ade63-a26/journal.jsonl); U-26 0f611e5, U-28 8dccbfb d4c49d1 built; slice 5af6665 merged 17:57; real cut base 9f3026c6
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 22:11 IST
+UPDATED: 2026-11-07 22:16 IST
 
 # 2026-11-07 22:11 IST · SCREENS 4d443a20 resumes after the park
 

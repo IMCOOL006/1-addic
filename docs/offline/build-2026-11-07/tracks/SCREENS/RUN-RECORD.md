@@ -100,9 +100,13 @@
 - d6887185 is gone, so the game-tutorials re-check never ran. The worktree is clean at 1ea2ebf, which is also on origin. The re-check args with the new stamp and session are in tracks/SCREENS/args/args_gt_recheck2.json.
 - The board at 22:10: BASE ce691c21 (learn merged); SLOTS-ALLOWED 3, tier 1 first: CORE's actions-sos FIX-R6 re-check wf_4b67e91f-df4 is live, engine FIX-RS9E comes next, then the game-tutorials re-check. Memory 13.8 GB at 22:11.
 
+## 2026-11-07 22:16 IST · the game-tutorials re-check launched
+
+- wf_b62ade63-a26 (lane.js, args tracks/SCREENS/args/args_gt_recheck2.json, now 22:16, session 4d443a20), launched 22:16 on a 14.9 GB row (22:15:52) after CORE's engine FIX-RS9E wf_76a65b95-f5b started (22:15). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_b62ade63-a26/journal.jsonl.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. No SCREENS run live yet at 22:12.
+- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: the game-tutorials re-check wf_b62ade63-a26 (since 22:16; stage Check; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_b62ade63-a26/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`: it reads the journal and waits.
 - Per lane (every tip is on origin): content 680f850 MERGED; today-track a02f121 MERGED; workbook-settings 0e76065 MERGED; actions 0977edd MERGED (49f1c1d4, 18:50); game-tutorials 1ea2ebf CHECKING (U-27 merged as 5af6665; U-26 0f611e5, U-28 8dccbfb + d4c49d1, C1 fix 1ea2ebf).
 - NEXT: once CORE's engine FIX-RS9E has started (tier 1 first, one start per 7.0 GB row), launch the game-tutorials re-check: lane.js with tracks/SCREENS/args/args_gt_recheck2.json. Then run `python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/game-tutorials --lane game-tutorials build browser` by hand on the READY tip, restore offline/1-addic.html, and write `LANE: game-tutorials READY <tip>` (real cut base 9f3026c6).
 - Then, by name only: the Today embeds in today-track (GuidanceUI.explorerRing/moreTools/dot, GameUI.panel behind typeof) once game-tutorials merges (ask the HUB for a slot); workbook-settings C1 after actions-sos merges; content C2-C4 (offline-v1.1).
