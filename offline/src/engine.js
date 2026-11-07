@@ -1577,10 +1577,14 @@ const Engine = (() => {
     if (e.type === 'ObjectiveDone' || e.type === 'ObjectiveSwapped') { const d = pl(e).date; if (validDay(d)) return d; }
     return dateStr(e.at);
   }
+  /* A slip is never a day shown up: not its SlipLogged, not its 'slip' log row, not a LogCreated naming one. */
   function shownUpOver(view, ev, today) {
     const days = new Set();
-    for (const e of ev) if (SHOWN_UP.has(e.type) || (e.type === 'TutorialCompleted' && pl(e).id === 'drill')) days.add(eventDay(e));
-    for (const l of logsOf(view)) days.add(dateStr(l.at));
+    for (const e of ev) {
+      if (e.type === 'LogCreated' && pl(e).type === 'slip') continue;
+      if (SHOWN_UP.has(e.type) || (e.type === 'TutorialCompleted' && pl(e).id === 'drill')) days.add(eventDay(e));
+    }
+    for (const l of logsOf(view)) if (l.type !== 'slip') days.add(dateStr(l.at));
     return [...days].filter((d) => d && (!today || d <= today)).sort();
   }
   function shownUpDays(view, now) { return shownUpOver(view, normEvents(view), now == null ? '' : todayStr(now)); }

@@ -270,6 +270,21 @@ test('run: a slip, a milestone, a counter, a sample row or a drill log is not a 
   assert.equal(E.run(w, NOW).current, 3);
 });
 
+test('run: the rows Actions.log.slip writes (a slip log row and SlipLogged) are not a day shown up; another act that day still is (C1)', () => {
+  const slipRows = (id, d) => ({
+    logs: [{ id, type: 'slip', at: at(d), date: d, hour: 10, triggerIds: [], feelings: [], skills: [], used: true, drill: false }],
+    events: [ev('SlipLogged', { date: d, logId: id }, at(d)), ev('LogCreated', { logId: id, type: 'slip' }, at(d))],
+  });
+  const a = slipRows('s1', day(-1));
+  const v = V(a);
+  assert.deepEqual(E.shownUpDays(v, NOW), []);
+  assert.deepEqual(E.run(v, NOW), { current: 0, best: 0, total: 0, kept: [], cameBack: false, lastDay: null, holding: null });
+  const b = slipRows('s2', TODAY);
+  const w = V({ logs: [...a.logs, ...b.logs, { id: 'c1', type: 'craving', at: at(TODAY, '09:00') }], events: [...a.events, ...b.events] });
+  assert.deepEqual(E.shownUpDays(w, NOW), [TODAY]);
+  assert.equal(E.run(w, NOW).current, 1);
+});
+
 /* ── daily objectives and growth ───────────────────────────────────────────────────────── */
 
 test('dailyObjectives: three items; the same date and state give the same draw; the draw is fixed inside the day', () => withContent(() => {
