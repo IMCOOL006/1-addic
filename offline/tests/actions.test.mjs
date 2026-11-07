@@ -10,6 +10,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
+// The test clock is pinned (FIX-ONB-EMO CLOCK): a fixed local noon that still ticks, so no run meets midnight, a new
+// week or a month end. A Date made with no argument, and Date.now, read it; a Date with arguments is untouched.
+const RealDate = Date;
+const PINNED_AT = new RealDate(2026, 2, 11, 12, 0, 0).getTime(); // Wednesday 11 March 2026, 12:00 local
+const CLOCK_SHIFT = PINNED_AT - RealDate.now();
+globalThis.Date = class PinnedDate extends RealDate {
+  constructor(...a) { if (a.length) super(...a); else super(RealDate.now() + CLOCK_SHIFT); }
+  static now() { return RealDate.now() + CLOCK_SHIFT; }
+};
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
@@ -48,6 +57,14 @@ async function refused(promise, code) {
 }
 function daysAgo(n) { const d = new Date(); d.setDate(d.getDate() - n); return E().todayStr(d); }
 const firstModule = () => C().modules[0];
+// The event a saved response writes, from Content: ArtifactSaved only for the kinds build, assess and plan.
+function savedType(exerciseId) {
+  const ex = C().exercises;
+  const row = Array.isArray(ex) ? ex.find((x) => x && x.id === exerciseId) : ex && ex[exerciseId];
+  const kind = row ? row.kind || null : null;
+  if (['build', 'assess', 'plan'].includes(kind)) return 'ArtifactSaved';
+  return kind ? 'ExerciseDone' : null; // null: Content gives no kind yet, so a test does not pin the type
+}
 // Content.sample may be loaded (content-sample.js, BUILD-PLAN 3.1): a test that sets it, or needs it absent, puts it back after.
 async function withSample(sample, fn) {
   const had = Object.prototype.hasOwnProperty.call(C(), 'sample');
@@ -402,7 +419,8 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     const d = await Actions.saveResponse('quick-reasons', { reasons: ['health'] }, { mode: 'tutorial', draft: true });
     assert.equal(d.events.length, 0, 'a draft earns nothing');
     const s = await Actions.saveResponse('quick-reasons', { reasons: ['health', 'family'] });
-    assert.deepEqual(s.events.map((e) => [e.type, e.payload.exerciseId, e.payload.responseId]), [['ArtifactSaved', 'quick-reasons', s.response.id]]);
+    const want = savedType('quick-reasons');
+    assert.deepEqual(s.events.map((e) => [want === null ? null : e.type, e.payload.exerciseId, e.payload.responseId]), [[want, 'quick-reasons', s.response.id]]);
     assert.equal(list('responses').length, 2, 'append-only');
     await Actions.scriptUsed(s.response.id);
     assert.equal(events('ScriptUsed').length, 1);
@@ -1622,6 +1640,14 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.equal(events().length, 0, 'nothing written');
     await Actions.recordEvent('MindfulMinute');
     assert.equal(events('MindfulMinute').length, 1, 'other types still work');
+  });
+  test('CLOCK: the test clock is pinned to a fixed local noon that still ticks', async () => {
+    assert.equal(E().todayStr(new Date()), '2026-03-11');
+    assert.equal(new Date().getHours(), 12, 'noon: far from midnight');
+    const t0 = Date.now();
+    await new Promise((r) => setTimeout(r, 5));
+    assert.ok(Date.now() > t0, 'time still moves');
+    assert.equal(new Date(2026, 0, 2).getDate(), 2, 'a Date with arguments is untouched');
   });
   // -- FIX-ONB-EMO tests end --
 });
