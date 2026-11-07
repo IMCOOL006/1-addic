@@ -1381,4 +1381,18 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     assert.ok(H.FALLBACK.talkback.every((t) => !/decide then/i.test(t)));
     assert.equal(H.FALLBACK.clinicalReview, true);
   });
+
+  test('VERIFY: in crisis mode the verify note is one short line', () => {
+    assert.equal(H.COPY.crisisVerify, 'Please check these numbers.');
+    const note = C().resources.in.verifyNote;
+    assert.ok(note && note.length > 40, 'content has a long verify note');
+    const d = sosDom();
+    const crisis = d.UI.sosUrgentView({}, { crisis: true });
+    assert.equal(crisis.querySelectorAll('[data-testid="crisis-verify"]').length, 1, 'one line');
+    assert.equal(d.byId(crisis, 'crisis-verify').textContent.trim(), 'Please check these numbers.');
+    assert.ok(!crisis.textContent.includes(note), 'the long note is left out of a crisis');
+    const urgent = d.UI.sosUrgentView({}, {});
+    assert.ok(urgent.textContent.includes(note), 'the urgent page keeps it');
+    assert.equal(urgent.querySelectorAll('[data-testid="crisis-verify"]').length, 0);
+  });
 });

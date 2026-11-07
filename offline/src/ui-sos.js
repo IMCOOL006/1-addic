@@ -52,6 +52,7 @@
     overdose: 'If someone may have overdosed',
     withdrawal: 'Heavy daily drinking or sedatives: stop with a doctor.', // RS3, clinicalReview
     verify: 'please verify',
+    crisisVerify: 'Please check these numbers.', // the one verify line of the crisis view
     noVoice: 'Read-aloud is not available on this device.',
     notSaved: 'Not saved on this device. You can keep going.',
     copied: 'Copied.',
@@ -407,13 +408,14 @@
             it.altTel ? h('a', { class: 'btn ghost', href: it.altTel, text: it.alt, style: { width: 'auto', minHeight: '44px' } }) : null,
             verify));
       })),
-      sec.verifyNote ? h('p', { class: 'muted', text: sec.verifyNote }) : null));
+      sec.verifyNote && !o.crisis ? h('p', { class: 'muted', text: sec.verifyNote }) : null));
     const extra = (title, lines) => (lines.length ? h('details', { class: 'card' }, h('summary', { text: title, style: { minHeight: '44px' } }),
       h('ol', null, lines.map((t) => h('li', { text: t })))) : null);
     return h('div', { class: 'stack', dataset: tid(o.crisis ? 'sos-crisis' : 'sos-urgent'), 'aria-live': o.crisis ? 'assertive' : null },
       h('h1', { tabindex: '-1', class: 'sos-title', text: words.title }),
       h('p', { class: 'sos-line', text: words.line }),
       ...sections,
+      o.crisis && sections.length ? h('p', { class: 'muted', dataset: tid('crisis-verify'), text: COPY.crisisVerify }) : null,
       o.crisis ? null : extra(COPY.overdose, model.overdose), // a crisis: the numbers and little else
       o.crisis ? null : extra(COPY.withdrawal, model.withdrawal));
   }
