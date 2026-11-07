@@ -198,7 +198,8 @@ flow('SOS craving flow offline with delay loop and both outcomes', { routes: ['s
   await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'SlipLogged').length >= n, slip0 + 1);
   assert.ok((await F.count(page, 'logs')) >= logs0 + 2, 'two sessions logged');
   const d2 = await F.derived(page);
-  if (d1 && d2) for (const k of Object.keys(d1)) assert.ok(d2[k] >= d1[k], `${k} never decreases after a slip (${d1[k]} -> ${d2[k]})`);
+  if (!d1 || !d2) throw new F.Skip(REASON.global('Engine.gameState') + ' (nothing-decreases not checked; both sessions logged)');
+  for (const k of Object.keys(d1)) assert.ok(d2[k] >= d1[k], `${k} never decreases after a slip (${d1[k]} -> ${d2[k]})`);
 });
 
 flow('SOS reachable and not gated before onboarding or on lock screen', { onboarded: false }, async ({ page }) => {
