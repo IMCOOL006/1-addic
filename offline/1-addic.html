@@ -1962,6 +1962,8 @@ const UI = (function () {
     clinicalReview: true,
     title: 'Urgent help',
     line: 'If you or someone else is in danger, call now.',
+    // Shown only when Content's list is empty or unreadable (RS8): one number to tap, whatever else failed.
+    builtIn: [{ name: 'Emergency', number: '112', verify: true }],
     note: 'India numbers: please verify. Elsewhere: your local emergency number (usually 112, 911 or 999).',
   };
   const EMPTY_VIEW = Object.freeze({ get() { return null; }, list() { return []; }, count() { return 0; } });
@@ -2609,7 +2611,8 @@ const UI = (function () {
     const C = ns('Content');
     const res = safe(() => C.resources, null) || {};
     const local = res.in || {};
-    const lines = [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number);
+    const listed = safe(() => [].concat(local.emergency || [], local.crisis || []).filter((x) => x && x.number), []);
+    const lines = listed.length ? listed : URGENT.builtIn;
     const tel = (n) => 'tel:' + String(n).replace(/[^0-9+]/g, '');
     return h('section', { class: 'page sos-page stack', 'aria-labelledby': 'urgent-title' },
       h('h1', { id: 'urgent-title', text: URGENT.title }),

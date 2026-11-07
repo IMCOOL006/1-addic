@@ -368,6 +368,21 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  test('RS8: with Content missing, unreadable or its list empty, the built-in urgent page still has one number to tap', async () => {
+    const contents = [undefined, { resources: { in: { emergency: [], crisis: [] } } }, { resources: { in: { emergency: 'x' } } },
+      { get resources() { throw new Error('unreadable'); } }];
+    for (const content of contents) {
+      setup();
+      if (content) globalThis.Content = content; else delete globalThis.Content;
+      delete UI.pages.sos;
+      at('#/sos');
+      await UI.render();
+      assert.deepEqual(hrefs().filter((x) => x.startsWith('tel:')), ['tel:112'], 'one tap calls 112');
+      assert.match(main().textContent, /Urgent help/);
+      assert.match(main().textContent, /please verify/);
+    }
+  });
+
   test('routes: unknown renders Today, a known unregistered page says coming soon, and each render is announced', async () => {
     setup();
     at('#/nowhere/at/all');
