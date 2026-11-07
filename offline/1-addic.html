@@ -1663,14 +1663,15 @@ const Store = (function () {
     }
   }
 
-  // Rows from the view are the working set itself: read them, never change them (change rows through commit).
+  // Rows from the view are the working set itself, frozen (Q3): read them, never change them (change rows through
+  // commit, whose drafts are copies).
   const view = {
     get(store, id) {
       if (state.locked || !has(store)) return null;
       const r = state.rows[store].get(String(id));
-      return r === undefined ? null : r;
+      return r === undefined ? null : Object.freeze(r);
     },
-    list(store) { return state.locked || !has(store) ? [] : Array.from(state.rows[store].values()); },
+    list(store) { return state.locked || !has(store) ? [] : Array.from(state.rows[store].values(), (r) => Object.freeze(r)); },
     count(store) { return state.locked || !has(store) ? 0 : state.rows[store].size; },
   };
 

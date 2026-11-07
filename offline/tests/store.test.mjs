@@ -1418,6 +1418,25 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(heard, 1);
     assert.deepEqual(errs, [], 'the listener that is not a function was never kept');
   });
+
+  test('Q3: view.get and view.list give frozen rows: a change throws and the row stays; drafts are still copies', async () => {
+    const S = freshStore();
+    await addRows(S);
+    const me = S.view.get('profile', 'me');
+    assert.equal(Object.isFrozen(me), true);
+    assert.throws(() => { me.name = 'changed'; }, TypeError);
+    assert.ok(S.view.list('events').every((r) => Object.isFrozen(r)), 'every listed row is frozen');
+    assert.throws(() => { S.view.list('events')[0].type = 'changed'; }, TypeError);
+    assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK, 'the row stays as it was');
+    await S.commit('t', (d) => {
+      const r = d.get('profile', 'me');
+      assert.equal(Object.isFrozen(r), false, 'a draft is a copy the rule may change');
+      r.name = 'Asha';
+      d.put('profile', r);
+    });
+    assert.equal(S.view.get('profile', 'me').name, 'Asha');
+    assert.equal(Object.isFrozen(S.view.get('profile', 'me')), true);
+  });
 });
 
 /* ── boot.js (the CORE chat's ruling Q2): a start failure still shows urgent help ─────────────── */
