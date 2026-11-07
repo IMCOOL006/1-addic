@@ -6,24 +6,24 @@ NEXT: the HUB merges core U-04 when it is READY; actions-sos U-10 (the SOS scree
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 08:50 IST by `board.py`.
+Rewritten 2026-11-07 08:56 IST by `board.py`.
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 08:50 IST: four slices merged (core U-01, engine U-05, core U-03+U-02, actions-sos U-09), trunk 22c39654 pushed; queue empty; free memory 2.2 GB at 08:49, under the 4.0 GB floor with two…
+- STATE: BUILDING — 2026-11-07 08:56 IST: four slices merged, trunk 67cd45fc pushed; queue empty; running: core U-04 and, from 08:56, actions-sos U-10 (granted again at 7.4 GB free); engine paused, tests-docs and learn…
 - BASE: 22c39654 (the trunk after the actions-sos U-09 merge, 2026-11-07 08:48; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 - QUIET: no
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 08:50 IST
+- UPDATED: 2026-11-07 08:56 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 08:50 IST: four slices merged (core U-01, engine U-05, core U-03+U-02, actions-sos U-09), trunk 22c39654… | 206k | 2026-11-07 08:50 IST |
-| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2 (context 271k at 08:52: hand-over written in RUN-RECORD.md; RESTART at the next safe point or 300k)… | 267k | 2026-11-07 08:47 IST |
+| HUB | 874b2463 (launcher-started 2026-11-07 07:15) | BUILDING — 2026-11-07 08:56 IST: four slices merged, trunk 67cd45fc pushed; queue empty; running: core U-04 and, from 08:56… | 213k | 2026-11-07 08:56 IST |
+| CORE | a29cd9a2 (launcher-started 2026-11-07 07:15) | BUILDING — session a29cd9a2 (context about 280k: hand-over written in RUN-RECORD.md; RESTART at the next safe point or 300k)… | 274k | 2026-11-07 08:53 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
@@ -32,7 +32,7 @@ Rewritten 2026-11-07 08:50 IST by `board.py`.
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | BUILDING | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); slices 8bf7b5c (U-01) and 4a43190 (U-03, U-02) MERGED… |
 | `engine` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=2 PAUSED since 07:38 (memory); resumes with…; slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5)… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | READY-SLICE | GRANTED 08:21; PAUSE AT NEXT COMMIT from 08:50 (free memory 2.2 GB at 08:49, under the 4.0 GB floor; PLAN.md section 4, the newest lane): commit what is done… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | MERGED | GRANTED again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again… |
 | `learn` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while…; brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice… |
 | `tests-docs` | CORE | 1 |  | slot ? | SCOUTED | GRANTED slot=5 ASKED 07:42, WAITING for memory (tier 1; U-34 needs…; brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |

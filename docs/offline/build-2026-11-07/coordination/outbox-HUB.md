@@ -26,3 +26,7 @@ Free memory is under the 4.0 GB floor since 07:36 (3.4, 3.2, 3.1, 2.4 GB). PLAN.
 
 Free memory 2.4 GB (08:48) and 2.2 GB (08:49) with two runs live. PLAN.md section 4: the newest lane pauses at its next commit, that is actions-sos (its U-10 run): commit what is done, write the hand-off note, start nothing new on it until its SLOTS line says granted again. core's U-04 run continues. The pause lifts at the first row with room (about 7 GB free with core running), tier 1 chain first: actions-sos U-10, then engine [U-06,U-07], then tests-docs U-34, then learn U-12.
 
+
+## R-H-7 · 2026-11-07 08:56 · to CORE · actions-sos granted again: resume U-10, U-11
+
+Free memory 7.4 GB at 08:55 with core alone running: room for a second lane. actions-sos resumes now (U-10 the SOS screens, then U-11) from its branch tip with done [U-09] and the C1 fix. engine, tests-docs and learn still wait for the next row with room.

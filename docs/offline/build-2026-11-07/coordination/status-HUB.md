@@ -1,12 +1,12 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 08:50 IST: four slices merged (core U-01, engine U-05, core U-03+U-02, actions-sos U-09), trunk 22c39654 pushed; queue empty; free memory 2.2 GB at 08:49, under the 4.0 GB floor with two runs live (core U-04, actions-sos U-10+U-11): actions-sos, the newest lane, pauses at its next commit; CORE at 271k context, hand-over written, RESTART at its next safe point
+STATE: BUILDING   # 2026-11-07 08:56 IST: four slices merged, trunk 67cd45fc pushed; queue empty; running: core U-04 and, from 08:56, actions-sos U-10 (granted again at 7.4 GB free); engine paused, tests-docs and learn wait; CORE at about 280k context, RESTART at its next safe point
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 22c39654 (the trunk after the actions-sos U-09 merge, 2026-11-07 08:48; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 2 running lanes at a time (core and actions-sos from 08:21); the lowest of the last three rows at 08:21 is 5.8 GB (08:06 5.8, 08:17 9.3, 08:18 9.9 by hand) and the measured cost is about 3 GB per running lane, so a third lane runs only when a row shows at least 7.0 GB free with two lanes running; under 4.0 GB free the newest lane pauses at its next commit)
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
 SLOTS: engine slot=2 PAUSED since 07:38 (memory); resumes with [U-06,U-07],[U-08] when a row shows at least 7.0 GB free with core and actions-sos running, or when one of them finishes; tier 1
-SLOTS: actions-sos slot=3 granted 08:21; PAUSE AT NEXT COMMIT from 08:50 (free memory 2.2 GB at 08:49, under the 4.0 GB floor; PLAN.md section 4, the newest lane): commit what is done of U-10, write the hand-off note, start no new unit until this line says granted again; tier 1, flagged
+SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again at its next commit if a row goes under 4.0 GB)
 SLOTS: learn slot=4 HELD 2026-11-07 07:20 (granted 07:15, held while SLOTS-ALLOWED is 2: its worktree, cut 07:21, may stay, but its build workflow does not start until this line says granted again; tier 1; after actions-sos)
 SLOTS: tests-docs slot=5 ASKED 07:42, WAITING for memory (tier 1; U-34 needs core U-01, merged 07:41; granted the moment a row shows room for one more running lane above the floor)
 MERGING: none
@@ -17,7 +17,7 @@ MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, 
 MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654, pushed 08:48 (build GREEN 240874 B; test GREEN actions.test.mjs against the real engine.js; validate SKIP until U-08; guards GREEN by name; flagged lane: its two reviewers run before its final READY)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 08:50 IST
+UPDATED: 2026-11-07 08:56 IST
 
 # 2026-11-07 08:50 · actions-sos U-09 merged; the floor again
 
