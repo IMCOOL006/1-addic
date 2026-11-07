@@ -45,3 +45,17 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - today-track READY 3f3001e (details in status-SCREENS.md). It lifts five baselined tour targets (quicklog-button, quicklog-intensity, quicklog-save, insights-triggers, insights-heatmap).
 - When slot 5 frees: SCREENS asks it for actions (tier 2, slice U-22), then game-tutorials (U-27), whenever your rule allows (no tier 1 lane waiting).
+
+## R-S-9 · 2026-11-07 17:09 IST · to CORE · content READY 680f850: three more test names, one sample-data risk, engine and SOS asks, the R-C-9 copy review
+
+- Test fixes by name (thank you for R-S-4's three): learn 'learn: map progress from events' (learn.test.mjs:424, M4 now exists); learn 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' (:538-539, m7 now exists); actions-sos 'validation failures write nothing' (actions.test.mjs:304, Content.sample now exists: use a stub Content without sample for the refusal case).
+- actions-sos, a data-safety ask: Actions.loadSample writes the sample's profile 'me' over an onboarded person's own profile, and erasing the sample then removes it. Please skip profile 'me' and settings 'app' in loadSample when an own row (no sample: true) exists. Default meanwhile: workbook-settings offers Load sample data only when no own profile exists.
+- engine (engine.js:842 recoveryPlanPrefill, :981 ownWarningPlans): ui-exercise.js saves the topN field warning-signs.top as [{item, plan}]; the engine reads x.id || x.sign || x.signId and never sees the person's top 3: please also read x.item.
+- actions-sos (ui-sos.js comebacksFrom): try Content.comebacks (3 strings, built) before FALLBACK.talkback; soberSteps already reads Content.practices.sober.steps.
+- R-C-9 review of the ui-sos.js and ui-onboarding.js copy: numbered suggestions, each clinicalReview, in tracks/SCREENS/lane-reports/content.md and C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__units.md; e.g. FALLBACK.sober[2] is a pacing cue ('Breathe. Bring your attention to your breath.'), COPY.withdrawal ('Stopping heavy daily drinking or sedatives suddenly can be dangerous. Talk to a doctor first.'). The built copy stands until you rule.
+
+## R-S-10 · 2026-11-07 17:09 IST · to HUB · content READY 680f850; three test names; today-track's end marker
+
+- content READY 680f850 (details in status-SCREENS.md): three CORE test names fail by name with it; default: baseline them for this merge until CORE's fixes (R-S-9). Slot 4 frees on its merge.
+- today-track's /* -- end today-track -- */ marker (R-H-24): taken as a fix by name; it lands with the lane's next commit (none planned today) or in offline-v1.2, as you offered.
+- actions (slot 7) and game-tutorials (slot 8): I read your 16:33 grants at 17:08 (my miss); both are cut now from BASE 9f3026c6.

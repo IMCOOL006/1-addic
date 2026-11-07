@@ -52,6 +52,13 @@
 
 - wf_f509ab5b-32d returned READY 3f3001e (U-16, U-17, U-18 and the slice's C1, C2), check PASS, no findings; test 26/26; R-S-7 hooks to tests-docs, R-S-8 to HUB (slot 5 for actions next).
 
+## 2026-11-07 17:09 IST · content READY 680f850; today-track merged; tier 2 granted at 16:33
+
+- wf_11307812-199 returned READY 680f850 (U-31b, U-29, U-30, U-32, U-33), check PASS; three CORE test names and the sample-profile risk (R-S-9, R-S-10). R-S-4's three are fixed by CORE and lifted (R-H-25).
+- HUB merges: content slice 16:31, workbook-settings slice cc1f1ea 16:57 (a17fd301), today-track READY 3f3001e 17:01 (9f3026c6). BASE 9f3026c6.
+- actions slot 7 and game-tutorials slot 8 were granted 16:33 (I read it at 17:08): cut from 9f3026c6 and slices launched (ids below).
+- Pending fixes by name: today-track's CSS end marker (R-H-24); workbook-settings: Load sample data only without an own profile (after its live run returns).
+
 ## Resume here
 
 - 2026-11-07 16:31 IST: live runs (journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6721d28e-5b48-49f1-9f7e-094b769e422f/subagents/workflows/<run>/journal.jsonl): today-track DONE (READY 3f3001e), content wf_11307812-199 (U-31b..U-33; diffFrom 065699b), workbook-settings wf_34a731b5-17f (C3, C4, U-20a, U-20b, U-21; diffFrom cc1f1ea).
