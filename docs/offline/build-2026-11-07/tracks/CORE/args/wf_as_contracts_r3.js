@@ -1,6 +1,6 @@
 export const meta = {
   name: 'actions-sos-contracts-r3',
-  description: 'actions-sos: read-only contracts-and-tests re-review of fca2781..HEAD (FIX-R2..FIX-R6), each HIGH/MEDIUM finding adversarially verified (CORE 93bffdb7)',
+  description: 'actions-sos: read-only contracts-and-tests re-review of fca2781..HEAD and an independent lane check of 1cfc936..HEAD with a trunk merge preview, each HIGH/MEDIUM finding adversarially verified (CORE 93bffdb7)',
   phases: [{ title: 'Review' }, { title: 'Verify' }],
 }
 const A = args || {}
@@ -61,12 +61,51 @@ Check it against the code at HEAD (git -C ${WT} show HEAD:<file>, git -C ${WT} l
 ${READ_ONLY}
 Budget about 30 tool calls. Return id, real (true only if the failure scenario happens as described or in a closely related form), severity (your own; NONE when not real), reason (one or two sentences), evidence (paths, lines, the probe's output).`
 
+const CHECK_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['PASS', 'FIX'] },
+    tip: { type: 'string' },
+    findings: { type: 'array', items: { type: 'object', properties: {
+      id: { type: 'string' }, severity: { type: 'string', enum: ['BLOCKER', 'HIGH', 'MEDIUM', 'LOW'] }, unit: { type: 'string' },
+      where: { type: 'string' }, expected: { type: 'string' }, evidence: { type: 'string' } }, required: ['id', 'severity', 'where', 'expected', 'evidence'] } },
+    gates: { type: 'array', items: { type: 'string' } },
+    trunk_suite: { type: 'string', description: 'the full Node suite on the trunk tree with the lane files over it: counts, failing names, log path' },
+    territory: { type: 'string' },
+    not_checked: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['verdict', 'findings', 'gates', 'trunk_suite'],
+}
+const CHECK_FROM = '1cfc936'
+const checkPrompt = `You are the independent checker of lane actions-sos (build chat CORE, the 1-addic offline edition build of 7 November 2026). Worktree ${WT}, branch build/actions-sos, base 655516dc; the tip is HEAD. The last real lane check passed at ${CHECK_FROM}; since then two fix rounds by name were built and re-checked only by the safety reviewer: FIX-R6 (RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T, RS35, RS36, RS37) and FIX-R7 (RS37R, RS38, RS36R). Judge ONLY ${CHECK_FROM}..HEAD (git -C ${WT} log --oneline ${CHECK_FROM}..HEAD; the diff by file and range), reading the earlier code as context. The findings' full text and rulings: ${SCR}/actions-sos__review-safety.md (Round 6, Round 7, section FIX-R7) and ${DOCS}/tracks/CORE/contracts/actions-sos.md (rulings 17:22, 17:57, 22:25, 22:52).
+
+${READ_ONLY}
+
+Check, once each:
+1. The gates: python ${GATES} --wt ${WT} --lane actions-sos build test validate guards; each GATE and FAIL line judged by name against the baselines (build and validate SKIP in this worktree is expected: no build.mjs or engine.js at its base; the guards' tour-target names that belong to other lanes and are the same as at ${CHECK_FROM} are not this lane's failures: diff them by name against the gate log at ${CHECK_FROM} or 87030e3 under C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/).
+2. The territory: python ${DOCS}/tools/check_territory.py actions-sos 655516dc..HEAD --wt ${WT} (an ERROR line is a BLOCKER).
+3. THE MERGE PREVIEW (the most important): build a scratch tree of the trunk with the lane's four files over it and run the full Node suite there: mkdir -p C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7 (empty it first), git -C C:/Users/ruchi/1-addic archive build/offline-v1 offline package.json | tar -x -C <that dir>, copy over it ${WT}/offline/src/actions.js, ui-sos.js, ui-onboarding.js and offline/tests/actions.test.mjs, then in it: node offline/build.mjs, then node --test on every offline/tests/*.test.mjs except browser.test.mjs (log to C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/trunk-preview-<stamp>.log). Every failing test name is a finding unless ${DOCS}/coordination/baselines.md lists it; a failure in another lane's test caused by this lane's change (a caller on the trunk: ui-settings.js, ui-workbook.js, ui-today.js reading Actions.* or UI.sos*) is a HIGH. Never touch the trunk checkout or the worktree.
+4. Each fix id of FIX-R6 and FIX-R7 has its own commit and a test that fails without it (spot-check two: revert the source hunk in the scratch tree only, run the test, see it fail, restore).
+5. The commit messages after ${CHECK_FROM} carry the two trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>, and a Claude-Session line: 60f08c84-298d-4afc-9321-e70539a6534c for FIX-R6, 93bffdb7-4bab-4cfc-a69c-5f4a981d5968 for FIX-R7); nothing committed that is not the lane's.
+6. THE RULES below kept in the changed code (SOS never gated or interrupted; urgent help one tap away; nothing derived decreases; no network or innerHTML with data; crisis copy brief with clinicalReview: true).
+
+${RULES}
+
+YOUR BUDGET: about 60 tool calls, hard cap 80 (cut off at the cap you return NOTHING); write findings as you go to ${SCR}/actions-sos__check-r7.md. Return: verdict PASS or FIX (FIX only for a BLOCKER, HIGH or MEDIUM), tip, findings (ids C-R7-1, ...: severity, unit, file:line, what is expected, evidence path), gates (one line each with its log path), trunk_suite (counts, failing names, log path), territory, not_checked.`
+
 phase('Review')
-const review = await agent(reviewPrompt, { label: 'review:contracts:actions-sos:r3', phase: 'Review', agentType: 'lane-reviewer', schema: REVIEW_SCHEMA })
-if (!review) { log('the contracts reviewer returned nothing (cap?)'); return { review: null, verdicts: [] } }
-const serious = review.findings.filter(f => ['BLOCKER', 'HIGH', 'MEDIUM'].includes(f.severity))
-log(`contracts re-review: ${review.findings.length} findings (${serious.length} BLOCKER/HIGH/MEDIUM), ${review.questions.length} questions, tip ${review.tip}`)
+const [review, check] = await parallel([
+  () => agent(reviewPrompt, { label: 'review:contracts:actions-sos:r3', phase: 'Review', agentType: 'lane-reviewer', schema: REVIEW_SCHEMA }),
+  () => agent(checkPrompt, { label: 'check:actions-sos:r7', phase: 'Review', agentType: 'lane-checker', schema: CHECK_SCHEMA }),
+])
+if (!review) log('the contracts reviewer returned nothing (cap?)')
+if (!check) log('the checker returned nothing (cap?)')
+const serious = [
+  ...(review ? review.findings : []),
+  ...(check ? check.findings.map(f => ({ ...f, scenario: f.expected, fix: '(the checker\'s expectation)' })) : []),
+].filter(f => ['BLOCKER', 'HIGH', 'MEDIUM'].includes(f.severity))
+log(`contracts re-review: ${review ? review.findings.length : '?'} findings; check: ${check ? check.verdict + ' with ' + check.findings.length + ' findings' : '?'}; ${serious.length} BLOCKER/HIGH/MEDIUM to verify`)
 phase('Verify')
 const verdicts = await parallel(serious.map(f => () =>
   agent(verifyPrompt(f), { label: 'verify:' + f.id, phase: 'Verify', agentType: 'lane-checker', schema: VERDICT_SCHEMA })))
-return { review, verdicts: verdicts.filter(Boolean), lost: verdicts.filter(v => !v).length }
+return { review, check, verdicts: verdicts.filter(Boolean), lost: verdicts.filter(v => !v).length }
