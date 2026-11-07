@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 17:17 IST: two runs live: actions-sos FIX-R5 wf_fa0d78f5-b07, core FIX-V11 review wf_6015fc2b-7ec; CORE 06285082 is over 250k: hand-over written (RUN-RECORD 'Resume here'); RESTART when both return
+STATE: BUILDING   # 2026-11-07 17:23 IST: two runs live (actions-sos FIX-R5 wf_fa0d78f5-b07, core FIX-V11 review wf_6015fc2b-7ec); R-H-27 ruled (R-C-27/28): learn FIX-RS9 and engine FIX-RS9E ready as wrappers for the fresh CORE; actions-sos FIX-R6 (RS-SAMPLE, RS9T) after FIX-R5; 06285082 over 250k: RESTART when both runs return
 LANE: core REVIEWING b4ccce4   # 2026-11-07 17:17 IST: FIX-V11 built (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4; check PASS at b4ccce4, test GREEN 84/84 _logs/gates/core/test-20261107-170638.log, build GREEN); run wf_37a1972d-79e STOPPED before the reviewers only because the builder named its units by id; review run wf_6015fc2b-7ec (both reviewers over 957f333...b4ccce4); merged earlier as d4eed2a (957f333)
 LANE: engine MERGED 57153d3   # FIX-RS4 READY 16:4x, merged by the HUB as 3720d119 (R-H-25, 17:03; the baselined names lifted); before: READY 227a07a merged 15:34; complete, fixes by name only (the crisisKeywords request of RS32/RS31 is offline-v1.1 by name)
 LANE: actions-sos REVIEWING 5c2e7a7   #   2026-11-07 17:12 IST: FIX-R5 run wf_fa0d78f5-b07 (RS24 intl remainder, RS29 MEDIUM, RS30, RS31, RS32, RS22T; rulings contracts/actions-sos.md 17:04; then the safety re-check); FIX-R4 at 5c2e7a7: RS25, RS27, RS28 FIXED, RS26 remainder ruled offline-v1.1
 LANE: learn MERGED 4f5832f   # FIX-RS4 READY 16:4x, merged by the HUB as cb0b427 (R-H-25, 17:03); before: READY 19f373c merged 10:50; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R5 running), core slot 1 (FIX-V11 running)
-UPDATED: 2026-11-07 17:17 IST
+UPDATED: 2026-11-07 17:23 IST
 
 # 2026-11-07 17:07 IST · actions-sos FIX-R4 returned RED; FIX-R5 ruled; waiting for memory
 
