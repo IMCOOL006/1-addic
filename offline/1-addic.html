@@ -346,7 +346,8 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 .sos-target:hover { border-color: hsl(var(--primary)); }
 .sos-target-name { flex: 1 1 12em; min-width: 0; }
 .sos-target-number { font-weight: 700; font-size: 1.25rem; color: hsl(var(--primary)); white-space: nowrap; }
-[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop { display: none !important; }
+[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop,
+[data-route="sos"] #coach, [data-route="sos"] .coach-overlay { display: none !important; } /* the whole layer (RS9) */
 .lock-page { max-width: 420px; margin: 0 auto; }
 
 /* ── The harbor (placeholder box; the harbor lane draws the scene inside) ──────────────────── */

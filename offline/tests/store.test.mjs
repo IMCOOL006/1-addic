@@ -901,6 +901,27 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.deepEqual(f.values(), all);
   });
 
+  test('RS9: on SOS the whole coach layer is hidden, its tap-catching overlay too, and ui-core empties it', async () => {
+    setup();
+    UI.pages.sos = page('SOS PAGE');
+    const coach = document.getElementById('coach');
+    const overlay = document.createElement('div');
+    overlay.setAttribute('class', 'coach-overlay');
+    coach.appendChild(overlay);
+    at('#/sos');
+    await UI.render();
+    assert.equal(coach.hidden, true);
+    assert.equal(coach.children.length, 0);
+    const built = new URL('../1-addic.html', import.meta.url);
+    const sheets = [fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8')];
+    if (fs.existsSync(built)) sheets.push(fs.readFileSync(built, 'utf8'));
+    for (const css of sheets) {
+      const rule = css.split('}').find((r) => /\[data-route="sos"\]\s+#coach\b/.test(r)) || '';
+      assert.match(rule, /\[data-route="sos"\]\s+\.coach-overlay\b/, 'the overlay is named');
+      assert.match(rule, /display:\s*none\s*!important/);
+    }
+  });
+
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
     setup();
     const dlg = dialogStandIn();
