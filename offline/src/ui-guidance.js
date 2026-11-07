@@ -306,7 +306,7 @@ const GuidanceUI = (function () {
       t = targetOf(step.target);
     }
     const ring = active.ring; const pop = active.pop;
-    pop.style.top = ''; pop.style.bottom = ''; pop.style.left = '';
+    pop.style.top = ''; pop.style.bottom = ''; pop.style.left = ''; pop.style.maxWidth = '';
     if (!t) { // a missing target never makes a dead step: the step shows as a centred card
       ring.setAttribute('hidden', '');
       active.overlay.setAttribute('class', 'coach-overlay coach-dim');
@@ -320,9 +320,29 @@ const GuidanceUI = (function () {
     ring.style.top = px(r.top - 6); ring.style.left = px(r.left - 6);
     ring.style.width = px(r.width + 12); ring.style.height = px(r.height + 12);
     const w = Math.min(320, vw - 32);
-    pop.style.left = px(Math.max(16, Math.min(r.left, vw - w - 16)));
-    if (vh - r.bottom > 200) pop.style.top = px(r.bottom + 14);
-    else pop.style.bottom = px(Math.max(16, vh - r.top + 14));
+    const left = Math.max(16, Math.min(r.left, vw - w - 16));
+    pop.style.left = px(left);
+    // The SOS button sits above the coach layer and is never covered, so the popover keeps clear of it:
+    // otherwise SOS would sit on the popover's buttons (a bottom-nav step put Next right under it).
+    const sos = sosRect();
+    const besideSos = !!sos && sos.left < left + w + 8 && sos.right > left - 8;
+    if (vh - r.bottom > 200) {
+      pop.style.top = px(r.bottom + 14);
+      const b = sos ? safe(() => pop.getBoundingClientRect(), null) : null;
+      if (sos && b && b.height > 0 && b.left < sos.right + 8 && b.right > sos.left - 8 && b.top < sos.bottom + 8 && b.bottom > sos.top - 8) {
+        if (sos.left - 8 - left >= 200) pop.style.maxWidth = px(sos.left - 8 - left);
+        else { pop.style.top = ''; pop.style.bottom = px(Math.max(16, vh - r.top + 14, vh - sos.top + 12)); }
+      }
+    } else {
+      let bottom = Math.max(16, vh - r.top + 14);
+      if (besideSos) bottom = Math.max(bottom, vh - sos.top + 12);
+      pop.style.bottom = px(bottom);
+    }
+  }
+  function sosRect() {
+    const n = safe(() => document.getElementById('sos-btn'), null);
+    const r = n && typeof n.getBoundingClientRect === 'function' ? safe(() => n.getBoundingClientRect(), null) : null;
+    return r && r.width > 0 && r.height > 0 ? r : null;
   }
   function showStep() {
     if (!active) return;

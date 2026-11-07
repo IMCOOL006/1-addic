@@ -784,3 +784,22 @@ test('guidance: UI.tour.start returns nothing and opens the coach', async () => 
     cleanup();
   }
 });
+
+test('guidance: the coach popover keeps clear of the SOS button', async () => {
+  const w = world({ hash: '#/today' });
+  try {
+    const sos = w.doc.createElement('a'); sos.setAttribute('id', 'sos-btn'); sos.setAttribute('data-tour', 'sos-button');
+    sos.rect = { top: 664, left: 318, bottom: 720, right: 374, width: 56, height: 56 };
+    w.doc.body.appendChild(sos);
+    const tour = C.tutorials.find((t) => t.id === 'tour');
+    for (const s of tour.steps) if (s.target !== 'sos-button') target(w.doc, s.target, { top: 736, bottom: 800, left: 0, right: 78 });
+    const p = G.coach('tour', { replay: true });
+    const layer = w.doc.getElementById('coach');
+    const bottomOf = () => parseInt(byClass(layer, 'coach-pop')[0].style.bottom, 10);
+    for (let i = 0; i < tour.steps.length; i++) {
+      assert.ok(bottomOf() >= 800 - 664 + 12, 'step ' + (i + 1) + ': the popover sits above SOS, so SOS never lands on its buttons');
+      byClass(layer, 'coach-next')[0].click();
+    }
+    assert.equal(await p, 'done');
+  } finally { cleanup(); }
+});
