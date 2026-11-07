@@ -63,11 +63,13 @@ A PIN is offered, never forced. Set one in **Settings → Privacy** (4 to 12 dig
 
 **Urgent help** in SOS lists the India numbers and an international list (**Elsewhere**: two helpline directories and your local emergency number), each line marked "please verify". Each number is a tap to call. **Every number is unverified until the owner checks it**, before anyone else uses the file. If a number does not work, call your local emergency number.
 
-## What is in this build, and what is planned
+## What is in this build
 
 **In this build:** onboarding (eight short steps; every one but the safety notice can be skipped), the five tabs (Today, Learn, Workbook, Track, Actions), SOS (craving, feeling, slip and urgent help, one tap from every screen), the practices, tools and games, saving on the device with the saved label, backup and restore, the optional PIN and its lock screen, discreet mode, the light and dark theme, and Settings. **Load sample data** (Settings → Your data) fills the app with made-up entries marked as sample, to try it out; **Erase sample data** removes them and keeps your own entries.
 
-**Not finished yet:** a tool, practice or Actions page whose content is not in this version says so, with a way back, never a dead button. The guide is `offline/docs/1-addic-Guide.docx`: a skeleton today. Its screenshots are in `offline/docs/images/`; its lessons are planned.
+**Not finished yet:** a tool, practice or Actions page whose content is not in this version says so, with a way back, never a dead button.
+
+The guide is `offline/docs/1-addic-Guide.docx`, built from `offline/docs/1-addic-Guide.md`: how to open the file, every screen step by step with a phone screenshot from `offline/docs/images/`, and how the file was checked.
 
 ## For developers
 
@@ -79,5 +81,9 @@ A PIN is offered, never forced. Set one in **Settings → Privacy** (4 to 12 dig
 | `npm run screens` | Writes the guide's screenshots to `offline/docs/images/` from the built file, seeded with the sample data: `<name>-phone.png` (390x844) and `<name>-desktop.png` (1280x800), each at 300 DPI; skips by name when the file, a browser or a screen is missing |
 | `npm run check` | Build, Node tests, browser suite and the guide, in that order |
 | `python offline/docs/build_guide.py` | Builds the guide `.docx` from `offline/docs/1-addic-Guide.md` |
+
+**The tests (8 November 2026).** `npm test` runs 536 checks in 13 files, `offline/tests/<name>.test.mjs` for actions-ui, actions, content, engine-data, engine-insights, engine-roadmap, engine-warning-item, game-tutorials, learn, logic, store, today-track and workbook-settings: all 536 passed. `npm run test:browser` runs the 21 named flows of `offline/tests/browser.test.mjs`, all 21 passed and none skipped: "loads offline with zero console errors and zero network requests"; "phone viewport 390 px has no horizontal scroll"; "five tabs navigate by hash and back works"; "onboarding full"; "onboarding skip-all"; "tour complete"; "tour skip"; "tour replay from Settings Help"; "SOS drill creates no log"; "SOS craving flow offline with delay loop and both outcomes"; "SOS reachable and not gated before onboarding or on lock screen"; "quick log and evening check-in"; "lesson to artifact shown in SOS"; "PIN set lock unlock export"; "Settings PIN set and remove"; "planner add and save"; "discreet lock screen shows Notebook and Help"; "export erase import restores everything"; "dark theme applies and persists"; "print view of the plan"; "saved label is always shown". A test's name is how a failure is known, so names are kept.
+
+**A kept copy.** `offline/releases/1-addic-v1.1.html` is the file as it was at tag `offline-v1.1` (f69bc68a, 1113578 bytes), kept for comparison later; `offline/releases/README.md` says what it is. To use the app, build your own with `npm run build`.
 
 Layout: `offline/src/` (the parts: shell, styles, content, engine, store, actions, the UI core, the screens and boot), `offline/build.mjs`, `offline/tests/` (Node tests, the browser suite and its helpers), `offline/docs/` (the guide). The decision record is `docs/decisions/0022-offline-edition.md`.
