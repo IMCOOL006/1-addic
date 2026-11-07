@@ -88,3 +88,7 @@ UPDATED: 2026-11-07 17:30 IST
 # 2026-11-07 17:19 · from the HUB · content 680f850 merged (complete); pause rule in force (R-H-28)
 
 - content READY 680f850 -> 6f58f910, trunk c8dc6716 pushed; GREEN by name; the three CORE test names baselined until their fixes. content is complete; slot 4 free. actions and game-tutorials stand (started 17:10); memory 4.5 GB at 17:17 with five runs: under 4.0 game-tutorials pauses at its next commit, then actions. The sample-data risk (R-S-9) is a tag condition: the Settings stop-gap is asked by name for workbook-settings's live round. BASE c8dc6716.
+
+# 2026-11-07 17:41 · from the HUB · workbook-settings 9cbf630 merged (complete); for the fresh SCREENS (R-H-29)
+
+- workbook-settings READY 9cbf630 -> be0f806d pushed; GREEN by name; four tour-target names lifted. Every SCREENS tier 1 unit is on the trunk. BASE be0f806d. actions and game-tutorials runs stand (journals; relaunch only if 6721d28e is gone). Memory 5.7 GB at 17:38 with four runs; the pause rule stands.

@@ -31,13 +31,13 @@ Add a line here only when a check is red on the base itself (`- <gate>: <failure
 - guards: guard: tour-target planner-add (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
 - guards: guard: tour-target bp-new (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
 - guards: guard: tour-target bp-form (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target workbook-groups (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target workbook-card (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- ~~guards: guard: tour-target workbook-groups (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:39: workbook-settings READY 9cbf630 merged (be0f806d), the target exists
+- ~~guards: guard: tour-target workbook-card (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:39: workbook-settings READY 9cbf630 merged (be0f806d), the target exists
 - ~~guards: guard: tour-target insights-triggers (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:01: today-track READY 3f3001e merged (9f3026c6), the target exists
 - ~~guards: guard: tour-target insights-heatmap (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:01: today-track READY 3f3001e merged (9f3026c6), the target exists
 - guards: guard: tour-target review-start (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target plan-sections (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target plan-print (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- ~~guards: guard: tour-target plan-sections (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:39: workbook-settings READY 9cbf630 merged (be0f806d), the target exists
+- ~~guards: guard: tour-target plan-print (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:39: workbook-settings READY 9cbf630 merged (be0f806d), the target exists
 
 **LIFTED 2026-11-07 16:47: learn READY 4f5832f (cb0b427) and engine READY 57153d3 (3720d119) merged; the full Node suite on the trunk 3720d119 is 250 pass / 0 fail (jobs/4b638c7b/tmp/fulltest-after-fixes.log). The three names below are no longer baselined.** Three test names expected RED on the trunk from the content U-31a merge until CORE's test-only fixes merge (seen 2026-11-07 16:30 on int/content-065699b, full Node suite 247 pass / 3 fail, log C:\Users\ruchi\.claude-pro\jobs\4b638c7b\tmp\fulltest-content.log; each encodes the pre-content assumption "no Content.exercises"; the product behaviour is right: only real exercise ids are known routes, quick-reasons resolves; the fixes are asked in R-S-4 and R-H-21; lifted by name when build/engine and build/learn merge them):**
 
