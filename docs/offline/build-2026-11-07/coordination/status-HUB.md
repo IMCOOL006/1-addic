@@ -2,7 +2,7 @@ TRACK: HUB
 STATE: BUILDING   # 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and SCREENS 4d443a20. CORE 60f08c84 and SCREENS d6887185 are gone from claude agents: their runs died at the park (actions-sos FIX-R6 safety re-check, engine FIX-RS9E; the game-tutorials re-check never ran): the fresh chats relaunch each from the branch's last commit with done and priorNote. 12.5 GB free at 22:05. First: merge learn READY 75eb8e5 (test-only; aborted before guards at the park), then actions-sos, engine, game-tutorials as they come READY; then the full gates and the tag offline-v1.1
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 4006fae2 (the trunk after the today-track 6b0184b merge, 2026-11-07 23:31 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 1 (2026-11-07 23:31 IST: actions-sos FIX-R7 (CORE, slot 3) is the one live run and the last tag condition; rows 23:16 9.4, 23:26 4.2 GB; nothing else starts (every other lane is complete; the SCREENS fixes by name, workbook-settings C1 and R-S-16, wait for actions-sos's merge); under 4.0 GB the one tier 1 run continues; the HUB runs nothing heavy until QUIET)
+SLOTS-ALLOWED: 1 (2026-11-07 23:37 IST: the 23:36 row 5.1 GB free with nothing of this build running; the formula gives one slot, floor((5.1 - 4.0) / 0.7) = 1: the actions-sos contracts-and-tests re-review (read-only, one reviewer agent, no build or browser gate: lighter than a 3 GB builder run) STARTS NOW on slot 3; the 7.0 GB mark stays for builder and checker runs; nothing else starts; the HUB runs nothing heavy until QUIET)
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 free from 2026-11-07 22:19 IST: FIX-RS9E READY 84075b6 merged (3ea2e13d); the lane is complete; fixes by name only
@@ -46,7 +46,7 @@ MERGED: game-tutorials READY bd2e085 (U-26 game surfaces ui-game.js new, U-28 to
 MERGED: today-track READY 6b0184b (FIX-EMBED: Today embeds GameUI.panel, GuidanceUI.explorerRing, moreTools and dot behind typeof guards; ui-today.js, today-track.test.mjs) -> merge 4006fae2, trunk 4006fae2, pushed 23:31 (build GREEN 1015555 B; test GREEN 31/31; validate GREEN; guards GREEN by name; territory 0 errors over 7485e254..6b0184b; the branch fast-forwarded to 7485e254 by SCREENS 22:38, so the merge base is the trunk tip; merged clean, 2 files; the lane's browser gate on 6b0184b GREEN 13/0/6, the same names as the trunk; the lane is complete)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 23:31 IST
+UPDATED: 2026-11-07 23:37 IST
 
 # 2026-11-07 23:31 IST · the twenty-eighth merge: today-track FIX-EMBED; every SCREENS lane complete
 
