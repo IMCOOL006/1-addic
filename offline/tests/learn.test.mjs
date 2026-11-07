@@ -262,7 +262,7 @@ test('learn: the gallery renders every field type, saves and resumes a draft (st
     const again = XD.gallery({ route: { parts: ['dev', 'fields'], query: { mode: 'tutorial' } }, view: null });
     assert.equal(again.all((n) => n.getAttribute && n.getAttribute('data-test') === 'exercise-draft-note').length, 1, 'reopening resumes the draft');
     assert.ok(again.all((n) => n.tagName === 'details').length >= 1, 'tutorial mode shows the example first');
-    const missing = XD.open('quick-reasons', { from: 'm0-l2' }, { view: null });
+    const missing = XD.open('not-an-exercise', { from: 'm0-l2' }, { view: null });
     assert.match(missing.textContent, /Not available yet/);
     assert.equal(missing.all((n) => n.tagName === 'a')[0].getAttribute('href'), '#/lesson/m0-l2', 'never a dead end');
   } finally { delete globalThis.document; }
