@@ -1,0 +1,45 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-roadmap.test.mjs",
+  "offline/tests/engine-insights.test.mjs",
+  "offline/tests/engine-data.test.mjs",
+  "offline/tests/engine-warning-item.test.mjs",
+  "offline/tests/engine-questline.test.mjs"
+ ],
+ "units": [
+  "V-40"
+ ],
+ "batches": [
+  [
+   "V-40"
+  ]
+ ],
+ "unitTier": {
+  "V-40": 1
+ },
+ "unitNotes": {
+  "V-40": "Quest-line, objectives, growth, run (3 h, tier 1, R-O-6; the slice): Engine.questLine(view, now) -> {steps: [{...step, state: 'done'|'current'|'locked', doneAt?}], current} from Content.questLine in order, each condition {event, count, within?} evaluated over the events (a step is done when its condition held and a QuestLineStepDone exists, current when its condition is the next to meet or met and unclaimed, locked after); Engine.unlocked(view) -> Set of feature ids = revealed(view) ∪ the reward. [The rest of this note: lane_args_v3.json lanes.engine.unitNotes[\"V-40\"] and tracks/CORE/briefs/engine/V-40.md: read both before you build.]"
+ },
+ "laneNote": "V-40 is tier 1 and the slice (R-O-6, 03:03); V-19 and V-30 are tier 2 after it. On the content contract until V-42 merges. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 11's word (2026-11-08 03:24 IST): on the trunk's code (worktree at BASE; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/engine/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: c2601cf1-5557-49d0-a65e-b1eddd04b48d'; message from a file; add by path. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so. V-40 RULINGS (CORE 11, R-C-50): the Engine owns the swap replacement (items[].swapTo; Actions uses it); a day's draw reads only events dated before that day, so later events never change a past day; tests that later events never lower growth, best, total or unlocked; questLine().current.claimable is what Actions.questLine.claim trusts; unlocked = revealed + claimed rewards + FeatureUnlocked features, protected ids ignored; with no Content.questLine or Content.objectives each function returns its empty shape and never throws; SlipLogged, MilestoneSeen and the sober-day counters never count as a day shown up.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E"
+ ],
+ "base": "f69bc68a",
+ "session": "c2601cf1-5557-49d0-a65e-b1eddd04b48d",
+ "now": "2026-11-08 03:24 IST",
+ "diffFrom": "f69bc68a",
+ "slot": 2,
+ "sliceRun": true
+}

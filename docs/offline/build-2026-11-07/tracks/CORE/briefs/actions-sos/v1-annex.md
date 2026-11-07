@@ -24,3 +24,16 @@ Build: `UI.pages.lock` (`#/lock`): PIN input, `Store.lock.unlock(pin)`; wrong PI
 Acceptance (done when): a new person lands on Today with the tour offered; a locked person reaches urgent help in one tap.
 Browser tests fed: onboarding full, onboarding skip all, PIN set/lock/unlock, urgent help from the lock screen.
 
+
+## v1 Decisions that bite and Open questions (moved verbatim 2026-11-08 03:11 IST)
+## Decisions that bite
+O1 file offline/1-addic.html, title "1-addic", discreet "Notebook". O2 PIN offered, never forced. O3 India numbers all "please verify" + an international list. O4 read-aloud only by speechSynthesis (UI.speak). O5 no Gujarati; locale 'en'. O6 "Load sample data" marked and erasable. O7 a tier-2 screen honestly working, a stub or locked, never a dead button. O8 the .docx guide is not this lane's.
+Safety and content: SOS never gated by lock, PIN, onboarding, tip or tutorial; urgent help one tap from SOS and from the lock screen; substance use brief and clinical, never how to get, prepare or take, no sensations, no doses; crisis screens show the numbers and say little, every such passage listed to the chat with clinicalReview: true; numbers and links from Content.resources only, never typed in UI; no streak resets, random rewards or points for claimed sober days; no network, no trackers, contacts never leave the device (tel: and Copy only); person-first, never "addict" as a noun, grade 6-8, original words.
+
+## Open questions (default taken)
+1. Engine/Store contract files not yet present: build to 3.2 exactly; differences fixed at switch-over, in your files.
+2. SOBER/beat scripts: default Content.practices; in-file FALLBACK, reported.
+3. Tour entry: default optional `UI.tour`, guarded.
+4. Lock redirect: default core's router sends to #/lock when Store.status().locked; you supply the page only.
+5. Sample data absent: AppError 'no-sample'.
+

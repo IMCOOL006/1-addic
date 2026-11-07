@@ -204,3 +204,20 @@ V-18: no public change. V-17b: waits for core V-17a: Store.status().lockId (stri
 - V-SOS10: fixed in ui-sos.js ratingRow (the inline grid style, :440-444: the buttons keep '10' on one line at 390 px: nowrap and less inline padding); no styles.css edit; if unavoidable, a new `/* -- actions-sos -- */` section at the end of styles.css, never inside `/* -- actions -- */`.
 
 - 2026-11-08 03:14 IST: the HUB (HUB 9) confirms both R-C-48 rulings: a loaded sample is not a refusal for useSkill or V-41's verbs (the person's own events written as usual; sample rows skipped by the Engine and Actions; the drill records nothing); V-SOS10 in ui-sos.js's inline style, no styles.css section.
+
+## V3 R-O-6 (2026-11-08 03:11 IST)
+Lane actions-sos, unit V-41 (PLAN-V3.md section 7). Public names; none exist at BASE f69bc68a (actions.js has no objective or questLine; export block :972-980; EVENT_TYPES :141):
+- `Actions.objective.done(id) -> {ok:true, event: Event|null, already?: true} | {ok:false, code, message}`. Consumers: today-track V-43 (`objective-done`), tests-docs V-45.
+- `Actions.objective.swap(id) -> {ok:true, event} | {ok:false, code:'swap-used'|'no-swap'|'bad-objective'|'not-today'|store codes}`; once a day. Consumer: V-43 (`objective-swap`).
+- `Actions.questLine.claim(stepId) -> {ok:true, events:[QuestLineStepDone, FeatureUnlocked]|[]} | {ok:false, code:'not-ready'|'bad-step'|'locked'|'bad-reward'|store codes}`. Consumers: V-43 (`questline-claim`), V-44 (reward sheet reads events[1].payload.feature and Content.questLine[].opened).
+- None of the three throws. Events: ObjectiveDone {id,date}; ObjectiveSwapped {from,to,date}; QuestLineStepDone {id}; FeatureUnlocked {feature, by:'questline'}. recordEvent of these four -> USE_VERB. Once-only: QuestLineStepDone by id, FeatureUnlocked by feature. Event consumers: engine V-40 (conditions, growth, run, unlocked); Content.xp rows (content V-42).
+Relied on, waiting on other lanes (typeof-guarded; absent -> 'not-ready' or Content-only checks):
+- engine V-40: `Engine.questLine(view, now) -> {steps:[{...step, state:'done'|'current'|'locked', doneAt?}], current}`; `Engine.dailyObjectives(view, now) -> {date, items:[{...objective, done, swappable}], growth}`, which must honour ObjectiveSwapped {from,to,date} of that date (`to` replaces `from`) and skip sample rows; `Engine.unlocked(view) -> Set<featureId>` includes FeatureUnlocked features.
+- content V-42: `Content.questLine: [{id,title,line,condition:{event,count,within?},reward,opened}]`; `Content.objectives: [{id,title,line,doneBy:{event}|'tap',grows}]`; Content.features ids; rewards never sos, help, lessons, settings, export, data.
+- At BASE: Engine.todayStr/hourOf/id via localDate :70; Content.features (reveal :801); write/tx :113.
+
+## 2026-11-08 03:27 IST · V-41 rulings (CORE 11; R-C-50)
+
+- swap: Actions does not pick the replacement. It writes `ObjectiveSwapped {from: id, to: item.swapTo, date}` from `Engine.dailyObjectives(view, now)`. With no Engine.dailyObjectives, or no swappable item with that id: `{ok: false, code: 'not-ready' | 'bad-objective'}`, and nothing is written. This overrules the scout's 'Actions picks the next id' default. A second swap the same day returns `{ok: false, code: 'swap-used'}`.
+- done: idempotent by the Engine's done flag. An item already done today (by a tap or by its matching event) returns `{ok: true}` with no event, so a tap never earns XP twice.
+- claim: trusts `Engine.questLine(view, now).current` and its `claimable` flag, and never re-evaluates conditions itself. With no Engine.questLine: `{ok: false, code: 'not-ready'}`. A done step returns `{ok: true}` with no new event; a locked or not-claimable step returns `{ok: false, code: 'not-claimable'}`.

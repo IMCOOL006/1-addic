@@ -22,7 +22,7 @@ for b in a['batches']:
 a['units'] = before + want
 a['batches'] = ([before] if before else []) + batches
 a['unitTier'] = {u: t for u, t in a['unitTier'].items() if u in a['units']}
-NOTE_CAP = 900
+NOTE_CAP = 500
 def cap(u, n):
     if len(n) <= NOTE_CAP: return n
     cut = n[:NOTE_CAP].rsplit('. ', 1)[0] + '.'
@@ -32,14 +32,13 @@ NOT_BUILT = {'tests-docs': ['U-36b']}
 done = [u for u in v1 if u not in NOT_BUILT.get(lane, [])] + FIXES.get(lane, []) + before
 a['done'] = list(dict.fromkeys(done))
 a.update(base=base, session=SESSION, now=now, diffFrom=diff)
+if os.environ.get('SLOT'): a['slot'] = int(os.environ['SLOT'])
 if not before: a['sliceRun'] = True
 if prior: a['priorNote'] = prior
-a['laneNote'] = (a.get('laneNote', '') + " CORE CHAT'S WORD (" + now + ", CORE 11, session " + SESSION + "): V3 (PLAN-V3.md) on the real code "
-    "of the trunk (the worktree fast-forwarded to BASE; never merge or copy files in). The brief's '## V3' section and tracks/CORE/briefs/" + lane +
-    "/<unit>.md have the detail. A hook or shape needed in another lane's file: never edit it; a line in your note's requests (owner lane, file:line, "
-    "element, attribute as that file uses it: data-test on the SCREENS files, data-testid on ui-sos.js; R-H-39). No new dependency, no npm install. "
-    "Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: " + SESSION + "'; message from a file; add by path; "
-    "never git add -A. One browser or screens run at a time. Under 4.0 GB free memory, stop at your next commit and say so in the note.")
+a['laneNote'] = (a.get('laneNote', '') + " CORE 11's word (" + now + "): on the trunk's code (worktree at BASE; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/" + lane +
+    "/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). "
+    "No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: " + SESSION + "'; message from a file; add by path. "
+    "One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.")
 out = os.path.join(HERE, 'args_v3_%s_%s.json' % (lane, want[0]))
 io.open(out, 'w', encoding='utf-8', newline='\n').write(json.dumps(a, indent=1, ensure_ascii=False) + '\n')
 print(out, 'units', a['units'], 'batches', a['batches'], 'done', a['done'], 'sliceRun', a.get('sliceRun', False))

@@ -65,3 +65,29 @@ No routes, UI.pages entries, data-tour targets or DOM hooks. Content keys it rel
 ## Ruling 2026-11-08 02:24 IST (CORE 10 6c9dfc8f): spiralThoughts pairs gain own (V3-19)
 
 - `spiralThoughts(view) -> [{thought, reply, own}]`: own is true when the reply is the person's own words, false when filled from catalogs.slipSelfTalk; thought and reply unchanged. Consumer: ui-sos.js spiralPairs (unchanged).
+
+## V3 R-O-6 (2026-11-08 03:11 IST): quest-line, objectives, growth, run (unit V-40; also V-19, V-30)
+Binding shapes are PLAN-V3.md section 7; this section fixes what the engine returns. None of these names exist at BASE f69bc68a (export list engine.js :1495-1505) until engine V-40 merges, except `spiralThoughts` and the internal `tutorialDone` (:611). Every function is pure, takes `(view, now)`, skips `sample:true` rows and events, never throws, and returns the empty shape when `Content.questLine` or `Content.objectives` is absent.
+
+Content shapes read (content V-42 writes them in `content-quests.js`, pushed onto `Content`):
+- `Content.questLine: [{id, title, line, condition:{event, count, within?:'day'|'week', where?:{k:v}}, reward:'<featureId>', opened}]`, 8 to 12, array order is quest order. `where` is an optional shallow payload match, e.g. `{event:'TutorialCompleted', where:{id:'drill'}}` (the SOS drill: actions.js:403 writes only that event).
+- `Content.objectives: [{id, title, line, doneBy:'tap'|{event, where?}, grows}]`, 6 or more (about 20).
+- `Content.xp.ObjectiveDone`, `Content.xp.QuestLineStepDone`: optional rows; ObjectiveDone counts once per id and day, QuestLineStepDone once per step id.
+- `Content.features[id]` for each reward id; a reward is never protected.
+Events (rows `{id, type, at, payload}`, written by actions-sos V-41): `ObjectiveDone {id, date}`, `ObjectiveSwapped {from, to, date}`, `QuestLineStepDone {id}`, `FeatureUnlocked {feature, by:'questline'}`. To append to BUILD-PLAN 3.4 and to actions.js EVENT_TYPES (:141, actions-sos).
+
+Engine (consumers: today-track V-43, game-tutorials V-44, actions-sos V-41, tests-docs V-45):
+- `Engine.questLine(view, now) -> {steps:[{...step, state:'done'|'current'|'locked', met, progress:{have,need}, claimable, doneAt?}], current: step|null, done, total}`. Done means a `QuestLineStepDone{id}` exists. actions-sos claims only when `current.claimable`.
+- `Engine.unlocked(view) -> Set<featureId>` = `revealed(view)` plus rewards of claimed steps plus `FeatureUnlocked` events, minus protected ids; a superset of `revealed`. game-tutorials: ui-tools.js and ui-game.js read this instead of `Engine.revealed` (typeof-guarded).
+- `Engine.dailyObjectives(view, now) -> {date, items:[{...objective, done, swappable, swapTo}], growth, swapped}`. Three items. `swapTo` is the id actions-sos writes as `ObjectiveSwapped.to` for `Actions.objective.swap(id)` (once a day; refuse when `swapped`). An event-done objective shows `done` with no `ObjectiveDone` written.
+- `Engine.growth(view) -> number` (days with an objective done; never decreases). One Harbor element per unit.
+- `Engine.run(view, now) -> {current, best, total, kept:[date], cameBack, lastDay, holding}`. `holding` is a date: yesterday was missed and the grace day is holding the run open (show "kept"; it joins `kept` once a day shown up follows). `lastDay` null when none. Days shown up: LogCreated, CheckinCompleted, LessonCompleted, SkillUsed, ExerciseDone, ArtifactSaved, MindfulMinute, ActivityDone, BattlePlanCreated, BattlePlanDebriefed, WeeklyReviewCompleted, SosCompleted, ObjectiveDone, the SOS drill (TutorialCompleted id 'drill'), non-drill log rows. Never a slip, a milestone or a sober-day counter. Week start is Monday.
+- `Engine.isProtectedFeature(id) -> boolean` (content V-42 avoids these; validateContent names them).
+- `Engine.validateContent()` also checks `questLine` and `objectives` (errors like "questLine step q3: reward x is a protected feature").
+- V-19: `Engine.spiralThoughts(view) -> [{thought, reply, own}]` (ruled 02:24; `own` false when the reply is a stock line). Consumer ui-sos.js; actions-sos told by outbox.
+- V-30: `Engine.tutorialDone(view, tid, allowSkipped) -> boolean`. Consumer ui-guidance.js :130.
+Waits: content V-42 (the Content keys), actions-sos V-41 (the four events written), today-track V-43 and game-tutorials V-44 (readers only). Engine and its tests build on an inline fixture and wait for nobody.
+
+## 2026-11-08 03:27 IST · V-40 rulings (CORE 11; R-C-50; in the run's laneNote)
+
+- The Engine owns the swap replacement (items[].swapTo). A day's draw reads only the events dated before that day. Tests assert that later events never lower growth, best, total or unlocked. `questLine().current.claimable` is what Actions.questLine.claim trusts. unlocked = revealed + the claimed steps' rewards + the FeatureUnlocked features, with protected ids ignored. With no Content.questLine or Content.objectives, every function returns its empty shape and never throws. SlipLogged, MilestoneSeen and the sober-day counters never count as a day shown up.
