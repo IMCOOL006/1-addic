@@ -1851,5 +1851,15 @@ describe('review round 2 fixes (RC14-RC20)', () => {
       assert.equal(list('responses').length, 8, 'every answer is kept');
     } finally { if (had) C().exercises = old; else delete C().exercises; }
   });
+  test('RC18: a sample that cannot be read is refused with no-sample and writes nothing', async () => {
+    await someData();
+    const before = await snapshot();
+    const broken = [
+      { generate: () => { throw new Error('broken'); } },
+      { generate: () => ({ stores: { logs: [{ type: 'craving', at: '2026-03-11T06:30:00.000Z' }] } }) },
+    ];
+    for (const sample of broken) await withSample(sample, () => refused(Actions.loadSample(), 'no-sample'));
+    assert.deepEqual(await snapshot(), before);
+  });
   // -- review round 2 tests end --
 });
