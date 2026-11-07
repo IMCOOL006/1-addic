@@ -6,7 +6,7 @@ SLOTS-ALLOWED: 1 running lane from 15:36 (actions-sos finishing its round; core 
 TRACKS-ALLOWED: CORE   # the launcher is active; SCREENS is added by this line when a row shows 4.0 + 1.5 + 3.0 x (live lanes + 1) GB free (11.5 GB with actions-sos alone live; 8.5 GB with none): the HUB watches the rows from 15:36
 SLOTS: core slot=1 free from 2026-11-07 15:31: READY 957f333 merged (U-01..U-04 and every review fix in the trunk); the lane is complete; fixes by name only
 SLOTS: engine slot=2 free from 2026-11-07 15:36: READY 227a07a merged (U-05..U-08 in the trunk; validate on); the lane is complete; fixes by name only
-SLOTS: actions-sos slot=3 granted again 2026-11-07 14:20 (the 14:19 row shows 10.3 GB free with core's run live): start the fix run by name now from fc0d038 (FIX-R2-SAFETY: RS10 HIGH, RS11-RS17; FIX-R2-REST: RC14 and the check's LOWs C1-C3; then the check and both reviewers re-check their own findings; the report; `LANE: actions-sos READY <tip>`); pauses at its next commit if a row goes under 4.0 GB; tier 1, flagged; U-09 merged
+SLOTS: actions-sos slot=3 granted again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at a8dce5a (15:47) RS10-RS17, C2, C3 FIXED and check PASS, but the safety reviewer's re-check raised RS19 HIGH (typed death wishes miss the numbers) and RS20-RS23: CORE withheld READY (right: rule 5) and runs the fix round FIX-R3 wf_32a8784b-3af; READY after the safety reviewer's re-check passes; the HUB merges it then
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
 MERGING: none
@@ -23,7 +23,12 @@ MERGED: core READY 957f333 (U-04 Store with encryption and lock; review fixes F1
 MERGED: engine READY 227a07a (U-06 roadmap, reveal, Explorer, tips, quests, artifacts, plan prefill; U-07 insights, radar, planner, review, SOS sequence, crisis keywords; U-08 export/import/migrate, .ics, AppError, validateContent) -> merge 1ef2482, trunk 1ef2482e, pushed 15:34 (build GREEN 451085 B; test GREEN 102/102 in 4 files; validate GREEN 0 errors, its first run; guards GREEN by name, the 15 baselined tour targets only; territory 0 errors; merged clean, 5 files)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 15:36 IST
+UPDATED: 2026-11-07 16:10 IST
+
+# 2026-11-07 16:10 · actions-sos: a new HIGH from the safety re-check; third fix round
+
+- status-CORE.md 15:47: run wf_b38141d2-651 returned with RS10-RS17 FIXED (c7c1c92..1068c5f), C2 a060d95, C3 a8dce5a, check PASS over fc0d038..a8dce5a; its safety re-check raised RS19 HIGH (typed death wishes such as "I want to be dead" miss the numbers) and RS20-RS23. CORE did not write READY with a HIGH open (rule 5 as it should be) and launched FIX-R3 wf_32a8784b-3af (fix by name, the safety reviewer re-checks); rulings in contracts/actions-sos.md, last section. Nothing for the HUB to merge; the forecast for actions-sos moves to about 17:00-17:30.
+- Memory rows since 15:36: 9.1 by hand; the launcher's rows under lane-widening.md; none at the SCREENS mark (11.5 GB with one lane live). CORE 036d08b8 alive (hand-over written; RESTART at its next safe point; the launcher is active and starts the next CORE).
 
 # 2026-11-07 15:36 · engine READY merged (the tenth merge; engine complete; validate is on)
 
