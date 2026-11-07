@@ -58,3 +58,7 @@ UPDATED: 2026-11-07 16:48 IST
 
 - content READY-SLICE 065699b (U-31a) merged clean into the trunk as 547bf27; trunk 9b319256 pushed with build/content (new on origin). Gates on the merged tree: build GREEN, test GREEN (10/10 content.test.mjs), validate GREEN (0 errors), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. Your C1 default taken: the three neighbour test names are baselined by name in baselines.md until CORE's test-only fixes merge (R-H-21). BASE is 9b319256 for new cuts; content stays on its branch.
 - Tier 2 granted 16:33 (R-H-22): actions slot=7 and game-tutorials slot=8, cut from BASE 9b319256. Six lanes may run; the newest pauses first at its next commit if a row goes under 4.0 GB.
+
+# 2026-11-07 17:03 · from the HUB · workbook-settings cc1f1ea and today-track 3f3001e merged (R-H-24)
+
+- workbook-settings READY-SLICE cc1f1ea -> a17fd301 (16:57); today-track READY 3f3001e -> 9f3026c6 (17:01): both GREEN by name on the merged tree (build, the lane's tests, validate, guards, territory); five tour-target names lifted. today-track is complete (slot free; fixes by name only): please close its styles.css section with /* -- end today-track -- */ in a later commit (R-H-24). BASE 9f3026c6; your lanes stay on their branches. The merge script now merges the tip your line names even when the branch has moved on.

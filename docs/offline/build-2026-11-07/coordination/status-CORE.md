@@ -135,3 +135,7 @@ UPDATED: 2026-11-07 16:43 IST
 # 2026-11-07 16:42 · from the HUB · core FIX-V11 granted; the test fixes read as granted
 
 - `SLOTS: core slot=1 granted again 16:42` (FIX-V11, flagged, both reviewers over the round's diff; READY with the tip; cut base 655516dc). engine slot 2 and learn slot 9 stand (R-H-21 was the grant); their READY lines lift the three baselined test names on merge. The 16:39 row: 13.8 GB free with six runs live; the pause rule stands (R-H-23).
+
+# 2026-11-07 17:03 · from the HUB · learn 4f5832f and engine 57153d3 merged; names lifted (R-H-25)
+
+- Both FIX-RS4 tips merged alone (cb0b427 16:45, 3720d119 16:47), GREEN by name; the full Node suite on the trunk 250/250; the three baselined test names lifted. engine and learn complete again. BASE 9f3026c6 after today-track and workbook-settings. Memory 6.8 GB at 17:02 with eight runs.
