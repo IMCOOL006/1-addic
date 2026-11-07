@@ -494,3 +494,43 @@ test('sosOutcome: passed, still and used; anything else reads as other; still ea
   assert.equal(E.badges(v, NOW).some((b) => b.id === 'first-wave'), false);
   assert.ok(E.xpFromEvents(v, NOW).total > 0, 'a session that did not pass still earns its XP');
 });
+
+/* ── V-19: spiralThoughts pairs carry own (ruled 2026-11-08 02:24) ─────────────────────── */
+
+const spiralView = (payload, extra = {}) => E.makeView({ responses: [Object.assign({ id: `r${String(++n).padStart(5, '0')}`, exerciseId: 'spiral', schemaVersion: 1, payload, at: NOW, mode: 'workbook', draft: false }, extra)] });
+const STOCK = C.catalogs.slipSelfTalk;
+
+test('V-19 spiralThoughts: a pair with the person\'s reply is own true, words unchanged', () => {
+  assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: ' I blew it. ', reply: ' One slip is one day. ' }] })),
+    [{ thought: 'I blew it.', reply: 'One slip is one day.', own: true }]);
+  assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: 'I am weak.', rebuttal: 'I am learning.' }] }))[0].own, true);
+});
+
+test('V-19 spiralThoughts: a pair given as a plain string takes a stock line, own false', () => {
+  const got = E.spiralThoughts(spiralView({ pairs: ['I always ruin it.'] }));
+  assert.deepEqual(got, [{ thought: 'I always ruin it.', reply: STOCK[0], own: false }]);
+});
+
+test('V-19 spiralThoughts: the replies[] fallback is own by index', () => {
+  const got = E.spiralThoughts(spiralView({ thoughts: ['I am hopeless.', 'Nobody cares.'], replies: ['I am still here.', '  '] }));
+  assert.deepEqual(got, [{ thought: 'I am hopeless.', reply: 'I am still here.', own: true }, { thought: 'Nobody cares.', reply: STOCK[1], own: false }]);
+});
+
+test('V-19 spiralThoughts: an empty or blank reply is filled from slipSelfTalk with own false', () => {
+  const got = E.spiralThoughts(spiralView({ pairs: [{ thought: 'A', reply: '' }, { thought: 'B', reply: '   ' }, { thought: 'C' }] }));
+  assert.deepEqual(got.map((x) => x.own), [false, false, false]);
+  assert.deepEqual(got.map((x) => x.reply), [STOCK[0], STOCK[1], STOCK[2]]);
+  for (const x of got) assert.equal(typeof x.own, 'boolean');
+});
+
+test('V-19 spiralThoughts: without the slipSelfTalk catalog an empty reply stays empty, own false', () => {
+  const saved = C.catalogs.slipSelfTalk;
+  try {
+    delete C.catalogs.slipSelfTalk;
+    assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: 'I failed.' }, { thought: 'Mine.', reply: 'My words.' }] })),
+      [{ thought: 'I failed.', reply: '', own: false }, { thought: 'Mine.', reply: 'My words.', own: true }]);
+  } finally {
+    C.catalogs.slipSelfTalk = saved;
+  }
+  assert.deepEqual(E.spiralThoughts(E.makeView({})), []);
+});

@@ -719,7 +719,8 @@ const Engine = (() => {
     if (!own.length && r) own = allTexts(r.payload);
     return own.length ? own : uniq(textsOf(C.catalogs && C.catalogs.distractions));
   }
-  /* The person's spiral thoughts with their replies; a missing reply takes a slip self-talk line. */
+  /* The person's spiral thoughts with their replies; a missing reply takes a slip self-talk line.
+     own (V-19, ruled 02:24) is true only when the reply is the person's own words, false for a stock line or none. */
   function spiralThoughts(view) {
     const p = payloadOf(latest(view, 'spiral'));
     const replies = textsOf(C.catalogs && C.catalogs.slipSelfTalk);
@@ -729,7 +730,7 @@ const Engine = (() => {
       const own = arr(p.replies);
       pairs = pickTexts(p, ['thoughts', 'items', 'checked', 'picks']).map((t, i) => ({ thought: t, reply: strOf(own[i]) }));
     }
-    return pairs.filter((x) => x.thought).map((x, i) => ({ thought: x.thought, reply: x.reply || replies[i % (replies.length || 1)] || '' }));
+    return pairs.filter((x) => x.thought).map((x, i) => ({ thought: x.thought, reply: x.reply || replies[i % (replies.length || 1)] || '', own: x.reply !== '' }));
   }
   /* Trigger chips: the catalog plus the person's own, flagged from the latest `triggers` response
      (experienced = mine, frequent = starred, anger = tagged); frequent first, then mine, then the rest. */
