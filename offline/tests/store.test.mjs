@@ -1798,6 +1798,14 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.view.get('events', 'e1').note, MARK);
   });
 
+  test('RC13: autoLockMin is 5 for anything but 1, 5, 15, 0, null or never: false, an empty or a text value never turn it off', async () => {
+    const S = freshStore();
+    for (const given of [false, '', '0', true, '15']) {
+      await S.lock.set('2468', { autoLockMin: given });
+      assert.equal(S.status().autoLockMin, 5, JSON.stringify(given));
+    }
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });

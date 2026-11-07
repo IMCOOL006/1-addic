@@ -583,10 +583,11 @@ const Store = (function () {
   }
 
   /* ── The lock ─────────────────────────────────────────────────────────────────────────── */
+  // The numbers 1, 5 and 15 as they are; 0, null or 'never' is never; anything else is 5 (contract line 60), so a
+  // value that only coerces to 0 (false, '', '0') never turns the auto-lock off (RC13).
   function minutes(v) {
     if (v === null || v === 0 || v === 'never') return 0;
-    const n = Number(v);
-    return AUTO_LOCK.includes(n) ? n : 5;
+    return typeof v === 'number' && AUTO_LOCK.includes(v) ? v : 5;
   }
   function disarm() {
     if (state.timer) clearTimeout(state.timer);
