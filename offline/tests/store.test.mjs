@@ -437,4 +437,36 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     sos.close();
     dlg.flush();
   });
+
+  test('F1: a route change closes an open sheet, and a pending confirm answers false', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    const S = lockedStore('2468');
+    S.locked = false;
+    globalThis.Store = S;
+    UI.pages.today = page('today');
+    UI.pages.sos = page('SOS PAGE');
+    at('#/today');
+    await UI.render();
+    const why = [];
+    UI.sheet('Your reasons', page('PRIVATE reason')(), { onClose: (w) => why.push(w) });
+    await UI.render('store'); // the same route drawn again: the sheet stays
+    assert.equal(dlg.open, true);
+    assert.deepEqual(why, []);
+    at('#/sos/craving');
+    await UI.render();
+    assert.deepEqual(why, ['route']);
+    assert.equal(dlg.open, false);
+    assert.equal(dlg.kids.length, 0, 'nothing of the sheet stays over SOS');
+    assert.match(main().textContent, /SOS PAGE/);
+    dlg.flush();
+    at('#/today');
+    await UI.render();
+    const asked = UI.confirm({ title: 'Delete this line?', confirmLabel: 'Delete', danger: true });
+    at('#/track');
+    await UI.render();
+    assert.equal(await asked, false, 'a confirm left open by a route change answers false');
+    assert.equal(dlg.open, false);
+    dlg.flush();
+  });
 });

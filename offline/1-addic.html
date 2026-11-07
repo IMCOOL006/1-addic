@@ -1895,6 +1895,9 @@ const UI = (function () {
     let key = pageKey(r);
     const locked = isLocked();
     if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
+    // A sheet belongs to the screen it opened on: a new route closes it (a pending confirm answers false), so a
+    // private sheet never stays on screen over #/sos or #/lock.
+    if (openSheet && state.lastPath !== null && r.path !== state.lastPath) openSheet.close('route');
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
     chrome(key);
