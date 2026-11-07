@@ -1820,6 +1820,31 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(S.view.get('events', 'e1').note, MARK);
   });
 
+  test('RC11: without crypto.subtle, lock.set rejects with NO_CRYPTO, sets no lock and leaves the rows as they were', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    await S.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK }); });
+    const before = idb.dump();
+    const real = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+    const c = globalThis.crypto;
+    Object.defineProperty(globalThis, 'crypto', { configurable: true, value: { getRandomValues: (b) => c.getRandomValues(b) } });
+    try {
+      await assert.rejects(S.lock.set('2468', { autoLockMin: 1 }), (e) => e.code === 'NO_CRYPTO');
+      assert.equal(S.status().hasLock, false, 'no lock is set');
+      assert.equal(S.status().locked, false);
+      assert.equal(S.view.get('events', 'e1').note, MARK, 'the rows in memory are as they were');
+      assert.equal(S.view.list('events').length, 1);
+      assert.equal(idb.dump(), before, 'nothing stored is touched');
+    } finally {
+      Object.defineProperty(globalThis, 'crypto', real);
+    }
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().hasLock, false, 'after a reload there is still no lock');
+    assert.equal(R.view.get('events', 'e1').note, MARK);
+  });
+
   test('RC13: autoLockMin is 5 for anything but 1, 5, 15, 0, null or never: false, an empty or a text value never turn it off', async () => {
     const S = freshStore();
     for (const given of [false, '', '0', true, '15']) {
