@@ -2620,10 +2620,18 @@ describe('review round 5 fixes (FIX-R5)', () => {
   });
   test('RS24 remainder: the lead above the steps always has a number to tap, in every region and whatever Content holds, and All urgent help', () => {
     const tels = (lead) => lead.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+    // FIX-R8 C-R7-3: Content.resources whose intl lines carry no number (number or tel, RS29), whatever this tree's
+    // Content holds: the trunk's has the local emergency line with tel, so the real one is no such case there
+    const noNumber = () => {
+      const r = C().resources || {};
+      const intl = r.intl || {};
+      return Object.assign({}, r, { intl: Object.assign({}, intl, { lines: (intl.lines || []).filter((l) => !(l && (l.number || l.tel))) }) });
+    };
     const cases = [ // [what, Content.resources (null: the real one), region, the built-in number expected]
       ['India', null, 'in', false],
+      ['Somewhere else, the real Content', null, 'intl', false],
       ['Somewhere else, the trunk shape', trunkRes(), 'intl', false],
-      ['Somewhere else, no line with a number', null, 'intl', true],
+      ['Somewhere else, no line with a number', noNumber(), 'intl', true],
       ['India, Content.resources empty', {}, 'in', true],
       ['Somewhere else, Content.resources empty', {}, 'intl', true],
     ];
