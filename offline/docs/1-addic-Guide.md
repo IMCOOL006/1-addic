@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 8 November 2026, 536 of 536 logic checks and 16 of 19 browser checks passed, 3 skipped by name (Part 4)
+Tested: 8 November 2026, 536 of 536 logic checks and 21 of 21 browser checks passed, none skipped (Part 4)
 ---
 
 > [!SUMMARY]
@@ -402,7 +402,7 @@ None of these lose data. They are rough edges to be aware of in this early versi
 The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
 - **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **536 of 536** logic checks passed, in 13 test files.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **19** of them: **16 passed** and **3 were skipped**, each by name, because a test hook they need is not in the screens yet. None failed.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **21** of them, and **all 21 passed**: none failed and none was skipped.
 
 | Area | What is checked | Status |
 |---|---|---|
@@ -410,14 +410,16 @@ The steps in Part 3 were written against the screens of the real file, and every
 | Getting around | The five tabs open by link and Back works; no sideways scrolling at phone width | Pass |
 | First run | Onboarding all the way through, and Skip; the guided tour, its Skip, and replaying it from Settings | Pass |
 | SOS | Reachable before onboarding and on the lock screen, never gated | Pass |
-| SOS craving and drill | The craving flow with the timer and both outcomes; a drill saves nothing | Pending |
-| Logging | A quick log and an evening check-in are saved | Pending |
+| SOS craving and drill | The craving flow with the timer and both outcomes; a drill saves nothing | Pass |
+| Logging | A quick log and an evening check-in are saved | Pass |
 | Learning | A lesson's page in the Workbook, then shown in SOS | Pass |
 | Privacy | A PIN locks and unlocks; saving a backup asks for it; the discreet lock screen shows "Notebook" and Help | Pass |
+| Settings | A PIN is set and removed from Settings → Privacy; a wrong PIN removes nothing | Pass |
+| Planning | A block added to the Planner is still there after leaving the page | Pass |
 | Backup | Export, erase and import bring back every record | Pass |
 | Looks | The dark theme applies and stays; the print view of the plan; the saved label always shows | Pass |
 
-The two Pending rows are covered by the logic checks today. In the browser they wait for three test hooks in the SOS and Track screens; until those are added, the three checks skip by name rather than pass or fail.
+Every row passed in the browser on 8 November 2026, and the logic checks cover the same ground underneath.
 
 ### The privacy proof
 
