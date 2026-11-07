@@ -10,8 +10,8 @@ Adapted from Event Money's build_guide.py, with the file names changed:
    heading, so a nearly full page cannot push the break onto a page of its own.
 4. Gives tables whose last column is "Status" a narrow status column and a wide description column.
 
-Images: every ![caption](path) must exist. In skeleton mode (STRICT_IMAGES = False, lane tests-docs U-36a)
-a missing image is a warning; U-36b flips it to True and a missing image fails the build.
+Images: every ![caption](path) must exist. STRICT_IMAGES is True (V-07): a missing image fails the build
+(False was the skeleton mode of U-36a, where a missing image was only a warning).
 Libraries: python-docx and gen_docx.py. A missing one exits non-zero naming it; nothing is installed.
 GEN_DOCX=<path> overrides where gen_docx.py is looked for.
 Open the result in Word and press F9 (or right-click the contents -> Update Field) to refresh the contents.
@@ -24,7 +24,7 @@ import tempfile
 import zipfile
 from datetime import datetime
 
-STRICT_IMAGES = False
+STRICT_IMAGES = True
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "1-addic-Guide.md")
