@@ -2607,5 +2607,21 @@ describe('review round 5 fixes (FIX-R5)', () => {
     assert.ok(!root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'no overdose card');
     assert.equal(H.OVERDOSE.clinicalReview, true, 'marked for clinical review');
   });
+  const RS32_YES = [
+    "I hope that I don't wake up", 'I wish it would all just end', 'I wish it would just stop', 'I want it all to stop',
+    "I can't do this anymore", 'no one would miss me', "I'd be better off gone", 'I want to sleep forever',
+  ];
+  for (const t of RS32_YES) {
+    test('RS32: typed "' + t + '" opens the crisis view', () => {
+      assert.equal(H.isCrisisText(t, null), true, t);
+      const root = typedIn(sosDom(), t);
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    });
+  }
+  test('RS32: the crisis list stays marked for clinical review and leaves plain lines to the lead', () => {
+    assert.equal(H.CRISIS.clinicalReview, true);
+    for (const t of ['I could not sleep', 'I miss my friends', 'I can do this', 'I want to stop drinking']) assert.equal(H.isCrisisText(t, null), false, t);
+  });
   // -- FIX-R5 tests end --
 });

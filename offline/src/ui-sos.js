@@ -96,10 +96,14 @@
       '(want(s|ed|ing)?|wish(es|ed|ing)?|rather|ready)( to)? be dead', '(want|wish)(s|es|ed|ing)? (it|it all|this|everything) to (end|be over)', // RS19
       'never (been )?born', 'disappear(s|ed|ing)? forever', 'better off without me',
       // RS24: the re-checker's forms. A list always misses some wording, so Something else also keeps the numbers above the steps.
-      "(hop|wish)(e|es|ed|ing)? i (do not|don'?t|did not|didn'?t|will not|won'?t) wake up", 'wanna be dead',
+      "(hop|wish)(e|es|ed|ing)?( that)? i (do not|don'?t|did not|didn'?t|will not|won'?t) wake up", 'wanna be dead',
       'hop(e|es|ed|ing) (that )?i (will |would |could |just )?die', "wish(es|ed|ing)? i (had ?n'?t|had not|was ?n'?t|was not|were not) (been )?born",
-      'wish(es|ed|ing)? (it|this|everything)( all)? (would|could|will)( all)? (end|be over)',
+      'wish(es|ed|ing)? (it|this|everything)( all)? (would|could|will)( all)?( just)? (end|be over)',
       "better off (if|when|once) i('?m| am| was| were) (gone|dead|not here|not around)", 'better off (if|when|once) i (die|died)',
+      // RS32: the re-checker's phrases that reached only the lead (clinical review). The lists close with this round.
+      'wish(es|ed|ing)? (it|this|everything)( all)? (would|could|will)( all)? just stop', '(want(s|ed|ing)?|wish(es|ed|ing)?) (it all|everything|all of (it|this)) to( just)? stop',
+      "(can'?t|cannot|can not) do (this|it)( any ?more| no more)", "(no ?one|no-one|nobody)( would| will|'d|'ll)?( even)? miss me", 'better off gone',
+      '(want(s|ed|ing)?( to)?|wanna) (just )?sleep forever',
     ],
   };
   const CRISIS_RE = new RegExp('\\b(' + CRISIS.patterns.join('|') + ')\\b', 'i');
