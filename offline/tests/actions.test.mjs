@@ -2370,5 +2370,16 @@ describe('review round 4 fixes (FIX-R4)', () => {
     d.tapId(root, 'sos-feeling-' + d.calm());
     assert.ok(!root.querySelector('[data-testid="sos-urgent-lead"]'), 'a named feeling: the steps as before');
   });
+  test('RS25: typed took too many pills, taken too many sleeping pills or used too much opens the full urgent view with the overdose card', () => {
+    for (const t of ['I took too many pills', "I've taken too many sleeping pills", 'I used too much', 'she took too many of her tablets', 'I’ve taken too many meds']) {
+      assert.equal(H.isOverdoseText(t), true, t);
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]'), t + ': the full urgent view');
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]'), t + ': not the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      assert.ok(root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), t + ': with the overdose card');
+    }
+    for (const t of ['I took too many breaks', 'I used to run', 'too many people', 'I took my pills']) assert.equal(H.isOverdoseText(t), false, t);
+  });
   // -- FIX-R4 tests end --
 });

@@ -105,7 +105,8 @@
   // well goes there too (the numbers come first in both). OD only as a word: never odd or good.
   const OVERDOSE = {
     clinicalReview: true,
-    patterns: ['overdos(e|es|ed|ing)', "od(s|'d|ed|ing)?", '(took|taken) too much'],
+    patterns: ['overdos(e|es|ed|ing)', "od(s|'d|ed|ing)?", '(took|taken) too much',
+      "(took|taken) too many( [a-z']+){0,3} (pills|tablets|meds)", 'used too much'], // RS25: how a pill overdose is often typed
   };
   const OVERDOSE_RE = new RegExp('\\b(' + OVERDOSE.patterns.join('|') + ')\\b', 'i');
   function isOverdoseText(text) {
