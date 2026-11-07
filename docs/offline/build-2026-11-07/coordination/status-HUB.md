@@ -2,7 +2,7 @@ TRACK: HUB
 STATE: BUILDING   # 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and SCREENS 4d443a20. CORE 60f08c84 and SCREENS d6887185 are gone from claude agents: their runs died at the park (actions-sos FIX-R6 safety re-check, engine FIX-RS9E; the game-tutorials re-check never ran): the fresh chats relaunch each from the branch's last commit with done and priorNote. 12.5 GB free at 22:05. First: merge learn READY 75eb8e5 (test-only; aborted before guards at the park), then actions-sos, engine, game-tutorials as they come READY; then the full gates and the tag offline-v1.1
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 7485e254 (the trunk after the game-tutorials bd2e085 merge, 2026-11-07 22:37 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 2 (the 22:34 row 12.3 GB free; one start per 7.0 GB row; tier 1 first: actions-sos round 7 (CORE, slot 3, live); then today-track FIX-EMBED (SCREENS, slot 5); the HUB's browser suite on _int counts as a run; under 4.0 GB the newest run pauses at its next commit)
+SLOTS-ALLOWED: 1 under the floor (2026-11-07 22:50 IST: rows 22:45 7.2, 22:50 3.5 GB free with two runs live): the newest run, today-track FIX-EMBED (22:40), PAUSES at its next commit and resumes on a 7.0 GB row; actions-sos round 7 (tier 1, the tag condition) runs on; nothing new starts under 7.0 GB; the HUB runs nothing heavy meanwhile
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 free from 2026-11-07 22:19 IST: FIX-RS9E READY 84075b6 merged (3ea2e13d); the lane is complete; fixes by name only
@@ -10,7 +10,7 @@ SLOTS: actions-sos slot=3 granted again 2026-11-07 14:20 (tier 1, flagged); U-09
 SLOTS: learn slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY 75eb8e5 merged (ce691c21); the lane is complete; fixes by name only
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: content slot=4 free from 2026-11-07 17:17: READY 680f850 merged (c8dc6716; U-31a..U-33 in the trunk, validate GREEN over M0-M10); the lane is complete; fixes by name only (LOWs C2-C4 for offline-v1.1)
-SLOTS: today-track slot=5 granted again 2026-11-07 22:37 IST for FIX-EMBED by name (R-S-14: Today embeds GameUI.panel and GuidanceUI.explorerRing / moreTools / dot behind typeof guards; ui-today.js and its test only); the 22:34 row 12.3 GB; READY with the tip; the lane was complete at a02f121
+SLOTS: today-track slot=5 granted again 2026-11-07 22:35 for FIX-EMBED by name (R-S-14; ui-today.js and its test only); PAUSE at its next commit from 2026-11-07 22:50 IST (the 22:50 row 3.5 GB, the newest run); resume on a 7.0 GB row; READY with the tip; the lane was complete at a02f121
 SLOTS: workbook-settings slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged (be0f806d), FIX-SAMPLE READY 0e76065 merged 18:13 (42d2467d); the lane is complete; fixes by name only (C1 eraseSample round trip after actions-sos)
 SLOTS: actions slot=7 free from 2026-11-07 18:50: READY 0977edd merged (49f1c1d4; U-22..U-25 in the trunk); the lane is complete; fixes by name only
 SLOTS: game-tutorials slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged (7485e254); the lane is complete; fixes by name only (LOW C1)
@@ -45,7 +45,7 @@ MERGED: engine READY 84075b6 (FIX-RS9E: recoveryPlanPrefill and ownWarningPlans 
 MERGED: game-tutorials READY bd2e085 (U-26 game surfaces ui-game.js new, U-28 tools and mini-games ui-tools.js new, FIX-TOUR b677dbd bd2e085 in ui-guidance.js; styles.css section; game-tutorials.test.mjs 27 tests) -> merge 7485e254, trunk 7485e254, pushed 22:37 (build GREEN 1013931 B; test GREEN 27/27; validate GREEN; guards GREEN by name; territory 0 errors over 9f3026c6..bd2e085; merge base 5af6665; merged clean, 5 files; the lane's browser gate on bd2e085 GREEN 12/0/7; the lane is complete; LOW C1 by name for offline-v1.1)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 22:39 IST
+UPDATED: 2026-11-07 22:50 IST
 
 # 2026-11-07 22:37 IST · the twenty-seventh merge: game-tutorials complete; the browser suite on the trunk; R-O-3, R-O-4 read
 

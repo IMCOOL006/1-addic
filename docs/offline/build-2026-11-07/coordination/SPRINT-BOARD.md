@@ -6,7 +6,7 @@ NEXT (the HUB, in order): merge actions-sos when its safety re-check passes (the
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 22:39 IST by `board.py`.
+Rewritten 2026-11-07 22:50 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -22,15 +22,15 @@ FORECAST (22:08): offline-v1.1 tonight about 23:30-00:30 if memory holds at 7 GB
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 22:39 IST
+- UPDATED: 2026-11-07 22:50 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 169k | 2026-11-07 22:39 IST |
-| CORE | 93bffdb7 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:25 IST: CORE 93bffdb7: actions-sos FIX-R6 run wf_4b67e91f-df4 in its fix round (RS35 HIGH, RS36, RS37… | 201k | 2026-11-07 22:25 IST |
-| SCREENS | 4d443a20 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:33 IST: game-tutorials READY bd2e085 for the HUB (FIX-TOUR; check PASS; browser GREEN 12/0/7 read by me).… | 206k | 2026-11-07 22:33 IST |
+| HUB | 0a13fa1c (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:06 IST: HUB 7 (0a13fa1c) started by the launcher 22:04 on the owner's --start, with CORE 93bffdb7 and… | 176k | 2026-11-07 22:50 IST |
+| CORE | 93bffdb7 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:25 IST: CORE 93bffdb7: actions-sos FIX-R6 run wf_4b67e91f-df4 in its fix round (RS35 HIGH, RS36, RS37… | 214k | 2026-11-07 22:25 IST |
+| SCREENS | 4d443a20 (launcher-started 2026-11-07 22:04) | BUILDING — 2026-11-07 22:40 IST: today-track FIX-EMBED wf_8859379a-bb6 live (slot 5, R-H-32). game-tutorials MERGED 7485e254… | 216k | 2026-11-07 22:40 IST |
 
 ## Lanes (10)
 
@@ -41,13 +41,13 @@ FORECAST (22:08): offline-v1.1 tonight about 23:30-00:30 if memory holds at 7 GB
 | `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at 1131827 (16:18, pushed) RS19-RS23 FIXED on the safety re-check, test GREEN 119/119, but the… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
-| `today-track` | SCREENS | 1 |  | slot 5 | MERGED | GRANTED again 2026-11-07 22:37 IST for FIX-EMBED by name (R-S-14: Today embeds GameUI.panel and GuidanceUI.explorerRing / moreTools / dot behind typeof guards… |
+| `today-track` | SCREENS | 1 |  | slot 5 | BUILDING | GRANTED again 2026-11-07 22:35 for FIX-EMBED by name (R-S-14; ui-today.js and its test only); PAUSE at its next commit from 2026-11-07 22:50 IST (the 22:50 row… |
 | `workbook-settings` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met… |
 | `actions` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=7 free from 2026-11-07 18:50: READY 0977edd merged…; READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only… |
-| `game-tutorials` | SCREENS | 2 |  | slot ? | READY | GRANTED slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged…; U-26, U-28 and FIX-TOUR (b677dbd, bd2e085) after the merged slice 5af6665; check PASS… |
+| `game-tutorials` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=8 free from 2026-11-07 22:37 IST: READY bd2e085 merged…; READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW… |
 | `content` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=4 free from 2026-11-07 17:17: READY 680f850 merged…; READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1… |
 
-Slots allowed: 2 (the 22:34 row 12.3 GB free; one start per 7.0 GB row; tier 1 first: actions-sos round 7 (CORE, slot 3, live); then today-track FIX-EMBED (SCREENS, slot 5); the HUB's browser suite on _int counts as a run; under 4.0 GB the newest run pauses at its next commit). Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot 5, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
+Slots allowed: 1 under the floor (2026-11-07 22:50 IST: rows 22:45 7.2, 22:50 3.5 GB free with two runs live): the newest run, today-track FIX-EMBED (22:40), PAUSES at its next commit and resumes on a 7.0 GB row; actions-sos round 7 (tier 1, the tag condition) runs on; nothing new starts under 7.0 GB; the HUB runs nothing heavy meanwhile. Granted: 10 lanes (`core` slot ?, `engine` slot ?, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot ?, `today-track` slot 5, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot ?).
 
 ## Merges
 
@@ -93,13 +93,14 @@ Slots allowed: 2 (the 22:34 row 12.3 GB free; one start per 7.0 GB row; tier 1 f
 - Safety copy for clinical review (CORE R-C-9): the SOS fallback lines, the crisis copy, the onboarding safety and lock texts in ui-sos.js and ui-onboarding.js are built as placeholders; the content lane (SCREENS, not started today) writes the reviewed versions in offline-v1.1. Please read them on your walk.
 - Decisions: the defaults of PLAN.md section 9 applied at 08:25 (R-O-1) and are the owner's own decision since 14:38 (R-O-2: 'I agree with the defaults'; the decisions document is DECISIONS.md beside PLAN.md). The build runs on to the complete edition and the guide on the owner's word; the launcher stays running.
 - 18:58 Memory 2.1-2.3 GB free (18:55, 18:56) with the SOS safety round the only live run of this build; the launcher's rows 18:30-18:50 were 3.9-4.5 GB. The tier 2 runs (game-tutorials re-check) are paused; the two CORE test fixes wait. Under the floor, the one tier 1 run continues (CORE's R-C-32 default, accepted by the HUB): pausing it would stop the tag's condition for nothing gained. What frees memory is on NEEDS YOU.
+- 22:50 Memory under the floor again: 7.2 GB (22:45), 3.5 GB (22:50) with two runs live (the SOS round, the Today embed fix). The rule: the Today fix, the newest, pauses at its next commit and resumes on a 7.0 GB row; the SOS round runs on. NEEDS YOU: what frees memory is outside this build (the pharma chats, the planner chat, the browser); closing one of them lets the Today fix continue.
 - 22:10 From the owner's interactive HUB window (afc0ccd2): it files the owner's words (R-O-3: a report every 30 minutes or at a merge, a tag, a red by name or a question; the merge order as the status files have it) and relays the board; it merges nothing while this HUB is live. Tooling defect for the next program: the loop's first tick (22:04:12) and --launch-missing (22:04:20) each launched all three chats; care() stopped the loop's three at 22:06 (74596e55, 0504743a, ea937cfa) and kept HUB 7, CORE 93bffdb7, SCREENS 4d443a20. CORE 60f08c84 is still listed as a blocked background chat with no pid: nothing runs in it; its runs died.
 - 22:04 RESUMED by the owner's --start: HUB 7, CORE and SCREENS started by the launcher; the two CORE runs and the SCREENS re-check are relaunched from the branches' last commits (87030e3, a927cac, 1ea2ebf). Memory 12.5-14.2 GB free: three starts allowed, one per 7.0 GB row.
 - 19:11 PARKED: the owner's usage limit ends (relayed by the first HUB at 19:09). The learn merge was aborted before guards and is first in the queue; CORE's two runs (the SOS safety re-check, the engine one-liner) end with the limit and are relaunched from their branches' last commits by the fresh CORE. Nothing is lost: every branch is pushed.
 
 ## Machine
 
-- Free memory 12.3 GB of 31.8 GB at 2026-11-07 22:34 IST; claude 41, node 16 processes; 11 slots by the rule (lane-widening.md).
+- Free memory 7.2 GB of 31.8 GB at 2026-11-07 22:45 IST; claude 29, node 28 processes; 4 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 25324); its last launch: SCREENS 4d443a20 at 2026-11-07 22:04.
 
 ## Files of the build
