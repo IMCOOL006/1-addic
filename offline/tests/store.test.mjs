@@ -693,7 +693,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
       contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id',
       reveals: 'id', tips: 'id', recoveryPlan: 'key' });
     await S.load();
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null });
     assert.equal(await addRows(S), 'wrote', 'commit resolves with what the rule returned');
     assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
     assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
@@ -785,7 +785,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.notEqual(idb.rows('events').find((r) => r.id === 'e1').enc.iv, iv1, 'a fresh iv for every row write');
     const R = freshStore(); // the page reloads
     await R.load();
-    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true });
+    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5 });
     assert.equal(R.view.get('profile', 'me'), null);
     assert.equal(R.view.count('events'), 0);
     assert.equal(await R.lock.unlock('2468'), true);
@@ -805,7 +805,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.onLock((info) => heard.push(info.reason));
     S.lock.lockNow();
     assert.deepEqual(heard, ['manual']);
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0 });
     assert.equal(S.view.get('profile', 'me'), null);
     assert.deepEqual(S.view.list('events'), []);
     assert.equal(S.view.count('events'), 0);
@@ -937,7 +937,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.lockNow();
     ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
     await S.resetAll(); // Forgot PIN: erase, then start again from a backup
-    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false });
+    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null });
     assert.equal(S.view.count('todos'), 0);
     for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
     assert.equal(ls.getItem('1-addic:snapshot'), null);
@@ -1111,5 +1111,21 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(ls.getItem('1-addic:snapshot'), null);
     assert.equal(V.view.get('events', 'f2').note, MARK);
     assert.ok(!idb2.dump().includes(MARK), 'sealed in IndexedDB');
+  });
+
+  test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {
+    const S = freshStore();
+    await S.load();
+    assert.equal(S.status().autoLockMin, null, 'no PIN, no auto-lock');
+    await S.lock.set('2468', { autoLockMin: 15 });
+    assert.equal(S.status().autoLockMin, 15);
+    await S.lock.set('2468', { autoLockMin: 'never' });
+    assert.equal(S.status().autoLockMin, 0, 'never is 0');
+    await S.lock.set('2468', { autoLockMin: 7 });
+    assert.equal(S.status().autoLockMin, 5, 'anything else means 5');
+    S.lock.lockNow();
+    assert.equal(S.status().autoLockMin, 5, 'also while locked: the lock row is plain');
+    assert.equal(await S.lock.remove('2468'), true);
+    assert.equal(S.status().autoLockMin, null);
   });
 });

@@ -1650,8 +1650,11 @@ const Store = (function () {
     count(store) { return state.locked || !has(store) ? 0 : state.rows[store].size; },
   };
 
+  // autoLockMin is the lock's idle minutes (1, 5 or 15; 0 is never; null without a PIN), so the settings screen can
+  // show the choice in force (RC3).
   function status() {
-    return { persistence: state.mode, lastSavedAt: state.lastSavedAt, hasLock: !!state.lock, locked: state.locked };
+    return { persistence: state.mode, lastSavedAt: state.lastSavedAt, hasLock: !!state.lock, locked: state.locked,
+      autoLockMin: state.lock ? state.lock.autoLockMin : null };
   }
 
   // Decrypted rows. When a lock exists the caller asks for the PIN first (Store.lock.verify).
