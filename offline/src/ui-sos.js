@@ -471,7 +471,7 @@
         btn(last ? (doneLabel || 'Done') : 'Next', () => {
           safe(() => UI.stopSpeaking(), null);
           if (last) { if (onDone) onDone(); } else { i += 1; paint(); focusTitle(box); }
-        }, { primary: true })));
+        }, { primary: true, testid: last ? 'sos-step-done' : 'sos-step-next' })));
     };
     paint();
     return box;
@@ -488,10 +488,10 @@
     const box = h('div', { class: 'stack', dataset: testid ? tid(testid) : null });
     const paint = () => {
       const items = (typeof list === 'function' ? list() : list) || [];
-      if (!items.length) { box.replaceChildren(screen(title, emptyText, btn('Done', onDone, { primary: true }))); return; }
+      if (!items.length) { box.replaceChildren(screen(title, emptyText, btn('Done', onDone, { primary: true, testid: 'sos-step-done' }))); return; }
       const s = screen(title, items[i % items.length],
         items.length > 1 ? btn('Another one', () => { i += 1; paint(); focusTitle(box); }) : null,
-        btn('Done', onDone, { primary: true }));
+        btn('Done', onDone, { primary: true, testid: 'sos-step-done' }));
       if (priv) mine(s.querySelector('.sos-line'));
       box.replaceChildren(s);
     };
@@ -517,7 +517,7 @@
         h('ul', { class: 'sos-list' }, groups.map((g) => h('li', { class: 'row' }, h('span', { text: g.name }),
           g.url ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy link', style: { width: 'auto' }, onClick: () => copyText(g.url) }) : null,
           g.verify ? h('span', { class: 'sos-verify muted', dataset: tid('meetings-verify'), text: COPY.verify }) : null)))) : null,
-      btn('Done', onDone, { primary: true }));
+      btn('Done', onDone, { primary: true, testid: 'sos-step-done' }));
   }
 
   /* ── The craving flow (and the drill) ───────────────────────────────────────────────────────── */
@@ -543,7 +543,7 @@
     const show = (node) => { safe(() => UI.stopSpeaking(), null); body.replaceChildren(node); focusTitle(body); };
     const credit = (tool) => (helpful) => { st.tools.push({ skillId: tool.skillId, helpful }); next(); };
     const helped = (tool) => show(screen(COPY.helped.title, null,
-      btn('It helped', () => credit(tool)(true), { primary: true }), btn('Not really', () => credit(tool)(false))));
+      btn('It helped', () => credit(tool)(true), { primary: true, testid: 'sos-helped-yes' }), btn('Not really', () => credit(tool)(false), { testid: 'sos-helped-no' })));
     const next = () => { if (queue.length) runTool(queue.shift()); else if (st.guided) { st.guided = false; reassess(); } else tools(); };
     const reasons = () => (mode.drill ? texts(safe(() => Cn().catalogs.reassuring, [])) : isLockedNow() ? [] : reasonsFrom(c.view, c.E));
 
@@ -560,7 +560,7 @@
     function rate() {
       show(screen(COPY.rate.title, COPY.rate.line,
         ratingRow((n) => { st.ratingBefore = n; tools(); }),
-        btn('Skip', tools, { ghost: true })));
+        btn('Skip', tools, { ghost: true, testid: 'sos-rate-skip' })));
     }
 
     function tools() {
@@ -568,7 +568,7 @@
         h('div', { class: 'stack' }, TOOLS.map((t) => btn(t.label, () => runTool(t.id), { testid: 'sos-tool-' + t.id, primary: t.id === 'wave' }))),
         btn('Guide me', () => { st.guided = true; queue = guideOrder(c.view, c.E); next(); }, { testid: 'sos-tool-guide' }),
         btn(st.risky ? 'I am leaving the risky place' : 'I am somewhere risky', () => { st.risky = !st.risky; tools(); }, { ghost: true, pressed: st.risky ? 'true' : 'false' }),
-        btn('Check in with the craving', reassess, { ghost: true })));
+        btn('Check in with the craving', reassess, { ghost: true, testid: 'sos-checkin' })));
     }
 
     function reassess() {

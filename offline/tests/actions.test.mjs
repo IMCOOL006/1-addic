@@ -1722,3 +1722,44 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
   });
   // -- FIX-ONB-EMO tests end --
 });
+
+describe('review round 2 fixes (RC14-RC20)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RC14: the craving flow walks by its hooks alone: rate, wave, helped, check in, still, a tool, check in, passed, No', async () => {
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    const has = (id) => root.querySelector(`[data-testid="${id}"]`);
+    const tap = (id) => { const n = has(id); assert.ok(n, `the hook ${id} is on: ${root.textContent.slice(0, 120)}`); n.click(); };
+    d.rate(root, 7);
+    tap('sos-tool-wave');
+    for (let k = 0; !has('sos-step-done'); k += 1) { assert.ok(k < 12, 'SOBER has a last step'); tap('sos-step-next'); }
+    tap('sos-step-done');
+    tap('sos-helped-yes');
+    tap('sos-checkin');
+    tap('sos-reassess-still');
+    tap('sos-tool-distract');
+    tap('sos-step-done');
+    tap('sos-helped-no');
+    tap('sos-checkin');
+    d.rate(root, 3);
+    tap('sos-reassess-passed');
+    tap('sos-used-no');
+    await d.settle();
+    assert.ok(has('sos-finish'), 'the flow ends on Finish');
+    assert.deepEqual(events('SosCompleted').map((e) => [e.payload.outcome, e.payload.delays, e.payload.ratingBefore, e.payload.ratingAfter]), [['passed', 1, 7, 3]]);
+    assert.deepEqual(events('SkillUsed').map((e) => e.payload.helpful), [true, false]);
+    for (const tool of ['why', 'call', 'talkback']) {
+      const r = d.open(['sos', 'craving']);
+      const skip = r.querySelector('[data-testid="sos-rate-skip"]');
+      assert.ok(skip, 'the rating is skipped by its hook, and the tools come at once');
+      skip.click();
+      r.querySelector(`[data-testid="sos-tool-${tool}"]`).click();
+      assert.ok(r.querySelector('[data-testid="sos-step-done"]'), `${tool} ends on sos-step-done`);
+    }
+    for (const id of ['sos-step-next', 'sos-step-done', 'sos-helped-yes', 'sos-helped-no', 'sos-checkin', 'sos-rate-skip']) assert.ok(!id.startsWith('sos-tool-'), 'never under the prefix sosAnyTool matches');
+    assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
+  });
+  // -- review round 2 tests end --
+});
