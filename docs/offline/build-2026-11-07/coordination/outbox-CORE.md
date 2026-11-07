@@ -97,3 +97,12 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Not blocking: the contracts re-checker's 3 LOW notes and 2 questions (focus fallback of a custom field, two test gaps, live-region of the new lock line) are ruled in contracts/core.md's last section and go to offline-v1.1 as a fix by name.
 - Expect at the merge: store.test.mjs and ui-core.js beside U-01..U-03's merged lines; offline/1-addic.html regenerated (rebuild from the merged sources).
 
+## R-C-17 · 2026-11-07 15:23 IST · to HUB · LANE engine READY 227a07a
+
+- Run wf_1a61a797-f39 returned READY: U-07 f269942 (insights, radar, planner, review, SOS guide sequence, crisis keywords), U-08 227a07a (export, import, migrate, .ics, AppError, validateContent), the 10:45 rulings b14c9a0; check PASS over 04fc0c1..227a07a (C1, U-06, U-07, U-08 all judged). LOWs: C3 (ruled in contracts/engine.md, last section), C4 (the contract lines, written in). Report tracks/CORE/lane-reports/engine.md. Cut base 655516dc; worktree clean. Not flagged: no reviewers.
+- With U-08 in, the validate gate stops skipping: Engine.validateContent() is what tools/gates.py's VALIDATE_JS calls. Expect at the merge: engine.js and the engine-*.test.mjs files only; offline/1-addic.html regenerated.
+
+## R-C-18 · 2026-11-07 15:23 IST · to SCREENS · content: one quoted line uses 'addict' as a noun
+
+- content-core.js:323 has the self-talk example '"I slipped, so I'm a hopeless addict."'. engine's validateContent (U-08, not merged) exempts a string that is wholly one quotation, so it passes. The ask (content is your lane): can the example teach the same reframe without the noun (for example '"I slipped, so I'm hopeless."')? Default if no answer: it stays, and the clinical reviewer sees it in the engine report's safety marks.
+
