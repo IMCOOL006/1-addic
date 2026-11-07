@@ -26,7 +26,7 @@ const Store = (function () {
   const state = {
     loading: null, mode: 'memory', backend: null, rows: blank(), unread: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
     subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, asked: false, chain: Promise.resolve(), epoch: 0,
-    fails: 0, last: 0, timer: null,
+    fails: 0, last: 0, timer: null, held: false,
   };
 
   function blank() {
@@ -594,9 +594,11 @@ const Store = (function () {
   }
   function arm() {
     disarm();
-    const min = state.lock && !state.locked ? state.lock.autoLockMin : 0;
+    const min = state.lock && !state.locked && !state.held ? state.lock.autoLockMin : 0;
     if (!min) return;
-    state.timer = setTimeout(() => { state.timer = null; lockNow('auto'); }, min * 60000);
+    // To the limit from the last activity, so the time already idle when a hold ends still counts.
+    const wait = Math.max(0, state.last + min * 60000 - Date.now());
+    state.timer = setTimeout(() => { state.timer = null; lockNow('auto'); }, wait);
     if (state.timer && typeof state.timer.unref === 'function') state.timer.unref();
   }
   function opened(key) {
@@ -618,14 +620,28 @@ const Store = (function () {
     notify('lock');
   }
 
-  // Activity keeps the lock open. A touch after the idle limit (a phone that slept) locks instead.
+  // Activity keeps the lock open. A touch after the idle limit (a phone that slept) locks instead; during a hold (SOS)
+  // it never locks and leaves the idle clock where it was, so the end of the hold can tell (RC10, RS10).
   function touch() {
     if (!state.lock || state.locked) return;
     const min = state.lock.autoLockMin;
     const now = Date.now();
-    if (min && now - state.last >= min * 60000) { lockNow('auto'); return; }
+    if (min && now - state.last >= min * 60000) { if (!state.held) lockNow('auto'); return; }
     state.last = now;
     arm();
+  }
+
+  // SOS holds the lock open: during a hold no auto-lock fires, neither the timer nor a late touch (the CORE chat's
+  // ruling Q1). The end of the hold checks the idle time at once and locks past the limit, so a page left on SOS for
+  // hours opens nothing else (RC10, RS10). Lock now still locks at once. Gives whether the data is locked.
+  function hold(on) {
+    state.held = !!on;
+    if (!state.lock || state.locked) return state.locked;
+    if (state.held) { disarm(); return false; }
+    const min = state.lock.autoLockMin;
+    if (min && Date.now() - state.last >= min * 60000) { lockNow('auto'); return true; }
+    arm();
+    return false;
   }
 
   function setLock(pin, opts) {
@@ -754,7 +770,7 @@ const Store = (function () {
   return {
     STORES, load, view, commit, subscribe: (fn) => listen(state.subs, fn), bulk, status, exportJson, replaceAll, resetAll,
     lock: {
-      set: setLock, unlock, verify, remove, lockNow: () => lockNow('manual'), touch,
+      set: setLock, unlock, verify, remove, lockNow: () => lockNow('manual'), touch, hold,
       onLock: (fn) => listen(state.lockSubs, fn),
     },
   };

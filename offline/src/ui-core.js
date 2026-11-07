@@ -44,7 +44,7 @@ const UI = (function () {
   const pages = {};
   const state = {
     booted: false, loaded: false, seq: 0, lastPath: null, pending: 0, deferred: false, voices: null,
-    lastTouch: 0, theme: 'system', sosTimer: null,
+    lastTouch: 0, theme: 'system', held: false,
   };
 
   const hasDOM = () => typeof document !== 'undefined' && !!document.createElement;
@@ -880,17 +880,16 @@ const UI = (function () {
   }
 
   /* ── Boot ──────────────────────────────────────────────────────────────────────────────── */
-  // No auto-lock fires while the person is in SOS (the CORE chat's ruling Q1, RC4): on an SOS route the idle timer is
-  // touched every 30 s, and the touches stop when the person leaves SOS. 'Lock now' still locks at once.
+  // No auto-lock fires while the person is in SOS (the CORE chat's ruling Q1): an SOS route holds the Store's lock open
+  // (Store.lock.hold), with no ticks that would hide how long the page was left. Leaving SOS ends the hold, and the
+  // Store checks the idle time first: past the limit it locks, and the lock screen is drawn instead of the page
+  // (RC4, RC10, RS10). 'Lock now' still locks at once.
   function keepOpen(key) {
-    const tick = () => { const S = ns('Store'); if (S && S.lock && typeof S.lock.touch === 'function') safe(() => S.lock.touch(), null); };
-    if (key === 'sos' && !state.sosTimer) {
-      state.sosTimer = setInterval(tick, 30000);
-      if (state.sosTimer && typeof state.sosTimer.unref === 'function') state.sosTimer.unref();
-    } else if (key !== 'sos' && state.sosTimer) {
-      clearInterval(state.sosTimer);
-      state.sosTimer = null;
-    }
+    const on = key === 'sos';
+    if (on === state.held) return;
+    state.held = on;
+    const S = ns('Store');
+    if (S && S.lock && typeof S.lock.hold === 'function') safe(() => S.lock.hold(on), null);
   }
 
   function touch() {

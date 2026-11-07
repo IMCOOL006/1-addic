@@ -311,31 +311,30 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
-  test('RC4: in SOS the idle timer is touched every 30 s, so no auto-lock fires there; leaving SOS stops it', async (t) => {
+  test('RC4, RC10: an SOS route holds the lock open, once, with no ticks of its own; leaving SOS ends the hold', async (t) => {
     setup();
+    const held = [];
     let touched = 0;
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
       status: () => ({ persistence: 'memory', lastSavedAt: null, hasLock: true, locked: false }),
-      lock: { touch: () => { touched += 1; } } };
+      lock: { touch: () => { touched += 1; }, hold: (on) => { held.push(on); } } };
     UI.pages.sos = page('SOS PAGE');
     UI.pages.today = page('TODAY');
     at('#/today');
-    await UI.render(); // no timer left from an earlier test
-    t.mock.timers.enable({ apis: ['setInterval'] });
+    await UI.render(); // no hold left from an earlier test
+    held.length = 0;
+    t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] });
     at('#/sos/craving');
     await UI.render();
-    t.mock.timers.tick(30000);
-    assert.equal(touched, 1);
-    t.mock.timers.tick(60000);
-    assert.equal(touched, 3, 'a breathing round of minutes never reaches the idle limit');
+    assert.deepEqual(held, [true], 'entering SOS holds the lock open');
+    t.mock.timers.tick(120000);
+    assert.equal(touched, 0, 'no keep-alive ticks: they would hide how long the page was left');
     at('#/sos');
     await UI.render();
-    t.mock.timers.tick(30000);
-    assert.equal(touched, 4, 'one timer, never two');
+    assert.deepEqual(held, [true], 'one hold, never two');
     at('#/today');
     await UI.render();
-    t.mock.timers.tick(120000);
-    assert.equal(touched, 4, 'the touches stop outside SOS');
+    assert.deepEqual(held, [true, false], 'leaving SOS ends the hold');
   });
 
   test('unlocked: #/lock goes to Today', async () => {
@@ -1008,6 +1007,47 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     const msg = main().all().find((e) => e.id === 'lock-msg');
     assert.equal(msg.hidden, false);
     assert.equal(msg.textContent, 'A PIN is not available on this device.');
+  });
+
+  test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
+    setup();
+    t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'], now: Date.now() });
+    const S = freshStore();
+    globalThis.Store = S;
+    await S.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK }); });
+    await S.lock.set('2468', { autoLockMin: 1 });
+    UI.pages.today = page('TODAY ' + MARK);
+    UI.pages.sos = page('SOS PAGE');
+    at('#/today');
+    await UI.render();
+    at('#/sos/craving');
+    await UI.render();
+    t.mock.timers.tick(10 * 60000); // the page is left on SOS
+    assert.equal(S.status().locked, false, 'no auto-lock fires in SOS (Q1)');
+    t.mock.timers.setTime(Date.now() + 10 * 60000); // the phone slept on SOS; now it wakes
+    S.lock.touch();
+    t.mock.timers.tick(1000);
+    assert.equal(S.status().locked, false, 'a wake inside SOS never locks (RC10)');
+    at('#/today'); // someone else taps Today
+    await UI.render();
+    assert.equal(S.status().locked, true, 'leaving SOS past the limit locks first (RS10)');
+    assert.equal(location.hash, '#/lock');
+    assert.ok(!main().textContent.includes(MARK), 'Today is never drawn');
+    assert.equal(await S.lock.unlock('2468'), true);
+    at('#/sos');
+    await UI.render();
+    for (let i = 0; i < 6; i++) { t.mock.timers.tick(30000); S.lock.touch(); }
+    at('#/today');
+    await UI.render();
+    assert.equal(S.status().locked, false, 'a person active in SOS keeps it open');
+    assert.match(main().textContent, /TODAY/);
+    at('#/sos');
+    await UI.render();
+    S.lock.lockNow();
+    assert.equal(S.status().locked, true, 'Lock now still locks at once inside SOS');
+    at('#/today');
+    await UI.render();
+    assert.equal(location.hash, '#/lock');
   });
 
   test('RC7: confirm answers true only on its confirm button; Cancel, the close button, the backdrop and Esc answer false', async () => {
