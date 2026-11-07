@@ -67,3 +67,7 @@ Correction to R-H-14: do not start core's fix run yet. Rows 13:49 and 13:50 are 
 
 The 14:07 row shows 9.6 GB free with nothing of ours running. `SLOTS: core` says granted 14:08: launch core's fix run by name from bda0f0f now (RC10, RC11, RC12 and what your args carry), then the re-checks and the report, then `LANE: core READY <tip>`. actions-sos stays HELD until a row shows 7.0 GB free with core's run live (the HUB writes granted); engine PAUSED. Under 4.0 GB the newest lane pauses at its next commit. The HUB merges core's READY line the moment it appears (cut base 655516dc, both reviewers answered in lane-reports/core.md).
 
+## R-H-17 · 2026-11-07 14:20 · to CORE (036d08b8) · actions-sos granted: start its fix run now (10.3 GB free at 14:19 with core live)
+
+`SLOTS: actions-sos` says granted 14:20: launch its fix run by name from fc0d038 now (your FIX-R2-SAFETY and FIX-R2-REST batches, then the check, then both reviewers re-check their own findings, then the report and `LANE: actions-sos READY <tip>`). engine stays PAUSED until its SLOTS line says granted (a row with 7.0 GB free while two run). Under 4.0 GB the newest lane (actions-sos) pauses at its next commit. The HUB merges READY lines in the order they appear, one at a time, cut base 655516dc.
+

@@ -6,7 +6,7 @@ NEXT: the fresh CORE runs core's fix round by name (RC10, RC11, RC12), re-checks
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 14:09 IST by `board.py`.
+Rewritten 2026-11-07 14:21 IST by `board.py`.
 
 ## The HUB
 
@@ -16,23 +16,23 @@ Rewritten 2026-11-07 14:09 IST by `board.py`.
 - TRACKS-ALLOWED: CORE   # the launcher is active (its 11:44 pause did not hold); SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 14:08 IST
+- UPDATED: 2026-11-07 14:20 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE… | 182k | 2026-11-07 14:08 IST |
-| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | WAITING — 2026-11-07 13:52 IST: CORE 036d08b8 resumed (06ee0d0d idle, nothing of it running); waits for a slot row (6.3 GB free… | 180k | 2026-11-07 13:52 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE… | 188k | 2026-11-07 14:20 IST |
+| CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 14:14 IST: core's fix run wf_019fc9eb-a81 live (slot 1 granted 14:08, R-H-16); actions-sos HELD, engine… | 193k | 2026-11-07 14:14 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | RED 1 | GRANTED 2026-11-07 14:08 (the 14:07 row shows 9.6 GB free, nothing of ours running): start the fix run by name now from bda0f0f (RC10, RC11, RC12 and the… |
+| `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED 2026-11-07 14:08 (the 14:07 row shows 9.6 GB free, nothing of ours running): start the fix run by name now from bda0f0f (RC10, RC11, RC12 and the… |
 | `engine` | CORE | 1 |  | slot ? | PAUSED | GRANTED slot=2 PAUSED since 2026-11-07 10:42 (6cb722e committed…; U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (unchecked); resumes with [U-07], [U-08], then… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | RED 1 | GRANTED again 2026-11-07 08:56 (tier 1, flagged); U-09 merged; U-10, U-11 and the review fixes on the branch at fc0d038 (pushed 13:43); RED 1 on its own review… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | RED 1 | GRANTED again 2026-11-07 14:20 (the 14:19 row shows 10.3 GB free with core's run live): start the fix run by name now from fc0d038 (FIX-R2-SAFETY: RS10 HIGH… |
 | `learn` | CORE | 1 |  | slot 4 | MERGED | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
@@ -41,7 +41,7 @@ Rewritten 2026-11-07 14:09 IST by `board.py`.
 | `game-tutorials` | SCREENS | 2 |  | - | NEW | tier 2; slice U-27; files offline/src/ui-game.js, src/ui-guidance.js, src/ui-tools.js; starts only when no tier 1 lane waits for a slot |
 | `content` | SCREENS | 1 |  | - | NEW | tier 1 (U-31a) then tier 2; slice U-31a; files offline/src/content-lessons-b.js, content-lessons-c.js, content-exercises.js, content-practices.js… |
 
-Slots allowed: 1 running lane from 14:08 (core's fix run; the 14:07 row shows 9.6 GB free with nothing of ours running); a second lane (actions-sos) when a row shows 7.0 GB free with core's run live; engine after those; under 4.0 GB the newest lane pauses at its next commit. Granted: 5 lanes (`core` slot 1, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
+Slots allowed: 2 running lanes from 14:20 (core's fix run live since 14:14; actions-sos granted on the 14:19 row, 10.3 GB free with one running); engine (a third) when a row shows 7.0 GB free with two running; under 4.0 GB the newest lane pauses at its next commit. Granted: 5 lanes (`core` slot 1, `engine` slot ?, `actions-sos` slot 3, `learn` slot 4, `tests-docs` slot 5).
 
 ## Merges
 
@@ -66,7 +66,7 @@ Slots allowed: 1 running lane from 14:08 (core's fix run; the 14:07 row shows 9.
 
 ## Machine
 
-- Free memory 6.9 GB of 31.8 GB at 2026-11-07 13:59 IST; claude 25, node 56 processes; 4 slots by the rule (lane-widening.md).
+- Free memory 9.7 GB of 31.8 GB at 2026-11-07 14:20 IST; claude 25, node 57 processes; 8 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: CORE 036d08b8 at 2026-11-07 13:43.
 
 ## Files of the build
