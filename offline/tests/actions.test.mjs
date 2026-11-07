@@ -1587,5 +1587,35 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.ok(root.textContent.includes(W.reach.line));
     assert.ok(!root.textContent.includes(W.call.title), 'not the craving words');
   });
+  test('LEAVE: leaving a craving flow after a tool saves those tools as one still session, after the next screen draws', async () => {
+    const H2 = sosDom().UI.sosHelpers;
+    assert.equal(typeof H2.leaveSession, 'function');
+    const used = [{ skillId: 'ride-wave', helpful: true }];
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: [] }), null, 'no tool: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used, drill: true }), null, 'a drill: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used, finished: true }), null, 'already saved: nothing');
+    assert.equal(H2.leaveSession({ kind: 'craving', tools: used }).outcome, 'still');
+    const why = H2.TOOLS.find((t) => t.id === 'why').skillId;
+    for (const [label, drawn] of [['Urgent help', true], ['Back to SOS', false]]) {
+      await S().resetAll();
+      const d = sosDom();
+      const root = d.open(['sos', 'craving']);
+      d.tap(root, 'Skip');
+      d.tapId(root, 'sos-tool-why');
+      d.tap(root, 'Done');
+      d.tap(root, 'It helped');
+      root.querySelectorAll('a').find((x) => x.textContent.trim() === label).click();
+      assert.equal(events('SosCompleted').length, 0, label + ': nothing before the next screen draws');
+      if (drawn) d.fire('ui:rendered', {}); else await new Promise((r) => setTimeout(r, 350));
+      await d.settle();
+      assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['still'], label);
+      assert.deepEqual(events('SkillUsed').map((e) => [e.payload.skillId, e.payload.helpful]), [[why, true]], label);
+    }
+    const d = sosDom();
+    const root = d.open(['sos', 'craving']);
+    root.querySelectorAll('a').find((x) => x.textContent.trim() === 'Back to SOS').click();
+    await new Promise((r) => setTimeout(r, 350));
+    assert.equal(events('SosCompleted').length, 1, 'no tool used: leaving writes nothing');
+  });
   // -- FIX-ONB-EMO tests end --
 });

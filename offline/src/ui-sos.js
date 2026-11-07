@@ -316,10 +316,17 @@
     return Math.max(0, total - Math.floor((nowMs - startMs) / 1000));
   }
 
+  // Leaving a craving flow by Urgent help or Back to SOS after at least one tool: those tools are one session, 'still'.
+  function leaveSession(st) {
+    const s = st || {};
+    if (s.finished || s.drill || !Array.isArray(s.tools) || !s.tools.length) return null;
+    return sessionFrom(Object.assign({}, s, { used: false, outcome: 'still' }));
+  }
+
   const H = {
     COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
     telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
-    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, markHelped, meetingsFrom, activeContacts, planFor, planSections, clock, remaining,
+    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, markHelped, meetingsFrom, activeContacts, planFor, planSections, clock, remaining, leaveSession,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = H;
@@ -358,6 +365,16 @@
         style: { minHeight: '56px', width: '100%' }, onClick: () => onPick(n) }));
     }
     return row;
+  }
+
+  // Runs fn once the next screen has drawn (ui-core's ui:rendered), or after LEAVE_MS when that never comes: a save
+  // never holds up the numbers.
+  const LEAVE_MS = 300;
+  function afterDraw(fn) {
+    let ran = false;
+    const run = () => { if (ran) return; ran = true; fn(); };
+    safe(() => document.addEventListener('ui:rendered', run, { once: true }), null);
+    setTimeout(run, LEAVE_MS);
   }
 
   // An SOS write refused with LOCKED (a lock came while SOS stayed open) waits here, in memory only, and is saved
@@ -515,7 +532,7 @@
     const root = h('section', { class: 'page sos-page stack', dataset: tid('sos-craving') },
       mode.drill ? h('p', { class: 'card', dataset: tid('sos-drill-banner'), text: COPY.drillBanner }) : null,
       timer, body,
-      h('div', { class: 'row' }, link('Urgent help', '#/sos/urgent'), link('Back to SOS', '#/sos')));
+      h('div', { class: 'row' }, leaving(link('Urgent help', '#/sos/urgent')), leaving(link('Back to SOS', '#/sos'))));
     let seen = false;
     const iv = setInterval(() => {
       if (!root.isConnected) { if (seen) clearInterval(iv); return; }
@@ -581,6 +598,19 @@
       if (used && mode.drill) { UI.go('#/sos/slip?preview=1'); return; }
       const words = mode.drill ? COPY.drillDone : COPY.surfed;
       show(screen(words.title, words.line, link('Finish', '#/today', { primary: true, testid: 'sos-finish' })));
+    }
+
+    // Urgent help or Back to SOS after a tool: the tools used are one session, outcome 'still', saved after the next
+    // screen draws (never before the numbers).
+    function leaving(a) {
+      a.addEventListener('click', () => {
+        const payload = leaveSession(st);
+        if (!payload) return;
+        st.finished = true;
+        clearInterval(iv);
+        afterDraw(() => { if (A && typeof A.sosSession === 'function') save(() => A.sosSession(payload)); });
+      });
+      return a;
     }
 
     rate();
