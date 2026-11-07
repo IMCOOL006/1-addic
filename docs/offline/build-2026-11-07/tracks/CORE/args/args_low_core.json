@@ -20,13 +20,17 @@
   "U-02",
   "U-04",
   "FIX-V11",
-  "FIX-LOCKID",
-  "FIX-A11Y-N"
+  "V3-11",
+  "V3-17",
+  "V3-16"
  ],
  "batches": [
   [
-   "FIX-LOCKID",
-   "FIX-A11Y-N"
+   "V3-11"
+  ],
+  [
+   "V3-17",
+   "V3-16"
   ]
  ],
  "unitTier": {
@@ -35,14 +39,16 @@
   "U-04": 1,
   "U-02": 1,
   "FIX-V11": 1,
-  "FIX-LOCKID": 1,
-  "FIX-A11Y-N": 1
+  "V3-11": 1,
+  "V3-17": 2,
+  "V3-16": 2
  },
  "unitNotes": {
-  "FIX-LOCKID": "RS26 remainder (tracks/CORE/contracts/actions-sos.md lines 111 and 130). Store.status() gains lockId: an opaque string while a lock row exists, null when none; a NEW value whenever the lock row is created (set PIN), replaced (change PIN; replaceAll or import that writes a lock row, even one that carried an id; reset then set) or removed (remove PIN, erase: null); never derived from the PIN, salt or check (random bytes). Kept in the lock row itself, so it survives a reload unchanged and a second Store over the same storage (another tab) reads the new value after its load. Node memory mode the same. store.test.mjs: each transition changes it; unchanged across reload; null without a lock; no PIN, salt or check text inside it; a second store instance sees the change. No other Store API change; an old export without the field imports with a fresh id.",
-  "FIX-A11Y-N": "N1, N2, Q-a of tracks/CORE/contracts/core.md lines 117-119 (ui-core.js UI.form custom field focus, about :370-380). N1: role=group is written only on a plain div or span; a node with an implicit role (ul, ol, table, svg, fieldset and the rest) keeps it, still named by aria-labelledby. N2: a contenteditable node counts as a control: no tabindex -1, no role=group. Q-a: a native control (input, select, textarea, button) returned as the custom field's node gets aria-labelledby the field label's id when the page named it no other way. Tests in store.test.mjs's UI.form block, each red before."
+  "V3-11": "V3-IMPROVEMENTS.md V3-11 (tier 1, crisis copy, flagged): shell.html's <main id=main> holds, before boot, one static line 'If you are in danger, call your local emergency number.' (boot.js COPY.none's words, no new phrase), marked for the clinical review by an HTML comment; the first render replaces it; boot.js's failure block replaces it too, never shows both. A Node test over the built file: the line is inside #main and nowhere else; the CSP and the guards stay green.",
+  "V3-17": "V3-17, RS26 remainder (contracts/actions-sos.md lines 111, 130). Store.status() gains lockId: an opaque string while a lock row exists, null when none; a NEW value whenever the lock row is created (set PIN), replaced (change PIN; replaceAll or import that writes a lock row, even one that carried an id; reset then set) or removed (remove PIN, erase: null); never derived from the PIN, salt or check (random bytes). Kept in the lock row, so a reload keeps it and a second Store over the same storage (another tab) reads the new value after its load; Node memory mode the same. store.test.mjs: each transition changes it; unchanged across reload; null without a lock; no PIN, salt or check inside it; a second instance sees the change. No other Store API change; an old export without the field imports with a fresh id.",
+  "V3-16": "V3-16: N1, N2, Q-a of contracts/core.md lines 117-119 (ui-core.js UI.form custom field focus, about :370-380). N1: role=group only on a plain div or span; a node with an implicit role (ul, ol, table, svg, fieldset ...) keeps it, still named by aria-labelledby. N2: a contenteditable node counts as a control (no tabindex -1, no role=group). Q-a: a native control returned as the node gets aria-labelledby the field label's id when the page named it no other way. Tests in store.test.mjs's UI.form block."
  },
- "laneNote": "CORE CHAT'S WORD (2026-11-08 02:15 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): one fix round by name on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/core/core__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:25 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/core/core__<id>.red.log) and green after; one commit per id, the id in the subject.",
  "done": [
   "U-01",
   "U-03",
@@ -54,7 +60,7 @@
  "diffFrom": "f69bc68a",
  "slot": 1,
  "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
- "now": "2026-11-08 02:15 IST",
+ "now": "2026-11-08 02:25 IST",
  "start": "build",
- "priorNote": "The lane is MERGED at 8e80951 (FIX-V11; a3081f33). Its open LOWs N1, N2, Q-a and the RS26 remainder (Store.status().lockId) are this round. CORE 10 fast-forwarded build/core to f69bc68a (no merge commit; clean) before this run."
+ "priorNote": "The lane is MERGED at 8e80951 (FIX-V11; a3081f33). This round: V3-11 (tier 1), then V3-17 and V3-16 (tier 2). CORE 10 fast-forwarded build/core to f69bc68a (no merge commit; clean) before this run."
 }

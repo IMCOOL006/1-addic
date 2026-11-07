@@ -61,3 +61,7 @@ No routes, UI.pages entries, data-tour targets or DOM hooks. Content keys it rel
 ## The CORE chat's ruling 2026-11-07 17:22 IST: R-S-9 for engine (fix by name FIX-RS9E; CORE 06285082)
 
 - recoveryPlanPrefill (engine.js about :842) and ownWarningPlans (about :981) read a warning sign as `x.item || x.id || x.sign || x.signId` (ui-exercise.js saves warning-signs.top as [{item, plan}]). Tests with the saved shape: the person's top 3 reach the prefill and the plans. No other change.
+
+## Ruling 2026-11-08 02:24 IST (CORE 10 6c9dfc8f): spiralThoughts pairs gain own (V3-19)
+
+- `spiralThoughts(view) -> [{thought, reply, own}]`: own is true when the reply is the person's own words, false when filled from catalogs.slipSelfTalk; thought and reply unchanged. Consumer: ui-sos.js spiralPairs (unchanged).

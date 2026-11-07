@@ -4,9 +4,14 @@ LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f3
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs BUILDING f69bc68   # 2026-11-08 02:08 IST: 9931e10 MERGED (25269353, trunk f69bc68a; tag offline-v1.1). Fast-forwarded to f69bc68a 02:03 (no merge commit). U-35 slice wf_3e4ac20d-750 (args tracks/CORE/args/args_td_slice.json by gen4.py; wf_sim OK; 8.9 GB free at 02:07); then U-36b, then the hooks round (R-S-6, R-S-11, R-S-16, the two SOS reassess hooks) and C-TM-1
+LANE: tests-docs BUILDING dfc2703   # 2026-11-08 02:24 IST: U-35 wf_3e4ac20d-750: images committed dfc2703 (74 PNG); screens.mjs, launch.mjs, package.json not yet; memory 1.9 GB by hand (pharma tsc): pauses at the next commit, before the checker (R-C-45); then U-36b, the hooks round
 SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01, R-H-37); the CORE LOWs by name after U-35, one lane at a time, asked then
-UPDATED: 2026-11-08 02:15 IST
+UPDATED: 2026-11-08 02:24 IST
+
+# 2026-11-08 02:24 IST · V3-IMPROVEMENTS.md read; the CORE rounds re-staged under V3 ids; memory under the floor
+
+- V3-IMPROVEMENTS.md (the owner's review, 02:21): CORE rows V3-03..V3-08, V3-11 (tier 1) and V3-16..V3-20, V3-22, V3-25..V3-27 (tier 2). gen5.py re-staged by V3 id (wf_sim OK x4). V3-19 re-ruled additive (own: boolean) in contracts/actions-sos.md and engine.md.
+- Memory 1.9 GB by hand at 02:23 (the pharma program's tsc runs); tests-docs pauses at its next commit, before its checker (R-C-45).
 
 # 2026-11-08 02:15 IST · R-O-5 read (V3); the CORE fix rounds staged
 
