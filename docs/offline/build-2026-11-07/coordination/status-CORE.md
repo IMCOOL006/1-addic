@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 01:42 IST: CORE 11310a7c (context over 250k: hand-over planned): tests-docs FIX-TOURMARK on R-H-36 (slot 5 granted 01:39): build/tests-docs fast-forwarded d91164d -> e8da3fbd; browser.test.mjs markOnboarded marks the tour skipped through Actions.tutorial.done, the two tour flows opt out (tour: true); the scoped browser gate running; then READY
+STATE: BUILDING   # 2026-11-08 01:46 IST: CORE 11310a7c (context over 250k: hand-over planned): tests-docs FIX-TOURMARK committed 9931e10 (browser gate on the worktree: 16 pass, 0 fail, the same 3 hook skips as the quiet run; the four tour and artifact names pass by name); the independent check wf_982bf179-aa7 running; then READY
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs BUILDING e8da3fb   # 2026-11-08 01:42 IST: FIX-TOURMARK (test-only, browser.test.mjs) for the quiet window's one red by name, 'lesson to artifact shown in SOS' (R-H-36); fast-forwarded to BASE e8da3fbd (no merge commit); uncommitted until the scoped browser gate reads green by name; U-35, U-36b and the hooks round after the tag
+LANE: tests-docs CHECKING 9931e10   # 2026-11-08 01:46 IST: FIX-TOURMARK (test-only, browser.test.mjs; on BASE e8da3fbd by fast-forward): markOnboarded marks the tour skipped through Actions.tutorial.done, the two tour flows opt out (tour: true), the SOS artifact flow rates the craving first; browser 16/0/3 (browser-20261108-014419.log); the check wf_982bf179-aa7 running; U-35, U-36b and the hooks round after the tag
 SLOTS-ASKED: 1   # tests-docs slot 5 (FIX-TOURMARK, granted 01:39)
-UPDATED: 2026-11-08 01:42 IST
+UPDATED: 2026-11-08 01:46 IST
 
 # 2026-11-08 01:33 IST · actions-sos merged; every CORE lane merged; QUIET
 
