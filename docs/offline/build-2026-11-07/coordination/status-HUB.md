@@ -1,8 +1,8 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 18:58 IST: HUB 6 (42f60331, from the launcher) resumed from HUB 5's 'Resume here' (18:52): twenty-four merges stand, BASE 49f1c1d4, _int detached at the trunk tip, no lock held, trunk = origin after this push. Live: CORE 60f08c84 (actions-sos FIX-R6 wf_45f788de-56d, the tag condition, three commits on the branch so far: Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); SCREENS d6887185 idle (game-tutorials re-check waits for a 7.0 GB row). Free memory 2.1-2.3 GB at 18:55-18:56: under the floor; FIX-R6 runs on as CORE's R-C-32 default (the only live run, tier 1); nothing else starts. Next merges as they appear: actions-sos READY (655516dc, flagged), learn FIX-RS9, engine FIX-RS9E, game-tutorials READY (9f3026c6); then the full gates and the tag offline-v1.1
+STATE: HANDOVER   # 2026-11-07 19:11 IST: PARKED on the owner's word (relayed 19:09 by the first HUB 26196777: the usage limit ends within minutes; the launcher loop stopped by the first HUB; no fresh chat starts until the owner runs --start). Nothing of the HUB's runs; no merge in flight: the learn READY 75eb8e5 merge was prepared (merged clean, one file) but not past guards, so it was aborted 19:10 per the order; _int detached at the trunk tip, clean. The next HUB does first: merge learn READY 75eb8e5 (655516dc; test-only), then actions-sos READY when its safety re-check passes (655516dc; flagged; RS-SAMPLE is the tag condition), engine FIX-RS9E READY (655516dc), game-tutorials READY (9f3026c6); then the full gates on the trunk and the tag offline-v1.1. CORE 60f08c84 had two runs live at 19:08 (actions-sos FIX-R6 re-check, engine FIX-RS9E): if its session is gone when the program resumes, those runs died with it: relaunch from the branches' last commits
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 49f1c1d4 (the trunk after the actions READY merge, 2026-11-07 18:50; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 0 new starts while the rows stay under 7.0 GB (18:56: 2.3 GB free with FIX-R6 the one live run); FIX-R6 runs on (tier 1, the tag condition: CORE's R-C-32 default accepted); then, one per 7.0 GB row, in this order: learn FIX-RS9, engine FIX-RS9E, the game-tutorials re-check; under 4.0 GB no tier 2 run resumes
+SLOTS-ALLOWED: 0 (parked 19:11 on the owner's word; when the program resumes: one start per 7.0 GB row, tier 1 first: actions-sos FIX-R6 re-check and engine FIX-RS9E if they died, then the game-tutorials re-check; under 4.0 GB the newest run pauses)
 TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 granted again 2026-11-07 18:28 for FIX-RS9E by name (R-S-9: recoveryPlanPrefill and ownWarningPlans read x.item; CORE's wrapper ready), test-only or one-line; READY with the tip; the lane was complete at 57153d3
@@ -14,8 +14,8 @@ SLOTS: today-track slot=5 free from 2026-11-07 17:01: READY 3f3001e merged (9f30
 SLOTS: workbook-settings slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged (be0f806d), FIX-SAMPLE READY 0e76065 merged 18:13 (42d2467d); the lane is complete; fixes by name only (C1 eraseSample round trip after actions-sos)
 SLOTS: actions slot=7 free from 2026-11-07 18:50: READY 0977edd merged (49f1c1d4; U-22..U-25 in the trunk); the lane is complete; fixes by name only
 SLOTS: game-tutorials slot=8 granted 2026-11-07 16:33 (SCREENS, tier 2): READY-SLICE 5af6665 (U-27 guidance engine) merged 17:57 (89976d80); PAUSED by SCREENS at 17:53 (3.3 GB row); resumes U-26, U-28 on a 7.0 GB row; its real cut base is 9f3026c6 (the LANE line said 9b319256: use 9f3026c6 for its merges)
-MERGING: none
-MERGE-QUEUE: (empty; next, as they appear: game-tutorials READY (real cut base 9f3026c6; check git merge-base), actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33; lifts the actions.test.mjs name), learn FIX-RS9 READY (655516dc; lifts two names), engine FIX-RS9E READY (655516dc))
+MERGING: none (learn 75eb8e5 prepared 19:09 and aborted 19:10 on the park order, before guards)
+MERGE-QUEUE: learn READY 75eb8e5 (655516dc; test-only, learn.test.mjs; lifts two baselined names; merged clean on the dry prepare), then as they appear: actions-sos READY (655516dc; flagged; RS-SAMPLE, RS33; lifts the actions.test.mjs name), engine FIX-RS9E READY (655516dc), game-tutorials READY (real cut base 9f3026c6)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
@@ -42,7 +42,15 @@ MERGED: core READY 8e80951 (FIX-V11: high contrast on every render, custom-field
 MERGED: actions READY 0977edd (U-23 Battle Plans, U-24 Weekly Review, U-25 quests, Prediction Lab, to-dos, practices player ui-practices.js new; C1; actions-ui.test.mjs 32 tests) -> merge 49f1c1d4, trunk 49f1c1d4, pushed 18:50 (build GREEN; test GREEN 32/32; validate GREEN; guards GREEN with no baselined name left (bp-new, bp-form, review-start lifted); territory 0 errors over 710502f..0977edd; merged clean, 4 files; the lane is complete)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 18:58 IST
+UPDATED: 2026-11-07 19:11 IST
+
+# 2026-11-07 19:11 · PARKED on the owner's word: the usage limit ends; hand-off
+
+- 19:09: the first HUB (26196777, the owner's interactive chat) relayed the owner's order: the usage limit ends within minutes; park the program: finish a merge only if past guards, else abort; hand over; commit and push everything; the launcher loop is stopped by the first HUB (--stop); no restart by this HUB.
+- The learn READY 75eb8e5 merge (FIX-RS9, test-only) was at prepare (MERGED-CLEAN, one file, no conflict) and not past guards: aborted 19:10 (`merge_lane.py abort learn`: _int detached at the trunk tip, clean; the empty int/learn-* branches deleted). It is first in the queue when the program resumes; its dry prepare said clean.
+- Live at 19:08 under CORE 60f08c84: actions-sos FIX-R6 wf_45f788de-56d (all five ids committed to 87030e3; the safety re-check running) and engine FIX-RS9E wf_5b1d1a90-01f (launched 19:07). Their fate at the limit is CORE's to record; the next HUB checks `claude agents` and the branches' last commits before anything else.
+- Memory 8.8 GB free at 19:01 (the owner closed other programs): the two CORE runs started on 7.0 GB rows as the SLOTS-ALLOWED order said.
+- Pushed: the trunk and every lane branch (backup) at the hand-off commit.
 
 # 2026-11-07 18:58 · HUB 6 resumes; memory under the floor; FIX-R6 the one live run
 
