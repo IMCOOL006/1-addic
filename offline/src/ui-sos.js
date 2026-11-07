@@ -39,7 +39,7 @@
     feelRate: { title: 'How strong is the feeling now?', line: 'Optional. Tap 0 to 10, or skip.' },
     motivation: { title: 'How is your motivation?', line: 'Optional. 0 is none, 10 is strong.' },
     feelDone: { title: 'You stayed with it.', line: 'That takes skill. It gets easier.' },
-    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.' },
+    slipStart: { title: 'A slip is not a failure.', line: 'Everything you earned stays. You opened this, and that counts.', log: 'Log it and go on', read: 'Just reading' },
     slipSafe: { title: 'Are you safe right now?', line: 'If not, get help now.' },
     reach: { title: 'Reach out', line: 'One call or text. You do not have to explain it all.' },
     slipNext: { title: 'Within a day', line: 'Look back at what happened, kindly. It helps next time.' },
@@ -270,6 +270,9 @@
     }).filter((p) => p.thought.trim());
   }
 
+  // RS4: which first choice of the slip flow writes the slip. Only 'log' does, and never in a preview.
+  function slipLogs(choice, preview) { return choice === 'log' && preview !== true; }
+
   function activeContacts(view) {
     const rows = safe(() => view.list('contacts'), []) || [];
     return rows.filter((c) => c && c.active !== false && c.phone && telHref(c.phone));
@@ -298,7 +301,7 @@
   const H = {
     COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
     telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
-    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, activeContacts, planFor, planSections, clock, remaining,
+    reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, activeContacts, planFor, planSections, clock, remaining,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = H;
@@ -650,10 +653,13 @@
     const write = (fn) => (mode.preview ? Promise.resolve(toast(COPY.previewBanner, 'info')) : save(fn));
 
     function start() {
-      show(screen(COPY.slipStart.title, COPY.slipStart.line, btn('Continue', () => {
-        if (!logged && !mode.preview && A && typeof A.logSlip === 'function') { logged = true; save(() => A.logSlip({})); }
+      const go = (choice) => () => {
+        if (!logged && slipLogs(choice, mode.preview) && A && typeof A.logSlip === 'function') { logged = true; save(() => A.logSlip({})); }
         safety();
-      }, { primary: true, testid: 'sos-slip-continue' })));
+      };
+      show(screen(COPY.slipStart.title, COPY.slipStart.line,
+        btn(COPY.slipStart.log, go('log'), { primary: true, testid: 'sos-slip-continue' }),
+        btn(COPY.slipStart.read, go('read'), { ghost: true, testid: 'sos-slip-reading' })));
     }
 
     function safety() {

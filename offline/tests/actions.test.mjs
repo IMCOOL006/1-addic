@@ -1283,4 +1283,21 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     const labels = d.UI.sosUrgentView({}, {}).querySelectorAll('summary').map((s) => s.textContent.trim());
     assert.ok(labels.includes(H.COPY.withdrawal), labels.join(' | '));
   });
+
+  test('RS4: only "Log it and go on" writes the slip; "Just reading" goes on and logs nothing', async () => {
+    assert.equal(H.slipLogs('log', false), true);
+    assert.equal(H.slipLogs('read', false), false);
+    assert.equal(H.slipLogs('log', true), false, 'a preview writes nothing');
+    const d = sosDom();
+    let root = d.open(['sos', 'slip']);
+    d.tap(root, 'Just reading');
+    await d.settle();
+    assert.ok(d.byId(root, 'sos-slip-safe'), 'the flow goes on');
+    assert.equal(list('events').length, 0, 'nothing is written');
+    root = d.open(['sos', 'slip']);
+    assert.equal(d.byId(root, 'sos-slip-continue').textContent.trim(), 'Log it and go on', 'the button says what it does');
+    d.tapId(root, 'sos-slip-continue');
+    await d.settle();
+    assert.equal(events('SlipLogged').length, 1);
+  });
 });
