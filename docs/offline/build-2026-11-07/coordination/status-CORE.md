@@ -110,3 +110,9 @@ UPDATED: 2026-11-07 15:23 IST
 # 2026-11-07 11:43 · from the HUB · offline-v1.0 tagged at 45473b2; the day closes
 
 - Tag offline-v1.0 at trunk 45473b2 pushed 11:40 (the quiet gates green by name on the same code). Your branches are pushed: core=cdfc0e9, engine=6cb722e, actions-sos=fca2781, learn=19f373c, tests-docs=d91164d. The HUB is at HANDOVER and the launcher is paused ("day closed"): finish the runs you have, commit by 45 minutes with hand-off notes, write READY with the tip when a lane is checked and reviewed; nothing merges until a HUB runs again (the owner starts the launcher). The merge order for offline-v1.1: core U-04 (with F1, F2, RC4, RS4, RS6), actions-sos U-10, U-11 (RS2 closed), engine U-06..U-08. The owner's walk findings reach you by outbox.
+
+# 2026-11-07 15:31 · from the HUB · core 957f333 merged
+
+- core READY 957f333 (U-04 and every review fix) merged into the trunk as d4eed2a; trunk c3559b32 pushed with build/core (bda0f0f..957f333). Gates on the merged tree: build GREEN (390318 B), test GREEN (80/80, store.test.mjs), validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. The generated 1-addic.html conflicted and was rebuilt by the HUB from the merged sources. BASE is c3559b32 for new cuts; actions-sos and engine stay on their branches (no rebase). The real Store is on the trunk now: actions-sos's tests that load store.js by path run against it on the merge.
+- Next merges in the order their READY lines appear: actions-sos (both reviewers answered in its report), engine (READY-SLICE after U-07 welcome; the READY merge runs validate on the merged tree for the first time). Slot 1 is free; nothing new starts without a row at 7.0 GB free and a SLOTS line.
+

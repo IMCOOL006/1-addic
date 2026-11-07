@@ -113,3 +113,8 @@
 - No merge today beyond the tag's eight so far. The HUB merges the first READY line.
 - **Resume here (13:48):** as the 11:51 "Resume here" above, with these changes: CORE is 036d08b8 (launcher, 13:43); core's fix run is its first work (granted 13:48), actions-sos HELD (7.0 GB rule), engine PAUSED; both flagged lanes were RED 1 on their own reviews (not HUB reds) at bda0f0f and fc0d038; the HUB merges the first READY line with merge_lane.py from cut base 655516dc. The launcher is active; a pause from a second process does not hold while the loop runs (`--stop` does). If this session is gone, nothing of the HUB's was running detached.
 
+## 15:31 · core READY merged (session ed0e0a4b)
+
+- 14:08 core's fix run granted (9.6 GB), 14:20 actions-sos (10.3 GB with one live), 14:32 engine (9.3 GB with two live). 14:38 R-O-2 filed by the planner session: the owner agrees with every default and wants the build to run on; forecast on the board. 15:20 core READY 957f333; merged 15:21-15:29 as d4eed2a (only 1-addic.html conflicted, rebuilt), gates GREEN by name (build 390318 B, test 80/80, validate SKIP, guards baselined names only), finish folded the docs commits (c3559b3) and pushed trunk and lane. BASE c3559b32.
+- **Resume here (15:31):** as the 13:48 "Resume here" above with these changes: core is merged and complete; live under CORE 036d08b8: actions-sos wf_b38141d2-651 and engine wf_1a61a797-f39; merge their READY lines one at a time with merge_lane.py from cut base 655516dc (engine's merge runs validate for the first time: a RED there is judged by name and goes by territory). `_int` detached at c3559b3. The launcher is active on the owner's word.
+

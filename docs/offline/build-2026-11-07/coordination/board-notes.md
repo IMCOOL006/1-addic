@@ -1,8 +1,8 @@
 ## For the owner
 
-STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); the lanes continue toward offline-v1.1 (13:48). In the tag: the build pipeline and shell, UI core, router and components, the engine's logic, the Actions layer, the exercise engine, lesson player, roadmap and glossary, the browser harness, the docs and the guide skeleton with its .docx; every gate green by name. On their branches, pushed: the encrypted Store (core, two MEDIUM review findings still open) and the SOS screens, lock screen and onboarding (actions-sos, one HIGH safety finding and seven more open). Both need one more fix run by name before they can be merged; a fresh CORE chat started at 13:43 to run them, core first.
+STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: the encrypted Store (core, every review fix included) merged at 15:29, nine merges on the trunk. On their branches, in their final rounds: the SOS screens, lock screen and onboarding (actions-sos, fixing one HIGH safety finding and seven more, then check and reviewers) and the engine's U-07, U-08 (validate and the npm test wiring). The build runs on the owner's word (R-O-2).
 NEEDS YOU: (1) The build is continuing on your word (R-O-2, 14:38: 'I agree with the defaults', and run on to the complete edition and the guide): the launcher stays running, three lanes are in their rounds. (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake while the rounds run; the pharma tag (about 15:30) is what frees the memory for the SCREENS chat.
-NEXT: the HUB merges core READY (U-04 plus every review fix) and actions-sos READY (U-10, U-11 plus every review fix) as their fix rounds end, then engine U-07, U-08 (validate runs for the first time on that merge), then the SCREENS track tier 1 once memory allows its chat, then tier 2 and the guide with screenshots.
+NEXT: the HUB merges actions-sos READY (U-10, U-11 plus every review fix) and engine READY (U-06..U-08; validate runs for the first time on that merge) as their rounds end, one at a time, each with its gates on the merged tree and the trunk pushed; then the SCREENS track tier 1 once memory allows its chat, then tier 2 and the guide with screenshots.
 FORECAST (from today's measured pace, written 14:45, corrected as rows and READY lines come in): core and actions-sos READY and merged about 16:30-17:00 if their fix rounds end without a new HIGH finding; engine U-07 and U-08 merged about 16:45; SCREENS tier 1 (content U-31a, today-track U-15 and U-16, workbook-settings U-19 and U-20a) merged and offline-v1.1 tagged tonight about 19:30-20:30 if the pharma tag frees memory for the SCREENS chat by about 16:00, else the morning of 8 Nov; tier 2 and the guide Part 3 with screenshots (U-35, U-36b, last by design) by the afternoon of 8 Nov if the lanes run through the night, else the evening of 8 Nov.
 
 ## The tag's list (FREEZE 10:55, written 10:51)
@@ -21,7 +21,8 @@ FORECAST (from today's measured pace, written 14:45, corrected as rows and READY
 - 09:55 tests-docs READY-SLICE 310780d (U-34, the browser harness) -> trunk 2da0caa4. build GREEN; test GREEN (harness.test.mjs); 19 named browser tests, 5 pass, the rest SKIP by name until their screens land.
 - 10:18 learn READY-SLICE a499dae (U-12, the exercise engine) -> 4618e43c, trunk 4618e43c. build GREEN 298714 B; test GREEN (learn.test.mjs).
 - 10:26 tests-docs READY d91164d (U-37 docs true, U-36a the guide skeleton and its .docx) -> f3775f1a, trunk f3775f1a. build GREEN; test GREEN; docs GREEN (the guide .docx builds reproducibly).
-- Queue: empty.
+- 15:29 core READY 957f333 (U-04 the encrypted Store, every review fix) -> d4eed2a, trunk c3559b32. build GREEN 390318 B; test GREEN 80/80 (store.test.mjs); guards GREEN by name. The first merge of offline-v1.1.
+- Queue: empty (actions-sos and engine READY lines next).
 
 ## Blockers and questions
 
