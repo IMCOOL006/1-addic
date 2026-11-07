@@ -3623,7 +3623,7 @@ const Engine = (() => {
 
   const XP_SETTINGS = new Set(['mindfulDailyCap', 'repeatFull', 'repeatHalf', 'onceOnly']);
   const DIMINISHING = new Set(['LogCreated', 'CheckinCompleted', 'SkillUsed', 'ActivityDone']);
-  const ONCE_FIELD = { LessonCompleted: 'lessonId', TutorialCompleted: 'id', CheckpointCompleted: 'moduleId', ExplorerCompleted: null };
+  const ONCE_FIELD = { LessonCompleted: 'lessonId', TutorialCompleted: 'id', CheckpointCompleted: 'moduleId', ExplorerCompleted: null, QuestLineStepDone: 'id' };
   const ARTIFACT_KINDS = new Set(['build', 'assess', 'plan']);
   const KNOWN_KINDS = new Set(['build', 'assess', 'plan', 'practice', 'reflect', 'tool']);
 
@@ -3666,6 +3666,10 @@ const Engine = (() => {
           const so = counts.get(k) || 0;
           got = Math.max(0, Math.min(base, cap - so));
           counts.set(k, so + got);
+        } else if (e.type === 'ObjectiveDone') {
+          const p = pl(e);
+          const k = `ObjectiveDone|${p.id == null ? '' : p.id}|${validDay(p.date) ? p.date : day}`;
+          if (!done.has(k)) { done.add(k); got = base; }
         } else if (once.has(e.type) || own(ONCE_FIELD, e.type)) {
           const k = `${e.type}|${onceKey(e)}`;
           if (!done.has(k)) { done.add(k); got = base; }
@@ -4915,10 +4919,285 @@ const Engine = (() => {
         if (NOT_VOICE_KEYS.has(last) || WHOLE_QUOTE_RE.test(str)) return;
         if (ADDICT_RE.test(str)) errors.push(`${path}: uses "addict" as a noun (say "a person with an addiction")`);
       }, new Set(), 0);
+      questProblems(c, errors);
     } catch (e) {
       errors.push('validateContent could not finish: ' + errText(e));
     }
     return errors;
+  }
+
+  /* ── quest-line, objectives, run (R-O-6, V-40) ───────────────────────────────────────────── */
+  /* Pure and never throws; sample rows count for nothing. Content.questLine and Content.objectives are read at
+     call time, so absent keys give the empty shapes. The daily draw is an FNV-1a hash of the date and the state
+     before that date: no randomness, and later events never change a past day. Nothing derived here decreases. */
+
+  const KNOWN_EVENTS = new Set(['LogCreated', 'CheckinCompleted', 'SkillUsed', 'SosCompleted', 'LessonCompleted', 'ModuleCompleted',
+    'CheckpointCompleted', 'ArtifactSaved', 'ExerciseDone', 'BattlePlanCreated', 'BattlePlanDebriefed', 'ActivityDone',
+    'MindfulMinute', 'WeeklyReviewCompleted', 'SlipLogged', 'SlipReviewed', 'ContactReached', 'ScriptUsed',
+    'TutorialCompleted', 'ExplorerCompleted', 'FeatureRevealed', 'MilestoneSeen', 'RecoveryPlanConfirmed', 'OnboardingCompleted',
+    'ObjectiveDone', 'QuestLineStepDone', 'FeatureUnlocked', 'ObjectiveSwapped']);
+  const PROTECTED_IDS = new Set(['help', 'lessons', 'learn', 'settings', 'export', 'data', 'backup', 'sos', 'urgent']);
+  const PROTECTED_TABS = new Set(['sos', 'settings', 'learn']);
+  /* A day shown up: any of these (never a slip, a milestone or a sober-day counter), the SOS drill, a real log. */
+  const SHOWN_UP = new Set(['LogCreated', 'CheckinCompleted', 'LessonCompleted', 'SkillUsed', 'ExerciseDone', 'ArtifactSaved',
+    'MindfulMinute', 'ActivityDone', 'BattlePlanCreated', 'BattlePlanDebriefed', 'WeeklyReviewCompleted', 'SosCompleted', 'ObjectiveDone']);
+  const nonEmpty = (x) => typeof x === 'string' && x.trim() !== '';
+  const validDay = (d) => typeof d === 'string' && DATE_RE.test(d) && fromUtc(utcMs(d)) === d;
+
+  /* SOS, help, lessons, Settings, export and the person's data are never gated, so never a reward. */
+  function isProtectedFeature(id, content) {
+    const c = isObj(content) ? content : C;
+    if (typeof id !== 'string' || !id) return false;
+    if (PROTECTED_IDS.has(id) || arr((c.reveal || {}).always).includes(id)) return true;
+    const f = isObj(c.features) && own(c.features, id) ? c.features[id] : null;
+    return !!(isObj(f) && PROTECTED_TABS.has(f.tab));
+  }
+  function whereOk(e, where) {
+    if (!isObj(where)) return true;
+    const p = pl(e);
+    return Object.keys(where).every((k) => p[k] === where[k]);
+  }
+  /* {have, need, met} for a condition {event, count, within?, where?} over normalised events. */
+  function metOver(cond, ev) {
+    const c = isObj(cond) ? cond : {};
+    const need = (Number.isInteger(c.count) && c.count >= 1) ? c.count : 1;
+    if (typeof c.event !== 'string' || !c.event) return { have: 0, need, met: false };
+    const buckets = new Map();
+    let total = 0;
+    for (const e of ev) {
+      if (e.type !== c.event || !whereOk(e, c.where)) continue;
+      total++;
+      if (c.within === 'day' || c.within === 'week') {
+        const k = c.within === 'day' ? dateStr(e.at) : weekStart(dateStr(e.at), 1);
+        buckets.set(k, (buckets.get(k) || 0) + 1);
+      }
+    }
+    const have = (c.within === 'day' || c.within === 'week') ? Math.max(0, ...buckets.values()) : total;
+    return { have: Math.min(have, need), need, met: have >= need };
+  }
+  function questSteps(c) {
+    const seen = new Set();
+    return arr(c.questLine).filter((s) => isObj(s) && nonEmpty(s.id) && !seen.has(s.id) && seen.add(s.id));
+  }
+  /* step id -> the at of its first QuestLineStepDone. */
+  function claimedSteps(ev) {
+    const m = new Map();
+    for (const e of ev) {
+      const id = pl(e).id;
+      if (e.type === 'QuestLineStepDone' && nonEmpty(id) && !m.has(id)) m.set(id, e.at);
+    }
+    return m;
+  }
+  /* Steps in order: claimed are done, the first unclaimed is current, later ones locked (a met locked step stays locked). */
+  function questLine(view, now) { // eslint-disable-line no-unused-vars -- now is in the contract's signature
+    const steps = questSteps(C);
+    if (!steps.length) return { steps: [], current: null, done: 0, total: 0 };
+    const ev = normEvents(view);
+    const claimed = claimedSteps(ev);
+    const out = [];
+    let current = null;
+    let done = 0;
+    for (const s of steps) {
+      const m = metOver(s.condition, ev);
+      const step = Object.assign({}, s, { state: 'locked', met: m.met, progress: { have: m.have, need: m.need }, claimable: false });
+      if (claimed.has(s.id)) { step.state = 'done'; step.doneAt = claimed.get(s.id); done++; }
+      else if (!current) { step.state = 'current'; step.claimable = m.met; current = step; }
+      out.push(step);
+    }
+    return { steps: out, current, done, total: out.length };
+  }
+  /* revealed + rewards of claimed steps + FeatureUnlocked features; protected ids are never added. */
+  function unlocked(view) {
+    const out = new Set(revealed(view));
+    const add = (f) => { if (nonEmpty(f) && !isProtectedFeature(f)) out.add(f); };
+    const ev = normEvents(view);
+    const claimed = claimedSteps(ev);
+    for (const s of questSteps(C)) if (claimed.has(s.id)) add(s.reward);
+    for (const e of ev) if (e.type === 'FeatureUnlocked') add(pl(e).feature);
+    return out;
+  }
+
+  /* The day an event counts for: an objective's own date when valid, else its local date. */
+  function eventDay(e) {
+    if (e.type === 'ObjectiveDone' || e.type === 'ObjectiveSwapped') { const d = pl(e).date; if (validDay(d)) return d; }
+    return dateStr(e.at);
+  }
+  /* A slip is never a day shown up: not its SlipLogged, not its 'slip' log row, not a LogCreated naming one. */
+  function shownUpOver(view, ev, today) {
+    const days = new Set();
+    for (const e of ev) {
+      if (e.type === 'LogCreated' && pl(e).type === 'slip') continue;
+      if (SHOWN_UP.has(e.type) || (e.type === 'TutorialCompleted' && pl(e).id === 'drill')) days.add(eventDay(e));
+    }
+    for (const l of logsOf(view)) if (l.type !== 'slip') days.add(dateStr(l.at));
+    return [...days].filter((d) => d && (!today || d <= today)).sort();
+  }
+  function shownUpDays(view, now) { return shownUpOver(view, normEvents(view), now == null ? '' : todayStr(now)); }
+
+  /* Days shown up in a row. One missed day per Monday-week is kept (bridged); a longer gap quietly starts a new run.
+     best and total never decrease; kept never shrinks (holding is today's open grace day, not yet kept). */
+  function run(view, now) {
+    const today = todayStr(now);
+    const days = today ? shownUpOver(view, normEvents(view), today) : [];
+    if (!days.length) return { current: 0, best: 0, total: 0, kept: [], cameBack: false, lastDay: null, holding: null };
+    const kept = [];
+    const keptWeeks = new Set();
+    let best = 0;
+    let len = 0;
+    let prev = null;
+    for (const d of days) {
+      if (prev === null) len = 1;
+      else {
+        const gap = daysBetween(prev, d);
+        const missed = addDays(prev, 1);
+        if (gap === 1) len++;
+        else if (gap === 2 && !keptWeeks.has(weekStart(missed, 1))) { kept.push(missed); keptWeeks.add(weekStart(missed, 1)); len++; }
+        else { best = Math.max(best, len); len = 1; }
+      }
+      prev = d;
+    }
+    const missedSince = daysBetween(prev, today) - 1;
+    const yesterday = addDays(today, -1);
+    let current = 0;
+    let holding = null;
+    if (missedSince <= 0) current = len;
+    else if (missedSince === 1 && !keptWeeks.has(weekStart(yesterday, 1))) { current = len; holding = yesterday; }
+    else best = Math.max(best, len);
+    best = Math.max(best, current);
+    const cameBack = prev === today && current === 1 && days.length > 1;
+    return { current, best, total: days.length, kept, cameBack, lastDay: prev, holding };
+  }
+
+  function fnv1a32(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function validDoneBy(d) {
+    return d === 'tap' || (isObj(d) && typeof d.event === 'string' && KNOWN_EVENTS.has(d.event) && d.event !== 'ObjectiveDone');
+  }
+  function objectivePool(c) {
+    const seen = new Set();
+    return arr(c.objectives).filter((o) => isObj(o) && nonEmpty(o.id) && validDoneBy(o.doneBy) && !seen.has(o.id) && seen.add(o.id));
+  }
+  /* Everything the draw and growth read, built once from the normalised events. */
+  function objCtx(view) {
+    const ev = normEvents(view);
+    const firstClaim = new Map();
+    const swaps = new Map();
+    const doneIds = new Map();
+    const byDay = new Map();
+    for (const e of ev) {
+      const p = pl(e);
+      if (e.type === 'QuestLineStepDone' && nonEmpty(p.id) && !firstClaim.has(p.id)) firstClaim.set(p.id, dateStr(e.at));
+      if (e.type === 'ObjectiveSwapped') { const d = eventDay(e); if (d && !swaps.has(d)) swaps.set(d, e); }
+      if (e.type === 'ObjectiveDone' && nonEmpty(p.id)) {
+        const d = eventDay(e);
+        if (d) { if (!doneIds.has(d)) doneIds.set(d, new Set()); doneIds.get(d).add(p.id); }
+      }
+      const d0 = dateStr(e.at);
+      if (!byDay.has(d0)) byDay.set(d0, []);
+      byDay.get(d0).push(e);
+    }
+    return { days: shownUpOver(view, ev, ''), claimDates: [...firstClaim.values()].sort(), swaps, doneIds, byDay };
+  }
+  const countBefore = (sorted, d) => sorted.filter((x) => x < d).length;
+  function objDone(o, d, ctx) {
+    if ((ctx.doneIds.get(d) || new Set()).has(o.id)) return true;
+    return isObj(o.doneBy) && (ctx.byDay.get(d) || []).some((e) => e.type === o.doneBy.event && whereOk(e, o.doneBy.where));
+  }
+  /* Three a day: the first three of the pool ordered by hash(date | state before the date | id). One swap a day
+     (the first ObjectiveSwapped of the date) puts swapTo, the fourth in that order, in place of `from`. */
+  function drawFor(d, ctx, pool) {
+    const key = `${countBefore(ctx.days, d)}|${countBefore(ctx.claimDates, d)}`;
+    const ordered = pool.map((o) => ({ o, h: fnv1a32(`${d}|${key}|${o.id}`) }))
+      .sort((a, b) => (a.h - b.h) || cmpStr(a.o.id, b.o.id)).map((x) => x.o);
+    const items = ordered.slice(0, 3);
+    const sw = ctx.swaps.get(d) || null;
+    if (sw) {
+      const p = pl(sw);
+      const i = items.findIndex((o) => o.id === p.from);
+      const to = ordered.find((o) => o.id === p.to);
+      if (i >= 0 && to && !items.some((o) => o.id === to.id)) items[i] = to;
+    }
+    const swapTo = (!sw && ordered[3]) ? ordered[3].id : null;
+    return {
+      swapped: !!sw,
+      items: items.map((o) => { const done = objDone(o, d, ctx); return Object.assign({}, o, { done, swappable: !done && swapTo !== null, swapTo }); }),
+    };
+  }
+  /* Distinct dates with an objective done: ObjectiveDone dates, plus days whose own draw had an event-done match. */
+  function growthOver(ctx, pool, upTo) {
+    const days = new Set();
+    for (const d of ctx.doneIds.keys()) if (!upTo || d <= upTo) days.add(d);
+    const types = new Set(pool.filter((o) => isObj(o.doneBy)).map((o) => o.doneBy.event));
+    for (const [d, list] of ctx.byDay) {
+      if (!d || days.has(d) || (upTo && d > upTo) || !list.some((e) => types.has(e.type))) continue;
+      if (drawFor(d, ctx, pool).items.some((it) => it.done)) days.add(d);
+    }
+    return days.size;
+  }
+  function growth(view, now) {
+    const pool = objectivePool(C);
+    if (!pool.length) return 0;
+    return growthOver(objCtx(view), pool, now == null ? '' : todayStr(now));
+  }
+  function dailyObjectives(view, now) {
+    const date = todayStr(now);
+    const pool = objectivePool(C);
+    if (!pool.length || !date) return { date, items: [], growth: 0, swapped: false };
+    const ctx = objCtx(view);
+    const r = drawFor(date, ctx, pool);
+    return { date, items: r.items, growth: growthOver(ctx, pool, date), swapped: r.swapped };
+  }
+
+  /* validateContent's checks for Content.questLine and Content.objectives (each skipped when the key is absent). */
+  function questProblems(c, errors) {
+    if (own(c, 'questLine')) {
+      const q = c.questLine;
+      if (!Array.isArray(q)) errors.push('questLine: is not a list');
+      else {
+        if (q.length < 8 || q.length > 12) errors.push(`questLine: has ${q.length} steps (8 to 12)`);
+        const ids = new Set();
+        q.forEach((s, i) => {
+          if (!isObj(s)) { errors.push(`questLine step ${i}: is not an object`); return; }
+          const name = `questLine step ${nonEmpty(s.id) ? s.id : i}`;
+          if (!nonEmpty(s.id)) errors.push(`${name}: id is missing`);
+          else if (ids.has(s.id)) errors.push(`${name}: id is used twice`);
+          else ids.add(s.id);
+          for (const k of ['title', 'line', 'opened']) if (!nonEmpty(s[k])) errors.push(`${name}: ${k} is empty`);
+          const cond = s.condition;
+          if (!isObj(cond)) errors.push(`${name}: condition is missing`);
+          else {
+            if (!KNOWN_EVENTS.has(cond.event)) errors.push(`${name}: condition.event ${cond.event} is not a known event`);
+            if (!Number.isInteger(cond.count) || cond.count < 1) errors.push(`${name}: condition.count is not a whole number of 1 or more`);
+            if (cond.within !== undefined && cond.within !== 'day' && cond.within !== 'week') errors.push(`${name}: condition.within is not day or week`);
+            if (cond.where !== undefined && !isObj(cond.where)) errors.push(`${name}: condition.where is not an object`);
+          }
+          if (!nonEmpty(s.reward)) errors.push(`${name}: reward is missing`);
+          else if (isProtectedFeature(s.reward, c)) errors.push(`${name}: reward ${s.reward} is a protected feature`);
+          else if (!isObj(c.features) || !own(c.features, s.reward)) errors.push(`${name}: reward ${s.reward} is not in Content.features`);
+        });
+      }
+    }
+    if (own(c, 'objectives')) {
+      const o = c.objectives;
+      if (!Array.isArray(o)) errors.push('objectives: is not a list');
+      else {
+        if (o.length < 6) errors.push(`objectives: has ${o.length} (6 or more)`);
+        const ids = new Set();
+        o.forEach((x, i) => {
+          if (!isObj(x)) { errors.push(`objective ${i}: is not an object`); return; }
+          const name = `objective ${nonEmpty(x.id) ? x.id : i}`;
+          if (!nonEmpty(x.id)) errors.push(`${name}: id is missing`);
+          else if (ids.has(x.id)) errors.push(`${name}: id is used twice`);
+          else ids.add(x.id);
+          if (!nonEmpty(x.title)) errors.push(`${name}: title is empty`);
+          if (!validDoneBy(x.doneBy)) errors.push(`${name}: doneBy is not 'tap' or a known event`);
+          if (!(nonEmpty(x.grows) || (Array.isArray(x.grows) && x.grows.length))) errors.push(`${name}: grows is empty`);
+        });
+      }
+    }
   }
 
   /* ── views ───────────────────────────────────────────────────────────────────────────────── */
@@ -4948,6 +5227,7 @@ const Engine = (() => {
     guideSequence, crisisKeywords, SOS_TOOLS, CRISIS: { clinicalReview: true, patterns: CRISIS_PATTERNS.slice() },
     exportBackup, validateBackup, migrateBackup, ics, weeklyRrule, AppError, validateContent, knownRoute,
     makeView, STORES,
+    questLine, unlocked, dailyObjectives, growth, run, isProtectedFeature, shownUpDays,
   };
 })();
 
