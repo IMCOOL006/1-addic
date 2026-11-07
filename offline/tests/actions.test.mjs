@@ -2395,5 +2395,54 @@ describe('review round 4 fixes (FIX-R4)', () => {
     assert.ok(card(plain) && card(plain).getAttribute('open') === null, 'Urgent help from the hub: the card stays closed');
     assert.equal(plain.querySelector('.sos-line').getAttribute('aria-live'), null, 'and nothing is announced over the page');
   });
+  // a craving session tapped through to No: its save comes at the end
+  const craving = (d, A) => {
+    const root = d.open(['sos', 'craving'], null, A);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-no']) d.tapId(root, id);
+    return root;
+  };
+  test('RS26: a save refused LOCKED after its notebook was erased or replaced is dropped, never retried or kept for it', async () => {
+    const stale = () => Object.assign(new Error('This changed in another tab, so nothing was saved here.'), { code: 'LOCKED' });
+    const told = (d, msg) => d.toasts.some((t) => t[0] === msg);
+    // another tab erased the PIN-protected notebook: this tab's store resyncs to no lock row, reads open, and refuses
+    await S().lock.set('2468');
+    let calls = 0;
+    const A = Object.assign({}, Actions, { sosSession: async (p) => { calls += 1; if (calls === 1) { await S().lock.remove('2468'); throw stale(); } return Actions.sosSession(p); } });
+    const d = sosDom();
+    craving(d, A);
+    await d.settle(); await d.settle();
+    assert.equal(calls, 1, 'the lock row went away: never tried again');
+    assert.equal(events('SosCompleted').length, 0, 'nothing written into the erased notebook');
+    assert.ok(told(d, H.COPY.notSaved) && !told(d, H.COPY.lockedKept), 'told it was not saved, never that it waits');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(calls, 1, 'nothing kept to write later');
+    // this tab's import (the C2 signal) came while the save was being refused
+    await S().resetAll();
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    const backup = S().exportJson();
+    let n2 = 0;
+    const B = Object.assign({}, Actions, { sosSession: async (p) => { n2 += 1; if (n2 === 1) { await Actions.importBackup(backup); throw stale(); } return Actions.sosSession(p); } });
+    const d2 = sosDom();
+    craving(d2, B);
+    await d2.settle(); await d2.settle();
+    assert.equal(n2, 1, 'replaced in the meantime: never tried again');
+    assert.equal(events('SosCompleted').length, 0, 'nothing written into the imported notebook');
+    // kept while locked, then the lock row went away (erased in another tab) before the next notify
+    await S().resetAll();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const d3 = sosDom();
+    craving(d3, Actions);
+    await d3.settle();
+    assert.ok(told(d3, H.COPY.lockedKept), 'kept for the unlock');
+    await S().lock.remove('2468');
+    await Actions.settings.patch({ theme: 'light' });
+    await d3.settle();
+    assert.equal(events('SosCompleted').length, 0, 'a kept save never moves into another notebook');
+    craving(sosDom(), Actions);
+    await d3.settle();
+    assert.equal(events('SosCompleted').length, 1, 'a save on the notebook as it is goes in');
+  });
   // -- FIX-R4 tests end --
 });

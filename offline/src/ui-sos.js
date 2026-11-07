@@ -421,31 +421,48 @@
   const waiting = [];
   let flushing = false;
   let listening = false;
+  // RS26: the notebook a save was made in: the C2 signals seen so far, and whether a lock row is stored. Another
+  // tab's erase, Forgot PIN or import takes the lock row away (this tab's store resyncs and reads open); this tab's
+  // reset or import is the C2 signal. A save is never written into another notebook: a changed mark drops it.
+  let era = 0;
+  const markNow = () => era + ':' + safe(() => !!Store.status().hasLock, false);
+  const marks = new Map(); // a kept save: the mark of its notebook
   async function flushWaiting() {
     if (flushing || !waiting.length || isLockedNow()) return;
     flushing = true;
     try {
       while (waiting.length && !isLockedNow()) {
-        try { await waiting[0](); } catch (err) { if (err && err.code === 'LOCKED') break; }
+        const fn = waiting[0];
+        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook changed is dropped, never written into this one
+          try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; }
+        }
         waiting.shift();
+        marks.delete(fn);
       }
     } finally { flushing = false; }
   }
   // C2: a kept save belongs to the notebook it was made in. A reset (Forgot PIN, Erase) or an import drops it.
   const DROP = new Set(['resetAll', 'replaceAll']);
-  function keepForUnlock(fn) {
-    waiting.push(fn);
+  function listen() {
     const S = glob('Store');
-    if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe((e) => { if (e && DROP.has(e.label)) waiting.length = 0; flushWaiting(); }), null); }
+    if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe((e) => { if (e && DROP.has(e.label)) { era += 1; waiting.length = 0; marks.clear(); } flushWaiting(); }), null); }
+  }
+  function keepForUnlock(fn, mark) {
+    waiting.push(fn);
+    marks.set(fn, mark);
+    listen();
   }
   async function save(fn) {
+    listen(); // RS26: the C2 signal counts from before the first try
+    const mark = markNow();
+    const moved = () => markNow() !== mark; // RS26: erased, reset or replaced since this save began
     try { return await fn(); } catch (first) {
       let err = first;
-      if (err && err.code === 'LOCKED' && !isLockedNow()) { // RS22: another tab changed the lock and this one reads open: once more, now
+      if (err && err.code === 'LOCKED' && !isLockedNow() && !moved()) { // RS22: another tab changed the lock and this one reads open: once more, now
         try { return await fn(); } catch (again) { err = again; }
       }
-      if (err && err.code === 'LOCKED') { keepForUnlock(fn); toast(COPY.lockedKept, 'info'); return null; }
-      toast(COPY.notSaved, 'warn');
+      if (err && err.code === 'LOCKED' && !moved()) { keepForUnlock(fn, mark); toast(COPY.lockedKept, 'info'); return null; }
+      toast(COPY.notSaved, 'warn'); // RS26: refused, or its notebook changed: dropped, never retried or kept
       return null;
     }
   }
