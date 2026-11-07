@@ -691,3 +691,17 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 .prc-page select, .prc-page textarea { min-height: 44px; }
 .prc-done h2:focus { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
 /* -- end actions -- */
+/* -- today-track -- */
+/* V-01a the status page, Your Harbor (#/status) */
+.st-head h1 { margin: 0; }
+.st-nav { flex-wrap: wrap; gap: var(--space-2); }
+.st-scene .hb-place { cursor: pointer; }
+.st-places { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.st-place { width: 100%; min-height: 44px; justify-content: flex-start; text-align: left; }
+.st-page a.btn { min-height: 44px; }
+.st-place:focus-visible, .st-page a:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.st-more { padding: var(--space-2) 0; }
+.st-sheet-title { font-weight: 600; margin: 0; }
+.st-skills { margin: 0; padding-left: 1.2rem; }
+.st-skills > li { margin-bottom: var(--space-1); }
+/* -- end today-track -- */
