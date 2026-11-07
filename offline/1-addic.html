@@ -2340,9 +2340,24 @@ const UI = (function () {
       const el = isNode ? made : (made && made.el) || h('div');
       get = isNode ? () => made.value : () => (made && typeof made.get === 'function' ? made.get() : undefined);
       set = isNode ? (v) => { made.value = v; } : (v) => { if (made && typeof made.set === 'function') made.set(v); };
-      // The custom node carries the mark and its first control takes the focus, as a chips group does (RC12).
-      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
-        { focus: () => { const c = firstFocusable(el); if (c && c.focus) c.focus(); } }, el);
+      // The custom node carries the mark and its first enabled, visible control takes the focus, as a chips group does;
+      // with no such control the node itself does. The control that takes the focus is marked too and is described by
+      // the error line, and the mark moves with it (RC12).
+      const target = () => firstFocusable(el) || el;
+      let marked = null;
+      const mark = (on) => {
+        if (marked) { marked.removeAttribute('aria-invalid'); describedBy(marked, errId, false); }
+        marked = on ? target() : null;
+        if (marked) { marked.setAttribute('aria-invalid', 'true'); describedBy(marked, errId, true); }
+      };
+      const done = finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
+        { focus: () => {
+          const c = target();
+          if (c === el && c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1'); // focusable, outside the tab order
+          if (c.focus) c.focus();
+        } }, el);
+      done.mark = mark;
+      return done;
     } else {
       const type = ['number', 'date', 'time'].includes(t) ? t : 'text';
       input = h('input', Object.assign({ type, min: f.min, max: f.max, step: f.step, inputmode: type === 'number' ? 'decimal' : null, autocomplete: f.autocomplete || 'off' }, common));
@@ -2368,6 +2383,13 @@ const UI = (function () {
     return null;
   }
 
+  // Adds or removes one id in a node's aria-describedby, keeping the node's own ids (RC12).
+  function describedBy(node, id, on) {
+    const ids = (node.getAttribute('aria-describedby') || '').split(/\s+/).filter((x) => x && x !== id);
+    if (on) ids.push(id);
+    if (ids.length) node.setAttribute('aria-describedby', ids.join(' ')); else node.removeAttribute('aria-describedby');
+  }
+
   function finish(f, lead, rest, get, set, err, focusEl, ctl) {
     const el = h('div', { class: 'field field-' + (f.type || 'text'), dataset: { name: f.name } }, lead, rest);
     if (f.value !== undefined && f.type !== 'slider' && f.type !== 'chips') set(f.value);
@@ -2389,6 +2411,7 @@ const UI = (function () {
       x.err.textContent = msg || '';
       x.err.hidden = !msg;
       x.el.classList.toggle('invalid', !!msg);
+      if (x.mark) x.mark(!!msg); // a custom field's focus target, first, so the node's own mark below stands (RC12)
       const ctl = x.ctl || x.el.querySelector('input, select, textarea'); // a chips group or a custom node carries the mark (RC12)
       if (ctl) { if (msg) ctl.setAttribute('aria-invalid', 'true'); else ctl.removeAttribute('aria-invalid'); }
     };

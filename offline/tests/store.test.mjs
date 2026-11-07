@@ -1021,6 +1021,78 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(box.getAttribute('aria-invalid'), null, 'no longer marked');
   });
 
+  test('RC12-V11: a custom field whose first button is disabled or hidden: the next one takes the focus, marked and described by the error line', () => {
+    for (const how of ['disabled', 'hidden']) {
+      setup();
+      findIn(globalThis.document);
+      const node = (tag, text) => { const e = globalThis.document.createElement(tag); if (text) e.textContent = text; return e; };
+      let picked = null;
+      let box = null;
+      let morning = null;
+      let evening = null;
+      const f = UI.form({ fields: [
+        { name: 'when', type: 'custom', label: 'When', required: true, render: () => {
+          box = node('div');
+          morning = node('button', 'Morning');
+          morning[how] = true;
+          evening = node('button', 'Evening');
+          evening.setAttribute('aria-describedby', 'own-hint');
+          box.appendChild(morning);
+          box.appendChild(evening);
+          return { el: box, get: () => picked, set: (v) => { picked = v; } };
+        } },
+      ] });
+      const field = f.el.children.find((e) => e.dataset.name === 'when');
+      const errId = field.all().find((e) => e.id && e.id.endsWith('-err')).id;
+      const said = (e) => (e.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, evening, how + ': the first enabled, visible button takes the focus');
+      assert.equal(evening.getAttribute('aria-invalid'), 'true', how + ': the focused control is marked');
+      assert.deepEqual(said(evening), ['own-hint', errId], how + ': and described by the error line, its own line kept');
+      assert.equal(box.getAttribute('aria-invalid'), 'true', how + ': the node is marked too');
+      assert.equal(morning.getAttribute('aria-invalid'), null, how + ': the skipped button is not');
+      morning[how] = false; // the first button comes back: the mark moves with the focus
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, morning);
+      assert.equal(morning.getAttribute('aria-invalid'), 'true');
+      assert.deepEqual(said(morning), [errId]);
+      assert.equal(evening.getAttribute('aria-invalid'), null, how + ': the old mark is cleared');
+      assert.deepEqual(said(evening), ['own-hint']);
+      f.set('when', 'evening');
+      assert.equal(f.validate(), true);
+      assert.equal(morning.getAttribute('aria-invalid'), null, how + ': valid: no mark');
+      assert.equal(morning.getAttribute('aria-describedby'), null, how + ': and no error line');
+      assert.equal(box.getAttribute('aria-invalid'), null);
+    }
+  });
+
+  test('RC12-V11: a custom field with no control inside: the node itself takes the focus, marked and described by the error line', () => {
+    setup();
+    findIn(globalThis.document);
+    let picked = null;
+    let box = null;
+    const f = UI.form({ fields: [
+      { name: 'mood', type: 'custom', label: 'Mood', required: true, render: () => {
+        box = globalThis.document.createElement('div');
+        const p = globalThis.document.createElement('p');
+        p.textContent = 'Nothing to press here.';
+        box.appendChild(p);
+        return { el: box, get: () => picked, set: (v) => { picked = v; } };
+      } },
+    ] });
+    const field = f.el.children.find((e) => e.dataset.name === 'mood');
+    const errId = field.all().find((e) => e.id && e.id.endsWith('-err')).id;
+    assert.equal(f.validate(), false);
+    assert.equal(document.activeElement, box, 'the node itself takes the focus');
+    assert.equal(box.getAttribute('tabindex'), '-1', 'it can take the focus, outside the tab order');
+    assert.equal(box.getAttribute('aria-invalid'), 'true');
+    assert.equal(box.getAttribute('aria-describedby'), errId, 'described by the error line');
+    f.set('mood', 'ok');
+    assert.equal(f.validate(), true);
+    assert.equal(box.getAttribute('aria-invalid'), null);
+    assert.equal(box.getAttribute('aria-describedby'), null);
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
