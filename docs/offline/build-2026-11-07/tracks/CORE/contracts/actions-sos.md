@@ -202,3 +202,5 @@ V-18: no public change. V-17b: waits for core V-17a: Store.status().lockId (stri
 
 - useSkill refusals: the argument not an object; skillId not an id (isId) or not in Content.skills; helpful not a boolean; the store's own refusal (locked, no store) passed through. A loaded sample is not a refusal (no verb refuses for one; RS-SAMPLE): the SkillUsed event is the person's own, unmarked. The drill records nothing (ui-tools.js isDrill, before the call). This replaces the sample clause of the 02:50 section.
 - V-SOS10: fixed in ui-sos.js ratingRow (the inline grid style, :440-444: the buttons keep '10' on one line at 390 px: nowrap and less inline padding); no styles.css edit; if unavoidable, a new `/* -- actions-sos -- */` section at the end of styles.css, never inside `/* -- actions -- */`.
+
+- 2026-11-08 03:14 IST: the HUB (HUB 9) confirms both R-C-48 rulings: a loaded sample is not a refusal for useSkill or V-41's verbs (the person's own events written as usual; sample rows skipped by the Engine and Actions; the drill records nothing); V-SOS10 in ui-sos.js's inline style, no styles.css section.
