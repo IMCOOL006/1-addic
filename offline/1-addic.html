@@ -512,6 +512,54 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 :root[data-contrast="high"] input, :root[data-contrast="high"] select, :root[data-contrast="high"] textarea { border-width: 2px; border-color: hsl(var(--text)); }
 :root[data-contrast="high"] a:not(.btn):not(.ws-tab) { text-decoration: underline; }
 :root[data-contrast="high"] :focus-visible { outline-width: 4px; }
+/* Reasons Card and Support Network (U-20a). */
+.wb-page { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.wb-page h1 { margin: 0; }
+.wb-card { display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-section-title { margin: 0; font-size: 1.05rem; }
+.wb-reasons, .wb-contacts { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-reasons li, .wb-contact p { overflow-wrap: anywhere; }
+.wb-contacts { list-style: none; padding-left: 0; }
+.wb-contact { display: flex; flex-direction: column; gap: 4px; padding: var(--space-2) 0; border-top: 1px solid hsl(var(--border)); }
+.wb-contact p { margin: 0; }
+.wb-contact-name { font-weight: 600; }
+.wb-contact-actions, .wb-actions, .wb-choices { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-page .btn, .wb-big .btn, .wb-contact-form .btn, .wb-choices .btn { min-height: 44px; }
+.wb-contact-form select, .wb-contact-form input { min-height: 44px; }
+.wb-hidden summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.wb-hidden summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-big { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; padding: var(--space-3) 0; }
+.wb-back { align-self: flex-start; }
+.wb-big-title { margin: 0; font-size: 2rem; line-height: 1.2; }
+.wb-big-list { margin: 0; padding-left: 1.5rem; display: flex; flex-direction: column; gap: var(--space-3); font-size: 1.5rem; line-height: 1.4; font-weight: 600; color: hsl(var(--text)); }
+.wb-big-list li { overflow-wrap: anywhere; }
+.wb-big-empty { font-size: 1.25rem; margin: 0; }
+.wb-big-call { align-self: stretch; justify-content: center; font-size: 1.15rem; min-height: 56px; }
+/* Workbook browser and artifacts (U-20b). */
+.wb-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-group > p { margin: 0; }
+.wb-art-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-2); }
+.wb-art-card { min-height: 44px; text-decoration: none; color: inherit; gap: 4px; }
+.wb-art-card:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-art-title { font-weight: 600; }
+.wb-art-blurb, .wb-art-status { font-size: 0.92rem; overflow-wrap: anywhere; }
+.wb-art-status { margin: 0; font-weight: 600; }
+.wb-lines { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.wb-lines dt { font-weight: 600; }
+.wb-lines dd { margin: 0 0 var(--space-2); overflow-wrap: anywhere; }
+.wb-history summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.wb-history summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-history-list { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-print h2 { font-size: 1.1rem; margin: 1rem 0 0.25rem; }
+/* My Recovery Plan (U-21). */
+.wb-plan-list { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-plan-item { display: flex; flex-direction: column; gap: 4px; }
+.wb-plan-input { min-height: 44px; width: 100%; min-width: 0; }
+.wb-plan-moves, .wb-plan-add { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-plan-add .wb-plan-input { flex: 1 1 12rem; }
+.wb-plan-confirm { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; cursor: pointer; font-weight: 600; }
+.wb-plan-confirm input { width: 24px; height: 24px; }
 /* -- end workbook-settings -- */
 </style>
 </head>
@@ -9724,6 +9772,665 @@ if (typeof module !== 'undefined' && module.exports) {
   for (const k of ExerciseUI.PURE) module.exports[k] = ExerciseUI[k];
 }
 </script>
+<script data-part="ui-workbook.js">
+/* 1-addic offline edition: the Workbook (lane workbook-settings; BUILD-PLAN 3.5, tracks/SCREENS/contracts/workbook-settings.md).
+   U-20a: the Reasons Card (#/workbook/reasons), its big view for hard moments (#/workbook/reasons?big=1, the page SOS
+   opens) with a lock-screen image drawn on a canvas on this device, and the Support Network (#/workbook/network):
+   people by role, kept on this device only and in the backup file the person saves. Contacts are hidden, never deleted;
+   "I reached out" writes through Actions.contacts.reached. No network call: a phone number becomes a tel: link only.
+   U-20b: the browser (#/workbook, four groups, the sensitive card behind a tap) and every artifact page: the latest
+   answer as text, Edit in workbook mode, read-only history, print, a practise link only when its page exists; an
+   artifact whose exercise is not in this version says what it will be (O7). #/workbook/plan is PlanUI (ui-plan.js).
+   Text goes in as text only (UI.h), never as HTML. Nothing here gates SOS. */
+const WorkbookUI = (function () {
+  'use strict';
+
+  /* Content, Engine, Store, Actions, UI and PlanUI are classic-script globals, not globalThis properties. */
+  const ns = (name) => {
+    try {
+      if (name === 'Store') return typeof Store !== 'undefined' ? Store : null;
+      if (name === 'Engine') return typeof Engine !== 'undefined' ? Engine : null;
+      if (name === 'Actions') return typeof Actions !== 'undefined' ? Actions : null;
+      if (name === 'Content') return typeof Content !== 'undefined' ? Content : null;
+      if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
+      if (name === 'PlanUI') return typeof PlanUI !== 'undefined' ? PlanUI : null;
+      if (name === 'ExerciseUI') return typeof ExerciseUI !== 'undefined' ? ExerciseUI : null;
+    } catch (e) { /* not loaded */ }
+    return null;
+  };
+  const safe = (fn, fallback) => { try { const v = fn(); return v === undefined ? fallback : v; } catch (e) { return fallback; } };
+  const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
+  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  /* ── words (original; grade 6-8, person-first) ───────────────────────────────────────────── */
+  const ROLES = [
+    { id: 'safetyNet', label: 'My safety net', hint: 'People I can call or text on a hard day.' },
+    { id: 'sponsor', label: 'Sponsor or mentor', hint: 'Someone further along who walks with me.' },
+    { id: 'therapist', label: 'Counsellor or doctor', hint: 'The people who care for my health.' },
+    { id: 'other', label: 'Other people who help', hint: 'Friends, family, a group, a neighbour.' },
+    { id: 'risky', label: 'People I am careful around', hint: 'Time with them makes using more likely for now. I keep a plan for them.' },
+  ];
+  const STRATEGIES = [
+    { id: 'avoid', label: 'Stay away for now' },
+    { id: 'limit', label: 'See them less' },
+    { id: 'setLimits', label: 'Set clear limits when we meet' },
+  ];
+  const REACH = [
+    { id: 'call', label: 'I called' },
+    { id: 'text', label: 'I sent a message' },
+    { id: 'meet', label: 'We met' },
+    { id: 'other', label: 'Another way' },
+  ];
+  const SECTIONS = [
+    { id: 'quick', label: 'My reasons' },
+    { id: 'drawbacks', label: 'What using costs me' },
+    { id: 'benefits', label: 'What changing gives me' },
+    { id: 'different', label: 'What would be different' },
+  ];
+  const PHONE_RE = /^[0-9+()\-.\s]{3,24}$/;
+  const TEXT = {
+    cardTitle: 'My Reasons Card',
+    bigTitle: 'Remember why',
+    discreetTitle: 'Notes',
+    networkTitle: 'My Support Network',
+    discreetNetwork: 'People',
+    stays: 'Stays on this device. It is in your backup file.',
+    cardEmpty: 'Your card is empty for now. Write a few reasons, and they show here and in SOS.',
+    exerciseLater: 'The exercise that fills this card comes in a later version. Until then, the lessons in Learn help you think it through.',
+    bigEmpty: 'No reasons on your card yet. You are still here, and that counts. Call someone, or open SOS.',
+    imageNote: 'The image is made on this device. Nothing is sent anywhere.',
+    noCanvas: 'This browser cannot make the image. You can take a screenshot of the big view instead.',
+    imageSaved: 'Image saved. Set it as your lock screen in your phone settings.',
+    locked: 'Your notebook is locked. Unlock it to see this page. SOS and urgent help still work.',
+    networkEmpty: 'No one here yet. Add one person you could call on a hard day.',
+    later: 'This part of the workbook comes in a later version.',
+    reached: (name) => 'Noted: you reached out to ' + name + '.',
+    hideMessage: 'They leave this list but stay in your notebook and your backup file. You can show them again below.',
+  };
+
+  /* ── pure helpers (exported for the tests) ───────────────────────────────────────────────── */
+
+  /* Greedy word wrap by characters; a word longer than the line is cut. Line breaks in the text are kept. */
+  function wrapLines(text, maxChars) {
+    const max = Math.max(1, Math.floor(Number(maxChars) || 1));
+    const out = [];
+    for (const para of String(text == null ? '' : text).split(/\r?\n/)) {
+      const words = para.split(/\s+/).filter(Boolean);
+      let line = '';
+      for (let w of words) {
+        while (w.length > max) {
+          if (line) { out.push(line); line = ''; }
+          out.push(w.slice(0, max)); w = w.slice(max);
+        }
+        if (!w) continue;
+        if (!line) line = w;
+        else if (line.length + 1 + w.length <= max) line += ' ' + w;
+        else { out.push(line); line = w; }
+      }
+      if (line) out.push(line);
+    }
+    return out;
+  }
+
+  const textList = (x) => (Array.isArray(x) ? x : []).filter((s) => typeof s === 'string' && s.trim()).map((s) => s.trim());
+
+  /* The card's four lists. Engine exports reasonsCardSections (engine.js:684, 1500), so the card reads the same
+     payload keys as SOS; an Engine without it gives the flat card as one list. */
+  function reasonsSections(view) {
+    const out = { quick: [], drawbacks: [], benefits: [], different: [] };
+    const E = ns('Engine');
+    if (!view || !E) return out;
+    const s = typeof E.reasonsCardSections === 'function' ? safe(() => E.reasonsCardSections(view), null) : null;
+    if (isObj(s)) { for (const k of Object.keys(out)) out[k] = textList(s[k]); return out; }
+    if (typeof E.reasonsCard === 'function') out.quick = textList(safe(() => E.reasonsCard(view), []));
+    return out;
+  }
+  /* Every reason once, in the card's order (as Engine.reasonsCard). */
+  function flatReasons(sections) {
+    const seen = new Set();
+    const out = [];
+    for (const sec of SECTIONS) {
+      for (const r of textList(sections && sections[sec.id])) {
+        const k = r.toLowerCase();
+        if (!seen.has(k)) { seen.add(k); out.push(r); }
+      }
+    }
+    return out;
+  }
+
+  /* A contact from the form's values, in the shape Actions.contacts.add takes. */
+  function contactPayload(v) {
+    const x = v || {};
+    const str = (s) => (typeof s === 'string' ? s.trim() : '');
+    const role = ROLES.some((r) => r.id === x.role) ? x.role : 'safetyNet';
+    const strategy = role === 'risky' && STRATEGIES.some((s) => s.id === x.strategy) ? x.strategy : null;
+    return { name: str(x.name), role, strategy, phone: str(x.phone), note: str(x.note) };
+  }
+  /* What is wrong with a payload, in plain words, or ''. Same limits as Actions (actions.js:489-503). */
+  function contactError(p) {
+    if (!p || !p.name) return 'Add a name, or a nickname only you understand.';
+    if (p.name.length > 80) return 'Keep the name under 80 characters.';
+    if (p.phone && !PHONE_RE.test(p.phone)) return 'That phone number does not look right. Use digits, spaces and + ( ) - only.';
+    if (p.note && p.note.length > 300) return 'Keep the note under 300 characters.';
+    return '';
+  }
+  const byName = (a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'en', { sensitivity: 'base' });
+  /* Active contacts by role, in the ROLES order; empty roles are left out. */
+  function groupContacts(list) {
+    const rows = (Array.isArray(list) ? list : []).filter((c) => c && c.active !== false && typeof c.id === 'string');
+    return ROLES.map((r) => ({ role: r.id, label: r.label, hint: r.hint, items: rows.filter((c) => (ROLES.some((x) => x.id === c.role) ? c.role : 'other') === r.id).sort(byName) }))
+      .filter((g) => g.items.length);
+  }
+  function hiddenContacts(list) {
+    return (Array.isArray(list) ? list : []).filter((c) => c && c.active === false && typeof c.id === 'string').sort(byName);
+  }
+  const telHref = (phone) => {
+    const d = String(phone || '').replace(/[^0-9+]/g, '');
+    return d.length >= 3 ? 'tel:' + d : null;
+  };
+  const labelOf = (list, id) => { const x = list.find((r) => r.id === id); return x ? x.label : ''; };
+
+  /* An exercise the exercise page can open (as ui-exercise.js exerciseFor reads Content.exercises). */
+  function exerciseKnown(id) {
+    const C = ns('Content');
+    const ex = C && C.exercises;
+    if (Array.isArray(ex)) return ex.some((x) => isObj(x) && x.id === id);
+    return isObj(ex) && own(ex, id) && isObj(ex[id]);
+  }
+
+  /* ── small DOM helpers ───────────────────────────────────────────────────────────────────── */
+  const h = (...a) => ns('UI').h(...a);
+  let uid = 0;
+  const nextId = (p) => 'wb-' + p + '-' + (++uid);
+  const toast = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+  const errText = (e) => (e && e.code === 'bad-contact' && e.message ? e.message : 'That could not be saved on this device. Please try again.');
+  const discreetOf = (c) => !!(c && c.settings && c.settings.discreet);
+  const isLocked = () => { const S = ns('Store'); return !!safe(() => S && typeof S.status === 'function' && S.status().locked, false); };
+  const viewOf = (c) => (c && c.view) || safe(() => ns('Store').view, null);
+
+  function lockedPage() {
+    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-locked' },
+      h('p', { text: TEXT.locked }), h('a', { class: 'btn primary', href: '#/sos', text: 'Open SOS' }));
+  }
+
+  /* ── the Reasons Card ────────────────────────────────────────────────────────────────────── */
+
+  /* Draws the lock-screen image: 1080 x 1920, dark, system font only, the top third left free for the clock. */
+  function drawCard(canvas, title, reasons) {
+    const W = 1080; const H = 1920; const X = 96;
+    canvas.width = W; canvas.height = H;
+    const g = canvas.getContext('2d');
+    if (!g) return false;
+    const font = (px, weight) => weight + ' ' + px + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+    g.fillStyle = '#0f1a24'; g.fillRect(0, 0, W, H);
+    g.fillStyle = '#f2ece0'; g.textBaseline = 'top';
+    let y = 560;
+    g.font = font(68, '700'); g.fillText(title, X, y); y += 130;
+    const total = reasons.reduce((n, r) => n + r.length, 0);
+    const px = total > 600 ? 40 : total > 300 ? 46 : 54;
+    const lh = Math.round(px * 1.32);
+    const maxChars = Math.max(12, Math.floor((W - 2 * X - 50) / (px * 0.5)));
+    g.font = font(px, '400');
+    for (let i = 0; i < reasons.length; i++) {
+      const lines = wrapLines(reasons[i], maxChars);
+      if (y + lines.length * lh > H - 200) { g.fillText('and ' + (reasons.length - i) + ' more', X, y); break; }
+      lines.forEach((ln, j) => { g.fillText(ln, X + 50, y); if (j === 0) g.fillText('•', X, y); y += lh; });
+      y += Math.round(px * 0.55);
+    }
+    return true;
+  }
+
+  /* Makes the image and hands it to UI.download. Resolves true when a file was offered. */
+  function exportImage(title, reasons, fileName) {
+    const U = ns('UI');
+    const canvas = safe(() => document.createElement('canvas'), null);
+    const can = !!canvas && typeof canvas.getContext === 'function' && typeof canvas.toBlob === 'function';
+    if (!can || !safe(() => drawCard(canvas, title, reasons), false)) { toast(TEXT.noCanvas, 'warn'); return Promise.resolve(false); }
+    return new Promise((resolve) => {
+      const done = (blob) => {
+        const ok = !!blob && !!U && typeof U.download === 'function' && !!safe(() => U.download(fileName, blob, 'image/png'), false);
+        toast(ok ? TEXT.imageSaved : TEXT.noCanvas, ok ? 'ok' : 'warn');
+        resolve(ok);
+      };
+      try { canvas.toBlob(done, 'image/png'); } catch (e) { done(null); }
+    });
+  }
+
+  function emptyCardAction() {
+    if (exerciseKnown('quick-reasons')) return h('a', { class: 'btn primary', href: '#/exercise/quick-reasons?mode=workbook', 'data-test': 'reasons-write', text: 'Write my reasons' });
+    return h('p', { class: 'muted', 'data-test': 'reasons-later', text: TEXT.exerciseLater });
+  }
+
+  function reasonsPage(c) {
+    const discreet = discreetOf(c);
+    const sections = reasonsSections(viewOf(c));
+    const all = flatReasons(sections);
+    const title = discreet ? TEXT.discreetTitle : TEXT.cardTitle;
+    const lists = SECTIONS.filter((s) => sections[s.id].length).map((s) => h('section', { class: 'wb-section' },
+      h('h2', { class: 'wb-section-title', text: s.label }),
+      h('ul', { class: 'wb-reasons' }, sections[s.id].map((r) => h('li', { text: r })))));
+    const exportBtn = all.length ? h('button', {
+      type: 'button', class: 'btn', 'data-test': 'reasons-export',
+      onClick: () => exportImage(title, all, discreet ? 'notes.png' : 'reasons-card.png'),
+      text: 'Save as a lock-screen image',
+    }) : null;
+    return h('div', { class: 'wb-page stack', 'data-test': 'reasons-page' },
+      h('h1', { text: title }),
+      h('section', { class: 'card wb-card', 'data-test': 'reasons-card', 'aria-label': title },
+        all.length ? lists : [h('p', { text: TEXT.cardEmpty }), emptyCardAction()]),
+      h('div', { class: 'row wb-actions' },
+        h('a', { class: 'btn primary', href: '#/workbook/reasons?big=1&from=card', 'data-test': 'reasons-big', text: 'Big view' }),
+        exportBtn,
+        h('a', { class: 'btn ghost', href: '#/workbook/network', text: 'My people' })),
+      all.length ? h('p', { class: 'muted', text: TEXT.imageNote }) : null);
+  }
+
+  /* The big view: what a person sees from SOS. Large type, one tap back, a way to call someone; no tips, no tours. */
+  function bigPage(c) {
+    const discreet = discreetOf(c);
+    const all = flatReasons(reasonsSections(viewOf(c)));
+    const q = (c && c.route && c.route.query) || {};
+    const back = q.from === 'card' ? { href: '#/workbook/reasons', text: 'Back to my card' } : { href: '#/sos', text: 'Back to SOS' };
+    return h('div', { class: 'wb-big', 'data-test': 'reasons-big-view' },
+      h('a', { class: 'btn ghost wb-back', href: back.href, 'data-test': 'reasons-back', text: back.text }),
+      h('h1', { class: 'wb-big-title', text: discreet ? TEXT.discreetTitle : TEXT.bigTitle }),
+      all.length ? h('ul', { class: 'wb-big-list' }, all.map((r) => h('li', { text: r }))) : h('p', { class: 'wb-big-empty', text: TEXT.bigEmpty }),
+      h('a', { class: 'btn primary wb-big-call', href: '#/workbook/network', 'data-test': 'reasons-call', text: 'Call someone' }));
+  }
+
+  /* ── the Support Network ─────────────────────────────────────────────────────────────────── */
+
+  const actions = () => {
+    const A = ns('Actions');
+    if (!A || !A.contacts) throw Object.assign(new Error('That could not be saved on this device.'), { code: 'no-store' });
+    return A.contacts;
+  };
+  async function saveContact(values, id) {
+    const p = contactPayload(values);
+    const msg = contactError(p);
+    if (msg) { const e = new Error(msg); e.code = 'bad-contact'; throw e; }
+    return id ? actions().update(id, p) : actions().add(p);
+  }
+  const reachOut = (id, how) => actions().reached(id, how);
+  const hideContact = (id) => actions().deactivate(id);
+  const showContact = (id) => actions().update(id, { active: true });
+
+  function sheetOf(title, body, onClose) {
+    const U = ns('UI');
+    return U && typeof U.sheet === 'function' ? U.sheet(title, body, { onClose: onClose || (() => {}) }) : null;
+  }
+
+  function field(label, input, hint) {
+    const id = input.getAttribute('id');
+    return h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: label }), input,
+      hint ? h('p', { id: id + '-hint', class: 'field-hint', text: hint }) : null);
+  }
+
+  /* The add / edit sheet. The form lives in the sheet, so a store re-render of the page never clears it. */
+  function contactSheet(existing) {
+    const c = existing || {};
+    const mk = (tag, test, attrs) => { const id = nextId(test); return h(tag, Object.assign({ id, name: test, 'data-test': test }, attrs || {})); };
+    const name = mk('input', 'contact-name', { type: 'text', maxlength: '80', autocomplete: 'off', required: true });
+    const role = mk('select', 'contact-role', {});
+    ROLES.forEach((r) => role.appendChild(h('option', { value: r.id, text: r.label })));
+    const strategy = mk('select', 'contact-strategy', {});
+    STRATEGIES.forEach((s) => strategy.appendChild(h('option', { value: s.id, text: s.label })));
+    const phone = mk('input', 'contact-phone', { type: 'tel', inputmode: 'tel', maxlength: '24', autocomplete: 'off' });
+    const note = mk('textarea', 'contact-note', { rows: '3', maxlength: '300' });
+    name.value = c.name || ''; role.value = c.role || 'safetyNet'; strategy.value = c.strategy || 'avoid';
+    phone.value = c.phone || ''; note.value = c.note || '';
+    phone.setAttribute('aria-describedby', phone.getAttribute('id') + '-hint');
+    const stratField = field('My plan with them', strategy);
+    const sync = () => { stratField.hidden = role.value !== 'risky'; };
+    role.addEventListener('change', sync);
+    sync();
+    const err = h('p', { class: 'field-error', role: 'alert', hidden: true });
+    let s = null; let busy = false;
+    const submit = async (ev) => {
+      if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+      if (busy) return;
+      busy = true;
+      try {
+        await saveContact({ name: name.value, role: role.value, strategy: strategy.value, phone: phone.value, note: note.value }, c.id || null);
+        if (s) s.close('saved');
+        toast(c.id ? 'Saved.' : 'Added. ' + TEXT.stays, 'ok');
+      } catch (e) {
+        err.textContent = e && e.code === 'bad-contact' ? e.message : errText(e);
+        err.hidden = false;
+      }
+      busy = false;
+    };
+    const body = h('form', { class: 'stack wb-contact-form', onSubmit: submit, novalidate: true },
+      field('Name', name, null), field('Who they are to me', role, null), stratField,
+      field('Phone (optional)', phone, 'Only for a Call button here. It never leaves this device.'),
+      field('Note (optional)', note, null), err,
+      h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'btn ghost', text: 'Cancel', onClick: () => { if (s) s.close('cancelled'); } }),
+        h('button', { type: 'submit', class: 'btn primary', 'data-test': 'contact-save', text: c.id ? 'Save' : 'Add' })));
+    s = sheetOf(c.id ? 'Edit ' + c.name : 'Add a person', body);
+    return s;
+  }
+
+  function reachSheet(contact) {
+    let s = null;
+    const pick = async (how) => {
+      try {
+        await reachOut(contact.id, how);
+        if (s) s.close('saved');
+        toast(TEXT.reached(contact.name), 'ok');
+      } catch (e) { toast(errText(e), 'warn'); }
+    };
+    const body = h('div', { class: 'stack' },
+      h('p', { text: 'How did you reach out?' }),
+      h('div', { class: 'wb-choices' }, REACH.map((r) => h('button', { type: 'button', class: 'btn', 'data-test': 'reach-' + r.id, text: r.label, onClick: () => pick(r.id) }))));
+    s = sheetOf('I reached out to ' + contact.name, body);
+    return s;
+  }
+
+  async function askHide(contact) {
+    const U = ns('UI');
+    const ok = U && typeof U.confirm === 'function'
+      ? await U.confirm({ title: 'Hide ' + contact.name + '?', message: TEXT.hideMessage, confirmLabel: 'Hide' }) : false;
+    if (!ok) return false;
+    try { await hideContact(contact.id); return true; } catch (e) { toast(errText(e), 'warn'); return false; }
+  }
+
+  function contactRow(ct) {
+    const tel = ct.phone ? telHref(ct.phone) : null;
+    const risky = ct.role === 'risky';
+    return h('li', { class: 'wb-contact', 'data-test': 'contact-' + ct.id },
+      h('p', { class: 'wb-contact-name', text: ct.name }),
+      risky && ct.strategy ? h('p', { class: 'wb-contact-plan', text: 'My plan: ' + labelOf(STRATEGIES, ct.strategy) }) : null,
+      ct.note ? h('p', { class: 'muted wb-contact-note', text: ct.note }) : null,
+      h('div', { class: 'row wb-contact-actions' },
+        tel && !risky ? h('a', { class: 'btn primary', href: tel, 'data-test': 'call-' + ct.id, text: 'Call', 'aria-label': 'Call ' + ct.name }) : null,
+        risky ? null : h('button', { type: 'button', class: 'btn', 'data-test': 'reached-' + ct.id, text: 'I reached out', 'aria-label': 'I reached out to ' + ct.name, onClick: () => reachSheet(ct) }),
+        h('button', { type: 'button', class: 'btn ghost', 'data-test': 'contact-edit-' + ct.id, text: 'Edit', 'aria-label': 'Edit ' + ct.name, onClick: () => contactSheet(ct) }),
+        h('button', { type: 'button', class: 'btn ghost', 'data-test': 'contact-hide-' + ct.id, text: 'Hide', 'aria-label': 'Hide ' + ct.name, onClick: () => askHide(ct) })));
+  }
+
+  function networkPage(c) {
+    const discreet = discreetOf(c);
+    const list = safe(() => viewOf(c).list('contacts'), []) || [];
+    const groups = groupContacts(list);
+    const hidden = hiddenContacts(list);
+    return h('div', { class: 'wb-page stack', 'data-test': 'network-page' },
+      h('h1', { text: discreet ? TEXT.discreetNetwork : TEXT.networkTitle }),
+      h('p', { class: 'muted', 'data-test': 'network-stays', text: TEXT.stays }),
+      h('div', { class: 'row' },
+        h('button', { type: 'button', class: 'btn primary', 'data-test': 'contact-add', text: 'Add a person', onClick: () => contactSheet(null) }),
+        h('a', { class: 'btn ghost', href: '#/workbook/reasons', text: discreet ? TEXT.discreetTitle : TEXT.cardTitle })),
+      groups.length ? groups.map((g) => h('section', { class: 'card wb-card', 'data-test': 'network-role-' + g.role },
+        h('h2', { class: 'card-title', text: g.label }), h('p', { class: 'muted', text: g.hint }),
+        h('ul', { class: 'wb-contacts' }, g.items.map(contactRow)))) : h('p', { 'data-test': 'network-empty', text: TEXT.networkEmpty }),
+      hidden.length ? h('details', { class: 'wb-hidden' },
+        h('summary', { text: 'Hidden people (' + hidden.length + ')' }),
+        h('ul', { class: 'wb-contacts' }, hidden.map((ct) => h('li', { class: 'wb-contact', 'data-test': 'contact-' + ct.id },
+          h('p', { class: 'wb-contact-name', text: ct.name }),
+          h('button', { type: 'button', class: 'btn ghost', 'data-test': 'contact-show-' + ct.id, text: 'Show again', 'aria-label': 'Show ' + ct.name + ' again',
+            onClick: () => { showContact(ct.id).catch((e) => toast(errText(e), 'warn')); } }))))) : null);
+  }
+
+  /* ── U-20b: the workbook browser and the artifacts (BUILD-PLAN 3.5, 3.8) ─────────────────── */
+  /* Artifact -> the exercises that fill it. `will` names what it becomes while its exercise is not in this version (O7).
+     `own` artifacts have their own page (the card, the network) or PlanUI (the plan). */
+  const ARTIFACTS = {
+    reasons: { title: 'My Reasons Card', group: 'why', exerciseIds: ['quick-reasons', 'balance', 'four-lenses'], own: true, blurb: 'Your reasons in one place, also shown in SOS.' },
+    balance: { title: 'Pros and cons', group: 'why', exerciseIds: ['balance', 'four-lenses'], blurb: 'What using costs you and what changing gives you, seen from four sides.', will: 'a side-by-side list of what using costs you and what changing gives you' },
+    motivation: { title: 'How ready I feel', group: 'why', exerciseIds: ['motivation'], blurb: 'How ready you feel to change, rated from time to time.', will: 'a short rating of how ready you feel, kept over time' },
+    signs: { title: 'Signs I noticed', group: 'why', exerciseIds: ['signs-check'], blurb: 'The signs that told you something needed to change.', will: 'a list of the signs that made you take a closer look' },
+    triggers: { title: 'My triggers', group: 'self', exerciseIds: ['triggers'], practiseRoute: '#/track/log/craving', blurb: 'People, places, feelings and times that set off cravings.', will: 'your own list of triggers, with the ones that come up most' },
+    redflags: { title: 'Red-flag thoughts', group: 'self', exerciseIds: ['red-flags', 'trap-pairs'], practiseRoute: '#/games/spot-red-flag', blurb: 'Thoughts that make using seem fine, and the thinking traps behind them.', will: 'the thoughts that make using seem fine, paired with the trap behind each' },
+    journal: { title: 'Thought Journal', group: 'self', exerciseIds: ['trial'], practiseRoute: '#/tools/trial', blurb: 'Thoughts you put on trial, and the comebacks you wrote.', will: 'the thoughts you put on trial and your comebacks' },
+    spiral: { title: 'The spiral', group: 'self', exerciseIds: ['spiral'], blurb: 'Thoughts that pull you down after a hard moment, and your replies.', will: 'the thoughts that pull you down, each with your reply' },
+    signature: { title: 'My craving signature', group: 'self', exerciseIds: ['craving-signature'], practiseRoute: '#/practice/urge-surf', blurb: 'Where a craving shows up in your body, and how it builds and fades.', will: 'a body map of where cravings show up, and how they build' },
+    anger: { title: 'My anger signature', group: 'self', exerciseIds: ['anger-signature'], practiseRoute: '#/practice/breathe', blurb: 'How anger builds for you, and what sets it off.', will: 'how anger builds for you and what sets it off' },
+    warnings: { title: 'My warning signs', group: 'self', exerciseIds: ['warning-signs'], blurb: 'Early signs that things are slipping, and a plan for each.', will: 'your top warning signs, each with a plan' },
+    risks: { title: 'Risk factors', group: 'self', exerciseIds: ['risk-factors'], sensitive: true, blurb: 'Things in your history and health worth knowing about. Private, and only for you.', will: 'a private list of things in your history and health worth knowing about' },
+    network: { title: 'My Support Network', group: 'people', exerciseIds: [], own: true, blurb: 'The people who help, and the ones you are careful around.' },
+    scripts: { title: 'What I will say', group: 'people', exerciseIds: ['assertive-script'], practiseRoute: '#/games/refusal', blurb: 'Words you practised for saying no, or asking for what you need.', will: 'the words you practised for saying no or asking for help' },
+    activities: { title: 'Activity Library', group: 'joys', exerciseIds: ['activity-menu', 'used-to-enjoy'], practiseRoute: '#/actions/planner', blurb: 'Things you enjoy, or used to enjoy, to fill your time.', will: 'a library of things you enjoy, or used to' },
+    'balance-sw': { title: 'Should and want', group: 'joys', exerciseIds: ['should-want'], practiseRoute: '#/actions/planner', blurb: 'The balance between what you have to do and what you want to do.', will: 'the balance between what you have to do and what you want to do' },
+    distractions: { title: 'Distraction deck', group: 'joys', exerciseIds: ['distractions'], practiseRoute: '#/sos/craving', blurb: 'Quick things to do while a craving passes.', will: 'your own deck of quick things to do while a craving passes' },
+    plan: { title: 'My Recovery Plan', group: null, exerciseIds: [], own: true, blurb: 'Your plan for staying on track, built from your notebook.' },
+  };
+  const GROUPS = [
+    { id: 'why', label: 'My Why', hint: 'What you are doing this for.' },
+    { id: 'self', label: 'Know Myself', hint: 'How cravings and hard moments work for you.' },
+    { id: 'people', label: 'My People', hint: 'Who helps, and what you say.' },
+    { id: 'joys', label: 'My Joys', hint: 'What fills your time and lifts you.' },
+  ];
+  Object.assign(TEXT, {
+    workbookTitle: 'Workbook',
+    workbookIntro: 'Everything you write in the exercises lives here. Open any page to read it, change it or print it.',
+    stub: (will) => 'Coming in a later version: ' + will + '.',
+    nothing: 'Nothing saved here yet.',
+    sensitiveShow: 'Show sensitive items',
+    sensitiveHide: 'Hide sensitive items',
+    sensitiveNote: 'Only you see this. Nothing here is a judgement.',
+    saidIt: 'Noted. You said it, and that takes nerve.',
+  });
+
+  /* `#/workbook?sensitive=1` shows the sensitive card; the order is the GROUPS order, then the ARTIFACTS order. */
+  function groupsFor(showSensitive) {
+    return GROUPS.map((g) => ({ id: g.id, label: g.label, hint: g.hint,
+      items: Object.keys(ARTIFACTS).filter((k) => ARTIFACTS[k].group === g.id && (showSensitive || !ARTIFACTS[k].sensitive)) }));
+  }
+  /* 'fooBarBaz' or 'foo-bar' -> 'Foo bar baz'. */
+  const humanize = (k) => { const s = String(k).replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]+/g, ' ').trim().toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); };
+  function valueText(v) {
+    if (v == null) return '';
+    if (typeof v === 'string') return v.trim();
+    if (typeof v === 'number') return isFinite(v) ? String(v) : '';
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+    if (Array.isArray(v)) return v.map(valueText).filter(Boolean).join('; ');
+    if (isObj(v)) return Object.keys(v).map((k) => { const t = valueText(v[k]); return t ? humanize(k) + ': ' + t : ''; }).filter(Boolean).join(', ');
+    return '';
+  }
+  /* A saved answer as readable lines [{label, text}]: the spec's own labels when the exercise is known (and
+     ExerciseUI.summarize when it is loaded), else a plain key and value list for a shape not known here. */
+  function readable(payload, spec, view) {
+    if (!isObj(payload)) { const t = valueText(payload); return t ? [{ label: 'Answer', text: t }] : []; }
+    const fields = spec && Array.isArray(spec.fields) ? spec.fields.filter((f) => isObj(f) && f.id) : [];
+    const EX = ns('ExerciseUI');
+    const out = [];
+    const done = new Set();
+    for (const f of fields) {
+      done.add(f.id);
+      if (!own(payload, f.id)) continue;
+      let t = '';
+      if (EX && typeof EX.summarize === 'function') t = safe(() => String(EX.summarize(f, payload[f.id], view, ns('Content'), spec, payload) || ''), '');
+      if (!t) t = valueText(payload[f.id]);
+      if (t) out.push({ label: f.label ? String(f.label) : humanize(f.id), text: t });
+    }
+    for (const k of Object.keys(payload)) {
+      if (done.has(k)) continue;
+      const t = valueText(payload[k]);
+      if (t) out.push({ label: humanize(k), text: t });
+    }
+    return out;
+  }
+  function specOf(id) {
+    const EX = ns('ExerciseUI');
+    if (EX && typeof EX.exerciseFor === 'function') return safe(() => EX.exerciseFor(id), null);
+    const C = ns('Content');
+    const ex = C && C.exercises;
+    if (Array.isArray(ex)) return ex.find((x) => isObj(x) && x.id === id) || null;
+    return isObj(ex) && own(ex, id) && isObj(ex[id]) ? Object.assign({ id }, ex[id]) : null;
+  }
+  /* Is the artifact a stub in this version: none of its exercises is in Content.exercises (O7). */
+  const isStub = (a) => !!a && !a.own && !a.exerciseIds.some(exerciseKnown);
+  /* A route is offered only when a page answers it (UI.pages[firstSegment]); never a link to nowhere. */
+  function routeLive(route) {
+    const seg = String(route || '').replace(/^#\//, '').split(/[/?]/)[0];
+    const U = ns('UI');
+    return !!seg && !!(U && U.pages && typeof U.pages[seg] === 'function');
+  }
+  const E_ = () => ns('Engine');
+  const latestOf = (view, id) => { const E = E_(); return E && view ? safe(() => E.latest(view, id), null) : null; };
+  const historyOf = (view, id) => { const E = E_(); return E && view ? safe(() => E.history(view, id), []) || [] : []; };
+  const dateText = (at) => { const d = new Date(at); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' }); };
+  /* The newest save across the artifact's exercises, or null. */
+  function lastSaved(view, a) {
+    let best = null;
+    for (const id of (a && a.exerciseIds) || []) { const r = latestOf(view, id); if (r && (!best || String(r.at) > String(best.at))) best = r; }
+    return best;
+  }
+
+  function cardStatus(view, key, a) {
+    if (key === 'reasons') { const n = flatReasons(reasonsSections(view)).length; return n ? n + (n === 1 ? ' reason' : ' reasons') : 'Empty for now'; }
+    if (key === 'network') { const n = safe(() => groupContacts(view.list('contacts')).reduce((s, g) => s + g.items.length, 0), 0); return n ? n + (n === 1 ? ' person' : ' people') : 'No one yet'; }
+    if (key === 'plan') { const p = safe(() => view.get('recoveryPlan', 'plan'), null); return p && p.sections ? 'Saved ' + dateText(p.lastReviewAt) : 'A first draft is ready'; }
+    const r = lastSaved(view, a);
+    if (r) return 'Saved ' + dateText(r.at);
+    return isStub(a) ? 'Coming in a later version' : TEXT.nothing;
+  }
+  function artifactCard(view, key, first, discreet) {
+    const a = ARTIFACTS[key];
+    const title = key === 'reasons' && discreet ? TEXT.discreetTitle : key === 'network' && discreet ? TEXT.discreetNetwork : a.title;
+    const tour = first ? { 'data-tour': 'workbook-card' } : null; // the first artifact card only
+    return h('li', null, h('a', Object.assign({ class: 'card wb-card wb-art-card', href: '#/workbook/' + key, 'data-test': 'workbook-card-' + key }, tour),
+      h('span', { class: 'wb-art-title', text: title }),
+      h('span', { class: 'muted wb-art-blurb', text: a.blurb }),
+      h('span', { class: 'wb-art-status', text: cardStatus(view, key, a) })));
+  }
+  function browserPage(c) {
+    const view = viewOf(c);
+    const q = (c.route && c.route.query) || {};
+    const show = q.sensitive === '1';
+    const discreet = discreetOf(c);
+    let first = true;
+    const groups = groupsFor(show).map((g) => h('section', { class: 'wb-group', 'data-test': 'workbook-group-' + g.id },
+      h('h2', { class: 'wb-section-title', text: g.label }), h('p', { class: 'muted', text: g.hint }),
+      h('ul', { class: 'wb-art-list' }, g.items.map((k) => { const n = artifactCard(view, k, first, discreet); first = false; return n; }))));
+    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-page' },
+      h('h1', { text: TEXT.workbookTitle }),
+      h('p', { class: 'muted', text: TEXT.workbookIntro }),
+      h('ul', { class: 'wb-art-list' }, artifactCard(view, 'plan', false, discreet)),
+      h('div', { class: 'stack', 'data-tour': 'workbook-groups' }, groups),
+      h('a', { class: 'btn ghost', href: show ? '#/workbook' : '#/workbook?sensitive=1', 'data-test': 'risks-reveal', text: show ? TEXT.sensitiveHide : TEXT.sensitiveShow }));
+  }
+
+  function linesNode(lines) {
+    return h('dl', { class: 'wb-lines' }, lines.map((l) => [h('dt', { text: l.label }), h('dd', { text: l.text })]));
+  }
+  /* The print view: the title, the date and the saved lines; no buttons, no chrome. */
+  function printNode(title, blocks, now) {
+    return h('article', { class: 'wb-print' },
+      h('h1', { text: title }),
+      h('p', { text: 'Printed ' + dateText(now || new Date()) }),
+      blocks.map((b) => h('section', null, h('h2', { text: b.title }), b.lines.length ? linesNode(b.lines) : h('p', { text: TEXT.nothing }))));
+  }
+  /* The extras some artifacts carry: the motivation ratings, the comebacks, the deck, "I said it". */
+  function extras(key, view) {
+    const E = E_();
+    if (key === 'motivation') {
+      const rows = safe(() => view.list('motivation'), []).filter((r) => isObj(r)).sort((x, y) => String(y.at).localeCompare(String(x.at))).slice(0, 6);
+      if (!rows.length) return null;
+      return h('section', { class: 'card wb-card', 'data-test': 'motivation-meter' }, h('h2', { class: 'card-title', text: 'My ratings, newest first' }),
+        h('ul', { class: 'wb-reasons' }, rows.map((r) => h('li', { text: dateText(r.at) + ': ' + valueText(r.score) + (valueText(r.plusOne) ? '. One step up: ' + valueText(r.plusOne) : '') }))));
+    }
+    if (key === 'journal') {
+      const list = E && typeof E.comebacks === 'function' ? safe(() => E.comebacks(view), []) : [];
+      return list.length ? h('section', { class: 'card wb-card', 'data-test': 'journal-comebacks' }, h('h2', { class: 'card-title', text: 'My comebacks' }),
+        h('ul', { class: 'wb-reasons' }, list.map((t) => h('li', { text: t })))) : null;
+    }
+    if (key === 'distractions') {
+      const list = E && typeof E.distractionDeck === 'function' ? safe(() => E.distractionDeck(view), []) : [];
+      const mine = !!latestOf(view, 'distractions');
+      return list.length ? h('section', { class: 'card wb-card', 'data-test': 'distraction-deck' }, h('h2', { class: 'card-title', text: mine ? 'My distraction deck' : 'Ideas to start with' }),
+        h('ul', { class: 'wb-reasons' }, list.map((t) => h('li', { text: t })))) : null;
+    }
+    if (key === 'scripts') {
+      const r = latestOf(view, 'assertive-script');
+      return r ? h('button', { type: 'button', class: 'btn', 'data-test': 'script-said', text: 'I said it',
+        onClick: () => { scriptSaid(r.id).then(() => toast(TEXT.saidIt), () => toast('That could not be noted on this device. Please try again.', 'warn')); } }) : null;
+    }
+    return null;
+  }
+  const scriptSaid = (responseId) => { const A = ns('Actions'); return A && typeof A.scriptUsed === 'function' ? A.scriptUsed(responseId) : Promise.reject(new Error('no actions')); };
+
+  function artifactPage(c, key) {
+    const a = ARTIFACTS[key];
+    const view = viewOf(c);
+    const stub = isStub(a);
+    let edit = true; let hist = true;
+    const blocks = [];
+    const parts = a.exerciseIds.map((id) => {
+      const spec = specOf(id);
+      const known = exerciseKnown(id);
+      const r = latestOf(view, id);
+      const name = spec && spec.title ? String(spec.title) : a.title;
+      const lines = r ? readable(r.payload, spec, view) : [];
+      if (r) blocks.push({ title: name, lines });
+      const versions = historyOf(view, id);
+      const editBtn = known ? h('a', { class: 'btn primary', href: '#/exercise/' + id + '?mode=workbook', 'data-test': edit ? 'artifact-edit' : 'artifact-edit-' + id, text: r ? 'Change it' : 'Fill it in' }) : null;
+      if (known) edit = false;
+      const histNode = versions.length ? h('details', { class: 'wb-history', 'data-test': hist ? 'artifact-history' : 'artifact-history-' + id },
+        h('summary', { text: 'History (' + versions.length + ')' }),
+        h('ol', { class: 'wb-history-list' }, versions.map((v) => h('li', null, h('p', { class: 'wb-art-status', text: dateText(v.at) }), linesNode(readable(v.payload, spec, view)))))) : null;
+      if (versions.length) hist = false;
+      if (!r && !known) return null;
+      return h('section', { class: 'card wb-card', 'data-test': 'artifact-part-' + id },
+        a.exerciseIds.length > 1 ? h('h2', { class: 'card-title', text: name }) : null,
+        r ? linesNode(lines) : h('p', { class: 'muted', text: TEXT.nothing }),
+        editBtn, histNode);
+    });
+    const live = a.practiseRoute && routeLive(a.practiseRoute);
+    return h('div', { class: 'wb-page stack', 'data-test': 'artifact-' + key },
+      h('a', { class: 'btn ghost wb-back', href: '#/workbook', text: 'All of my workbook' }),
+      h('h1', { text: a.title }),
+      h('p', { class: 'muted', text: a.blurb }),
+      a.sensitive ? h('p', { class: 'muted', text: TEXT.sensitiveNote }) : null,
+      stub ? h('p', { class: 'card wb-card', 'data-test': 'artifact-stub', text: TEXT.stub(a.will) }) : null,
+      parts,
+      !stub && !parts.some(Boolean) ? h('p', { text: TEXT.nothing }) : null,
+      extras(key, view),
+      h('div', { class: 'row wb-actions' },
+        live ? h('a', { class: 'btn', href: a.practiseRoute, 'data-test': 'artifact-practise', text: 'Practise with this' }) : null,
+        blocks.length ? h('button', { type: 'button', class: 'btn ghost', 'data-test': 'artifact-print', text: 'Print',
+          onClick: () => { const U = ns('UI'); if (U && typeof U.printDoc === 'function') U.printDoc(printNode(a.title, blocks, c.now)); } }) : null));
+  }
+
+  function planPage(c) {
+    const P = ns('PlanUI');
+    if (P && typeof P.view === 'function') return P.view(c);
+    return h('div', { class: 'wb-page stack', 'data-test': 'workbook-later' }, h('h1', { text: ARTIFACTS.plan.title }), h('p', { text: TEXT.later }),
+      h('a', { class: 'btn', href: '#/workbook', text: 'All of my workbook' }));
+  }
+
+  function page(ctx) {
+    const c = ctx || {};
+    if (isLocked()) return lockedPage();
+    const r = c.route || { parts: [], query: {} };
+    const artifact = (r.parts && r.parts[1]) || '';
+    const q = r.query || {};
+    if (artifact === 'reasons') return q.big === '1' ? bigPage(c) : reasonsPage(c);
+    if (artifact === 'network') return networkPage(c);
+    if (artifact === 'plan') return planPage(c);
+    if (own(ARTIFACTS, artifact)) return artifactPage(c, artifact);
+    return browserPage(c); // #/workbook and an unknown artifact
+  }
+
+  const PURE = ['ROLES', 'STRATEGIES', 'REACH', 'SECTIONS', 'TEXT', 'wrapLines', 'reasonsSections', 'flatReasons',
+    'contactPayload', 'contactError', 'groupContacts', 'hiddenContacts', 'exerciseKnown', 'ARTIFACTS', 'GROUPS', 'groupsFor',
+    'readable', 'valueText', 'humanize', 'isStub'];
+
+  return {
+    ROLES, STRATEGIES, REACH, SECTIONS, TEXT, wrapLines, reasonsSections, flatReasons, contactPayload, contactError,
+    groupContacts, hiddenContacts, exerciseKnown, telHref, drawCard, exportImage, saveContact, reachOut, hideContact,
+    showContact, ARTIFACTS, GROUPS, groupsFor, readable, valueText, humanize, isStub, routeLive, printNode, scriptSaid, page, PURE,
+  };
+})();
+
+// The page registers from this file (contracts/core.md: UI.pages[firstSegment]); nothing in ui-core.js changes.
+if (typeof UI !== 'undefined' && UI && UI.pages) UI.pages.workbook = (ctx) => WorkbookUI.page(ctx);
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {};
+  for (const k of WorkbookUI.PURE) module.exports[k] = WorkbookUI[k];
+}
+</script>
 <script data-part="ui-track.js">
 /* 1-addic · ui-track.js · the Track screen (BUILD-PLAN 3.5 #/track, section 5 U-16; lane today-track).
    The quick log (+) for a craving, a feeling, a check-in, an activity or a slip; the timeline, newest first;
@@ -11100,6 +11807,38 @@ const SettingsUI = (function () {
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); nothing in ui-core.js changes.
 if (typeof UI !== 'undefined' && UI && UI.pages) UI.pages.settings = (ctx) => SettingsUI.page(ctx);
 
+/* High contrast on every screen, not only in Settings (slice check C3). ui-core applies text size and motion from the
+   settings row but not contrast yet (asked of core), so this file sets html[data-contrast=high] once the Store has
+   loaded and again after every store change, without touching ui-core.js. Locked or not loaded: the sealed row decides
+   nothing, so the attribute is left as it is. */
+const applySavedContrast = (function () {
+  const apply = () => {
+    try {
+      if (typeof Store === 'undefined' || !Store || !Store.view || typeof Store.view.get !== 'function') return;
+      if (typeof document === 'undefined' || !document || !document.documentElement) return;
+      const st = Store.view.get('settings', 'app');
+      if (!st || typeof st !== 'object') return;
+      const root = document.documentElement;
+      if (st.highContrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast');
+    } catch (e) { /* never in the way of a page */ }
+  };
+  if (typeof Store === 'undefined' || !Store) return apply;
+  try { if (typeof Store.subscribe === 'function') Store.subscribe(apply); } catch (e) { /* no subscription here */ }
+  const afterLoad = () => {
+    try {
+      // Store.load() is memoised: after ui-core's boot it hands back the same promise and starts nothing new.
+      if (typeof Store.load === 'function') Promise.resolve().then(() => Store.load()).then(apply, () => {});
+      else apply();
+    } catch (e) { /* never in the way of a page */ }
+  };
+  try {
+    const waiting = typeof window !== 'undefined' && window && typeof window.addEventListener === 'function' &&
+      typeof document !== 'undefined' && document && document.readyState && document.readyState !== 'complete';
+    if (waiting) window.addEventListener('load', afterLoad, { once: true }); else afterLoad();
+  } catch (e) { /* never in the way of a page */ }
+  return apply;
+})();
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {};
   for (const k of SettingsUI.PURE) module.exports[k] = SettingsUI[k];
@@ -11249,6 +11988,268 @@ const HarborUI = (() => {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {};
   for (const k of HarborUI.PURE) module.exports[k] = HarborUI[k];
+}
+</script>
+<script data-part="ui-plan.js">
+/* 1-addic offline edition: My Recovery Plan (lane workbook-settings, U-21; BUILD-PLAN 3.10,
+   tracks/SCREENS/contracts/workbook-settings.md). #/workbook/plan (ui-workbook.js calls PlanUI.view).
+   The plan is the saved recoveryPlan row's sections, else a first draft from Engine.prefillRecoveryPlan. "Refresh
+   from my data" only adds what is missing, never drops a line. Edit, reorder, confirm each section; Save goes through
+   Actions.recoveryPlan.save (confirmedAt once, RecoveryPlanConfirmed once, lastReviewAt every save). Print is
+   UI.printDoc: lists only, no buttons. Text goes in as text only (UI.h), never as HTML. Nothing here gates SOS. */
+const PlanUI = (function () {
+  'use strict';
+
+  /* Engine, Store, Actions and UI are classic-script globals, not globalThis properties. */
+  const ns = (name) => {
+    try {
+      if (name === 'Store') return typeof Store !== 'undefined' ? Store : null;
+      if (name === 'Engine') return typeof Engine !== 'undefined' ? Engine : null;
+      if (name === 'Actions') return typeof Actions !== 'undefined' ? Actions : null;
+      if (name === 'UI') return typeof UI !== 'undefined' ? UI : null;
+    } catch (e) { /* not loaded */ }
+    return null;
+  };
+  const safe = (fn, fallback) => { try { const v = fn(); return v === undefined ? fallback : v; } catch (e) { return fallback; } };
+  const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
+  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  const SECTIONS = ['motivation', 'wellness', 'situation', 'people', 'mood', 'triggers', 'warnings', 'battlePlans', 'support'];
+  /* Words are original (grade 6-8). `link` is where an empty section is filled. */
+  const LABELS = {
+    motivation: { title: 'Why I am doing this', hint: 'My reasons, and the next step up I named.', empty: 'Your reasons show here once your Reasons Card has some.', link: '#/workbook/reasons', linkLabel: 'Open my Reasons Card' },
+    wellness: { title: 'What keeps me well', hint: 'The everyday skills that help me most.', empty: 'The skills you mark as helpful in your logs show here.', link: '#/track', linkLabel: 'Open my logbook' },
+    situation: { title: 'Skills for hard moments', hint: 'What I do when a situation gets risky.', empty: 'The skills you use in hard moments show here once you log them.', link: '#/track', linkLabel: 'Open my logbook' },
+    people: { title: 'My people', hint: 'Who I call, and who walks with me.', empty: 'Add the people you could call on a hard day.', link: '#/workbook/network', linkLabel: 'Open my Support Network' },
+    mood: { title: 'When my mood dips', hint: 'What helps when I feel low, angry or worried.', empty: 'The skills that help your mood show here once you log them.', link: '#/track', linkLabel: 'Open my logbook' },
+    triggers: { title: 'My triggers', hint: 'What sets off cravings for me.', empty: 'Your triggers show here once you name them.', link: '#/workbook/triggers', linkLabel: 'Open my triggers' },
+    warnings: { title: 'My warning signs and what I do', hint: 'Early signs that things are slipping, and my plan for each.', empty: 'Your top warning signs show here once you pick them.', link: '#/workbook/warnings', linkLabel: 'Open my warning signs' },
+    battlePlans: { title: 'Plans for risky times', hint: 'The situations that come back, and my plan for them.', empty: 'Your plans for risky times show here once you make one.', link: '#/actions/battle?new=1', linkLabel: 'Make a plan for a risky time' },
+    support: { title: 'Groups and treatment', hint: 'The groups, care and services that support me.', empty: 'Add the groups or care that help you. You can write them here.', link: '#/workbook/network', linkLabel: 'Open my Support Network' },
+  };
+  const TEXT = {
+    title: 'My Recovery Plan',
+    discreetTitle: 'My plan',
+    intro: 'Your plan for staying on track, built from your own notebook. Change anything: it is yours.',
+    draft: 'This is a first draft from your notebook. Nothing is saved until you press Save.',
+    unsaved: 'You have changes that are not saved yet.',
+    stillTrue: 'It has been a while since you looked at this plan. Is it still true? Change what has moved on, then save.',
+    confirm: 'This is still right for me',
+    saved: 'Your plan is saved on this device.',
+    confirmed: 'Your plan is saved, and every part is confirmed. You built this.',
+    failed: 'That could not be saved on this device. Please try again.',
+    refreshed: (n) => (n ? 'Added ' + n + (n === 1 ? ' line' : ' lines') + ' from your notebook. Nothing was removed.' : 'Nothing new to add. Your plan already has everything from your notebook.'),
+    nothing: 'Nothing here yet.',
+  };
+  const DAY = 24 * 60 * 60 * 1000;
+
+  /* ── pure helpers (exported for the tests) ───────────────────────────────────────────────── */
+  const clean = (s) => (typeof s === 'string' ? s.replace(/\s+/g, ' ').trim() : '');
+  const keyOf = (s) => clean(s).toLowerCase();
+  function items(list) {
+    const seen = new Set();
+    const out = [];
+    for (const s of Array.isArray(list) ? list : []) {
+      const t = clean(s);
+      if (t && !seen.has(t.toLowerCase())) { seen.add(t.toLowerCase()); out.push(t); }
+    }
+    return out;
+  }
+  /* Every section present, items trimmed and once each, confirmed a boolean; sections not in SECTIONS are kept. */
+  function normalise(sections) {
+    const src = isObj(sections) ? sections : {};
+    const out = {};
+    for (const id of SECTIONS.concat(Object.keys(src).filter((k) => !SECTIONS.includes(k)))) {
+      const s = isObj(src[id]) ? src[id] : {};
+      out[id] = { items: items(s.items), confirmed: s.confirmed === true };
+    }
+    return out;
+  }
+  /* The saved plan plus every prefill line it does not have yet, at the end of its section. Never drops a line;
+     a confirmed section stays confirmed. */
+  function merge(saved, prefill) {
+    const a = normalise(saved);
+    const b = normalise(prefill);
+    for (const id of Object.keys(b)) {
+      if (!own(a, id)) { a[id] = b[id]; continue; }
+      const have = new Set(a[id].items.map(keyOf));
+      for (const t of b[id].items) if (!have.has(keyOf(t))) { a[id].items.push(t); have.add(keyOf(t)); }
+    }
+    return a;
+  }
+  const countItems = (sections) => Object.keys(sections || {}).reduce((n, k) => n + ((sections[k] && sections[k].items) || []).length, 0);
+  const allConfirmed = (sections) => SECTIONS.every((id) => !!(sections && sections[id] && sections[id].confirmed === true));
+  /* "Still true?" once the last save is more than 30 days old. */
+  function stillTrue(lastReviewAt, now) {
+    if (!lastReviewAt) return false;
+    const t = new Date(lastReviewAt).getTime();
+    const n = new Date(now || Date.now()).getTime();
+    return !isNaN(t) && !isNaN(n) && n - t > 30 * DAY;
+  }
+  /* Move item i of a list by d (-1 up, +1 down); a move past either end changes nothing. */
+  function move(list, i, d) {
+    const out = list.slice();
+    const j = i + d;
+    if (i < 0 || i >= out.length || j < 0 || j >= out.length) return out;
+    const [x] = out.splice(i, 1);
+    out.splice(j, 0, x);
+    return out;
+  }
+
+  /* ── state across re-renders: a plan being edited is kept until it is saved ─────────────── */
+  const state = { draft: null, dirty: false };
+  const h = (...a) => ns('UI').h(...a);
+  const toast = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+  const viewOf = (c) => (c && c.view) || safe(() => ns('Store').view, null);
+  const dateText = (at) => { const d = new Date(at); return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' }); };
+  function savedRow(view) { return view ? safe(() => view.get('recoveryPlan', 'plan'), null) : null; }
+  function prefillOf(view, now) {
+    const E = ns('Engine');
+    return E && typeof E.prefillRecoveryPlan === 'function' && view ? safe(() => E.prefillRecoveryPlan(view, now || new Date()), {}) : {};
+  }
+  /* The plan to show: the draft being edited, else the saved sections, else the prefill. */
+  function source(view, now) {
+    if (state.dirty && state.draft) return state.draft;
+    const row = savedRow(view);
+    return row && isObj(row.sections) ? normalise(row.sections) : normalise(prefillOf(view, now));
+  }
+  function routeLive(route) {
+    const seg = String(route || '').replace(/^#\//, '').split(/[/?]/)[0];
+    const U = ns('UI');
+    return seg === 'workbook' || !!(U && U.pages && typeof U.pages[seg] === 'function');
+  }
+
+  /* The print view: the title, the date and the lists; no buttons, no chrome. */
+  function printNode(sections, title, now) {
+    const s = normalise(sections);
+    return h('article', { class: 'wb-print' },
+      h('h1', { text: title || TEXT.title }),
+      h('p', { text: 'Printed ' + dateText(now || new Date()) }),
+      SECTIONS.map((id) => h('section', null, h('h2', { text: LABELS[id].title }),
+        s[id].items.length ? h('ul', null, s[id].items.map((t) => h('li', { text: t }))) : h('p', { text: TEXT.nothing }))));
+  }
+
+  async function save(sections) {
+    const A = ns('Actions');
+    if (!A || !A.recoveryPlan || typeof A.recoveryPlan.save !== 'function') throw new Error('no actions');
+    const s = normalise(sections);
+    return A.recoveryPlan.save(s, { confirm: allConfirmed(s) });
+  }
+
+  function view(ctx) {
+    const c = ctx || {};
+    const v = viewOf(c);
+    const now = c.now || new Date();
+    const discreet = !!(c.settings && c.settings.discreet);
+    const title = discreet ? TEXT.discreetTitle : TEXT.title;
+    const root = h('div', { class: 'wb-page stack', 'data-test': 'plan-page' });
+    const edit = () => { if (!state.dirty) { state.draft = source(v, now); state.dirty = true; } return state.draft; };
+
+    function paint() {
+      const plan = source(v, now);
+      const row = savedRow(v);
+      root.textContent = '';
+      const status = [];
+      if (state.dirty) status.push(h('p', { class: 'muted', 'data-test': 'plan-unsaved', text: TEXT.unsaved }));
+      else if (!row || !isObj(row.sections)) status.push(h('p', { class: 'muted', 'data-test': 'plan-draft', text: TEXT.draft }));
+      if (row && row.confirmedAt) status.push(h('p', { class: 'muted', text: 'Confirmed on ' + dateText(row.confirmedAt) + '.' }));
+      if (row && stillTrue(row.lastReviewAt, now)) status.push(h('p', { class: 'card wb-card', 'data-test': 'plan-still-true', text: TEXT.stillTrue }));
+      const nodes = [
+        h('a', { class: 'btn ghost wb-back', href: '#/workbook', text: 'All of my workbook' }),
+        h('h1', { text: title }),
+        h('p', { class: 'muted', text: TEXT.intro }),
+        status,
+        h('div', { class: 'row wb-actions' },
+          h('button', { type: 'button', class: 'btn primary', 'data-test': 'plan-save', text: 'Save', onClick: onSave }),
+          h('button', { type: 'button', class: 'btn', 'data-test': 'plan-refresh', text: 'Refresh from my data', onClick: onRefresh }),
+          h('button', { type: 'button', class: 'btn ghost', 'data-test': 'plan-print', 'data-tour': 'plan-print', text: 'Print', onClick: onPrint })),
+        h('div', { class: 'stack', 'data-tour': 'plan-sections' }, SECTIONS.map((id) => sectionNode(id, plan[id]))),
+      ];
+      for (const n of nodes.flat()) if (n) root.appendChild(n);
+    }
+
+    function sectionNode(id, sec) {
+      const L = LABELS[id];
+      const list = sec.items;
+      const rows = list.map((t, i) => {
+        const input = h('input', { type: 'text', class: 'wb-plan-input', value: t, 'aria-label': L.title + ', line ' + (i + 1), 'data-test': 'plan-item-' + id + '-' + i });
+        input.value = t;
+        input.addEventListener('input', () => { edit()[id].items[i] = String(input.value || ''); });
+        const btn = (label, text, fn, test) => h('button', { type: 'button', class: 'btn ghost', 'aria-label': label + ': ' + t, 'data-test': test, text, onClick: fn });
+        return h('li', { class: 'wb-plan-item' }, input,
+          h('div', { class: 'wb-plan-moves' },
+            i > 0 ? btn('Move up', 'Up', () => { const d = edit(); d[id].items = move(d[id].items, i, -1); paint(); }, 'plan-up-' + id + '-' + i) : null,
+            i < list.length - 1 ? btn('Move down', 'Down', () => { const d = edit(); d[id].items = move(d[id].items, i, 1); paint(); }, 'plan-down-' + id + '-' + i) : null,
+            btn('Remove', 'Remove', () => { const d = edit(); d[id].items = d[id].items.filter((_, k) => k !== i); paint(); }, 'plan-remove-' + id + '-' + i)));
+      });
+      const add = h('input', { type: 'text', class: 'wb-plan-input', 'aria-label': 'Add a line to ' + L.title, placeholder: 'Add a line', 'data-test': 'plan-add-input-' + id });
+      const doAdd = () => {
+        const t = clean(add.value);
+        if (!t) return;
+        const d = edit();
+        if (!d[id].items.some((x) => keyOf(x) === keyOf(t))) d[id].items.push(t);
+        paint();
+      };
+      add.addEventListener('keydown', (e) => { if (e && e.key === 'Enter') { if (e.preventDefault) e.preventDefault(); doAdd(); } });
+      const box = h('input', { type: 'checkbox', 'data-test': 'plan-confirm-' + id, checked: sec.confirmed });
+      box.checked = sec.confirmed;
+      box.addEventListener('change', () => { edit()[id].confirmed = !!box.checked; paint(); });
+      const fill = !list.length ? [h('p', { class: 'muted', text: L.empty }),
+        routeLive(L.link) ? h('a', { class: 'btn ghost', href: L.link, text: L.linkLabel }) : null] : null;
+      return h('section', { class: 'card wb-card', 'data-test': 'plan-section-' + id },
+        h('h2', { class: 'card-title', text: L.title }),
+        h('p', { class: 'muted', text: L.hint }),
+        list.length ? h('ol', { class: 'wb-plan-list' }, rows) : fill,
+        h('div', { class: 'row wb-plan-add' }, add, h('button', { type: 'button', class: 'btn', 'data-test': 'plan-add-' + id, text: 'Add', onClick: doAdd })),
+        h('label', { class: 'wb-plan-confirm' }, box, h('span', { text: TEXT.confirm })));
+    }
+
+    async function onSave() {
+      const plan = source(v, now);
+      try {
+        await save(plan);
+        state.dirty = false; state.draft = null;
+        toast(allConfirmed(plan) ? TEXT.confirmed : TEXT.saved);
+      } catch (e) { toast(TEXT.failed, 'warn'); }
+      paint();
+    }
+    function onRefresh() {
+      const before = source(v, now);
+      const merged = merge(before, prefillOf(v, now));
+      const n = countItems(merged) - countItems(normalise(before));
+      if (n) { state.draft = merged; state.dirty = true; }
+      toast(TEXT.refreshed(n));
+      paint();
+    }
+    function onPrint() {
+      const U = ns('UI');
+      if (U && typeof U.printDoc === 'function') U.printDoc(printNode(source(v, now), title, now));
+    }
+
+    paint();
+    return root;
+  }
+
+  /* Forget a draft being edited (a fresh page). */
+  const reset = () => { state.draft = null; state.dirty = false; };
+
+  /* A draft belongs to the notebook it was started in (check C5). Erase everything (Store.resetAll) and a backup
+     brought back (Store.replaceAll) swap the whole notebook without a reload, so they drop the draft: the old
+     notebook's unsaved lines never show in, or save into, the new one. Store.subscribe hands each listener
+     { label }; every other change (the plan's own save among them) keeps the draft. No Store here: nothing to do. */
+  const DROPS = ['resetAll', 'replaceAll'];
+  safe(() => {
+    const S = ns('Store');
+    if (S && typeof S.subscribe === 'function') S.subscribe((e) => { if (e && DROPS.includes(e.label)) reset(); });
+  }, null);
+
+  const PURE = ['SECTIONS', 'LABELS', 'TEXT', 'normalise', 'merge', 'allConfirmed', 'stillTrue', 'move', 'countItems'];
+  return { SECTIONS, LABELS, TEXT, normalise, merge, allConfirmed, stillTrue, move, countItems, printNode, save, view, reset, PURE };
+})();
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {};
+  for (const k of PlanUI.PURE) module.exports[k] = PlanUI[k];
 }
 </script>
 <script data-part="boot.js">

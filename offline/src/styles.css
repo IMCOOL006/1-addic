@@ -501,4 +501,52 @@ html[data-discreet] .td-harbor, body.calm .td-harbor { display: none; }
 :root[data-contrast="high"] input, :root[data-contrast="high"] select, :root[data-contrast="high"] textarea { border-width: 2px; border-color: hsl(var(--text)); }
 :root[data-contrast="high"] a:not(.btn):not(.ws-tab) { text-decoration: underline; }
 :root[data-contrast="high"] :focus-visible { outline-width: 4px; }
+/* Reasons Card and Support Network (U-20a). */
+.wb-page { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.wb-page h1 { margin: 0; }
+.wb-card { display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-section-title { margin: 0; font-size: 1.05rem; }
+.wb-reasons, .wb-contacts { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-reasons li, .wb-contact p { overflow-wrap: anywhere; }
+.wb-contacts { list-style: none; padding-left: 0; }
+.wb-contact { display: flex; flex-direction: column; gap: 4px; padding: var(--space-2) 0; border-top: 1px solid hsl(var(--border)); }
+.wb-contact p { margin: 0; }
+.wb-contact-name { font-weight: 600; }
+.wb-contact-actions, .wb-actions, .wb-choices { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-page .btn, .wb-big .btn, .wb-contact-form .btn, .wb-choices .btn { min-height: 44px; }
+.wb-contact-form select, .wb-contact-form input { min-height: 44px; }
+.wb-hidden summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.wb-hidden summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-big { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; padding: var(--space-3) 0; }
+.wb-back { align-self: flex-start; }
+.wb-big-title { margin: 0; font-size: 2rem; line-height: 1.2; }
+.wb-big-list { margin: 0; padding-left: 1.5rem; display: flex; flex-direction: column; gap: var(--space-3); font-size: 1.5rem; line-height: 1.4; font-weight: 600; color: hsl(var(--text)); }
+.wb-big-list li { overflow-wrap: anywhere; }
+.wb-big-empty { font-size: 1.25rem; margin: 0; }
+.wb-big-call { align-self: stretch; justify-content: center; font-size: 1.15rem; min-height: 56px; }
+/* Workbook browser and artifacts (U-20b). */
+.wb-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-group > p { margin: 0; }
+.wb-art-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-2); }
+.wb-art-card { min-height: 44px; text-decoration: none; color: inherit; gap: 4px; }
+.wb-art-card:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-art-title { font-weight: 600; }
+.wb-art-blurb, .wb-art-status { font-size: 0.92rem; overflow-wrap: anywhere; }
+.wb-art-status { margin: 0; font-weight: 600; }
+.wb-lines { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.wb-lines dt { font-weight: 600; }
+.wb-lines dd { margin: 0 0 var(--space-2); overflow-wrap: anywhere; }
+.wb-history summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.wb-history summary:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.wb-history-list { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-print h2 { font-size: 1.1rem; margin: 1rem 0 0.25rem; }
+/* My Recovery Plan (U-21). */
+.wb-plan-list { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: var(--space-2); }
+.wb-plan-item { display: flex; flex-direction: column; gap: 4px; }
+.wb-plan-input { min-height: 44px; width: 100%; min-width: 0; }
+.wb-plan-moves, .wb-plan-add { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wb-plan-add .wb-plan-input { flex: 1 1 12rem; }
+.wb-plan-confirm { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; cursor: pointer; font-weight: 600; }
+.wb-plan-confirm input { width: 24px; height: 24px; }
 /* -- end workbook-settings -- */

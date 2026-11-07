@@ -130,7 +130,8 @@ test('workbook-settings: the source reads globals safely and never writes HTML',
   never(/\baddicts?\b/i, 'person-first');
   never(/fetch\(|XMLHttpRequest|sendBeacon|WebSocket/, 'no network');
   never(/console\.(log|info|debug)/, 'nothing is logged, a PIN least of all');
-  // A guard: in a fresh context with no globals, loading the file and rendering does not throw a ReferenceError.
+  // A guard: in a fresh context with no globals, loading the file does not throw a ReferenceError. It only loads
+  // (the screens need UI.h); the tab renders run on the stand-in DOM in the next test.
   const sandbox = { module: { exports: {} } };
   vm.runInNewContext(text, sandbox, { filename: 'ui-settings.js' });
   assert.equal(typeof sandbox.module.exports.normalTab, 'function');
@@ -357,4 +358,445 @@ test('workbook-settings: PIN set, export asks it, auto-lock asks it, remove (rea
   await fillSheet({ 'pin-input': '2468' });
   await until(() => S().status().hasLock === false);
   assert.equal(S().view.list('logs').length, 1, 'removing the PIN keeps every note');
+});
+
+test('workbook-settings: high contrast comes back after a reload, before Settings opens (C3)', async () => {
+  await S().resetAll();
+  await Actions.settings.patch({ highContrast: true });
+  const root = document.createElement('html');
+  document.documentElement = root;
+  try {
+    classic('ui-settings.js', 'SettingsUI'); // a reload: the file runs again; Settings is never rendered here
+    await until(() => root.getAttribute('data-contrast') === 'high');
+    await Actions.settings.patch({ highContrast: false });
+    assert.equal(root.getAttribute('data-contrast'), null, 'a store change applies it too');
+    await Actions.settings.patch({ highContrast: true });
+    assert.equal(root.getAttribute('data-contrast'), 'high');
+  } finally {
+    await Actions.settings.patch({ highContrast: false });
+    delete document.documentElement;
+  }
+});
+
+/* ── U-20a: the Reasons Card and the Support Network (offline/src/ui-workbook.js) ─────────────────────────── */
+const W = require(src('ui-workbook.js'));
+const WUI = classic('ui-workbook.js', 'WorkbookUI');
+const wctx = (parts, query) => ({ view: S().view, settings: S().view.get('settings', 'app') || {}, profile: S().view.get('profile', 'me') || {},
+  route: { parts: ['workbook'].concat(parts || []), query: query || {} }, now: new Date() });
+const texts = (node) => node.all((n) => n.tagName === 'li').map((n) => n.textContent);
+const isTest = (node, id) => node.getAttribute('data-test') === id; // a page's root carries its own hook
+
+test('workbook-settings U-20a: wrap, contact payload, check and grouping (pure)', () => {
+  assert.deepEqual(W.wrapLines('I want to be there for my kids every morning', 12), ['I want to be', 'there for my', 'kids every', 'morning']);
+  assert.deepEqual(W.wrapLines('  ', 10), []);
+  assert.deepEqual(W.wrapLines('abcdefghijkl xy', 5), ['abcde', 'fghij', 'kl xy']);
+  assert.deepEqual(W.wrapLines('one\ntwo three', 20), ['one', 'two three']);
+  for (const line of W.wrapLines('a long sentence with several words in it to wrap', 9)) assert.ok(line.length <= 9);
+
+  assert.deepEqual(W.contactPayload({ name: '  Asha ', role: 'safetyNet', strategy: 'avoid', phone: ' +91 98 ', note: ' sister ' }),
+    { name: 'Asha', role: 'safetyNet', strategy: null, phone: '+91 98', note: 'sister' }, 'strategy only for risky people');
+  assert.deepEqual(W.contactPayload({ name: 'R', role: 'risky', strategy: 'setLimits' }), { name: 'R', role: 'risky', strategy: 'setLimits', phone: '', note: '' });
+  assert.equal(W.contactPayload({ name: 'X', role: 'boss' }).role, 'safetyNet');
+  assert.match(W.contactError(W.contactPayload({ name: ' ' })), /name/);
+  assert.match(W.contactError(W.contactPayload({ name: 'A', phone: 'call me' })), /phone/);
+  assert.match(W.contactError(W.contactPayload({ name: 'A', note: 'x'.repeat(301) })), /300/);
+  assert.equal(W.contactError(W.contactPayload({ name: 'A', phone: '(022) 555-0101' })), '');
+
+  const g = W.groupContacts([
+    { id: 'c1', name: 'Zed', role: 'risky', active: true }, { id: 'c2', name: 'bea', role: 'safetyNet', active: true },
+    { id: 'c3', name: 'Al', role: 'safetyNet', active: true }, { id: 'c4', name: 'Old', role: 'sponsor', active: false },
+  ]);
+  assert.deepEqual(g.map((x) => x.role), ['safetyNet', 'risky'], 'ROLES order, empty roles left out, hidden left out');
+  assert.deepEqual(g[0].items.map((c) => c.name), ['Al', 'bea']);
+  assert.deepEqual(W.hiddenContacts([{ id: 'c4', name: 'Old', active: false }, { id: 'c5', name: 'N', active: true }]).map((c) => c.id), ['c4']);
+  assert.equal(WUI.telHref('+91 (22) 555-0101'), 'tel:+91225550101');
+  assert.equal(W.TEXT.stays, 'Stays on this device. It is in your backup file.');
+});
+
+test('workbook-settings U-20a: the card reads the four lists; empty is honest; big view from SOS', async () => {
+  await S().resetAll();
+  let page = UI.pages.workbook(wctx(['reasons']));
+  assert.ok(byTest(page, 'reasons-card'));
+  assert.ok(byTest(page, 'reasons-big'));
+  assert.equal(byTest(page, 'reasons-export'), undefined, 'no image of an empty card');
+  if (W.exerciseKnown('quick-reasons')) assert.ok(byTest(page, 'reasons-write'));
+  else { assert.equal(byTest(page, 'reasons-write'), undefined, 'never a link to an exercise that is not here (O7)'); assert.ok(byTest(page, 'reasons-later')); }
+
+  await Actions.saveResponse('quick-reasons', { reasons: ['My health', 'My kids'] });
+  await Actions.saveResponse('balance', { drawbacks: ['Lost money'], benefits: ['Clear mornings', 'my health'] });
+  const sec = W.reasonsSections(S().view);
+  assert.deepEqual(sec.quick, ['My health', 'My kids']);
+  assert.deepEqual(sec.drawbacks, ['Lost money']);
+  assert.deepEqual(W.flatReasons(sec), ['My health', 'My kids', 'Lost money', 'Clear mornings'], 'each reason once, in the card order');
+  assert.deepEqual(W.flatReasons(sec), Engine.reasonsCard(S().view), 'the same list SOS reads');
+
+  page = UI.pages.workbook(wctx(['reasons']));
+  assert.deepEqual(texts(byTest(page, 'reasons-card')), ['My health', 'My kids', 'Lost money', 'Clear mornings', 'my health']);
+  assert.ok(byTest(page, 'reasons-export'));
+  assert.equal(byTest(page, 'reasons-big').getAttribute('href'), '#/workbook/reasons?big=1&from=card');
+
+  const big = UI.pages.workbook(wctx(['reasons'], { big: '1' }));
+  assert.ok(isTest(big, 'reasons-big-view'));
+  assert.deepEqual(texts(big), ['My health', 'My kids', 'Lost money', 'Clear mornings']);
+  assert.equal(byTest(big, 'reasons-back').getAttribute('href'), '#/sos', 'from SOS, one tap back to SOS');
+  assert.equal(byTest(big, 'reasons-call').getAttribute('href'), '#/workbook/network');
+  assert.doesNotMatch(big.textContent, /tip|tour/i);
+
+  const discreet = Object.assign(wctx(['reasons'], { big: '1' }), { settings: { discreet: true } });
+  assert.match(UI.pages.workbook(discreet).textContent, /Notes/);
+  assert.doesNotMatch(UI.pages.workbook(discreet).textContent, /Remember why/);
+});
+
+test('workbook-settings U-20a: the lock-screen image is drawn on a canvas and saved with UI.download', async () => {
+  calls.toasts.length = 0; calls.downloads.length = 0;
+  assert.equal(await WUI.exportImage('My Reasons Card', ['One'], 'reasons-card.png'), false, 'the stand-in DOM has no canvas');
+  assert.equal(calls.downloads.length, 0);
+  assert.equal(calls.toasts.pop()[0], W.TEXT.noCanvas);
+
+  const drawn = [];
+  const g = { fillRect() {}, fillText: (t) => drawn.push(t), set font(v) { this._f = v; }, get font() { return this._f; } };
+  const canvas = { getContext: (k) => (k === '2d' ? g : null), toBlob: (cb, type) => cb(new Blob(['png'], { type })) };
+  const make = document.createElement;
+  document.createElement = (t) => (t === 'canvas' ? canvas : make(t));
+  try {
+    const long = 'I want to wake up clear and be there for the people I love, every single day of the week';
+    assert.equal(await WUI.exportImage('My Reasons Card', ['My kids', long], 'reasons-card.png'), true);
+  } finally { document.createElement = make; }
+  assert.equal(canvas.width, 1080); assert.equal(canvas.height, 1920);
+  assert.match(g.font, /system-ui/); assert.doesNotMatch(g.font, /url\(|https?:/, 'system font only');
+  assert.ok(drawn.includes('My Reasons Card') && drawn.includes('My kids'));
+  const d = calls.downloads.pop();
+  assert.equal(d.name, 'reasons-card.png'); assert.equal(d.mime, 'image/png'); assert.ok(d.text instanceof Blob);
+});
+
+test('workbook-settings U-20a: contacts add -> edit -> I reached out -> hide -> show, on the device only', async () => {
+  await S().resetAll();
+  let page = UI.pages.workbook(wctx(['network']));
+  assert.ok(byTest(page, 'network-empty'));
+  assert.equal(byTest(page, 'network-stays').textContent, W.TEXT.stays);
+
+  byTest(page, 'contact-add').fire('click');
+  await fillSheet({ 'contact-name': 'Asha', 'contact-role': 'safetyNet', 'contact-phone': 'not a number' });
+  await until(() => sheetError(lastSheet()) && !sheetError(lastSheet()).hidden);
+  assert.match(sheetError(lastSheet()).textContent, /phone/);
+  assert.equal(S().view.list('contacts').length, 0, 'nothing saved while the form is wrong');
+  await fillSheet({ 'contact-phone': '+91 98200 00000', 'contact-note': 'Sister, evenings' });
+  await until(() => S().view.list('contacts').length === 1);
+  const asha = S().view.list('contacts')[0];
+  assert.deepEqual([asha.name, asha.role, asha.phone, asha.note, asha.active], ['Asha', 'safetyNet', '+91 98200 00000', 'Sister, evenings', true]);
+  assert.equal(lastSheet().closed, 'saved');
+
+  await WUI.saveContact({ name: 'Ravi', role: 'risky', strategy: 'avoid' });
+  page = UI.pages.workbook(wctx(['network']));
+  assert.ok(byTest(page, 'contact-' + asha.id) && byTest(page, 'reached-' + asha.id));
+  assert.equal(byTest(page, 'call-' + asha.id).getAttribute('href'), 'tel:+919820000000');
+  const ravi = S().view.list('contacts').find((c) => c.name === 'Ravi');
+  assert.match(byTest(page, 'contact-' + ravi.id).textContent, /My plan: Stay away for now/);
+  assert.equal(byTest(page, 'reached-' + ravi.id), undefined, 'no "reached out" for a person I am careful around');
+
+  byTest(page, 'contact-edit-' + asha.id).fire('click');
+  assert.equal(byTest(lastSheet().body, 'contact-name').value, 'Asha', 'the edit sheet opens with the saved values');
+  await fillSheet({ 'contact-name': 'Asha Didi' });
+  await until(() => S().view.get('contacts', asha.id).name === 'Asha Didi');
+
+  byTest(page, 'reached-' + asha.id).fire('click');
+  byTest(lastSheet().body, 'reach-text').fire('click');
+  await until(() => S().view.list('events').some((e) => e.type === 'ContactReached'));
+  const ev = S().view.list('events').filter((e) => e.type === 'ContactReached');
+  assert.equal(ev.length, 1); assert.ok(JSON.stringify(ev[0]).includes(asha.id) && JSON.stringify(ev[0]).includes('text'));
+
+  confirmAnswer = true;
+  byTest(page, 'contact-hide-' + asha.id).fire('click');
+  await until(() => S().view.get('contacts', asha.id).active === false);
+  assert.equal(S().view.list('contacts').length, 2, 'hidden, never deleted');
+  page = UI.pages.workbook(wctx(['network']));
+  assert.equal(byTest(page, 'reached-' + asha.id), undefined);
+  byTest(page, 'contact-show-' + asha.id).fire('click');
+  await until(() => S().view.get('contacts', asha.id).active === true);
+  assert.equal(S().view.list('events').filter((e) => e.type === 'ContactReached').length, 1, 'events only grow');
+});
+
+test('workbook-settings U-20a: the workbook routes render (U-20b); locked is kind; source rules', async () => {
+  assert.ok(isTest(UI.pages.workbook(wctx([])), 'workbook-page'));
+  assert.ok(isTest(UI.pages.workbook(wctx(['motivation'])), 'artifact-motivation'));
+  const plan = UI.pages.workbook(wctx(['plan']));
+  assert.ok(isTest(plan, 'workbook-later') || isTest(plan, 'plan-page'));
+  const real = globalThis.Store;
+  globalThis.Store = Object.assign(Object.create(real), { status: () => Object.assign(real.status(), { locked: true }) });
+  try { assert.ok(isTest(UI.pages.workbook(wctx(['reasons'], { big: '1' })), 'workbook-locked')); } finally { globalThis.Store = real; }
+  const text = readFileSync(src('ui-workbook.js'), 'utf8');
+  const never = (re, why) => assert.ok(!re.test(text), why + ' (' + re + ')');
+  never(/globalThis\.(Content|Engine|Store|Actions)/, 'globals are read with typeof');
+  never(/innerHTML|outerHTML|insertAdjacentHTML|document\.write/, 'text only');
+  never(/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|navigator\.share|https?:\/\//, 'no network; contacts never leave the device');
+  never(/\baddicts?\b/i, 'person-first');
+  never(/\bat risk\b|\bpoints?\b/i, 'no scoring, no "at risk" wording');
+  assert.ok(!/\bscore\b/i.test(text.replace(/\.score\b/g, '')), 'no score in the words (the motivation row field r.score is read, never called a score)');
+  const sandbox = { module: { exports: {} } };
+  vm.runInNewContext(text, sandbox, { filename: 'ui-workbook.js' }); // loads with no globals (it only loads)
+  assert.equal(JSON.stringify(sandbox.module.exports.wrapLines('a b', 1)), '["a","b"]'); // another realm's array
+});
+
+/* ── U-20b: the workbook browser and the artifacts ──────────────────────────────────────────────────────── */
+const ROUTE_ARTIFACTS = ['reasons', 'balance', 'motivation', 'triggers', 'redflags', 'journal', 'spiral', 'signature', 'anger', 'network',
+  'scripts', 'activities', 'balance-sw', 'distractions', 'warnings', 'plan', 'signs', 'risks']; // BUILD-PLAN 3.5
+const tours = (node) => node.all((n) => n.getAttribute && n.getAttribute('data-tour') !== null).map((n) => n.getAttribute('data-tour'));
+
+test('workbook-settings U-20b: the map covers 3.5, the groups, the sensitive card, the readable text (pure)', () => {
+  assert.deepEqual(Object.keys(W.ARTIFACTS).sort(), ROUTE_ARTIFACTS.slice().sort());
+  const g = W.groupsFor(false);
+  assert.deepEqual(g.map((x) => x.id), ['why', 'self', 'people', 'joys']);
+  assert.deepEqual(g.map((x) => x.label), ['My Why', 'Know Myself', 'My People', 'My Joys']);
+  assert.deepEqual(g[0].items, ['reasons', 'balance', 'motivation', 'signs']);
+  assert.deepEqual(g[1].items, ['triggers', 'redflags', 'journal', 'spiral', 'signature', 'anger', 'warnings']);
+  assert.deepEqual(g[2].items, ['network', 'scripts']);
+  assert.deepEqual(g[3].items, ['activities', 'balance-sw', 'distractions']);
+  assert.ok(W.groupsFor(true)[1].items.includes('risks'), 'risk factors only behind the tap');
+  for (const [key, a] of Object.entries(W.ARTIFACTS)) {
+    assert.ok(Array.isArray(a.exerciseIds), key);
+    if (!a.own) assert.ok(a.exerciseIds.length && typeof a.will === 'string' && a.will, key + ' names what it will be');
+    if (!a.own) assert.equal(W.isStub(a), !a.exerciseIds.some(W.exerciseKnown), key + ': a stub exactly when none of its exercises is in Content.exercises');
+  }
+  assert.deepEqual(W.ARTIFACTS.journal.exerciseIds, ['trial']);
+  assert.deepEqual(W.ARTIFACTS.signature.exerciseIds, ['craving-signature']);
+  assert.deepEqual(W.ARTIFACTS.risks.exerciseIds, ['risk-factors']);
+  assert.equal(W.humanize('peakCraving'), 'Peak craving');
+  assert.equal(W.humanize('balance-sw'), 'Balance sw');
+  assert.deepEqual(W.readable({ drawbacks: ['Lost money', ' '], often: true, n: 3, empty: [], plan: { when: 'Friday', who: 'Asha' } }, null),
+    [{ label: 'Drawbacks', text: 'Lost money' }, { label: 'Often', text: 'Yes' }, { label: 'N', text: '3' }, { label: 'Plan', text: 'When: Friday, Who: Asha' }]);
+  assert.deepEqual(W.readable({ line: 'No thanks, I am driving', x: 'y' }, { fields: [{ id: 'line', type: 'text', label: 'What I will say' }] }),
+    [{ label: 'What I will say', text: 'No thanks, I am driving' }, { label: 'X', text: 'y' }], 'the spec labels first, then the rest');
+  assert.deepEqual(W.readable('just text', null), [{ label: 'Answer', text: 'just text' }]);
+  assert.deepEqual(W.readable(null, null), []);
+});
+
+test('workbook-settings U-20b: browser, every artifact opens; stubs are honest; edit, history, print, I said it', async () => {
+  await S().resetAll();
+  const home = UI.pages.workbook(wctx([]));
+  assert.ok(isTest(home, 'workbook-page'));
+  assert.ok(tours(home).includes('workbook-groups') && tours(home).filter((t) => t === 'workbook-card').length === 1);
+  const hs = hooks(home);
+  for (const id of ['why', 'self', 'people', 'joys']) assert.ok(hs.includes('workbook-group-' + id), id);
+  assert.ok(hs.includes('workbook-card-plan') && hs.includes('risks-reveal') && !hs.includes('workbook-card-risks'));
+  assert.equal(byTest(home, 'risks-reveal').getAttribute('href'), '#/workbook?sensitive=1');
+  assert.ok(hooks(UI.pages.workbook(wctx([], { sensitive: '1' }))).includes('workbook-card-risks'));
+  assert.ok(isTest(UI.pages.workbook(wctx(['no-such-page'])), 'workbook-page'), 'unknown -> the browser');
+  assert.doesNotMatch(home.textContent, /\bat risk\b|\bscore\b/i);
+
+  for (const key of ROUTE_ARTIFACTS.filter((k) => !W.ARTIFACTS[k].own)) {
+    const pg = UI.pages.workbook(wctx([key]));
+    assert.ok(isTest(pg, 'artifact-' + key), key);
+    if (W.isStub(W.ARTIFACTS[key])) {
+      assert.match(byTest(pg, 'artifact-stub').textContent, /^Coming in a later version: .+\.$/, key);
+      assert.equal(byTest(pg, 'artifact-edit'), undefined, key + ': never an edit button for an exercise that is not here (O7)');
+    }
+    assert.equal(byTest(pg, 'artifact-print'), undefined, key + ': nothing saved, nothing to print');
+    const seg = W.ARTIFACTS[key].practiseRoute ? W.ARTIFACTS[key].practiseRoute.slice(2).split(/[/?]/)[0] : '';
+    assert.equal(!!byTest(pg, 'artifact-practise'), !!seg && typeof UI.pages[seg] === 'function', key + ': a practise link only to a live page');
+  }
+  // Check C6: the practise link shows when its page exists and is absent without it (a stand-in games page, one case).
+  assert.equal(typeof UI.pages.games, 'undefined');
+  assert.equal(byTest(UI.pages.workbook(wctx(['redflags'])), 'artifact-practise'), undefined, 'no games page: no link');
+  UI.pages.games = () => ({});
+  try {
+    const link = byTest(UI.pages.workbook(wctx(['redflags'])), 'artifact-practise');
+    assert.ok(link, 'a games page: the link shows');
+    assert.equal(link.getAttribute('href'), W.ARTIFACTS.redflags.practiseRoute);
+    assert.match(link.getAttribute('href'), /^#\/games\//);
+  } finally { delete UI.pages.games; }
+
+  // Saved answers show as text, with history newest first, and print through UI.printDoc.
+  await Actions.saveResponse('trial', { thought: 'One will not hurt', comeback: 'One has never stayed one' });
+  await Actions.saveResponse('trial', { thought: 'I earned it', comeback: 'I earned a good morning more' });
+  let pg = UI.pages.workbook(wctx(['journal']));
+  assert.match(byTest(pg, 'artifact-part-trial').textContent, /I earned it/);
+  const hist = byTest(pg, 'artifact-history');
+  assert.match(hist.textContent, /^History \(2\)/);
+  const items = hist.all((n) => n.tagName === 'li').map((n) => n.textContent);
+  assert.ok(/I earned it/.test(items[0]) && /One will not hurt/.test(items[1]), 'newest first');
+  assert.deepEqual(texts(byTest(pg, 'journal-comebacks')), Engine.comebacks(S().view));
+  const before = calls.printed.length;
+  byTest(pg, 'artifact-print').fire('click');
+  assert.equal(calls.printed.length, before + 1);
+  const doc = calls.printed[calls.printed.length - 1];
+  assert.match(doc.textContent, /^Thought Journal/);
+  assert.match(doc.textContent, /I earned a good morning more/);
+  assert.equal(hooks(doc).length, 0, 'the print view has no controls');
+
+  await Actions.saveResponse('distractions', { distractions: ['Cold water on my face', 'Walk round the block'] });
+  assert.deepEqual(texts(byTest(UI.pages.workbook(wctx(['distractions'])), 'distraction-deck')), ['Cold water on my face', 'Walk round the block']);
+
+  // A known exercise: Edit opens it in workbook mode; "I said it" writes ScriptUsed through Actions.
+  const saved = globalThis.Content.exercises;
+  globalThis.Content.exercises = [{ id: 'assertive-script', title: 'Say it straight', kind: 'build', fields: [{ id: 'line', type: 'text', label: 'What I will say' }] }];
+  try {
+    pg = UI.pages.workbook(wctx(['scripts']));
+    assert.equal(byTest(pg, 'artifact-stub'), undefined);
+    assert.equal(byTest(pg, 'artifact-edit').getAttribute('href'), '#/exercise/assertive-script?mode=workbook');
+    assert.equal(byTest(pg, 'script-said'), undefined, 'nothing saved, nothing to say');
+    await Actions.saveResponse('assertive-script', { line: 'No thanks, I am driving' });
+    pg = UI.pages.workbook(wctx(['scripts']));
+    assert.match(byTest(pg, 'artifact-part-assertive-script').textContent, /What I will sayNo thanks, I am driving/);
+    byTest(pg, 'script-said').fire('click');
+    await until(() => S().view.list('events').some((e) => e.type === 'ScriptUsed'));
+    const r = Engine.latest(S().view, 'assertive-script');
+    assert.equal(S().view.list('events').find((e) => e.type === 'ScriptUsed').payload.responseId, r.id);
+  } finally { if (saved === undefined) delete globalThis.Content.exercises; else globalThis.Content.exercises = saved; }
+  assert.ok(byTest(UI.pages.workbook(wctx([])), 'workbook-card-journal').textContent.includes('Saved '));
+});
+
+/* ── U-21: My Recovery Plan (offline/src/ui-plan.js) ────────────────────────────────────────────────────── */
+const PL = require(src('ui-plan.js'));
+globalThis.PlanUI = classic('ui-plan.js', 'PlanUI'); // ui-workbook reads PlanUI by name, as in the browser
+
+test('workbook-settings U-21: merge adds and never drops; normalise, confirm, still true, move (pure)', () => {
+  assert.deepEqual(PL.SECTIONS, ['motivation', 'wellness', 'situation', 'people', 'mood', 'triggers', 'warnings', 'battlePlans', 'support']);
+  const saved = { motivation: { items: ['My kids', 'my own line'], confirmed: true }, people: { items: [], confirmed: false }, extra: { items: ['kept'] } };
+  const prefill = { motivation: { items: ['my kids', 'Clear mornings'], confirmed: false }, people: { items: ['Asha (Safety Net)'], confirmed: false } };
+  const m = PL.merge(saved, prefill);
+  assert.deepEqual(m.motivation, { items: ['My kids', 'my own line', 'Clear mornings'], confirmed: true }, 'saved lines first, new ones after, one each');
+  assert.deepEqual(m.people.items, ['Asha (Safety Net)']);
+  assert.deepEqual(m.extra.items, ['kept'], 'a section not in the list is kept');
+  for (const id of PL.SECTIONS) {
+    assert.ok(Array.isArray(m[id].items), id);
+    for (const t of (saved[id] && saved[id].items) || []) assert.ok(m[id].items.includes(t), 'never drops ' + t);
+  }
+  assert.deepEqual(PL.merge(null, prefill).motivation.items, ['my kids', 'Clear mornings']);
+  assert.deepEqual(PL.normalise({ mood: { items: ['  a  b ', 'A B', '', 7], confirmed: 'yes' } }).mood, { items: ['a b'], confirmed: false });
+  assert.equal(PL.allConfirmed(PL.normalise({})), false);
+  assert.equal(PL.allConfirmed(Object.fromEntries(PL.SECTIONS.map((id) => [id, { items: [], confirmed: true }]))), true);
+  const now = new Date('2026-11-07T10:00:00');
+  assert.equal(PL.stillTrue('2026-10-01T10:00:00', now), true);
+  assert.equal(PL.stillTrue('2026-10-20T10:00:00', now), false);
+  assert.equal(PL.stillTrue(null, now), false);
+  assert.deepEqual(PL.move(['a', 'b', 'c'], 2, -1), ['a', 'c', 'b']);
+  assert.deepEqual(PL.move(['a', 'b'], 0, -1), ['a', 'b']);
+});
+
+test('workbook-settings U-21: the plan prefills, edits, confirms, saves, refreshes and prints', async () => {
+  await S().resetAll();
+  PlanUI.reset();
+  await Actions.saveResponse('quick-reasons', { reasons: ['My health'] });
+  await Actions.contacts.add({ name: 'Asha', role: 'safetyNet' });
+  const open = (q) => UI.pages.workbook(Object.assign(wctx(['plan']), q || {}));
+  let pg = open();
+  assert.ok(isTest(pg, 'plan-page'));
+  assert.ok(tours(pg).includes('plan-sections') && tours(pg).includes('plan-print'));
+  for (const id of PL.SECTIONS) { assert.ok(byTest(pg, 'plan-section-' + id), id); assert.ok(byTest(pg, 'plan-confirm-' + id), id); }
+  assert.ok(byTest(pg, 'plan-draft'), 'a first draft says nothing is saved yet');
+  assert.equal(byTest(pg, 'plan-item-motivation-0').value, 'My health', 'prefilled from the Reasons Card');
+  assert.equal(byTest(pg, 'plan-item-people-0').value, Engine.prefillRecoveryPlan(S().view, new Date()).people.items[0]);
+  assert.match(byTest(pg, 'plan-section-triggers').textContent, /Your triggers show here/);
+
+  // Edit: add two lines, reorder, remove one; confirm every section; the page is one node that repaints in place.
+  byTest(pg, 'plan-add-input-triggers').value = 'Payday evenings';
+  byTest(pg, 'plan-add-triggers').fire('click');
+  byTest(pg, 'plan-add-input-triggers').value = 'Being alone after work';
+  byTest(pg, 'plan-add-triggers').fire('click');
+  byTest(pg, 'plan-up-triggers-1').fire('click');
+  assert.equal(byTest(pg, 'plan-item-triggers-0').value, 'Being alone after work');
+  byTest(pg, 'plan-add-input-mood').value = 'Throwaway';
+  byTest(pg, 'plan-add-mood').fire('click');
+  byTest(pg, 'plan-remove-mood-0').fire('click');
+  assert.equal(byTest(pg, 'plan-item-mood-0'), undefined);
+  const typed = byTest(pg, 'plan-item-motivation-0');
+  typed.value = 'My health, and my mornings';
+  typed.fire('input');
+  assert.ok(byTest(pg, 'plan-unsaved'));
+  assert.ok(isTest(open(), 'plan-page') && byTest(open(), 'plan-item-motivation-0').value === 'My health, and my mornings', 'a re-render keeps the draft');
+  for (const id of PL.SECTIONS) { const b = byTest(pg, 'plan-confirm-' + id); b.checked = true; b.fire('change'); }
+
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => { const r = S().view.get('recoveryPlan', 'plan'); return r && r.confirmedAt; });
+  let row = S().view.get('recoveryPlan', 'plan');
+  assert.deepEqual(row.sections.triggers.items, ['Being alone after work', 'Payday evenings']);
+  assert.deepEqual(row.sections.motivation.items[0], 'My health, and my mornings');
+  assert.ok(PL.allConfirmed(row.sections));
+  const confirmedAt = row.confirmedAt;
+  const confirmedEvents = () => S().view.list('events').filter((e) => e.type === 'RecoveryPlanConfirmed').length;
+  assert.equal(confirmedEvents(), 1);
+  await tick();
+  pg = open();
+  assert.equal(byTest(pg, 'plan-draft'), undefined);
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.match(pg.textContent, /Confirmed on /);
+
+  // Save again: confirmedAt and the event stay once; lastReviewAt moves.
+  await new Promise((r) => setTimeout(r, 5));
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => S().view.get('recoveryPlan', 'plan').lastReviewAt !== row.lastReviewAt);
+  row = S().view.get('recoveryPlan', 'plan');
+  assert.equal(row.confirmedAt, confirmedAt);
+  assert.equal(confirmedEvents(), 1);
+
+  // Refresh adds what the notebook has now, keeps every line the person wrote.
+  await Actions.contacts.add({ name: 'Ravi', role: 'sponsor' });
+  pg = open();
+  byTest(pg, 'plan-refresh').fire('click');
+  // Two: Ravi, and 'My health' again (the person reworded that line, so the notebook's own line is missing).
+  assert.match(calls.toasts[calls.toasts.length - 1][0], /^Added 2 lines from your notebook\. Nothing was removed\./);
+  assert.ok(byTest(pg, 'plan-section-people').all((n) => n.tagName === 'input').some((n) => /Ravi/.test(n.value)));
+  assert.equal(byTest(pg, 'plan-item-triggers-1').value, 'Payday evenings');
+
+  // Print: the lists only, no controls.
+  byTest(pg, 'plan-print').fire('click');
+  const doc = calls.printed[calls.printed.length - 1];
+  assert.match(doc.textContent, /^My Recovery Plan/);
+  assert.match(doc.textContent, /Payday evenings/);
+  assert.match(doc.textContent, /Ravi/);
+  assert.equal(hooks(doc).length, 0);
+
+  // Still true? 30 days after the last save (text only).
+  PlanUI.reset();
+  assert.equal(byTest(open(), 'plan-still-true'), undefined);
+  assert.ok(byTest(open({ now: new Date(Date.now() + 31 * 86400000) }), 'plan-still-true'));
+  assert.match(open({ settings: { discreet: true } }).textContent, /My plan/);
+
+  const text = readFileSync(src('ui-plan.js'), 'utf8');
+  assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write/.test(text), 'text only');
+  assert.ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|https?:\/\//.test(text), 'no network');
+  assert.ok(!/globalThis\.(Content|Engine|Store|Actions)|\baddicts?\b|\bscore\b|\bat risk\b/i.test(text));
+  const sandbox = { module: { exports: {} } };
+  vm.runInNewContext(text, sandbox, { filename: 'ui-plan.js' }); // loads with no globals (it only loads)
+  assert.equal(sandbox.module.exports.SECTIONS.length, 9);
+});
+
+/* ── check C5: a plan draft belongs to its notebook; erase everything and a backup brought back drop it ────── */
+test('workbook-settings U-21 C5: erase everything and a backup brought back drop an unsaved plan draft', async () => {
+  await S().resetAll();
+  PlanUI.reset();
+  const open = () => UI.pages.workbook(wctx(['plan']));
+  const draftLine = (line) => { const pg = open(); const f = byTest(pg, 'plan-item-motivation-0'); f.value = line; f.fire('input'); return pg; };
+  const anyValue = (pg, re) => pg.all((n) => n.tagName === 'input' && re.test(String(n.value || ''))).length > 0;
+
+  // A notebook to bring back later: its own reason, no saved plan.
+  await Actions.saveResponse('quick-reasons', { reasons: ['From the backup'] });
+  const backup = JSON.parse(JSON.stringify(Engine.exportBackup(S().view, { exportedAt: new Date().toISOString() })));
+  await S().resetAll();
+  await Actions.saveResponse('quick-reasons', { reasons: ['Old notebook reason'] });
+
+  // An ordinary change elsewhere keeps the draft.
+  draftLine('Old unsaved line');
+  await Actions.contacts.add({ name: 'Asha', role: 'safetyNet' });
+  assert.ok(byTest(open(), 'plan-unsaved'), 'a contact added elsewhere keeps the draft');
+
+  // A backup brought back: the plan shows the backup's notebook, never the old draft.
+  await Actions.importBackup(backup);
+  let pg = open();
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.ok(byTest(pg, 'plan-draft'));
+  assert.equal(byTest(pg, 'plan-item-motivation-0').value, 'From the backup');
+  assert.ok(!anyValue(pg, /Old unsaved line|Old notebook reason/));
+
+  // Erase everything: an empty first draft again, and Save writes nothing from before.
+  draftLine('Second unsaved line');
+  assert.ok(byTest(open(), 'plan-unsaved'));
+  await Actions.eraseAll();
+  pg = open();
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.ok(!anyValue(pg, /unsaved line|From the backup|Old notebook/));
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => S().view.get('recoveryPlan', 'plan'));
+  assert.doesNotMatch(JSON.stringify(S().view.get('recoveryPlan', 'plan').sections), /unsaved line|From the backup|Old notebook/);
+  PlanUI.reset();
 });

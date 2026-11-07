@@ -645,6 +645,38 @@ const SettingsUI = (function () {
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); nothing in ui-core.js changes.
 if (typeof UI !== 'undefined' && UI && UI.pages) UI.pages.settings = (ctx) => SettingsUI.page(ctx);
 
+/* High contrast on every screen, not only in Settings (slice check C3). ui-core applies text size and motion from the
+   settings row but not contrast yet (asked of core), so this file sets html[data-contrast=high] once the Store has
+   loaded and again after every store change, without touching ui-core.js. Locked or not loaded: the sealed row decides
+   nothing, so the attribute is left as it is. */
+const applySavedContrast = (function () {
+  const apply = () => {
+    try {
+      if (typeof Store === 'undefined' || !Store || !Store.view || typeof Store.view.get !== 'function') return;
+      if (typeof document === 'undefined' || !document || !document.documentElement) return;
+      const st = Store.view.get('settings', 'app');
+      if (!st || typeof st !== 'object') return;
+      const root = document.documentElement;
+      if (st.highContrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast');
+    } catch (e) { /* never in the way of a page */ }
+  };
+  if (typeof Store === 'undefined' || !Store) return apply;
+  try { if (typeof Store.subscribe === 'function') Store.subscribe(apply); } catch (e) { /* no subscription here */ }
+  const afterLoad = () => {
+    try {
+      // Store.load() is memoised: after ui-core's boot it hands back the same promise and starts nothing new.
+      if (typeof Store.load === 'function') Promise.resolve().then(() => Store.load()).then(apply, () => {});
+      else apply();
+    } catch (e) { /* never in the way of a page */ }
+  };
+  try {
+    const waiting = typeof window !== 'undefined' && window && typeof window.addEventListener === 'function' &&
+      typeof document !== 'undefined' && document && document.readyState && document.readyState !== 'complete';
+    if (waiting) window.addEventListener('load', afterLoad, { once: true }); else afterLoad();
+  } catch (e) { /* never in the way of a page */ }
+  return apply;
+})();
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {};
   for (const k of SettingsUI.PURE) module.exports[k] = SettingsUI[k];
