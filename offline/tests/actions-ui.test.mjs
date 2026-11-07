@@ -258,7 +258,8 @@ test('actions: the hub and the screens still being built are honest (no dead but
   await withDom(async () => {
     const hub = AU.page(ctxFor(E.makeView({}), R('/actions')));
     assert.equal(one(hub, 'actions-open-planner').getAttribute('href'), '#/actions/planner');
-    for (const sub of ['battle', 'review', 'quests', 'predictions', 'todos', 'elsewhere']) {
+    assert.equal(one(hub, 'actions-open-battle').getAttribute('href'), '#/actions/battle');
+    for (const sub of ['review', 'quests', 'predictions', 'todos', 'elsewhere']) {
       const root = AU.page(ctxFor(E.makeView({}), R('/actions/' + sub)));
       assert.equal(root.getAttribute('data-test'), 'actions-stub', sub);
       assert.match(root.textContent, /being built/);
@@ -333,4 +334,142 @@ test('planner: the contract\'s data-testid hooks sit beside data-test (planner-a
     assert.equal(tid('planner-block').length, 1);
     assert.equal(tid('planner-block')[0].getAttribute('data-test'), 'planner-block');
   });
+});
+
+// ── U-23 Battle Plans ──────────────────────────────────────────────────────────────────────
+const evs = (type) => Store.view.list('events').filter((e) => e.type === type);
+const bpFill = (root, o) => { for (const k of Object.keys(o)) one(root, 'bp-f-' + k).value = o[k]; };
+
+test('battle: a plan exports a valid .ics through Engine.ics (one VEVENT on its date, CRLF lines, no buddy)', () => {
+  const p = plan({ id: 'bp1', date: '2026-11-10', start: '19:00', end: '21:00', title: 'Work party', kind: 'risky', risky: true,
+    battlePlan: { situation: 'Old crew, open bar, a long evening with nothing else planned for after it ends', plan: 'Hold a soda; leave by nine',
+      backups: ['Text my sister', 'Step outside'], buddyId: 'c1', exit: 'A taxi at nine' } });
+  const item = P.battlePlanIcsItem(p);
+  assert.deepEqual(Object.keys(item).sort(), ['date', 'end', 'id', 'notes', 'start', 'title']);
+  assert.equal(item.date, '2026-11-10');
+  assert.doesNotMatch(item.notes, /Someone to reach|c1/, 'the buddy stays on the device');
+  const f = P.battleIcsFile(E, p, NOW);
+  assert.equal(f.filename, '1-addic-battle-plan-2026-11-10.ics');
+  assert.ok(f.text.startsWith('BEGIN:VCALENDAR\r\n'));
+  assert.match(f.text, /END:VCALENDAR\r\n$/);
+  assert.equal((f.text.match(/BEGIN:VEVENT/g) || []).length, 1);
+  assert.match(f.text, /\r\nDTSTART:20261110T190000\r\n/);
+  assert.match(f.text, /\r\nDTEND:20261110T210000\r\n/);
+  assert.match(f.text, /\r\nSUMMARY:Work party\r\n/);
+  assert.doesNotMatch(f.text.replace(/\r\n/g, ''), /[\r\n]/, 'every line ends in CRLF');
+  assert.equal(P.battlePlanIcsItem({ date: 'soon' }), null);
+  assert.equal(P.battleIcsFile(null, p, NOW), null);
+});
+
+test('battle: the list carries bp-new; the form carries bp-form and saves a risky block with one BattlePlanCreated', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const empty = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.ok(tours(empty).includes('bp-new'));
+    assert.equal(one(empty, 'bp-new').getAttribute('href'), '#/actions/battle?new=1');
+    one(empty, 'bp-none');
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { new: '1' })));
+    assert.equal(one(root, 'bp-form').getAttribute('data-tour'), 'bp-form');
+    assert.equal(one(root, 'bp-f-date').value, TODAY, 'the day defaults to today');
+    bpFill(root, { title: 'Work party', date: '2026-11-10', start: '19:00', end: '21:00', plan: 'Hold a soda; leave by nine', backups: 'Text my sister\n\n Step outside ' });
+    await one(root, 'bp-form').fire('submit');
+    await until(() => Store.view.list('plans').length === 1);
+    const [p] = Store.view.list('plans');
+    assert.equal(p.kind, 'risky');
+    assert.equal(p.risky, true);
+    assert.equal(p.title, 'Work party');
+    assert.deepEqual(p.battlePlan.backups, ['Text my sister', 'Step outside']);
+    assert.equal(p.battlePlan.buddyId, null);
+    assert.equal(evs('BattlePlanCreated').length, 1);
+    assert.equal(byTest(root, 'bp-card').length, 1, 'the list shows the new plan');
+    assert.equal(byTest(root, 'bp-form').length, 0, 'the form is closed');
+  });
+});
+
+test('battle: an empty plan or an end before the start is refused with a message, and the input is kept', async () => {
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { new: '1' })));
+    bpFill(root, { title: 'Late shift', start: '22:00', end: '21:00' });
+    await one(root, 'bp-form').fire('submit');
+    assert.match(one(root, 'bp-f-error').textContent, /what you will do/i);
+    assert.equal(one(root, 'bp-f-title').value, 'Late shift');
+    one(root, 'bp-f-plan').value = 'Go straight home';
+    await one(root, 'bp-form').fire('submit');
+    assert.match(one(root, 'bp-f-error').textContent, /end time must be after/i);
+    assert.equal(one(root, 'bp-f-plan').value, 'Go straight home');
+    assert.equal(Store.view.list('plans').length, 0);
+    assert.equal(evs('BattlePlanCreated').length, 0);
+  });
+});
+
+test('battle: ?plan=<id> attaches a Battle Plan to an existing block (no second block); a gone block is said plainly', async () => {
+  await freshStore();
+  const { plan: b } = await Actions.plans.add({ date: TODAY, start: '18:00', end: '20:00', title: 'Evening alone', kind: 'should' });
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: b.id })));
+    assert.equal(one(root, 'bp-f-title').value, 'Evening alone');
+    assert.equal(one(root, 'bp-f-start').value, '18:00');
+    one(root, 'bp-f-plan').value = 'Cook, then call a friend';
+    await one(root, 'bp-form').fire('submit');
+    await until(() => !!Store.view.list('plans')[0].battlePlan);
+    const rows = Store.view.list('plans');
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].risky, true);
+    assert.equal(rows[0].kind, 'should', 'the kind of an existing block is kept');
+    assert.equal(rows[0].battlePlan.plan, 'Cook, then call a friend');
+    assert.equal(evs('BattlePlanCreated').length, 1);
+    const gone = AU.page(ctxFor(Store.view, R('/actions/battle', { plan: 'nope' })));
+    one(gone, 'bp-missing');
+    assert.equal(one(gone, 'bp-new-instead').getAttribute('href'), '#/actions/battle?new=1');
+  });
+});
+
+test('battle: the debrief, yes and no, each append one BattlePlanDebriefed; a second debrief adds none; no score', async () => {
+  await freshStore();
+  const mk = (date, title) => Actions.plans.add({ date, start: '19:00', end: '21:00', title, kind: 'risky', battlePlan: { plan: 'Walk it off' } });
+  const a = (await mk('2026-11-06', 'Friday evening')).plan;
+  const b = (await mk('2026-11-05', 'Thursday evening')).plan;
+  await mk('2026-11-09', 'Monday evening');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.equal(byTest(root, 'bp-card').length, 3);
+    assert.equal(byTest(root, 'bp-debrief').length, 2, 'only ended blocks ask');
+    assert.match(one(root, 'bp-upcoming').textContent, /When this time has passed/);
+    assert.equal(one(root, 'bp-debrief-yes').getAttribute('data-testid'), 'bp-debrief-yes');
+    one(root, 'bp-how').value = 'Called my brother';
+    await one(root, 'bp-debrief-yes').fire('click');
+    assert.equal(evs('BattlePlanDebriefed').length, 1);
+    assert.equal(Store.view.get('plans', a.id).debrief.usedPlan, true);
+    assert.equal(Store.view.get('plans', a.id).debrief.how, 'Called my brother');
+    assert.equal(byTest(root, 'bp-debrief').length, 1);
+    await one(root, 'bp-debrief-no').fire('click');
+    assert.equal(evs('BattlePlanDebriefed').length, 2);
+    assert.equal(Store.view.get('plans', b.id).debrief.usedPlan, false);
+    await P.debriefPlan(Actions, a.id, false, 'again');
+    assert.equal(evs('BattlePlanDebriefed').length, 2, 'once per plan');
+    const after = AU.page(ctxFor(Store.view, R('/actions/battle')));
+    assert.equal(byTest(after, 'bp-debriefed').length, 2);
+    assert.doesNotMatch(after.textContent, /\b(score|points|streak|failed|missed|overdue)\b/i);
+  });
+});
+
+test('battle: "Add to calendar" hands the .ics to UI.download as text/calendar; crisis words show the urgent-help line', async () => {
+  await freshStore();
+  await Actions.plans.add({ date: '2026-11-12', start: '20:00', end: '22:00', title: 'Payday', kind: 'risky', battlePlan: { plan: "I can't go on like this" } });
+  const calls = [];
+  globalThis.UI = { download: (...a) => { calls.push(a); return true; }, toast() {} };
+  try {
+    await withDom(async () => {
+      const root = AU.page(ctxFor(Store.view, R('/actions/battle')));
+      await one(root, 'bp-ics').fire('click');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0][0], '1-addic-battle-plan-2026-11-12.ics');
+      assert.ok(calls[0][1].startsWith('BEGIN:VCALENDAR\r\n'));
+      assert.equal(calls[0][2], 'text/calendar');
+      assert.equal(one(root, 'bp-help-go').getAttribute('href'), '#/sos/urgent');
+      for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+      for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+    });
+  } finally { delete globalThis.UI; }
 });
