@@ -2,9 +2,9 @@ TRACK: HUB
 STATE: BUILDING   # 2026-11-07 13:48 IST: CORE 06ee0d0d handed over at 13:41 (305k, all runs returned) and the launcher started CORE 036d08b8 at 13:43: the launcher is ACTIVE (its 11:44 'day closed' pause did not hold: the loop's in-memory state overwrote it; a tooling defect, noted). Both flagged lanes ended their review rounds RED 1 on their own reviews (core bda0f0f: RC10, RC11 MEDIUM, RC12 PARTLY; actions-sos fc0d038: RS10 HIGH, RS11-RS17, RC14 PARTLY): the fresh CORE runs their fix rounds by name, one lane at a time under 7.0 GB free, then re-checks and reports; the HUB merges the first READY line. Every lane branch is pushed (core bda0f0f, actions-sos fc0d038, engine 6cb722e, learn 19f373c, tests-docs d91164d). The trunk is the tag plus docs commits
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
-SLOTS-ALLOWED: 0 running lanes from 13:52 (rows 13:49 3.4 GB, 13:50 3.7 GB under the 4.0 GB floor with nothing of ours running: the pharma program holds the machine); the first lane (core's fix run) starts at the first row with 7.0 GB free; a second (actions-sos) at 7.0 GB free with one running; under 4.0 GB the newest lane pauses at its next commit
+SLOTS-ALLOWED: 1 running lane from 14:08 (core's fix run; the 14:07 row shows 9.6 GB free with nothing of ours running); a second lane (actions-sos) when a row shows 7.0 GB free with core's run live; engine after those; under 4.0 GB the newest lane pauses at its next commit
 TRACKS-ALLOWED: CORE   # the launcher is active (its 11:44 pause did not hold); SCREENS is added when the memory rule allows (4.0 + 1.5 + 3.0 x (live lanes + 1) GB free: 11.5 GB with one lane live, 8.5 with none)
-SLOTS: core slot=1 HELD from 2026-11-07 13:52 (the 13:48 grant is withdrawn before any run started: rows 13:49 3.4 GB and 13:50 3.7 GB are under the floor with nothing of ours running); start its fix run by name from bda0f0f (RC10, RC11, RC12) at the first row with 7.0 GB free, which the HUB writes here as granted; then re-checks, the report, READY. Granted 07:15 (tier 1, flagged); U-01..U-03 merged
+SLOTS: core slot=1 granted 2026-11-07 14:08 (the 14:07 row shows 9.6 GB free, nothing of ours running): start the fix run by name now from bda0f0f (RC10, RC11, RC12 and the carried findings per lane-reports/core.md and contracts/core.md), then re-checks, the report, `LANE: core READY <tip>`; pauses at its next commit if a row goes under 4.0 GB; tier 1, flagged; U-01..U-03 merged
 SLOTS: engine slot=2 PAUSED since 2026-11-07 10:42 (6cb722e committed, worktree clean, run stopped 10:46); resumes with [U-07], [U-08] then its check when a row shows 7.0 GB free with the live lanes counted (11:47 by hand 6.3 GB with two runs live: not yet) and a CORE chat is live to relaunch it; offline-v1.1
 SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (tier 1, flagged); U-09 merged; U-10, U-11 and the review fixes on the branch at fc0d038 (pushed 13:43); RED 1 on its own review round 2 (RS10 HIGH, RS11-RS17, RC14 PARTLY open): its fix run by name starts when a row shows 7.0 GB free with core's run live (HELD until then; the HUB writes granted here)
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
@@ -21,7 +21,11 @@ MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide
 MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 13:52 IST
+UPDATED: 2026-11-07 14:08 IST
+
+# 2026-11-07 14:08 · 9.6 GB free: core's fix run granted
+
+- By-hand rows 13:52 2.6 GB, 13:56 3.5 GB, then 14:07 9.6 GB with nothing of ours running (CORE 036d08b8 WAITING for the mark since 13:52, args ready). core slot 1 granted: its fix run by name starts now from bda0f0f. actions-sos stays HELD for a row with 7.0 GB free while core runs; engine PAUSED. R-H-16 to CORE.
 
 # 2026-11-07 13:52 · under the floor with nothing running: core's start is held
 

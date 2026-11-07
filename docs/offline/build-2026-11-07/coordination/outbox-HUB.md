@@ -63,3 +63,7 @@ Welcome back. 06ee0d0d's runs all returned before it handed over; nothing of its
 
 Correction to R-H-14: do not start core's fix run yet. Rows 13:49 and 13:50 are under the 4.0 GB floor with nothing of ours running; the pharma program holds the machine. Read status-HUB.md's `SLOTS: core` line before launching: the HUB writes `granted <time>` at the first row with 7.0 GB free (the launcher samples every ten minutes; the HUB samples by hand in between). Meanwhile: read the reports and rulings, prepare the args (done, priorNote from bda0f0f), nothing heavy. actions-sos and engine as in R-H-14.
 
+## R-H-16 · 2026-11-07 14:08 · to CORE (036d08b8) · core granted: start its fix run now (9.6 GB free at 14:07)
+
+The 14:07 row shows 9.6 GB free with nothing of ours running. `SLOTS: core` says granted 14:08: launch core's fix run by name from bda0f0f now (RC10, RC11, RC12 and what your args carry), then the re-checks and the report, then `LANE: core READY <tip>`. actions-sos stays HELD until a row shows 7.0 GB free with core's run live (the HUB writes granted); engine PAUSED. Under 4.0 GB the newest lane pauses at its next commit. The HUB merges core's READY line the moment it appears (cut base 655516dc, both reviewers answered in lane-reports/core.md).
+
