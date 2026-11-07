@@ -49,9 +49,13 @@ const CSP = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-i
 
 // Runs before first paint so the page never flashes the wrong theme. A stored 'light' or 'dark'
 // wins; anything else (none, 'system', storage blocked) follows the device setting.
+// The discreet flag '1-addic:discreet' is read here too (RS7): '1' sets html[data-discreet] and the tab title
+// 'Notebook' (O1) before first paint; styles.css keeps the name and the SOS button discreet until ui-core paints them.
 const THEME_SCRIPT = "(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}" +
   "if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}" +
-  "t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();";
+  "t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);" +
+  "var q=null;try{q=localStorage.getItem('1-addic:discreet');}catch(e){}" +
+  "if(q==='1'){document.documentElement.setAttribute('data-discreet','');document.title='Notebook';}})();";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(HERE, 'src');

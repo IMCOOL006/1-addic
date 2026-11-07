@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>1-addic</title>
-<script>(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);var q=null;try{q=localStorage.getItem('1-addic:discreet');}catch(e){}if(q==='1'){document.documentElement.setAttribute('data-discreet','');document.title='Notebook';}})();</script>
 <style>
 /* 1-addic · styles.css · the look (BUILD-PLAN 3.12), lane core. The paper harbor: deep teal, sand, terracotta and
    lantern gold by day; the lantern-lit night in dark. Red only for stuck or dangerous. System fonts.
@@ -359,6 +359,10 @@ dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
 /* ── Calm and discreet ────────────────────────────────────────────────────────────────────── */
 body.calm .xp, body.calm .badge, body.calm .harbor { display: none !important; }
 [data-counters="off"] .counter { display: none !important; }
+/* Discreet before ui-core paints the chrome (RS7): the head script sets html[data-discreet]; ui-core sets data-route. */
+html[data-discreet]:not([data-route]) #app-name, html[data-discreet]:not([data-route]) #sos-btn { font-size: 0; }
+html[data-discreet]:not([data-route]) #app-name::after { content: "Notebook"; font-size: 1rem; }
+html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-size: 1rem; }
 
 /* ── Motion ───────────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -2822,6 +2826,7 @@ const UI = (function () {
     const S = ns('Store');
     const sosFirst = pageKey(route()) === 'sos';
     if (sosFirst || !S) await render('route'); // SOS never waits for storage
+    else chrome(pageKey(route())); // the name and the button are discreet before the load ends (RS7)
     if (S) {
       if (typeof S.load === 'function') {
         const load = Promise.resolve().then(() => S.load()).catch((err) => {

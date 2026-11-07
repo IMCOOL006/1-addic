@@ -899,6 +899,7 @@ const UI = (function () {
     const S = ns('Store');
     const sosFirst = pageKey(route()) === 'sos';
     if (sosFirst || !S) await render('route'); // SOS never waits for storage
+    else chrome(pageKey(route())); // the name and the button are discreet before the load ends (RS7)
     if (S) {
       if (typeof S.load === 'function') {
         const load = Promise.resolve().then(() => S.load()).catch((err) => {

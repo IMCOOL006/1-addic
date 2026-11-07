@@ -680,6 +680,32 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     await b.booting;
     assert.match(main().textContent, /Today, loaded/);
   });
+
+  test('RS7: discreet, the name and the button read Notebook and Help before the Store has loaded, at any route', async (t) => {
+    const b = await bootPending(t, '#/today', new Map([['1-addic:discreet', '1']]));
+    assert.equal(document.title, 'Notebook');
+    assert.equal(document.getElementById('app-name').textContent.trim(), 'Notebook');
+    assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
+    b.opened();
+    await b.booting; // loaded and open, the settings row decides from here (C5)
+  });
+
+  test('RS7: discreet, the head script names the tab Notebook before first paint, and the CSS keeps name and button discreet', () => {
+    const html = fs.readFileSync(new URL('../1-addic.html', import.meta.url), 'utf8');
+    const m = /<title>1-addic<\/title>\s*<script>([\s\S]*?)<\/script>/.exec(html);
+    assert.ok(m, 'the head script follows the title');
+    const run = (get) => {
+      const root = { attrs: {}, setAttribute(k, v) { this.attrs[k] = String(v); } };
+      const doc = { title: '1-addic', documentElement: root };
+      new Function('localStorage', 'window', 'document', m[1])({ getItem: get }, { matchMedia: () => ({ matches: false }) }, doc);
+      return { title: doc.title, discreet: 'data-discreet' in root.attrs, theme: root.attrs['data-theme'] };
+    };
+    assert.deepEqual(run((k) => (k === '1-addic:discreet' ? '1' : null)), { title: 'Notebook', discreet: true, theme: 'light' });
+    assert.deepEqual(run(() => null), { title: '1-addic', discreet: false, theme: 'light' });
+    assert.deepEqual(run(() => { throw new Error('SecurityError'); }), { title: '1-addic', discreet: false, theme: 'light' });
+    assert.match(html, /html\[data-discreet\]:not\(\[data-route\]\) #app-name::after \{ content: "Notebook"/);
+    assert.match(html, /html\[data-discreet\]:not\(\[data-route\]\) #sos-btn::after \{ content: "Help"/);
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
