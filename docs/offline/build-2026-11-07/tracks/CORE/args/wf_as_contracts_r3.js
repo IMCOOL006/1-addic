@@ -94,12 +94,14 @@ ${RULES}
 YOUR BUDGET: about 60 tool calls, hard cap 80 (cut off at the cap you return NOTHING); write findings as you go to ${SCR}/actions-sos__check-r7.md. Return: verdict PASS or FIX (FIX only for a BLOCKER, HIGH or MEDIUM), tip, findings (ids C-R7-1, ...: severity, unit, file:line, what is expected, evidence path), gates (one line each with its log path), trunk_suite (counts, failing names, log path), territory, not_checked.`
 
 phase('Review')
+// args.only: 'review' (the contracts reviewer only: the HUB's grant on a row under 7.0 GB), 'check' (the lane checker only, on a 7.0 GB row), or absent (both).
+const ONLY = A.only || null
 const [review, check] = await parallel([
-  () => agent(reviewPrompt, { label: 'review:contracts:actions-sos:r3', phase: 'Review', agentType: 'lane-reviewer', schema: REVIEW_SCHEMA }),
-  () => agent(checkPrompt, { label: 'check:actions-sos:r7', phase: 'Review', agentType: 'lane-checker', schema: CHECK_SCHEMA }),
+  () => ONLY === 'check' ? Promise.resolve(null) : agent(reviewPrompt, { label: 'review:contracts:actions-sos:r3', phase: 'Review', agentType: 'lane-reviewer', schema: REVIEW_SCHEMA }),
+  () => ONLY === 'review' ? Promise.resolve(null) : agent(checkPrompt, { label: 'check:actions-sos:r7', phase: 'Review', agentType: 'lane-checker', schema: CHECK_SCHEMA }),
 ])
-if (!review) log('the contracts reviewer returned nothing (cap?)')
-if (!check) log('the checker returned nothing (cap?)')
+if (!review && ONLY !== 'check') log('the contracts reviewer returned nothing (cap?)')
+if (!check && ONLY !== 'review') log('the checker returned nothing (cap?)')
 const serious = [
   ...(review ? review.findings : []),
   ...(check ? check.findings.map(f => ({ ...f, scenario: f.expected, fix: '(the checker\'s expectation)' })) : []),

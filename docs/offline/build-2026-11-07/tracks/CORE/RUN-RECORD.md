@@ -178,12 +178,18 @@
 
 - wf_ea2586a6-02e READY cd385a5: RS37R 54405c7, RS38 b20cdb3, RS36R cd385a5 FIXED; no new finding; 169/169 (this chat re-ran it). The contracts re-review waits for a 7.0 GB row. R-C-37.
 
+## 2026-11-07 23:39 IST · the contracts re-review of actions-sos started; the hand-over planned (context over 250k)
+
+- wf_66ea28b7-119 (Workflow scriptPath C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_contracts_r3.js, args {now, only: review}; a copy in tracks/CORE/args/): one lane-reviewer (contracts lens, fca2781..HEAD, notes appended to _logs/reports/actions-sos/actions-sos__review-contracts.md as Round 3), then a lane-checker skeptic per HIGH/MEDIUM finding. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_66ea28b7-119/journal.jsonl.
+- The HUB (R-H via message 23:38) grants a reviewer-only run under 7.0 GB; checker and builder runs keep the 7.0 GB mark.
+
 ## Resume here
 
-- **(2026-11-07 22:53 IST) STATE BUILDING, CORE 93bffdb7, nothing runs.** engine READY 84075b6 (R-C-35, for the HUB's merge). learn MERGED ce691c21.
-- **Done · actions-sos FIX-R7 wf_ea2586a6-02e (clean at cd385a5)** (launched 2026-11-07 22:57 IST on the HUB's grant; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_ea2586a6-02e/journal.jsonl). If it died with the session, relaunch: Workflow scriptPath C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_r7.js (a copy in tracks/CORE/args/; a fresh chat runs gen3.py there after editing the session id in it and in args_as_r6b.json). Returns READY or RED with the tip.
-- **Next 2 · the contracts re-review of actions-sos:** C:/Users/ruchi/.claude-pro/jobs/93bffdb7/tmp/wf_as_contracts_r3.js (read-only, one lane-reviewer over fca2781..HEAD, each HIGH/MEDIUM verified by a lane-checker); args {now}. Its findings, if any HIGH or MEDIUM survive, go into a FIX-R8 like FIX-R7. Clean -> `LANE: actions-sos READY <tip>`, lane report, R-C to the HUB.
-- **Queued, by name, after actions-sos merges:** engine FIX-SPIRAL-OWN (spiralThoughts returns the person's reply apart from a filled one; contract ruling 22:25); the offline-v1.1 queue below.
+- **(2026-11-07 23:39 IST) STATE BUILDING, CORE 93bffdb7, context over 250k (hand-over planned).** engine MERGED 3ea2e13d; learn MERGED ce691c21; core MERGED a3081f33; tests-docs MERGED (tier 2 later). Only actions-sos is open, at cd385a5 (worktree clean, safety lens clean, 169/169).
+- **Running:** actions-sos contracts re-review wf_66ea28b7-119 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_66ea28b7-119/journal.jsonl). A fresh chat never relaunches it while 93bffdb7 is listed in `claude agents`; if 93bffdb7 is gone, relaunch: Workflow scriptPath tracks/CORE/args/wf_as_contracts_r3.js (copy it into the fresh job's tmp first if the path is refused), args {now: <date>, only: 'review'}.
+- **Next 1 · the lane check (only: 'check'):** the same script with args {now, only: 'check'} on a 7.0 GB row (a checker run): gates.py over the worktree, the territory, and the merge preview (the trunk with the lane's four files over it: full Node suite) of 1cfc936..cd385a5. The runs since 1cfc936 carried the check verdict; this is the real one.
+- **Then:** clean (no HIGH or MEDIUM left after the skeptics) -> update the lane report's state line and its check and contracts lines (tracks/CORE/lane-reports/actions-sos.md, under 20 KB: it is 19.9 KB, so trim or move to an annex at _logs/reports/actions-sos-report-annex.md), `LANE: actions-sos READY cd385a5`, R-C to the HUB (cut base 655516dc; RS-SAMPLE the tag condition; lifts actions.test.mjs 'validation failures write nothing'). A surviving HIGH or MEDIUM -> a FIX-R8 like FIX-R7: write the findings in full to _logs/reports/actions-sos/actions-sos__review-contracts.md, rulings in contracts/actions-sos.md, then gen3.py's pattern (tracks/CORE/args/gen3.py: copy, rename to FIX-R8, carried check PASS cd385a5, carried review [contracts {findings}, safety {}]).
+- **Queued, by name, after actions-sos merges:** engine FIX-SPIRAL-OWN (contract 22:25); the offline-v1.1 queue below.
 
 ### The 19:13 Resume here (kept)
 

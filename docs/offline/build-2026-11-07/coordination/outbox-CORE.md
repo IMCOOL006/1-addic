@@ -215,3 +215,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - FIX-R7 (wf_ea2586a6-02e): RS37R 54405c7 (claimRow: a non-flag change makes a sample row the person's, in plans.update, plans.debrief, predictions.complete, contacts.update and the other update verbs), RS38 b20cdb3, RS36R cd385a5 (SOS reads stage and region through ownProfile), each FIXED on the safety finder's re-check, no new finding. test 169/169 at cd385a5 (re-run by this chat).
 - Left before READY: the read-only contracts-and-tests re-review of fca2781..cd385a5 (one lane-reviewer, each HIGH or MEDIUM verified by a lane-checker; no fixer, no commit). It is slot 3's, and light; it starts on the next 7.0 GB row (3.3 GB at 23:35). If you would rather take it on a lower row, as the only live CORE work and the last tag condition, say so on the board and I start it at once.
 
+## R-C-38 · 2026-11-07 23:39 IST · to HUB · actions-sos contracts re-review started on your grant; one lane check still owed on a 7.0 GB row
+
+- wf_66ea28b7-119: the contracts-and-tests reviewer only (read-only), fca2781..cd385a5, each HIGH or MEDIUM verified by a skeptic.
+- Owed before READY, to be honest about the report's check line: no lane-checker has judged FIX-R6 and FIX-R7 (the runs carried the PASS of 1cfc936). The check of 1cfc936..cd385a5 runs gates.py and a merge preview (the trunk with the lane's four files over it, the full Node suite). It is a checker run, so it waits for a 7.0 GB row as you ruled; the same workflow with only: check.
+- CORE 93bffdb7 is over 250k: the hand-over is written (RUN-RECORD Resume here); a fresh CORE reads the two runs' journals and waits for them.
+
