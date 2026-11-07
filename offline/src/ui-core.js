@@ -354,9 +354,34 @@ const UI = (function () {
       const el = isNode ? made : (made && made.el) || h('div');
       get = isNode ? () => made.value : () => (made && typeof made.get === 'function' ? made.get() : undefined);
       set = isNode ? (v) => { made.value = v; } : (v) => { if (made && typeof made.set === 'function') made.set(v); };
-      // The custom node carries the mark and its first control takes the focus, as a chips group does (RC12).
-      return finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', text: f.label }) : null, el), [hint, err], get, set, err,
-        { focus: () => { const c = firstFocusable(el); if (c && c.focus) c.focus(); } }, el);
+      // The custom node carries the mark and its first enabled, visible control takes the focus, as a chips group does;
+      // with no such control the node itself does. The control that takes the focus is marked too and is described by
+      // the error line, and the mark moves with it (RC12).
+      const target = () => firstFocusable(el) || el;
+      let marked = null;
+      const mark = (on) => {
+        if (marked) { marked.removeAttribute('aria-invalid'); describedBy(marked, errId, false); }
+        marked = on ? target() : null;
+        if (marked) { marked.setAttribute('aria-invalid', 'true'); describedBy(marked, errId, true); }
+      };
+      const done = finish(f, h('div', { class: 'field-custom' }, f.label ? h('p', { class: 'field-label', id: id + '-label', text: f.label }) : null, el), [hint, err], get, set, err,
+        { focus: () => {
+          const c = target();
+          // A node with nothing to press is made focusable outside the tab order; a control or link the render
+          // returned keeps its own tab stop, also while it is disabled (RC1). Unless the page named that node, the
+          // field's label names it, as a group, as a chips group is named (RC3).
+          const own = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName) || (el.tagName === 'A' && el.getAttribute('href') !== null);
+          if (c === el && !own) {
+            if (c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1');
+            if (f.label && c.getAttribute('aria-labelledby') === null && c.getAttribute('aria-label') === null) {
+              if (c.getAttribute('role') === null) c.setAttribute('role', 'group');
+              c.setAttribute('aria-labelledby', id + '-label');
+            }
+          }
+          if (c.focus) c.focus();
+        } }, el);
+      done.mark = mark;
+      return done;
     } else {
       const type = ['number', 'date', 'time'].includes(t) ? t : 'text';
       input = h('input', Object.assign({ type, min: f.min, max: f.max, step: f.step, inputmode: type === 'number' ? 'decimal' : null, autocomplete: f.autocomplete || 'off' }, common));
@@ -382,6 +407,13 @@ const UI = (function () {
     return null;
   }
 
+  // Adds or removes one id in a node's aria-describedby, keeping the node's own ids (RC12).
+  function describedBy(node, id, on) {
+    const ids = (node.getAttribute('aria-describedby') || '').split(/\s+/).filter((x) => x && x !== id);
+    if (on) ids.push(id);
+    if (ids.length) node.setAttribute('aria-describedby', ids.join(' ')); else node.removeAttribute('aria-describedby');
+  }
+
   function finish(f, lead, rest, get, set, err, focusEl, ctl) {
     const el = h('div', { class: 'field field-' + (f.type || 'text'), dataset: { name: f.name } }, lead, rest);
     if (f.value !== undefined && f.type !== 'slider' && f.type !== 'chips') set(f.value);
@@ -403,6 +435,7 @@ const UI = (function () {
       x.err.textContent = msg || '';
       x.err.hidden = !msg;
       x.el.classList.toggle('invalid', !!msg);
+      if (x.mark) x.mark(!!msg); // a custom field's focus target, first, so the node's own mark below stands (RC12)
       const ctl = x.ctl || x.el.querySelector('input, select, textarea'); // a chips group or a custom node carries the mark (RC12)
       if (ctl) { if (msg) ctl.setAttribute('aria-invalid', 'true'); else ctl.removeAttribute('aria-invalid'); }
     };
@@ -644,6 +677,11 @@ const UI = (function () {
     if (discreet || settings.counters === false) root.setAttribute('data-counters', 'off'); else root.removeAttribute('data-counters');
     if (typeof settings.textSize === 'string' && settings.textSize) root.setAttribute('data-text-size', settings.textSize); else root.removeAttribute('data-text-size');
     if (settings.reducedMotion) root.setAttribute('data-motion', 'reduce'); else root.removeAttribute('data-motion');
+    // High contrast follows the settings row only while the row can be read: locked (the row is sealed) or before the
+    // Store has loaded, it stays as the session left it; no plain copy of it is kept on the device (RS19).
+    if (!locked && !(state.booted && !state.loaded)) {
+      if (settings.highContrast) root.setAttribute('data-contrast', 'high'); else root.removeAttribute('data-contrast'); // (R-S-6)
+    }
     if (document.body) document.body.classList.toggle('calm', !!settings.calm);
     root.setAttribute('data-route', key);
     const nav = byId('nav');
@@ -727,12 +765,14 @@ const UI = (function () {
 
   function lockFallback() {
     const S = ns('Store');
-    const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
+    const msg = h('p', { class: 'field-error', hidden: true });
     // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
     const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg lock-where' });
     msg.id = 'lock-msg';
     // Without crypto, a second line says where the PIN still works, so 'not available' never reads as 'erase' (RS18).
     const where = h('p', { id: 'lock-where', class: 'field-hint', hidden: true });
+    // One alert holds both lines, on the page from the start, so the second is read out with the first (RS18).
+    const said = h('div', { class: 'lock-said', role: 'alert' }, msg, where);
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
       class: 'form stack', novalidate: true,
@@ -752,7 +792,7 @@ const UI = (function () {
         where.hidden = why !== 'NO_CRYPTO';
         pin.focus();
       },
-    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, msg, where), btn);
+    }, h('div', { class: 'field' }, h('label', { class: 'field-label', for: 'lock-pin', text: 'PIN' }), pin, said), btn);
     return h('section', { class: 'page stack lock-page' },
       h('h1', { text: 'Locked' }), f,
       h('p', { class: 'muted', text: 'Forgot your PIN? You can erase this notebook and restore a backup.' }), // (d)

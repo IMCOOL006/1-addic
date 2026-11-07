@@ -1021,6 +1021,113 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(box.getAttribute('aria-invalid'), null, 'no longer marked');
   });
 
+  test('RC12-V11: a custom field whose first button is disabled or hidden: the next one takes the focus, marked and described by the error line', () => {
+    for (const how of ['disabled', 'hidden']) {
+      setup();
+      findIn(globalThis.document);
+      const node = (tag, text) => { const e = globalThis.document.createElement(tag); if (text) e.textContent = text; return e; };
+      let picked = null;
+      let box = null;
+      let morning = null;
+      let evening = null;
+      const f = UI.form({ fields: [
+        { name: 'when', type: 'custom', label: 'When', required: true, render: () => {
+          box = node('div');
+          morning = node('button', 'Morning');
+          morning[how] = true;
+          evening = node('button', 'Evening');
+          evening.setAttribute('aria-describedby', 'own-hint');
+          box.appendChild(morning);
+          box.appendChild(evening);
+          return { el: box, get: () => picked, set: (v) => { picked = v; } };
+        } },
+      ] });
+      const field = f.el.children.find((e) => e.dataset.name === 'when');
+      const errId = field.all().find((e) => e.id && e.id.endsWith('-err')).id;
+      const said = (e) => (e.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, evening, how + ': the first enabled, visible button takes the focus');
+      assert.equal(evening.getAttribute('aria-invalid'), 'true', how + ': the focused control is marked');
+      assert.deepEqual(said(evening), ['own-hint', errId], how + ': and described by the error line, its own line kept');
+      assert.equal(box.getAttribute('aria-invalid'), 'true', how + ': the node is marked too');
+      assert.equal(morning.getAttribute('aria-invalid'), null, how + ': the skipped button is not');
+      morning[how] = false; // the first button comes back: the mark moves with the focus
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, morning);
+      assert.equal(morning.getAttribute('aria-invalid'), 'true');
+      assert.deepEqual(said(morning), [errId]);
+      assert.equal(evening.getAttribute('aria-invalid'), null, how + ': the old mark is cleared');
+      assert.deepEqual(said(evening), ['own-hint']);
+      f.set('when', 'evening');
+      assert.equal(f.validate(), true);
+      assert.equal(morning.getAttribute('aria-invalid'), null, how + ': valid: no mark');
+      assert.equal(morning.getAttribute('aria-describedby'), null, how + ': and no error line');
+      assert.equal(box.getAttribute('aria-invalid'), null);
+    }
+  });
+
+  test('RC12-V11: a custom field with no control inside: the node itself takes the focus, marked and described by the error line', () => {
+    setup();
+    findIn(globalThis.document);
+    let picked = null;
+    let box = null;
+    const f = UI.form({ fields: [
+      { name: 'mood', type: 'custom', label: 'Mood', required: true, render: () => {
+        box = globalThis.document.createElement('div');
+        const p = globalThis.document.createElement('p');
+        p.textContent = 'Nothing to press here.';
+        box.appendChild(p);
+        return { el: box, get: () => picked, set: (v) => { picked = v; } };
+      } },
+    ] });
+    const field = f.el.children.find((e) => e.dataset.name === 'mood');
+    const errId = field.all().find((e) => e.id && e.id.endsWith('-err')).id;
+    assert.equal(f.validate(), false);
+    assert.equal(document.activeElement, box, 'the node itself takes the focus');
+    assert.equal(box.getAttribute('tabindex'), '-1', 'it can take the focus, outside the tab order');
+    assert.equal(box.getAttribute('aria-invalid'), 'true');
+    assert.equal(box.getAttribute('aria-describedby'), errId, 'described by the error line');
+    const label = field.all().find((e) => e.id && e.id === box.getAttribute('aria-labelledby'));
+    assert.equal(label && label.textContent.trim(), 'Mood', 'named by the field label (RC3)');
+    assert.equal(box.getAttribute('role'), 'group', 'as a group, as a chips group is');
+    f.set('mood', 'ok');
+    assert.equal(f.validate(), true);
+    assert.equal(box.getAttribute('aria-invalid'), null);
+    assert.equal(box.getAttribute('aria-describedby'), null);
+    let named = null;
+    const g = UI.form({ fields: [{ name: 'mood', type: 'custom', label: 'Mood', required: true, render: () => {
+      named = globalThis.document.createElement('div');
+      named.setAttribute('aria-label', 'How you feel');
+      return { el: named, get: () => null, set() {} };
+    } }] });
+    assert.equal(g.validate(), false);
+    assert.equal(document.activeElement, named);
+    assert.equal(named.getAttribute('aria-labelledby'), null, 'a name the page gave is kept');
+    assert.equal(named.getAttribute('role'), null);
+  });
+
+  test('RC1: a custom field whose render returns a control: the control takes the focus and keeps its tab stop', () => {
+    for (const [tag, off] of [['select', false], ['input', false], ['textarea', false], ['button', false], ['a', false], ['select', true]]) {
+      setup();
+      findIn(globalThis.document);
+      let ctl = null;
+      const f = UI.form({ fields: [{ name: 'when', type: 'custom', label: 'When', required: true, render: () => {
+        ctl = globalThis.document.createElement(tag);
+        if (tag === 'a') ctl.setAttribute('href', '#/plan');
+        ctl.disabled = off;
+        return ctl;
+      } }] });
+      const what = tag + (off ? ' (disabled)' : '');
+      assert.equal(f.validate(), false);
+      if (!off) assert.equal(document.activeElement, ctl, what + ': the control takes the focus');
+      assert.equal(ctl.getAttribute('tabindex'), null, what + ': and keeps its tab stop');
+      ctl.disabled = false;
+      ctl.value = 'x';
+      assert.equal(f.validate(), true);
+      assert.equal(ctl.getAttribute('tabindex'), null, what + ': also once the field is valid');
+    }
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
@@ -1062,6 +1169,31 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     const order = all();
     assert.ok(order.indexOf(msg) < order.indexOf(where) && order.indexOf(where) < order.indexOf(forgot),
       'the first line, then this one, then the Forgot-PIN line');
+  });
+
+  test('RS18-V11: the line on where the PIN works is read out with the first one, and the PIN field is described by both', async () => {
+    setup();
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true }),
+      lock: { unlock: async () => { const e = new Error('no crypto'); e.code = 'NO_CRYPTO'; throw e; } } };
+    at('#/lock');
+    await UI.render();
+    const all = () => main().all();
+    const pin = all().find((e) => e.id === 'lock-pin');
+    const msg = all().find((e) => e.id === 'lock-msg');
+    const where = all().find((e) => e.id === 'lock-where');
+    assert.equal(pin.getAttribute('aria-describedby'), 'lock-msg lock-where');
+    const region = (e) => { for (let n = e; n; n = n.parentNode) if (['alert', 'status'].includes(n.getAttribute && n.getAttribute('role'))) return n; return null; };
+    const said = region(msg);
+    assert.ok(said, 'the first line is in a live region');
+    assert.equal(region(where), said, 'the second line is in the same one');
+    assert.equal(said.getAttribute('role'), 'alert');
+    assert.equal(said.hidden, false, 'the region is on the page before the lines change, so the change is read out');
+    pin.value = '2468';
+    await all().find((e) => e.tagName === 'FORM').on.submit[0]({ preventDefault() {} });
+    assert.equal(msg.hidden, false);
+    assert.equal(where.hidden, false);
+    assert.match(said.textContent, /not available on this device\.\s+Open this file in the browser where you set your PIN\./);
   });
 
   test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
@@ -1153,6 +1285,123 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     dlg.flush();
     assert.equal(await a, false, 'Esc');
     assert.equal(dlg.open, false);
+  });
+
+  test('R-S-6: high contrast is on after the first render of a reload, and off when the setting is off', async () => {
+    setup(); // a reload: a fresh page, and Settings is never opened
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    let settings = { key: 'app', highContrast: true };
+    globalThis.Store = {
+      view: { get: (s, id) => (s === 'settings' && id === 'app' ? settings : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+    };
+    UI.pages.today = page('today');
+    const root = () => document.documentElement;
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'the first render applies it');
+    at('#/sos');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'every render keeps it, SOS too');
+    settings = { key: 'app', highContrast: false };
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), null, 'false removes it');
+    settings = { key: 'app' };
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), null, 'no setting: off');
+    assert.equal(box.size, 0, 'no new storage key');
+  });
+
+  test('RS19: while the settings row is sealed, high contrast stays as the session left it; an erase turns it off', async () => {
+    setup();
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    const s = { locked: false, hasLock: true, row: { key: 'app', highContrast: true } };
+    globalThis.Store = {
+      view: { get: (st, id) => (!s.locked && st === 'settings' && id === 'app' ? s.row : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: s.hasLock, locked: s.locked }),
+      lock: { unlock: async () => false },
+    };
+    UI.pages.today = page('today');
+    const root = () => document.documentElement;
+    at('#/today');
+    await UI.render();
+    assert.equal(root().getAttribute('data-contrast'), 'high');
+    s.locked = true; // the auto-lock: the row is sealed now
+    for (const hash of ['#/lock', '#/sos/urgent', '#/sos', '#/today']) {
+      at(hash);
+      await UI.render();
+      assert.equal(root().getAttribute('data-contrast'), 'high', hash + ', locked: kept');
+    }
+    assert.equal(location.hash, '#/lock', 'a locked page goes to the lock screen');
+    assert.equal(box.size, 0, 'no plain copy on the device');
+    s.locked = false; s.hasLock = false; s.row = null; // Forgot PIN: the notebook is erased
+    await UI.render();
+    assert.equal(location.hash, '#/today');
+    assert.equal(root().getAttribute('data-contrast'), null, 'erased: off');
+    assert.equal(box.size, 0);
+  });
+
+  test('RC2: high contrast follows a store change on every path, and a reload straight onto #/sos turns it on once the load ends', async (t) => {
+    setup();
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const U = freshUi();
+    const box = new Map();
+    globalThis.localStorage = {
+      getItem: (k) => (box.has(k) ? box.get(k) : null), setItem: (k, v) => box.set(k, String(v)), removeItem: (k) => box.delete(k),
+    };
+    globalThis.window = { addEventListener() {} };
+    document.addEventListener = () => {};
+    let row = { key: 'app', highContrast: true };
+    let heard = null;
+    let opened;
+    const loading = new Promise((res) => { opened = res; });
+    globalThis.Store = {
+      view: { get: (st, id) => (st === 'settings' && id === 'app' ? row : null), list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false }),
+      load: () => loading, subscribe: (f) => { heard = f; return () => {}; },
+    };
+    const drawn = { sos: 0, today: 0 };
+    let field = null;
+    U.pages.sos = () => { drawn.sos += 1; return page('sos')(); };
+    U.pages.today = () => {
+      drawn.today += 1;
+      const p = globalThis.document.createElement('div');
+      field = globalThis.document.createElement('input');
+      field.matches = (sel) => /\binput\b/.test(sel);
+      p.appendChild(field);
+      return p;
+    };
+    const root = () => document.documentElement;
+    const change = (on) => { row = { key: 'app', highContrast: on }; heard({ label: 'settings' }); t.mock.timers.tick(16); };
+    at('#/sos'); // a reload straight onto SOS
+    const booting = U.boot();
+    await new Promise((r) => setImmediate(r));
+    assert.equal(drawn.sos, 1, 'SOS draws before the Store loads');
+    assert.equal(root().getAttribute('data-contrast'), null, 'the row is not read before the load ends');
+    opened();
+    await booting;
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'on once the load ends');
+    assert.equal(drawn.sos, 1, 'and SOS is not drawn again');
+    change(false);
+    assert.equal(root().getAttribute('data-contrast'), null, 'on SOS a change follows after the frame');
+    assert.equal(drawn.sos, 1, 'without drawing SOS again');
+    at('#/today');
+    await U.render();
+    field.focus(); // the person is typing in a field of the page
+    change(true);
+    assert.equal(root().getAttribute('data-contrast'), 'high', 'a field has the focus: it follows too');
+    assert.equal(drawn.today, 1, 'and the page is not drawn again');
+    document.activeElement = null;
+    change(false);
+    assert.equal(root().getAttribute('data-contrast'), null, 'no field has the focus: the page is drawn again with it');
+    assert.equal(drawn.today, 2);
   });
 });
 
