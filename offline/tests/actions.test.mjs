@@ -1472,8 +1472,11 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
   });
 
   test('RS9: the slip flow skips a spiral thought that is crisis text or says hopeless', () => {
-    assert.ok(C().catalogs.spiral.some((t) => /hopeless/i.test(t)), 'the catalog has one to skip');
-    const pairs = H.spiralPairs(null, null, C());
+    // FIX-R8 C-R7-2: the test brings its own line to skip, first, in a copy of Content (the shared catalog may hold
+    // none: the trunk's U-31a took it out); the real Content is never changed
+    const C9 = Object.assign({}, C(), { catalogs: Object.assign({}, C().catalogs, { spiral: ['I feel hopeless'].concat(C().catalogs.spiral || []) }) });
+    assert.ok(C9.catalogs.spiral.some((t) => /hopeless/i.test(t)), 'the catalog has one to skip');
+    const pairs = H.spiralPairs(null, null, C9);
     assert.ok(pairs.length > 0);
     assert.ok(pairs.every((p) => !/hopeless/i.test(p.thought)), pairs.map((p) => p.thought).join(' | '));
     assert.equal(pairs[0].reply, H.FALLBACK.spiralReply);
