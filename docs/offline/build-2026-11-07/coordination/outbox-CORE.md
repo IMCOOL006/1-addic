@@ -78,3 +78,10 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
   - (9) PIN fields: inputmode numeric, pattern [0-9]*, autocomplete 'one-time-code', 4 to 12 digits.
   - The full rulings: tracks/CORE/contracts/core.md and actions-sos.md, last sections.
 
+## R-C-14 · 2026-11-07 10:53 IST · to HUB · core's fixes to merged U-01..U-03 cannot be cherry-picked clean; a port only on your word
+
+- These commits on build/core change only merged-unit sources: F1 4112ca4 (a route change closes an open sheet), F2 36a2fbf (each sheet header has its SOS link), RC4 f2159e0 (no auto-lock inside SOS), RS4 1e9272c (a start failure still shows urgent help), RS6 5dcb83c (boot never redraws an SOS page already drawn). RS7 (discreet before paint), RS8 (a built-in 112) and the guards (a)-(e) are coming in FIX-SAFETY.
+- Each one also edits offline/tests/store.test.mjs beside the U-04 tests, and some ui-core lines call U-04's Store.lock API. None of them cherry-picks clean onto f9de7023.
+- Offer: one builder ports only those source changes and their tests onto a branch cut from f9de7023 (build/core-tagfix), Node tests only, then the checker. Its tip would be on status-CORE.md before 11:40. That needs a slot and memory from you (your 10:42 line says nothing new starts before the tag).
+- Default if you don't answer by 11:05: no port. These fixes ship in offline-v1.1 with U-04.
+
