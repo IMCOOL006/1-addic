@@ -1,14 +1,21 @@
 TRACK: CORE
-STATE: HANDOVER   # 2026-11-07 19:13 IST: parked on the owner's word (usage limit; relayed by the first HUB 26196777): nothing runs; every worktree committed; the fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here' (actions-sos FIX-R6 safety re-check first, then engine FIX-RS9E's check); launch files in tracks/CORE/args/
+STATE: BUILDING   # 2026-11-07 22:09 IST: CORE 93bffdb7 (CORE session 8) resumes; the launcher stopped the duplicate 0504743a at 22:06. actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 running; engine FIX-RS9E next, on the next 7.0 GB row
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine BUILDING a927cac   # 2026-11-07 19:13 IST: FIX-RS9E wf_5b1d1a90-01f stopped at the park; its work committed as wip a927cac (engine.js reads x.item; new engine-warning-item.test.mjs), not yet checked; NEXT: finish and check FIX-RS9E (diffFrom 57153d3); merged before at 57153d3 (3720d119)
-LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 19:13 IST: FIX-R6 wf_45f788de-56d stopped at the park during the safety re-check (read-only; nothing lost): RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3 committed, worktree clean; NEXT: the safety re-check of these five, then READY if clean of HIGH and MEDIUM
-LANE: learn READY 75eb8e5   # 2026-11-07 19:08 IST: FIX-RS9 (test-only, learn.test.mjs) check PASS, 28/28 on the branch and on the trunk 5d0f8b1's content (re-run by this chat); the HUB's merge started 19:09; report lane-reports/learn.md (15462 B); cut base 655516dc, round diff 4f5832f..75eb8e5
+LANE: engine BUILDING a927cac   # 2026-11-07 22:09 IST: FIX-RS9E to finish over the wip a927cac and check (diffFrom 57153d3), on the next 7.0 GB row; args tracks/CORE/args/args_engine_rs9e2.json; merged before at 57153d3 (3720d119)
+LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 22:09 IST: FIX-R6 safety re-check wf_4b67e91f-df4 (start review, reviewOnly safety, carried check PASS 87030e3, knownFindings RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); READY if clean of HIGH and MEDIUM
+LANE: learn READY 75eb8e5   # 2026-11-07 22:10 IST: FIX-RS9 in HUB 7's merge since 22:06 (merge commit ce691c2 on the trunk; the gates not yet on the board); report lane-reports/learn.md; cut base 655516dc, round diff 4f5832f..75eb8e5
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 3   # actions-sos slot 3 (FIX-R6 running), learn slot 9 (FIX-RS9), engine slot 2 (FIX-RS9E); core slot 1 free (merged a3081f33)
-UPDATED: 2026-11-07 19:13 IST
+SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R6 re-check running), engine slot 2 (FIX-RS9E, next row); learn slot 9 and core slot 1 free
+UPDATED: 2026-11-07 22:09 IST
 
-# 2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
+# 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here' (19:13), status-HUB.md (HUB 7 0a13fa1c BUILDING 22:06, SLOTS-ALLOWED 3, tier 1 first: actions-sos FIX-R6 re-check, engine FIX-RS9E), the outboxes (R-O-2 the last owner word), lane.js header and its review/state code, tracks/CORE/args/ (gen.py, the FIX-R6 fixer note).
+- The launcher started every track twice at 22:04 (the loop and a LAUNCH-MISSING check); it stepped 93bffdb7 as CORE and stopped 0504743a at 22:06 (launcher.log). 0504743a launched nothing and wrote nothing.
+- `claude agents --json` 22:05: 60f08c84 listed blocked: its two runs stopped at the 19:10 park. Worktrees clean: actions-sos 87030e3, engine a927cac (wip), learn 75eb8e5, core 8e80951, tests-docs d91164d; the remote holds the same tips.
+- Free memory 13.3 GB at 22:07. Launched 22:09 actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (args tracks/CORE/args/args_as_r6b.json, built by gen2.py there; wf_sim OK). Ruled: RS33's note stays beside each number in the crisis view (one short muted line; nothing else added). engine FIX-RS9E (args_engine_rs9e2.json, wf_sim OK) starts on the next 7.0 GB row.
+
+2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
 
 - Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 42d2467d; SLOTS actions-sos slot=3 held; QUIET done; live: SCREENS actions and game-tutorials), outbox-HUB.md to R-H-29, outbox-CORE.md to R-C-30, outbox-OWNER.md (R-O-2: the defaults are the owner's), lane.js header and its review/state code, contracts/actions-sos.md (17:22, 17:57) and Round 6 of _logs/reports/actions-sos/actions-sos__review-safety.md.
 - `claude agents --json` 18:26: 06285082 not listed; it ran nothing at its RESTART, so nothing is relaunched. The five worktrees are clean (core 8e80951, engine 57153d3, actions-sos 1cfc936, learn 4f5832f, tests-docs d91164d).

@@ -157,7 +157,21 @@
 - 19:10 both runs stopped (TaskStop): actions-sos FIX-R6 wf_45f788de-56d during its safety re-check (the fix agent had returned: five ids committed, worktree clean at 87030e3); engine FIX-RS9E wf_5b1d1a90-01f during its builder (uncommitted engine.js and a new test file, committed as wip a927cac). learn READY 75eb8e5 (R-C-33) was in the HUB's merge from 19:09.
 - Not pushed by this chat: the CORE prompt reserves every push of a program branch and the trunk to the HUB (the park message asked for it; told to the HUB). Branch tips to push: build/actions-sos 87030e3, build/engine a927cac, build/learn 75eb8e5 (core 8e80951, tests-docs d91164d unchanged).
 
+## 2026-11-07 22:09 IST · CORE session 93bffdb7-4bab-4cfc-a69c-5f4a981d5968 resumes after the park
+
+- The launcher started every track twice at 22:04 (loop launch and a LAUNCH-MISSING check, launcher.log); it stepped 93bffdb7 as CORE and stopped 0504743a at 22:06 (launched nothing). HUB 7 is 0a13fa1c, SCREENS 4d443a20.
+- 60f08c84 listed blocked: its runs died at the park. Worktrees clean, remote tips equal: actions-sos 87030e3, engine a927cac, learn 75eb8e5.
+- 22:09 launched actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (wrapper tracks/CORE/args/wf_as_r6b.js; args args_as_r6b.json; built by gen2.py there from args_as_r6.json and as_r6_fixnote.json): start review, reviewOnly [safety], carried check PASS 87030e3, no carried review, knownFindings = re-check the five fixes first, diffFrom 1cfc936. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_4b67e91f-df4/journal.jsonl. Ruled: RS33's note stays beside each number in the crisis view.
+- learn READY 75eb8e5 in HUB 7's merge (ce691c2 on the trunk 22:07).
+
 ## Resume here
+
+- **(2026-11-07 22:09 IST) STATE BUILDING, CORE 93bffdb7.** Running: actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (stage Review; journal path above). If 93bffdb7 leaves `claude agents`, the run died: relaunch tracks/CORE/args/wf_as_r6b.js after `python gen2.py "<stamp>"` with NEW = the fresh id (gen2.py reads tracks/CORE/args; edit SRC/OLD/NEW), never resumeFromRunId across sessions.
+- **Next:** engine FIX-RS9E on the next 7.0 GB row: Workflow scriptPath tracks/CORE/args/wf_engine_rs9e2.js (finish over wip a927cac, check 57153d3..HEAD). READY -> LANE line, report, R-C to the HUB.
+- **actions-sos READY** when the re-check is clean of HIGH and MEDIUM -> `LANE: actions-sos READY <tip>`, lane-reports/actions-sos.md, R-C to the HUB (cut base 655516dc; RS-SAMPLE is the tag condition; lifts actions.test.mjs 'validation failures write nothing').
+- **offline-v1.1 queue and facts:** as in the 19:13 Resume here, kept below.
+
+### The 19:13 Resume here (kept)
 
 - **(2026-11-07 19:13 IST) STATE HANDOVER, nothing runs.** Parked on the owner's word. The launch files and args are in tracks/CORE/args/ (gen.py builds the wrappers: edit NEW to the fresh session id, then `python tracks/CORE/args/gen.py "<date stamp>"` writes them beside it; it reads args_as_r5.json, args_learn_fix-rs9.json and args_engine_fix-rs9e.json there). Each launch at a 7.0 GB row, one per row, the order below.
 - **1 · actions-sos (tip 87030e3, worktree clean; REVIEWING):** FIX-R6's fixes are committed (RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3; the fixer's note: tracks/CORE/args/as_r6_fixnote.json). Only the safety re-check is left. Launch from args_as_r6.json with: start 'review', reviewOnly ['safety'], carried {check: {verdict PASS, tip 87030e3, findings []}} and NO carried review (a fresh safety reviewer judges 1cfc936..87030e3), knownFindings = the five ids, their SHAs and the fixer's note (so it re-checks them and looks for regressions), diffFrom 1cfc936. Clean of HIGH and MEDIUM -> `LANE: actions-sos READY 87030e3` (or the run's tip), report tracks/CORE/lane-reports/actions-sos.md, R-C to the HUB (cut base 655516dc; its merge carries the RS-SAMPLE tag condition and lifts actions.test.mjs 'validation failures write nothing').

@@ -190,3 +190,11 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - FIX-RS9, test-only, one file (offline/tests/learn.test.mjs, 12+/4-): 'learn: map progress from events' and 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' derive their expected values from Content.modules. Check PASS at 75eb8e5: test GREEN 28/28 (_logs/gates/learn/test-20261107-190438.log); guards the same names as the earlier report, none new. Verified by this chat: the fixed file against the trunk 5d0f8b1's content (git archive), 28/28, both names ok. Cut base 655516dc; the round's diff 4f5832f..75eb8e5. Its merge lifts the two learn names from baselines.md.
 - Running: actions-sos FIX-R6 (all five ids committed 42f5a9a..87030e3; the safety re-check now), engine FIX-RS9E wf_5b1d1a90-01f (launched 19:07 on the 19:06 row 8.3 GB).
+
+## R-C-34 · 2026-11-07 22:09 IST · to HUB · CORE 93bffdb7 resumes; actions-sos FIX-R6 safety re-check running; engine FIX-RS9E next
+
+- The launcher's double start at 22:04 is settled: 93bffdb7 is CORE (0504743a stopped 22:06, it launched nothing). 60f08c84's two runs died at the park.
+- 22:09 actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (slot 3, on the 22:07 row 13.3 GB): it re-checks RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3 and judges the lane; READY when clean of HIGH and MEDIUM (cut base 655516dc).
+- engine FIX-RS9E (slot 2) starts on the next 7.0 GB row: it finishes the wip a927cac, check over 57153d3..HEAD.
+- learn: thanks for the 75eb8e5 merge; I write MERGED when the board shows it past the gates.
+
