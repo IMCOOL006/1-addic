@@ -591,9 +591,19 @@ test('workbook-settings U-20b: browser, every artifact opens; stubs are honest; 
       assert.equal(byTest(pg, 'artifact-edit'), undefined, key + ': never an edit button for an exercise that is not here (O7)');
     }
     assert.equal(byTest(pg, 'artifact-print'), undefined, key + ': nothing saved, nothing to print');
-    const pr = byTest(pg, 'artifact-practise');
-    if (pr) assert.equal(typeof UI.pages[pr.getAttribute('href').slice(2).split(/[/?]/)[0]], 'function', key + ': a practise link only to a live page');
+    const seg = W.ARTIFACTS[key].practiseRoute ? W.ARTIFACTS[key].practiseRoute.slice(2).split(/[/?]/)[0] : '';
+    assert.equal(!!byTest(pg, 'artifact-practise'), !!seg && typeof UI.pages[seg] === 'function', key + ': a practise link only to a live page');
   }
+  // Check C6: the practise link shows when its page exists and is absent without it (a stand-in games page, one case).
+  assert.equal(typeof UI.pages.games, 'undefined');
+  assert.equal(byTest(UI.pages.workbook(wctx(['redflags'])), 'artifact-practise'), undefined, 'no games page: no link');
+  UI.pages.games = () => ({});
+  try {
+    const link = byTest(UI.pages.workbook(wctx(['redflags'])), 'artifact-practise');
+    assert.ok(link, 'a games page: the link shows');
+    assert.equal(link.getAttribute('href'), W.ARTIFACTS.redflags.practiseRoute);
+    assert.match(link.getAttribute('href'), /^#\/games\//);
+  } finally { delete UI.pages.games; }
 
   // Saved answers show as text, with history newest first, and print through UI.printDoc.
   await Actions.saveResponse('trial', { thought: 'One will not hurt', comeback: 'One has never stayed one' });
