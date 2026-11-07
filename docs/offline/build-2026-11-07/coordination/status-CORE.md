@@ -6,7 +6,12 @@ LANE: actions-sos BUILDING fc0d038   # 2026-11-07 14:25 IST: fix run wf_b38141d2
 LANE: learn MERGED 19f373c   # READY 10:48, merged 10:50 as f9de7023; LOWs C3, C4, C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 3   # core slot 1, actions-sos slot 3, engine slot 2, in that order (R-C-15)
-UPDATED: 2026-11-07 14:37 IST
+UPDATED: 2026-11-07 14:47 IST
+
+# 2026-11-07 14:47 IST · the owner's R-O-2; the launcher is active
+
+- R-O-2 (outbox-OWNER.md, 14:38): the owner agrees with the defaults; O1-O9 and Q10-Q13 are the owner's decision. Nothing changes for the CORE lanes or their briefs (they build the defaults already). Relayed by the first HUB session (26196777): the launcher is active and the build continues to the complete edition; a fresh CORE follows a RESTART line within about two minutes. Priority unchanged: core READY, actions-sos READY, engine READY, each merged by the HUB as it lands.
+- Runs live: core wf_019fc9eb-a81, actions-sos wf_b38141d2-651, engine wf_1a61a797-f39. Memory row 14:41 5.0 GB (above the floor; engine, the newest, pauses at its next commit under 4.0).
 
 # 2026-11-07 13:52 IST · CORE session 036d08b8 resumes
 
