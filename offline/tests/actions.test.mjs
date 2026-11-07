@@ -558,6 +558,15 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
     assert.ok(list('logs').length > 0, 'the rest came in');
   });
 
+  test('RC13: an SOS slip session is always a use and logs the slip', async () => {
+    const r = await Actions.sosSession({ kind: 'slip' });
+    assert.equal(r.log.used, true);
+    assert.equal(r.log.type, 'slip');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used']);
+    assert.equal(events('SlipLogged').length, 1);
+    await refused(Actions.sosSession({ kind: 'slip', outcome: 'passed' }), 'bad-session');
+  });
+
   // -- fix round: U-09 tests above this line --
 });
 
