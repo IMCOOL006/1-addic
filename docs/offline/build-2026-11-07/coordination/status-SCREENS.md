@@ -1,12 +1,24 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 03:42 IST: today-track V-01b wf_ccfdc4d0-2ae (slot 6) and the V-43 annex scout wf_7392359a-5b6 run; V-01a MERGED 37d1a53c; content V-10 args ready for its SLOTS line
+STATE: BUILDING   # 2026-11-08 03:49 IST: today-track V-01b wf_ccfdc4d0-2ae runs (slot 6). The V-43 annex scout wf_7392359a-5b6 is done: brief annex 11499 B and contract annex, commit 467e59dd; R-S-22 to CORE (Engine.growthItems, additive). content V-10 args ready for its SLOTS line
 LANE: content SCOUTED 680f850   # V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2), V-10b (owner's I6); brief briefs/content-v3.md; slot asked (on a 7.0 GB row after engine V-40's start). v1: MERGED 680f850
 LANE: today-track BUILDING 127509e   # V3 V-01a MERGED 37d1a53c (03:37, HUB 10; slice 127509e). V-01b BUILDING wf_ccfdc4d0-2ae (03:31, slot 6, diffFrom and merge base 127509e; closes C1, C2); then V-43
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 03:42 IST
+UPDATED: 2026-11-08 03:49 IST
+
+# 2026-11-08 03:49 IST · V-43 annex scouted; R-S-22
+
+- The scout wf_7392359a-5b6 finished at 03:47. It wrote briefs/today-track-v3-annex.md (11499 B) and contracts/today-track-v3-annex.md, against the code at 37d1a53c.
+- The plan has four parts: U1 Today (objectives card, run line, quest-line card), U2 the Harbor growth layer (pure growthSpots(n), up to 60 drawn, each new spot added after the ones before), U3 Status (growth block, 'Your way', the run in 'Where you stand'), U4 tests. Every part is typeof-guarded, and a control without its verb is not drawn.
+- Defaults taken:
+  - The growth kind cycles through a fixed 8-kind list by index, until CORE answers R-S-22 (Engine.growthItems).
+  - Discreet mode shows the objectives and the run, but not the quest-line card.
+  - Maintenance mode shows the objectives only.
+  - If a Content.runWords key is missing, the TEXT fallback is used.
+  - V-43 goes after V-01b's chip on Today.
+- V-43 waits for V-01b's READY. It builds on the section 7 contracts before V-40, V-41 and V-42 merge.
 
 # 2026-11-08 03:36 IST · from the HUB · today-track 127509e merged (trunk 37d1a53c); BASE 37d1a53c; R-H-42
 
