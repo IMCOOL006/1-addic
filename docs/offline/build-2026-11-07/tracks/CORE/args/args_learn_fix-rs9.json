@@ -1,0 +1,57 @@
+{
+ "lane": "learn",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The exercise engine, the lesson player, the roadmap and the glossary page.",
+ "files": [
+  "offline/src/ui-exercise.js",
+  "offline/src/ui-learn.js",
+  "offline/tests/learn.test.mjs"
+ ],
+ "units": [
+  "U-12",
+  "U-13",
+  "U-14",
+  "FIX-RS4",
+  "FIX-RS9"
+ ],
+ "batches": [
+  [
+   "U-12"
+  ],
+  [
+   "U-13",
+   "U-14"
+  ],
+  [
+   "FIX-RS9"
+  ]
+ ],
+ "unitTier": {
+  "U-12": 1,
+  "U-13": 1,
+  "U-14": 1,
+  "FIX-RS9": 1
+ },
+ "unitNotes": {
+  "U-12": "Exercise engine (3.5 h): every field type of 3.8, tutorial and workbook modes, examples and hints, 'finish later' drafts, the #/dev/fields gallery. Done when every field type renders in #/dev/fields, saves, and resumes a draft.",
+  "U-13": "Lesson player and checkpoint (2.5 h): moment, cards, checks with no fail state, try it (exercise or route), wrap ('Why this works' to the evidence card); LessonCompleted, ModuleCompleted, the checkpoint at module end. Done when M0 plays end to end and writes those events.",
+  "U-14": "Roadmap and glossary (2.5 h): map view (eleven stops as the harbor path, lessons done, skills, unlocks), plan view (weeks by pace, Custom and Free, never overdue, 'welcome back' re-plan), the weekly focus card component, the glossary page. Done when both views render from the event log and nothing is ever shown as overdue.",
+  "FIX-RS9": "Two test-only fixes by name in offline/tests/learn.test.mjs (R-S-9): 'learn: map progress from events' (about :424) and 'learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted, ModuleCompleted (stand-in DOM)' (about :538-539) assert the state before content U-31b..U-33 (M4 and m7 now exist on the trunk). Make each pass with and without the full content (derive the expected values from Content.modules, or a stub for the absent case). Done when both pass on the branch and against the trunk c8dc6716's content (git archive into a new folder under C:/Users/ruchi/1-addic-wt/_logs/scratch/learn-rs9/, the fixed test file copied over, node --test; log C:/Users/ruchi/1-addic-wt/_logs/reports/learn/learn__FIX-RS9.trunk.log), one commit 'test(learn, FIX-RS9): ...'."
+ },
+ "laneNote": "Depends only on BUILD-PLAN 3.6 (lessons and modules), 3.7 (events) and 3.8 (exercises): starts at hour 0 against the contracts and switches to the real ui-core.js when core merges. U-12 sits in the chain after U-04; U-13 and U-14 after U-11. Reads content-core.js and content-lessons-a.js (M0-M3) at the base and content's U-31a exercises; the weekly focus card is used by today-track's Today.\nCORE CHAT'S WORD (2026-11-07 17:22 IST, CORE 60f08c84): the lane is complete and merged; one fix round by name, FIX-RS9, test-only (no src change, no new unit); never git worktree add/remove. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 60f08c84-298d-4afc-9321-e70539a6534c'; the message from a file; git add by explicit path. In your note's done, name the unit by its batch id.",
+ "done": [
+  "U-12",
+  "U-13",
+  "U-14",
+  "FIX-RS4"
+ ],
+ "diffFrom": "4f5832f",
+ "base": "655516dc",
+ "slot": 9,
+ "session": "60f08c84-298d-4afc-9321-e70539a6534c",
+ "now": "2026-11-07 19:07 IST",
+ "start": "build",
+ "priorNote": "The lane is MERGED at 4f5832f (worktree clean). FIX-RS9 only."
+}

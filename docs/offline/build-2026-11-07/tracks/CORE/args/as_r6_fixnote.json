@@ -1,0 +1,81 @@
+{
+ "done": [
+  {
+   "unit": "RS-SAMPLE",
+   "shas": [
+    "42f5a9a"
+   ]
+  },
+  {
+   "unit": "RS33",
+   "shas": [
+    "f429ce7"
+   ]
+  },
+  {
+   "unit": "Q-BUILTIN",
+   "shas": [
+    "ff38655"
+   ]
+  },
+  {
+   "unit": "Q-SPIRAL",
+   "shas": [
+    "934b85a"
+   ]
+  },
+  {
+   "unit": "RS9T",
+   "shas": [
+    "87030e3"
+   ]
+  }
+ ],
+ "tip": "87030e3",
+ "in_flight": "none. The worktree is clean at 87030e3 on build/actions-sos. All five FIX-R6 ids are committed, each with a test that was red before its fix and green after it (161/161).",
+ "next": [
+  {
+   "unit": "FIX-R6 safety re-check",
+   "first_step": "CORE launches the safety re-check over 1cfc936..87030e3. Its open questions are in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__units.md, section FIX-R6. READY when it is clean of HIGH and MEDIUM."
+  },
+  {
+   "unit": "RS34 and RS26 remainder (offline-v1.1 by name, not this round)",
+   "first_step": "RS34: add the two OVERDOSE patterns from actions-sos__review-safety.md Round 6 (with the engine request), one test each, keeping the negatives. RS26: waits for core's Store.status().lockId."
+  }
+ ],
+ "files_touched": [
+  "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js",
+  "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/ui-sos.js",
+  "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__units.md",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__progress.md",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__r6.py"
+ ],
+ "shared_touched": [
+  "none: no shared file and no append point was touched (actions.js, ui-sos.js and actions.test.mjs are the lane's own files)"
+ ],
+ "one_thing": "Since RS-SAMPLE, Load sample data on a fresh notebook writes the sample's profile 'me' and settings 'app', marked sample: true, as the 17:22 ruling asks. So onboard, settings.patch and markTipShown now read those two rows through ownRow (RC15's rule). Over a sample row they write a fresh, unmarked row; otherwise the person's own profile or settings would be erased with the sample. Any new verb that writes profile or settings must do the same. On RS9T: in the lane, the test already passed with Content.sample present (RC8's withSample form). The trunk's failing :304 is the trunk's older copy of the test, and the lane's file replaces it at the merge. The stub is the ruled shape. Its red log is the trunk's form of the case, run with a stand-in Content.sample of the trunk's shape. The base code and the brief did not disagree this round.",
+ "evidence": [
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261107-185750.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261107-185804.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/build-20261107-185750.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/validate-20261107-185804.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__RS-SAMPLE.red.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__RS33.red.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__Q-BUILTIN.red.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__Q-SPIRAL.red.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__RS9T.red.log",
+  "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__r6.log"
+ ],
+ "blocked": [],
+ "for_the_chat": [
+  "Gates at 87030e3: test GREEN 161/161. Build and validate are SKIP (no build.mjs, no engine.js in the worktree). Guards are RED tour-target x21, the same 21 names as 1cfc936, diffed by name, all owned by other lanes. There is no new failure.",
+  "SCREENS (workbook-settings): Actions.loadSample now never writes over an own profile 'me' or settings 'app', and Actions.eraseSample removes only rows marked sample: true, keyed ones included. The Settings own-profile guard (FIX-SAMPLE) can stay as a second check, which is their default.",
+  "Safety re-check (RS33): as ruled, every urgent line shows its note in every view, the crisis view and the India lines included. Each number with a note gets one muted line beside it, and the call link is described by it. The reviewer had offered to keep India as it was. Please judge whether the crisis view should stay shorter.",
+  "Q-BUILTIN: the built-in Emergency 112 also comes in when Content's lines are links only (no number anywhere), not only when Content gives no section, so the 'always have one number' rule holds. The urgentList model has a new key, builtIn.",
+  "core (ui-core): ui-sos's BUILT_IN copy of URGENT.builtIn now feeds both the lead and urgentList. If core exports URGENT.builtIn, ui-sos can read it; until then the copy stays.",
+  "HUB: the baselined R-S-9 name actions.test.mjs 'validation failures write nothing' passes with the stub Content whether Content.sample is loaded or not. The baseline can be dropped once actions-sos merges.",
+  "tests-docs: no new data-testid. The note spans carry id sos-note-<n> and the tel links aria-describedby, so hooks.mjs needs no change for this round."
+ ],
+ "steps_used": 32
+}
