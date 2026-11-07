@@ -9,8 +9,11 @@
    from Engine.weekSummary, the forecast check from Engine.forecastCheck, a motivation re-rate, the week ahead, want-tos
    and a focus skill). Answers stay in memory (this session only, never stored) until Save writes them through Actions
    (A.weeklyReview once; WeeklyReviewCompleted once per week). A weekly reminder .ics at 18:00 on profile.reviewDay.
-   The other Actions screens (quests, Prediction Lab, to-dos) are honest stubs until their
-   units land (O7). Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
+   U-25: quests at #/actions/quests (Engine.quests' progress; a manual tick only for steps that do not tick themselves;
+   a finished quest names its badge; no timer, no loss, no random reward), the Prediction Lab at #/actions/predictions
+   (expected enjoyment 0-10, then "How was it?", then the two side by side in words) and to-dos at #/actions/todos
+   (add, done, remove; a due date shown plainly, never overdue). The practices player is ui-practices.js (#/practice).
+   Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
    read through typeof guards (they are not globalThis properties in the built page); ctx.E and ctx.A come first. */
 const ActionsUI = (() => {
   /* ── words ─────────────────────────────────────────────────────────────────────────────── */
@@ -160,6 +163,49 @@ const ActionsUI = (() => {
     rvNext: 'Next',
     rvSave: 'Save the review',
     rvDone: 'Review saved.',
+    qTitle: 'Quests',
+    qIntro: 'Small steps that add up. Take them in any order, at your own pace.',
+    qProgress: (d, n) => `${d} of ${n} steps done`,
+    qComplete: 'Quest complete',
+    qBadge: (name) => `Badge: ${name}`,
+    qTick: 'Mark done',
+    qStepDone: 'Done',
+    qAuto: 'This ticks itself when you log it.',
+    plTitle: 'Prediction Lab',
+    plIntro: 'Guess how much you will enjoy something, do it, then check. Moods often guess low.',
+    plNew: 'A new experiment',
+    plActivity: 'What will you do?',
+    plExpect: 'How much do you expect to enjoy it? 0 is not at all, 10 is a lot',
+    plPick: 'Pick a number',
+    plSave: 'Save the prediction',
+    plOpenTitle: 'Waiting for a result',
+    plNoneOpen: 'Nothing waiting. Start an experiment above.',
+    plExpected: (n) => `You expected ${n} out of 10.`,
+    plHow: 'How was it?',
+    plSaveResult: 'Save the result',
+    plDoneTitle: 'Results',
+    plResult: (b, a) => `You expected ${b}; it was ${a}.`,
+    plBetter: 'It went better than you guessed.',
+    plLess: 'It was less than you hoped. That is useful to know too.',
+    plSame: 'Just as you guessed.',
+    plOpen: 'Open the Prediction Lab',
+    tdTitle: 'To-dos',
+    tdIntro: 'A short list of things to do, at your pace.',
+    tdNew: 'Add a to-do',
+    tdText: 'What to do',
+    tdDue: 'For a day (optional)',
+    tdAdd: 'Add',
+    tdOpenTitle: 'To do',
+    tdNone: 'Nothing on the list.',
+    tdFor: (d) => `For ${d}`,
+    tdDone: 'Done',
+    tdDoneMark: 'Done',
+    tdGo: 'Go',
+    tdRemove: 'Remove',
+    tdRemoveAsk: 'Remove this to-do?',
+    tdRemoveYes: 'Remove',
+    tdRemoveNo: 'Keep it',
+    tdDoneTitle: 'Done',
   };
   const KINDS = ['should', 'want', 'recovery', 'risky'];
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -168,10 +214,10 @@ const ActionsUI = (() => {
     { id: 'planner', title: 'Planner', gist: 'Plan the day and see the open stretches.', href: '#/actions/planner', ready: true },
     { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.', href: '#/actions/battle', ready: true },
     { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.', href: '#/actions/review', ready: true },
-    { id: 'quests', title: 'Quests', gist: 'Small steps that add up.' },
-    { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.' },
-    { id: 'todos', title: 'To-dos', gist: 'A short list of things to do, at your pace.' },
-    { id: 'practices', title: 'Practices', gist: 'Guided breathing and mindful minutes.' },
+    { id: 'quests', title: 'Quests', gist: 'Small steps that add up.', href: '#/actions/quests', ready: true },
+    { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.', href: '#/actions/predictions', ready: true },
+    { id: 'todos', title: 'To-dos', gist: 'A short list of things to do, at your pace.', href: '#/actions/todos', ready: true },
+    { id: 'practices', title: 'Practices', gist: 'Guided breathing and mindful minutes.', href: '#/practice', ready: true },
   ];
 
   /* ── small helpers ─────────────────────────────────────────────────────────────────────── */
@@ -834,7 +880,7 @@ const ActionsUI = (() => {
      back resumes the same screen. HELP_WEEKS keeps the help line on after a save with crisis words. */
   const DRAFTS = new Map();
   const HELP_WEEKS = new Set();
-  const forgetReviews = () => { DRAFTS.clear(); HELP_WEEKS.clear(); };
+  const forgetReviews = () => { DRAFTS.clear(); HELP_WEEKS.clear(); if (typeof HELP_PAGES !== 'undefined') HELP_PAGES.clear(); };
 
   /* ── DOM: the Weekly Review (U-24) ─────────────────────────────────────────────────────── */
   function reviewPage(ctx) {
@@ -1006,6 +1052,267 @@ const ActionsUI = (() => {
     return root;
   }
 
+  /* ── U-25: quests ──────────────────────────────────────────────────────────────────────── */
+  /* Quests whose steps tick themselves from what is logged (engine.js questDerived): no manual tick for them. */
+  const DERIVED_QUESTS = { crew: true, 'seven-days': true, 'prediction-lab': true };
+  /* The quest cards: Content.quests with Engine.quests' progress; a step done stays done (ticks are never taken back,
+     derived counts only grow), and a finished quest names its badge when it has one. */
+  function questCards(E, C, view) {
+    const prog = safe(() => (E && typeof E.quests === 'function' ? E.quests(view) : {}), {}) || {};
+    const badges = arr(C && C.badges);
+    return arr(C && C.quests).filter((q) => isObj(q) && str(q.id)).map((q) => {
+      const p = isObj(prog[q.id]) ? prog[q.id] : {};
+      const doneIds = new Set(arr(p.steps).filter((s) => s && s.done).map((s) => s.id));
+      const steps = arr(q.steps).filter(isObj).map((s) => ({ id: s.id, label: str(s.label), done: doneIds.has(s.id), auto: !!DERIVED_QUESTS[q.id] }));
+      const done = steps.filter((s) => s.done).length;
+      const complete = p.complete === true || (steps.length > 0 && done === steps.length);
+      const b = q.badge ? badges.find((x) => x && x.id === q.badge) : null;
+      return { id: q.id, name: str(q.name) || q.id, gist: str(q.gist), steps, done, total: steps.length, complete, badge: complete && b ? str(b.name) : '' };
+    });
+  }
+  /* One tick through Actions: {ok} or {ok:false, message}. A second tick of the same step changes nothing. */
+  async function tickQuest(A, questId, stepId) {
+    try {
+      if (!A || !A.quests || typeof A.quests.tick !== 'function') throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      const row = await A.quests.tick(questId, stepId);
+      return { ok: true, row };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-quest' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  function questsPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-quests', 'data-test': 'quests' });
+    const cards = questCards(E, ns('Content'), view);
+    root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+    root.appendChild(h('h1', { class: 'page-title', text: TEXT.qTitle }));
+    root.appendChild(h('p', { class: 'muted', text: TEXT.qIntro }));
+    const note = h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'quests-error' });
+    note.hidden = true; note.setAttribute('hidden', '');
+    root.appendChild(note);
+    if (!cards.length) root.appendChild(h('p', { text: TEXT.soon }));
+    for (const q of cards) {
+      root.appendChild(h('section', { class: 'card stack act-quest' + (q.complete ? ' act-complete' : ''), 'data-test': 'quest', 'data-quest': q.id, 'aria-labelledby': 'act-q-' + q.id },
+        h('h2', { class: 'card-title', id: 'act-q-' + q.id, text: q.name }),
+        q.gist ? h('p', { class: 'muted', text: q.gist }) : null,
+        h('p', { class: 'act-status', 'data-test': 'quest-progress', text: q.complete ? TEXT.qComplete : TEXT.qProgress(q.done, q.total) }),
+        q.badge ? h('p', { class: 'act-badge', 'data-test': 'quest-badge', text: TEXT.qBadge(q.badge) }) : null,
+        h('ul', { class: 'act-steps' }, q.steps.map((s) => h('li', { class: 'row act-step' + (s.done ? ' act-step-done' : ''), 'data-test': 'quest-step', 'data-step': s.id },
+          h('span', { class: 'act-step-text', text: s.label }),
+          s.done ? h('span', { class: 'act-status', text: TEXT.qStepDone })
+            : s.auto ? h('span', { class: 'muted act-auto', text: TEXT.qAuto })
+              : button(TEXT.qTick, async () => {
+                const r = await tickQuest(A, q.id, s.id);
+                if (!r.ok) { note.textContent = r.message; note.hidden = false; note.removeAttribute('hidden'); safe(() => note.focus(), null); }
+              }, 'btn ghost', 'quest-tick', { 'aria-label': `${TEXT.qTick}: ${s.label}` })))),
+        q.id === 'prediction-lab' && !q.complete ? h('div', { class: 'row' }, link('#/actions/predictions', TEXT.plOpen, 'btn', 'quest-to-predictions')) : null));
+    }
+    return root;
+  }
+
+  /* ── U-25: Prediction Lab ──────────────────────────────────────────────────────────────── */
+  const plScore = (v) => (v === '' || v == null ? NaN : Number(v));
+  /* Open predictions (no result yet) newest first, then finished ones newest first, each with its sentence. */
+  function predictionRows(view) {
+    const rows = list(view, 'predictions');
+    const isDone = (p) => !!p.completedAt || (p.actual !== null && p.actual !== undefined);
+    const byAt = (a, b) => String(b.completedAt || b.at || '').localeCompare(String(a.completedAt || a.at || ''));
+    return {
+      open: rows.filter((p) => !isDone(p)).sort(byAt),
+      done: rows.filter(isDone).sort(byAt).map((p) => Object.assign({}, p, { words: predictionWords(p.predicted, p.actual) })),
+    };
+  }
+  /* "You expected 3; it was 6." and one calm line on what that means. */
+  function predictionWords(predicted, actual) {
+    const a = Number(actual), b = Number(predicted);
+    const first = TEXT.plResult(b, a);
+    return a > b ? `${first} ${TEXT.plBetter}` : a < b ? `${first} ${TEXT.plLess}` : `${first} ${TEXT.plSame}`;
+  }
+  async function savePrediction(A, v) {
+    const item = { activity: str(v && v.activity), predicted: plScore(v && v.predicted) };
+    try {
+      if (!A || !A.predictions) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.predictions.add(item) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-prediction' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  async function completePrediction(A, id, actual) {
+    try {
+      if (!A || !A.predictions) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.predictions.complete(id, { actual: plScore(actual) }) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-prediction' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  /* The help line shows after a save with crisis words, for this session only (memory, never stored). */
+  const HELP_PAGES = new Set();
+  const helpBox = (test) => h('p', { class: 'tip act-help', 'data-test': test }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', test + '-go'));
+  const scoreSelect = (id, test, value, withBlank) => h('select', { id, 'data-test': test, value: value == null ? '' : String(value) },
+    withBlank ? h('option', { value: '', text: TEXT.plPick }) : null, Array.from({ length: 11 }, (_, i) => h('option', { value: String(i), text: String(i) })));
+  function predictionsPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const state = { asking: null, message: '', values: { activity: '', predicted: '' }, askMsg: '' };
+    const root = h('div', { class: 'page stack act-page act-predictions', 'data-test': 'predictions' });
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const paint = () => {
+      clear(root);
+      const rows = predictionRows(view);
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.plTitle }));
+      root.appendChild(h('p', { class: 'muted', text: TEXT.plIntro }));
+      const ids = { a: fid('pla'), p: fid('plp'), err: fid('plerr') };
+      const act = h('input', { id: ids.a, type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'prediction-activity', value: state.values.activity });
+      const pre = scoreSelect(ids.p, 'prediction-predicted', state.values.predicted, true);
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'prediction-error', text: state.message });
+      if (!state.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('form', { class: 'card form stack act-form', 'data-test': 'prediction-form', novalidate: true, 'aria-labelledby': 'act-pl-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = { activity: act.value, predicted: pre.value };
+          const r = await savePrediction(A, values);
+          if (!r.ok) { state.values = values; state.message = r.message; paint(); focusOn('.act-form-error'); return; }
+          if (crisisIn(E, values.activity)) HELP_PAGES.add('predictions');
+          state.values = { activity: '', predicted: '' }; state.message = '';
+          paint();
+        } },
+      h('h2', { class: 'card-title', id: 'act-pl-h', text: TEXT.plNew }),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.a, text: TEXT.plActivity }), act),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.p, text: TEXT.plExpect }), pre),
+      err,
+      h('div', { class: 'row form-actions' }, h('button', { type: 'submit', class: 'btn primary', 'data-test': 'prediction-save', text: TEXT.plSave }))));
+      root.appendChild(h('section', { class: 'card stack', 'data-test': 'predictions-open', 'aria-labelledby': 'act-pl-open' },
+        h('h2', { class: 'card-title', id: 'act-pl-open', text: TEXT.plOpenTitle }),
+        rows.open.length ? h('ul', { class: 'act-blocks' }, rows.open.map((p) => {
+          const asking = state.asking === p.id;
+          const aid = fid('plact');
+          const sel = asking ? scoreSelect(aid, 'prediction-actual', '', true) : null;
+          return h('li', { class: 'act-block', 'data-test': 'prediction-open' },
+            h('p', { class: 'act-title', text: p.activity }),
+            h('p', { class: 'muted', text: TEXT.plExpected(p.predicted) }),
+            asking ? h('div', { class: 'stack act-ask' },
+              h('div', { class: 'field' }, h('label', { class: 'field-label', for: aid, text: TEXT.plHow }), sel),
+              state.askMsg ? h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'prediction-actual-error', text: state.askMsg }) : null,
+              h('div', { class: 'row form-actions' },
+                button(TEXT.plSaveResult, async () => {
+                  const r = await completePrediction(A, p.id, sel.value);
+                  if (!r.ok) { state.askMsg = r.message; paint(); focusOn('[data-test="prediction-actual-error"]'); return; }
+                  state.asking = null; state.askMsg = ''; paint();
+                }, 'btn primary', 'prediction-complete'),
+                button(TEXT.cancel, () => { state.asking = null; state.askMsg = ''; paint(); }, 'btn ghost', 'prediction-cancel')))
+              : h('div', { class: 'row' }, button(TEXT.plHow, () => { state.asking = p.id; state.askMsg = ''; paint(); focusOn('[data-test="prediction-actual"]'); }, 'btn', 'prediction-ask',
+                { 'aria-label': `${TEXT.plHow} ${p.activity}` })));
+        })) : h('p', { class: 'muted', text: TEXT.plNoneOpen })));
+      if (rows.done.length) {
+        root.appendChild(h('section', { class: 'card stack', 'data-test': 'predictions-done', 'aria-labelledby': 'act-pl-done' },
+          h('h2', { class: 'card-title', id: 'act-pl-done', text: TEXT.plDoneTitle }),
+          h('ul', { class: 'act-blocks' }, rows.done.map((p) => h('li', { class: 'act-block', 'data-test': 'prediction-done' },
+            h('p', { class: 'act-title', text: p.activity }), h('p', { text: p.words }))))));
+      }
+      if (HELP_PAGES.has('predictions') || rows.open.concat(rows.done).some((p) => crisisIn(E, p.activity))) root.appendChild(helpBox('predictions-help'));
+    };
+    paint();
+    return root;
+  }
+
+  /* ── U-25: to-dos ──────────────────────────────────────────────────────────────────────── */
+  /* Open to-dos (by due date, those without one last, then oldest first) and done ones (newest first). A due date is
+     shown plainly; nothing is ever overdue or late, and a past date looks like any other. */
+  function todoRows(view) {
+    const rows = list(view, 'todos');
+    const open = rows.filter((t) => !t.done).sort((a, b) => {
+      const da = DATE_RE.test(String(a.due || '')) ? a.due : '9999-99-99';
+      const db = DATE_RE.test(String(b.due || '')) ? b.due : '9999-99-99';
+      return da.localeCompare(db) || String(a.at || '').localeCompare(String(b.at || ''));
+    });
+    const done = rows.filter((t) => t.done).sort((a, b) => String(b.doneAt || '').localeCompare(String(a.doneAt || '')));
+    const shape = (t) => Object.assign({}, t, { dueLabel: DATE_RE.test(String(t.due || '')) ? TEXT.tdFor(dayLabel(t.due)) : '',
+      go: typeof t.route === 'string' && t.route.startsWith('#/') ? t.route : '' });
+    return { open: open.map(shape), done: done.map(shape) };
+  }
+  async function saveTodo(A, v) {
+    const item = { text: str(v && v.text) };
+    const due = str(v && v.due);
+    if (due) item.due = due;
+    try {
+      if (!A || !A.todos) throw Object.assign(new Error(TEXT.error), { code: 'no-actions' });
+      return { ok: true, row: await A.todos.add(item) };
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : 'error';
+      return { ok: false, code, message: code === 'bad-plan' && err.message ? String(err.message) : TEXT.error };
+    }
+  }
+  function todosPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const view = (ctx && ctx.view) || null;
+    const state = { asking: null, message: '', values: { text: '', due: '' } };
+    const root = h('div', { class: 'page stack act-page act-todos', 'data-test': 'todos' });
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const write = async (fn) => {
+      try { await fn(); } catch (e) { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(TEXT.error, 'warn'), null); }
+      paint();
+    };
+    const paint = () => {
+      clear(root);
+      const rows = todoRows(view);
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.tdTitle }));
+      root.appendChild(h('p', { class: 'muted', text: TEXT.tdIntro }));
+      const ids = { t: fid('tdt'), d: fid('tdd'), err: fid('tderr') };
+      const txt = h('input', { id: ids.t, type: 'text', maxlength: '300', autocomplete: 'off', 'data-test': 'todo-text', value: state.values.text });
+      const due = h('input', { id: ids.d, type: 'date', 'data-test': 'todo-due', value: state.values.due });
+      const err = h('p', { id: ids.err, class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'todo-error', text: state.message });
+      if (!state.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('form', { class: 'card form stack act-form', 'data-test': 'todo-form', novalidate: true, 'aria-labelledby': 'act-td-h',
+        onSubmit: async (ev) => {
+          if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          const values = { text: txt.value, due: due.value };
+          const r = await saveTodo(A, values);
+          if (!r.ok) { state.values = values; state.message = r.message; paint(); focusOn('.act-form-error'); return; }
+          if (crisisIn(E, values.text)) HELP_PAGES.add('todos');
+          state.values = { text: '', due: '' }; state.message = '';
+          paint();
+          focusOn('[data-test="todo-text"]');
+        } },
+      h('h2', { class: 'card-title', id: 'act-td-h', text: TEXT.tdNew }),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.t, text: TEXT.tdText }), txt),
+      h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids.d, text: TEXT.tdDue }), due),
+      err,
+      h('div', { class: 'row form-actions' }, h('button', { type: 'submit', class: 'btn primary', 'data-test': 'todo-add', 'data-testid': 'todo-add', text: TEXT.tdAdd }))));
+      const item = (t, isOpen) => h('li', { class: 'act-block' + (isOpen ? '' : ' act-skipped'), 'data-test': isOpen ? 'todo' : 'todo-done' },
+        h('p', { class: 'act-title', text: t.text }),
+        t.dueLabel ? h('p', { class: 'muted', 'data-test': 'todo-due-label', text: t.dueLabel }) : null,
+        !isOpen ? h('p', { class: 'act-status', text: TEXT.tdDoneMark }) : null,
+        state.asking === t.id
+          ? h('div', { class: 'row act-ask' }, h('span', { text: TEXT.tdRemoveAsk }),
+            button(TEXT.tdRemoveYes, () => write(async () => { state.asking = null; await A.todos.remove(t.id); }), 'btn', 'todo-remove-yes'),
+            button(TEXT.tdRemoveNo, () => { state.asking = null; paint(); }, 'btn ghost', 'todo-remove-no'))
+          : h('div', { class: 'row act-tools' },
+            isOpen ? button(TEXT.tdDone, () => write(() => A.todos.done(t.id)), 'btn', 'todo-done-btn', { 'aria-label': `${TEXT.tdDone}: ${t.text}` }) : null,
+            isOpen && t.go ? link(t.go, TEXT.tdGo, 'btn ghost', 'todo-go', { 'aria-label': `${TEXT.tdGo}: ${t.text}` }) : null,
+            button(TEXT.tdRemove, () => { state.asking = t.id; paint(); focusOn('[data-test="todo-remove-no"]'); }, 'btn ghost', 'todo-remove', { 'aria-label': `${TEXT.tdRemove}: ${t.text}` })));
+      root.appendChild(h('section', { class: 'card stack', 'data-test': 'todos-open', 'aria-labelledby': 'act-td-open' },
+        h('h2', { class: 'card-title', id: 'act-td-open', text: TEXT.tdOpenTitle }),
+        rows.open.length ? h('ul', { class: 'act-blocks' }, rows.open.map((t) => item(t, true))) : h('p', { class: 'muted', text: TEXT.tdNone })));
+      if (rows.done.length) {
+        root.appendChild(h('section', { class: 'card stack', 'data-test': 'todos-done', 'aria-labelledby': 'act-td-done' },
+          h('h2', { class: 'card-title', id: 'act-td-done', text: TEXT.tdDoneTitle }),
+          h('ul', { class: 'act-blocks' }, rows.done.map((t) => item(t, false)))));
+      }
+      if (HELP_PAGES.has('todos') || rows.open.some((t) => crisisIn(E, t.text))) root.appendChild(helpBox('todos-help'));
+    };
+    paint();
+    return root;
+  }
+
   /* ── page ──────────────────────────────────────────────────────────────────────────────── */
   function page(ctx) {
     const parts = ctx && ctx.route && Array.isArray(ctx.route.parts) ? ctx.route.parts : [];
@@ -1014,15 +1321,21 @@ const ActionsUI = (() => {
     if (sub === 'planner') return plannerPage(ctx);
     if (sub === 'battle') return battlePage(ctx);
     if (sub === 'review') return reviewPage(ctx);
+    if (sub === 'quests') return questsPage(ctx);
+    if (sub === 'predictions') return predictionsPage(ctx);
+    if (sub === 'todos') return todosPage(ctx);
+    if (sub === 'practices' || sub === 'practice') { const U = ns('UI'); if (U && typeof U.go === 'function') safe(() => U.go('#/practice'), null); }
     return stubPage(sub);
   }
 
   const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel',
     'planEnded', 'battleLists', 'battleNotes', 'battlePlanIcsItem', 'battleIcsFile', 'battleFromValues', 'saveBattle', 'debriefPlan',
-    'reviewWeek', 'nextReviewDate', 'reviewIcsItem', 'reviewSaved', 'forecastRows', 'wantToItem', 'reviewPayload', 'saveReview'];
+    'reviewWeek', 'nextReviewDate', 'reviewIcsItem', 'reviewSaved', 'forecastRows', 'wantToItem', 'reviewPayload', 'saveReview',
+    'questCards', 'tickQuest', 'predictionRows', 'predictionWords', 'savePrediction', 'completePrediction', 'todoRows', 'saveTodo'];
   return { page, TEXT, PURE, forgetReviews, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel,
     planEnded, battleLists, battleNotes, battlePlanIcsItem, battleIcsFile, battleFromValues, saveBattle, debriefPlan,
-    reviewWeek, nextReviewDate, reviewIcsItem, reviewSaved, forecastRows, wantToItem, reviewPayload, saveReview };
+    reviewWeek, nextReviewDate, reviewIcsItem, reviewSaved, forecastRows, wantToItem, reviewPayload, saveReview,
+    questCards, tickQuest, predictionRows, predictionWords, savePrediction, completePrediction, todoRows, saveTodo };
 })();
 
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); ui-core.js is not changed.
