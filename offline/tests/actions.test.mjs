@@ -998,6 +998,32 @@ describe('sos flows in a stand-in DOM (fix round)', () => {
     assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
   });
 
+  test('RC6: a lock inside SOS hides the person’s rows at once, the flow goes on, nothing navigates', async () => {
+    const d = sosDom();
+    await Actions.saveResponse('quick-reasons', { reasons: ['my health'] });
+    await Actions.contacts.add({ name: 'Ravi', role: 'safetyNet', phone: '+91 98765 43210' });
+    await Actions.recoveryPlan.save({ motivation: { items: ['my kids'] } }, { confirm: true });
+    await S().lock.set('2468');
+    const hub = d.open(['sos']);
+    assert.match(hub.textContent, /my kids/);
+    S().lock.lockNow();
+    assert.doesNotMatch(hub.textContent, /my kids/, 'My plan is hidden');
+    assert.match(hub.textContent, /Locked/);
+    assert.ok(await S().lock.unlock('2468'));
+    for (const [tool, own] of [['why', /my health/], ['call', /Ravi/]]) {
+      const root = d.open(['sos', 'craving']);
+      d.tap(root, 'Skip');
+      d.tapId(root, 'sos-tool-' + tool);
+      assert.match(root.textContent, own, tool);
+      S().lock.lockNow();
+      assert.doesNotMatch(root.textContent, own, tool + ': hidden while locked');
+      d.tap(root, 'Done');
+      assert.match(root.textContent, /Did that help/, 'the flow goes on');
+      assert.ok(await S().lock.unlock('2468'));
+    }
+    assert.deepEqual(d.go, [], 'a lock never moves the person out of SOS');
+  });
+
   // -- fix round: stand-in DOM tests above this line --
 });
 

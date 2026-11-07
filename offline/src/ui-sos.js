@@ -54,6 +54,7 @@
     noVoice: 'Read-aloud is not available on this device.',
     notSaved: 'Not saved on this device. You can keep going.',
     copied: 'Copied.',
+    hidden: 'Locked: your own notes are hidden.',
   };
 
   // Stand-ins until Content.practices (content U-32) and the engine's SOS views arrive. Reported for clinical review.
@@ -297,6 +298,8 @@
   const toast = (msg, tone) => safe(() => UI.toast(msg, tone || 'info'), null);
   const tid = (id) => ({ testid: id });
   const isLockedNow = () => safe(() => !!Store.status().locked, false);
+  // The person's own rows on an SOS screen carry data-private, so a lock inside SOS can hide them at once.
+  const mine = (node) => { if (node && node.dataset) node.dataset.private = '1'; return node; };
 
   function btn(label, onClick, opts) {
     const o = opts || {};
@@ -407,14 +410,18 @@
     if (t && t.focus) safe(() => t.focus({ preventScroll: false }), null);
   }
 
-  function cards(title, list, emptyText, onDone, testid) {
+  // `list`: an array, or a function read again at each paint (a card drawn after a lock has none of the person's rows).
+  function cards(title, list, emptyText, onDone, testid, priv) {
     let i = 0;
     const box = h('div', { class: 'stack', dataset: testid ? tid(testid) : null });
     const paint = () => {
-      if (!list.length) { box.replaceChildren(screen(title, emptyText, btn('Done', onDone, { primary: true }))); return; }
-      box.replaceChildren(screen(title, list[i % list.length],
-        list.length > 1 ? btn('Another one', () => { i += 1; paint(); focusTitle(box); }) : null,
-        btn('Done', onDone, { primary: true })));
+      const items = (typeof list === 'function' ? list() : list) || [];
+      if (!items.length) { box.replaceChildren(screen(title, emptyText, btn('Done', onDone, { primary: true }))); return; }
+      const s = screen(title, items[i % items.length],
+        items.length > 1 ? btn('Another one', () => { i += 1; paint(); focusTitle(box); }) : null,
+        btn('Done', onDone, { primary: true }));
+      if (priv) mine(s.querySelector('.sos-line'));
+      box.replaceChildren(s);
     };
     paint();
     return box;
@@ -422,14 +429,14 @@
 
   function contactsView(c, drill, onDone) {
     const A = c.A;
-    const people = drill ? [] : activeContacts(c.view);
+    const people = drill || isLockedNow() ? [] : activeContacts(c.view);
     const groups = safe(() => Cn().resources.in.groups, []) || [];
     const reached = (id, how) => { if (!drill && A && A.contacts && A.contacts.reached) save(() => A.contacts.reached(id, how)); };
     const list = people.length
-      ? h('ul', { class: 'sos-list' }, people.map((p) => h('li', { class: 'row' },
+      ? mine(h('div', null, h('ul', { class: 'sos-list' }, people.map((p) => h('li', { class: 'row' },
         h('a', { class: 'sos-target', href: telHref(p.phone), onClick: () => reached(p.id, 'call') },
           h('span', { class: 'sos-target-name', text: p.name || 'Safety Net' }), h('span', { class: 'sos-target-number', text: 'Call' })),
-        h('a', { class: 'btn ghost', href: 'sms:' + telHref(p.phone).slice(4), text: 'Text', style: { width: 'auto' }, onClick: () => reached(p.id, 'text') }))))
+        h('a', { class: 'btn ghost', href: 'sms:' + telHref(p.phone).slice(4), text: 'Text', style: { width: 'auto' }, onClick: () => reached(p.id, 'text') }))))))
       : null;
     return h('div', { class: 'stack' },
       screen(COPY.call.title, drill ? COPY.call.drill : people.length ? COPY.call.line : COPY.call.none, list),
@@ -464,16 +471,16 @@
     const helped = (tool) => show(screen(COPY.helped.title, null,
       btn('It helped', () => credit(tool)(true), { primary: true }), btn('Not really', () => credit(tool)(false))));
     const next = () => { if (queue.length) runTool(queue.shift()); else if (st.guided) { st.guided = false; reassess(); } else tools(); };
-    const reasons = () => (mode.drill ? texts(safe(() => Cn().catalogs.reassuring, [])) : reasonsFrom(c.view, c.E));
+    const reasons = () => (mode.drill ? texts(safe(() => Cn().catalogs.reassuring, [])) : isLockedNow() ? [] : reasonsFrom(c.view, c.E));
 
     function runTool(id) {
       const tool = TOOLS.find((t) => t.id === id);
       if (!tool) { next(); return; }
       if (id === 'wave') show(soberView(() => helped(tool)));
-      else if (id === 'why') show(cards(COPY.why.title, reasons(), COPY.why.empty, () => helped(tool)));
+      else if (id === 'why') show(cards(COPY.why.title, reasons, COPY.why.empty, () => helped(tool), null, !mode.drill));
       else if (id === 'call') show(contactsView(c, mode.drill, () => helped(tool)));
-      else if (id === 'distract') show(cards(COPY.distract.title, deckFrom(mode.drill ? null : c.view, c.E, Cn()), '', () => helped(tool)));
-      else if (id === 'talkback') show(cards(COPY.talkback.title, mode.drill ? FALLBACK.talkback.slice() : comebacksFrom(c.view, c.E), '', () => helped(tool)));
+      else if (id === 'distract') show(cards(COPY.distract.title, () => deckFrom(mode.drill || isLockedNow() ? null : c.view, c.E, Cn()), '', () => helped(tool), null, !mode.drill));
+      else if (id === 'talkback') show(cards(COPY.talkback.title, () => (mode.drill || isLockedNow() ? FALLBACK.talkback.slice() : comebacksFrom(c.view, c.E)), '', () => helped(tool), null, !mode.drill));
     }
 
     function rate() {
@@ -648,15 +655,17 @@
     }
 
     function spiral() {
-      const pairs = spiralPairs(mode.preview ? null : c.view, c.E, C);
       let i = 0;
       const paint = () => {
+        const pairs = spiralPairs(mode.preview || isLockedNow() ? null : c.view, c.E, C); // read again: after a lock, none of the person's
         if (!pairs.length) { reach(); return; }
-        const p = pairs[i];
+        const p = pairs[Math.min(i, pairs.length - 1)];
         const last = i >= pairs.length - 1 || i >= 2; // three at most: enough to stop the spiral, not a lecture
-        show(screen('“' + p.thought + '”', p.reply,
+        const s = screen('“' + p.thought + '”', p.reply,
           last ? null : btn('Next thought', () => { i += 1; paint(); }),
-          btn('Continue', reach, { primary: true })));
+          btn('Continue', reach, { primary: true }));
+        if (!mode.preview) { mine(s.querySelector('.sos-title')); mine(s.querySelector('.sos-line')); }
+        show(s);
       };
       paint();
     }
@@ -697,12 +706,29 @@
         link('I’m craving', '#/sos/craving', { 'data-tour': 'sos-craving', testid: 'sos-go-craving' }),
         link('A hard feeling', '#/sos/feeling', { testid: 'sos-go-feeling' }),
         link('I slipped', '#/sos/slip', { testid: 'sos-go-slip' })),
-      secs.length ? h('details', { class: 'card', dataset: tid('sos-plan') }, h('summary', { text: 'My plan', style: { minHeight: '44px' } }),
-        ...secs.map((s) => h('ul', { 'aria-label': s.id }, s.items.map((t) => h('li', { text: t }))))) : null,
+      secs.length ? mine(h('div', null, h('details', { class: 'card', dataset: tid('sos-plan') }, h('summary', { text: 'My plan', style: { minHeight: '44px' } }),
+        ...secs.map((s) => h('ul', { 'aria-label': s.id }, s.items.map((t) => h('li', { text: t }))))))) : null,
       link('Leave SOS', '#/today', { testid: 'sos-leave' }));
   }
 
+  // A lock inside SOS (manual or auto): ui-core keeps SOS on screen, so the page hides the person's rows itself, at
+  // once, and the flow goes on. It never navigates.
+  function hideOnLock(node) {
+    const S = glob('Store');
+    if (!node || !node.querySelectorAll || !S || !S.lock || typeof S.lock.onLock !== 'function') return node;
+    let off = null;
+    off = safe(() => S.lock.onLock(() => {
+      if (!node.isConnected) { if (typeof off === 'function') off(); return; }
+      for (const n of node.querySelectorAll('[data-private]')) n.textContent = COPY.hidden;
+    }), null);
+    return node;
+  }
+
   function page(c) {
+    return hideOnLock(pageFor(c));
+  }
+
+  function pageFor(c) {
     const m = parseSos(c && c.route);
     if (m.flow === 'urgent') {
       return h('section', { class: 'page sos-page stack' }, urgentView(c), link('Back to SOS', '#/sos'));
