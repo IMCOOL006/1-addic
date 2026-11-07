@@ -1,0 +1,61 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The screenshots, the guide, the browser harness and the hooks round, the offline docs true, the status layer's browser tests, the boot-time and contrast checks.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-35",
+  "V-07",
+  "V-03",
+  "V-06"
+ ],
+ "batches": [
+  [
+   "U-35",
+   "V-07"
+  ],
+  [
+   "V-03",
+   "V-06"
+  ]
+ ],
+ "unitTier": {
+  "U-35": 1,
+  "V-07": 1,
+  "V-03": 1,
+  "V-06": 1
+ },
+ "unitNotes": {
+  "V-03": "The hooks round, test side (2.2 h, V3-03, V3-04, V3-05): facts first: sos-reassess-passed and sos-reassess-still exist (ui-sos.js:709-710, hooks.mjs:35-36); the skip is the flow's path: flows.mjs advanceUntil taps only Next/Continue/Start, while the app needs sos-helped-yes (ui-sos.js:675) then sos-checkin (:700) or Guide me (:676): the helper taps helped, then Check in. [The rest of this note: lane_args_v3.json lanes.tests-docs.unitNotes[\"V-03\"] and tracks/CORE/briefs/tests-docs/V-03.md: read both before you build.]",
+  "V-06": "Docs true again (V3-06; shrunk: the 'planned' marks went in C1, C2): offline/README.md and the '## Offline edition' sections of README.md and CLAUDE.md name the commands, the tests by name and count as the trunk has them, and the release copy offline/releases/1-addic-v1.1.html. Append-only sections in the shared files."
+ },
+ "laneNote": "Runs on from U-35 without a new cut (fast-forwarded to f69bc68a 02:03). Tier 1 first: U-35, V-07, then V-03 and V-06, then V-01t when today-track V-01b is merged; tier 2 after. Every hook that must be added to another lane's file is asked by outbox with the attribute name and the element (the owner adds the attribute only). Under 4.0 GB free the run pauses at its next commit (the floor was crossed 02:23). V-45 (R-O-6) after V-01t. House rules as BUILD-PLAN section 2. CORE 11's word (2026-11-08 03:50 IST): on the trunk's code (worktree at BASE; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: c2601cf1-5557-49d0-a65e-b1eddd04b48d'; message from a file; add by path. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK",
+  "V-07"
+ ],
+ "base": "f69bc68a",
+ "session": "c2601cf1-5557-49d0-a65e-b1eddd04b48d",
+ "now": "2026-11-08 03:50 IST",
+ "diffFrom": "c1058ab",
+ "slot": 5,
+ "priorNote": "V-07 READY at c1058ab (CORE 11, R-C-52; worktree clean; check PASS, no findings): the guide's Parts 3 and 4 in offline/docs/1-addic-Guide.md with the U-35 images, STRICT_IMAGES True in build_guide.py, the .docx rebuilt. Gates on c1058ab GREEN: build, test, validate, guards, browser (ℹ pass 16 ℹ fail 0 ℹ skipped 3 ; C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261108-034327.log), docs (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/docs-20261108-034621.log). Now V-03 (the hooks round, test side) and V-06 (docs true: only the commands, the test names and counts as the trunk has them, and the release copy offline/releases/1-addic-v1.1.html named; the 'planned' marks are already gone). If V-03 changes the browser counts, update the guide's checked numbers in the same batch.\n"
+}

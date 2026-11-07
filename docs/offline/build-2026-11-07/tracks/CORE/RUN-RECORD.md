@@ -259,7 +259,15 @@
 - 03:24 engine V-40 wf_2b0e95b3-328 (slot 2; args tracks/CORE/args/args_v3_engine_V-40.json by gen6.py plus the rulings). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_2b0e95b3-328/journal.jsonl.
 - 03:26 tests-docs V-07 wf_eb189dd3-0fd (slot 5; args_v3_tests-docs_V-07.json, diffFrom 476f404, priorNote td_u35_slicenote.txt). V-03 + V-06 come as the next run: one run with both batches was over wf_sim's 12 KB limit. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_eb189dd3-0fd/journal.jsonl.
 
+## 2026-11-08 03:52 IST · tests-docs READY c1058ab (V-07); V-03 + V-06 launched; R-S-22 accepted as V-40b
+
+- wf_eb189dd3-0fd returned READY c1058ab: check PASS, gates GREEN by name (browser 16/0/3; docs with STRICT_IMAGES True). R-C-52 to the HUB.
+- 03:50 V-03 + V-06 wf_181dd398-6a1 (slot 5; args tracks/CORE/args/args_v3_tests-docs_V-03.json, trimmed by hand to stay under 12 KB; priorNote td_v07_note.txt). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_181dd398-6a1/journal.jsonl.
+- R-S-22 (SCREENS 0fd59f53): Engine.growthItems accepted as V-40b (R-C-51; contracts/engine.md). It is built in engine's next run after the V-40 slice, ahead of V-19 and V-30 (gen6 '[["V-40b"]]' does not work because V-40b is not in lane_args_v3.json: add it to the args by hand, units and unitNotes from contracts/engine.md).
+
 ## Resume here
+
+- **(2026-11-08 03:52 IST) STATE BUILDING, CORE 11 (c2601cf1), over 250k.** Running: engine V-40 wf_2b0e95b3-328 (-> `LANE: engine READY-SLICE <tip>`, R-C to the HUB; then V-40b growthItems, then V-19 + V-30) and tests-docs V-03 + V-06 wf_181dd398-6a1 (-> `LANE: tests-docs READY <tip>`, R-C; then V-01t when the board shows today-track V-01b merged). Waiting for SLOTS lines: core V-11 (args_v3_core_V-11.json + slot), actions-sos V-08a + V-SOS10 (args_v3_actions-sos_V-08a.json + slot), then V-41. If c2601cf1 is gone from `claude agents --json`, both runs died: relaunch each from its branch's last commit with done and priorNote.
 
 - **(2026-11-08 03:28 IST) STATE BUILDING, CORE 11 (c2601cf1).** Running: engine V-40 wf_2b0e95b3-328 (sliceRun; returns READY-SLICE: write `LANE: engine READY-SLICE <tip>`, R-C to the HUB; the next engine run is V-19 + V-30, tier 2, only when no tier 1 lane waits) and tests-docs V-07 wf_eb189dd3-0fd (returns READY: `LANE: tests-docs READY <tip>`, R-C; then V-03 + V-06 by `SLOT=5 python tracks/CORE/args/gen6.py "<now>" tests-docs '[["V-03","V-06"]]' <the V-07 tip> <a note file>`, wf_sim, launch). Waiting for SLOTS lines: core V-11 (args_v3_core_V-11.json; set slot), then actions-sos V-08a + V-SOS10 (args_v3_actions-sos_V-08a.json; set slot), then V-41 in the same lane (gen6 '[["V-41"]]'). If c2601cf1 is gone from `claude agents --json`, these runs died with it: relaunch each from its branch's last commit with done and priorNote.
 

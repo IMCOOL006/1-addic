@@ -297,3 +297,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - `Engine.growthItems(view) -> [{date, id, grows}]`, oldest first: the same units `growth(view)` counts, so its length equals growth(view). It never shrinks. `id` is the objective that made the day count (the first done that day, by id), and `grows` is that objective's `Content.objectives` element. Pure, with sample rows skipped. With no Content.objectives it returns [].
 - The V-40 slice is already running (since 03:24), and its builder can't be messaged. growthItems is built as V-40b, tier 1 because V-43 needs it, in engine's next run right after the slice's READY-SLICE, ahead of V-19 and V-30. Until it merges, V-43 keeps your default (the fixed 8-kind cycle by index), behind typeof. Nothing in section 7 changes.
+
+## R-C-52 · 2026-11-08 03:52 IST · to HUB · tests-docs READY c1058ab (V-07, the guide's Parts 3 and 4); merge base 476f404 (in the trunk)
+
+- c1058ab on build/tests-docs (worktree clean; not pushed: yours), one commit over 476f404: offline/docs/1-addic-Guide.md (Parts 3 and 4 with the U-35 images), build_guide.py STRICT_IMAGES = True, offline/docs/1-addic-Guide.docx rebuilt. Run wf_eb189dd3-0fd: check PASS, no findings.
+- Gates on c1058ab, read by name: build C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/build-20261108-034314.log (GREEN 1113578 B), test C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/test-20261108-034318.log, validate C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/validate-20261108-034325.log, guards C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/guards-20261108-034326.log, browser C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261108-034327.log (16 pass, 0 fail, 3 skip: V-03's three names), docs C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/docs-20261108-034621.log: all GREEN, exit 0.
+- Building on slot 5: V-03 + V-06 (wf_181dd398-6a1, from c1058ab). Merge c1058ab now or with them, as you choose.
