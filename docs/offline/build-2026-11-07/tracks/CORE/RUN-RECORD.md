@@ -265,7 +265,18 @@
 - 03:50 V-03 + V-06 wf_181dd398-6a1 (slot 5; args tracks/CORE/args/args_v3_tests-docs_V-03.json, trimmed by hand to stay under 12 KB; priorNote td_v07_note.txt). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_181dd398-6a1/journal.jsonl.
 - R-S-22 (SCREENS 0fd59f53): Engine.growthItems accepted as V-40b (R-C-51; contracts/engine.md). It is built in engine's next run after the V-40 slice, ahead of V-19 and V-30 (gen6 '[["V-40b"]]' does not work because V-40b is not in lane_args_v3.json: add it to the args by hand, units and unitNotes from contracts/engine.md).
 
+## 2026-11-08 03:54 IST · engine READY-SLICE 03840ef; CORE 11 hands over (STATE RESTART)
+
+- wf_2b0e95b3-328 returned READY-SLICE 03840ef (V-40; C1 fixed; gates GREEN by name). R-C-53 to the HUB.
+
 ## Resume here
+
+- **(2026-11-08 03:54 IST) STATE RESTART, CORE 11 (c2601cf1) hands over near 300k.** Still running in c2601cf1: **tests-docs V-03 + V-06 wf_181dd398-6a1** (from c1058ab). Do not relaunch it while c2601cf1 is listed in `claude agents --json` and the journal is still growing. Watch C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c2601cf1-5557-49d0-a65e-b1eddd04b48d/subagents/workflows/wf_181dd398-6a1/journal.jsonl: the last 'result' line of the report agent marks the end, and the checker's verdict is in its 'result'. Then write `LANE: tests-docs READY <tip>` (git -C C:/Users/ruchi/1-addic-wt/tests-docs log -1) and an R-C to the HUB with the gates read by name. If c2601cf1 is gone and the run never finished, relaunch V-03 + V-06 from the branch's last commit with done [..., 'V-07'] and a priorNote (args_v3_tests-docs_V-03.json: set now, diffFrom; wf_sim).
+- **Next, in order:**
+  1. engine **V-40b** Engine.growthItems (tier 1, R-C-51; contract in contracts/engine.md). V-40b is not in lane_args_v3.json: copy args_v3_engine_V-40.json, set units/batches [['V-40b']] with done + 'V-40', a unitNote from contracts/engine.md (V-40b), diffFrom 03840ef, sliceRun false, slot 2 (held). Then V-19 + V-30 (tier 2).
+  2. core **V-11** (args_v3_core_V-11.json + slot) and actions-sos **V-08a + V-SOS10** (args_v3_actions-sos_V-08a.json + slot), each on its SLOTS line; then actions-sos **V-41** (gen6 '[["V-41"]]' with the V-08a tip, plus the R-C-50 rulings in its laneNote).
+  3. tests-docs **V-01t** after today-track V-01b merges, then **V-45**.
+- **Facts:** gen6.py makes args from lane_args_v3.json (`SLOT=<n> python tracks/CORE/args/gen6.py "<now>" <lane> '<batches JSON>' <diffFrom> [priorNote file]`). The builder prompt must stay under 12288 B (trim unitNotes or laneNote by hand). Write hub files through Python or a heredoc, and commit them with hub_commit.py. The HUB is now HUB 10 (4bd5570f). Rulings R-C-48 (confirmed by R-H-41), R-C-50 and R-C-51 are in the contracts.
 
 - **(2026-11-08 03:52 IST) STATE BUILDING, CORE 11 (c2601cf1), over 250k.** Running: engine V-40 wf_2b0e95b3-328 (-> `LANE: engine READY-SLICE <tip>`, R-C to the HUB; then V-40b growthItems, then V-19 + V-30) and tests-docs V-03 + V-06 wf_181dd398-6a1 (-> `LANE: tests-docs READY <tip>`, R-C; then V-01t when the board shows today-track V-01b merged). Waiting for SLOTS lines: core V-11 (args_v3_core_V-11.json + slot), actions-sos V-08a + V-SOS10 (args_v3_actions-sos_V-08a.json + slot), then V-41. If c2601cf1 is gone from `claude agents --json`, both runs died: relaunch each from its branch's last commit with done and priorNote.
 
