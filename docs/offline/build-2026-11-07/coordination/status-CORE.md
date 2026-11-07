@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 22:53 IST: CORE 93bffdb7: nothing runs (free memory 3.1 GB at 22:50, under the floor); actions-sos FIX-R7 ready to launch on the next 7.0 GB row; engine READY 84075b6
+STATE: BUILDING   # 2026-11-07 22:57 IST: CORE 93bffdb7: actions-sos FIX-R7 wf_ea2586a6-02e running (launched 22:56 on the HUB's grant, its 22:54 row 7.1 GB; the launcher's 22:55 row 6.7); engine READY 84075b6
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine READY 84075b6   # 2026-11-07 22:18 IST: FIX-RS9E wf_76a65b95-f5b check PASS; verified by this chat: 105/105 on the branch and on the trunk 79f43db's content (git archive, the lane's engine.js and new test over it); red before at 57153d3 (_logs/reports/engine/engine__FIX-RS9E.red.log, 3 fail); report lane-reports/engine.md (18115 B); cut base 655516dc, round diff 57153d3..84075b6
-LANE: actions-sos RED 00a5c08   # 2026-11-07 22:53 IST: FIX-R6 re-check wf_4b67e91f-df4 returned RED: the five FIX-R6 ids FIXED, RS35 HIGH FIXED ed34fc8, RS36 and RS37 PARTLY (00a5c08, 1f4b61c), one LOW; test GREEN 164/164. FIX-R7 (RS37R, RS38, RS36R; rulings contracts/actions-sos.md 2026-11-07 22:53 IST) waits for a 7.0 GB row: tracks/CORE/args/wf_as_r7.js; then the contracts re-review fca2781..HEAD
+LANE: actions-sos BUILDING 00a5c08   # 2026-11-07 22:57 IST: FIX-R7 wf_ea2586a6-02e (RS37R, RS38, RS36R; then the safety finder's re-check); after it the read-only contracts re-review fca2781..HEAD; RED 00a5c08 before (FIX-R6 re-check)
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
 SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R7 next); engine slot 2 done (READY 84075b6); learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 22:53 IST
+UPDATED: 2026-11-07 22:57 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 
