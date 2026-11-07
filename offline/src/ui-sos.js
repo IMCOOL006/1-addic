@@ -473,7 +473,7 @@
     const moved = () => markNow() !== mark; // RS26: erased, reset or replaced since this save began
     try { return await fn(); } catch (first) {
       let err = first;
-      if (err && err.code === 'LOCKED' && !isLockedNow() && !moved()) { // RS22: another tab changed the lock and this one reads open: once more, now
+      if (err && err.code === 'LOCKED' && !isLockedNow() && !moved()) { // RS22: this tab locked and unlocked while it ran (the same lock row): once more, now
         try { return await fn(); } catch (again) { err = again; }
       }
       if (err && err.code === 'LOCKED' && !moved()) { keepForUnlock(fn, mark); toast(COPY.lockedKept, 'info'); return null; }

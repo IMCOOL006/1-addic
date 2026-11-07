@@ -2187,11 +2187,20 @@ describe('review round 3 fixes (FIX-R3)', () => {
     assert.ok(crisis.querySelector('[data-testid="sos-crisis"]'), 'crisis words without overdose words: the crisis view, as before');
     assert.ok(!crisis.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'the crisis view says little else');
   });
-  test('RS22: a save refused LOCKED while the notebook reads unlocked (another tab changed the lock) is tried once more, at once', async () => {
-    const lockedErr = () => Object.assign(new Error('The lock changed in another tab.'), { code: 'LOCKED' });
+  test('RS22: a save refused LOCKED because this tab locked and unlocked while it ran is tried once more, at once (the same lock row)', async () => {
+    // RS22 after RS26 (the 17:04 ruling): any change of the lock row drops a save, so the retry has one case left: this
+    // tab locks and unlocks again (the same PIN) while the save runs, and the store refuses the write that met the lock
+    const lockedErr = () => Object.assign(new Error('This tab locked while the save ran.'), { code: 'LOCKED' });
+    await S().lock.set('2468');
     const refusing = (k) => {
       const s = { calls: 0 };
-      s.A = Object.assign({}, Actions, { sosSession: (p) => { s.calls += 1; return s.calls <= k ? Promise.reject(lockedErr()) : Actions.sosSession(p); } });
+      s.A = Object.assign({}, Actions, { sosSession: async (p) => {
+        s.calls += 1;
+        if (s.calls > k) return Actions.sosSession(p);
+        S().lock.lockNow();
+        assert.equal(await S().lock.unlock('2468'), true, 'unlocked again, the same PIN');
+        throw lockedErr();
+      } });
       return s;
     };
     const walk = (d, A, last) => {
@@ -2205,6 +2214,7 @@ describe('review round 3 fixes (FIX-R3)', () => {
     walk(d, one.A, 'sos-used-yes');
     await d.settle();
     assert.equal(one.calls, 2, 'refused once: tried once more, at once');
+    assert.equal(S().status().hasLock, true, 'the lock row the save began with');
     assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, not at some later notify');
     assert.equal(events('SlipLogged').length, 1, 'the slip is in the log');
     assert.ok(!kept(d), 'never told it waits for an unlock');
@@ -2223,8 +2233,7 @@ describe('review round 3 fixes (FIX-R3)', () => {
     await d2.settle();
     assert.equal(two.calls, 3);
     assert.equal(events('SosCompleted').length, 2, 'the kept one is saved once, at the next notify');
-    await S().lock.set('2468');
-    S().lock.lockNow();
+    S().lock.lockNow(); // really locked: the store refuses and this tab reads locked
     const three = refusing(0);
     const d3 = sosDom();
     walk(d3, three.A, 'sos-used-no');
