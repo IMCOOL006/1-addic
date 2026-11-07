@@ -1155,6 +1155,25 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(await S.lock.remove('2468'), true);
     assert.equal(S.status().autoLockMin, null);
   });
+
+  test('RC8: the refusal branches: a rule that stages nothing writes nothing; no lock, no opening; a PIN out of bounds', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    let heard = 0;
+    S.subscribe(() => { heard += 1; });
+    assert.equal(typeof S.subscribe('not a function'), 'function', 'a listener that is not a function gets a no-op unsubscribe');
+    assert.equal(await S.commit('read only', (d) => d.list('events').length), 0);
+    assert.equal(S.status().lastSavedAt, null, 'nothing was written');
+    assert.equal(heard, 0, 'and no one was told');
+    assert.equal(await S.lock.unlock('2468'), false, 'no lock: unlock, verify and remove are false');
+    assert.equal(await S.lock.verify('2468'), false);
+    assert.equal(await S.lock.remove('2468'), false);
+    for (const bad of ['123', 'x'.repeat(65), 2468, null]) await assert.rejects(S.lock.set(bad), (e) => e.code === 'BAD_PIN');
+    assert.equal(S.status().hasLock, false);
+    await S.lock.set('x'.repeat(64)); // the longest PIN is taken
+    assert.equal(S.status().hasLock, true);
+  });
 });
 
 /* ── boot.js (the CORE chat's ruling Q2): a start failure still shows urgent help ─────────────── */
