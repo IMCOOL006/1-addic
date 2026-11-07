@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 22:57 IST: CORE 93bffdb7: actions-sos FIX-R7 wf_ea2586a6-02e running (launched 22:56 on the HUB's grant, its 22:54 row 7.1 GB; the launcher's 22:55 row 6.7); engine READY 84075b6
+STATE: BUILDING   # 2026-11-07 22:58 IST: CORE 93bffdb7: actions-sos FIX-R7 wf_ea2586a6-02e running (launched 22:56 on the HUB's grant); engine MERGED 3ea2e13d
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine READY 84075b6   # 2026-11-07 22:18 IST: FIX-RS9E wf_76a65b95-f5b check PASS; verified by this chat: 105/105 on the branch and on the trunk 79f43db's content (git archive, the lane's engine.js and new test over it); red before at 57153d3 (_logs/reports/engine/engine__FIX-RS9E.red.log, 3 fail); report lane-reports/engine.md (18115 B); cut base 655516dc, round diff 57153d3..84075b6
+LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos BUILDING 00a5c08   # 2026-11-07 22:57 IST: FIX-R7 wf_ea2586a6-02e (RS37R, RS38, RS36R; then the safety finder's re-check); after it the read-only contracts re-review fca2781..HEAD; RED 00a5c08 before (FIX-R6 re-check)
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R7 next); engine slot 2 done (READY 84075b6); learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 22:57 IST
+SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R7 running); engine slot 2, learn slot 9 and core slot 1 free
+UPDATED: 2026-11-07 22:58 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 
