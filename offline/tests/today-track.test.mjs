@@ -477,7 +477,7 @@ test('track: timeline order and grouping', () => {
     assert.equal(byTest(home, 'track-counters').length, 0, 'counters only when opted in');
     assert.equal(byTest(home, 'track-insights-link')[0].getAttribute('href'), '#/track/insights', 'insights after seven logs');
     const few = TR.page(Object.assign({}, ctx, { view: viewOf({ logs }) }));
-    assert.match(byTest(few, 'insights-empty')[0].textContent, /after seven logs\. You have 3 so far/);
+    assert.match(byTest(few, 'insights-empty')[0].textContent, /after seven logs\. You have 2 so far/, 'sample rows and drills do not count (the engine rule)');
     assert.equal(byTest(few, 'track-insights-link').length, 0);
     const none = TR.page(Object.assign({}, ctx, { view: viewOf({}) }));
     assert.equal(byTest(none, 'timeline-row').length, 0);
@@ -529,5 +529,90 @@ test('track: ui-track.js inserts text as text, makes no network call and exports
   assert.equal(TRK.page, undefined);
   for (const k of ['timeline', 'formToLog', 'save', 'triggerOptions', 'countersData']) assert.equal(typeof TRK[k], 'function', k);
   const tourNames = [...new Set([...code.matchAll(/'(quicklog-[a-z]+|insights-(?:triggers|heatmap))'/g)].map((m) => m[1]))].sort();
-  assert.deepEqual(tourNames, ['quicklog-button', 'quicklog-intensity', 'quicklog-save']);
+  assert.deepEqual(tourNames, ['insights-heatmap', 'insights-triggers', 'quicklog-button', 'quicklog-intensity', 'quicklog-save']);
+});
+
+/* ── U-17 Insights ─────────────────────────────────────────────────────────────────────── */
+/* UI.svg stand-in on the fake DOM: the real one (ui-core.js) needs createElementNS. */
+const uiStub = () => ({
+  svg: (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) if (v != null && v !== false) n.setAttribute(k, v === true ? '' : String(v));
+    for (const k of kids.flat(5)) if (k != null && k !== false && k !== true) n.appendChild(typeof k === 'object' ? k : document.createTextNode(String(k)));
+    return n;
+  },
+});
+function withDom(fn) {
+  globalThis.document = fakeDom();
+  globalThis.UI = uiStub();
+  try { return fn(); } finally { delete globalThis.document; delete globalThis.UI; }
+}
+const craving = (d, hr, intensity, triggerIds) => {
+  const when = at(2026, 11, d, hr);
+  return { id: 'c' + (++seq), type: 'craving', at: when.toISOString(), date: T.localDate(when), intensity, triggerIds: triggerIds || [] };
+};
+function synthLogs(n) {
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(craving(1 + (i % 7), 18 + (i % 3), 3 + (i % 5), i % 2 ? ['people:work-stress'] : ['place:bar', 'people:work-stress']));
+  return out;
+}
+const insightsAt = (logs) => TR.page({ view: viewOf({ logs }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track/insights') });
+
+test('insights: hidden below 7 logs', () => withDom(() => {
+  const root = insightsAt(synthLogs(6));
+  assert.equal(byTest(root, 'insights-empty').length, 1);
+  assert.match(byTest(root, 'insights-empty')[0].textContent, /appear after seven logs\. You have 6 so far/);
+  assert.equal(byTest(root, 'insights-card').length, 0);
+  assert.equal(root.all((n) => n.tagName === 'svg').length, 0, 'nothing drawn');
+  assert.equal(byTest(root, 'insights-log')[0].getAttribute('href'), '#/track/log');
+  const home = TR.page({ view: viewOf({ logs: synthLogs(6) }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track') });
+  assert.equal(byTest(home, 'track-insights-link').length, 0);
+  assert.equal(TRK.insightsView(viewOf({ logs: synthLogs(6) }), NOW, E).ready, false);
+}));
+
+test('insights: cards from synthetic logs (svg present, heatmap 7x24)', () => withDom(() => {
+  const logs = synthLogs(10);
+  const iv = TRK.insightsView(viewOf({ logs }), NOW, E);
+  assert.equal(iv.ready, true);
+  assert.equal(iv.heatmap.length, 7);
+  assert.ok(iv.heatmap.every((r) => r.length === 24));
+  assert.equal(iv.cravings, 10);
+  assert.equal(iv.triggers[0].count, 10, 'work stress is in every log');
+  const root = insightsAt(logs);
+  const names = byTest(root, 'insights-card').map((n) => n.getAttribute('data-card'));
+  for (const k of ['trend', 'triggers', 'heatmap']) assert.ok(names.includes(k), k);
+  const heat = byTest(root, 'insights-heat')[0];
+  assert.equal(heat.tagName, 'svg');
+  assert.equal(heat.all((n) => n.tagName === 'rect').length, 168, '7 x 24 cells');
+  for (const id of ['insights-trend', 'insights-bars', 'insights-heat']) {
+    const s = byTest(root, id)[0];
+    assert.equal(s.getAttribute('role'), 'img', id);
+    assert.match(s.getAttribute('aria-label'), /\d/, id + ' says its numbers');
+  }
+  assert.equal(byTest(root, 'insights-bars')[0].all((n) => n.tagName === 'rect').length, iv.triggers.length);
+  assert.ok(byTest(root, 'insights-heat-table')[0].all((n) => n.tagName === 'tr').length > 1, 'a text table alternative');
+  assert.deepEqual(tours(root).sort(), ['insights-heatmap', 'insights-triggers']);
+  const home = TR.page({ view: viewOf({ logs }), E, A: stubActions(), settings: {}, profile: {}, now: NOW, route: R('/track') });
+  assert.equal(byTest(home, 'track-insights-link')[0].getAttribute('href'), '#/track/insights');
+  for (const a of root.all((n) => n.tagName === 'a')) assert.ok(KNOWN.includes(a.getAttribute('href').slice(2).split(/[/?]/)[0]));
+}));
+
+test('insights: caveat under 14', () => withDom(() => {
+  const few = insightsAt(synthLogs(10));
+  const cards = byTest(few, 'insights-card');
+  assert.ok(cards.length >= 3);
+  for (const c of cards) assert.equal(byTest(c, 'insights-caveat').length, 1, c.getAttribute('data-card'));
+  const many = insightsAt(synthLogs(15));
+  assert.ok(byTest(many, 'insights-card').length >= 3);
+  assert.equal(byTest(many, 'insights-caveat').length, 0);
+}));
+
+test('insights: without UI.svg the numbers still show as text', () => {
+  globalThis.document = fakeDom();
+  try {
+    const root = insightsAt(synthLogs(8));
+    assert.equal(root.all((n) => n.tagName === 'svg').length, 0);
+    assert.ok(byTest(root, 'insights-card').length >= 3);
+    assert.ok(byTest(root, 'insights-heat-table').length, 'the table stays');
+  } finally { delete globalThis.document; }
 });

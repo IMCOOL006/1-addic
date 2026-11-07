@@ -77,7 +77,30 @@ const TrackUI = (() => {
     insightsSoon: (n) => `Insights appear after seven logs. You have ${n} so far.`,
     insightsGo: 'See your insights',
     insightsTitle: 'Insights',
-    insightsStub: 'Your insights cards are coming in the next update. Your logs are saved and will be used.',
+    insightsMissing: 'Insights cannot be worked out right now. Your logs are saved.',
+    insightsLead: (n) => `What your ${n} logs show so far. These are patterns to notice, not rules.`,
+    trendTitle: 'Craving strength by week',
+    trendNone: 'No cravings logged in the last eight weeks.',
+    trendLabel: (parts) => `Average craving strength out of 10, last eight weeks: ${parts}.`,
+    trendWeek: (d, m, n) => (m === null ? `week of ${d}: none logged` : `week of ${d}: ${m} from ${n}`),
+    trendLegend: 'Each dot is one week. A gap means no cravings were logged that week.',
+    triggersTitle: 'What set cravings off most',
+    triggersNone: 'No triggers picked in your craving logs yet.',
+    triggersLabel: (parts) => `Top triggers by count: ${parts}.`,
+    heatTitle: 'When cravings came',
+    heatNone: 'No cravings logged yet, so there is no pattern by day and hour.',
+    heatLabel: (n, top) => `Cravings by day of the week and hour of the day, ${n} in all.${top ? ' Busiest: ' + top + '.' : ''}`,
+    heatLegend: 'Darker squares mean more cravings at that day and hour.',
+    heatTable: 'Show as a table',
+    heatCols: ['Day', 'Time', 'Cravings', 'Average strength'],
+    skillsTitle: 'Skills that helped most',
+    skillUses: (n) => `used ${n} ${n === 1 ? 'time' : 'times'}`,
+    skillHelped: (p) => `helpful ${p}% of the time`,
+    moodTitle: 'Mood and pleasant activities',
+    predTitle: 'Your predictions',
+    predLine: (p) => `You checked ${p.count} ${p.count === 1 ? 'prediction' : 'predictions'}. On average you expected ${p.predicted} and it turned out ${p.actual}. ${p.better} came out higher than you expected.`,
+    motTitle: 'Your motivation over time',
+    motLine: (d, s) => `${d}: ${s}`,
     back: 'Back',
   };
   const KINDS = ['craving', 'feeling', 'checkin', 'activity', 'slip'];
@@ -153,7 +176,41 @@ const TrackUI = (() => {
     return out;
   }
   const timelineCount = (view) => list(view, 'logs').filter((l) => l.drill !== true && KINDS.includes(l.type)).length;
-  const insightCount = (view) => list(view, 'logs').filter((l) => l.drill !== true && INSIGHT_TYPES.includes(l.type)).length;
+  const insightCount = (view) => list(view, 'logs').filter((l) => l.drill !== true && l.sample !== true && INSIGHT_TYPES.includes(l.type)).length;
+
+  /* Insights (3.9, U-17): E.insights(view, now) shaped for drawing. Never draws below seven logs (ready false).
+     -> { ready, count, engine, caveat, trend[8]:{weekStart,count,mean|null}, triggers[]:{id,label,count}, maxTrigger,
+          heatmap[7][24]:{count,mean|null}, maxCell, cravings, hot[]:{day,hour,count,mean}, skills[], sentences[],
+          predictions|null, motivation[]:{date,score} } */
+  const numOr = (v) => (typeof v === 'number' && isFinite(v) ? v : null);
+  function insightsView(view, now, eng) {
+    const E = eng === undefined ? ns('Engine') : eng;
+    const raw = E && typeof E.insights === 'function' ? safe(() => E.insights(view, now || new Date()), null) : null;
+    if (!isObj(raw)) return { ready: false, count: insightCount(view), engine: false };
+    const count = Number.isInteger(raw.count) ? raw.count : insightCount(view);
+    const trend = arr(raw.cravingTrend).filter(isObj).map((w) => ({ weekStart: String(w.weekStart || ''), count: Number(w.count) || 0, mean: numOr(w.mean) }));
+    const triggers = arr(raw.topTriggers).filter((t) => isObj(t) && Number(t.count) > 0).slice(0, 5)
+      .map((t) => ({ id: String(t.id), label: String(t.label || t.id), count: Number(t.count) }));
+    const heatmap = Array.from({ length: 7 }, (_, d) => Array.from({ length: 24 }, (__, hr) => {
+      const cell = safe(() => raw.heatmap[d][hr], null);
+      return { count: isObj(cell) ? Number(cell.count) || 0 : 0, mean: isObj(cell) ? numOr(cell.mean) : null };
+    }));
+    const hot = [];
+    for (let d = 0; d < 7; d += 1) for (let hr = 0; hr < 24; hr += 1) if (heatmap[d][hr].count) hot.push(Object.assign({ day: d, hour: hr }, heatmap[d][hr]));
+    const mv = isObj(raw.moodVsActivities) ? raw.moodVsActivities : {};
+    const pr = isObj(raw.predictions) && Number(raw.predictions.count) > 0 && numOr(raw.predictions.predicted) !== null && numOr(raw.predictions.actual) !== null ? raw.predictions : null;
+    return {
+      ready: raw.ready === true, count, engine: true,
+      caveat: typeof raw.caveat === 'string' && raw.caveat ? raw.caveat : null,
+      trend, triggers, maxTrigger: Math.max(1, ...triggers.map((t) => t.count)),
+      heatmap, maxCell: Math.max(1, ...hot.map((x) => x.count)), cravings: hot.reduce((a, x) => a + x.count, 0), hot,
+      skills: arr(raw.skillRanking).filter((x) => isObj(x) && Number(x.uses) > 0).slice(0, 8)
+        .map((x) => ({ id: String(x.skillId || ''), name: String(x.name || x.skillId || ''), uses: Number(x.uses), helpfulAvg: numOr(x.helpfulAvg) })),
+      sentences: arr(mv.sentences).filter((x) => typeof x === 'string' && x),
+      predictions: pr ? { count: Number(pr.count), predicted: pr.predicted, actual: pr.actual, better: Number(pr.better) || 0 } : null,
+      motivation: arr(raw.motivationHistory).filter((x) => isObj(x) && numOr(x.score) !== null).slice(-8).map((x) => ({ date: String(x.date || ''), score: x.score })),
+    };
+  }
 
   /* Trigger chips, the frequent ones first (stable), as E.triggerChips returns them. */
   function triggerOptions(view, E) {
@@ -408,8 +465,9 @@ const TrackUI = (() => {
   }
 
   function insightsLine(c) {
-    const n = insightCount(c.view);
-    if (n < 7) return h('p', { class: 'muted', 'data-test': 'insights-empty', text: TEXT.insightsSoon(n) });
+    const iv = insightsView(c.view, c.now, E_(c));
+    const n = iv.count;
+    if (!(iv.engine ? iv.ready : n >= 7)) return h('p', { class: 'muted', 'data-test': 'insights-empty', text: TEXT.insightsSoon(n) });
     return link('#/track/insights', TEXT.insightsGo, 'btn', 'track-insights-link');
   }
 
@@ -522,13 +580,120 @@ const TrackUI = (() => {
       header(c, title, '#/track'), switcher, lead, form);
   }
 
+  /* ── Insights (U-17): inline SVG through UI.svg, each with role="img" and its numbers in words ─────── */
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const shortDate = (ymd) => { const d = toDate(ymd); return d ? safe(() => d.toLocaleDateString('en', { day: 'numeric', month: 'short' }), ymd) : ymd; };
+  const hourText = (hr) => `${pad(hr)}:00`;
+  const svgOf = () => { const U = ns('UI'); return U && typeof U.svg === 'function' ? U.svg : null; };
+
+  function insightCard(name, title, iv, body, extra) {
+    return h('section', Object.assign({ class: 'card stack tr-insight', 'data-test': 'insights-card', 'data-card': name, 'aria-label': title }, extra || {}),
+      h('h2', { class: 'card-title', text: title }), body,
+      iv.caveat ? h('p', { class: 'muted tr-caveat', 'data-test': 'insights-caveat', text: iv.caveat }) : null);
+  }
+
+  function trendSvg(iv) {
+    const s = svgOf();
+    const pts = iv.trend.map((w, i) => ({ x: 30 + i * 40, y: w.mean === null ? null : 12 + ((10 - w.mean) / 10) * 100, w }));
+    const label = TEXT.trendLabel(iv.trend.map((w) => TEXT.trendWeek(shortDate(w.weekStart), w.mean, w.count)).join('; '));
+    if (!s) return h('p', { class: 'muted', text: label });
+    let d = '';
+    let pen = false;
+    for (const p of pts) { if (p.y === null) { pen = false; continue; } d += `${pen ? 'L' : 'M'}${p.x} ${p.y.toFixed(1)} `; pen = true; }
+    const grid = [0, 5, 10].map((v) => {
+      const y = 12 + ((10 - v) / 10) * 100;
+      return [s('line', { class: 'tr-grid', x1: '26', x2: '314', y1: String(y), y2: String(y) }), s('text', { class: 'tr-axis', x: '4', y: String(y + 4) }, String(v))];
+    });
+    const first = iv.trend[0] ? shortDate(iv.trend[0].weekStart) : '';
+    const last = iv.trend.length ? shortDate(iv.trend[iv.trend.length - 1].weekStart) : '';
+    return s('svg', { viewBox: '0 0 320 136', class: 'tr-chart', role: 'img', 'aria-label': label, 'data-test': 'insights-trend', focusable: 'false' },
+      grid, d ? s('path', { class: 'tr-line', d: d.trim() }) : null,
+      pts.filter((p) => p.y !== null).map((p) => s('circle', { class: 'tr-dot', cx: String(p.x), cy: p.y.toFixed(1), r: '4' })),
+      s('text', { class: 'tr-axis', x: '30', y: '130' }, first),
+      s('text', { class: 'tr-axis', x: '310', y: '130', 'text-anchor': 'end' }, last));
+  }
+
+  function barsSvg(iv) {
+    const s = svgOf();
+    const label = TEXT.triggersLabel(iv.triggers.map((t) => `${t.label} ${t.count}`).join(', '));
+    if (!s) return h('ol', { class: 'tr-list' }, iv.triggers.map((t) => h('li', { text: `${t.label}: ${t.count}` })));
+    const rowH = 30;
+    return s('svg', { viewBox: `0 0 320 ${iv.triggers.length * rowH + 4}`, class: 'tr-chart', role: 'img', 'aria-label': label, 'data-test': 'insights-bars', focusable: 'false' },
+      iv.triggers.map((t, i) => {
+        const y = i * rowH + 4;
+        const w = Math.max(4, Math.round((t.count / iv.maxTrigger) * 150));
+        const name = t.label.length > 20 ? t.label.slice(0, 19) + '…' : t.label;
+        return [s('text', { class: 'tr-axis', x: '0', y: String(y + 17) }, name),
+          s('rect', { class: 'tr-bar', x: '132', y: String(y + 4), width: String(w), height: '18', rx: '3' }),
+          s('text', { class: 'tr-axis', x: String(138 + w), y: String(y + 17) }, String(t.count))];
+      }));
+  }
+
+  function heatSvg(iv) {
+    const s = svgOf();
+    const top = iv.hot.slice().sort((a, b) => (b.count - a.count) || (a.day - b.day) || (a.hour - b.hour)).slice(0, 3)
+      .map((x) => `${DAYS[x.day]} ${hourText(x.hour)} with ${x.count}`).join('; ');
+    const label = TEXT.heatLabel(iv.cravings, top);
+    if (!s) return h('p', { class: 'muted', text: label });
+    const cells = [];
+    for (let d = 0; d < 7; d += 1) {
+      for (let hr = 0; hr < 24; hr += 1) {
+        const n = iv.heatmap[d][hr].count;
+        cells.push(s('rect', { class: n ? 'tr-heat tr-heat-on' : 'tr-heat', x: String(32 + hr * 12), y: String(4 + d * 14), width: '11', height: '13', rx: '2',
+          'fill-opacity': n ? (0.25 + 0.75 * (n / iv.maxCell)).toFixed(2) : null, 'data-day': String(d), 'data-hour': String(hr) }));
+      }
+    }
+    return s('svg', { viewBox: '0 0 320 118', class: 'tr-chart', role: 'img', 'aria-label': label, 'data-test': 'insights-heat', focusable: 'false' },
+      DAYS.map((name, d) => s('text', { class: 'tr-axis', x: '0', y: String(14 + d * 14) }, name)),
+      cells,
+      [0, 6, 12, 18].map((hr) => s('text', { class: 'tr-axis', x: String(32 + hr * 12), y: '114' }, hourText(hr))));
+  }
+
+  function heatTable(iv) {
+    return h('details', { class: 'tr-more', 'data-test': 'insights-heat-table' },
+      h('summary', { text: TEXT.heatTable }),
+      h('table', { class: 'tr-table' },
+        h('thead', {}, h('tr', {}, TEXT.heatCols.map((t) => h('th', { scope: 'col', text: t })))),
+        h('tbody', {}, iv.hot.map((x) => h('tr', {},
+          h('td', { text: DAYS[x.day] }), h('td', { text: hourText(x.hour) }), h('td', { text: String(x.count) }),
+          h('td', { text: x.mean === null ? '-' : TEXT.outOf10(x.mean) }))))));
+  }
+
+  function insightsCards(iv) {
+    const anyTrend = iv.trend.some((w) => w.mean !== null);
+    const cards = [
+      insightCard('trend', TEXT.trendTitle, iv, anyTrend ? [trendSvg(iv), h('p', { class: 'muted', text: TEXT.trendLegend })] : h('p', { text: TEXT.trendNone })),
+      insightCard('triggers', TEXT.triggersTitle, iv, iv.triggers.length ? barsSvg(iv) : h('p', { text: TEXT.triggersNone }), { 'data-tour': 'insights-triggers' }),
+      insightCard('heatmap', TEXT.heatTitle, iv, iv.cravings ? [heatSvg(iv), h('p', { class: 'muted', text: TEXT.heatLegend }), heatTable(iv)] : h('p', { text: TEXT.heatNone }), { 'data-tour': 'insights-heatmap' }),
+    ];
+    if (iv.skills.length) {
+      cards.push(insightCard('skills', TEXT.skillsTitle, iv, h('ol', { class: 'tr-list', 'data-test': 'insights-skills' }, iv.skills.map((x) => h('li', {},
+        h('span', { class: 'tr-word', text: x.name }), ' ',
+        h('span', { class: 'muted', text: TEXT.skillUses(x.uses) + (x.helpfulAvg === null ? '' : ', ' + TEXT.skillHelped(Math.round(x.helpfulAvg * 100))) }))))));
+    }
+    if (iv.sentences.length) cards.push(insightCard('mood', TEXT.moodTitle, iv, iv.sentences.map((t) => h('p', { text: t }))));
+    if (iv.predictions) cards.push(insightCard('predictions', TEXT.predTitle, iv, h('p', { text: TEXT.predLine(iv.predictions) })));
+    if (iv.motivation.length) {
+      cards.push(insightCard('motivation', TEXT.motTitle, iv, h('ul', { class: 'tr-list' },
+        iv.motivation.map((x) => h('li', { text: TEXT.motLine(shortDate(x.date), x.score) })))));
+    }
+    return cards;
+  }
+
   function insightsPage(c) {
-    const n = insightCount(c.view);
-    const body = n < 7
-      ? [h('p', { 'data-test': 'insights-empty', text: TEXT.insightsSoon(n) }), link('#/track/log', TEXT.logFirst, 'btn primary', 'insights-log')]
-      : [h('p', { text: TEXT.insightsStub }), link('#/track', TEXT.backToTrack, 'btn', 'insights-back')];
+    const iv = insightsView(c.view, c.now, E_(c));
+    let body;
+    if (!iv.engine && iv.count >= 7) {
+      body = [h('section', { class: 'card stack' }, h('p', { 'data-test': 'insights-unavailable', text: TEXT.insightsMissing }),
+        link('#/track', TEXT.backToTrack, 'btn', 'insights-back'))];
+    } else if (!iv.ready) {
+      body = [h('section', { class: 'card stack' }, h('p', { 'data-test': 'insights-empty', text: TEXT.insightsSoon(iv.count) }),
+        link('#/track/log', TEXT.logFirst, 'btn primary', 'insights-log'))];
+    } else {
+      body = [h('p', { class: 'muted', text: TEXT.insightsLead(iv.count) })].concat(insightsCards(iv));
+    }
     return h('section', { class: 'page stack tr-page', 'data-test': 'insights-page' },
-      header(c, TEXT.insightsTitle, '#/track'), h('section', { class: 'card stack' }, body));
+      header(c, TEXT.insightsTitle, '#/track'), body);
   }
 
   function page(ctxIn) {
@@ -545,10 +710,10 @@ const TrackUI = (() => {
     return homePage(c);
   }
 
-  const PURE = ['TEXT', 'KINDS', 'localDate', 'timeline', 'timelineCount', 'insightCount', 'triggerOptions', 'formToLog', 'save',
+  const PURE = ['TEXT', 'KINDS', 'localDate', 'timeline', 'timelineCount', 'insightCount', 'insightsView', 'triggerOptions', 'formToLog', 'save',
     'rowText', 'countersData', 'routeOf'];
   return {
-    TEXT, KINDS, localDate, timeline, timelineCount, insightCount, triggerOptions, formToLog, save, rowText, countersData, routeOf,
+    TEXT, KINDS, localDate, timeline, timelineCount, insightCount, insightsView, triggerOptions, formToLog, save, rowText, countersData, routeOf,
     page, PURE,
   };
 })();
