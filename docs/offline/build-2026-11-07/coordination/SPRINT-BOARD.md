@@ -1,39 +1,39 @@
-STATE: BUILDING, 10:27 IST (HUB session 3 running). Seven merges are in the trunk: the build pipeline and shell (U-01), the engine's ids, dates and game derivations (U-05), the UI core, router, tokens and components (U-03, U-02), the Actions layer (U-09), the browser test harness (U-34), the exercise engine (U-12), and the docs and guide skeleton with its .docx (U-37, U-36a); trunk build/offline-v1 at f3775f1a, pushed. Running under CORE: core's encrypted Store (U-04, reviewers' fixes), the SOS screens, lock screen and onboarding (U-10, U-11, reviewers' fixes), the lesson player and roadmap (U-13, U-14), engine's roadmap and insights units (U-06, U-07; resumed 10:23 on 10.8 GB free).
-NEEDS YOU: (1) the decision defaults are in force since 08:25 (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
-NEXT: the HUB merges each READY as it appears (the Store U-04 and SOS, lock, onboarding U-10, U-11 are the two left before the FREEZE); FREEZE 10:55 (the tag's list goes here); QUIET 10:55-11:40 (the full suites on the merged trunk); TAG offline-v1.0 about 11:55; hand-off by 12:25. engine's remaining units, the content, Today, Track, Settings and every tier 2 unit go to offline-v1.1.
+STATE: FROZEN at 10:55, QUIET window running (10:51 IST). Seven merges are in the trunk (see the tag's list below); the HUB runs the full suites on the merged trunk until 11:40, then tags offline-v1.0 at 11:55. core (the Store) and actions-sos (SOS, lock, onboarding) missed the freeze: their reviewers found HIGH issues that are being fixed by name; they lead offline-v1.1.
+NEEDS YOU: (0) after the tag (about 11:55) open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; (1) the decision defaults are in force since 08:25 (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
+NEXT: QUIET 10:55-11:40 (the full suites on the trunk: build, every Node test, validate, guards, the browser suite, the docs build; failures classified by name against the baseline; fixes by territory, one line each); TAG offline-v1.0 at 11:55 (a red named rather than no tag); hand-off note by 12:10; HANDOVER by 12:25. After the day the lanes continue toward offline-v1.1: the Store, SOS, lock and onboarding first.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 10:41 IST by `board.py`.
+Rewritten 2026-11-07 10:51 IST by `board.py`.
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-07 10:27 IST: seven merges done, tests-docs READY (tier 1 complete) merged 10:26; CORE 224074c0 runs core and actions-sos review-fix rounds, learn (U-13, U-14), engine resumed 10:23; FREEZE…
-- BASE: f3775f1a (the trunk after the tests-docs READY merge, 2026-11-07 10:26; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
+- STATE: FROZEN — 2026-11-07 10:51 IST: FREEZE 10:55; the tag's list on the board; QUIET window running; core U-04 and actions-sos U-10/U-11 not READY (reviewers' HIGH findings open) -> offline-v1.1; TAG offline-v1.0…
+- BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
-- QUIET: no
+- QUIET: running   # from 10:55: the full suites on C:/Users/ruchi/1-addic-wt/_int at the trunk; no lane runs anything heavy until 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 10:42 IST
+- UPDATED: 2026-11-07 10:51 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 408a3f20 (launcher-started 2026-11-07 09:58) | BUILDING — 2026-11-07 10:27 IST: seven merges done, tests-docs READY (tier 1 complete) merged 10:26; CORE 224074c0 runs core and… | 145k | 2026-11-07 10:42 IST |
-| CORE | 06ee0d0d (launcher-started 2026-11-07 10:29) | BUILDING — 2026-11-07 10:33 IST: CORE session 06ee0d0d (launcher 10:29) takes over from 224074c0; 224074c0 is still listed by… | 173k | 2026-11-07 10:33 IST |
+| HUB | 408a3f20 (launcher-started 2026-11-07 09:58) | FROZEN — 2026-11-07 10:51 IST: FREEZE 10:55; the tag's list on the board; QUIET window running; core U-04 and actions-sos… | 162k | 2026-11-07 10:51 IST |
+| CORE | 06ee0d0d (launcher-started 2026-11-07 10:29) | BUILDING — 2026-11-07 10:45 IST: CORE session 06ee0d0d; 224074c0 left claude agents at 10:37 and its four runs died; all four… | 225k | 2026-11-07 10:50 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34… |
-| `engine` | CORE | 1 |  | slot ? | BUILDING | GRANTED slot=2 PAUSED again from 2026-11-07 10:42 (3.6 GB free at…; slice U-05 04fc0c1 MERGED; run wf_f39915b9-3a4 (10:23): C1 helpfulValue 3ed6e1d, builder on… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again… |
-| `learn` | CORE | 1 |  | slot 4 | BUILDING | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
+| `core` | CORE | 1 | yes | slot 1 | BUILDING | GRANTED 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief); slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34… |
+| `engine` | CORE | 1 |  | slot ? | PAUSED | GRANTED slot=2 PAUSED again from 2026-11-07 10:42 (3.6 GB free at…; slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | BUILDING | GRANTED again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again… |
+| `learn` | CORE | 1 |  | slot 4 | READY | GRANTED 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37… |
 | `today-track` | SCREENS | 1 |  | - | NEW | tier 1 (U-15, U-16) then tier 2; slice U-15; files offline/src/ui-today.js, src/ui-track.js, src/ui-harbor.js |
 | `workbook-settings` | SCREENS | 1 |  | - | NEW | tier 1 (U-19, U-20a) then tier 2; slice U-19; files offline/src/ui-settings.js, src/ui-workbook.js, src/ui-plan.js |
@@ -58,12 +58,13 @@ Slots allowed: 4 running lanes from 10:42 (core, actions-sos, learn finishing th
 
 - Memory is shared with the pharma program: rows 9.7 GB (07:25, nothing running), 3.4 (07:36, two builders), 5.8-6.3 (07:46-08:06, one builder), 9.3 (08:17, nothing), 5.9-6.1 (08:27-08:37, two builders), 2.4 (08:48, two builders and a checker). A running lane costs 2 to 3 GB measured. Rule applied twice (07:38 engine, 08:50 actions-sos): under 4 GB the newest lane pauses at its next commit.
 - The planner chat (session e4492b2a) is at 630k context: not a track of this program; closing it frees memory for a lane.
+- lane.js (HUB tooling): the reviewers' findings over 2,000 characters were cut to ids and the fix rounds never saw them (R-C-12); worked around by laneNote today; fixed in the tooling for offline-v1.1.
 - Safety copy for clinical review (CORE R-C-9): the SOS fallback lines, the crisis copy, the onboarding safety and lock texts in ui-sos.js and ui-onboarding.js are built as placeholders; the content lane (SCREENS, not started today) writes the reviewed versions in offline-v1.1. Please read them on your walk.
 - Decisions: no answer by 08:25, so the defaults of PLAN.md section 9 are in force (outbox-OWNER.md R-O-1). A later one-line answer still counts for the units not yet built.
 
 ## Machine
 
-- Free memory 8.7 GB of 31.8 GB at 2026-11-07 10:31 IST; claude 27, node 36 processes; 6 slots by the rule (lane-widening.md).
+- Free memory 6.6 GB of 31.8 GB at 2026-11-07 10:41 IST; claude 25, node 44 processes; 3 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 14024); its last launch: CORE 06ee0d0d at 2026-11-07 10:29.
 
 ## Files of the build

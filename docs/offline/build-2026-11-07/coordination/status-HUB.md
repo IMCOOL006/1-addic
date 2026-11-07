@@ -1,7 +1,7 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 10:27 IST: seven merges done, tests-docs READY (tier 1 complete) merged 10:26; CORE 224074c0 runs core and actions-sos review-fix rounds, learn (U-13, U-14), engine resumed 10:23; FREEZE 10:55
+STATE: FROZEN   # 2026-11-07 10:51 IST: FREEZE 10:55; the tag's list on the board; QUIET window running; core U-04 and actions-sos U-10/U-11 not READY (reviewers' HIGH findings open) -> offline-v1.1; TAG offline-v1.0 at 11:55
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: f3775f1a (the trunk after the tests-docs READY merge, 2026-11-07 10:26; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
+BASE: f9de7023 (the trunk after the learn READY merge, 2026-11-07 10:50; the tag offline-v1.0 is cut from the trunk at the end of the quiet window; new lanes cut from here; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 4 running lanes from 10:42 (core, actions-sos, learn finishing their rounds; engine paused at its next commit); under 4.0 GB free the newest lane pauses at its next commit; nothing new starts before the tag
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
@@ -10,7 +10,7 @@ SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
 MERGING: none
-MERGE-QUEUE: (empty)
+MERGE-QUEUE: (empty; FROZEN at 10:55: only fixes by name to merged units until the tag)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
@@ -18,9 +18,21 @@ MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654,
 MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4, pushed 09:55 (build GREEN 240874 B; test GREEN harness.test.mjs; validate SKIP until U-08; guards GREEN by name; package.json merged clean, tests-docs keys)
 MERGED: learn READY-SLICE a499dae (U-12 exercise engine) -> merge 4618e43c, trunk 4618e43c, pushed 10:18 (build GREEN 298714 B; test GREEN learn.test.mjs; validate SKIP until U-08; guards GREEN by name; merged clean, 2 files)
 MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide skeleton and .docx pipeline) -> merge f3775f1a, trunk f3775f1a, pushed 10:26 (build GREEN 298714 B; test GREEN; validate SKIP until U-08; guards GREEN by name; docs GREEN exit 0, the .docx reproducible; package.json by key owner; merged clean, 9 files)
-QUIET: no
+MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
+QUIET: running   # from 10:55: the full suites on C:/Users/ruchi/1-addic-wt/_int at the trunk; no lane runs anything heavy until 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:42 IST
+UPDATED: 2026-11-07 10:51 IST
+
+# 2026-11-07 10:51 · FREEZE 10:55: the tag's list; the QUIET window opens
+
+- In the tag (merged, GREEN by name): U-01, U-03, U-02 (core), U-05 (engine), U-09 (actions-sos), U-34, U-37, U-36a (tests-docs), U-12 (learn). U-13 lesson player and checkpoint, U-14 roadmap and glossary (learn, READY 19f373c by the freeze; merged in the quiet window's first minutes).
+- Not in the tag: core U-04 and actions-sos U-10, U-11: not READY by 10:55 (R-C-12: their fix rounds saw only the first 2,000 characters of the reviewers' findings; the relaunched runs fix RC5-RC9, RS2-RS9 by name, then check and both reviewers). Rule 5 (two reviewers before a flagged merge) and the FREEZE rule both say offline-v1.1; CORE agrees (RS2 HIGH open on the crisis check). The owner's walk after the tag therefore sees the shell, the exercise engine and the dev gallery, not onboarding, the Store or SOS.
+- QUIET: `python tools/gates.py --wt C:/Users/ruchi/1-addic-wt/_int --lane HUB --full build test validate guards browser docs` on _int at the trunk tip, detached, log under _logs/gates/HUB/. Expected by name: validate SKIP (no validateContent until U-08), the 15 baselined tour targets, browser tests SKIP by name where their screens are absent.
+- lane.js's findings truncation (R-C-12) is a HUB tooling defect, noted for offline-v1.1; not changed under live runs today.
+
+# 2026-11-07 10:51 · learn READY merged (the eighth merge; learn's tier 1 complete)
+
+- learn READY 19f373c (C1, C2 fixes to U-12; U-13 lesson player and checkpoint; U-14 roadmap and glossary; check PASS at 19f373c 10:47, 28/28) merged clean as f9de7023 at 10:50; trunk pushed with build/learn. Gates on the merged tree: build GREEN 346637 B, test GREEN learn.test.mjs, validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. BASE f9de7023.
 
 # 2026-11-07 10:27 · tests-docs READY merged (the seventh merge; its tier 1 is complete)
 
