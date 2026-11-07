@@ -42,7 +42,7 @@ const UI = (function () {
   const pages = {};
   const state = {
     booted: false, loaded: false, seq: 0, lastPath: null, pending: 0, deferred: false, voices: null,
-    lastTouch: 0, theme: 'system',
+    lastTouch: 0, theme: 'system', sosTimer: null,
   };
 
   const hasDOM = () => typeof document !== 'undefined' && !!document.createElement;
@@ -741,6 +741,7 @@ const UI = (function () {
     const seq = ++state.seq;
     let r = route();
     let key = pageKey(r);
+    keepOpen(key);
     const locked = isLocked();
     if (locked && key !== 'sos' && openSheet) openSheet.close('locked'); // nothing of the person's stays on screen
     // A sheet belongs to the screen it opened on: a new route closes it (a pending confirm answers false), so a
@@ -855,6 +856,19 @@ const UI = (function () {
   }
 
   /* ── Boot ──────────────────────────────────────────────────────────────────────────────── */
+  // No auto-lock fires while the person is in SOS (the CORE chat's ruling Q1, RC4): on an SOS route the idle timer is
+  // touched every 30 s, and the touches stop when the person leaves SOS. 'Lock now' still locks at once.
+  function keepOpen(key) {
+    const tick = () => { const S = ns('Store'); if (S && S.lock && typeof S.lock.touch === 'function') safe(() => S.lock.touch(), null); };
+    if (key === 'sos' && !state.sosTimer) {
+      state.sosTimer = setInterval(tick, 30000);
+      if (state.sosTimer && typeof state.sosTimer.unref === 'function') state.sosTimer.unref();
+    } else if (key !== 'sos' && state.sosTimer) {
+      clearInterval(state.sosTimer);
+      state.sosTimer = null;
+    }
+  }
+
   function touch() {
     const S = ns('Store');
     const now = Date.now();

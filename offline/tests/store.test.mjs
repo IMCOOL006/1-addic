@@ -305,6 +305,33 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  test('RC4: in SOS the idle timer is touched every 30 s, so no auto-lock fires there; leaving SOS stops it', async (t) => {
+    setup();
+    let touched = 0;
+    globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'memory', lastSavedAt: null, hasLock: true, locked: false }),
+      lock: { touch: () => { touched += 1; } } };
+    UI.pages.sos = page('SOS PAGE');
+    UI.pages.today = page('TODAY');
+    at('#/today');
+    await UI.render(); // no timer left from an earlier test
+    t.mock.timers.enable({ apis: ['setInterval'] });
+    at('#/sos/craving');
+    await UI.render();
+    t.mock.timers.tick(30000);
+    assert.equal(touched, 1);
+    t.mock.timers.tick(60000);
+    assert.equal(touched, 3, 'a breathing round of minutes never reaches the idle limit');
+    at('#/sos');
+    await UI.render();
+    t.mock.timers.tick(30000);
+    assert.equal(touched, 4, 'one timer, never two');
+    at('#/today');
+    await UI.render();
+    t.mock.timers.tick(120000);
+    assert.equal(touched, 4, 'the touches stop outside SOS');
+  });
+
   test('unlocked: #/lock goes to Today', async () => {
     setup();
     const S = lockedStore('2468');
