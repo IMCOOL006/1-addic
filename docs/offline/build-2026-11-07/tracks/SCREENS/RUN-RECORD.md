@@ -81,7 +81,7 @@
 ## Resume here
 
 - Chat d6887185. Live in this session: workbook-settings FIX-SAMPLE wf_232baea7-f07 (worktree C:/Users/ruchi/1-addic-wt/workbook-settings; returns READY with the tip: write `LANE: workbook-settings READY <tip>` naming the fix by name), actions wf_6effec68-3fd (U-23, U-24, U-25; returns READY with the tip). Journals under C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/d6887185-82d2-4a14-8c98-cee7cc2b525d/subagents/workflows/<run>/journal.jsonl.
-- Paused: game-tutorials at READY-SLICE 5af6665 (for the HUB to merge); its next batch (U-26, U-28) launches on the next 7.0 GB row with tmp/args_gt_next.json (stamp now and @NOW@; batches [[U-26],[U-28]]).
+- game-tutorials READY-SLICE 5af6665 (for the HUB to merge); its next batch wf_697f8fff-2d2 (U-26, then U-28; done [U-27], diffFrom 5af6665; args tmp/args_gt_next.json) launched 18:02 on a 10.2 GB row: live too.
 - A fresh chat: `claude agents --json`; if d6887185 is gone, relaunch each live run from its branch (done = the units committed, priorNote from the last commit and _logs/reports/<lane>/<lane>__progress.md, the args files in C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp).
 - Open by name: workbook-settings C1 (sample round trip); content LOWs C2-C4; today-track: embedding GuidanceUI.explorerRing/moreTools/dot and GameUI.panel in Today (behind typeof) is a later fix by name once game-tutorials merges.
 - Trunk BASE 71a65763 (17:51). Hub files: setlane.py and rr.py in tmp, tools/hub_commit.py; stamps from `date` only.
