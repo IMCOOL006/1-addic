@@ -83,10 +83,19 @@
 - workbook-settings FIX-SAMPLE wf_232baea7-f07 READY 0e76065 (03c3631, 0e76065; check PASS; test 25/25; builder's browser GREEN 10 pass 9 skip); merged by the HUB 18:13 (42d2467d). The HUB also merged game-tutorials 5af6665 (17:57) and actions 710502f (18:02).
 - game-tutorials wf_697f8fff-2d2: U-26 0f611e5, U-28 8dccbfb + d4c49d1; stopped by me 18:26 after the U-28 commit on a 3.9 GB row (pause rule). Check args ready: tmp/args_gt_check.json (start 'check', done [U-27], diffFrom 5af6665, browser gate asked).
 
+## 2026-11-07 18:30 IST · actions built and paused; hand-over planned (context past 250k)
+
+- actions wf_6effec68-3fd: U-23 42ce8aa, 25308cc; U-24 bd8be70, 0894beb; U-25 40e3418, 7641b1b, 9ee68cf; I stopped it 18:28 after the U-25 commit on a 3.2 GB row as its checker started (pause rule). Check args ready: tmp/args_actions_check.json (start 'check', done [U-22], diffFrom 710502f, browser gate asked).
+- R-S-12 to CORE (the weekly-review and practice ExerciseDone shapes; hooks), R-S-13 to HUB (the review week default; two small defaults).
+- No SCREENS run is live. Both lanes are fully built; only their checks remain.
+
 ## Resume here
 
-- Chat d6887185. Live: actions wf_6effec68-3fd (U-23 42ce8aa, 25308cc; U-24 bd8be70, 0894beb; U-25 building; then its check over 710502f...HEAD). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/d6887185-82d2-4a14-8c98-cee7cc2b525d/subagents/workflows/wf_6effec68-3fd/journal.jsonl.
-- Paused: game-tutorials at d4c49d1 (all units built; no check yet): on the next 7.0 GB row launch lane.js with tmp/args_gt_check.json (stamp now and @NOW@). On its READY: the lane is complete (U-27 merged; U-26, U-28 in the READY).
-- A fresh chat: `claude agents --json`; if d6887185 is gone, relaunch actions from its branch (done = the units committed; if U-25 is committed, start 'check' over 710502f...HEAD) and game-tutorials as above. Args files: C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp (args_actions_next.json, args_gt_check.json).
-- After both READY: write the lane reports' state, `LANE: <lane> READY <tip>`; then the owed by-name items: today-track embedding GuidanceUI (explorerRing, moreTools, dot) and GameUI.panel in Today behind typeof (a fix by name on build/today-track once game-tutorials merges; ask the HUB for the slot); workbook-settings C1 after actions-sos merges; content LOWs C2-C4.
-- Trunk BASE 42d2467d (18:13). Pause rule: under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row. Hub files: setlane.py, rr.py in tmp; tools/hub_commit.py; stamps from `date` only.
+- Chat d6887185 (context past 250k at 18:29: RESTART at the next safe point past 300k). NO run live. Both remaining lanes are fully built and PAUSED for memory; only their checks remain:
+  - actions at 9ee68cf (U-23..U-25 after the merged slice 710502f): launch lane.js with C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp/args_actions_check.json on the next 7.0 GB row (replace @NOW@ in laneNote and set now from `date`; set session to the new chat's id).
+  - game-tutorials at d4c49d1 (U-26, U-28 after the merged slice 5af6665): tmp/args_gt_check.json, on the 7.0 GB row after that (one start per row).
+  - Each returns READY (or RED): write `LANE: <lane> READY <tip>` with the gate lines; the lane is then complete (all its units in the READY); report path tracks/SCREENS/lane-reports/<lane>.md (under 20 KB).
+- Memory: `powershell -NoProfile -Command "[math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB,1)"`; rows swing 3.2-10.2 GB with the pharma and CORE runs. Pause rule: under 4.0 the newest run pauses at its next commit (stop it with TaskStop after the commit; relaunch start 'check' or with done).
+- Every SCREENS READY so far is merged (BASE 42d2467d at 18:13): content, today-track (+a02f121 marker), workbook-settings (+0e76065 FIX-SAMPLE), actions slice 710502f, game-tutorials slice 5af6665.
+- Owed by name after the two READYs: today-track: embed GuidanceUI.explorerRing/moreTools/dot and GameUI.panel in Today behind typeof (ask the HUB for slot 5 as a fix by name once game-tutorials merges); workbook-settings C1 (sample round trip) after actions-sos merges; content LOWs C2-C4. Answers pending: R-S-12 (CORE), R-S-13 (HUB).
+- Hub files: setlane.py and rr.py in tmp; commit with tools/hub_commit.py --track SCREENS --session <id>; stamps from `date` only; lane commits carry Co-Authored-By: Claude Fable 5.1 and Claude-Session trailers.
