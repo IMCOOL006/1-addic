@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # session a29cd9a2 (context about 280k: hand-over written in RUN-RECORD.md; RESTART at the next safe point or 300k); running: core final run wf_20fa36d0-f20 only; engine and actions-sos paused (memory); learn HELD; tests-docs ASKED
+STATE: RESTART   # 2026-11-07 08:57 IST: session a29cd9a2 hands over at 292k context; its two runs keep going while it is listed by claude agents: core final wf_20fa36d0-f20 (F1, F2, U-04, reviewers), actions-sos wf_5187f402-d73 (U-10, U-11, reviewers); the fresh CORE chat reads tracks/CORE/RUN-RECORD.md 'Resume here'
 LANE: core BUILDING   # slices 8bf7b5c (U-01) and 4a43190 (U-03, U-02) MERGED by the HUB (07:42, 08:19; trunk 68371bb5); final run wf_20fa36d0-f20 (08:22): F1 sheet closes on route change, F2 SOS link in every sheet header, then U-04 alone, check, two reviewers, report
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
-LANE: actions-sos MERGED   # slice U-09 1cb96a3 merged by the HUB 08:48 (merge 7a9547c, trunk 22c39654); PAUSED (R-H-6, memory): its next run wf_e95d54a9-f8e stopped at 08:54 right after the builder's commit 0699730 (C1: loadSample never overwrites the person's rows; eraseSample); branch tip 0699730; U-10, U-11 resume when the SLOTS line says granted again (done [U-09], diffFrom 1cb96a3, C1 already fixed)
+LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED 08:48 (7a9547c); C1 fixed 0699730; re-granted 08:56 (R-H-7); run wf_5187f402-d73 (08:57): U-10, U-11, check, two reviewers, report
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
 LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 08:53 IST
+UPDATED: 2026-11-07 08:57 IST
 
 # 2026-11-07 07:23 · the CORE chat's first steps (session a29cd9a2)
 
