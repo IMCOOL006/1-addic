@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 23:02 IST: PAUSED for memory (3.9 GB free at 23:02): today-track FIX-EMBED built at 6b0184b, worktree clean; its check relaunches on the next 7.0 GB row, on the HUB's word (tracks/SCREENS/args/args_tt_embed_check.json). No SCREENS run live; my memory watch was stopped by Claude Code for low memory at about 23:00 and is not restarted
+STATE: BUILDING   # 2026-11-07 23:18 IST: today-track check of FIX-EMBED 6b0184b live as wf_1e226e2d-c2b (the HUB's word 23:17, the 23:16 row 9.4 GB; mine 7.6 GB at 23:17). READY with the tip when it returns. No other SCREENS run
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track CHECKING 6b0184b   # PAUSED: FIX-EMBED built 6b0184b (22:48; builder's gates GREEN: test 31/31, guards 5/5, browser 13/0/6 same names before and after, read by me); run wf_8859379a-bb6 stopped 22:52 during the checker's gates (memory); the check relaunches on a 7.0 GB row; base and diffFrom 7485e254
+LANE: today-track CHECKING 6b0184b   # check wf_1e226e2d-c2b live since 23:18 (start 'check', base and diffFrom 7485e254; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl); FIX-EMBED built 6b0184b 22:48 (builder's gates GREEN, browser 13/0/6 read by me)
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 23:02 IST
+UPDATED: 2026-11-07 23:18 IST
 
 # 2026-11-07 22:33 IST · game-tutorials READY bd2e085 (U-26, U-28, FIX-TOUR; the lane is complete)
 

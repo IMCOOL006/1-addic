@@ -125,9 +125,13 @@
 - The HUB's word 22:51: memory under the floor (7.2 GB 22:45, 3.5 GB 22:50), so the newest run pauses at its next commit. The builder committed 6b0184b at 22:48 and had finished: its own gates were GREEN, test 31/31, guards 5/5, browser 13/0/6 with the same names before and after (I read both logs). With 1.7 GB free at 22:51, I stopped wf_8859379a-bb6 at 22:52 rather than wait. Only the checker's gates were cut off. No orphan node or chrome process was left; the worktree is clean at 6b0184b.
 - R-S-16 to CORE: the quick-log browser flow always skips (its hook is on #/track, the flow starts on Today).
 
+## 2026-11-07 23:18 IST · the today-track check relaunched
+
+- Claude Code stopped my memory watch at about 23:00 (low memory). The HUB's word at 23:17 (the 23:16 row 9.4 GB): resume. I read 7.6 GB at 23:17 and launched wf_1e226e2d-c2b (args_tt_embed_check.json, start 'check'). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING, PAUSED for memory. NO SCREENS run live (wf_8859379a-bb6 was stopped by me at 22:52 after its build). FIRST on a 7.0 GB row: the today-track check. lane.js with tracks/SCREENS/args/args_tt_embed_check.json: start 'check', base and diffFrom 7485e254, tip 6b0184b; replace @NOW@ in now and laneNote; set session. When it returns: read its browser log, then write `LANE: today-track READY <tip>` (the HUB merges from 7485e254).
+- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: the today-track check wf_1e226e2d-c2b (since 23:18; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`; if 4d443a20 is gone, relaunch it with tracks/SCREENS/args/args_tt_embed_check.json (replace @NOW@). When it returns: read its browser log, then write `LANE: today-track READY <tip>` (the HUB merges from 7485e254).
 - Per lane: content 680f850, workbook-settings 0e76065, actions 0977edd and game-tutorials bd2e085 (7485e254, 22:35) are MERGED. today-track is CHECKING 6b0184b (FIX-EMBED built on BASE 7485e254; fast-forwarded 22:38; the check waits for memory). Every SCREENS unit is built.
 - NEXT, by name only:
   - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track. Args ready: tracks/SCREENS/args/args_tt_embed.json (replace @NOW@ in now and laneNote; base 1ef2482e, slot 5, diffFrom a02f121). Launch on the HUB's grant line on a 7.0 GB row.
