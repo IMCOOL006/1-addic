@@ -1,12 +1,18 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-07 16:15 IST: three tier 1 slices live (content U-31a slot 4, today-track U-15 slot 5, workbook-settings U-19 slot 6); actions, game-tutorials SCOUTED (tier 2, wait for no tier 1 lane waiting)
 LANE: content BUILDING   # slice U-31a run wf_0f49abe3-ebb (sliceRun, slot 4); worktree C:/Users/ruchi/1-addic-wt/content cut 16:12 at 1ef2482e; brief 10761 B
-LANE: today-track BUILDING   # slice U-15 run wf_cbccd83b-f69 (sliceRun, slot 5 granted 16:06); worktree cut 16:12 at 1ef2482e; brief 14835 B
+LANE: today-track READY-SLICE 13eba28   # U-15 Today (f615567, 13eba28); run wf_cbccd83b-f69 check PASS over 1ef2482e..13eba28 (LOWs C1, C2 fixed by name first in the next run); gates: build GREEN, test GREEN 10/10 today-track.test.mjs, validate GREEN, guards the 15 baselined tour targets only (logs C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/*-20261107-1620*.log); report tracks/SCREENS/lane-reports/today-track.md 8888 B; cut base 1ef2482e
 LANE: workbook-settings BUILDING   # slice U-19 run wf_a8a3fbe3-437 (sliceRun, slot 6 granted 16:06); worktree cut 16:14 at 1ef2482e; brief 14967 B
 LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
 LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 16:15 IST
+UPDATED: 2026-11-07 16:23 IST
+
+# 2026-11-07 16:23 IST · today-track READY-SLICE 13eba28 (U-15 Today)
+
+- For the HUB: merge build/today-track at 13eba28 (cut from BASE 1ef2482e). Files: offline/src/ui-today.js (new), offline/tests/today-track.test.mjs (new), offline/src/styles.css (a section at the end under /* -- today-track -- */, after /* -- end core -- */; no token redefined). The worktree's offline/1-addic.html is modified by the build gate and not committed (core's build output).
+- Verified by me: the branch log (two commits after 1ef2482e), the tip sha, the checker's gate lines (build GREEN, test GREEN pass=10 fail=0, validate GREEN, guards RED by count with the 15 baselined tour-target names only). Assumed: the checker's reading of the guard names against baselines.md (I did not re-run the gates).
+- The lane continues on the same branch (no rebase): U-16 next, then U-17 and U-18.
 
 # 2026-11-07 16:09 IST · SCREENS chat 6721d28e-5b48-49f1-9f7e-094b769e422f starts
 
