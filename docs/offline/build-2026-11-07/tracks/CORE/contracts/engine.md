@@ -38,3 +38,7 @@ No routes, UI.pages entries, data-tour targets or DOM hooks. Content keys it rel
 - `xpFromEvents().byType` lists XP-bearing types only (a zero-XP event never changes its shape). Every `events` parameter also accepts a view. `Engine.makeView` and `Engine.STORES` are exported from U-05.
 - `validateContent()` (U-08) skips the tryIt-exercise check while `Content.exercises` is absent and runs it as soon as it exists.
 - Defaults built: `net-weaver` counts safetyNet contacts ever added, active or not (a badge never disappears); `ExerciseDone` earns 10 every time (3.7 sets no daily cap).
+
+## For U-07, written in by the CORE chat 2026-11-07 09:33 IST: the shapes actions-sos' ui-sos.js reads (built at 1507640)
+
+- Return these exact shapes (ui-sos tolerates the alternatives in contracts/actions-sos.md, but these are the contract): `crisisKeywords(text) -> boolean`; `guideSequence(view) -> ['wave'|'why'|'call'|'distract'|'talkback', ...]` (flat on Engine); `reasonsCard(view) -> string[]`, `distractionDeck(view) -> string[]`, `comebacks(view) -> string[]`, `spiralThoughts(view) -> [{thought, reply}]`. Crisis words are short and marked clinicalReview; an empty or unknown text is false.
