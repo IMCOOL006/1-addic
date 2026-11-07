@@ -67,11 +67,17 @@
 
 - R-H-8 (09:09) granted tests-docs slot 5; the HUB held it again at 09:19 (4.7 GB free with two runs live) before it started. Cut at 09:21: build/tests-docs at 22c3965 (BASE 22c39654). Its slice U-34 waits for the SLOTS line to say granted again; args ready (base 22c39654).
 
+## 2026-11-07 09:31 IST · core check PASS; tests-docs slice launched
+
+- core FIX-C4-C5: C4 030f949, C5 98f872d (UI.applyDiscreet; contract line added bd240d2c); check PASS at 98f872d; reviewers running.
+- 09:30 tests-docs granted again (R-H: 9.2 GB free); slice run wf_5eb3e38a-14f (sliceRun, U-34, base 22c39654; args_tests-docs.json with the 09:30 word).
+
 ## Resume here
 
 - **Owner of the runs: CORE session 224074c0-9c4d-4302-b359-f52819443e37** (alive only while `claude agents --json` lists it). Running:
   - core **wf_6b7ddbb3-2a7** (09:10): FIX-C4-C5 builder, check (diffFrom 06cdf34), two reviewers over 655516dc..HEAD, report (kind update) -> on return write `LANE: core READY <tip>` (or RED/STOPPED with findings by name).
   - actions-sos **wf_379c12ed-2e4** (09:10): builder U-10+U-11, check (diffFrom 1cb96a3), two reviewers, report -> `LANE: actions-sos READY <tip>`. If the HUB pauses actions-sos for memory, TaskStop it right after its builder's next commit and relaunch later with done = the units on the branch.
+  - tests-docs **wf_5eb3e38a-14f** (09:30): slice U-34, check, slice report -> `LANE: tests-docs READY-SLICE <tip>`; then the resume with done [U-34], diffFrom <tip>, batches [U-37,U-36a] (tier 1) then [U-35,U-36b] (tier 2, only when no tier-1 lane waits).
   - Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/224074c0-9c4d-4302-b359-f52819443e37/subagents/workflows/<run>/journal.jsonl. Progress notes: C:/Users/ruchi/1-addic-wt/_logs/reports/<lane>/<lane>__progress.md.
   - A fresh chat: if 224074c0 is still listed, do not relaunch; poll the journals until each run's report line, then write the LANE line from it. If 224074c0 is gone, its runs died: relaunch each lane with done = the units on its branch (git log), priorNote from the last commit and the progress note, the laneNote from the args files above (or the builder prompt's 'THE BUILD CHAT'S WORD' in the agent jsonl), start 'check' when every unit is committed.
 - **Waiting for grants (status-HUB SLOTS lines):** engine (PAUSED since 07:38): batches [[U-05],[U-06,U-07],[U-08]], done [U-05], diffFrom 04fc0c1, base 655516dc, slot 2; laneNote = the args of wf_8ebdb63c-428 (a29cd9a2's workflows/wf_8ebdb63c-428.json) plus "fix first by name: check C1, engine.js:248-255 helpfulValue: the reader accepts true/false and 0/1 only". learn (HELD): slice U-12, worktree at 655516d, args = its scout run's (wf_9b3634ad-c4d) plus "ui-core.js, styles.css, engine.js are on the trunk, not on this branch: build to contracts/core.md and read the trunk's files by git show". tests-docs (slot 5 HELD 09:19; worktree cut from 22c39654): its slice U-34 when granted again, args C:/Users/ruchi/.claude-pro/jobs/224074c0/tmp/args_tests-docs.json plus now (npm install of the pinned playwright in its worktree is allowed; a missing browser is SKIP by named reason). Order the HUB gives: engine [U-06,U-07], then tests-docs U-34, then learn U-12.
