@@ -121,5 +121,5 @@
 ## 15:36 · engine READY merged (session ed0e0a4b)
 
 - 15:23 engine READY 227a07a; merged clean 15:32-15:34 as 1ef2482 (build 451085 B, test 102/102, validate GREEN 0 errors for the first time, guards baselined names only); pushed trunk and lane. BASE 1ef2482e. Ten merges on the trunk; core and engine complete.
-- **Resume here (15:36):** as the 15:31 "Resume here" above with these changes: engine merged; live under CORE 036d08b8 (RESTART soon, hand-over written): actions-sos wf_b38141d2-651; merge its READY line with merge_lane.py from cut base 655516dc (flagged: both reviewers answered in lane-reports/actions-sos.md); `_int` detached at 1ef2482. Watch the memory rows for the SCREENS mark (8.5 GB with one lane live) and add SCREENS to TRACKS-ALLOWED when met.
+- **Resume here (15:36):** as the 15:31 "Resume here" above with these changes: engine merged; live under CORE 036d08b8 (RESTART soon, hand-over written): actions-sos wf_b38141d2-651; merge its READY line with merge_lane.py from cut base 655516dc (flagged: both reviewers answered in lane-reports/actions-sos.md); `_int` detached at 1ef2482. Watch the memory rows for the SCREENS mark (11.5 GB with one lane live, 8.5 with none) and add SCREENS to TRACKS-ALLOWED when met.
 
