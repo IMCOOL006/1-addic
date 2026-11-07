@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:34 IST: two checks live: actions wf_04c1d56e-d49 (18:32), game-tutorials wf_2cdde478-7e9 (18:33); every unit of both lanes is built; each READY completes its lane
+STATE: BUILDING   # 2026-11-07 18:42 IST: one run live: actions check wf_04c1d56e-d49 (in its fix round: 0977edd C1 test); game-tutorials paused at 1ea2ebf for memory (3.3 GB 18:41), its re-check on the next 7.0 GB row
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions CHECKING   # U-22..U-25 built (tip 9ee68cf); the check over 710502f...HEAD with the browser gate: run wf_04c1d56e-d49 launched 18:32 on an 8.4 GB row; slice 710502f merged 18:02
-LANE: game-tutorials CHECKING   # U-27..U-28 built (tip d4c49d1); the check over 5af6665...HEAD with the browser gate: run wf_2cdde478-7e9 launched 18:33 on a 7.1 GB row; slice 5af6665 merged 17:57
+LANE: game-tutorials CHECKING   # PAUSED for memory at 1ea2ebf (18:41, a 3.3 GB row): the check wf_2cdde478-7e9 said FIX (C1 MEDIUM: hooks game-card, trial-closing) and its fix round committed 1ea2ebf; the re-check (with the browser gate) on the next 7.0 GB row (tmp/args_gt_recheck.json)
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:34 IST
+UPDATED: 2026-11-07 18:42 IST
 
 # 2026-11-07 18:28 IST · game-tutorials PAUSED for memory after its U-28 commit; U-26 and U-28 built, the check waits for a 7.0 GB row
 
