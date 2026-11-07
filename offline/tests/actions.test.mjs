@@ -1375,4 +1375,10 @@ describe('safety fixes (FIX-SAFETY-AS)', () => {
     const own = H.spiralPairs(null, { spiralThoughts: () => ['I want to die', 'I feel hopeless', "I can't go on", 'I blew it'] }, C());
     assert.deepEqual(own.map((p) => p.thought), ['I blew it']);
   });
+
+  test('TALKBACK: the waiting line lets the wave pass and never says decide then', () => {
+    assert.ok(H.FALLBACK.talkback.includes('I can wait 15 minutes and let this wave pass.'), H.FALLBACK.talkback.join(' | '));
+    assert.ok(H.FALLBACK.talkback.every((t) => !/decide then/i.test(t)));
+    assert.equal(H.FALLBACK.clinicalReview, true);
+  });
 });

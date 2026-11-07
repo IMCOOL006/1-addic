@@ -71,7 +71,7 @@
     talkback: [
       'This is a craving. It rises, peaks and passes.',
       'Wanting it is not the same as needing it.',
-      'I can wait 15 minutes and decide then.',
+      'I can wait 15 minutes and let this wave pass.',
     ],
     spiralReply: 'I can stop now. This does not erase my progress.',
     guide: ['wave', 'why', 'distract'],
