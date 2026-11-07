@@ -826,6 +826,32 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       assert.equal(document.activeElement, main(), '#main takes focus on the move to ' + t);
     }
   });
+
+  test('RC6: SOS is dark at night unless the theme is forced light; away from SOS the theme follows the device', () => {
+    setup();
+    globalThis.Engine = { isNight: () => true };
+    let deviceDark = false;
+    globalThis.window = { matchMedia: () => ({ matches: deviceDark }) };
+    const theme = () => document.documentElement.getAttribute('data-theme');
+    at('#/sos');
+    UI.applyTheme('system');
+    assert.equal(theme(), 'dark', 'SOS at night on a light device is dark');
+    UI.applyTheme('light');
+    assert.equal(theme(), 'light', 'a theme forced light stays light, even in SOS at night');
+    UI.applyTheme('dark');
+    assert.equal(theme(), 'dark');
+    at('#/today');
+    UI.applyTheme('system');
+    assert.equal(theme(), 'light', 'away from SOS the system theme follows the device, at night too');
+    deviceDark = true;
+    UI.applyTheme('system');
+    assert.equal(theme(), 'dark');
+    globalThis.Engine = { isNight: () => false };
+    deviceDark = false;
+    at('#/sos');
+    UI.applyTheme('system');
+    assert.equal(theme(), 'light', 'SOS by day follows the device');
+  });
 });
 
 /* ── U-04: the encrypted store (store.js by path; each test loads a fresh copy) ─────────────── */
