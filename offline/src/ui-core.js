@@ -885,6 +885,13 @@ const UI = (function () {
     state.lastTouch = now;
     if (S && S.lock && typeof S.lock.touch === 'function') safe(() => S.lock.touch(), null);
   }
+  // A phone that slept or a page back from the back-forward cache: the Store checks the idle time at once and locks
+  // when the limit has passed (b). Never while the page is hidden.
+  function wake() {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+    state.lastTouch = 0;
+    touch();
+  }
 
   async function boot() {
     if (state.booted || !hasDOM()) return;
@@ -898,6 +905,9 @@ const UI = (function () {
     safe(() => window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => paintTheme(pageKey(route()))), null);
     document.addEventListener('pointerdown', touch, true);
     document.addEventListener('keydown', touch, true);
+    document.addEventListener('input', touch, true);
+    document.addEventListener('visibilitychange', wake);
+    window.addEventListener('pageshow', wake);
     const main = byId('main');
     if (main) main.addEventListener('focusout', (ev) => {
       if (state.deferred && !(ev.relatedTarget && main.contains(ev.relatedTarget))) { state.deferred = false; schedule(); }

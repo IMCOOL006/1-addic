@@ -725,6 +725,25 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(doc.children.length, 0, 'a lock inside SOS empties it too');
   });
 
+  test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
+    const b = await bootPending(t, '#/today');
+    const touches = [];
+    globalThis.Store.lock = { touch: () => { touches.push(1); } };
+    b.opened();
+    await b.booting;
+    const fire = (type, ev) => { for (const f of b.on[type] || []) f(ev || {}); };
+    fire('doc:input');
+    assert.equal(touches.length, 1, 'typing keeps the lock open');
+    document.visibilityState = 'hidden';
+    fire('doc:visibilitychange');
+    assert.equal(touches.length, 1, 'hidden: no touch');
+    document.visibilityState = 'visible';
+    fire('doc:visibilitychange');
+    assert.equal(touches.length, 2, 'visible again: the Store checks the idle time at once, past the 2 s throttle');
+    fire('pageshow', { persisted: true });
+    assert.equal(touches.length, 3, 'back from the back-forward cache');
+  });
+
   test('RS7: discreet, the head script names the tab Notebook before first paint, and the CSS keeps name and button discreet', () => {
     const html = fs.readFileSync(new URL('../1-addic.html', import.meta.url), 'utf8');
     const m = /<title>1-addic<\/title>\s*<script>([\s\S]*?)<\/script>/.exec(html);
