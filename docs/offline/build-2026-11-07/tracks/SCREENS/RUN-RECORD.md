@@ -110,11 +110,18 @@
 - My browser gate on 1ea2ebf at 22:19: RED, tour complete and tour skip time out (log _logs/gates/game-tutorials/browser-20261107-221944.log). Cause: ui-guidance.js:630 UI.tour.start returns the coach Promise, and page.evaluate waits for it. The trunk carries the same code (R-S-15). So no READY yet.
 - FIX-TOUR wf_3aed1c64-86a launched 22:26 on a 14.7 GB row (args tracks/SCREENS/args/args_gt_fixtour.json; batches [[FIX-TOUR]], done U-27, U-26, U-28, diffFrom 1ea2ebf). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_3aed1c64-86a/journal.jsonl.
 
+## 2026-11-07 22:33 IST · game-tutorials READY bd2e085
+
+- FIX-TOUR wf_3aed1c64-86a returned READY bd2e085 (b677dbd: UI.tour.* return nothing; bd2e085: the popover keeps clear of #sos-btn, the second cause the builder found). Check PASS, LOW C1 open (the below-target branch untested). Browser GREEN 12/0/7, read by me in browser-20261107-223109.log.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: game-tutorials FIX-TOUR wf_3aed1c64-86a (since 22:26; stage Build then Check; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_3aed1c64-86a/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`: it reads the journal and waits. If 4d443a20 is gone, relaunch with tracks/SCREENS/args/args_gt_fixtour.json (or start 'check' if the FIX-TOUR commit is on the branch).
-- Per lane (every tip is on origin): content 680f850 MERGED; today-track a02f121 MERGED; workbook-settings 0e76065 MERGED; actions 0977edd MERGED (49f1c1d4, 18:50); game-tutorials 1ea2ebf CHECKING (U-27 merged as 5af6665; U-26 0f611e5, U-28 8dccbfb + d4c49d1, C1 fix 1ea2ebf).
-- NEXT: when FIX-TOUR returns, check that its checker's browser gate shows tour complete and tour skip passing (if it did not run the gate, run it by hand: `python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/game-tutorials --lane game-tutorials build browser` on the tip), restore offline/1-addic.html, and write `LANE: game-tutorials READY <tip>` (real cut base 9f3026c6). The re-check of 1ea2ebf already PASSED (wf_b62ade63-a26).
-- Then, by name only: the Today embeds in today-track (GuidanceUI.explorerRing/moreTools/dot, GameUI.panel behind typeof) once game-tutorials merges (ask the HUB for a slot); workbook-settings C1 after actions-sos merges; content C2-C4 (offline-v1.1).
-- Helpers: tracks/SCREENS/args/setlane.py, rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>. Memory: powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory; under 4.0 GB the newest run pauses at its next commit.
-- Facts: `claude agents` needs `--json` here. A dead run's args are in its session's transcript. A run named as running is alive only while its session is listed.
+- Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 22:33.
+- Per lane: content 680f850, today-track a02f121, workbook-settings 0e76065 and actions 0977edd are MERGED. game-tutorials bd2e085 is READY for the HUB (real cut base 9f3026c6; FIX-TOUR mends the trunk's tour hang, R-S-15). Every SCREENS unit is built.
+- NEXT, by name only:
+  - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track.
+  - workbook-settings C1 (the sample round trip) after actions-sos READY merges.
+  - LOWs: game-tutorials C1, content C2-C4 (offline-v1.1).
+  - Answer any red the HUB sends back within the hour, two rounds at most.
+- Args: tracks/SCREENS/args/ (args_gt_fixtour.json is the last game-tutorials run). Helpers setlane.py and rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>. Memory: powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory; under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row.
+- Facts: `claude agents` needs `--json` here. A run named as running is alive only while its session is listed. lane.js's checker runs the browser gate only for tests-docs unless the laneNote insists (wf_3aed1c64-86a's did): run it by hand otherwise.

@@ -1,7 +1,7 @@
 ## game-tutorials (SCREENS, 1-addic offline build): the slice report
 
-State: READY (2026-11-07 22:16 IST). Branch build/game-tutorials, worktree C:/Users/ruchi/1-addic-wt/game-tutorials. Base 9f3026c6. Tip 1ea2ebf (earlier: READY-SLICE at 5af6665, 17:42 IST).
-Commits (9f3026c6..HEAD): 1ea2ebf fix(U-28, C1): contract hooks game-card and trial-closing; d4c49d1 test(U-28): tools routes, sort scoring, one Comeback, drills save nothing, stubs; 8dccbfb feat(U-28): tools and mini-games (ui-tools.js); 0f611e5 feat(U-26): game surfaces (ui-game.js); 5af6665 feat(U-27): guidance engine (ui-guidance.js).
+State: READY (2026-11-07 22:27 IST, tip bd2e085; FIX-TOUR built, browser GREEN). Earlier: READY (22:16 IST). Branch build/game-tutorials, worktree C:/Users/ruchi/1-addic-wt/game-tutorials. Base 9f3026c6. Tip bd2e085 (earlier 1ea2ebf; earlier: READY-SLICE at 5af6665, 17:42 IST).
+Commits (9f3026c6..HEAD): bd2e085 fix(U-27, FIX-TOUR): coach popover keeps clear of the SOS button; b677dbd fix(U-27, FIX-TOUR): UI.tour.start and replay return nothing; 1ea2ebf fix(U-28, C1): contract hooks game-card and trial-closing; d4c49d1 test(U-28): tools routes, sort scoring, one Comeback, drills save nothing, stubs; 8dccbfb feat(U-28): tools and mini-games (ui-tools.js); 0f611e5 feat(U-26): game surfaces (ui-game.js); 5af6665 feat(U-27): guidance engine (ui-guidance.js).
 
 ### Turn caps
 - Builder batch [U-27]: steps_used 11, returned a note (done: U-27, 5af6665). capHits 0. The earlier run wf_8e6d4a60-85a was stopped at 17:34 with the work uncommitted; the relaunch finished and committed it.
@@ -16,6 +16,7 @@ Commits (9f3026c6..HEAD): 1ea2ebf fix(U-28, C1): contract hooks game-card and tr
   U-26 Game surfaces, 0f611e5. For a person using the file: a Game panel (XP bar, skill mastery, badge shelf, rank card, region lights 0..5) reads only Engine.gameState. Momentum and current counters are not shown (they can fall). No streak, no random reward. Calm mode shows nothing. The 240 ms celebration is skipped in Calm mode, under reduced motion and on SOS.
   U-28 Tools and games, 8dccbfb, d4c49d1, 1ea2ebf. #/tools and #/games list every 3.5 route. Distortion Sort and Spot the Red Flag play from the catalogs (or Content.games). Put it on trial is a five-step courtroom saving one saveResponse('trial'); its closing statement is the Comeback SOS reads. Should I go, Problem Solver (exercise obstacles), Rewrite, Big Game and Refusal are guided steps or honest stubs with a way back until content (be0f806d) is in the build. ?drill=1 saves nothing. A finished game offers "That helped / Done for now": one SkillUsed event. Detail: game-tutorials__units.md.
   Closes: Content.games shape differences taken from the real content (sort, flag, bigGame.scenes, refusal[{scene,responses}]); finding C1 (hooks game-card, trial-closing) by 1ea2ebf.
+- 2026-11-07 22:27 run (FIX-TOUR, U-27: b677dbd, bd2e085). Held or blocked: none. Browser gate was RED by name (tour complete, tour skip); two causes. (1) UI.tour.start/replay returned coach()'s Promise; now return undefined (b677dbd); GuidanceUI.coach and replayTour still return their Promise. (2) On bottom-nav steps the popover sat just above the nav and the SOS button (z 60) covered its Next button ("#sos-btn intercepts pointer events"). In bd2e085 place() reads #sos-btn's box and lifts an above-target popover over it, or narrows or flips a below-target one. For a person using the file: the tour's Next and Skip can always be tapped; SOS stays on top and reachable. Closes: browser RED on tour complete and tour skip. A coach-layout change must keep the popover clear of #sos-btn.
 
 ### Contract changes
 - GuidanceUI (offline/src/ui-guidance.js): coach(id, opts) -> Promise<'done'|'skipped'|'aborted'> (workbook-settings); replayTour() (workbook-settings); isOpen() (none yet); maybeTour(ctx) (none yet, self-hooked); featureOfRoute(path) (none yet); training() -> [{id,name,route,kind}] (workbook-settings); tipCard(ctx), explorerRing(ctx), moreTools(ctx), dot(featureId, ctx) (today-track). Test extras: shouldTour, jitFor, lockedFeatures, routeOfFeature, pathOf, afterRender, checkExplorer, TRAINING, _reset (none).
@@ -26,6 +27,7 @@ Commits (9f3026c6..HEAD): 1ea2ebf fix(U-28, C1): contract hooks game-card and tr
 - data-tour added: tips-card, explorer-ring, more-tools (consumer: today-track).
 - data-test hooks for hooks.mjs (tests-docs): coach-overlay, coach-pop, coach-next, coach-skip, jit-bar, jit-show, jit-later, tip-card, tip-got-it, explorer-ring, explorer-hide, more-tools, show-now (data-feature), new-dot (data-feature). Classes .coach-overlay, .coach-next, .coach-skip.
 - 2026-11-07 22:16: GameUI (ui-game.js): model, xpBar, skillMastery, badgeShelf, rankCard, regionLight(ctx,id) 0..5, regionLights, celebrate, panel (consumers: today-track, learn, workbook-settings); data-tour game-panel. ToolsUI {toolsPage, gamesPage, TOOLS, GAMES, TEXT, exercise, available, sortItems, checkSort, sortSummary, flagModel, scoreFlags, bigGameModel, bigGameNext, refusalModel, refusalFeedback, stepsFor, missing, payloadOf, startValues, optionsOf}; UI.pages.tools and UI.pages.games. The trial payload adds keys for and verdict. Events: only SkillUsed via Actions.recordEvent. Hooks for hooks.mjs: see game-tutorials__units.md (tools-page, games-page, game-card, trial-closing, tl-*, sort-*, flag-*, bg-*, drill-banner and more).
+- 2026-11-07 22:27: UI.tour = {start, replay} now return undefined (was a Promise). No other change; place() keeps the popover clear of #sos-btn.
 
 ### Gates
 VERIFIED (check, tip 5af6665):
@@ -43,6 +45,14 @@ ASSUMED (not run):
 - GATE guards RED (4 pass, 10 fail): C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/guards-20261107-221639.log. The same 10 tour-target names as at 5af6665; their lanes merged after cut 9f3026c6; lifted on the trunk. None is this lane's.
 - Territory: 5 files, 4 own (ui-game.js, ui-guidance.js, ui-tools.js, game-tutorials.test.mjs), 1 shared (styles.css, appended inside the game-tutorials banners, no token redefined); 0 errors, 0 warnings.
 ASSUMED (not run): browser gate (no browser tests; hooks not yet in hooks.mjs; focus, 44 px, contrast and the 240 ms animation checked only against CSS and the Node stand-in DOM). Trial, Should I go, Problem Solver, Rewrite, Big Game and Refusal not run on merged content (absent from this cut; stand-ins match be0f806d).
+2026-11-07 22:27 run, VERIFIED (check, tip bd2e085):
+- GATE build GREEN (701296 B): C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/build-20261107-223108.log
+- GATE test GREEN (27 pass, 0 fail): C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/test-20261107-223108.log
+- GATE validate GREEN: C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/validate-20261107-223109.log
+- GATE guards RED (4 pass, 10 fail): C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/guards-20261107-223109.log. Same 10 tour-target names; lanes merged after cut 9f3026c6. None is this lane's.
+- GATE browser GREEN (pass 12, fail 0, skip 7): C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/browser-20261107-223109.log. tour complete, tour skip, tour replay pass. Skips allowed: #/onboarding, #/sos, #/workbook routes, quicklog-button hook.
+- Territory: 5 files, 4 own, 1 shared (styles.css); 0 errors, 0 warnings. Commits since 1ea2ebf touch only ui-guidance.js and game-tutorials.test.mjs.
+ASSUMED (not run): place() narrow and flip branches in a real browser at other viewport sizes (only 390 px ran).
 
 ### Review gates
 None.
@@ -51,6 +61,7 @@ None.
 ### Check
 PASS at 5af6665. No findings, so no fix SHA and nothing to re-check. U-26 and U-28 not judged (batch 2).
 2026-11-07 22:16: PASS at 1ea2ebf over commits after 5af6665 (U-26, U-28). Finding C1 (MEDIUM, U-28, missing hooks game-card and trial-closing): fix 1ea2ebf; the finder's re-check: closed (ui-tools.js:303 and :211, two tests). No open findings. Notes: _logs/reports/game-tutorials/game-tutorials__check.md.
+2026-11-07 22:27: PASS at bd2e085 over commits after 1ea2ebf (FIX-TOUR). Finding C1 (LOW, FIX-TOUR, ui-guidance.js:329-334): no Node case for a high target whose below-popover meets #sos-btn (narrow or flip branch); the new test puts all targets at top 736 and covers only the above-target branch. No fix SHA; the finder's re-check: open (LOW, accepted). Not checked: earlier code to 1ea2ebf; other viewports.
 
 ### Review
 Not a flagged lane: no reviewers run.
@@ -58,6 +69,8 @@ Not a flagged lane: no reviewers run.
 ### Safety and content marks
 No passage marked clinicalReview: true and no resource marked verify: true in this slice (no crisis or substance text, no numbers or links). Safety behaviour to confirm: SOS is never gated; the coach layer (z 50) sits under the SOS button (z 60), is hidden on SOS and lock, and a route toward SOS marks nothing.
 2026-11-07 22:16: none added by U-26 or U-28. The Big Game and Refusal scenes carry clinicalReview: true in the content lane. The game panel has no streak, no loss framing, no random reward; Calm mode hides it; SOS is never gated and the celebration is skipped on SOS. Drills save nothing.
+2026-11-07 22:27: none new. Safety: SOS z-order unchanged (60 over coach 50); the popover now never covers SOS.
+
 
 ### Requests for other lanes
 - tests-docs: add the data-test hooks above to offline/tests/helpers/hooks.mjs, then browser tests (tour complete, tour skip, JIT, tip card).
@@ -65,12 +78,14 @@ No passage marked clinicalReview: true and no resource marked verify: true in th
 - workbook-settings: Help uses GuidanceUI.replayTour() and training().
 - content: optional Content.features[id].route and Content.tutorials kind 'training' routes; games content (U-32).
 - 2026-11-07 22:16: tests-docs: add the U-26/U-28 hooks (game-card, trial-closing, tools-page, games-page, drill-banner, tl-*) and browser tests. today-track: embed GameUI.panel / regionLights. learn and actions: link to #/tools and #/games. content: Content.games and exercises trial, should-i-go, obstacles, rewrite-scene must be in the same build (be0f806d).
+- 2026-11-07 22:27: none for the other lanes. tests-docs: the "tour complete"/"tour skip" browser tests now pass at bd2e085.
 
 ### Docs owed
 - Guide (tests-docs): one line each on the tour, "Show me / Later", Training and "More tools".
 - offline/README.md: a line that the first-run tour and tutorials can be replayed from Settings, Help.
 - CLAUDE.md: none.
 - 2026-11-07 22:16: Guide pages for Tools, Games and the Game panel (tests-docs). README: a line on the tools and mini-games.
+- 2026-11-07 22:27: none new.
 
 ### Open questions
 - Feature to route map: Content.features has no route; FEATURE_ROUTES in ui-guidance.js is used (Content wins when added).
@@ -84,3 +99,4 @@ No passage marked clinicalReview: true and no resource marked verify: true in th
 - Browser tests for the quiet window: none from this lane yet; once tests-docs adds them, run with --grep "tour".
 - Confirm ui-guidance.js is in build.mjs's parts list in the right order.
 - 2026-11-07 22:16: styles.css gains lines inside the same game-tutorials banners; keep both sides at append conflicts. build.mjs already lists ui-game.js:34, ui-tools.js:35, ui-guidance.js:40. Guards RED on the 10 names clears once actions and workbook-settings are merged. After the merge re-run tools and games against be0f806d content. Commit trailers carry Claude-Session d6887185 (SCREENS before the 22:04 relaunch): not a finding. offline/1-addic.html stays uncommitted.
+- 2026-11-07 22:27: FIX-TOUR touches only ui-guidance.js and the Node test; the browser quiet window can run --grep "tour" and expect GREEN. offline/1-addic.html stays uncommitted. Open LOW C1 is optional.

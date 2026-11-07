@@ -1,12 +1,27 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 22:26 IST: game-tutorials FIX-TOUR wf_3aed1c64-86a live (the re-check passed 1ea2ebf, but my browser gate was RED by name: tour complete, tour skip). READY after its check and a browser GREEN. Every other SCREENS lane MERGED
+STATE: BUILDING   # 2026-11-07 22:33 IST: game-tutorials READY bd2e085 for the HUB (FIX-TOUR; check PASS; browser GREEN 12/0/7 read by me). No SCREENS run live. Every SCREENS unit is built; what is left is by name: the Today embeds (R-S-14, after the game-tutorials merge), workbook-settings C1 (after actions-sos), the LOWs
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials BUILDING 1ea2ebf   # FIX-TOUR wf_3aed1c64-86a live since 22:26 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_3aed1c64-86a/journal.jsonl). Re-check wf_b62ade63-a26 PASS on 1ea2ebf (C1 FIXED; test 25/25; validate GREEN; guards only the 10 cut-age tour targets), but my browser gate on 1ea2ebf was RED: tour complete, tour skip time out (UI.tour.start returns the coach Promise; page.evaluate waits for it). Real cut base 9f3026c6
+LANE: game-tutorials READY bd2e085   # U-26, U-28 and FIX-TOUR (b677dbd, bd2e085) after the merged slice 5af6665; check PASS (wf_b62ade63-a26 on 1ea2ebf, wf_3aed1c64-86a on bd2e085); test 27/27, validate GREEN, browser GREEN 12/0/7 (tour complete, tour skip pass); merge from the real cut base 9f3026c6; LOW C1 open by name (offline-v1.1)
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 22:26 IST
+UPDATED: 2026-11-07 22:33 IST
+
+# 2026-11-07 22:33 IST · game-tutorials READY bd2e085 (U-26, U-28, FIX-TOUR; the lane is complete)
+
+- For the HUB: merge build/game-tutorials at bd2e085. The real cut base is 9f3026c6, and the slice 5af6665 is in the trunk since 17:57 (89976d80). This READY adds:
+  - 0f611e5 U-26 game surfaces (ui-game.js: GameUI from Engine.gameState only; nothing shown decreases; GameUI.panel(ctx) for Today).
+  - 8dccbfb + d4c49d1 U-28 tools and mini-games (ui-tools.js: UI.pages.tools, UI.pages.games).
+  - 1ea2ebf C1 the contract hooks game-card and trial-closing.
+  - b677dbd FIX-TOUR: UI.tour.start and UI.tour.replay return nothing.
+  - bd2e085 FIX-TOUR: the coach popover keeps clear of #sos-btn.
+  Files: ui-game.js, ui-tools.js, ui-guidance.js, game-tutorials.test.mjs, and the lane's styles.css section.
+- FIX-TOUR mends the trunk too (R-S-15). The trunk's browser gate hangs on 'tour complete' and 'tour skip' until this merges. Cause 1: UI.tour.start returned the coach Promise, and page.evaluate waits for it. Cause 2, found by the builder after fixing cause 1: on the bottom-nav steps the SOS button (z-index 60 over the coach layer's 50) sat on the popover's Next button. Now the popover moves clear of SOS; SOS stays on top and is never covered.
+- Gates (check wf_3aed1c64-86a on bd2e085): build GREEN 701296 B, test GREEN 27/27, validate GREEN. guards RED by name only on the 10 tour-target names absent at the cut 9f3026c6 (lifted on the trunk). Territory 9f3026c6..HEAD 4 own, 1 shared at its append point, 0 errors.
+- Browser GREEN exit 0, pass 12, fail 0, skip 7 (C:/Users/ruchi/1-addic-wt/_logs/gates/game-tutorials/browser-20261107-223109.log). The skips are routes and hooks of other lanes absent at the cut: #/onboarding x2, #/sos x3, quicklog-button, #/workbook. On the trunk, after the merge, run the browser gate: the tour then reaches the real targets.
+- Open by name: C1 LOW (no Node case for the below-target branch of place(), the maxWidth narrowing or the flip above SOS; ui-guidance.js:329-334), for offline-v1.1. Report: tracks/SCREENS/lane-reports/game-tutorials.md (16187 B).
+- Verified by me: the diff 1ea2ebf..bd2e085 (ui-guidance.js and its test only), the browser log's lines and verdict, the trailers on bd2e085, and the clean worktree. Assumed: the node, validate and guards counts as the checker ran them.
 
 # 2026-11-07 22:26 IST · game-tutorials: re-check PASS, browser RED by name, FIX-TOUR live
 
