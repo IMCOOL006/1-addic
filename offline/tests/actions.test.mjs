@@ -2169,5 +2169,22 @@ describe('review round 3 fixes (FIX-R3)', () => {
     }
     assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
   });
+  test('RS23: typed overdose, overdosed, OD or took too much opens the full urgent view with the overdose card, not the crisis view', () => {
+    for (const t of ['overdose', 'I think I overdosed', 'my friend is overdosing', 'I think I OD’d', "he OD'd", 'I might OD', 'I took too much', "I've taken too much"]) {
+      assert.equal(H.isOverdoseText(t), true, t);
+    }
+    for (const t of ['I feel odd', 'oddly calm', 'good', 'I took too long', 'too much work', 'I took a walk', '']) assert.equal(H.isOverdoseText(t), false, t);
+    assert.equal(H.OVERDOSE.clinicalReview, true, 'marked for clinical review');
+    for (const t of ['I think I overdosed', 'I took too much', 'I might OD', 'I want to overdose on purpose']) {
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-urgent"]'), t + ': the full urgent view');
+      assert.ok(!root.querySelector('[data-testid="sos-crisis"]'), t + ': not the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+      assert.ok(root.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), t + ': with the overdose card');
+    }
+    const crisis = typedTo('I want to be dead');
+    assert.ok(crisis.querySelector('[data-testid="sos-crisis"]'), 'crisis words without overdose words: the crisis view, as before');
+    assert.ok(!crisis.querySelectorAll('summary').some((s) => s.textContent.trim() === H.COPY.overdose), 'the crisis view says little else');
+  });
   // -- FIX-R3 tests end --
 });

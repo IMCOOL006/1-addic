@@ -96,6 +96,17 @@
   };
   const CRISIS_RE = new RegExp('\\b(' + CRISIS.patterns.join('|') + ')\\b', 'i');
   const crisisNorm = (s) => String(s).replace(/[‘’‛ʼ`´]/g, "'").replace(/\s+/g, ' ');
+  // RS23: typed overdose words open the full urgent view, which keeps the overdose card; a text with crisis words as
+  // well goes there too (the numbers come first in both). OD only as a word: never odd or good.
+  const OVERDOSE = {
+    clinicalReview: true,
+    patterns: ['overdos(e|es|ed|ing)', "od(s|'d|ed|ing)?", '(took|taken) too much'],
+  };
+  const OVERDOSE_RE = new RegExp('\\b(' + OVERDOSE.patterns.join('|') + ')\\b', 'i');
+  function isOverdoseText(text) {
+    const s = String(text == null ? '' : text);
+    return !!s.trim() && OVERDOSE_RE.test(crisisNorm(s));
+  }
 
   // The craving tools: route id, skill credited (Content.skills ids), label.
   const TOOLS = [
@@ -334,8 +345,8 @@
   }
 
   const H = {
-    COPY, FALLBACK, CRISIS, TOOLS, FEEL_SKILLS, WAVE_MIN,
-    telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, parseSos, sessionFrom, guideOrder, soberSteps,
+    COPY, FALLBACK, CRISIS, OVERDOSE, TOOLS, FEEL_SKILLS, WAVE_MIN,
+    telHref, urgentList, outcomeFrom, isCrisisEmotion, isCrisisText, isOverdoseText, parseSos, sessionFrom, guideOrder, soberSteps,
     reasonsFrom, deckFrom, comebacksFrom, spiralPairs, slipLogs, markHelped, meetingsFrom, activeContacts, planFor, planSections, clock, remaining, leaveSession,
   };
 
@@ -655,6 +666,7 @@
       h('div', { class: 'row' }, link('Urgent help', '#/sos/urgent'), link('Back to SOS', '#/sos')));
     const show = (node) => { safe(() => UI.stopSpeaking(), null); body.replaceChildren(node); focusTitle(body); };
     const crisis = () => show(urgentView(c, { crisis: true }));
+    const urgent = () => show(urgentView(c)); // RS23: the full view, with the overdose card
     const use = (skill, then) => () => { st.tools.push({ skillId: skill, helpful: false }); then(); }; // helpful only when ticked (RS7)
 
     function pick() {
@@ -670,7 +682,7 @@
 
     function other() {
       const input = h('input', { id: 'sos-feel-text', type: 'text', maxlength: '120', autocomplete: 'off', 'aria-label': COPY.feelOther.title, style: { minHeight: '44px', width: '100%' } });
-      const go = () => { if (isCrisisText(input.value, c.E)) crisis(); else low(); };
+      const go = () => { if (isOverdoseText(input.value)) urgent(); else if (isCrisisText(input.value, c.E)) crisis(); else low(); }; // RS23: overdose first
       input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); go(); } });
       show(screen(COPY.feelOther.title, COPY.feelOther.line, input, btn('Next', go, { primary: true })));
     }
