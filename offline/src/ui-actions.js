@@ -5,7 +5,11 @@
    U-23: Battle Plans at #/actions/battle (list, ?new=1 form, ?plan=<id> attach/edit): each exports a .ics through
    Engine.ics and UI.download (a file on the device, no network; the buddy is left out of it), and once the block has
    ended asks "Did the plan show up?" (A.plans.debrief, warm either way, no score).
-   The other Actions screens (Weekly Review, quests, Prediction Lab, to-dos) are honest stubs until their
+   U-24: the Weekly Review at #/actions/review: a start screen, then five screens with Back/Next (the last seven days
+   from Engine.weekSummary, the forecast check from Engine.forecastCheck, a motivation re-rate, the week ahead, want-tos
+   and a focus skill). Answers stay in memory (this session only, never stored) until Save writes them through Actions
+   (A.weeklyReview once; WeeklyReviewCompleted once per week). A weekly reminder .ics at 18:00 on profile.reviewDay.
+   The other Actions screens (quests, Prediction Lab, to-dos) are honest stubs until their
    units land (O7). Words are original, person-first, grade 6-8. Text goes in as text only. Content, Engine, Store are
    read through typeof guards (they are not globalThis properties in the built page); ctx.E and ctx.A come first. */
 const ActionsUI = (() => {
@@ -109,6 +113,53 @@ const ActionsUI = (() => {
     bpLater: 'When this time has passed, you can look back on how it went.',
     bpEdit: 'Change',
     bpInPlanner: 'See the day',
+    // U-24 Weekly Review
+    rvTitle: 'Weekly Review',
+    rvIntro: 'Five short screens: look back at the last seven days, then plan the next ones. Nothing here is scored.',
+    rvStart: 'Start the review',
+    rvResume: 'Carry on where you left off',
+    rvSaved: 'This week\'s review is saved.',
+    rvAgain: 'Go through it again',
+    rvIcs: 'Add a weekly reminder',
+    rvIcsHint: (day) => `A calendar file that repeats every ${day} at 6 pm. You can change the day in Settings.`,
+    rvIcsTitle: 'Weekly review',
+    rvStep: (n) => `${n} of 5`,
+    rv1: 'The last seven days',
+    rvQuiet: 'A quiet week in the log. That is fine; the review still works.',
+    rvNote: 'Anything else that went well? (optional)',
+    rv2: 'The forecast check',
+    rv2Intro: 'You planned for some times to be hard. Here is what the log shows. Just notice what happened.',
+    rvNoForecast: 'No risky times were planned and nothing was logged. The next screens can help you plan ahead.',
+    rvPlanned: (t, s, e) => `Planned: ${t}, ${s} to ${e}`,
+    rvLogged: (type, time, n) => `Logged: a ${type} at ${time}${n == null ? '' : `, ${n}/10`}`,
+    rvForecastNote: 'What do you notice? (optional)',
+    rv3: 'Where you are now',
+    rv3Intro: 'There is no right number. It is a check-in with yourself.',
+    rvStage: 'Which fits best right now?',
+    rvChoose: 'Choose one',
+    rvScore: 'How ready do you feel to keep going, from 0 to 10?',
+    rvNotNow: 'Skip for now',
+    rvPlusOne: 'What would move it up by one? (optional)',
+    rvNeedStage: 'Choose the stage that fits best, or skip the number.',
+    rv4: 'The week ahead',
+    rv4Intro: 'Any time this week that could be hard? A Battle Plan made now is there when you need it.',
+    rvNoRisky: 'No risky times in the Planner for the next seven days.',
+    rvBpReady: 'Battle Plan ready',
+    rvUpcomingNote: 'Anything coming up that could be hard? (optional)',
+    rvMakeBp: 'Make a Battle Plan',
+    rv5: 'Want-tos and a focus',
+    rv5Intro: 'Up to three things you want to do this week, each with a small reward after.',
+    rvWant: (n) => `Want-to ${n}`,
+    rvWantWhat: 'What',
+    rvWantDay: 'Day',
+    rvWantTime: 'Time',
+    rvWantReward: 'Reward (optional)',
+    rvFocus: 'A skill to practise this week (optional)',
+    rvNoFocus: 'None for now',
+    rvBack: 'Back',
+    rvNext: 'Next',
+    rvSave: 'Save the review',
+    rvDone: 'Review saved.',
   };
   const KINDS = ['should', 'want', 'recovery', 'risky'];
   const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -116,7 +167,7 @@ const ActionsUI = (() => {
   const HUB = [
     { id: 'planner', title: 'Planner', gist: 'Plan the day and see the open stretches.', href: '#/actions/planner', ready: true },
     { id: 'battle', title: 'Battle Plans', gist: 'A plan for a risky time, made ahead.', href: '#/actions/battle', ready: true },
-    { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.' },
+    { id: 'review', title: 'Weekly Review', gist: 'Five short screens to look back and plan ahead.', href: '#/actions/review', ready: true },
     { id: 'quests', title: 'Quests', gist: 'Small steps that add up.' },
     { id: 'predictions', title: 'Prediction Lab', gist: 'Guess how much you will enjoy something, then check.' },
     { id: 'todos', title: 'To-dos', gist: 'A short list of things to do, at your pace.' },
@@ -697,6 +748,264 @@ const ActionsUI = (() => {
     return root;
   }
 
+  /* ── pure data: the Weekly Review (U-24) ───────────────────────────────────────────────── */
+  const BYDAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const dow = (ds) => { const [y, m, d] = String(ds).split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)).getUTCDay(); };
+  /* The review's week: weekStart is this week's Monday (the key A.weeklyReview saves under, one per week); the look
+     back covers the last seven days, ending today (from..to), whatever the review day is. */
+  function reviewWeek(now) {
+    const today = localDate(now instanceof Date ? now : new Date());
+    return { today, weekStart: shiftDate(today, -((dow(today) + 6) % 7)), from: shiftDate(today, -6), to: today };
+  }
+  /* The next date (today counts) that falls on reviewDay (0 = Sunday ... 6 = Saturday; anything else is Sunday). */
+  function nextReviewDate(reviewDay, today) {
+    const day = Number.isInteger(reviewDay) && reviewDay >= 0 && reviewDay <= 6 ? reviewDay : 0;
+    return shiftDate(today, (day - dow(today) + 7) % 7);
+  }
+  /* The weekly reminder for Engine.ics (contract: reviewIcsItem(profile, now)): 18:00 to 18:15 on the review day, weekly. */
+  function reviewIcsItem(profile, now) {
+    const p = isObj(profile) ? profile : {};
+    const day = Number.isInteger(p.reviewDay) && p.reviewDay >= 0 && p.reviewDay <= 6 ? p.reviewDay : 0;
+    return { id: 'weekly-review', date: nextReviewDate(day, localDate(now instanceof Date ? now : new Date())), start: '18:00', end: '18:15',
+      title: TEXT.rvIcsTitle, rrule: `FREQ=WEEKLY;BYDAY=${BYDAY[day]}` };
+  }
+  /* The latest saved review for a week (a 'weekly-review' response), or null. */
+  function reviewSaved(view, weekStart) {
+    return list(view, 'responses').filter((r) => r.exerciseId === 'weekly-review' && isObj(r.payload) && r.payload.weekStart === weekStart)
+      .sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0] || null;
+  }
+  /* The forecast check as rows to show: each day with something planned or logged; Engine's line where it has one. */
+  function forecastRows(E, view, from) {
+    const eng = E === undefined ? ns('Engine') : E;
+    if (!eng || typeof eng.forecastCheck !== 'function') return [];
+    return safe(() => arr(eng.forecastCheck(view, from)), []).filter((d) => isObj(d) && (arr(d.planned).length || arr(d.logged).length))
+      .map((d) => ({ date: d.date, line: typeof d.line === 'string' && d.line ? d.line : null,
+        rows: arr(d.planned).map((p) => TEXT.rvPlanned(str(p.title) || TEXT.bpDefaultTitle, timeLabel(p.start), timeLabel(p.end)))
+          .concat(arr(d.logged).map((l) => TEXT.rvLogged(l.type === 'feeling' ? 'feeling' : 'craving', str(l.time) || '?', Number.isInteger(l.intensity) ? l.intensity : null))) }));
+  }
+  /* A want-to row -> a plan item (kind want, an hour long, ending by 23:59). */
+  function wantToItem(w) {
+    const o = isObj(w) ? w : {};
+    const start = TIME_RE.test(str(o.start)) ? str(o.start) : '18:00';
+    const m = Math.min(Number(start.slice(0, 2)) * 60 + Number(start.slice(3)) + 60, 23 * 60 + 59);
+    return { date: str(o.date), start, end: `${pad(Math.floor(m / 60))}:${pad(m % 60)}`, title: str(o.title), kind: 'want', risky: false, reward: str(o.reward) || null };
+  }
+  const scoreOf = (d) => (d && d.score !== '' && d.score != null && Number.isInteger(Number(d.score)) ? Number(d.score) : null);
+  /* The response payload (contract: {weekStart, highlights, focusSkill, wantTos[], motivation}, plus the two notes). */
+  function reviewPayload(d, weekStart) {
+    const o = isObj(d) ? d : {};
+    const score = scoreOf(o);
+    return {
+      weekStart,
+      highlights: { lines: arr(o.lines).filter((x) => typeof x === 'string'), note: str(o.note) },
+      forecastNote: str(o.forecastNote),
+      upcomingNote: str(o.upcomingNote),
+      focusSkill: str(o.focusSkill) || null,
+      wantTos: arr(o.wants).filter((w) => isObj(w) && str(w.title)).map((w) => Object.assign(wantToItem(w), { planId: w.planId || null })),
+      motivation: score === null ? null : { stage: str(o.stage), score, plusOne: str(o.plusOne) },
+    };
+  }
+  /* Save: the want-tos (A.plans.add), the re-rate (A.motivation.add), then A.weeklyReview once. A retry after a refusal
+     never adds a want-to or a re-rate twice (the draft remembers what was written). {ok:true} or {ok:false, message}. */
+  async function saveReview(A, d, weekStart) {
+    const no = (message) => ({ ok: false, message });
+    if (!A || !A.plans || typeof A.weeklyReview !== 'function') return no(TEXT.error);
+    const score = scoreOf(d);
+    if (score !== null && !str(d.stage)) return no(TEXT.rvNeedStage);
+    try {
+      for (const w of arr(d.wants)) {
+        if (!isObj(w) || !str(w.title) || w.planId) continue;
+        const r = await A.plans.add(wantToItem(w));
+        w.planId = r && r.plan && r.plan.id ? r.plan.id : 'saved';
+      }
+      if (score !== null && !d.motSaved && A.motivation) {
+        const m = { stage: str(d.stage), score, source: 'weekly-review' };
+        if (str(d.plusOne)) m.plusOne = str(d.plusOne);
+        await A.motivation.add(m);
+        d.motSaved = true;
+      }
+      const r = await A.weeklyReview(reviewPayload(d, weekStart));
+      return { ok: true, response: r && r.response ? r.response : null };
+    } catch (err) {
+      return no(err && /^bad-/.test(String(err.code || '')) && err.message ? String(err.message) : TEXT.error);
+    }
+  }
+  /* The review's answers in memory, by week (this session only, never stored): leaving for a Battle Plan and coming
+     back resumes the same screen. HELP_WEEKS keeps the help line on after a save with crisis words. */
+  const DRAFTS = new Map();
+  const HELP_WEEKS = new Set();
+  const forgetReviews = () => { DRAFTS.clear(); HELP_WEEKS.clear(); };
+
+  /* ── DOM: the Weekly Review (U-24) ─────────────────────────────────────────────────────── */
+  function reviewPage(ctx) {
+    const E = E_(ctx);
+    const A = A_(ctx);
+    const C = ns('Content');
+    const now = ctx && ctx.now instanceof Date ? ctx.now : new Date();
+    const wk = reviewWeek(now);
+    const ws = wk.weekStart;
+    const profile = ctx && isObj(ctx.profile) ? ctx.profile : {};
+    const view = () => (ctx && ctx.view) || null;
+    const root = h('div', { class: 'page stack act-page act-review', 'data-test': 'review' });
+    const stages = arr(C && C.stages).filter((s) => isObj(s) && s.id);
+    const skills = arr(C && C.skills).filter((s) => isObj(s) && s.id);
+    const toastMsg = (msg, tone) => { const U = ns('UI'); if (U && typeof U.toast === 'function') safe(() => U.toast(msg, tone), null); };
+    const focusOn = (sel) => { const f = safe(() => root.querySelector(sel), null); if (f && typeof f.focus === 'function') safe(() => f.focus(), null); };
+    const newDraft = () => {
+      const latest = list(view(), 'motivation').slice().sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))[0];
+      const sum = E && typeof E.weekSummary === 'function' ? safe(() => E.weekSummary(view(), wk.from), null) : null;
+      const stage = [str(latest && latest.stage), str(profile.stage)].find((s) => s && stages.some((x) => x.id === s)) || '';
+      return { step: 1, lines: sum ? arr(sum.highlights).filter((x) => typeof x === 'string') : [], note: '', forecastNote: '', stage, score: '', plusOne: '',
+        upcomingNote: '', wants: [1, 2, 3].map((i) => ({ title: '', date: shiftDate(wk.today, i), start: '18:00', reward: '', planId: null })),
+        focusSkill: '', message: '', help: false, motSaved: false };
+    };
+    const draft = () => DRAFTS.get(ws) || null;
+    let collect = () => {};
+    const texts = (d) => [d.note, d.forecastNote, d.plusOne, d.upcomingNote].concat(arr(d.wants).map((w) => `${w.title} ${w.reward}`));
+    const go = (step) => {
+      const d = draft();
+      collect();
+      if (crisisIn(E, ...texts(d))) d.help = true;
+      d.step = step; d.message = '';
+      paint();
+      focusOn('.act-review h2');
+    };
+    const helpLine = () => h('p', { class: 'tip act-help', 'data-test': 'review-help' }, TEXT.help + ' ', link('#/sos/urgent', TEXT.helpGo, 'btn', 'review-help-go'));
+    const area = (key, label, max, d) => {
+      const id = fid('rv-' + key);
+      const el = h('textarea', { id, name: key, maxlength: String(max), rows: '3', 'data-test': 'review-f-' + key, value: d[key] || '' });
+      return { el, node: h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: label }), el) };
+    };
+    const select = (key, label, options, value) => {
+      const id = fid('rv-' + key);
+      const el = h('select', { id, name: key, 'data-test': 'review-f-' + key, value: value == null ? '' : String(value) }, options.map((o) => h('option', { value: o.value, text: o.label })));
+      return { el, node: h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: label }), el) };
+    };
+
+    function startScreen() {
+      const saved = reviewSaved(view(), ws);
+      const d = draft();
+      const out = [h('p', { class: 'muted', text: TEXT.rvIntro })];
+      if (saved) {
+        const dayName = DAYS[Number.isInteger(profile.reviewDay) && profile.reviewDay >= 0 && profile.reviewDay <= 6 ? profile.reviewDay : 0];
+        out.push(h('section', { class: 'card act-review-saved', 'data-test': 'review-saved' },
+          h('p', { class: 'act-bp-title', text: TEXT.rvSaved }),
+          h('p', { class: 'muted', text: TEXT.rvIcsHint(dayName) }),
+          h('div', { class: 'row' }, button(TEXT.rvIcs, reminder, 'btn', 'review-ics', { 'data-testid': 'review-ics' }))));
+        if (HELP_WEEKS.has(ws)) out.push(helpLine());
+      }
+      out.push(h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-tour': 'review-start', 'data-test': 'review-start',
+        text: d && d.step > 0 ? TEXT.rvResume : saved ? TEXT.rvAgain : TEXT.rvStart,
+        onClick: () => { if (!draft()) DRAFTS.set(ws, newDraft()); const x = draft(); x.step = x.step > 0 ? x.step : 1; paint(); focusOn('.act-review h2'); } })));
+      return out;
+    }
+    function reminder() {
+      const U = ns('UI');
+      const text = E && typeof E.ics === 'function' ? safe(() => E.ics([reviewIcsItem(profile, now)], { now }), '') : '';
+      const ok = !!text && !!U && typeof U.download === 'function' && safe(() => U.download('1-addic-weekly-review.ics', text, 'text/calendar'), false) !== false;
+      toastMsg(ok ? TEXT.bpIcsDone : TEXT.bpIcsNo, ok ? 'ok' : 'warn');
+    }
+
+    function screen1(d) {
+      const n = area('note', TEXT.rvNote, 500, d);
+      collect = () => { d.note = n.el.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv1 }),
+        d.lines.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-highlights' }, d.lines.map((l) => h('li', { text: l })))
+          : h('p', { class: 'muted', 'data-test': 'review-quiet', text: TEXT.rvQuiet }),
+        n.node];
+    }
+    function screen2(d) {
+      const rows = forecastRows(E, view(), wk.from);
+      const n = area('forecastNote', TEXT.rvForecastNote, 1000, d);
+      collect = () => { d.forecastNote = n.el.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv2 }), h('p', { class: 'muted', text: TEXT.rv2Intro }),
+        rows.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-forecast' }, rows.map((r) => h('li', { 'data-test': 'review-forecast-day' },
+          h('p', { class: 'act-when', text: dayLabel(r.date) }),
+          r.line ? h('p', { 'data-test': 'review-forecast-line', text: r.line }) : r.rows.map((t) => h('p', { text: t })))))
+          : h('p', { class: 'muted', 'data-test': 'review-forecast-none', text: TEXT.rvNoForecast }),
+        n.node];
+    }
+    function screen3(d) {
+      const st = select('stage', TEXT.rvStage, [{ value: '', label: TEXT.rvChoose }].concat(stages.map((s) => ({ value: s.id, label: str(s.name) || s.id }))), d.stage);
+      const sc = select('score', TEXT.rvScore, [{ value: '', label: TEXT.rvNotNow }].concat(Array.from({ length: 11 }, (_, i) => ({ value: String(i), label: String(i) }))), d.score);
+      const id = fid('rv-plusOne');
+      const plus = h('input', { id, name: 'plusOne', type: 'text', maxlength: '500', autocomplete: 'off', 'data-test': 'review-f-plusOne', value: d.plusOne || '' });
+      collect = () => { d.stage = st.el.value; d.score = sc.el.value; d.plusOne = plus.value; };
+      return [h('h2', { class: 'card-title', text: TEXT.rv3 }), h('p', { class: 'muted', text: TEXT.rv3Intro }), st.node, sc.node,
+        h('div', { class: 'field' }, h('label', { class: 'field-label', for: id, text: TEXT.rvPlusOne }), plus)];
+    }
+    function screen4(d) {
+      const ahead = [];
+      for (let i = 0; i < 7; i++) for (const p of planRowsForDate(view(), shiftDate(wk.today, i))) if (p.risky && !pastUnmarked(p, now)) ahead.push(p);
+      const n = area('upcomingNote', TEXT.rvUpcomingNote, 1000, d);
+      collect = () => { d.upcomingNote = n.el.value; };
+      const keep = () => collect(); // a link away keeps the answers (memory) so the review resumes here
+      return [h('h2', { class: 'card-title', text: TEXT.rv4 }), h('p', { class: 'muted', text: TEXT.rv4Intro }),
+        ahead.length ? h('ul', { class: 'act-review-lines', 'data-test': 'review-ahead' }, ahead.map((p) => h('li', { class: 'row' },
+          h('span', { class: 'act-gap-text', text: `${dayLabel(p.date)}, ${timeLabel(p.start)}: ${str(p.title) || TEXT.bpDefaultTitle}` }),
+          p.battlePlan ? h('span', { class: 'badge', text: TEXT.rvBpReady })
+            : link('#/actions/battle?plan=' + encodeURIComponent(p.id), TEXT.battleAdd, 'btn ghost', 'review-bp-add', { onClick: keep }))))
+          : h('p', { class: 'muted', text: TEXT.rvNoRisky }),
+        n.node,
+        h('div', { class: 'row' }, link('#/actions/battle?new=1', TEXT.rvMakeBp, 'btn', 'review-bp-new', { onClick: keep }))];
+    }
+    function screen5(d) {
+      const rows = d.wants.map((w, i) => {
+        const ids = { title: fid('rv-w-title'), date: fid('rv-w-date'), start: fid('rv-w-start'), reward: fid('rv-w-reward') };
+        const inp = {
+          title: h('input', { id: ids.title, type: 'text', maxlength: '120', autocomplete: 'off', 'data-test': 'review-want-title', value: w.title, disabled: !!w.planId }),
+          date: h('input', { id: ids.date, type: 'date', 'data-test': 'review-want-date', value: w.date, disabled: !!w.planId }),
+          start: h('input', { id: ids.start, type: 'time', 'data-test': 'review-want-start', value: w.start, disabled: !!w.planId }),
+          reward: h('input', { id: ids.reward, type: 'text', maxlength: '200', autocomplete: 'off', 'data-test': 'review-want-reward', value: w.reward, disabled: !!w.planId }),
+        };
+        const f = (k, label) => h('div', { class: 'field' }, h('label', { class: 'field-label', for: ids[k], text: label }), inp[k]);
+        return { inp, node: h('fieldset', { class: 'act-want', 'data-test': 'review-want' }, h('legend', { text: TEXT.rvWant(i + 1) }),
+          f('title', TEXT.rvWantWhat), h('div', { class: 'row act-times' }, f('date', TEXT.rvWantDay), f('start', TEXT.rvWantTime)), f('reward', TEXT.rvWantReward)) };
+      });
+      const fs = select('focusSkill', TEXT.rvFocus, [{ value: '', label: TEXT.rvNoFocus }].concat(skills.map((s) => ({ value: s.id, label: str(s.name) || s.id }))), d.focusSkill);
+      collect = () => {
+        rows.forEach((r, i) => { const w = d.wants[i]; if (w.planId) return; w.title = r.inp.title.value; w.date = r.inp.date.value; w.start = r.inp.start.value; w.reward = r.inp.reward.value; });
+        d.focusSkill = fs.el.value;
+      };
+      return [h('h2', { class: 'card-title', text: TEXT.rv5 }), h('p', { class: 'muted', text: TEXT.rv5Intro }), rows.map((r) => r.node), fs.node];
+    }
+    const SCREENS = [null, screen1, screen2, screen3, screen4, screen5];
+
+    async function save() {
+      const d = draft();
+      collect();
+      if (crisisIn(E, ...texts(d))) d.help = true;
+      const r = await saveReview(A, d, ws);
+      if (!r.ok) { d.message = r.message; paint(); focusOn('.act-form-error'); return; }
+      if (d.help) HELP_WEEKS.add(ws);
+      DRAFTS.delete(ws);
+      toastMsg(TEXT.rvDone, 'ok');
+      paint();
+      focusOn('[data-tour="review-start"]');
+    }
+
+    const paint = () => {
+      clear(root);
+      collect = () => {};
+      root.appendChild(h('div', { class: 'row act-head' }, link('#/actions', TEXT.backHub, 'btn ghost', 'actions-back')));
+      root.appendChild(h('h1', { class: 'page-title', text: TEXT.rvTitle }));
+      const d = draft();
+      if (!d || !(d.step >= 1 && d.step <= 5)) { for (const n of startScreen()) root.appendChild(n); return; }
+      const body = SCREENS[d.step](d);
+      const err = h('p', { class: 'field-error act-form-error', role: 'alert', tabindex: '-1', 'data-test': 'review-error', text: d.message || '' });
+      if (!d.message) { err.hidden = true; err.setAttribute('hidden', ''); }
+      root.appendChild(h('section', { class: 'card stack act-review-step', 'data-test': 'review-step', 'data-step': String(d.step), 'aria-label': TEXT.rvStep(d.step) },
+        h('p', { class: 'act-date', text: TEXT.rvStep(d.step) }), body, err, d.help ? helpLine() : null,
+        h('div', { class: 'row form-actions' },
+          button(TEXT.rvBack, () => go(d.step - 1), 'btn ghost', 'review-back'),
+          d.step < 5 ? button(TEXT.rvNext, () => go(d.step + 1), 'btn primary', 'review-next', { 'data-testid': 'review-next' })
+            : button(TEXT.rvSave, save, 'btn primary', 'review-save', { 'data-testid': 'review-save' }))));
+    };
+
+    paint();
+    return root;
+  }
+
   /* ── page ──────────────────────────────────────────────────────────────────────────────── */
   function page(ctx) {
     const parts = ctx && ctx.route && Array.isArray(ctx.route.parts) ? ctx.route.parts : [];
@@ -704,13 +1013,16 @@ const ActionsUI = (() => {
     if (!sub) return hubPage(ctx);
     if (sub === 'planner') return plannerPage(ctx);
     if (sub === 'battle') return battlePage(ctx);
+    if (sub === 'review') return reviewPage(ctx);
     return stubPage(sub);
   }
 
   const PURE = ['planRowsForDate', 'gapRows', 'ideaRows', 'pastUnmarked', 'planFromValues', 'saveBlock', 'plannerDate', 'localDate', 'shiftDate', 'dayLabel', 'timeLabel',
-    'planEnded', 'battleLists', 'battleNotes', 'battlePlanIcsItem', 'battleIcsFile', 'battleFromValues', 'saveBattle', 'debriefPlan'];
-  return { page, TEXT, PURE, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel,
-    planEnded, battleLists, battleNotes, battlePlanIcsItem, battleIcsFile, battleFromValues, saveBattle, debriefPlan };
+    'planEnded', 'battleLists', 'battleNotes', 'battlePlanIcsItem', 'battleIcsFile', 'battleFromValues', 'saveBattle', 'debriefPlan',
+    'reviewWeek', 'nextReviewDate', 'reviewIcsItem', 'reviewSaved', 'forecastRows', 'wantToItem', 'reviewPayload', 'saveReview'];
+  return { page, TEXT, PURE, forgetReviews, planRowsForDate, gapRows, ideaRows, pastUnmarked, planFromValues, saveBlock, plannerDate, localDate, shiftDate, dayLabel, timeLabel,
+    planEnded, battleLists, battleNotes, battlePlanIcsItem, battleIcsFile, battleFromValues, saveBattle, debriefPlan,
+    reviewWeek, nextReviewDate, reviewIcsItem, reviewSaved, forecastRows, wantToItem, reviewPayload, saveReview };
 })();
 
 // The page registers from this file (contracts/core.md: UI.pages[firstSegment]); ui-core.js is not changed.
