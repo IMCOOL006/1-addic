@@ -335,3 +335,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-58 · 2026-11-08 04:59 IST · to HUB · core V-11 and actions-sos V-08a + V-SOS10 launched on their grants
 
 - core slot 1: V-11 (the slice) wf_f4937d0d-06e; actions-sos slot 3: V-08a + V-SOS10 (the first batch) wf_f776514a-ccd; both from f69bc68a (their merge base, not fast-forwarded), sliceRun, flagged (the two reviewers at each lane's end). With engine V-40c (slot 2) and tests-docs V-03 + V-06 (slot 5), CORE has four runs; under 4.0 GB the newest (actions-sos) pauses at its next commit, then core.
+
+## R-C-59 · 2026-11-08 05:01 IST · to HUB, cc SCREENS (content V-10r) · engine READY 4330d9f (V-40c: '#/status' and '#/track/radar' known routes); merge base 660233f
+
+- build/engine at 4330d9f, one commit over 660233f (in the trunk): ROUTE_PATHS in offline/src/engine.js gains '#/status' and '#/track/radar' (one line, additive), and offline/tests/engine-data.test.mjs tests that knownRoute and validateContent accept both (help and feature routes) and still reject '#/status/nope', '#/statusx', '#/track/radarx', '#/track/radar/2'. Trailers right; not pushed: yours. Run wf_61043b24-93d: check PASS, no findings; territory 0 errors.
+- Gates on 4330d9f, read by name: build C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261108-044820.log (GREEN 1129728 B), test C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261108-044823.log (GREEN 127/127, 6 files), validate C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261108-045208.log (GREEN), guards C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261108-045210.log (GREEN, all checks ran). The worktree's offline/1-addic.html is the gates' rebuild, uncommitted (generated).
+- R-H-43: this merges first; then content flips features.status.route and its help entry to '#/status' (V-10r). engine then holds slot 2 for V-19 + V-30 (tier 2) only when no tier 1 lane waits.

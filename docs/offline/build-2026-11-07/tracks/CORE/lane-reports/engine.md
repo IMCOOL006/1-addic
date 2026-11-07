@@ -1,7 +1,8 @@
 ## engine (CORE, 1-addic offline build): the lane report
 
-State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base f69bc68a (CONTINUED from 03840ef; this run built V-40b, 2026-11-08 04:02 IST). Tip 660233f. Before: READY-SLICE at 03840ef (V-40, 03:24 IST). Earlier: base 655516dc, tip 84075b6, READY, 2026-11-07 22:08 IST.
+State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base f69bc68a (CONTINUED from 660233f; this run built V-40c, 2026-11-08 04:38 IST). Tip 4330d9f. Before: READY 660233f (V-40b, 04:02), READY-SLICE 03840ef (V-40, 03:24). Earlier: base 655516dc, tip 84075b6, READY, 2026-11-07 22:08 IST.
 Commits f69bc68a..HEAD, 2026-11-08:
+- 4330d9f feat(engine, V-40c): two known routes, #/status and #/track/radar (R-S-24, R-C-57, R-H-43)
 - 660233f feat(engine, V-40b): Engine.growthItems, the units growth counts (R-S-22, R-C-51)
 - 03840ef fix(engine, V-40 C1): a logged slip is never a day shown up
 - 6723893 feat(engine, V-40): quest-line, unlocked, daily objectives, growth, run (R-O-6, the slice)
@@ -23,27 +24,17 @@ Commits 655516dc..84075b6 (2026-11-07):
 - 22:08 run: builder [FIX-RS9E]: steps_used 9, note yes. capHits 0.
 - 2026-11-08 run: builder [V-40]: steps_used 14, note yes; check-fix builder (C1) note yes. capHits 0.
 - 2026-11-08 04:02 run: builder [V-40b]: steps_used 11, note yes. capHits 0.
+- 2026-11-08 04:38 run: builder [V-40c]: steps_used 12, note yes. capHits 0.
 
 ### Units
-- U-05 (tier 1, built, 04fc0c1; files offline/src/engine.js, offline/tests/logic.test.mjs). For a person: nothing on a screen yet. The engine now computes from the append-only events the XP, skill mastery, six Harbor region lights, 14-day momentum, rank, 13 badges, lessons and modules done, and opt-in day counters (total, current run, milestones), which Today, the Harbor and Insights will show.
-  Questions closed:
-  - counters.total (CORE 07:29 a): total = completed local dates from startDate to yesterday, minus each date with a slip logged (local date of its at) on or before that date. A slip with no at counts as logged today. A banked day stays counted, so total never falls. current is the only number a slip restarts. reached = milestones <= total plus every MilestoneSeen. Tests check that today and backdated slips lower nothing, and that total is monotone over 34 days.
-  - SkillUsed.helpful (CORE c): one encoding, boolean, written by Actions. C1 fix 3ed6e1d: the reader takes true/false and 0/1 only (test logic.test.mjs:227-232).
-  - View shape: Store.view {get,list,count}; pure helpers take plain arrays and also accept a view.
-- U-06 (tier 1, built, 6cb722e, 10:45; offline/src/engine.js, offline/tests/engine-roadmap.test.mjs, 27 tests). For a person: nothing on a screen yet. The engine now works out the roadmap (weeks behind never negative, never says "overdue"), the reveal of what is unlocked, Explorer progress (explorerDone feeds the explorer rank), a tip for the moment (none on #/sos), quests, artifacts and the Recovery Plan prefill.
-- R-sample / R-outcome (b14c9a0): CORE rulings of 10:45. sample:true rows and events are skipped everywhere, at the three readers normEvents, rowsOf, rowOf; Engine.sosOutcome added. 3 tests.
-- U-07 (tier 1, built, f269942; offline/tests/engine-insights.test.mjs, 24 tests). For a person: nothing on a screen yet. The engine now finds when cravings cluster (heatmap), the six warning-sign detectors, gaps, risky hours, suggestions, a 7-day forecast check, a weekly summary (no score, no XP), the SOS tool order, and crisis phrases in what they write.
-  Questions closed: crisisKeywords returns the matched phrases (string[]), not a boolean (10:45 ruling); guideSequence always starts with 'wave' because SOBER breathing runs inside the wave tool; 'I killed that workout' does not trigger.
-- U-08 (tier 1, built, 227a07a; offline/tests/engine-data.test.mjs). For a person: the backup file export, import checks (plain-language errors), older-backup migration and .ics calendar files are ready to be wired by Settings. validateContent returns [] on the base (validate gate GREEN).
-  Questions closed: a string that is wholly one quotation is not the app's voice, so the person's own thought at content-core.js:323 ("I slipped, so I'm a hopeless addict.") passes; a quoted word inside a sentence still fails (see C3). npm test needs no change: build/offline-v1 scripts.test already runs every offline/tests/*.test.mjs; run in this worktree, 102/102 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__npm-test-proof.log).
-- FIX-RS4 (tier 1, built, 57153d3, 16:36; offline/tests/engine-data.test.mjs, 3 lines added, 2 removed). For a person: nothing changes; tests only, no src. R-S-4 closed: the tryIt test deletes exercises from its clone before the 'waits' half; the knownRoute test uses the real id #/exercise/quick-reasons and asserts #/exercise/not-one is unknown only when Content.exercises is present (under Node engine.js loads content-exercises.js into the cached content module, so trunk 9b319256 has it, this branch does not). Against the trunk archive the file runs 15/15 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__FIX-RS4.trunk.log).
-- FIX-RS9E (tier 1, built, a927cac wip + 84075b6 empty closing commit, 22:08; engine.js:844 recoveryPlanPrefill and :983 ownWarningPlans; offline/tests/engine-warning-item.test.mjs, new, 3 tests). For a person: the top 3 warning signs saved from the exercise as { item, plan } now reach the Recovery Plan prefill and the radar, a sign with no plan shows its label alone, the person's own plans win in the radar; the older { id } shape still reads. R-S-9 closed. Red-before: the test fails 3 of 3 against 57153d3's engine.js (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__FIX-RS9E.red.log). The wip carried code and test already correct; 84075b6 records the proof without rewriting the pushed wip.
+- U-05, U-06, U-07, U-08, FIX-RS4, FIX-RS9E (tier 1, built 2026-11-07: 04fc0c1, 6cb722e, f269942, 227a07a, 57153d3, 84075b6; R-sample/R-outcome b14c9a0): full text, what changed for a person and questions closed, in engine-report-annex.md.
 - V-40 (tier 1, built, 6723893; check fix 03840ef; 2026-11-08; offline/src/engine.js block before "/* views", offline/tests/engine-questline.test.mjs). For a person: nothing on a screen yet. The engine now works out the quest line (steps unlock features), what is unlocked, three daily objectives with one swap, growth (days shown up; XP ObjectiveDone 5, QuestLineStepDone 20) and a run of days shown up with one grace day per Monday-week. A logged slip never counts as a day shown up. Details: engine__units.md.
   Questions closed: V-Q9 (one grace day per Monday-week, kept), V-Q11 (three a day, one swap), V-Q12 (shown-up set). Builder choices: shownUpDays extra export; growth(view, now?); swapped true after any ObjectiveSwapped that day; progress.have capped at need; ObjectiveDone counts on its date even if not in the day's draw.
   C1 fix 03840ef: slip rows (type slip, or LogCreated with payload.type slip) never add a day; logsOf unchanged. Red and green: engine__C1.redgreen.log. Gates 121/121.
 - V-40b (tier 1, built, 660233f; 2026-11-08; offline/src/engine.js, offline/tests/engine-questline.test.mjs). For a person: nothing on a screen yet. The engine can now list each unit that growth counts (date, objective id, what it grows), oldest first, so the Today screen can show the units behind the growth number. growth and the list share one day walk, so they always agree in length. Closed: V-40b as briefed (R-S-22, R-C-51). Details: engine__units.md.
+- V-40c (tier 1, built, 4330d9f; 2026-11-08; offline/src/engine.js ROUTE_PATHS ~:1385, offline/tests/engine-data.test.mjs). For a person: nothing on a screen yet; Help and Features can now point to the Status page and the Radar track without the content check rejecting them. Routes match the exact path before "?": #/status/nope, #/statusx, #/track/radarx, #/track/radar/2 stay unknown. Red before (3 tests fail, engine__V-40c.red.log), green after. Closed: V-40c as briefed (R-S-24, R-C-57, R-H-43). Content V-10r (SCREENS) may flip features.status.route and the help entry to #/status after the merge.
 - Held or blocked: none.
-- Still to build on this lane (tier 2, not in this run): V-19 (spiralThoughts own flag), V-30 (tutorialDone export).
+- Still to build on this lane (tier 2, not in this run): V-19 (spiralThoughts own flag), V-30 (tutorialDone export); read briefs/engine.md "## V3" once CORE names the batch.
 
 ### Contract changes
 All on `Engine` (browser global; require('offline/src/engine.js') under Node). No events, content keys, routes, UI.pages entries or data-tour targets added.
@@ -58,6 +49,7 @@ All on `Engine` (browser global; require('offline/src/engine.js') under Node). N
   - Engine.sosOutcome (R-outcome).
 - 2026-11-08 V-40 (on Engine; for contracts/engine.md): questLine, unlocked, dailyObjectives, growth(view, now?), run, shownUpDays(view, now?) (extra), isProtectedFeature(x, content?). Events read: ObjectiveDone {id,date}, ObjectiveSwapped {from,to,date}, QuestLineStepDone {id}, FeatureUnlocked {feature,by}. Content read: questLine, objectives, xp.ObjectiveDone, xp.QuestLineStepDone, features[reward]. ONCE_FIELD.QuestLineStepDone=id. validateContent adds questLine (8 to 12 steps, no protected reward) and objectives (6 or more) checks.
 - 2026-11-08 V-40b (for contracts/engine.md): Engine.growthItems(view, now?) -> [{date, id, grows}], oldest first, first-by-id per day; grows is the Content.objectives element or null for an ObjectiveDone id Content.objectives lacks (guard for null); [] when the pool is empty. Optional now is a small addition to the contract, same as growth. Length always equals growth. Consumer: SCREENS today-track V-43. Internal: growthWalk(ctx, pool, upTo, ids); change the counting rule only there.
+- 2026-11-08 V-40c: no new function; knownRoute and validateContent accept #/status and #/track/radar (3.5 route list; contracts/engine.md:104).
 
 ### Gates
 VERIFIED (check run at 03840ef, 2026-11-08 03:24 IST run; gates 03:38 to 03:43):
@@ -69,11 +61,17 @@ VERIFIED (2026-11-08 04:02 run, check at 660233f; gates 04:13):
 - build GREEN pass=1. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261108-041338.log
 - test GREEN, 125 pass, 0 fail, 6 files. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261108-041344.log
 - validate GREEN, log same folder validate-20261108-041349.log; guards GREEN, 5 pass, guards-20261108-041350.log
+VERIFIED (2026-11-08 04:38 run, check at 4330d9f):
+- build GREEN pass=1, 1129728 B. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261108-044820.log
+- test GREEN, 127 pass, 0 fail, 6 files. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261108-044823.log
+- validate GREEN C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261108-045208.log; guards GREEN, 5 pass C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261108-045210.log
+ASSUMED (2026-11-08 04:38): browser gate not run (route table only); mutation proof not run.
 ASSUMED (2026-11-08 04:02): browser gate not run (engine-only unit); mutation proof of the new tests not run (read-only checker; judged by reading).
 ASSUMED (2026-11-08): browser gate not run (no browser tests); growth monotone under backup import with past dates not tested.
 Earlier runs' gates: see engine-report-annex.md (logs in C:/Users/ruchi/1-addic-wt/_logs/gates/engine/).
 Territory (2026-11-08): engine f69bc68a..HEAD: 2 files, both own (engine.js, engine-questline.test.mjs); 0 shared, 0 nobody's, 0 errors, 0 warnings; both commits carry both trailers. Earlier: 22:08 6 files own; 16:36 5 own; 14:34 5 own; all 0 shared, 0 errors.
 Territory (2026-11-08 04:02): engine f69bc68a..HEAD: 2 files, both own (engine.js, engine-questline.test.mjs); 0 shared, 0 nobody's, 0 errors, 0 warnings; 660233f carries both trailers.
+Territory (2026-11-08 04:38): engine f69bc68a..HEAD: 3 files, all own (engine.js, engine-data.test.mjs, engine-questline.test.mjs); 0 shared, 0 nobody's, 0 errors, 0 warnings; the V-40c commit carries both trailers; only uncommitted file is the gates' rebuild offline/1-addic.html.
 
 ### Review gates
 None. Not a flagged lane (reviewGates empty).
@@ -81,6 +79,7 @@ None. Not a flagged lane (reviewGates empty).
 2026-11-08 03:24 IST: Verdict FIX at 6723893, fixed at 03840ef (judged commits after f69bc68a). V-40 present, meets brief items 1-4 and 6-11. U-05 to U-08, FIX-RS4, FIX-RS9E counted present only through the test gate.
 - C1 MEDIUM (V-40, engine.js:1583 shownUpOver): a slip log row counted as a day shown up, against contract :84 and R-C-50. Fix 03840ef. Finder's re-check: FIXED (engine.js:1580-1588). Evidence: _logs/reports/engine/scratch/slipprobe.log. No new findings.
 2026-11-08 04:02 IST: Verdict PASS at 660233f (judged commits after 03840ef). V-40b present, meets acceptance (growthItems engine.js:1704-1715, exported :1801, shares growthWalk :1687; tests engine-questline.test.mjs:369-454). V-40 still present; growthOver now calls growthWalk with the same count. No findings (none open, none fixed). Not checked: browser gate; mutation proof; the open CORE slip question (a policy call); earlier units.
+2026-11-08 04:38 IST: Verdict PASS at 4330d9f (judged commits after 660233f). V-40c present (ROUTE_PATHS engine.js:1385; neighbours rejected; validateContent accepts routed help, feature, tip). No findings (none open, none fixed). Not checked: browser gate; U-05 to V-40b not re-judged; UI/copy/SOS rules (diff adds two route strings and tests).
 Not checked (2026-11-08): browser gate; U-05 to U-08, FIX-RS4, FIX-RS9E not re-judged; growth under past-dated backup import.
 
 ### Check
@@ -99,11 +98,11 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 - HUB: at the merge lift the two baselined names (engine-data 'validateContent: the tryIt exercise check waits for Content.exercises, then runs' and 'knownRoute: the 3.5 route table, by path').
 - CORE: write the U-07 and U-08 contract lines above into contracts/engine.md (C4).
 - 2026-11-08 CORE: add the V-40 contract lines above to contracts/engine.md; add the four events to BUILD-PLAN 3.4. Screens lanes: use Engine.run, growth, dailyObjectives; never filter slips yourself.
+- 2026-11-08 V-40c: content V-10r (SCREENS) may route features.status and help to #/status once merged.
 
 ### Docs owed
 - Full list (07:29 to 22:08 runs) in C:/Users/ruchi/1-addic-wt/_logs/reports/engine-report-annex.md.
-- 2026-11-08: contracts/engine.md owes V-40: Engine.shownUpDays(view, now?), optional now on growth(view, now?), optional content arg on isProtectedFeature; a slip never counts as a day shown up. BUILD-PLAN 3.4 gets four events (ObjectiveDone, ObjectiveSwapped, QuestLineStepDone, FeatureUnlocked). tests-docs V-45 documents the run and the grace day.
-- 2026-11-08 V-40b: SCREENS today-track V-43: use Engine.growthItems(view, now?); guard for grows null. CORE: add the line above to contracts/engine.md; answer the slip question (Open question 10).
+- 2026-11-08 (V-40, V-40b, V-40c): owed lines (contracts/engine.md, BUILD-PLAN 3.4 events, V-43 growthItems, V-45 docs, slip question) are in engine-report-annex.md. V-40c owes none: contracts/engine.md:104 already names both routes.
 
 ### Open questions
 1. rank "explorer": ExplorerCompleted or the all-12 path via explorerDone(view) (built in U-06).
@@ -128,3 +127,4 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 - 22:08: FIX-RS9E adds engine.js (readers only) and engine-warning-item.test.mjs; still no shared file; no new conflicts expected.
 - 2026-11-08 V-40: engine.js and engine-questline.test.mjs only; no shared file; no conflicts expected. Do not commit the rebuilt offline/1-addic.html. Tests on this lane: 121. Evidence: engine__units.md, engine__C1.redgreen.log.
 - 2026-11-08 04:02 V-40b: engine.js and engine-questline.test.mjs only; no shared file; no conflicts expected. Do not commit the rebuilt offline/1-addic.html. Tests on this lane: 125. Evidence: engine__units.md.
+- 2026-11-08 04:38 V-40c: engine.js and engine-data.test.mjs only; no shared file; no conflicts expected. Do not commit the rebuilt offline/1-addic.html. Tests on this lane: 127. Merge V-40c before content V-10r routes to #/status. Evidence: engine__units.md, engine__V-40c.red.log, engine__V-40c.green.log.
