@@ -57,6 +57,7 @@
     notSaved: 'Not saved on this device. You can keep going.',
     copied: 'Copied.',
     hidden: 'Locked: your own notes are hidden.',
+    lockedKept: 'Locked. This saves when you unlock.',
   };
 
   // Stand-ins until Content.practices (content U-32) and the engine's SOS views arrive. Reported for clinical review.
@@ -359,9 +360,30 @@
     return row;
   }
 
+  // An SOS write refused with LOCKED (a lock came while SOS stayed open) waits here, in memory only, and is saved
+  // after the next unlock (core's Q1). Nothing of it is stored or logged anywhere else meanwhile.
+  const waiting = [];
+  let flushing = false;
+  let listening = false;
+  async function flushWaiting() {
+    if (flushing || !waiting.length || isLockedNow()) return;
+    flushing = true;
+    try {
+      while (waiting.length && !isLockedNow()) {
+        try { await waiting[0](); } catch (err) { if (err && err.code === 'LOCKED') break; }
+        waiting.shift();
+      }
+    } finally { flushing = false; }
+  }
+  function keepForUnlock(fn) {
+    waiting.push(fn);
+    const S = glob('Store');
+    if (!listening && S && typeof S.subscribe === 'function') { listening = true; safe(() => S.subscribe(() => { flushWaiting(); }), null); }
+  }
   async function save(fn) {
     try { return await fn(); } catch (err) {
-      toast(err && err.code === 'LOCKED' ? 'Locked: this was not saved. You can keep going.' : COPY.notSaved, 'warn');
+      if (err && err.code === 'LOCKED') { keepForUnlock(fn); toast(COPY.lockedKept, 'info'); return null; }
+      toast(COPY.notSaved, 'warn');
       return null;
     }
   }

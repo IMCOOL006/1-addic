@@ -694,7 +694,7 @@ function storeStandIn() {
     async resetAll() { data = empty(); pin = null; locked = false; lastSavedAt = null; notify(); },
     lock: {
       async set(p) { const s = String(p); if (s.length < 4 || s.length > 64) throw Object.assign(new Error('A PIN has 4 to 64 characters.'), { code: 'BAD_PIN' }); pin = s; },
-      async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; return true; } return false; },
+      async unlock(p) { if (pin !== null && String(p) === pin) { locked = false; notify(); return true; } return false; }, // the real Store notifies 'unlock'
       async verify(p) { return pin !== null && String(p) === pin; },
       async remove(p) { if (pin !== null && String(p) === pin) { pin = null; locked = false; return true; } return false; },
       lockNow() { if (pin !== null) { locked = true; for (const fn of lockSubs) fn({ reason: 'manual' }); } },
@@ -1452,6 +1452,26 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     await refused(Actions.sosSession({ kind: 'feeling', emotion: 'no-such-feeling', tools: [] }), 'bad-session');
     await Actions.sosSession({ kind: 'feeling', emotion: id, tools: [], drill: true });
     assert.equal(list('logs').length, 3, 'a drill writes no log');
+  });
+  test('LOCKED: an SOS save refused by a lock is kept in memory and saved once after the next unlock', async () => {
+    const d = sosDom();
+    await S().lock.set('2468');
+    S().lock.lockNow();
+    const root = d.open(['sos', 'craving']);
+    d.tap(root, 'Skip');
+    d.tap(root, 'Check in with the craving');
+    d.tapId(root, 'sos-reassess-passed');
+    d.tapId(root, 'sos-used-no');
+    await d.settle();
+    assert.ok(d.byId(root, 'sos-finish'), 'SOS goes on while locked');
+    assert.ok(d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), 'the person is told it waits for the unlock');
+    assert.ok(await S().lock.unlock('2468'));
+    await d.settle();
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['passed'], 'saved after the unlock');
+    await Actions.settings.patch({ theme: 'dark' });
+    await d.settle();
+    assert.equal(events('SosCompleted').length, 1, 'never twice');
+    assert.equal(list('logs').length, 1);
   });
   // -- FIX-ONB-EMO tests end --
 });
