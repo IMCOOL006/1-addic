@@ -9,118 +9,369 @@
 <title>1-addic</title>
 <script>(function(){var t=null;try{t=localStorage.getItem('1-addic:theme');}catch(e){}if(t!=='light'&&t!=='dark'){var d=false;try{d=!!(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);}catch(e){}t=d?'dark':'light';}document.documentElement.setAttribute('data-theme',t);})();</script>
 <style>
-/* 1-addic · styles.css · the U-01 starter sheet (lane core). U-02 replaces it with the full look of
-   BUILD-PLAN 3.12. Colour tokens are HSL triplets used as hsl(var(--x)); the light :root and the dark
-   blocks define the same variable set (the theme-parity guard compares them). */
+/* 1-addic · styles.css · the look (BUILD-PLAN 3.12), lane core. The paper harbor: deep teal, sand, terracotta and
+   lantern gold by day; the lantern-lit night in dark. Red only for stuck or dangerous. System fonts.
+   Tokens are HSL triplets used as hsl(var(--x)). The light :root, [data-theme="dark"] and the dark media block
+   define the same variable set (the theme-parity guard compares them); no other block redefines a token.
+   Phone first: bottom nav and the floating SOS button; a left nav from 900 px. 44 px targets, visible focus,
+   no motion under reduced motion, no horizontal scroll at 390 px (wrapping and min-width:0, never hidden overflow). */
 :root {
-  --bg: 40 33% 96%;
-  --surface: 0 0% 100%;
-  --surface-2: 40 25% 92%;
-  --text: 200 25% 14%;
-  --muted: 200 10% 36%;
-  --primary: 183 60% 26%;
+  --bg: 38 38% 94%;
+  --surface: 40 45% 98%;
+  --surface-2: 37 32% 89%;
+  --text: 200 32% 13%;
+  --muted: 200 14% 32%;
+  --primary: 185 64% 23%;
   --primary-text: 0 0% 100%;
-  --accent: 14 60% 40%;
-  --gold: 42 85% 52%;
-  --danger: 0 70% 40%;
-  --border: 40 15% 78%;
-  --focus: 183 70% 30%;
+  --accent: 13 60% 37%;
+  --gold: 41 88% 48%;
+  --danger: 0 70% 36%;
+  --border: 36 20% 74%;
+  --focus: 185 80% 26%;
+  --shadow: 200 35% 12%;
+  --radius: 12px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
 }
 [data-theme="dark"] {
-  --bg: 210 30% 9%;
-  --surface: 210 25% 13%;
-  --surface-2: 210 22% 18%;
-  --text: 40 30% 92%;
-  --muted: 40 10% 72%;
-  --primary: 178 45% 55%;
-  --primary-text: 210 30% 9%;
-  --accent: 16 65% 62%;
-  --gold: 42 90% 62%;
-  --danger: 0 75% 66%;
-  --border: 210 15% 30%;
-  --focus: 42 90% 62%;
+  --bg: 214 34% 9%;
+  --surface: 214 28% 13%;
+  --surface-2: 214 24% 18%;
+  --text: 40 33% 91%;
+  --muted: 38 14% 70%;
+  --primary: 177 50% 52%;
+  --primary-text: 214 34% 9%;
+  --accent: 16 70% 63%;
+  --gold: 42 92% 62%;
+  --danger: 2 80% 70%;
+  --border: 214 18% 30%;
+  --focus: 42 92% 62%;
+  --shadow: 0 0% 0%;
+  --radius: 12px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: 210 30% 9%;
-    --surface: 210 25% 13%;
-    --surface-2: 210 22% 18%;
-    --text: 40 30% 92%;
-    --muted: 40 10% 72%;
-    --primary: 178 45% 55%;
-    --primary-text: 210 30% 9%;
-    --accent: 16 65% 62%;
-    --gold: 42 90% 62%;
-    --danger: 0 75% 66%;
-    --border: 210 15% 30%;
-    --focus: 42 90% 62%;
+    --bg: 214 34% 9%;
+    --surface: 214 28% 13%;
+    --surface-2: 214 24% 18%;
+    --text: 40 33% 91%;
+    --muted: 38 14% 70%;
+    --primary: 177 50% 52%;
+    --primary-text: 214 34% 9%;
+    --accent: 16 70% 63%;
+    --gold: 42 92% 62%;
+    --danger: 2 80% 70%;
+    --border: 214 18% 30%;
+    --focus: 42 92% 62%;
+    --shadow: 0 0% 0%;
+    --radius: 12px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
   }
 }
 
+/* ── Base ─────────────────────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html[data-text-size="large"] { font-size: 112.5%; }
+html[data-text-size="larger"] { font-size: 125%; }
 body {
   margin: 0;
   min-height: 100vh;
   background: hsl(var(--bg));
   color: hsl(var(--text));
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   overflow-wrap: anywhere;
 }
 [hidden] { display: none !important; }
-a { color: hsl(var(--primary)); }
+h1, h2, h3 { line-height: 1.25; margin: 0 0 var(--space-3); }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.0625rem; }
+p { margin: 0 0 var(--space-3); }
+a { color: hsl(var(--primary)); text-underline-offset: 2px; }
+img, svg, video, canvas { max-width: 100%; }
+pre { white-space: pre-wrap; }
+table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.muted { color: hsl(var(--muted)); }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
-#app { min-height: 100vh; padding-bottom: 72px; }
+/* ── Frame: top bar, main, nav, SOS button ────────────────────────────────────────────────── */
+#app { min-height: 100vh; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 .topbar {
-  display: flex; align-items: center; gap: 8px; min-width: 0;
-  padding: 4px 12px; background: hsl(var(--surface)); border-bottom: 1px solid hsl(var(--border));
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: var(--space-2); min-width: 0; min-height: 52px;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  background: hsl(var(--surface)); border-bottom: 1px solid hsl(var(--border));
 }
-.app-name { font-weight: 700; }
-.saved-label { flex: 1; min-width: 0; font-size: 0.875rem; color: hsl(var(--muted)); }
+.app-name { font-weight: 700; white-space: nowrap; }
+.saved-label { flex: 1; min-width: 0; font-size: 0.8125rem; line-height: 1.25; color: hsl(var(--muted)); }
 .icon-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 44px; min-height: 44px; padding: 0; border: 0; border-radius: 12px;
-  background: transparent; color: hsl(var(--text)); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  min-width: 44px; min-height: 44px; padding: 0; border: 0; border-radius: var(--radius);
+  background: transparent; color: hsl(var(--text)); cursor: pointer; text-decoration: none;
 }
-main { display: block; min-width: 0; padding: 16px; }
+.icon-btn:hover { background: hsl(var(--surface-2)); }
+main { display: block; min-width: 0; max-width: 760px; margin: 0 auto; padding: var(--space-4); }
 main:focus { outline: none; }
+.page { min-width: 0; }
 
 .nav {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-  display: flex; background: hsl(var(--surface)); border-top: 1px solid hsl(var(--border));
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: hsl(var(--surface)); border-top: 1px solid hsl(var(--border));
 }
 .nav a {
-  flex: 1; min-width: 0; min-height: 56px; display: flex; align-items: center; justify-content: center;
-  font-size: 0.8125rem; color: hsl(var(--muted)); text-decoration: none;
+  flex: 1 1 0; min-width: 0; min-height: 64px; padding: var(--space-1);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font-size: 0.8125rem; text-align: center; color: hsl(var(--muted)); text-decoration: none;
 }
-.nav a[aria-current="page"] { color: hsl(var(--primary)); font-weight: 700; }
+.nav a:hover { color: hsl(var(--text)); }
+.nav a[aria-current="page"] { color: hsl(var(--primary)); font-weight: 700; box-shadow: inset 0 3px 0 hsl(var(--primary)); }
 
+/* The SOS button sits above every layer a page or a tour can add (never covered by a coach mark). */
 .sos-btn {
-  position: fixed; right: 16px; bottom: 72px; z-index: 11;
+  position: fixed; right: var(--space-4); bottom: calc(64px + var(--space-4) + env(safe-area-inset-bottom, 0px)); z-index: 60;
   width: 56px; height: 56px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: hsl(var(--accent)); color: hsl(var(--primary-text));
-  font-weight: 700; text-decoration: none; box-shadow: 0 2px 8px hsl(0 0% 0% / 0.25);
+  font-weight: 800; letter-spacing: 0.02em; text-decoration: none;
+  box-shadow: 0 2px 10px hsl(var(--shadow) / 0.35);
 }
+.sos-btn:hover { filter: brightness(1.08); }
+.sos-btn:focus-visible { outline-offset: 3px; }
 
-.toasts { position: fixed; left: 16px; right: 16px; bottom: 136px; z-index: 12; pointer-events: none; }
-.print-root { display: none; }
-
+@media (min-width: 720px) {
+  .nav a { font-size: 0.9375rem; }
+}
 @media (min-width: 900px) {
-  #app { padding: 0 0 0 200px; }
-  .nav { top: 0; right: auto; width: 200px; flex-direction: column; border-top: 0; border-right: 1px solid hsl(var(--border)); padding-top: 56px; }
-  .nav a { flex: 0 0 auto; justify-content: flex-start; padding: 0 16px; font-size: 1rem; }
-  .sos-btn { bottom: 24px; right: 24px; }
+  #app { padding: 0 0 0 220px; }
+  .nav {
+    top: 0; right: auto; width: 220px; flex-direction: column; padding: 64px 0 var(--space-4);
+    border-top: 0; border-right: 1px solid hsl(var(--border));
+  }
+  .nav a { flex: 0 0 auto; min-height: 48px; flex-direction: row; justify-content: flex-start; padding: 0 var(--space-5); font-size: 1rem; }
+  .nav a[aria-current="page"] { box-shadow: inset 3px 0 0 hsl(var(--primary)); background: hsl(var(--surface-2)); }
+  .sos-btn { bottom: var(--space-5); right: var(--space-5); width: 64px; height: 64px; }
+  main { padding: var(--space-5); }
 }
 
+/* ── Layout helpers ───────────────────────────────────────────────────────────────────────── */
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-width: 0; }
+.row > * { min-width: 0; }
+.stack { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.stack > * { margin-top: 0; margin-bottom: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); gap: var(--space-3); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 44px; max-width: 100%; padding: 10px 18px;
+  border: 1px solid hsl(var(--muted) / 0.6); border-radius: var(--radius);
+  background: hsl(var(--surface)); color: hsl(var(--text));
+  font-weight: 600; line-height: 1.25; text-align: center; text-decoration: none; cursor: pointer;
+}
+.btn:hover { background: hsl(var(--surface-2)); }
+.btn.primary { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-text)); }
+.btn.primary:hover { background: hsl(var(--primary) / 0.9); }
+.btn.ghost { background: transparent; border-color: transparent; color: hsl(var(--primary)); }
+.btn.ghost:hover { background: hsl(var(--surface-2)); }
+.btn.danger { background: hsl(var(--danger)); border-color: hsl(var(--danger)); color: hsl(var(--primary-text)); }
+.btn.big { min-height: 56px; width: 100%; font-size: 1.125rem; }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Building blocks ──────────────────────────────────────────────────────────────────────── */
+.card {
+  min-width: 0; padding: var(--space-4);
+  background: hsl(var(--surface)); border: 1px solid hsl(var(--border)); border-radius: var(--radius);
+  box-shadow: 0 1px 2px hsl(var(--shadow) / 0.08);
+}
+.card-title { font-size: 1.125rem; margin: 0 0 var(--space-2); }
+.card-foot { margin-top: var(--space-3); }
+.tile {
+  display: flex; flex-direction: column; min-width: 0; padding: var(--space-3);
+  background: hsl(var(--surface-2)); border-radius: var(--radius);
+}
+.tile-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.tile-label { font-size: 0.875rem; color: hsl(var(--muted)); }
+.tile-sub { font-size: 0.8125rem; color: hsl(var(--muted)); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+.chip {
+  min-height: 44px; max-width: 100%; padding: 8px 14px;
+  border: 1px solid hsl(var(--muted) / 0.7); border-radius: 999px;
+  background: hsl(var(--surface)); color: hsl(var(--text)); cursor: pointer; line-height: 1.25;
+}
+.chip:hover { background: hsl(var(--surface-2)); }
+.chip.on, .chip[aria-pressed="true"] { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-text)); font-weight: 700; }
+.ring { position: relative; display: inline-flex; flex-direction: column; align-items: center; gap: var(--space-1); }
+.ring svg { display: block; width: 64px; height: 64px; }
+.ring-track { fill: none; stroke: hsl(var(--surface-2)); stroke-width: 4; }
+.ring-fill { fill: none; stroke: hsl(var(--primary)); stroke-width: 4; stroke-linecap: round; }
+.ring-text { position: absolute; top: 32px; left: 50%; transform: translate(-50%, -50%); font-size: 0.875rem; font-weight: 700; }
+.ring-label { font-size: 0.8125rem; color: hsl(var(--muted)); text-align: center; }
+.meter { height: 10px; min-width: 0; border-radius: 999px; background: hsl(var(--surface-2)); overflow: hidden; }
+.meter-fill { display: block; height: 100%; border-radius: inherit; background: hsl(var(--primary)); }
+.empty {
+  padding: var(--space-6) var(--space-4); text-align: center; color: hsl(var(--muted));
+  border: 1px dashed hsl(var(--border)); border-radius: var(--radius);
+}
+.empty .btn { margin-top: var(--space-1); }
+.render-fallback, .boot-failure { padding: var(--space-4); margin: 0; border-radius: var(--radius); background: hsl(var(--surface-2)); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: hsl(var(--gold)); vertical-align: middle; }
+.badge {
+  display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px 10px; border-radius: 999px;
+  background: hsl(var(--gold) / 0.2); border: 1px solid hsl(var(--gold)); font-size: 0.8125rem; font-weight: 600;
+}
+.tip { padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: hsl(var(--gold) / 0.14); border: 1px solid hsl(var(--gold) / 0.6); }
+
+/* ── Form fields ──────────────────────────────────────────────────────────────────────────── */
+.form { min-width: 0; }
+.field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.field-label { font-weight: 600; margin: 0; }
+.field-hint { margin: 0; font-size: 0.875rem; color: hsl(var(--muted)); }
+.field-error { margin: 0; font-size: 0.875rem; font-weight: 600; color: hsl(var(--danger)); }
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .field select, .field textarea {
+  width: 100%; max-width: 100%; min-height: 44px; padding: 10px 12px;
+  border: 1px solid hsl(var(--muted)); border-radius: var(--radius);
+  background: hsl(var(--surface)); color: hsl(var(--text));
+}
+.field textarea { min-height: 96px; resize: vertical; }
+.field.invalid input, .field.invalid select, .field.invalid textarea { border-color: hsl(var(--danger)); }
+.field input[type="range"] { width: 100%; min-height: 44px; margin: 0; accent-color: hsl(var(--primary)); }
+.field input[type="checkbox"], .field input[type="radio"] { width: 22px; height: 22px; margin: 0; flex: 0 0 auto; accent-color: hsl(var(--primary)); }
+.choices { border: 0; margin: 0; padding: 0; min-width: 0; }
+.choices legend { padding: 0; margin-bottom: var(--space-1); }
+.choice { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.choice label { flex: 1; min-width: 0; cursor: pointer; }
+.slider-head { justify-content: space-between; }
+.slider-value { font-weight: 700; }
+.slider-ends { display: flex; justify-content: space-between; gap: var(--space-2); font-size: 0.8125rem; color: hsl(var(--muted)); }
+.form-actions { margin-top: var(--space-1); }
+
+/* ── Sheet (dialog#dialog): a bottom sheet on phones, a centred card from 720 px ──────────── */
+dialog.sheet {
+  width: 100%; max-width: 560px; max-height: 88vh; margin: auto auto 0; padding: 0;
+  border: 0; border-radius: 16px 16px 0 0; overflow: auto;
+  background: hsl(var(--surface)); color: hsl(var(--text)); box-shadow: 0 -4px 24px hsl(var(--shadow) / 0.3);
+}
+dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.45); }
+.sheet-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-1) var(--space-4); }
+.sheet-title { flex: 1; min-width: 0; margin: 0; font-size: 1.125rem; }
+.sheet-body { padding: var(--space-2) var(--space-4) var(--space-4); }
+.sheet-actions { justify-content: flex-end; padding: 0 var(--space-4) var(--space-4); }
+@media (min-width: 720px) {
+  dialog.sheet { margin: auto; border-radius: 16px; }
+}
+
+/* ── Toasts: above the SOS button, never covering it ──────────────────────────────────────── */
+.toasts {
+  position: fixed; left: var(--space-4); right: var(--space-4); z-index: 40;
+  bottom: calc(64px + 56px + var(--space-6) + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2); pointer-events: none;
+}
+.toast {
+  max-width: min(480px, 100%); padding: 10px 16px; border-radius: var(--radius); pointer-events: auto;
+  background: hsl(var(--text)); color: hsl(var(--bg)); box-shadow: 0 2px 12px hsl(var(--shadow) / 0.3);
+  animation: toast-in 0.2s ease-out;
+}
+.toast-ok { box-shadow: inset 4px 0 0 hsl(var(--primary)), 0 2px 12px hsl(var(--shadow) / 0.3); }
+.toast-warn { box-shadow: inset 4px 0 0 hsl(var(--gold)), 0 2px 12px hsl(var(--shadow) / 0.3); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (min-width: 900px) {
+  .toasts { left: calc(220px + var(--space-4)); bottom: var(--space-5); }
+}
+
+/* ── Coach marks (#coach; game-tutorials fills it): dim layer, spotlight ring, popover ────── */
+.coach { position: fixed; inset: 0; z-index: 50; pointer-events: none; }
+.coach-overlay { position: absolute; inset: 0; pointer-events: auto; }
+.coach-ring {
+  position: absolute; border-radius: var(--radius); pointer-events: none;
+  box-shadow: 0 0 0 4px hsl(var(--gold)), 0 0 0 9999px hsl(var(--shadow) / 0.55);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.coach-pop {
+  position: absolute; max-width: min(320px, calc(100vw - 32px)); padding: var(--space-4); pointer-events: auto;
+  background: hsl(var(--surface)); color: hsl(var(--text)); border-radius: var(--radius);
+  box-shadow: 0 4px 24px hsl(var(--shadow) / 0.35);
+}
+.coach-pop p { margin: 0 0 var(--space-3); }
+.coach-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+
+/* ── Lessons ──────────────────────────────────────────────────────────────────────────────── */
+.lesson-card { border-left: 4px solid hsl(var(--gold)); }
+.lesson-card.current { border-left-color: hsl(var(--primary)); }
+.lesson-card .lesson-meta { font-size: 0.875rem; color: hsl(var(--muted)); margin: 0 0 var(--space-2); }
+.lesson-body { max-width: 65ch; font-size: 1.0625rem; line-height: 1.6; }
+.lesson-body h2 { margin-top: var(--space-5); }
+.lesson-body blockquote { margin: var(--space-4) 0; padding: var(--space-2) var(--space-4); border-left: 4px solid hsl(var(--accent)); background: hsl(var(--surface-2)); border-radius: 0 var(--radius) var(--radius) 0; }
+
+/* ── SOS: big targets, one hand, nothing else on the screen ───────────────────────────────── */
+.sos-page { max-width: 560px; margin: 0 auto; }
+.sos-page h1 { font-size: 1.75rem; }
+.sos-page p { font-size: 1.125rem; }
+.sos-page .btn { min-height: 56px; width: 100%; font-size: 1.125rem; }
+.sos-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.sos-target {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-3);
+  min-height: 64px; padding: var(--space-3) var(--space-4);
+  background: hsl(var(--surface)); color: hsl(var(--text)); text-decoration: none;
+  border: 2px solid hsl(var(--border)); border-radius: var(--radius); font-size: 1.0625rem;
+}
+.sos-target:hover { border-color: hsl(var(--primary)); }
+.sos-target-name { flex: 1 1 12em; min-width: 0; }
+.sos-target-number { font-weight: 700; font-size: 1.25rem; color: hsl(var(--primary)); white-space: nowrap; }
+[data-route="sos"] .tip, [data-route="sos"] .dot, [data-route="sos"] .coach-ring, [data-route="sos"] .coach-pop { display: none !important; }
+.lock-page { max-width: 420px; margin: 0 auto; }
+
+/* ── The harbor (placeholder box; the harbor lane draws the scene inside) ──────────────────── */
+.harbor {
+  position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(hsl(var(--surface-2)), hsl(var(--primary) / 0.35));
+}
+.harbor svg { display: block; width: 100%; height: 100%; }
+
+/* ── Calm and discreet ────────────────────────────────────────────────────────────────────── */
+body.calm .xp, body.calm .badge, body.calm .harbor { display: none !important; }
+[data-counters="off"] .counter { display: none !important; }
+
+/* ── Motion ───────────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+[data-motion="reduce"] *, [data-motion="reduce"] *::before, [data-motion="reduce"] *::after {
+  animation: none !important; transition: none !important; scroll-behavior: auto !important;
+}
 
+/* ── Print: only the document in #print-root when there is one, never the nav, SOS or toasts ─ */
+.print-root { display: none; }
 @media print {
-  #app { display: none; }
+  body { background: #fff; color: #000; }
+  .topbar, .nav, .sos-btn, .toasts, .coach, dialog { display: none !important; }
+  #app { padding: 0; }
+  body:has(#print-root > *) #app { display: none; }
   .print-root { display: block; }
+  .card { box-shadow: none; border-color: #999; break-inside: avoid; }
+  a { color: #000; }
+  @page { margin: 16mm; }
 }
 
 /* -- end core -- */
