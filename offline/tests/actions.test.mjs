@@ -2805,6 +2805,21 @@ describe('review round 5 fixes (FIX-R5)', () => {
       assert.deepEqual(H.spiralPairs(null, trunkSpiral, C()).map((p) => p.thought), C().catalogs.spiral.filter((t) => !/hopeless/i.test(t) && !H.isCrisisText(t, null)),
         'with no view (a preview, or locked), the catalog without its crisis and hopeless thoughts');
     });
+    test("RS37: the person's edit of a sample contact makes it theirs: unmarked, in SOS's Call someone, kept by eraseSample", async () => {
+      // the trunk's sample contacts (42d2467d content-sample.js:146-150) by a stand-in of their shape: invented, no phone number
+      const sc = { id: 'smp-con-1', name: 'Asha (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Sister. Calls back the same day.', active: true, sample: true };
+      const other = Object.assign({}, sc, { id: 'smp-con-2', name: 'Vikram (sample)', note: 'Friend from the walking group.' });
+      await withSample({ generate: () => ({ stores: { contacts: [sc, other] } }) }, () => Actions.loadSample());
+      assert.equal(S().view.get('contacts', sc.id).sample, true, 'loaded, marked');
+      await Actions.contacts.update(sc.id, { name: 'Asha', phone: '+91 98765 43210' });
+      const row = S().view.get('contacts', sc.id);
+      assert.notEqual(row.sample, true, "the edited contact is the person's own");
+      assert.deepEqual([row.name, row.phone, row.note, row.role, row.active], ['Asha', '+91 98765 43210', sc.note, 'safetyNet', true], 'the edit over the rest of the row');
+      assert.deepEqual(H.activeContacts(S().view).map((c) => c.name), ['Asha'], 'Call someone shows it');
+      await Actions.eraseSample();
+      assert.deepEqual(S().view.get('contacts', sc.id), row, 'eraseSample keeps it as it was');
+      assert.equal(S().view.get('contacts', other.id), null, 'and takes the sample contact nobody edited');
+    });
     // -- FIX-R6 tests end --
   });
   // -- FIX-R5 tests end --

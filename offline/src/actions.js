@@ -533,7 +533,11 @@ const Actions = (() => {
       checkContact(patch, true);
       const p = clone(patch);
       if (typeof p.name === 'string') p.name = p.name.trim();
-      return write('contact update', stamp(), (tx) => tx.put('contacts', Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), p, { id })));
+      return write('contact update', stamp(), (tx) => {
+        const next = Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), p, { id });
+        delete next.sample; // RS37: the person's edit makes a sample contact theirs: SOS shows it, eraseSample keeps it
+        return tx.put('contacts', next);
+      });
     },
     async deactivate(id) {
       if (!isId(id)) fail('bad-contact', 'Contact not found.');
