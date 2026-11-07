@@ -18,3 +18,5 @@
 **The baseline of named failures is empty.** A lane is green when every test it adds passes and nothing that passed on the base fails; judged by failure name, never by count or exit code. A SKIP that becomes a run on a lane is the lane's own gate (a RED there is the lane's, not the base's).
 
 Add a line here only when a check is red on the base itself (`- <gate>: <failure name> (seen <stamp>, <log path>)`).
+
+- guards: tutorial data-tour targets (`FAIL guard: tour-target: <name>`) are expected RED by name until the screens that carry them land; the HUB baselines them here by name when a lane reports them (noted 2026-11-07 07:15, not yet seen).
