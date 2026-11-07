@@ -79,3 +79,18 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 **Rulings on questions that need no code here:**
 - sms: is accepted beside tel: and Copy. It opens the device's own app, and this file sends nothing.
 - While locked, the region is unknown: the India list comes first, then the international list, as now. No plain region flag. The content lane is asked by outbox for a number on the intl local-emergency item.
+
+## The CORE chat's rulings 2026-11-07 13:55 IST: review round 2's open findings at fc0d038 (session 036d08b8; built in the run's batches FIX-R2-SAFETY then FIX-R2-REST)
+
+- **DOM hooks added by c270a01 (RC14), part of the contract from now on:** sos-step-next, sos-step-done (soberView and the Done buttons of cards() and contactsView()), sos-helped-yes, sos-helped-no, sos-rate-skip, sos-checkin. The trunk's tests/helpers/flows.mjs and hooks.mjs drive them in tests-docs' next run (a fix by name to U-34, after actions-sos merges): RC14's remainder is not this lane's.
+- **RS10 (HIGH):** the typed-text crisis check also matches the inflected and nearby forms the reviewer lists (killing myself, hurting/harming/cutting myself, self-harm in its forms, want(s/ed/ing) to die, thoughts of / thinking about death, dying or suicide, not worth living, never wake up), with one test per phrase. When unsure, the check shows the numbers: a false positive is allowed, a miss is not.
+- **RS11:** Next on the privacy step with digits in either field runs the same check as Set PIN and sets the PIN; if they differ or are invalid, stay on the step and say why. Never go on with a typed PIN that was not set.
+- **RS12:** the lock screen and the tab title follow the discreet flag while locked: localStorage '1-addic:discreet' and UI.applyDiscreet (core C5, 98f872d): 'Notebook' title and the discreet labels. On the trunk before core merges, use the flag through a guard. The browser case goes to tests-docs.
+- **RS13:** 'Look around with sample data' on step 1 loads the sample, then shows the safety step (the one that cannot be skipped), then Today after 'I understand'.
+- **RS14:** outside the drill, SOS never shows sample rows (sample === true) as the person's own: Call someone and Remind me why skip them. No tel: or sms: link ever points at a sample number.
+- **RS15:** while locked, Call someone and Remind me why say the people and reasons are hidden while the notebook is locked (not the empty-state lines). Urgent help stays one tap away.
+- **RS16:** #/sos/slip?logged=1 shows 'It is in your log.' and one primary 'Go on' (no 'Just reading').
+- **RS17:** on the privacy step with a PIN already set, show 'A PIN is set. You can change it in Settings.' instead of the fields.
+- **Check C2:** a save kept for the next unlock is dropped when the Store is reset (Forgot PIN erase) or replaced (import) first.
+- **Check C3:** the slider gets a small confirm button that saves the shown value; moving it still saves.
+- **Check C1 (trailers):** no fix. 9a970ec..5cfed71 come from session 224074c0 and carry its trailer; history is never rewritten.

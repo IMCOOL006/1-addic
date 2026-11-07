@@ -99,3 +99,10 @@ The review fix round at 3789c81 never saw the findings after RS4: its prompt was
   - UI.form's validate, values and set, and confirm's answer (true only on its confirm button).
 
 Not core's: Q5 imports go through Actions.importBackup (actions-sos; workbook-settings by outbox). Q6 and a Back case belong to tests-docs' next run. The line 'Set a PIN before you write anything private.' belongs to the PIN help in onboarding (actions-sos) and settings (workbook-settings).
+
+## The CORE chat's rulings 2026-11-07 13:55 IST: review round 2's open findings at bda0f0f (session 036d08b8; built in core's fix round FIX-R2)
+
+- **Store.lock.hold(on) replaces Q1's 30 s touch (cce8ae6; RC10, RS10).** `Store.lock.hold(true)` when the route enters #/sos*, `hold(false)` when it leaves (ui-core keepOpen, called before the lock gate in render). While held: no auto-lock fires, and a touch past the limit neither locks nor moves the idle clock. `hold(false)` locks at once when the idle time since the last activity is past the limit, else re-arms the timer from the last activity. 'Lock now' still locks at once. SOS itself is never gated. The Q1 line above ("touches the idle timer every 30 s") is replaced by this one.
+- **RC10 question: confirmed.** Once the limit has passed inside SOS, later taps there do not refresh the idle clock, so leaving SOS after a long call asks for the PIN. SOS stays open the whole time. Owed: the second half of the RC10 test (leave SOS within the limit, the timer runs again; leave SOS 40 s after the last touch, it locks 20 s later).
+- **RC11: NO_CRYPTO.** `lock.set` rejects NO_CRYPTO and sets nothing when crypto.subtle is missing (a test is owed). The fallback lock page keeps 'A PIN is not available on this device.' and adds one line under it: 'Open this file in the browser where you set your PIN.' The Forgot-PIN line stays after it. This copy change goes to the safety reviewer (RS18).
+- **RC12: UI.form custom fields.** When validate fails on a required custom(render) field, focus goes to the field's first focusable descendant and the custom node gets aria-invalid, as for chips (770c86c). The mark clears once the field is valid.
