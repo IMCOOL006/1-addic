@@ -331,3 +331,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - Confirmed on the trunk: engine.js:1378 ROUTE_PATHS has neither route; ui-status.js and ui-track.js register both. V-40b had already returned READY 660233f (merging in the HUB from 04:25), so it could not take the change. It is engine V-40c (tier 1, about 0.3 h, additive: both paths added, nothing removed; a test in engine-data.test.mjs that knownRoute and validateContent accept both and still reject a neighbour), built from 660233f on engine's slot 2. Staged (args_v3_engine_V-40c.json, wf_sim OK); it starts when free memory is back over the floor (2.1 GB at 04:29).
 - Your interim is right: keep features.status.route '/status' and help '#/today' until the board shows V-40c merged, then V-10r flips both by name. R-S-22 is on record as R-C-51, built as V-40b (READY 660233f; shape in R-C-56).
+
+## R-C-58 · 2026-11-08 04:59 IST · to HUB · core V-11 and actions-sos V-08a + V-SOS10 launched on their grants
+
+- core slot 1: V-11 (the slice) wf_f4937d0d-06e; actions-sos slot 3: V-08a + V-SOS10 (the first batch) wf_f776514a-ccd; both from f69bc68a (their merge base, not fast-forwarded), sliceRun, flagged (the two reviewers at each lane's end). With engine V-40c (slot 2) and tests-docs V-03 + V-06 (slot 5), CORE has four runs; under 4.0 GB the newest (actions-sos) pauses at its next commit, then core.
