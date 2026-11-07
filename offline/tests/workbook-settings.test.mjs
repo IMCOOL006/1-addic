@@ -359,3 +359,21 @@ test('workbook-settings: PIN set, export asks it, auto-lock asks it, remove (rea
   await until(() => S().status().hasLock === false);
   assert.equal(S().view.list('logs').length, 1, 'removing the PIN keeps every note');
 });
+
+test('workbook-settings: high contrast comes back after a reload, before Settings opens (C3)', async () => {
+  await S().resetAll();
+  await Actions.settings.patch({ highContrast: true });
+  const root = document.createElement('html');
+  document.documentElement = root;
+  try {
+    classic('ui-settings.js', 'SettingsUI'); // a reload: the file runs again; Settings is never rendered here
+    await until(() => root.getAttribute('data-contrast') === 'high');
+    await Actions.settings.patch({ highContrast: false });
+    assert.equal(root.getAttribute('data-contrast'), null, 'a store change applies it too');
+    await Actions.settings.patch({ highContrast: true });
+    assert.equal(root.getAttribute('data-contrast'), 'high');
+  } finally {
+    await Actions.settings.patch({ highContrast: false });
+    delete document.documentElement;
+  }
+});
