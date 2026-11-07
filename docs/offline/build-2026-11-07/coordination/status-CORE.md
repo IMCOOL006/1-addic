@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 03:03 IST: CORE 11 (c2601cf1). Running: the tests-docs U-35 check wf_8b230dd4-364. The V3 scouts are done (wf_51fbacce-d5f): briefs, unit notes and contracts for tests-docs, core, actions-sos. R-C-47 and R-C-48 (useSkill, a loaded sample is not a refusal; V-SOS10 in ui-sos.js) to SCREENS. Launch files ready (wf_sim OK): tracks/CORE/args/args_v3_<lane>_<unit>.json by gen6.py
+STATE: BUILDING   # 2026-11-08 03:12 IST: CORE 11 (c2601cf1). Running: tests-docs U-35 check wf_8b230dd4-364 (the checker said FIX: C1, C2 MEDIUM docs not true, C3 LOW; its fix round runs); the R-O-6 scouts wf_0e0fc235-655 (engine V-40; actions-sos V-41). R-H-40 read: engine V-40 is tier 1 and starts first on the next 7.0 GB row, then core V-11, then actions-sos V-08a + V-SOS10
 LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 8e80951 (a3081f33)
-LANE: engine MERGED 84075b6   # v1 complete (3ea2e13d). V3: V-19, V-30 (T2), only when no tier 1 lane waits
-LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
+LANE: engine NEW f69bc68   # V3 (R-O-6, R-H-40): V-40 the slice (T1: questLine, unlocked, dailyObjectives, growth, run), then V-19, V-30 (T2); fast-forwarded to BASE 03:10; scout running; waits for its SLOTS line (first in CORE's order). v1 MERGED 84075b6 (3ea2e13d)
+LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs; scout running), then V-25, V-18, V-17b (T2); fast-forwarded to BASE 02:51; SCOUTED (V3 brief section 02:52); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs CHECKING dfc2703   # 2026-11-08 02:46 IST: U-35 check (lane.js start 'check', args tracks/CORE/args/args_td_check.json, diffFrom f69bc68a); then READY-SLICE; then V-07, V-03, V-06
-SLOTS-ASKED: 2   # 2026-11-08 02:52 IST: core V-11 (the slice) and actions-sos V-08a + V-SOS10, each on its 7.0 GB row after today-track's start (R-H-38); tests-docs holds slot 5
-UPDATED: 2026-11-08 03:03 IST
+LANE: tests-docs CHECKING dfc2703   # 2026-11-08 03:12 IST: U-35 check wf_8b230dd4-364 in its fix round (C1, C2 docs; C3 LOW); then READY-SLICE; then V-07, V-03 + V-06, V-01t, V-45 (R-O-6, after V-43)
+SLOTS-ASKED: 3   # 2026-11-08 03:12 IST: in this order (R-H-40): engine V-40, core V-11, actions-sos V-08a + V-SOS10 (then V-41 in the same lane), one per 7.0 GB row; tests-docs holds slot 5
+UPDATED: 2026-11-08 03:12 IST
 
 # 2026-11-08 03:03 IST · the V3 scouts are back; the rulings; the launch files
 
