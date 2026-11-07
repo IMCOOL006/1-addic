@@ -171,6 +171,9 @@ test('learn: crisis words show urgent help through Engine only, on typed answers
   assert.equal(X.crisisCheck(S, ex, E), false);
   assert.ok(seen.every((t) => typeof t === 'string' && t.length > 0));
   assert.equal(X.crisisCheck(S, { different: 'danger-word' }, null), false, 'no Engine: nothing shown, saving never blocked');
+  const L = { crisisKeywords: (t) => (t.includes('danger-word') ? ['danger-word'] : []) };
+  assert.equal(X.crisisCheck(S, { different: 'a danger-word here' }, L), true, 'a non-empty word list counts as a hit');
+  assert.equal(X.crisisCheck(S, { different: 'calm' }, L), false, 'an empty list is no hit');
   assert.equal(X.URGENT_LINE.clinicalReview, true);
   assert.equal(X.URGENT_LINE.route, '#/sos/urgent');
 });

@@ -375,13 +375,15 @@ const ExerciseUI = (function () {
   };
 
   // True when any typed answer (text, textarea) holds crisis words, per Engine.crisisKeywords. Never blocks saving.
+  // A hit is true or a non-empty list of matched words (the readers ui-sos accepts, contracts/actions-sos.md).
+  const isCrisisHit = (r) => r === true || (Array.isArray(r) && r.length > 0);
   function crisisCheck(spec, values, engine) {
     const E = engine || ns('Engine');
     if (!E || typeof E.crisisKeywords !== 'function') return false;
     for (const f of (spec && spec.fields) || []) {
       if (f.type !== 'text' && f.type !== 'textarea') continue;
       const t = values ? values[f.id] : '';
-      try { if (typeof t === 'string' && t && E.crisisKeywords(t) === true) return true; } catch (e) { /* ignore */ }
+      try { if (typeof t === 'string' && t && isCrisisHit(E.crisisKeywords(t))) return true; } catch (e) { /* ignore */ }
     }
     return false;
   }
