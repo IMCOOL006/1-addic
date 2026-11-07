@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: RESTART   # 2026-11-07 17:30 IST: context past 300k: SCREENS chat 6721d28e hands over at a safe point (run record 'Resume here' 17:30). READY for the HUB: content 680f850, workbook-settings 9cbf630; today-track MERGED. Two slices still live in this session: actions U-22 wf_33b06a55-895, game-tutorials U-27 wf_8e6d4a60-85a: the next chat reads their journals, it does not relaunch them while this session is listed
-LANE: content READY 680f850   # U-31a..U-33 complete (slice 065699b merged 16:31); run wf_11307812-199 check PASS over 065699b..680f850; test 31/31, validate GREEN; three CORE test names red with it (R-S-9); sample profile risk (R-S-9); report tracks/SCREENS/lane-reports/content.md 9000 B; cut base 1ef2482e
+STATE: BUILDING   # 2026-11-07 17:44 IST: SCREENS chat d6887185 resumed (6721d28e gone, its runs died with it); actions check relaunched wf_954d557f-237, game-tutorials U-27 relaunched wf_270cb2ea-a72; content, workbook-settings, today-track MERGED (complete); owed by name: the Settings sample stop-gap, the today-track end marker
+LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED 3f3001e   # READY 3f3001e merged 17:01 as 9f3026c6; complete; fix by name asked (R-H-24): close its styles.css section with /* -- end today-track -- */
-LANE: workbook-settings READY 9cbf630   # U-19..U-21 complete (slice cc1f1ea merged 16:57); run wf_34a731b5-17f check FIX -> C5 5e80f01, C6 9cbf630 FIXED; test 21/21, validate GREEN; browser not re-run; C1 open by name; report tracks/SCREENS/lane-reports/workbook-settings.md 12408 B; cut base 1ef2482e
-LANE: actions BUILDING   # slot 7 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-22 run wf_33b06a55-895 (sliceRun)
-LANE: game-tutorials BUILDING   # slot 8 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-27 run wf_8e6d4a60-85a (sliceRun)
+LANE: workbook-settings MERGED 9cbf630   # READY 9cbf630 merged 17:39 (be0f806d); complete; owed by name: Load sample data only without an own profile (R-H-28, a tag condition); C1 open by name
+LANE: actions CHECKING   # slot 7; cut 17:10 at 9f3026c6; U-22 built 84b92be, 3de2d32 (tip 3de2d32); the check relaunched 17:42 as wf_954d557f-237 (start check, sliceRun)
+LANE: game-tutorials BUILDING   # slot 8; cut 17:10 at 9f3026c6; U-27 relaunched 17:42 as wf_270cb2ea-a72 (sliceRun) over the stopped builder's uncommitted files
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:30 IST
+UPDATED: 2026-11-07 17:44 IST
+
+# 2026-11-07 17:44 IST · SCREENS chat d6887185 resumes; the two tier 2 slices relaunched
+
+- Session d6887185-82d2-4a14-8c98-cee7cc2b525d (https://claude.ai/code/session_d6887185-82d2-4a14-8c98-cee7cc2b525d), started 17:31 by the launcher. The previous chat 6721d28e is gone from `claude agents --json` (its job state 'stopped'; last writes 17:34): its runs wf_33b06a55-895 (actions) and wf_8e6d4a60-85a (game-tutorials) died with it.
+- actions: the U-22 builder had returned (84b92be planner, 3de2d32 its tests; tip 3de2d32; build, test 11 pass, validate GREEN; guards baselined names only; planner-day, planner-gaps, planner-add now pass); its checker was cut off. Relaunched 17:42 as wf_954d557f-237: start 'check', sliceRun, over 9f3026c6...HEAD.
+- game-tutorials: the U-27 builder was stopped before any commit; its work is on disk uncommitted (ui-guidance.js, game-tutorials.test.mjs, its styles.css section; test 14/14 at 17:27, browser gate never run). Relaunched 17:42 as wf_270cb2ea-a72 (sliceRun) with a prior note: keep the files, finish U-27, commit by path, then the browser gate.
+- Both keep their cut base 9f3026c6 (the HUB's R-H-29 says 9b319256: the worktrees and the run args say 9f3026c6). Memory 4.9 GB free at 17:42 by Win32_OperatingSystem: the two runs replace the two the HUB counted live; nothing else starts under 7.0.
+- Read R-H-29: workbook-settings 9cbf630 merged (be0f806d), complete. Owed by name: the Settings sample stop-gap (R-H-28, a tag condition; a small fix run on build/workbook-settings when one of the two runs returns), today-track's end marker (R-H-24).
 
 # 2026-11-07 17:30 IST · workbook-settings READY 9cbf630 (U-19..U-21 complete) · this chat hands over (RESTART)
 
