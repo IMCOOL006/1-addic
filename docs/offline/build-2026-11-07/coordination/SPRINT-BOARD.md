@@ -1,4 +1,4 @@
-STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: ten merges on the trunk. Since the tag: the encrypted Store with every review fix (core, 15:29) and the whole engine with content validation (engine, 15:34). Still on its branch: the SOS screens, lock screen and onboarding (actions-sos): its second fix round landed every finding and passed the check, but the safety reviewer's re-check found one more HIGH (typed death wishes such as 'I want to be dead' did not bring up the numbers) and four smaller items, so a third fix round runs now (16:10). The build runs on the owner's word (R-O-2).
+STATE: TAGGED offline-v1.0 at 45473b2 (11:40 IST); offline-v1.1 under way: ten merges on the trunk. Since the tag: the encrypted Store with every review fix (core, 15:29) and the whole engine with content validation (engine, 15:34). Still on its branch: the SOS screens, lock screen and onboarding (actions-sos): its second fix round landed every finding and passed the check, but the safety reviewer's re-check found one more HIGH (typed death wishes such as 'I want to be dead' did not bring up the numbers) and four smaller items, so a third fix round runs now (16:00). The build runs on the owner's word (R-O-2).
 NEEDS YOU: (1) The build is continuing on your word (R-O-2, 14:38: 'I agree with the defaults', and run on to the complete edition and the guide): the launcher stays running, three lanes are in their rounds. (2) Open offline/1-addic.html from the trunk on your phone and computer and write what you find in one message; the India numbers (I6: verify each helpline before it ships) remain yours. (3) Keep the machine awake while the rounds run; the pharma tag (about 15:30) is what frees the memory for the SCREENS chat.
 NEXT: the HUB merges actions-sos READY (U-10, U-11 plus every review fix) when its round ends, with its gates on the merged tree and the trunk pushed; then the SCREENS track tier 1 (content U-31a, Today and Track U-15, U-16, Settings U-19, U-20a) once memory allows its chat (11.5 GB free with one lane live, 8.5 with none), then tier 2 and the guide with screenshots.
 
@@ -6,11 +6,11 @@ NEXT: the HUB merges actions-sos READY (U-10, U-11 plus every review fix) when i
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 15:59 IST by `board.py`.
+Rewritten 2026-11-07 16:00 IST by `board.py`.
 
 ## For the owner (more)
 
-FORECAST (from today's measured pace, written 14:45, corrected 16:10): core merged 15:29 and engine 15:34 (ahead of their marks); actions-sos READY and merged about 17:00-17:30 (a third fix round for the new HIGH RS19 runs since 15:47; each round has taken about 60-80 minutes); SCREENS tier 1 (content U-31a, today-track U-15 and U-16, workbook-settings U-19 and U-20a) merged and offline-v1.1 tagged tonight about 20:00-21:00 if memory reaches the SCREENS chat's mark (11.5 GB free with one lane live) by about 16:30, else the morning of 8 Nov; tier 2 and the guide Part 3 with screenshots (U-35, U-36b, last by design) by the afternoon of 8 Nov if the lanes run through the night, else the evening of 8 Nov.
+FORECAST (from today's measured pace, written 14:45, corrected 16:00): core merged 15:29 and engine 15:34 (ahead of their marks); actions-sos READY and merged about 17:00-17:30 (a third fix round for the new HIGH RS19 runs since 15:47; each round has taken about 60-80 minutes); SCREENS tier 1 (content U-31a, today-track U-15 and U-16, workbook-settings U-19 and U-20a) merged and offline-v1.1 tagged tonight about 20:00-21:00 if memory reaches the SCREENS chat's mark (11.5 GB free with one lane live) by about 16:30, else the morning of 8 Nov; tier 2 and the guide Part 3 with screenshots (U-35, U-36b, last by design) by the afternoon of 8 Nov if the lanes run through the night, else the evening of 8 Nov.
 
 ## The HUB
 
@@ -20,13 +20,13 @@ FORECAST (from today's measured pace, written 14:45, corrected 16:10): core merg
 - TRACKS-ALLOWED: CORE   # the launcher is active; SCREENS is added by this line when a row shows 4.0 + 1.5 + 3.0 x (live lanes + 1) GB free (11.5 GB with actions-sos alone live; 8.5 GB with none): the HUB watches the rows from 15:36
 - QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-- UPDATED: 2026-11-07 16:10 IST
+- UPDATED: 2026-11-07 16:00 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate… | 241k | 2026-11-07 16:10 IST |
+| HUB | ed0e0a4b (launcher-started 2026-11-07 11:44) | BUILDING — 2026-11-07 15:36 IST: ten merges on the trunk: core READY 957f333 (15:29) and engine READY 227a07a (15:34, validate… | 245k | 2026-11-07 16:00 IST |
 | CORE | 036d08b8 (launcher-started 2026-11-07 13:43) | BUILDING — 2026-11-07 15:47 IST: one run live: actions-sos fix round FIX-R3 wf_32a8784b-3af; core and engine MERGED | 289k | 2026-11-07 15:47 IST |
 | SCREENS |  | NEW — not started; the launcher starts this chat once status-HUB.md carries BASE-READY and TRACKS-ALLOWED names SCREENS (when… |  | 2026-11-07 06:50 IST |
 

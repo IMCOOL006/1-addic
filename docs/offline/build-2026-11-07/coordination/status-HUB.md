@@ -23,9 +23,9 @@ MERGED: core READY 957f333 (U-04 Store with encryption and lock; review fixes F1
 MERGED: engine READY 227a07a (U-06 roadmap, reveal, Explorer, tips, quests, artifacts, plan prefill; U-07 insights, radar, planner, review, SOS sequence, crisis keywords; U-08 export/import/migrate, .ics, AppError, validateContent) -> merge 1ef2482, trunk 1ef2482e, pushed 15:34 (build GREEN 451085 B; test GREEN 102/102 in 4 files; validate GREEN 0 errors, its first run; guards GREEN by name, the 15 baselined tour targets only; territory 0 errors; merged clean, 5 files)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 16:10 IST
+UPDATED: 2026-11-07 16:00 IST
 
-# 2026-11-07 16:10 · actions-sos: a new HIGH from the safety re-check; third fix round
+# 2026-11-07 16:00 · actions-sos: a new HIGH from the safety re-check; third fix round (this section was first stamped 16:10 by estimate; `date` said 15:59 at the commit: corrected, the rule is stamps from `date`)
 
 - status-CORE.md 15:47: run wf_b38141d2-651 returned with RS10-RS17 FIXED (c7c1c92..1068c5f), C2 a060d95, C3 a8dce5a, check PASS over fc0d038..a8dce5a; its safety re-check raised RS19 HIGH (typed death wishes such as "I want to be dead" miss the numbers) and RS20-RS23. CORE did not write READY with a HIGH open (rule 5 as it should be) and launched FIX-R3 wf_32a8784b-3af (fix by name, the safety reviewer re-checks); rulings in contracts/actions-sos.md, last section. Nothing for the HUB to merge; the forecast for actions-sos moves to about 17:00-17:30.
 - Memory rows since 15:36: 9.1 by hand; the launcher's rows under lane-widening.md; none at the SCREENS mark (11.5 GB with one lane live). CORE 036d08b8 alive (hand-over written; RESTART at its next safe point; the launcher is active and starts the next CORE).
