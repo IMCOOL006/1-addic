@@ -1806,6 +1806,23 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     }
   });
 
+  test('RC14: replaceAll replaces a stale snapshot too: a PIN set later brings none of its rows back', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await S.load();
+    await S.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged' }); });
+    ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1, stores: { events: [{ id: 'f1', type: 'CravingLogged', note: MARK }] } }));
+    const R = freshStore();
+    await R.load();
+    assert.ok(ls.getItem('1-addic:snapshot'), 'a full IndexedDB leaves the snapshot until then');
+    await R.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { events: [{ id: 'b1', type: 'CravingLogged' }] } });
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'it goes with the rows it would have merged');
+    await R.lock.set('2468');
+    assert.deepEqual(R.view.list('events').map((r) => r.id), ['b1'], 'the backup and nothing else');
+    assert.ok(!idb.dump().includes(MARK));
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });

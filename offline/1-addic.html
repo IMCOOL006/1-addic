@@ -1733,6 +1733,10 @@ const Store = (function () {
       const puts = (await sealAll(next, state.key)).concat(kept.puts);
       if (state.lock) puts.push(['meta', 'lock', clone(state.lock)]);
       await write({ clear: true, puts, dels: [] });
+      if (state.mode === 'indexeddb') { // a stale snapshot is replaced too: a PIN set later never brings its rows back (RC14)
+        const ls = storage();
+        if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
+      }
       if (epoch === state.epoch) { state.rows = next; state.unread = kept.left; }
       notify('replaceAll');
     });
