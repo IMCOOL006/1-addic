@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 22:09 IST: CORE 93bffdb7 (CORE session 8) resumes; the launcher stopped the duplicate 0504743a at 22:06. actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 running; engine FIX-RS9E next, on the next 7.0 GB row
+STATE: BUILDING   # 2026-11-07 22:15 IST: CORE 93bffdb7: two runs live: actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (22:09), engine FIX-RS9E wf_76a65b95-f5b (22:15, on the 22:14 row 14.3 GB)
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine BUILDING a927cac   # 2026-11-07 22:09 IST: FIX-RS9E to finish over the wip a927cac and check (diffFrom 57153d3), on the next 7.0 GB row; args tracks/CORE/args/args_engine_rs9e2.json; merged before at 57153d3 (3720d119)
+LANE: engine BUILDING a927cac   # 2026-11-07 22:15 IST: FIX-RS9E wf_76a65b95-f5b: the builder finishes the wip a927cac, then the check over 57153d3..HEAD; args tracks/CORE/args/args_engine_rs9e2.json; merged before at 57153d3 (3720d119)
 LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 22:09 IST: FIX-R6 safety re-check wf_4b67e91f-df4 (start review, reviewOnly safety, carried check PASS 87030e3, knownFindings RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); READY if clean of HIGH and MEDIUM
-LANE: learn READY 75eb8e5   # 2026-11-07 22:10 IST: FIX-RS9 in HUB 7's merge since 22:06 (merge commit ce691c2 on the trunk; the gates not yet on the board); report lane-reports/learn.md; cut base 655516dc, round diff 4f5832f..75eb8e5
+LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R6 re-check running), engine slot 2 (FIX-RS9E, next row); learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 22:09 IST
+SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R6 re-check), engine slot 2 (FIX-RS9E); learn slot 9 and core slot 1 free
+UPDATED: 2026-11-07 22:15 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 
@@ -14,6 +14,7 @@ UPDATED: 2026-11-07 22:09 IST
 - The launcher started every track twice at 22:04 (the loop and a LAUNCH-MISSING check); it stepped 93bffdb7 as CORE and stopped 0504743a at 22:06 (launcher.log). 0504743a launched nothing and wrote nothing.
 - `claude agents --json` 22:05: 60f08c84 listed blocked: its two runs stopped at the 19:10 park. Worktrees clean: actions-sos 87030e3, engine a927cac (wip), learn 75eb8e5, core 8e80951, tests-docs d91164d; the remote holds the same tips.
 - Free memory 13.3 GB at 22:07. Launched 22:09 actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (args tracks/CORE/args/args_as_r6b.json, built by gen2.py there; wf_sim OK). Ruled: RS33's note stays beside each number in the crisis view (one short muted line; nothing else added). engine FIX-RS9E (args_engine_rs9e2.json, wf_sim OK) starts on the next 7.0 GB row.
+- 2026-11-07 22:15 IST: engine FIX-RS9E wf_76a65b95-f5b launched on the 22:14 row (14.3 GB). R-H-30 read: learn 75eb8e5 merged as ce691c21; BASE ce691c21. I verified actions-sos at 87030e3 myself: node --test actions.test.mjs 161/161 pass, 0 fail.
 
 2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
 
