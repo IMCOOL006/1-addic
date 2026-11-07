@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 10:23 IST: four runs live: core and actions-sos (review fix rounds), learn (U-13, U-14), engine (U-06..U-08); tests-docs READY d91164d; hand-over in RUN-RECORD 'Resume here'
+STATE: RESTART   # 2026-11-07 10:28 IST: session 224074c0 hands over at 302k context; its four runs (core wf_6b7ddbb3-2a7 re-checks, actions-sos wf_379c12ed-2e4 re-checks, learn wf_7e30a83f-8e5 U-13/U-14, engine wf_f39915b9-3a4 U-06..U-08) live only while 224074c0 is listed by claude agents; the fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here'
 LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 030f949 + 98f872d, check PASS; review fixes committed to 3789c81; the two reviewers re-check (run wf_6b7ddbb3-2a7), then report
 LANE: engine BUILDING   # slice U-05 04fc0c1 MERGED 07:44; slot 2 granted again 10:23; run wf_f39915b9-3a4 (10:23): C1 helpfulValue by name, [U-06, U-07], [U-08], check, report
 LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae, check PASS; review fixes committed to 5cfed71; the two reviewers re-check (run wf_379c12ed-2e4), then report; a follow-up FIX-ONB-EMO after it
 LANE: learn BUILDING   # slice U-12 a499dae MERGED 10:18 (trunk 4618e43c); run wf_7e30a83f-8e5 (10:16): C1, C2 by name, U-13, U-14, check, report
 LANE: tests-docs READY d91164d   # tier 1 done: U-34 (merged 09:55), C1+C2 fixes, U-37 docs, U-36a guide skeleton and pipeline; check FIX C1 (README claimed unbuilt features) FIXED at d91164d on re-check; report tracks/CORE/lane-reports/tests-docs.md; U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 10:27 IST
+UPDATED: 2026-11-07 10:28 IST
 
 # 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
 
