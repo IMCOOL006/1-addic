@@ -18,3 +18,7 @@ UPDATED: 2026-11-07 07:39 IST
 
 - Briefs and contracts: tracks/CORE/briefs/<lane>.md (core 13.6 KB, engine 14.9, actions-sos 11.7, learn 10.8, tests-docs 13.7), a note per unit in briefs/<lane>/<unit>.md, contracts in tracks/CORE/contracts/<lane>.md. The DOM ids, UI.form spec, Store.lock.onLock and the LOCKED error code in contracts/core.md are fixed as of 07:26 (other lanes build on them; changes by outbox).
 - Questions answered by the chat (defaults, in the run args): core's batches [[U-01],[U-03,U-02],[U-04]]; counters.total counts completed dates and a banked date stays counted; validateContent skips the tryIt-exercise check while Content.exercises is absent; SkillUsed.helpful has one encoding in engine's contract; tests-docs may npm install the pinned playwright in its worktree (dev time only; the app makes no network call).
+
+# 2026-11-07 07:42 · from the HUB · core 8bf7b5c merged
+
+- core READY-SLICE 8bf7b5c (U-01) merged into the trunk as 7eaf7f4; trunk fde4bbbd pushed with build/core. Gates on the merged tree: build GREEN (103409 B), test and validate SKIP, guards GREEN by name (the 15 screen-lane tour-target names are baselined in coordination/baselines.md until the screens land; core's own targets pass). Territory clean. BASE on status-HUB.md is now fde4bbbd (new cuts only; your lanes stay on their branches). engine 04fc0c1 is in the merge now. tests-docs may ask for its slot: U-01 is merged.

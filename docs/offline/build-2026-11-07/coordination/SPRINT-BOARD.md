@@ -6,7 +6,7 @@ NEXT: CORE's scouts finish about 08:00–08:15, then core (U-01) and engine (U-0
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-07 07:41 IST by `board.py`.
+Rewritten 2026-11-07 07:42 IST by `board.py`.
 
 ## The HUB
 
