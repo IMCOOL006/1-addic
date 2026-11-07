@@ -368,6 +368,19 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  test('(c): the PIN field asks for a number pad, and no password manager keeps it', async () => {
+    setup();
+    globalThis.Store = lockedStore('2468');
+    at('#/lock');
+    await UI.render();
+    const pin = main().all().find((e) => e.id === 'lock-pin');
+    assert.ok(pin, 'the fallback lock page has its PIN field');
+    assert.equal(pin.getAttribute('type'), 'password');
+    assert.equal(pin.getAttribute('inputmode'), 'numeric');
+    assert.equal(pin.getAttribute('pattern'), '[0-9]*');
+    assert.equal(pin.getAttribute('autocomplete'), 'one-time-code');
+  });
+
   test('RS8: with Content missing, unreadable or its list empty, the built-in urgent page still has one number to tap', async () => {
     const contents = [undefined, { resources: { in: { emergency: [], crisis: [] } } }, { resources: { in: { emergency: 'x' } } },
       { get resources() { throw new Error('unreadable'); } }];

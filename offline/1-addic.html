@@ -2627,7 +2627,8 @@ const UI = (function () {
   function lockFallback() {
     const S = ns('Store');
     const msg = h('p', { class: 'field-error', role: 'alert', hidden: true });
-    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', autocomplete: 'off', 'aria-describedby': 'lock-msg' });
+    // A number pad on a phone, and no password manager offers to save it (c). The Store checks 4 to 64 characters.
+    const pin = h('input', { id: 'lock-pin', type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'one-time-code', 'aria-describedby': 'lock-msg' });
     msg.id = 'lock-msg';
     const btn = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock' });
     const f = h('form', {
