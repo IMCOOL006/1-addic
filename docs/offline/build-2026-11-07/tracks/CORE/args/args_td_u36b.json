@@ -1,0 +1,77 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The browser harness, the screenshots, the offline docs and the guide; root package.json's scripts and devDependencies keys and package-lock.json; the '## Offline edition' sections of README.md and CLAUDE.md; ADR 0022.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (append ## Offline edition)",
+  "CLAUDE.md (append ## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "package.json (scripts test:browser, screens, check; devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "FIX-TOURMARK",
+  "U-35",
+  "V-07"
+ ],
+ "batches": [
+  [
+   "U-34"
+  ],
+  [
+   "U-37",
+   "U-36a"
+  ],
+  [
+   "FIX-TOURMARK"
+  ],
+  [
+   "U-35"
+  ],
+  [
+   "V-07"
+  ]
+ ],
+ "unitTier": {
+  "U-34": 1,
+  "U-37": 1,
+  "U-36a": 1,
+  "U-35": 1,
+  "U-36b": 2,
+  "FIX-TOURMARK": 1,
+  "V-07": 1
+ },
+ "unitNotes": {
+  "U-34": "Browser harness (3 h): Playwright pinned, channel 'chrome' with a fallback, the flows of 3.13 as named tests, console and network assertions, offline mode, the phone viewport. Done when npm run test:browser opens the built file offline at phone size and runs the 3.13 flows by name, failing on any console error or network request.",
+  "U-37": "Docs true (1 h): offline/README.md (copy to a phone, open from Files/Chrome, the file:///sdcard/Download/1-addic.html tip, what 'Not saved' means), the README and CLAUDE.md '## Offline edition' sections, ADR 0022, npm run check. Done when npm run check runs every gate and the docs match the file.",
+  "U-36a": "Guide skeleton and pipeline (1.5 h): the Markdown with Parts 1, 2 and 4 written and Part 3's lesson headings; build_guide.py; the .docx builds (O8). Done when python offline/docs/build_guide.py exits 0 (the docs gate).",
+  "U-35": "Screenshots (tier 2, 1.5 h; BUILD-PLAN 3.13 line 216, 3.14; brief 'U-35'). offline/tests/screens.mjs, `npm run screens` (add scripts.screens = 'node offline/tests/screens.mjs' by JSON parse, no other key); shares helpers/launch.mjs (same launch, same offline route blocking: a non-file request or console error fails by name); selectors from helpers/hooks.mjs. SHOTS about 30 {slug, route, setup, size} for the screens the 14 Part 3 lessons of offline/docs/1-addic-Guide.md need (onboarding, lock, Today, SOS flows, urgent help, quick log, Learn, a lesson, an exercise, Workbook, Reasons Card, Recovery Plan, Track, Insights, Harbor, planner, Settings). Seed through Load sample data (O6) on a fresh profile; the tour marked skipped as markOnboarded does; reduced motion. Writes offline/docs/images/<slug>-desktop.png (1280x800) and <slug>-phone.png (390x844) with a pHYs chunk at 300 DPI (11811 px/m) by a dependency-free PNG rewrite (CRC32 in the file), then reads each back and checks size and pHYs (exit 1 by name). Exit 0 with a named reason when the file or a browser is absent; a shot whose route or hook is missing skips by name; prints 'screens: N written, M skipped'. Done when: build, then screens on the worktree writes at least 28 shots at both sizes, zero non-file requests, no console error (log _logs/gates/tests-docs/screens-<stamp>.log); you Read four images and name them; committed by path (images total under 15 MB, in the note); browser still 16/0/3 by name; docs gate green.",
+  "U-36b": "Guide, Part 3 (2.5 h): the tutorial lessons written against the real screens; every image referenced exists; 'How this guide was checked' with the real counts. Done when the docs gate is green.",
+  "V-07": "V-07 = U-36b, guide Parts 3 and 4 (PLAN-V3.md tier 1, 2.5 h; Part 4's 'Planned' rows say what is merged; BUILD-PLAN 3.14; brief section 'U-36b'). In offline/docs/1-addic-Guide.md write the 14 Part 3 lessons against the real screens on the trunk (the names, buttons and order as built: read the ui-*.js files and the U-35 images, never guess), one U-35 image per lesson with real alt text; 'How this guide was checked' with the real counts from the last runs (Node 536/536 in 13 files; browser 16 pass, 0 fail, 3 skip by name on f69bc68, _logs/gates/hub/browser-20261108-015539.log; re-read the newest logs and use those) and the privacy proof (CSP connect-src 'none', zero network requests in the browser suite, no trackers, no remote font). Flip STRICT_IMAGES to True in build_guide.py. Original words only, grade 6-8, person-first; the SOS lesson keeps the urgent-help numbers' 'please verify' mark and says little else. Done when: python offline/docs/build_guide.py exits 0 with STRICT_IMAGES True, every referenced image exists, the docs gate green, the .docx rebuilt and committed by path."
+ },
+ "laneNote": "Owns the harness, screens.mjs, the guide, package.json scripts test:browser/screens/check; every screen lane is in the trunk. CORE CHAT'S WORD (2026-11-08 02:32 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca; R-H-37): tier 2 on slot 5, on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). A hook missing from another lane's screen: a skip by name and a line in your note's requests, never an edit of their file. No new dependency, no npm install. Name the unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser or screens run at a time.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "FIX-TOURMARK",
+  "U-35"
+ ],
+ "base": "f69bc68a",
+ "slot": 5,
+ "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
+ "now": "2026-11-08 02:32 IST",
+ "start": "build",
+ "priorNote": "Sample rows never count toward Insights: ui-track's insightCount drops rows marked sample: true, so with only the sample loaded Insights shows the 'appear after seven logs, you have 0' empty state. That is why the extra shot insights-logs saves 8 craving logs of its own (numbers only, no words) thro",
+ "diffFrom": "dfc2703"
+}

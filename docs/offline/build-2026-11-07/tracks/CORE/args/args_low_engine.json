@@ -16,11 +16,13 @@
   "U-08",
   "FIX-RS4",
   "FIX-RS9E",
-  "V3-19"
+  "V-19",
+  "V-30"
  ],
  "batches": [
   [
-   "V3-19"
+   "V-19",
+   "V-30"
   ]
  ],
  "unitTier": {
@@ -30,12 +32,14 @@
   "U-08": 1,
   "FIX-RS4": 1,
   "FIX-RS9E": 1,
-  "V3-19": 2
+  "V-19": 2,
+  "V-30": 2
  },
  "unitNotes": {
-  "V3-19": "V3-19, FIX-SPIRAL-OWN (contracts/actions-sos.md line 151, re-ruled by CORE 10 to the additive form): each pair of spiralThoughts(view) gains own: true when its reply is the person's own words, false when it was filled from catalogs.slipSelfTalk (engine.js about :719-729); thought and reply unchanged. The consumer ui-sos.js spiralPairs (:341-357) keeps working unchanged: prove it with node --test offline/tests/actions.test.mjs. Tests: own reply, filled reply, strings and objects, the pickTexts path."
+  "V-19": "V3-19, FIX-SPIRAL-OWN (contracts/actions-sos.md line 151, re-ruled by CORE 10 to the additive form): each pair of spiralThoughts(view) gains own: true when its reply is the person's own words, false when it was filled from catalogs.slipSelfTalk (engine.js about :719-729); thought and reply unchanged. The consumer ui-sos.js spiralPairs (:341-357) keeps working unchanged: prove it with node --test offline/tests/actions.test.mjs. Tests: own reply, filled reply, strings and objects, the pickTexts path.",
+  "V-30": "V-30 (PLAN-V3.md): engine.js exports tutorialDone (ui-guidance.js calls it behind a typeof guard; today only the tour and drill wrappers are exported). A test that the export matches the wrappers."
  },
- "laneNote": "CORE CHAT'S WORD (2026-11-08 02:25 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/engine/engine__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:32 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (PLAN-V3.md and V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/engine/engine__<id>.red.log) and green after; one commit per id, the id in the subject.",
  "done": [
   "U-05",
   "U-06",
@@ -48,7 +52,7 @@
  "diffFrom": "f69bc68a",
  "slot": 2,
  "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
- "now": "2026-11-08 02:25 IST",
+ "now": "2026-11-08 02:32 IST",
  "start": "build",
- "priorNote": "The lane is MERGED at 84075b6 (3ea2e13d). This round: V3-19 only. CORE 10 fast-forwarded build/engine to f69bc68a (no merge commit; clean) before this run."
+ "priorNote": "The lane is MERGED at 84075b6 (3ea2e13d). This round (PLAN-V3.md): V-19, V-30. CORE 10 fast-forwarded build/engine to f69bc68a (no merge commit; clean) before this run."
 }

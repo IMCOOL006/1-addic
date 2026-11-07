@@ -16,72 +16,76 @@ GATE = ("Then on the worktree (it holds the whole trunk): npm run build, npm tes
 SPEC = {
  'core': {
   'prior_done': ['FIX-V11'],
-  'batches': [['V3-11'], ['V3-17', 'V3-16']],
-  'tiers': {'V3-11': 1, 'V3-17': 2, 'V3-16': 2},
+  'batches': [['V-11'], ['V-17a', 'V-16', 'V-26a']],
+  'tiers': {'V-11': 1, 'V-17a': 2, 'V-16': 2, 'V-26a': 2},
   'notes': {
-   'V3-11': ("V3-IMPROVEMENTS.md V3-11 (tier 1, crisis copy, flagged): shell.html's <main id=main> holds, before boot, one static line "
+   'V-11': ("V3-IMPROVEMENTS.md V3-11 (tier 1, crisis copy, flagged): shell.html's <main id=main> holds, before boot, one static line "
      "'If you are in danger, call your local emergency number.' (boot.js COPY.none's words, no new phrase), marked for the clinical review "
      "by an HTML comment; the first render replaces it; boot.js's failure block replaces it too, never shows both. A Node test over the "
      "built file: the line is inside #main and nowhere else; the CSP and the guards stay green."),
-   'V3-17': ("V3-17, RS26 remainder (contracts/actions-sos.md lines 111, 130). Store.status() gains lockId: an opaque string while a lock "
+   'V-26a': ("V-26a (PLAN-V3.md, V3-26): build.mjs prints each part's size in bytes and the total after a build (one line per part); "
+     "the built file is byte-for-byte the same as before."),
+   'V-17a': ("V3-17, RS26 remainder (contracts/actions-sos.md lines 111, 130). Store.status() gains lockId: an opaque string while a lock "
      "row exists, null when none; a NEW value whenever the lock row is created (set PIN), replaced (change PIN; replaceAll or import "
      "that writes a lock row, even one that carried an id; reset then set) or removed (remove PIN, erase: null); never derived from the PIN, "
      "salt or check (random bytes). Kept in the lock row, so a reload keeps it and a second Store over the same storage (another tab) reads "
      "the new value after its load; Node memory mode the same. store.test.mjs: each transition changes it; unchanged across reload; null "
      "without a lock; no PIN, salt or check inside it; a second instance sees the change. No other Store API change; an old export without "
      "the field imports with a fresh id."),
-   'V3-16': ("V3-16: N1, N2, Q-a of contracts/core.md lines 117-119 (ui-core.js UI.form custom field focus, about :370-380). N1: role=group "
-     "only on a plain div or span; a node with an implicit role (ul, ol, table, svg, fieldset ...) keeps it, still named by "
+   'V-16': ("V3-16: N1, N2, Q-a of contracts/core.md lines 117-119 (ui-core.js UI.form custom field focus, about :370-380). N1: role=group "
+     "only on a plain div or span; a node with an implicit role (ul, table, svg ...) keeps it, still named by "
      "aria-labelledby. N2: a contenteditable node counts as a control (no tabindex -1, no role=group). Q-a: a native control returned as the "
      "node gets aria-labelledby the field label's id when the page named it no other way. Tests in store.test.mjs's UI.form block."),
   },
-  'prior': "The lane is MERGED at 8e80951 (FIX-V11; a3081f33). This round: V3-11 (tier 1), then V3-17 and V3-16 (tier 2).",
+  'prior': "The lane is MERGED at 8e80951 (FIX-V11; a3081f33). This round (PLAN-V3.md): V-11 (tier 1), then V-17a, V-16, V-26a (tier 2).",
  },
  'actions-sos': {
   'prior_done': ['FIX-SAFETY-AS', 'FIX-ONB-EMO', 'FIX-R4', 'FIX-R5', 'FIX-R6', 'FIX-R7', 'FIX-R8'],
-  'batches': [['V3-08', 'V3-SOS10'], ['V3-17M', 'V3-18', 'V3-25']],
-  'tiers': {'V3-08': 1, 'V3-SOS10': 1, 'V3-17M': 2, 'V3-18': 2, 'V3-25': 2},
+  'batches': [['V-08a', 'V-SOS10'], ['V-17b', 'V-18', 'V-25']],
+  'tiers': {'V-08a': 1, 'V-SOS10': 1, 'V-17b': 2, 'V-18': 2, 'V-25': 2},
   'notes': {
-   'V3-08': ("V3-08 (tier 1; contracts/actions-sos.md line 175): Actions.useSkill({skillId, helpful}) writes SkillUsed {skillId, helpful, "
+   'V-08a': ("V3-08 (tier 1; contracts/actions-sos.md line 175): Actions.useSkill({skillId, helpful}) writes SkillUsed {skillId, helpful, "
      "logId: null} with no log; skillId must be a skill in Content (else the lane's validation error, nothing written); helpful in the "
      "engine contract's one encoding; nothing in a preview or drill. Tests: written once, bad ids refused, the engine counts it. Name the "
      "verb and shape in your note (game-tutorials calls it from ui-tools.js :315)."),
-   'V3-SOS10': ("At 390 px the SOS craving rating's '10' button wraps, '1' over '0' (offline/docs/images/sos-craving-phone.png on "
+   'V-SOS10': ("At 390 px the SOS craving rating's '10' button wraps, '1' over '0' (offline/docs/images/sos-craving-phone.png on "
      "build/tests-docs dfc2703, U-35): every rating button keeps its number on one line at 390 px with its 44 px target (nowrap and a width "
      "that fits two digits; ui-sos.js or actions-sos's own styles.css section). Prove it with a browser screenshot at 390 px, named in the note."),
-   'V3-17M': ("V3-17 actions-sos side (lines 111, 130): the save's mark (RS22's retry) also holds Store.status().lockId behind a feature "
+   'V-17b': ("V3-17 actions-sos side (lines 111, 130): the save's mark (RS22's retry) also holds Store.status().lockId behind a feature "
      "check (no lockId field: today's behaviour); a retry whose lockId changed is dropped, never retried. Test with a stand-in store whose "
      "lockId changes between mark and retry, and one without the field."),
-   'V3-18': ("V3-18: RC23 (line 172: a plan's status change keeps the sample mark, a flag for claimRow; plans.update writes "
+   'V-18': ("V3-18: RC23 (line 172: a plan's status change keeps the sample mark, a flag for claimRow; plans.update writes "
      "BattlePlanCreated only for the person's row); RC22 (line 177: tests of the kept-session date in the feeling flow and the leave path); "
      "R8-RC1 (line 183, test-only: RS22's retry asserted by count, calls === 2, settle by condition)."),
-   'V3-25': ("V3-25: while unlock derives the key, the lock form shows an aria-live line 'Opening your notebook' (the set-PIN form's 'One "
+   'V-25': ("V3-25: while unlock derives the key, the lock form shows an aria-live line 'Opening your notebook' (the set-PIN form's 'One "
      "moment' pattern, ui-onboarding.js :41 and :240-252), cleared on success or error; the urgent-help link stays usable. Test it."),
   },
-  'prior': "The lane is MERGED at 7d9d557 (e8da3fbd). This round: V3-08 and V3-SOS10 (tier 1), then V3-17M, V3-18, V3-25 (tier 2).",
+  'prior': "The lane is MERGED at 7d9d557 (e8da3fbd). This round (PLAN-V3.md): V-08a and V-SOS10 (tier 1), then V-17b, V-18, V-25 (tier 2).",
  },
  'engine': {
   'prior_done': ['FIX-RS4', 'FIX-RS9E'],
-  'batches': [['V3-19']],
-  'tiers': {'V3-19': 2},
+  'batches': [['V-19', 'V-30']],
+  'tiers': {'V-19': 2, 'V-30': 2},
   'notes': {
-   'V3-19': ("V3-19, FIX-SPIRAL-OWN (contracts/actions-sos.md line 151, re-ruled by CORE 10 to the additive form): each pair of "
+   'V-30': ("V-30 (PLAN-V3.md): engine.js exports tutorialDone (ui-guidance.js calls it behind a typeof guard; today only the tour "
+     "and drill wrappers are exported). A test that the export matches the wrappers."),
+   'V-19': ("V3-19, FIX-SPIRAL-OWN (contracts/actions-sos.md line 151, re-ruled by CORE 10 to the additive form): each pair of "
      "spiralThoughts(view) gains own: true when its reply is the person's own words, false when it was filled from catalogs.slipSelfTalk "
      "(engine.js about :719-729); thought and reply unchanged. The consumer ui-sos.js spiralPairs (:341-357) keeps working unchanged: prove "
      "it with node --test offline/tests/actions.test.mjs. Tests: own reply, filled reply, strings and objects, the pickTexts path."),
   },
-  'prior': "The lane is MERGED at 84075b6 (3ea2e13d). This round: V3-19 only.",
+  'prior': "The lane is MERGED at 84075b6 (3ea2e13d). This round (PLAN-V3.md): V-19, V-30.",
  },
  'learn': {
   'prior_done': ['FIX-RS4', 'FIX-RS9'],
-  'batches': [['V3-20']],
-  'tiers': {'V3-20': 2},
+  'batches': [['V-20']],
+  'tiers': {'V-20': 2},
   'notes': {
-   'V3-20': ("V3-20, C3 (lane-reports/learn.md line 78): the checkpoint finish says '+10 XP' only the first time that module's checkpoint "
+   'V-20': ("V3-20, C3 (lane-reports/learn.md line 78): the checkpoint finish says '+10 XP' only the first time that module's checkpoint "
      "is completed (CheckpointCompleted earns once per module, engine.js :181), as lessons do (ui-learn.js about :537 and :610). C4 and C5 "
      "need no code (C4 cannot happen on the trunk; C5 is provenance). A test in learn.test.mjs, red before."),
   },
-  'prior': "The lane is MERGED at 75eb8e5 (ce691c21). This round: V3-20 only.",
+  'prior': "The lane is MERGED at 75eb8e5 (ce691c21). This round (PLAN-V3.md): V-20.",
  },
 }
 s = SPEC[LANE]
@@ -103,7 +107,7 @@ a['session'] = SESSION
 a['now'] = NOW
 a['start'] = 'build'
 a['priorNote'] = s['prior'] + " CORE 10 fast-forwarded build/" + LANE + " to " + BASE + " (no merge commit; clean) before this run."
-a['laneNote'] = ("CORE CHAT'S WORD (" + NOW + ", CORE 10, session " + SESSION + "): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree "
+a['laneNote'] = ("CORE CHAT'S WORD (" + NOW + ", CORE 10, session " + SESSION + "): the V3 round by name (PLAN-V3.md and V3-IMPROVEMENTS.md in the program docs) on the real code (worktree "
   "fast-forwarded to " + BASE + "; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your "
   "note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. "
   "Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: " + SESSION + "'; message from a file; add by path. "

@@ -8,9 +8,9 @@ SESSION = '6c9dfc8f-25c9-4b86-802e-1c99fa025fca'
 BASE = 'f69bc68a'
 L = json.load(io.open(os.path.join(D, 'tracks/HUB/workflows/lane_args.json'), encoding='utf-8'))['lanes']['tests-docs']
 a = dict(L)
-a['units'] = ['U-34', 'U-37', 'U-36a', 'FIX-TOURMARK', 'U-35', 'U-36b']
-a['batches'] = [['U-34'], ['U-37', 'U-36a'], ['FIX-TOURMARK'], ['U-35'], ['U-36b']]
-a['unitTier'] = dict(L['unitTier']); a['unitTier']['FIX-TOURMARK'] = 1
+a['units'] = ['U-34', 'U-37', 'U-36a', 'FIX-TOURMARK', 'U-35', 'V-07']
+a['batches'] = [['U-34'], ['U-37', 'U-36a'], ['FIX-TOURMARK'], ['U-35'], ['V-07']]
+a['unitTier'] = dict(L['unitTier']); a['unitTier']['FIX-TOURMARK'] = 1; a['unitTier']['V-07'] = 1; a['unitTier']['U-35'] = 1
 a['unitNotes'] = dict(L['unitNotes'])
 a['unitNotes']['U-35'] = (
   "Screenshots (tier 2, 1.5 h; BUILD-PLAN 3.13 line 216, 3.14; brief 'U-35'). offline/tests/screens.mjs, `npm run screens` (add scripts.screens "
@@ -24,8 +24,8 @@ a['unitNotes']['U-35'] = (
   "written, M skipped'. Done when: build, then screens on the worktree writes at least 28 shots at both sizes, zero non-file requests, no console "
   "error (log _logs/gates/tests-docs/screens-<stamp>.log); you Read four images and name them; committed by path (images total under 15 MB, in the "
   "note); browser still 16/0/3 by name; docs gate green.")
-a['unitNotes']['U-36b'] = (
-  "Guide Part 3 (tier 2, 2.5 h; BUILD-PLAN 3.14; brief section 'U-36b'). In offline/docs/1-addic-Guide.md write the 14 Part 3 lessons against the "
+a['unitNotes']['V-07'] = (
+  "V-07 = U-36b, guide Parts 3 and 4 (PLAN-V3.md tier 1, 2.5 h; Part 4's 'Planned' rows say what is merged; BUILD-PLAN 3.14; brief section 'U-36b'). In offline/docs/1-addic-Guide.md write the 14 Part 3 lessons against the "
   "real screens on the trunk (the names, buttons and order as built: read the ui-*.js files and the U-35 images, never guess), one U-35 image per "
   "lesson with real alt text; 'How this guide was checked' with the real counts from the last runs (Node 536/536 in 13 files; browser 16 pass, "
   "0 fail, 3 skip by name on f69bc68, _logs/gates/hub/browser-20261108-015539.log; re-read the newest logs and use those) and the privacy proof "

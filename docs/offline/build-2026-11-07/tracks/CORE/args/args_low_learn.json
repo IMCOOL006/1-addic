@@ -14,11 +14,11 @@
   "U-14",
   "FIX-RS4",
   "FIX-RS9",
-  "V3-20"
+  "V-20"
  ],
  "batches": [
   [
-   "V3-20"
+   "V-20"
   ]
  ],
  "unitTier": {
@@ -27,12 +27,12 @@
   "U-14": 1,
   "FIX-RS4": 1,
   "FIX-RS9": 1,
-  "V3-20": 2
+  "V-20": 2
  },
  "unitNotes": {
-  "V3-20": "V3-20, C3 (lane-reports/learn.md line 78): the checkpoint finish says '+10 XP' only the first time that module's checkpoint is completed (CheckpointCompleted earns once per module, engine.js :181), as lessons do (ui-learn.js about :537 and :610). C4 and C5 need no code (C4 cannot happen on the trunk; C5 is provenance). A test in learn.test.mjs, red before."
+  "V-20": "V3-20, C3 (lane-reports/learn.md line 78): the checkpoint finish says '+10 XP' only the first time that module's checkpoint is completed (CheckpointCompleted earns once per module, engine.js :181), as lessons do (ui-learn.js about :537 and :610). C4 and C5 need no code (C4 cannot happen on the trunk; C5 is provenance). A test in learn.test.mjs, red before."
  },
- "laneNote": "CORE CHAT'S WORD (2026-11-08 02:25 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/learn/learn__<id>.red.log) and green after; one commit per id, the id in the subject.",
+ "laneNote": "CORE CHAT'S WORD (2026-11-08 02:32 IST, CORE 10, session 6c9dfc8f-25c9-4b86-802e-1c99fa025fca): the V3 round by name (PLAN-V3.md and V3-IMPROVEMENTS.md in the program docs) on the real code (worktree fast-forwarded to f69bc68a; never merge or copy files in). Your lane's files only; a change another lane's file needs is a line in your note's requests. No new copy unless the note asks; unsure, the shorter version. No new dependency. Name each unit by its batch id in done. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 6c9dfc8f-25c9-4b86-802e-1c99fa025fca'; message from a file; add by path. One browser run at a time. Then on the worktree (it holds the whole trunk): npm run build, npm test (the full Node suite; 536/536 in 13 files at f69bc68) green by name, and gates.py browser (16/0/3 by name at f69bc68: no new failure, no new skip). Every Node test that meets the real store.js waits by condition, never a fixed settle (PBKDF2 at 310000 iterations). Each id: a test red before (log _logs/reports/learn/learn__<id>.red.log) and green after; one commit per id, the id in the subject.",
  "done": [
   "U-12",
   "U-13",
@@ -44,7 +44,7 @@
  "diffFrom": "f69bc68a",
  "slot": 9,
  "session": "6c9dfc8f-25c9-4b86-802e-1c99fa025fca",
- "now": "2026-11-08 02:25 IST",
+ "now": "2026-11-08 02:32 IST",
  "start": "build",
- "priorNote": "The lane is MERGED at 75eb8e5 (ce691c21). This round: V3-20 only. CORE 10 fast-forwarded build/learn to f69bc68a (no merge commit; clean) before this run."
+ "priorNote": "The lane is MERGED at 75eb8e5 (ce691c21). This round (PLAN-V3.md): V-20. CORE 10 fast-forwarded build/learn to f69bc68a (no merge commit; clean) before this run."
 }

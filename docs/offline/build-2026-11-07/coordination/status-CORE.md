@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: PAUSED   # 2026-11-08 02:25 IST: CORE 10 (6c9dfc8f). tests-docs U-35 built (2f6ab78 screens.mjs, dfc2703 74 images) and paused before its checker: the 02:23 row 2.0 GB free, slots 0 (PLAN.md section 4; the pharma program's tsc runs). Resume on the next 7.0 GB row: Workflow resumeFromRunId wf_3e4ac20d-750 (the builder cached; the check runs live) in this session, else start 'check'
+STATE: RESTART   # 2026-11-08 02:30 IST: CORE 10 (6c9dfc8f) hands over at a safe point (context over 250k; nothing runs; no workflow alive). tests-docs U-35 built at dfc2703 and PAUSED before its check (the 02:23 row 2.0 GB). CORE 11 first: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 02:30 IST); the launch files are in tracks/CORE/args/ (every one wf_sim OK): args_td_check.json first on a 7.0 GB row, then the PLAN-V3.md rounds
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs PAUSED dfc2703   # 2026-11-08 02:25 IST: U-35 built: screens 74 written, 0 skipped (37 slugs x 2 sizes, 1.29 MB, 300 DPI), the builder's gates green (browser 16/0/3, docs GREEN; logs _logs/gates/tests-docs/*-202611080218..0222*.log); the check not run yet (stopped at its start for memory). Note tracks/CORE/args/td_u35_buildnote.json. Then U-36b, the hooks round
-SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01, R-H-37); the CORE LOWs by name after U-35, one lane at a time, asked then
-UPDATED: 2026-11-08 02:25 IST
+SLOTS-ASKED: 1   # tests-docs slot 5 (granted 02:01; paused for memory); core V-11 and actions-sos V-08a next on the rows per PLAN-V3.md section 4, asked by CORE 11
+UPDATED: 2026-11-08 02:30 IST
+
+# 2026-11-08 02:30 IST · PLAN-V3.md read; the launch files renamed to its ids; CORE 10 hands over
+
+- PLAN-V3.md (HUB 9, 02:28): CORE's units tests-docs U-35, V-07, V-03, V-06, V-01t (T1), V-22a, V-26b, V-27, V-29 (T2); core V-11 (T1, the slice), V-16, V-17a, V-26a; actions-sos V-08a (T1), V-25, V-18, V-17b; engine V-19, V-30; learn V-20. CORE adds V-SOS10 (actions-sos, T1: the SOS rating '10' wraps at 390 px, found by U-35). V-19 is the additive own: boolean (ruled 02:24).
+- Launch files (tracks/CORE/args/, wf_sim OK each): args_td_check.json (tests-docs U-35 check only), args_td_u36b.json (V-07; regenerate with gen4.py "<now>" u36b <priorNote file> <the U-35 tip>), args_low_<lane>.json for core, actions-sos, engine, learn (gen5.py "<now>" <lane> [BASE]). Before each lane's first launch: git -C <wt>/<lane> merge --ff-only f69bc68a (each tip is an ancestor; clean).
 
 # 2026-11-08 02:25 IST · tests-docs U-35 built; paused before its check (2.0 GB row)
 
