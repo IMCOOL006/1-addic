@@ -1,8 +1,8 @@
 ## For the owner
 
-STATE: BUILDING, 10:20 IST (HUB session 3 running). Six slices are merged into the trunk: the build pipeline and shell (U-01), the engine's ids, dates and game derivations (U-05), the UI core, router, tokens and components (U-03, U-02), the Actions layer (U-09), the browser test harness (U-34) and the exercise engine (U-12); trunk build/offline-v1 at 4618e43c, pushed. Four lanes are running under CORE: core's encrypted Store (U-04, reviewers' fixes), the SOS screens, lock screen and onboarding (U-10, U-11, reviewers), the lesson player and roadmap (U-13, U-14), docs-true and the guide skeleton (U-37, U-36a). engine is paused for memory.
+STATE: BUILDING, 10:27 IST (HUB session 3 running). Seven merges are in the trunk: the build pipeline and shell (U-01), the engine's ids, dates and game derivations (U-05), the UI core, router, tokens and components (U-03, U-02), the Actions layer (U-09), the browser test harness (U-34), the exercise engine (U-12), and the docs and guide skeleton with its .docx (U-37, U-36a); trunk build/offline-v1 at f3775f1a, pushed. Running under CORE: core's encrypted Store (U-04, reviewers' fixes), the SOS screens, lock screen and onboarding (U-10, U-11, reviewers' fixes), the lesson player and roadmap (U-13, U-14), engine's roadmap and insights units (U-06, U-07; resumed 10:23 on 10.8 GB free).
 NEEDS YOU: (1) the decision defaults are in force since 08:25 (PLAN.md section 9); a one-line answer such as `O3: international only` still changes the units not yet built; (2) memory is the bottleneck now: each running lane takes about 3 GB, not the 0.7 GB the plan assumed, so only one lane runs at a time while the pharma program holds the machine; anything you can free (the 630k-context planner chat, idle browser tabs, a pharma pause if it has one) is one more lane on this build; (3) keep the machine awake.
-NEXT: the HUB merges each READY as it appears (the Store U-04, SOS U-10 and U-11, docs-true and the guide skeleton U-37, U-36a are the candidates); FREEZE 10:55 (the tag's list goes here); QUIET 10:55-11:40 (the full suites on the merged trunk); TAG offline-v1.0 about 11:55; hand-off by 12:25. engine's remaining units, the content, Today, Track, Settings and every tier 2 unit go to offline-v1.1.
+NEXT: the HUB merges each READY as it appears (the Store U-04 and SOS, lock, onboarding U-10, U-11 are the two left before the FREEZE); FREEZE 10:55 (the tag's list goes here); QUIET 10:55-11:40 (the full suites on the merged trunk); TAG offline-v1.0 about 11:55; hand-off by 12:25. engine's remaining units, the content, Today, Track, Settings and every tier 2 unit go to offline-v1.1.
 
 ## Merges
 
@@ -12,6 +12,7 @@ NEXT: the HUB merges each READY as it appears (the Store U-04, SOS U-10 and U-11
 - 08:48 actions-sos READY-SLICE 1cb96a3 (U-09) -> 7a9547c, trunk 22c39654. build GREEN 240874 B; test GREEN (actions.test.mjs on the real engine).
 - 09:55 tests-docs READY-SLICE 310780d (U-34, the browser harness) -> trunk 2da0caa4. build GREEN; test GREEN (harness.test.mjs); 19 named browser tests, 5 pass, the rest SKIP by name until their screens land.
 - 10:18 learn READY-SLICE a499dae (U-12, the exercise engine) -> 4618e43c, trunk 4618e43c. build GREEN 298714 B; test GREEN (learn.test.mjs).
+- 10:26 tests-docs READY d91164d (U-37 docs true, U-36a the guide skeleton and its .docx) -> f3775f1a, trunk f3775f1a. build GREEN; test GREEN; docs GREEN (the guide .docx builds reproducibly).
 - Queue: empty.
 
 ## Blockers and questions

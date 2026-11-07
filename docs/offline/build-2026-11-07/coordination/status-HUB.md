@@ -1,7 +1,7 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 10:20 IST: six merges done, learn U-12 merged at 10:18; CORE 224074c0 runs core review fixes, actions-sos reviewers, learn (C1, C2, U-13, U-14), tests-docs (U-37 committed 0019a3d, U-36a); engine paused; FREEZE 10:55
+STATE: BUILDING   # 2026-11-07 10:27 IST: seven merges done, tests-docs READY (tier 1 complete) merged 10:26; CORE 224074c0 runs core and actions-sos review-fix rounds, learn (U-13, U-14), engine resumed 10:23; FREEZE 10:55
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: 4618e43c (the trunk after the learn U-12 merge, 2026-11-07 10:18; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
+BASE: f3775f1a (the trunk after the tests-docs READY merge, 2026-11-07 10:26; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 5 running lanes at a time from 10:23 (core, engine, actions-sos, tests-docs, learn); measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
@@ -17,9 +17,16 @@ MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, 
 MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654, pushed 08:48 (build GREEN 240874 B; test GREEN actions.test.mjs against the real engine.js; validate SKIP until U-08; guards GREEN by name; flagged lane: its two reviewers run before its final READY)
 MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4, pushed 09:55 (build GREEN 240874 B; test GREEN harness.test.mjs; validate SKIP until U-08; guards GREEN by name; package.json merged clean, tests-docs keys)
 MERGED: learn READY-SLICE a499dae (U-12 exercise engine) -> merge 4618e43c, trunk 4618e43c, pushed 10:18 (build GREEN 298714 B; test GREEN learn.test.mjs; validate SKIP until U-08; guards GREEN by name; merged clean, 2 files)
+MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide skeleton and .docx pipeline) -> merge f3775f1a, trunk f3775f1a, pushed 10:26 (build GREEN 298714 B; test GREEN; validate SKIP until U-08; guards GREEN by name; docs GREEN exit 0, the .docx reproducible; package.json by key owner; merged clean, 9 files)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:23 IST
+UPDATED: 2026-11-07 10:27 IST
+
+# 2026-11-07 10:27 · tests-docs READY merged (the seventh merge; its tier 1 is complete)
+
+- tests-docs READY d91164d (6 commits over 310780d: U-34 check fixes C1, C2; U-37 docs true: offline/README.md, the Offline edition sections of README.md and CLAUDE.md, ADR 0022, `npm run check`; U-36a the guide skeleton offline/docs/1-addic-Guide.md with build_guide.py and a reproducible 1-addic-Guide.docx; check FIX C1 fixed at d91164d) merged clean as f3775f1a; trunk pushed with build/tests-docs. Gates on the merged tree: build GREEN 298714 B, test GREEN, validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only), docs GREEN exit 0 (run by the HUB on _int, tree clean after), territory 0 errors (package.json shared by key owner, as designed). BASE f3775f1a.
+- O8's condition is met: U-36a is merged, so the .docx guide is in the tag; Part 3 (U-36b) and the screenshots (U-35) go to offline-v1.1.
+- Live: core (review fixes), actions-sos (review fixes), learn (U-13, U-14), engine (resumed 10:23). Candidates before the FREEZE 10:55: core READY (U-04), actions-sos READY (U-10, U-11).
 
 # 2026-11-07 10:20 · learn U-12 merged (the sixth merge)
 

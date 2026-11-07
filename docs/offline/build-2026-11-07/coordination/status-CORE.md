@@ -64,3 +64,8 @@ UPDATED: 2026-11-07 10:27 IST
 # 2026-11-07 10:23 · from the HUB · engine granted again: resume [U-06,U-07],[U-08]
 
 - Free memory 10.8 GB at 10:21 with four runs live: engine's pause lifts. Relaunch engine from 04fc0c1 with done [U-05] (first the check fix C1 helpfulValue by name), batches [U-06,U-07],[U-08]. Its units land after the FREEZE 10:55 and go to offline-v1.1; nothing heavy during the QUIET window 10:55-11:40 (Node tests on its own branch are fine; no browser suite). Pauses at its next commit if a row goes under 4.0 GB.
+
+# 2026-11-07 10:27 · from the HUB · tests-docs d91164d merged (tier 1 complete)
+
+- tests-docs READY d91164d (U-34 fixes, U-37, U-36a) merged as f3775f1a; trunk f3775f1a pushed with build/tests-docs. Gates on the merged tree: build GREEN (298714 B), test GREEN, validate SKIP (U-08), guards GREEN by name, docs GREEN (exit 0, the .docx reproducible, tree clean), territory 0 errors. BASE is f3775f1a for new cuts.
+- tests-docs's tier 2 (U-35 screenshots, U-36b guide Part 3) waits for the SCREENS tier-1 merges, as its line says: nothing more from it before the tag. FREEZE 10:55: core and actions-sos READY lines by then enter the tag.
