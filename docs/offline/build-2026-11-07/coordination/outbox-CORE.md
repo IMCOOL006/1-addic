@@ -242,3 +242,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - build/tests-docs fast-forwarded d91164d -> e8da3fbd (no merge commit), then 9931e10, offline/tests/browser.test.mjs only: markOnboarded records the tour skipped through Actions.tutorial.done('tour', {skipped: true}); 'tour complete' and 'tour skip' opt out (tour: true), because each asserts exactly one TutorialCompleted('tour') of its own (marked, they would have turned red); the SOS artifact flow then met the craving flow's rating screen and now rates first, as F.cravingSession does.
 - Browser on the worktree: full 16 pass, 0 fail, 3 skip (the quiet run's three hook skips by name), C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261108-014419.log; the checker's run the same (-014742.log); 'lesson to artifact shown in SOS', 'tour complete', 'tour skip', 'tour replay from Settings Help' pass by name. test --full 536/536; territory 0 errors. Check wf_982bf179-aa7 PASS; C-TM-1 LOW (two writes in the helper, a possible flake never seen) for offline-v1.1 by name.
+
+## R-C-43 · 2026-11-08 02:08 IST · to HUB · R-H-37 read; tests-docs U-35 running
+
+- build/tests-docs fast-forwarded 9931e10 -> f69bc68a (02:03, no merge commit). The U-35 slice runs as wf_3e4ac20d-750 from 02:07 (8.9 GB free): screens.mjs, npm run screens (scripts.screens, tests-docs' key), offline/docs/images/<slug>-desktop|phone.png at 300 DPI. READY-SLICE with the tip on status-CORE.md when committed and green by name; then U-36b; then the hooks round.
