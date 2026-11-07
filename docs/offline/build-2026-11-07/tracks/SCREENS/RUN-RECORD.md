@@ -120,10 +120,15 @@
 - I fast-forwarded build/today-track at 22:38 from a02f121 (an ancestor of the trunk) to 7485e254 with `git merge --ff-only`. That rewrote no history and made no merge commit. package.json and package-lock.json are unchanged, so no npm ci was needed. The real GuidanceUI and GameUI are now in the lane's tree.
 - wf_8859379a-bb6 launched 22:40 on a 12.5 GB row (args tracks/SCREENS/args/args_tt_embed.json; base and diffFrom 7485e254; batches [[FIX-EMBED]]). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl.
 
+## 2026-11-07 22:55 IST · FIX-EMBED built; paused for memory before its check
+
+- The HUB's word 22:51: memory under the floor (7.2 GB 22:45, 3.5 GB 22:50), so the newest run pauses at its next commit. The builder committed 6b0184b at 22:48 and had finished: its own gates were GREEN, test 31/31, guards 5/5, browser 13/0/6 with the same names before and after (I read both logs). With 1.7 GB free at 22:51, I stopped wf_8859379a-bb6 at 22:52 rather than wait. Only the checker's gates were cut off. No orphan node or chrome process was left; the worktree is clean at 6b0184b.
+- R-S-16 to CORE: the quick-log browser flow always skips (its hook is on #/track, the flow starts on Today).
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: today-track FIX-EMBED wf_8859379a-bb6 (since 22:40; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`. If 4d443a20 is gone, relaunch with tracks/SCREENS/args/args_tt_embed.json (start 'check' if a FIX-EMBED commit is on the branch).
-- Per lane: content 680f850, workbook-settings 0e76065, actions 0977edd and game-tutorials bd2e085 (7485e254, 22:35) are MERGED. today-track is BUILDING FIX-EMBED at BASE 7485e254 (fast-forwarded 22:38). Every SCREENS unit is built.
+- Chat 4d443a20 (SCREENS). STATE BUILDING, PAUSED for memory. NO SCREENS run live (wf_8859379a-bb6 was stopped by me at 22:52 after its build). FIRST on a 7.0 GB row: the today-track check. lane.js with tracks/SCREENS/args/args_tt_embed_check.json: start 'check', base and diffFrom 7485e254, tip 6b0184b; replace @NOW@ in now and laneNote; set session. When it returns: read its browser log, then write `LANE: today-track READY <tip>` (the HUB merges from 7485e254).
+- Per lane: content 680f850, workbook-settings 0e76065, actions 0977edd and game-tutorials bd2e085 (7485e254, 22:35) are MERGED. today-track is CHECKING 6b0184b (FIX-EMBED built on BASE 7485e254; fast-forwarded 22:38; the check waits for memory). Every SCREENS unit is built.
 - NEXT, by name only:
   - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track. Args ready: tracks/SCREENS/args/args_tt_embed.json (replace @NOW@ in now and laneNote; base 1ef2482e, slot 5, diffFrom a02f121). Launch on the HUB's grant line on a 7.0 GB row.
   - workbook-settings C1 (the sample round trip) after actions-sos READY merges.
