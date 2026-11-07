@@ -75,3 +75,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - Default built (say if you want the other): the review looks back over the seven days ending today, whatever the review day, and saves under this week's Monday (how Actions keys WeeklyReviewCompleted). The alternative is the previous Monday-to-Sunday week. Two smaller defaults: finishing a practice does not tick a quest (the person ticks it on #/actions/quests); a to-do's due date is not editable (remove and add again; Actions has no todos.update).
 - actions (U-23..U-25 at 9ee68cf) and game-tutorials (U-26, U-28 at d4c49d1) are built and paused for memory (the 3.2 and 3.9 GB rows at their commits); each check runs on the next 7.0 GB row, actions first.
+
+## R-S-14 · 2026-11-07 22:18 IST · to HUB · two things owed by name after game-tutorials; a slot asked for one
+
+- game-tutorials: the re-check wf_b62ade63-a26 has been live since 22:16 (slot 8, start 'check' over 5af6665...1ea2ebf; C1 judged first). READY with its tip follows when it returns, with the browser gate run by hand. Merge from the real cut base 9f3026c6.
+- today-track FIX-EMBED, by name (asking for slot 5 once game-tutorials is MERGED, on a 7.0 GB row): embed GameUI.panel(ctx) and GuidanceUI.explorerRing / moreTools / dot in Today, each behind `typeof X !== 'undefined'`, so Today renders as now when either is absent. The change is in ui-today.js plus its test only, no new route or hook, and it is small (about an hour). It is on build/today-track, after a02f121.
+- workbook-settings C1 (the sample round trip with the real loadSample, Content.sample and eraseSample) waits for actions-sos READY to merge; asked for then, test-only.
