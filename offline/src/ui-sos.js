@@ -174,8 +174,13 @@
     const other = { id: 'intl', name: String(intl.name || 'Elsewhere'), verifyNote: intl.verifyNote ? String(intl.verifyNote) : null,
       items: items(intl.lines) };
     const r = region === 'intl' ? 'intl' : 'in';
+    // Q-BUILTIN (the RS24 class): no line from Content with a number to tap: the region's list starts with the built-in
+    // emergency number, so the full view, the crisis view and the lock screen's list always have one number
+    const builtIn = ![india, other].some((s) => s.items.some((i) => i.tel));
+    if (builtIn) (r === 'intl' ? other : india).items.unshift(Object.assign(urgentItem(BUILT_IN), { builtIn: true }));
     return {
       region: r,
+      builtIn,
       sections: (r === 'intl' ? [other, india] : [india, other]).filter((s) => s.items.length),
       overdose: texts(res.overdose),
       withdrawal: texts(res.withdrawal),
@@ -537,7 +542,7 @@
       h('h2', { text: sec.name }),
       h('ul', { class: 'sos-list' }, sec.items.map((it) => {
         const i = it.tel ? ++n : 0;
-        const verify = it.verify ? h('span', { class: 'sos-verify muted', dataset: tid('urgent-verify'), text: COPY.verify }) : null;
+        const verify = it.verify ? h('span', { class: 'sos-verify muted', dataset: tid('urgent-verify'), text: it.builtIn ? COPY.checkOne : COPY.verify }) : null;
         const nid = it.note ? noteId() : null; // RS33: a line's note shows whenever it has one, with or without a number
         const main = it.tel
           ? h('a', { class: 'sos-target', href: it.tel, dataset: tid('urgent-number-' + i), 'aria-label': 'Call ' + it.name + ', ' + it.number, 'aria-describedby': nid },
@@ -559,7 +564,7 @@
       h('h1', { tabindex: '-1', class: 'sos-title', text: words.title }),
       h('p', { class: 'sos-line', text: words.line, 'aria-live': o.overdose ? 'assertive' : null }), // RS28: typed overdose words: said at once
       ...sections,
-      o.crisis && sections.length ? h('p', { class: 'muted', dataset: tid('crisis-verify'), text: COPY.crisisVerify }) : null,
+      o.crisis && sections.length && !model.builtIn ? h('p', { class: 'muted', dataset: tid('crisis-verify'), text: COPY.crisisVerify }) : null, // Q-BUILTIN: the built-in says it once
       o.crisis ? null : extra(COPY.overdose, model.overdose, o.overdose), // a crisis: the numbers and little else; RS28: open after typed overdose words
       o.crisis ? null : extra(COPY.withdrawal, model.withdrawal));
   }

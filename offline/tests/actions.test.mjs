@@ -814,7 +814,7 @@ describe('sos screens (U-10)', () => {
     assert.equal(H.urgentList(undefined, C()).region, 'in');
     assert.equal(H.urgentList('xx', C()).region, 'in');
     const bare = H.urgentList('in', {});
-    assert.deepEqual(bare.sections, [], 'no Content: no invented numbers, no throw');
+    assert.deepEqual(bare.sections.map((s) => s.items.map((i) => i.number)), [['112']], 'no Content: only the built-in emergency number (Q-BUILTIN), no throw');
   });
 
   test('crisis routing: hopeless and crisis words go to the numbers at once', () => {
@@ -2719,6 +2719,34 @@ describe('review round 5 fixes (FIX-R5)', () => {
         const lcall = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
         assert.ok(lnote && lcall && lcall.attrs['aria-describedby'] === lnote.attrs.id, 'the intl lead: the note beside its 112, and the link described by it');
       });
+    });
+    test('Q-BUILTIN: with no number from Content, Urgent help, the crisis view and the lock screen list show the built-in 112 with Please check this number.', () => {
+      const links = { intl: { name: 'Elsewhere', lines: TRUNK_INTL.lines.filter((l) => !l.tel && !l.number) } };
+      for (const [what, res] of [['Content.resources empty', {}], ['Content.resources null', null], ['links only, no number', links]]) {
+        withResources(res, () => {
+          for (const region of ['in', 'intl']) {
+            const m = H.urgentList(region, C());
+            assert.equal(m.builtIn, true, what + ', ' + region + ': the model says built-in');
+            assert.equal(m.sections[0].items[0].number, '112', what + ', ' + region + ': the region list starts with it');
+            const views = [
+              ['Urgent help', page(sosDom(), ['sos', 'urgent'], { region })],
+              ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region })],
+              ['the lock screen', sosDom().UI.sosUrgentView({ profile: { region } })],
+            ];
+            for (const [where, root] of views) {
+              const label = what + ', ' + region + ', ' + where;
+              const tels = root.querySelectorAll('a').filter((a) => String(a.attrs.href || '').startsWith('tel:'));
+              assert.ok(tels.length >= 1 && tels[0].attrs.href === 'tel:112', label + ': the built-in number, one tap');
+              assert.ok(/^Call /.test(tels[0].attrs['aria-label'] || ''), label + ': it says whom it calls');
+              assert.ok(root.textContent.includes(H.COPY.checkOne), label + ': Please check this number.');
+              assert.ok(!root.textContent.includes(H.COPY.crisisVerify), label + ': said once');
+            }
+          }
+        });
+      }
+      const real = H.urgentList('in', C());
+      assert.equal(real.builtIn, false, 'with numbers from Content, no built-in');
+      assert.ok(real.sections.every((s) => s.items.every((i) => !i.builtIn)));
     });
     // -- FIX-R6 tests end --
   });
