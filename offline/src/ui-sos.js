@@ -186,6 +186,8 @@
   // first two international lines with a number: the local emergency line). Never none, whatever Content holds: then
   // the built-in emergency number, as core's URGENT.builtIn, with Please check this number. The full list is one tap away.
   const BUILT_IN = Object.freeze({ name: 'Emergency', number: '112', verify: true });
+  let noteSeq = 0; // RS33: each drawn note has its own id, so the link to its number is described by it
+  const noteId = () => 'sos-note-' + (noteSeq += 1);
   function leadList(region, C) {
     const res = safe(() => C.resources, {}) || {};
     const one = (arr) => (Array.isArray(arr) ? arr.map(urgentItem).filter((i) => i && i.name && i.tel) : []);
@@ -516,10 +518,11 @@
     const items = leadList(safe(() => c.profile.region, 'in'), Cn());
     return h('section', { class: 'stack sos-lead', 'aria-label': COPY.urgent.title, dataset: tid('sos-urgent-lead') },
       h('p', { class: 'sos-line', id: LEAD.id, text: LEAD.line }),
-      ...items.map((it, k) => h('div', { class: 'row' },
-        h('a', { class: 'sos-target', href: it.tel, dataset: tid('sos-lead-number-' + (k + 1)), 'aria-label': 'Call ' + it.name + ', ' + it.number },
+      ...items.map((it, k) => { const nid = it.note ? noteId() : null; return h('div', { class: 'row' },
+        h('a', { class: 'sos-target', href: it.tel, dataset: tid('sos-lead-number-' + (k + 1)), 'aria-label': 'Call ' + it.name + ', ' + it.number, 'aria-describedby': nid },
           h('span', { class: 'sos-target-name', text: it.name }), h('span', { class: 'sos-target-number', text: it.number })),
-        it.verify ? h('span', { class: 'sos-verify muted', text: it.builtIn ? COPY.checkOne : COPY.verify }) : null)),
+        nid ? h('span', { class: 'muted', id: nid, text: it.note }) : null, // RS33: the line's note, beside its number
+        it.verify ? h('span', { class: 'sos-verify muted', text: it.builtIn ? COPY.checkOne : COPY.verify }) : null); }),
       link(COPY.leadAll, '#/sos/urgent', { testid: 'sos-lead-all' })); // RS24: the full list, one tap
   }
 
@@ -535,13 +538,14 @@
       h('ul', { class: 'sos-list' }, sec.items.map((it) => {
         const i = it.tel ? ++n : 0;
         const verify = it.verify ? h('span', { class: 'sos-verify muted', dataset: tid('urgent-verify'), text: COPY.verify }) : null;
+        const nid = it.note ? noteId() : null; // RS33: a line's note shows whenever it has one, with or without a number
         const main = it.tel
-          ? h('a', { class: 'sos-target', href: it.tel, dataset: tid('urgent-number-' + i), 'aria-label': 'Call ' + it.name + ', ' + it.number },
+          ? h('a', { class: 'sos-target', href: it.tel, dataset: tid('urgent-number-' + i), 'aria-label': 'Call ' + it.name + ', ' + it.number, 'aria-describedby': nid },
             h('span', { class: 'sos-target-name', text: it.name }), h('span', { class: 'sos-target-number', text: it.number }))
           : h('div', { class: 'sos-target' }, h('span', { class: 'sos-target-name', text: it.name }),
-            it.url ? h('span', { class: 'sos-target-number', text: it.url }) : it.note ? h('span', { class: 'muted', text: it.note }) : null);
+            it.url ? h('span', { class: 'sos-target-number', text: it.url }) : null);
         const copyWhat = it.number || it.url;
-        return h('li', { class: 'stack' }, main,
+        return h('li', { class: 'stack' }, main, nid ? h('span', { class: 'muted', id: nid, text: it.note }) : null,
           h('div', { class: 'row' },
             copyWhat ? h('button', { type: 'button', class: 'btn ghost', text: 'Copy', dataset: i ? tid('urgent-copy-' + i) : null,
               'aria-label': 'Copy ' + copyWhat, style: { width: 'auto', minHeight: '44px' }, onClick: () => copyText(copyWhat) }) : null,

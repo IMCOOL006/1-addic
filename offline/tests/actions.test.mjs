@@ -2692,5 +2692,35 @@ describe('review round 5 fixes (FIX-R5)', () => {
     assert.equal(H.CRISIS.clinicalReview, true);
     for (const t of ['I could not sleep', 'I miss my friends', 'I can do this', 'I want to stop drinking']) assert.equal(H.isCrisisText(t, null), false, t);
   });
+  // ── FIX-R6 (2026-11-07, rulings 17:22 and 17:57): RS33, Q-BUILTIN, Q-SPIRAL (RS-SAMPLE and RS9T sit with U-09) ──
+  describe('review round 6 fixes (FIX-R6)', () => {
+    beforeEach(async () => { await S().resetAll(); });
+    const NOTE = 'Usually 112, 911 or 999'; // the trunk's note beside its local emergency line (TRUNK_INTL)
+    test('RS33: a line shows its note with or without a number: Usually 112, 911 or 999 beside the one-tap 112 on Urgent help, the lock screen, the crisis view and the intl lead', () => {
+      withResources(trunkRes(), () => {
+        const d = sosDom();
+        const views = [
+          ['Urgent help', page(d, ['sos', 'urgent'], { region: 'intl' })],
+          ['the lock screen', d.UI.sosUrgentView({})],
+          ['the crisis view', typedIn(sosDom(), 'I wanna be dead', { region: 'intl' })],
+        ];
+        for (const [what, root] of views) {
+          const elsewhere = root.querySelectorAll('section').find((s) => s.attrs['aria-label'] === 'Elsewhere');
+          assert.ok(elsewhere, what + ': the Elsewhere section');
+          const note = elsewhere.querySelectorAll('span').find((s) => s.textContent.trim() === NOTE);
+          assert.ok(note, what + ': ' + NOTE + ' is shown');
+          const call = elsewhere.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+          assert.ok(call && note.attrs.id && call.attrs['aria-describedby'] === note.attrs.id, what + ': the one-tap 112 is described by its note');
+        }
+        const first = C().resources.in.emergency[0];
+        assert.ok(first.note && page(sosDom(), ['sos', 'urgent'], { region: 'in' }).textContent.includes(first.note), 'India: a line with a number shows its note too');
+        const lead = typedIn(sosDom(), 'I feel strange today', { region: 'intl' }).querySelector('[data-testid="sos-urgent-lead"]');
+        const lnote = lead && lead.querySelectorAll('span').find((s) => s.textContent.trim() === NOTE);
+        const lcall = lead && lead.querySelectorAll('a').find((a) => a.attrs.href === 'tel:112');
+        assert.ok(lnote && lcall && lcall.attrs['aria-describedby'] === lnote.attrs.id, 'the intl lead: the note beside its 112, and the link described by it');
+      });
+    });
+    // -- FIX-R6 tests end --
+  });
   // -- FIX-R5 tests end --
 });
