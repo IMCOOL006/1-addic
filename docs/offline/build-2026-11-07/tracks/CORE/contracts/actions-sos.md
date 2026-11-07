@@ -137,3 +137,11 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **RS9T (test-only):** actions.test.mjs 'validation failures write nothing' (:304) uses a stub Content without `sample` for the refusal case, so it passes with and without Content.sample.
 - FIX-R6 also carries whatever FIX-R5's re-check leaves open (HIGH or MEDIUM only).
 - **Kept for FIX-SCREENS-ASKS (after READY):** comebacksFrom reads Content.comebacks before FALLBACK.talkback; spiralPairs; the Reasons Card link; the R-C-9 copy suggestions (each for clinical review; the built copy stands until then; COPY.withdrawal may take SCREENS' line 'Stopping heavy daily drinking or sedatives suddenly can be dangerous. Talk to a doctor first.').
+
+## The CORE chat's rulings 2026-11-07 17:57 IST: the safety re-check at 1cfc936 (run wf_fa0d78f5-b07; RS24, RS29-RS32, RS22T FIXED; these join FIX-R6)
+
+- **RS33 (MEDIUM, a regression of 27b4f3b):** every urgent line draws its note whenever it has one, with or without a tel (urgentView and leadView), so 'Usually 112, 911 or 999' shows beside the one-tap 112. A test on the trunk shape.
+- **Q-BUILTIN (ruled yes, the RS24 class):** urgentList falls back to the built-in 'Emergency 112' with 'Please check this number.' when Content gives no section, so the full urgent view, the crisis view and the lock screen's list always have one number. A test with empty Content.resources.
+- **Q-SPIRAL (ruled):** RS9's filter drops a crisis or 'hopeless' thought only when it would get a stock reply; a thought the person answered with their own reply keeps its pair (their own words).
+- **RS34 (LOW):** more overdose wordings ('I took 20 pills', 'the whole bottle'): offline-v1.1 by name (the lists are closed; the lead with numbers covers them).
+- **FIX-R6 is therefore:** RS-SAMPLE (MEDIUM, a tag condition), RS33 (MEDIUM), Q-BUILTIN, Q-SPIRAL, RS9T. Then the safety re-check; READY when it is clean of HIGH and MEDIUM.
