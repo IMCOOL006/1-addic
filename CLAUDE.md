@@ -21,8 +21,11 @@ In the cloud:
 
 ## Project docs
 
-- `docs/START-HERE.md` explains where the project stands, how to set up on a local machine (where the session-start hook doesn't run: use `npm install` and `npx playwright install chromium`), and the next steps with their prompts.
+- `docs/START-HERE.md` explains where the project stands, how to continue on the owner's own computer (where the session-start hook doesn't run), and the next steps with their prompts.
 - `docs/PLAN.md` is the product and execution plan. It's a draft under review: don't start building until the owner approves it, and record settled decisions as ADRs in `docs/decisions/`.
 - `docs/BUILD-GUIDE.md` is the step-by-step build guide, with a ready-to-paste prompt and a done-when checklist for every step. Its "house rules" apply to all build work.
 - `docs/book/` holds paraphrased reference notes on the source workbook (one file per chapter, plus `exercises.md` and `glossary.md`). Read these instead of re-reading the epub.
 - The source book is copyrighted. Never commit the epub, extracted text, or verbatim passages. If you need to re-extract it, put the epub in `data/` (git-ignored) and run `python3 -I scripts/epub_to_text.py data/<book>.epub <scratch-dir>`.
+- `docs/1-addic-execution-plan.docx` is the readable execution plan for the owner, designers, clinical reviewer and testers. Don't edit it by hand: it is generated from `scripts/execution_plan/content.md`, `docs/BUILD-GUIDE.md` and `docs/book/exercises.md` by `node scripts/build_execution_plan_doc.js`, and checked by `python3 scripts/check_execution_plan_doc.py`. Rebuild it after changing the plan or the guide.
+- `docs/1-addic-decisions-needed.docx` is the owner's questionnaire: every decision and input the project needs, with options and recommendations. Generated from `scripts/execution_plan/decisions.md` by `node scripts/build_decisions_doc.js`; check with `python3 scripts/check_execution_plan_doc.py docs/1-addic-decisions-needed.docx --briefs-only`.
+- `docs/program/` holds the Early Access plan and the proposed build program (`EARLY-ACCESS-AND-PROGRAM.md`, rendered to `docs/1-addic-early-access-and-program.docx` by `node scripts/build_doc.js`). Owner inputs are in `docs/decisions/owner-inputs.md`. The program's files (protocol, status, outboxes, agents, gates) are created only after the owner approves the proposal.
