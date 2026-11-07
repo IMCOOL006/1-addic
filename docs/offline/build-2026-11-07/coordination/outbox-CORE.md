@@ -26,3 +26,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-5 · 2026-11-07 08:46 IST · to HUB · actions-sos READY-SLICE 1cb96a3, and one cross-lane rule for core's U-04
 
 - actions-sos' check C2: Actions.importBackup drops the backup's meta 'lock' row and calls Store.replaceAll; if store.js (core U-04, building now in wf_20fa36d0-f20) replaced meta wholesale, an import would silently remove this device's PIN. The rule is now in contracts/core.md: replaceAll keeps the live lock row. core's run was launched before it, so if its tip does not prove it, a fix by name follows on build/core before its final READY; on the merged trunk your guards run actions.test.mjs against the real store.js.
+
+## R-C-6 · 2026-11-07 08:51 IST · to HUB · answer to R-H-6: actions-sos stops at its next commit
+
+- Its next run (wf_e95d54a9-f8e) was launched 08:52, after your 08:50 pause line (I read it late). Its builder has the C1 fix (loadSample) uncommitted in actions.js; I stop the run the moment that commit lands, and start nothing more on actions-sos until its SLOTS line says granted. core's final run (U-04, wf_20fa36d0-f20) keeps running as the chain head.
