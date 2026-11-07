@@ -549,9 +549,10 @@ const Actions = (() => {
       const p = clone(patch);
       if (typeof p.name === 'string') p.name = p.name.trim();
       return write('contact update', stamp(), (tx) => {
-        const next = Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), p, { id });
-        delete next.sample; // RS37: the person's edit makes a sample contact theirs: SOS shows it, eraseSample keeps it
-        return tx.put('contacts', next);
+        const prev = needRow(tx, 'contacts', id, 'bad-contact', 'Contact');
+        // RS37, RS38: the person's edit makes a sample contact theirs (SOS shows it, eraseSample keeps it); a Save with
+        // no change, or Show again (active only), keeps the mark
+        return tx.put('contacts', claimRow(prev, p, Object.assign({}, prev, p, { id })));
       });
     },
     async deactivate(id) {

@@ -2890,6 +2890,20 @@ describe('review round 5 fixes (FIX-R5)', () => {
       await Actions.eraseSample();
       assert.deepEqual([row('todos', 'smp-todo-1'), row('contacts', 'smp-con-1'), row('plans', 'smp-plan-2')], [null, null, null], 'eraseSample takes them');
     });
+    test('RS38: contacts.update keeps the sample mark for a patch that changes nothing (the same name; Save with no edit) or only a flag (Show again); eraseSample takes the contact', async () => {
+      await loadSmp();
+      const sc = smp().contacts[0];
+      await Actions.contacts.update(sc.id, { name: sc.name });
+      assert.equal(row('contacts', sc.id).sample, true, "the same name: still the sample's");
+      // the trunk's Save sends the whole form (ui-workbook.js:319, contactPayload :127-133): with no edit, the same values
+      await Actions.contacts.update(sc.id, { name: sc.name, role: sc.role, strategy: sc.strategy, phone: sc.phone, note: sc.note });
+      assert.equal(row('contacts', sc.id).sample, true, "Save with no edit: still the sample's");
+      await Actions.contacts.deactivate(sc.id);
+      await Actions.contacts.update(sc.id, { active: true }); // the trunk's showContact (ui-workbook.js:281)
+      assert.deepEqual([row('contacts', sc.id).sample, row('contacts', sc.id).active], [true, true], "Show again: shown, still the sample's");
+      await Actions.eraseSample();
+      assert.equal(row('contacts', sc.id), null, 'eraseSample takes it');
+    });
     // -- FIX-R7 tests end --
   });
   // -- FIX-R5 tests end --
