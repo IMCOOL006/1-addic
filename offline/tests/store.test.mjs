@@ -400,4 +400,41 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     dlg.flush();
     assert.equal(dlg.open, false);
   });
+
+  test('C3: an open sheet closes when the app locks and nothing of it stays; inside SOS the lock never interrupts it', async () => {
+    setup();
+    const dlg = dialogStandIn();
+    const S = lockedStore('2468');
+    S.locked = false;
+    globalThis.Store = S;
+    UI.pages.today = page('today');
+    at('#/today');
+    await UI.render();
+    const why = [];
+    UI.sheet('Your reasons', page('PRIVATE reason')(), { onClose: (w) => why.push(w) });
+    assert.equal(dlg.open, true);
+    assert.match(dlg.textContent, /PRIVATE/);
+    S.locked = true; // the app locks
+    await UI.render();
+    assert.deepEqual(why, ['locked']);
+    assert.equal(dlg.open, false);
+    assert.equal(dlg.kids.length, 0, 'nothing of the person’s stays in the dialog');
+    assert.equal(location.hash, '#/lock');
+    assert.match(main().textContent, /Locked/);
+    assert.ok(!main().textContent.includes('PRIVATE'));
+    dlg.flush();
+    S.locked = false;
+    UI.pages.sos = page('SOS PAGE');
+    at('#/sos/craving');
+    await UI.render();
+    const sos = UI.sheet('Breathe', page('Breathe out slowly.')(), { onClose: (w) => why.push(w) });
+    S.locked = true; // the app locks during SOS
+    await UI.render();
+    assert.equal(location.hash, '#/sos/craving', 'SOS is never gated');
+    assert.equal(dlg.open, true, 'a sheet inside SOS is never interrupted by the lock');
+    assert.match(dlg.textContent, /Breathe out slowly/);
+    assert.deepEqual(why, ['locked']);
+    sos.close();
+    dlg.flush();
+  });
 });
