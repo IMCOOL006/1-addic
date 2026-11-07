@@ -1863,3 +1863,35 @@ describe('review round 2 fixes (RC14-RC20)', () => {
   });
   // -- review round 2 tests end --
 });
+
+// ── FIX-R2-SAFETY (2026-11-07, rulings 13:55): review round 2's open safety findings RS10 to RS14 ──
+describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
+  const H = require(src('ui-sos.js'));
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS10: typed crisis text in its inflected forms goes to the numbers; Next on Something else shows them', () => {
+    const yes = [
+      'I keep cutting myself', 'thinking about killing myself', 'I want to harm myself', 'I have been self harming', 'I keep wanting to die',
+      'thoughts of death', 'killing myself', 'hurting myself', 'harming myself', 'hanging myself', 'self-harming again', 'I self harmed',
+      'part of me wants to die', 'I wanted to die', 'thinking about death', 'thinking about dying', 'thoughts about suicide',
+      'life is not worth living', "life isn't worth living", 'life isn’t worth living', 'I hope I never wake up',
+    ];
+    for (const t of yes) assert.equal(H.isCrisisText(t, null), true, t);
+    for (const t of ['killing time', 'I hurt my knee', 'I want a life worth living', 'thinking about dinner', 'I woke up late', 'I cut down on tea']) {
+      assert.equal(H.isCrisisText(t, null), false, t);
+    }
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+    for (const t of ['I keep cutting myself', 'thoughts of death', 'I keep wanting to die']) {
+      const d = sosDom();
+      const root = d.open(['sos', 'feeling']);
+      d.tapId(root, 'sos-feeling-other');
+      root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+      d.tap(root, 'Next');
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    }
+  });
+  // -- FIX-R2-SAFETY tests end --
+});
