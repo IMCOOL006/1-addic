@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 23:28 IST: today-track READY 6b0184b for the HUB (FIX-EMBED; check PASS; browser GREEN 13/0/6 run and read by me). No SCREENS run live. Every SCREENS unit is built; left by name: workbook-settings C1 (after actions-sos), R-S-16 (CORE's answer), LOWs for offline-v1.1. Hand-over planned (context past 250k)
+STATE: BUILDING   # 2026-11-07 23:33 IST: every SCREENS lane MERGED and complete (today-track 6b0184b merged 23:30 as 4006fae2; BASE 4006fae2). No SCREENS run live; nothing starts until actions-sos merges (R-H-33): then workbook-settings C1 by name on a 7.0 GB row; then QUIET and the tag offline-v1.1 (no heavy run while QUIET)
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track READY 6b0184b   # FIX-EMBED 6b0184b on BASE 7485e254 (fast-forwarded 22:38; base and diffFrom 7485e254; ui-today.js and its test only); check PASS wf_1e226e2d-c2b (test 31/31, validate, guards 5/5 GREEN; territory 2 own, 0 errors); browser GREEN 13/0/6 by me on 6b0184b
+LANE: today-track MERGED 6b0184b   # FIX-EMBED merged 23:30 (4006fae2); U-15..U-18 merged 17:01; complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 23:28 IST
+UPDATED: 2026-11-07 23:33 IST
 
 # 2026-11-07 23:28 IST · today-track READY 6b0184b (FIX-EMBED by name, R-S-14)
 

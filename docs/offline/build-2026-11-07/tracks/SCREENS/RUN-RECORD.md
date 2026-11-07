@@ -139,11 +139,11 @@
 - Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 2026-11-07 23:28 IST. Context past 250k: at 300k this chat writes STATE: RESTART and stops; the launcher starts a fresh SCREENS chat.
 - Per lane (merged tips are on origin; READY tips are local until the HUB pushes them):
   - MERGED: content 680f850, workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254, 22:35).
-  - today-track 6b0184b READY for the HUB (FIX-EMBED; base 7485e254 after the 22:38 fast-forward). When the HUB writes MERGED for it, set its LANE line to MERGED.
+  - today-track 6b0184b MERGED 23:30 (4006fae2; BASE 4006fae2). Every SCREENS lane is merged and complete (R-H-33).
   - Every SCREENS unit is built.
 - NEXT, by name only:
   - (1) A red the HUB sends back for today-track 6b0184b or game-tutorials: fix it on the branch within the hour, two rounds at most. The browser gate is not run by lane.js's checker unless the laneNote insists and memory allows: run it by hand with `python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser`, then `git checkout -- offline/1-addic.html`.
-  - (2) workbook-settings C1 (the sample round trip with the real Actions.loadSample, Content.sample and eraseSample), test-only, once actions-sos READY merges: ask the HUB for slot 6; base it on the then BASE by fast-forwarding build/workbook-settings (0e76065 is in the trunk) as done for today-track.
+  - (2) Nothing starts until actions-sos merges (R-H-33). Then, before QUIET: workbook-settings C1 (the sample round trip with the real Actions.loadSample, Content.sample and eraseSample), test-only, once actions-sos READY merges: ask the HUB for slot 6; base it on the then BASE by fast-forwarding build/workbook-settings (0e76065 is in the trunk) as done for today-track.
   - (3) R-S-16 (CORE, tests-docs): the quick-log browser flow skips because its hook is on #/track. If CORE asks today-track to put the hook on Today too, do it by name.
   - (4) LOWs for offline-v1.1: game-tutorials C1 (the below-target branch of place() untested), content C2-C4.
 - Args: tracks/SCREENS/args/ (args_tt_embed.json and _check.json for today-track; args_gt_fixtour.json for game-tutorials). Helpers setlane.py and rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>.
