@@ -73,6 +73,17 @@ async function withSample(sample, fn) {
   if (sample === undefined) delete C().sample; else C().sample = sample;
   try { return await fn(); } finally { if (had) C().sample = old; else delete C().sample; }
 }
+// the trunk's Content.sample (content U-33, 42d2467d content-sample.js) by a stand-in of its shape: generate(nowIso)
+// gives {stores}, every row marked sample: true, the profile 'me' among them; a settings 'app' row too, as RS-SAMPLE names it
+const TRUNK_SAMPLE = { name: 'Sample', generate: (now) => ({ stores: {
+  profile: [{ key: 'me', name: 'Sample', companion: 'Kite', substances: ['Alcohol'], term: 'sober', startDate: daysAgo(28), notSure: false,
+    stage: 'action', region: 'in', checkin: { morning: '08:30', evening: '21:30' }, reviewDay: 0, pace: 'steady', customPerWeek: null,
+    roadmapStart: daysAgo(28), onboardedAt: now, medical: { heavyDaily: false, sedatives: false, opioids: false }, locale: 'en', sample: true }],
+  settings: [{ key: 'app', theme: 'light', sample: true }],
+  events: [{ id: 'smp-ev-1', type: 'OnboardingCompleted', at: now, payload: {}, sample: true }],
+  logs: [{ id: 'smp-log-1', type: 'craving', at: now, date: E().todayStr(now), hour: 20, intensity: 6, triggerIds: [], feelings: [], skills: [],
+    drill: false, sample: true }],
+} }) };
 async function someData() {
   await Actions.onboard({ name: 'Asha', startDate: daysAgo(12), substances: ['Alcohol'] });
   await Actions.sosSession({ kind: 'craving', ratingBefore: 7, ratingAfter: 3, tools: [{ skillId: 'ride-wave', helpful: true }] });
@@ -523,6 +534,55 @@ describe(`actions (U-09; store: ${REAL_STORE ? 'real' : 'stand-in'}, engine: ${R
       assert.deepEqual(S().view.get('logs', mine.log.id), before.log);
       assert.deepEqual(S().view.get('profile', 'me'), before.profile);
       assert.equal(list('events').length, eventsBefore);
+    });
+  });
+
+  test('RS-SAMPLE: an onboarded profile and settings survive loadSample then eraseSample unchanged', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5), substances: ['Alcohol'] });
+    await Actions.settings.patch({ theme: 'dark' });
+    const mine = { profile: S().view.get('profile', 'me'), settings: S().view.get('settings', 'app') };
+    assert.ok(mine.profile && mine.settings && mine.profile.sample !== true && mine.settings.sample !== true);
+    await withSample(TRUNK_SAMPLE, async () => {
+      await Actions.loadSample();
+      assert.deepEqual(S().view.get('profile', 'me'), mine.profile, 'loadSample leaves the own profile as it was');
+      assert.deepEqual(S().view.get('settings', 'app'), mine.settings, 'and the own settings');
+      assert.equal(S().view.get('logs', 'smp-log-1').sample, true, 'the rest of the sample loads');
+      await Actions.eraseSample();
+    });
+    assert.deepEqual(S().view.get('profile', 'me'), mine.profile, 'eraseSample leaves the own profile as it was');
+    assert.deepEqual(S().view.get('settings', 'app'), mine.settings, 'and the own settings');
+    assert.equal(S().view.get('logs', 'smp-log-1'), null, 'the sample rows are gone');
+  });
+
+  test("RS-SAMPLE: a fresh notebook gets the sample profile, marked, and eraseSample takes it; the person's own acts over sample rows are theirs and stay", async () => {
+    const tip = C().tips[0].id;
+    await withSample(TRUNK_SAMPLE, async () => {
+      await Actions.loadSample();
+      const p = S().view.get('profile', 'me');
+      assert.ok(p && p.name === 'Sample' && p.sample === true, 'a fresh store gets the sample profile, marked');
+      assert.equal(S().view.get('settings', 'app').sample, true, 'and the sample settings, marked');
+      await Actions.eraseSample();
+      assert.equal(S().view.get('profile', 'me'), null, 'eraseSample takes the sample profile');
+      assert.equal(S().view.get('settings', 'app'), null, 'and the sample settings');
+      const acts = [ // [what, the act, the keyed rows it writes]
+        ['onboarding', () => Actions.onboard({ name: 'Asha', startDate: daysAgo(3), substances: ['Alcohol'] }), [['profile', 'me'], ['settings', 'app']]],
+        ['a settings change', () => Actions.settings.patch({ theme: 'dark' }), [['settings', 'app']]],
+        ['a tip shown', () => Actions.markTipShown(tip), [['settings', 'app']]],
+      ];
+      for (const [what, act, rows] of acts) {
+        await S().resetAll();
+        await Actions.loadSample();
+        await act();
+        const kept = rows.map(([s, k]) => S().view.get(s, k));
+        rows.forEach(([s], i) => assert.ok(kept[i] && kept[i].sample !== true, what + ': the ' + s + ' row is the person\'s own, not marked'));
+        if (rows[0][0] === 'profile') {
+          assert.equal(kept[0].name, 'Asha');
+          assert.notEqual(kept[0].companion, 'Kite', what + ': nothing of the sample profile in it');
+        }
+        await Actions.eraseSample();
+        rows.forEach(([s, k], i) => assert.deepEqual(S().view.get(s, k), kept[i], what + ': eraseSample keeps the ' + s + ' row'));
+        assert.equal(S().view.get('logs', 'smp-log-1'), null, what + ': the sample rows are gone');
+      }
     });
   });
 

@@ -212,7 +212,7 @@ const Actions = (() => {
     const at = stamp();
     const p = clone(patch);
     return write('onboard', at, (tx) => {
-      const prev = tx.get('profile', 'me');
+      const prev = ownRow(tx, 'profile', 'me'); // RS-SAMPLE: a sample profile is not the person's: theirs starts fresh, unmarked
       const firstTerm = idsOf(getContent().terms);
       const base = { key: 'me', name: '', companion: '', substances: [], term: firstTerm ? firstTerm[0] : 'sober', startDate: null,
         notSure: false, stage: null, region: 'in', checkin: { morning: null, evening: null }, reviewDay: 0, pace: 'steady',
@@ -224,7 +224,7 @@ const Actions = (() => {
       profile.locale = 'en';
       profile.onboardedAt = (prev && prev.onboardedAt) || at;
       tx.put('profile', profile);
-      const settings = settingsRow(tx.get('settings', 'app'));
+      const settings = settingsRow(ownRow(tx, 'settings', 'app')); // RS-SAMPLE: nor sample settings
       tx.put('settings', settings);
       if (!tx.has('OnboardingCompleted')) tx.event('OnboardingCompleted', {});
       return { profile, settings, events: tx.events };
@@ -240,7 +240,7 @@ const Actions = (() => {
     const at = stamp();
     const p = clone(patch);
     return write('settings', at, (tx) => {
-      const prev = settingsRow(tx.get('settings', 'app'));
+      const prev = settingsRow(ownRow(tx, 'settings', 'app')); // RS-SAMPLE: a change over sample settings starts the person's own row
       const next = Object.assign({}, prev, p, { key: 'app' });
       /* milestones seen are a record: they only grow */
       if (own(p, 'milestonesSeen')) next.milestonesSeen = [...new Set([...(prev.milestonesSeen || []), ...p.milestonesSeen])].sort((a, b) => a - b);
@@ -794,7 +794,7 @@ const Actions = (() => {
     const at = stamp();
     return write(`tip ${id}`, at, (tx) => {
       const tip = tx.put('tips', { id, shownAt: at });
-      tx.put('settings', Object.assign(settingsRow(tx.get('settings', 'app')), { lastTipDay: localDate(at) }));
+      tx.put('settings', Object.assign(settingsRow(ownRow(tx, 'settings', 'app')), { lastTipDay: localDate(at) })); // RS-SAMPLE
       return tip;
     });
   }
@@ -893,9 +893,11 @@ const Actions = (() => {
     return { erased: true };
   }
   /* O6: sample rows come from Content.sample.generate(now) as {stores:{name: rows}} (or the map itself). Sample rows
-     never overwrite the person's own rows: the keyed stores (profile, settings, meta, recoveryPlan) are never written
-     from a sample, and a row whose id already exists is skipped. Every row written carries `sample: true`, and the
-     meta 'sample' row marks the load; eraseSample removes those rows only, eraseAll removes everything. */
+     never overwrite the person's own rows: of the keyed stores, only profile 'me' and settings 'app' come from a
+     sample, and only where the notebook has no own row (none, or one marked sample: true: RS-SAMPLE); meta and
+     recoveryPlan rows never do; a row whose id already exists is skipped. Every row written carries `sample: true`, and
+     the meta 'sample' row marks the load; eraseSample removes those rows only, eraseAll removes everything. */
+  const SAMPLE_KEYED = Object.freeze({ profile: 'me', settings: 'app' });
   async function loadSample() {
     const C = getContent();
     if (!C.sample || typeof C.sample.generate !== 'function') fail('no-sample', 'Sample data is not in this version yet.');
@@ -913,7 +915,9 @@ const Actions = (() => {
       for (const [name, rows] of Object.entries(s)) {
         const kp = map[name];
         for (const r of rows) {
-          if (kp === 'key' || tx.get(name, r[kp]) != null) { skipped += 1; continue; }
+          const prev = tx.get(name, r[kp]);
+          const skip = kp === 'key' ? !(own(SAMPLE_KEYED, name) && SAMPLE_KEYED[name] === r[kp]) || (prev != null && prev.sample !== true) : prev != null;
+          if (skip) { skipped += 1; continue; } // RS-SAMPLE: an own row, or a keyed row a sample never writes
           tx.put(name, Object.assign(r, { sample: true }));
           count += 1;
         }
@@ -930,7 +934,7 @@ const Actions = (() => {
     return write('erase sample', stamp(), (tx) => {
       let count = 0;
       for (const name of Object.keys(map)) {
-        if (map[name] === 'key') continue;
+        if (name === 'meta') continue; // RS-SAMPLE: the keyed sample rows go too (profile, settings); of meta, the 'sample' row below
         for (const r of tx.list(name) || []) {
           if (r && r.sample === true) { tx.del(name, r[map[name]]); count += 1; }
         }
