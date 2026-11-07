@@ -224,7 +224,12 @@ test('mastery: levels at 1/3/7/15/30 uses, helpfulAvg and lastAt', () => {
   }
   const m = E.mastery([ev('SkillUsed', { skillId: 'sober', helpful: true }, at(day(-2))), ev('SkillUsed', { skillId: 'sober', helpful: false }, at(day(-1))), ev('SkillUsed', { skillId: 'sober' })]);
   assert.deepEqual(m.sober, { uses: 3, level: 2, helpfulAvg: 0.5, lastAt: NOW });
-  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'x', helpful: 5 }), ev('SkillUsed', { skillId: 'x', helpful: 0 })]).x.helpfulAvg, 0.5);
+  /* C1: true/false and 1/0 only; any other value (3, a 1-5 rating) reads as null and is left out */
+  const hx = E.mastery(['true', 'false', 1, 0, 3].map((h) => ev('SkillUsed', { skillId: 'x', helpful: h === 'true' ? true : h === 'false' ? false : h })));
+  assert.equal(hx.x.uses, 5);
+  assert.equal(hx.x.helpfulAvg, 0.5);
+  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'z', helpful: 3 })]).z.helpfulAvg, null);
+  assert.equal(E.mastery([ev('SkillUsed', { skillId: 'w', helpful: 1 }), ev('SkillUsed', { skillId: 'w', helpful: 5 })]).w.helpfulAvg, 1);
   assert.equal(E.mastery([ev('SkillUsed', { skillId: 'y' })]).y.helpfulAvg, null);
   assert.deepEqual(E.mastery([ev('SkillUsed', {})]), {});
 });
@@ -456,4 +461,36 @@ test('makeView: get by keyPath, list copies, count; missing stores give []', () 
   assert.deepEqual(v.list('plans'), []);
   v.list('events').push({});
   assert.equal(v.count('events'), 1);
+});
+
+/* ── CORE rulings of 10:45: sample rows and the SosCompleted outcome ───────────────────── */
+
+test('sample: events and rows marked sample:true never award anything', () => {
+  const sample = [ev('LogCreated', { logId: 'l1', type: 'craving' }), ev('SosCompleted', { outcome: 'passed' }), ev('SkillUsed', { skillId: 'sober', helpful: true })]
+    .map((e) => Object.assign(e, { sample: true }));
+  assert.deepEqual(E.xpFromEvents(sample, NOW), E.xpFromEvents([], NOW));
+  assert.deepEqual(E.mastery(sample), {});
+  const v = E.makeView({ events: sample, contacts: [1, 2, 3].map((i) => ({ id: `c${i}`, role: 'safetyNet', active: true, sample: true })) });
+  assert.deepEqual(E.badges(v, NOW), []);
+  assert.deepEqual(E.gameState(v, NOW), E.gameState(E.makeView({}), NOW));
+});
+
+test('sample: erasing sample rows lowers nothing that real rows earned', () => {
+  const real = [ev('LogCreated', { logId: 'l1', type: 'craving' }), ev('SosCompleted', { outcome: 'passed' })];
+  const sample = [ev('LessonCompleted', { lessonId: 'x' }), ev('SosCompleted', { outcome: 'passed' })].map((e) => Object.assign(e, { sample: true }));
+  const withSample = E.gameState(E.makeView({ events: real.concat(sample) }), NOW);
+  const erased = E.gameState(E.makeView({ events: real }), NOW);
+  assert.deepEqual(erased, withSample);
+});
+
+test('sosOutcome: passed, still and used; anything else reads as other; still earns no First Wave', () => {
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'passed' })), 'passed');
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'still' })), 'still');
+  assert.equal(E.sosOutcome({ outcome: 'used' }), 'used');
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'maybe' })), 'other');
+  assert.equal(E.sosOutcome(ev('SosCompleted', {})), 'other');
+  assert.equal(E.sosOutcome(null), 'other');
+  const v = E.makeView({ events: [ev('SosCompleted', { outcome: 'still' })] });
+  assert.equal(E.badges(v, NOW).some((b) => b.id === 'first-wave'), false);
+  assert.ok(E.xpFromEvents(v, NOW).total > 0, 'a session that did not pass still earns its XP');
 });
