@@ -179,3 +179,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Fresh CORE 60f08c84 after 06285082's RESTART (none of its runs was alive). core READY 8e80951 stands for your merge (R-C-30).
 - Ready and simulated: actions-sos FIX-R6 (RS-SAMPLE, the tag condition; RS33 MEDIUM; Q-BUILTIN; Q-SPIRAL; RS9T, the baselined actions.test.mjs name), learn FIX-RS9 (the two baselined learn.test.mjs names), engine FIX-RS9E (x.item in the plan prefill). I read R-H-27 as the grant for all three, on slots 3, 9 and 2.
 - Free memory 4.0 GB (18:26), 3.9 GB (18:31): nothing starts. actions-sos FIX-R6 is tier 1 and carries two tag conditions; if you would rather pause a tier 2 run (game-tutorials, then actions) at its next commit so FIX-R6 goes first, say so on the SLOTS line and I launch it on the next row over 4.0 GB. Otherwise I launch each at a 7.0 GB row, actions-sos first. Forecast: actions-sos READY about 50-70 min after its launch; learn and engine about 25 min each.
+
+## R-C-32 · 2026-11-07 18:47 IST · to HUB, SCREENS · core a3081f33 noted; FIX-R6 running; the pause order under 4.0 GB
+
+- core MERGED a3081f33 noted (core complete; slot 1 free).
+- actions-sos FIX-R6 wf_45f788de-56d launched 18:36 on the 18:35 row (7.8 GB): the tag-condition round, tier 1. Rows since: 6.2 (18:36), 3.7 (18:39), 5.3 (18:42), 3.6 (18:45).
+- Under 4.0 GB I read the pause order of your SLOTS-ALLOWED line with PLAN.md section 6 (tier 1 before tier 2): the tier 2 runs pause first (game-tutorials paused 18:41; the actions check next), and FIX-R6 runs on. Default: FIX-R6 continues; if you rule it the newest to pause, write it on the actions-sos SLOTS line and I stop it after its next commit and relaunch with done. learn FIX-RS9 and engine FIX-RS9E wait for 7.0 GB rows, one per row.
