@@ -5144,21 +5144,37 @@ const Engine = (() => {
       items: items.map((o) => { const done = objDone(o, d, ctx); return Object.assign({}, o, { done, swappable: !done && swapTo !== null, swapTo }); }),
     };
   }
-  /* Distinct dates with an objective done: ObjectiveDone dates, plus days whose own draw had an event-done match. */
-  function growthOver(ctx, pool, upTo) {
-    const days = new Set();
-    for (const d of ctx.doneIds.keys()) if (!upTo || d <= upTo) days.add(d);
+  /* The one growth rule. A day counts when an objective was done on it: an ObjectiveDone date, or a day whose own
+     draw had an event-done match. Returns Map date -> done ids; with ids false a counted day skips its draw
+     (growth only needs the count), with ids true every counted day carries all its done ids (growthItems). */
+  function growthWalk(ctx, pool, upTo, ids) {
+    const days = new Map();
+    for (const [d, set] of ctx.doneIds) if (d && (!upTo || d <= upTo)) days.set(d, [...set]);
     const types = new Set(pool.filter((o) => isObj(o.doneBy)).map((o) => o.doneBy.event));
     for (const [d, list] of ctx.byDay) {
-      if (!d || days.has(d) || (upTo && d > upTo) || !list.some((e) => types.has(e.type))) continue;
-      if (drawFor(d, ctx, pool).items.some((it) => it.done)) days.add(d);
+      if (!d || (!ids && days.has(d)) || (upTo && d > upTo) || !list.some((e) => types.has(e.type))) continue;
+      const done = drawFor(d, ctx, pool).items.filter((it) => it.done).map((it) => it.id);
+      if (done.length) days.set(d, [...new Set([...(days.get(d) || []), ...done])]);
     }
-    return days.size;
+    return days;
   }
+  function growthOver(ctx, pool, upTo) { return growthWalk(ctx, pool, upTo, false).size; }
   function growth(view, now) {
     const pool = objectivePool(C);
     if (!pool.length) return 0;
     return growthOver(objCtx(view), pool, now == null ? '' : todayStr(now));
+  }
+  /* V-40b: the units growth counts, oldest first: {date, id, grows}. id is the first objective done that day by id;
+     grows is its Content.objectives element (null for an id Content.objectives does not hold). Never shrinks. */
+  function growthItems(view, now) {
+    const pool = objectivePool(C);
+    if (!pool.length) return [];
+    const byId = new Map(pool.map((o) => [o.id, o]));
+    const days = growthWalk(objCtx(view), pool, now == null ? '' : todayStr(now), true);
+    return [...days.keys()].sort().map((date) => {
+      const id = days.get(date).slice().sort(cmpStr)[0];
+      return { date, id, grows: byId.get(id) || null };
+    });
   }
   function dailyObjectives(view, now) {
     const date = todayStr(now);
@@ -5245,7 +5261,7 @@ const Engine = (() => {
     guideSequence, crisisKeywords, SOS_TOOLS, CRISIS: { clinicalReview: true, patterns: CRISIS_PATTERNS.slice() },
     exportBackup, validateBackup, migrateBackup, ics, weeklyRrule, AppError, validateContent, knownRoute,
     makeView, STORES,
-    questLine, unlocked, dailyObjectives, growth, run, isProtectedFeature, shownUpDays,
+    questLine, unlocked, dailyObjectives, growth, growthItems, run, isProtectedFeature, shownUpDays,
   };
 })();
 

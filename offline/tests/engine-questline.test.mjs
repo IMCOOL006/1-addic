@@ -366,6 +366,93 @@ test('growth: days with an objective done; never decreases after a missed day or
   assert.equal(E.growth(V({ events: [Object.assign(ev('ObjectiveDone', { id: 'o1', date: TODAY }), { sample: true })] })), 0);
 }));
 
+/* ── growthItems (V-40b) ───────────────────────────────────────────────────────────────── */
+
+/* A date whose draw holds an event-done objective, searched from TODAY back (a pure walk, so the same every run). */
+function eventDrawDay() {
+  for (let k = 0; k < 60; k++) {
+    const d = day(-k);
+    const it = E.dailyObjectives(V({}), at(d)).items.find((i) => typeof i.doneBy === 'object');
+    if (it) return { d, it };
+  }
+  throw new Error('no draw with an event objective');
+}
+
+test('growthItems: length equals growth for every view; sample rows are skipped as growth skips them', () => withContent(() => {
+  const { d, it } = eventDrawDay();
+  const sampled = (e) => Object.assign(e, { sample: true });
+  const views = {
+    none: [],
+    oneDay: [ev('ObjectiveDone', { id: 'o2', date: day(-1) }, at(day(-1)))],
+    twoOneDay: [ev('ObjectiveDone', { id: 'o3', date: day(-1) }, at(day(-1))), ev('ObjectiveDone', { id: 'o1', date: day(-1) }, at(day(-1), '11:00'))],
+    sample: [sampled(ev('ObjectiveDone', { id: 'o1', date: day(-2) }, at(day(-2)))), sampled(ev(it.doneBy.event, {}, at(d))), ev('ObjectiveDone', { id: 'o2', date: day(-3) }, at(day(-3)))],
+    slipDay: [ev('SlipLogged', {}, at(day(-1))), ev('LogCreated', { type: 'slip' }, at(day(-1))), ev('ObjectiveDone', { id: 'o1', date: day(-1) }, at(day(-1), '12:00'))],
+    eventDone: [ev(it.doneBy.event, { lessonId: 'm1-l1', skillId: 's1' }, at(d, '09:00')), ev('ObjectiveDone', { id: 'o3', date: day(1) }, at(day(1)))],
+    tapAndEvent: [ev(it.doneBy.event, { lessonId: 'm1-l1', skillId: 's1' }, at(d, '09:00')), ev('ObjectiveDone', { id: 'o3', date: d }, at(d, '10:00'))],
+  };
+  for (const [name, events] of Object.entries(views)) {
+    const items = E.growthItems(V({ events }));
+    assert.equal(items.length, E.growth(V({ events })), `length differs from growth: ${name}`);
+    assert.equal(E.growthItems(V({ events }), NOW).length, E.growth(V({ events }), NOW), `length differs with now: ${name}`);
+    for (const x of items) assert.deepEqual(Object.keys(x).sort(), ['date', 'grows', 'id'], name);
+  }
+  assert.deepEqual(E.growthItems(V({ events: [] })), []);
+  assert.deepEqual(E.growthItems(V({ events: views.sample })).map((x) => x.date), [day(-3)]);
+  const ed = E.growthItems(V({ events: views.eventDone })).find((x) => x.date === d);
+  assert.equal(ed.id, it.id);
+  assert.equal(ed.grows, C.objectives.find((o) => o.id === it.id));
+  // both done on d: the first by id wins, whichever was done first
+  const both = E.growthItems(V({ events: views.tapAndEvent }));
+  assert.equal(both.length, 1);
+  assert.equal(both[0].id, [it.id, 'o3'].sort()[0]);
+}));
+
+test('growthItems: the first objective by id, grows is the Content.objectives element itself, oldest first', () => withContent(() => {
+  const events = [
+    ev('ObjectiveDone', { id: 'o3', date: day(-1) }, at(day(-1), '08:00')), ev('ObjectiveDone', { id: 'o1', date: day(-1) }, at(day(-1), '21:00')),
+    ev('ObjectiveDone', { id: 'o2', date: day(-5) }, at(day(-5))), ev('ObjectiveDone', { id: 'o1', date: day(-3) }, at(day(-3))),
+  ];
+  const items = E.growthItems(V({ events: shuffle(events) }));
+  assert.deepEqual(items.map((x) => [x.date, x.id]), [[day(-5), 'o2'], [day(-3), 'o1'], [day(-1), 'o1']]);
+  assert.equal(items[2].grows, C.objectives[0]);
+  assert.equal(items[0].grows, C.objectives.find((o) => o.id === 'o2'));
+  assert.deepEqual(E.growthItems(V({ events })), items);
+  assert.equal(E.growth(V({ events })), 3);
+}));
+
+test('growthItems: [] without Content.objectives or when it is not an array; never throws', () => {
+  const events = [ev('ObjectiveDone', { id: 'o1', date: TODAY })];
+  withoutContent(() => {
+    assert.deepEqual(E.growthItems(V({ events })), []);
+    for (const bad of [null, undefined, {}, V({ events: 'x' }), V({ events: [null, 7, { type: 3 }] })]) assert.doesNotThrow(() => E.growthItems(bad));
+  });
+  for (const objectives of ['x', { o1: {} }, 7]) withContent(() => assert.deepEqual(E.growthItems(V({ events })), []), { objectives });
+  withContent(() => assert.deepEqual(E.growthItems(V({ events: [null, 7, { type: 3 }] })), []));
+});
+
+test('growthItems: a later event never lowers the length nor changes or reorders an earlier item', () => withContent(() => {
+  const events = [];
+  let prev = [];
+  for (let k = -12; k <= 1; k++) {
+    const d = day(k);
+    if (k % 4 !== 0) {
+      const o = E.dailyObjectives(V({ events: events.slice() }), at(d, '08:00'));
+      const pick = o.items[k % 2 ? 0 : 1];
+      if (pick.doneBy === 'tap') events.push(ev('ObjectiveDone', { id: pick.id, date: d }, at(d, '09:00')));
+      else events.push(ev(pick.doneBy.event, { lessonId: `m1-l${k + 20}`, skillId: 's1' }, at(d, '09:00')));
+    }
+    events.push(ev('SlipLogged', {}, at(d, '23:00')), ev('QuestLineStepDone', { id: 'q1' }, at(d, '23:10')));
+    const items = E.growthItems(V({ events: events.slice() }), at(d, '23:30'));
+    assert.equal(items.length, E.growth(V({ events: events.slice() }), at(d, '23:30')), `length differs on ${d}`);
+    assert.ok(items.length >= prev.length, `growthItems shrank on ${d}`);
+    assert.deepEqual(items.slice(0, prev.length), prev, `an earlier item changed on ${d}`);
+    for (let i = 1; i < items.length; i++) assert.ok(items[i - 1].date < items[i].date);
+    prev = items;
+  }
+  assert.ok(prev.length >= 9);
+  assert.deepEqual(E.growthItems(V({ events })), prev);
+}));
+
 /* ── XP ────────────────────────────────────────────────────────────────────────────────── */
 
 test('XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only', () => {
