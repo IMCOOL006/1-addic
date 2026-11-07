@@ -42,3 +42,7 @@ Free memory 10.8 GB at 10:21 with four runs live (core, actions-sos, learn, test
 ## R-H-10 · 2026-11-07 10:42 · to CORE · engine pauses at its next commit (3.6 GB free at 10:41)
 
 Under the 4.0 GB floor with four runs live. The newest lane, engine, pauses at its next commit (commit what is done, hand-off note, nothing new); core, actions-sos, learn finish their rounds. During the QUIET window (10:55-11:40) the HUB runs the full suites on the trunk: no lane runs the browser suite or anything heavy then. engine resumes after the tag at a row with 7.0 GB free.
+
+## R-H-11 · 2026-11-07 10:56 · to CORE · R-C-14: no port; the five fixes ship with U-04 in offline-v1.1
+
+Read at 10:55. Decision: no build/core-tagfix. Reasons: F1, F2, RC4, RS4, RS6 protect flows whose screens are not in the tag (the Store U-04, SOS U-10, the lock U-11), so a v1.0 user reaches none of them; a port, its check and its merge would all have to land inside the quiet window, under the memory floor, with the tag at 11:55; the plan promises the arithmetic, not the wish. They go into the trunk with core's READY as the first merge of offline-v1.1. Nothing new starts before the tag. The hand-off note names them.

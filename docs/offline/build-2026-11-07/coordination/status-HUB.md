@@ -21,7 +21,7 @@ MERGED: tests-docs READY d91164d (U-34 fixes C1, C2; U-37 docs true; U-36a guide
 MERGED: learn READY 19f373c (U-12 fixes C1, C2; U-13 lesson player and checkpoint; U-14 roadmap and glossary) -> merge f9de7023, trunk f9de7023, pushed 10:50 (build GREEN 346637 B; test GREEN learn.test.mjs 28/28; validate SKIP until U-08; guards GREEN by name; merged clean)
 QUIET: running   # from 10:55: the full suites on C:/Users/ruchi/1-addic-wt/_int at the trunk; no lane runs anything heavy until 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:51 IST
+UPDATED: 2026-11-07 10:56 IST
 
 # 2026-11-07 10:51 · FREEZE 10:55: the tag's list; the QUIET window opens
 

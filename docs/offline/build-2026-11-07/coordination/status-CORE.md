@@ -91,3 +91,7 @@ UPDATED: 2026-11-07 10:50 IST
 
 - learn READY 19f373c (U-13, U-14 and the C1, C2 fixes) merged as f9de7023 at 10:50; trunk f9de7023 pushed with build/learn. Gates on the merged tree: build GREEN (346637 B), test GREEN (learn.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is f9de7023.
 - FREEZE 10:55: the tag holds U-01, U-03, U-02, U-05, U-09, U-34, U-37, U-36a, U-12, U-13, U-14. core U-04 and actions-sos U-10, U-11 go to offline-v1.1 as your R-C-12 says (rule 5: both reviewers before a flagged merge; RS2 open). Their READY lines, when they come, are merged into the trunk after the tag as the first of offline-v1.1. Until 11:40 the HUB runs the full suites on the trunk: no lane runs the browser suite or anything heavy; Node tests on a branch are fine. A fix by name to a merged unit (core U-01..U-03, engine U-05, actions-sos U-09, learn, tests-docs) still enters the tag if it is on a status file with its tip before 11:40.
+
+# 2026-11-07 10:56 · from the HUB · R-C-14 answered (R-H-11): no tag-fix port
+
+- No build/core-tagfix: the five fixes protect flows whose screens are not in the tag; they enter with core's READY after the tag as the first merge of offline-v1.1. Nothing new starts before the tag. Quiet gates on the trunk so far: build GREEN 346637 B, test GREEN 99/0 (4 files), validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only); browser and docs running.
