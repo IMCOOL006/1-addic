@@ -810,6 +810,126 @@ describe('sos screens read const globals like a browser (U-10)', () => {
   });
 });
 
+// ── fix round (2026-11-07): the SOS flows themselves, run in Node in a small stand-in DOM (UI.h builds plain nodes; a tap calls the handler) ──
+function sosDom() {
+  const vm = require('node:vm');
+  const go = [];
+  const toasts = [];
+  class N {
+    constructor(tag) {
+      this.tag = tag; this.nodeType = tag === '#text' ? 3 : 1; this.kids = []; this.parent = null; this.own = '';
+      this.attrs = {}; this.dataset = {}; this.style = {}; this.on = {}; this.disabled = false; this.value = '';
+    }
+    get isConnected() { let n = this; while (n.parent) n = n.parent; return n === body; }
+    get textContent() { return [this.own, ...this.kids.map((k) => k.textContent)].join(' '); }
+    set textContent(v) { for (const k of this.kids) k.parent = null; this.kids = []; this.own = String(v); }
+    appendChild(c) { if (c.parent) c.remove(); c.parent = this; this.kids.push(c); return c; }
+    replaceChildren(...cs) { this.textContent = ''; for (const c of cs) if (c != null) this.appendChild(c); }
+    remove() { if (this.parent) { this.parent.kids = this.parent.kids.filter((k) => k !== this); this.parent = null; } }
+    setAttribute(k, v) { this.attrs[k] = String(v); }
+    getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
+    addEventListener(type, fn) { (this.on[type] = this.on[type] || []).push(fn); }
+    focus() {}
+    select() {}
+    matches(sel) {
+      if (sel.startsWith('.')) return String(this.attrs.class || '').split(' ').includes(sel.slice(1));
+      const m = /^\[data-([a-z-]+)(?:="([^"]*)")?\]$/.exec(sel);
+      if (!m) return this.tag === sel;
+      const k = m[1].replace(/-([a-z])/g, (x, ch) => ch.toUpperCase());
+      return Object.prototype.hasOwnProperty.call(this.dataset, k) && (m[2] === undefined || this.dataset[k] === m[2]);
+    }
+    querySelectorAll(sel) {
+      const out = [];
+      const walk = (n) => { for (const k of n.kids) { if (k.nodeType === 1 && k.matches(sel)) out.push(k); walk(k); } };
+      walk(this);
+      return out;
+    }
+    querySelector(sel) { return this.querySelectorAll(sel)[0] || null; }
+    click() { if (!this.disabled) for (const fn of this.on.click || []) fn({ preventDefault() {} }); }
+  }
+  const text = (s) => { const t = new N('#text'); t.own = String(s); return t; };
+  function h(tag, attrs, ...children) {
+    const n = new N(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') { const c = Array.isArray(v) ? v.filter(Boolean).join(' ') : String(v); if (c) n.attrs.class = c; }
+      else if (k === 'text') n.textContent = String(v);
+      else if (k === 'dataset') { for (const d of Object.keys(v)) if (v[d] != null) n.dataset[d] = String(v[d]); }
+      else if (k === 'style') Object.assign(n.style, v);
+      else if (/^on[A-Z]/.test(k) && typeof v === 'function') n.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (k === 'value' || k === 'disabled' || k === 'hidden') n[k] = v;
+      else n.attrs[k] = v === true ? '' : String(v);
+    }
+    const add = (c) => {
+      if (c == null || c === false || c === true) return;
+      if (Array.isArray(c)) c.forEach(add);
+      else if (typeof c === 'object' && typeof c.nodeType === 'number') n.appendChild(c);
+      else n.appendChild(text(c));
+    };
+    children.forEach(add);
+    return n;
+  }
+  const body = new N('body');
+  const UI = { h, pages: {}, go: (r) => { go.push(r); }, toast: (m, tone) => { toasts.push([m, tone]); }, speak: () => false, stopSpeaking: () => {} };
+  const ctx = vm.createContext({ UI, document: { body, createElement: (t) => new N(t), createTextNode: text }, navigator: {},
+    setInterval: () => 0, clearInterval: () => {}, setTimeout, Content: C(), Store: S(), module: { exports: {} } });
+  vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
+  const byId = (root, id) => {
+    const n = root.querySelector(`[data-testid="${id}"]`);
+    if (!n) throw new Error(`no ${id} on: ${root.textContent.slice(0, 160)}`);
+    return n;
+  };
+  const button = (root, label) => {
+    const b = root.querySelectorAll('button').find((x) => x.textContent.trim() === label);
+    if (!b) throw new Error(`no "${label}" button on: ${root.textContent.slice(0, 160)}`);
+    return b;
+  };
+  return {
+    UI, go, toasts, byId,
+    tap: (root, label) => button(root, label).click(),
+    tapId: (root, id) => byId(root, id).click(),
+    rate: (root, n) => byId(root, 'sos-rating').querySelectorAll('button')[n].click(),
+    open(parts, query) {
+      const root = UI.pages.sos({ route: { parts, query: query || {} }, A: Actions, view: S().view, E: null,
+        profile: S().view.get('profile', 'me') || {} });
+      body.replaceChildren(root);
+      return root;
+    },
+    // the feeling flow's calm path, tapped through to its closing rating
+    toRating(root) {
+      for (let k = 0; !root.querySelector('[data-testid="sos-rating"]'); k += 1) {
+        assert.ok(k < 30, 'the closing rating comes');
+        const b = root.querySelectorAll('button').find((x) => ['Next', 'Done'].includes(x.textContent.trim()));
+        assert.ok(b, 'a way on from: ' + root.textContent.slice(0, 160));
+        b.click();
+      }
+    },
+    calm: () => C().emotions.find((e) => e && e.crisisCheck !== true && e.id !== 'other' && e.tools !== 'anger').id,
+    settle: async () => { for (let k = 0; k < 5; k += 1) await new Promise((r) => setTimeout(r, 2)); },
+  };
+}
+
+describe('sos flows in a stand-in DOM (fix round)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  test('RS1: the crisis view shows the numbers at once and says little else', () => {
+    const d = sosDom();
+    const crisis = d.UI.sosUrgentView({}, { crisis: true });
+    assert.ok(crisis.querySelector('[data-testid="urgent-number-1"]'), 'the first number is there');
+    assert.ok(crisis.querySelectorAll('[data-testid="urgent-verify"]').length > 0, 'please verify still shows');
+    assert.equal(crisis.querySelectorAll('details').length, 0, 'no overdose or withdrawal reading in a crisis');
+    assert.equal(d.UI.sosUrgentView({}, {}).querySelectorAll('details').length, 2, 'the urgent page keeps both');
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-' + C().emotions.find((e) => e && e.crisisCheck === true).id);
+    const shown = d.byId(root, 'sos-crisis');
+    assert.equal(shown.querySelectorAll('details').length, 0);
+    assert.ok(shown.querySelector('[data-testid="urgent-number-1"]'));
+  });
+
+  // -- fix round: stand-in DOM tests above this line --
+});
+
 // ── U-11: the lock screen and onboarding, their pure parts (offline/src/ui-onboarding.js loads in Node) ─────────────
 describe('lock screen and onboarding (U-11)', () => {
   const O = require(src('ui-onboarding.js'));

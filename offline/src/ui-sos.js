@@ -378,8 +378,8 @@
       h('h1', { tabindex: '-1', class: 'sos-title', text: words.title }),
       h('p', { class: 'sos-line', text: words.line }),
       ...sections,
-      extra(COPY.overdose, model.overdose),
-      extra(COPY.withdrawal, model.withdrawal));
+      o.crisis ? null : extra(COPY.overdose, model.overdose), // a crisis: the numbers and little else
+      o.crisis ? null : extra(COPY.withdrawal, model.withdrawal));
   }
 
   // SOBER, one step a time, with read-aloud (device voice only, O4). Shared with the lock screen.
