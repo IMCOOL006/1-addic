@@ -311,7 +311,7 @@ const Content = {
       'Everyone else is doing it.', 'I\'ll never manage anyway.', 'This is the last time.', 'I\'ve been good all week.',
     ],
     spiral: [
-      'One slip means I\'m a total failure.', 'I\'ve blown it, so I might as well keep going.', 'I\'m hopeless.', 'Once addicted, always addicted.',
+      'One slip means I\'m a total failure.', 'I\'ve blown it, so I might as well keep going.', 'Once addicted, always addicted.',
       'I\'ll never get back to where I was.', 'Today is ruined anyway; I might as well go all out.', 'I have no willpower.', 'This proves I can\'t do it.',
     ],
     distortions: [
@@ -320,7 +320,7 @@ const Content = {
       { id: 'conclusions', name: 'Jumping to conclusions', gist: 'Mind reading (I know what they think of me) or fortune telling (I know how this ends).', example: '"He didn\'t reply. He thinks I\'m a waste of time."', leadsTo: '"Why bother staying clean for people like that."', reply: 'I don\'t know why he didn\'t reply. Phones die, people get busy. I can ask instead of guessing.' },
       { id: 'feelings-facts', name: 'Feelings as facts', gist: 'If I feel it, it must be true.', example: '"I feel hopeless, so my situation is hopeless."', leadsTo: '"Using is the only thing that stops the pain."', reply: 'Feelings are weather. They are real, and they pass. Hopeless is how I feel at 11 pm; it is not a forecast.' },
       { id: 'self-blame', name: 'Self-blame', gist: 'Everything that goes wrong is my fault, including the addiction itself.', example: '"It\'s all my fault. I ruined everything."', leadsTo: '"I\'ve wrecked my life, so nothing matters now."', reply: 'Nobody chooses to become addicted. I am responsible for what I do next, and what I\'m doing next is this.' },
-      { id: 'labeling', name: 'Labelling', gist: 'A feeling or a mistake becomes who I am.', example: '"I slipped, so I\'m a hopeless addict."', leadsTo: '"No point staying clean."', reply: 'I am a person with an illness, learning new responses. A slip is a thing that happened, not a name.' },
+      { id: 'labeling', name: 'Labelling', gist: 'A feeling or a mistake becomes who I am.', example: '"I slipped, so I am hopeless."', leadsTo: '"No point staying clean."', reply: 'I am a person with an illness, learning new responses. A slip is a thing that happened, not a name.' },
     ],
     cravingBody: ['Tight chest', 'Churning stomach', 'Clenched jaw', 'Tense neck or shoulders', 'Racing heart', 'Sweaty palms', 'Restless legs', 'Dry mouth', 'A taste or smell of it', 'Shaky hands', 'Headache'],
     cravingEmotions: ['Anxious', 'Excited', 'Anticipating', 'Restless', 'Irritable', 'Empty', 'The same feeling as when I used'],
@@ -445,7 +445,7 @@ const Content = {
       lines: [
         { name: 'Find a Helpline (directory by country)', url: 'https://findahelpline.com', verify: true },
         { name: 'Befrienders Worldwide (directory)', url: 'https://befrienders.org', verify: true },
-        { name: 'Your local emergency number', note: 'Usually 112, 911 or 999', verify: true },
+        { name: 'Your local emergency number', tel: '112', note: 'Usually 112, 911 or 999', verify: true },
       ],
     },
     overdose: [
@@ -513,5 +513,24 @@ const Content = {
     { term: 'Companion', def: 'The voice of your rational brain in this app. You can rename it in Settings.' },
   ],
 };
+
+/* -- additions -- */
+/* -- content -- */
+/* R-C-13 (2): one conservative safety line for opioids. Read by actions-sos. */
+Content.resources.opioidSafety = {
+  text: 'After a break, your body loses tolerance, so an old amount can be deadly. Never use alone. If someone will not wake up or is breathing slowly, call 112 at once.',
+  verify: true,
+  clinicalReview: true,
+};
+/* R-C-13 (3): spiral thoughts with a short, kind reply each. No crisis words. Read by actions-sos. */
+Content.catalogs.spiralPairs = [
+  { thought: 'One slip means I\'m a total failure.', reply: 'One slip is one moment. What I do next matters more.' },
+  { thought: 'I\'ve blown it, so I might as well keep going.', reply: 'Stopping now still counts. A slip does not have to grow.' },
+  { thought: 'Once addicted, always addicted.', reply: 'I can learn new ways to respond. People change every day.' },
+  { thought: 'I\'ll never get back to where I was.', reply: 'I have not lost what I learned. I can start again from here.' },
+  { thought: 'Today is ruined anyway; I might as well go all out.', reply: 'The rest of today is still mine. One better choice is enough.' },
+  { thought: 'I have no willpower.', reply: 'This is about skills, not willpower. Skills grow with practice.' },
+  { thought: 'This proves I can\'t do it.', reply: 'It proves this moment was hard. I can learn what to plan for next time.' },
+];
 
 if (typeof module !== 'undefined' && module.exports) module.exports = Content;
