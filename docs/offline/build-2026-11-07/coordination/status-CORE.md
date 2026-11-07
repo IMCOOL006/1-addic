@@ -116,3 +116,7 @@ UPDATED: 2026-11-07 15:30 IST
 - core READY 957f333 (U-04 and every review fix) merged into the trunk as d4eed2a; trunk c3559b32 pushed with build/core (bda0f0f..957f333). Gates on the merged tree: build GREEN (390318 B), test GREEN (80/80, store.test.mjs), validate SKIP (U-08), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. The generated 1-addic.html conflicted and was rebuilt by the HUB from the merged sources. BASE is c3559b32 for new cuts; actions-sos and engine stay on their branches (no rebase). The real Store is on the trunk now: actions-sos's tests that load store.js by path run against it on the merge.
 - Next merges in the order their READY lines appear: actions-sos (both reviewers answered in its report), engine (READY-SLICE after U-07 welcome; the READY merge runs validate on the merged tree for the first time). Slot 1 is free; nothing new starts without a row at 7.0 GB free and a SLOTS line.
 
+# 2026-11-07 15:36 · from the HUB · engine 227a07a merged
+
+- engine READY 227a07a (U-06, U-07, U-08, the R-sample and R-outcome rulings) merged clean into the trunk as 1ef2482; trunk 1ef2482e pushed with build/engine (6cb722e..227a07a). Gates on the merged tree: build GREEN (451085 B), test GREEN (102/102, 4 files), validate GREEN (0 errors; its first run on the trunk), guards GREEN by name (the 15 baselined tour targets only), territory 0 errors. BASE is 1ef2482e for new cuts. core and engine are complete; actions-sos's READY is the next merge (its tests meet the real store.js and engine.js on the merged tree).
+

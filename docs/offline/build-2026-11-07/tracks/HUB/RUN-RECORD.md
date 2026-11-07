@@ -118,3 +118,8 @@
 - 14:08 core's fix run granted (9.6 GB), 14:20 actions-sos (10.3 GB with one live), 14:32 engine (9.3 GB with two live). 14:38 R-O-2 filed by the planner session: the owner agrees with every default and wants the build to run on; forecast on the board. 15:20 core READY 957f333; merged 15:21-15:29 as d4eed2a (only 1-addic.html conflicted, rebuilt), gates GREEN by name (build 390318 B, test 80/80, validate SKIP, guards baselined names only), finish folded the docs commits (c3559b3) and pushed trunk and lane. BASE c3559b32.
 - **Resume here (15:31):** as the 13:48 "Resume here" above with these changes: core is merged and complete; live under CORE 036d08b8: actions-sos wf_b38141d2-651 and engine wf_1a61a797-f39; merge their READY lines one at a time with merge_lane.py from cut base 655516dc (engine's merge runs validate for the first time: a RED there is judged by name and goes by territory). `_int` detached at c3559b3. The launcher is active on the owner's word.
 
+## 15:36 · engine READY merged (session ed0e0a4b)
+
+- 15:23 engine READY 227a07a; merged clean 15:32-15:34 as 1ef2482 (build 451085 B, test 102/102, validate GREEN 0 errors for the first time, guards baselined names only); pushed trunk and lane. BASE 1ef2482e. Ten merges on the trunk; core and engine complete.
+- **Resume here (15:36):** as the 15:31 "Resume here" above with these changes: engine merged; live under CORE 036d08b8 (RESTART soon, hand-over written): actions-sos wf_b38141d2-651; merge its READY line with merge_lane.py from cut base 655516dc (flagged: both reviewers answered in lane-reports/actions-sos.md); `_int` detached at 1ef2482. Watch the memory rows for the SCREENS mark (8.5 GB with one lane live) and add SCREENS to TRACKS-ALLOWED when met.
+
