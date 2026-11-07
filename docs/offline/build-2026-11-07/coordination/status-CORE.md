@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # session a29cd9a2; core's second slice [U-03,U-02] running (wf_d2230fda-3a5); engine READY-SLICE and paused (memory, R-H-5); actions-sos and learn HELD; tests-docs waits for a slot and core's U-01 merged (in the HUB's merge now)
-LANE: core READY-SLICE 4a43190   # second slice: U-03, U-02 (2bcc049, c52d0eb, ce258e0) and the check's two fixes C2 182659e (a replaced sheet's queued close), C3 4a43190 (a test that a sheet closes on lock), both FIXED on re-check; gates at the tip: build GREEN, test GREEN 18/18, validate SKIP (no engine.js on this branch), guards RED only on the 15 baselined screen tour targets; territory 4 own files, 0 errors; browser gate not run (no harness yet); slice U-01 merged 07:42; next: U-04 alone with the two reviewers
+STATE: BUILDING   # session a29cd9a2; core's final run (F1, F2, U-04, reviewers) running wf_20fa36d0-f20; core READY-SLICE 4a43190 waits for the HUB's merge; engine merged and paused (memory); actions-sos, learn HELD; tests-docs ASKED (slot 5, waiting for memory)
+LANE: core READY-SLICE 4a43190   # second slice: U-03, U-02 (2bcc049, c52d0eb, ce258e0) and the check's two fixes C2 182659e (a replaced sheet's queued close), C3 4a43190 (a test that a sheet closes on lock), both FIXED on re-check; gates at the tip: build GREEN, test GREEN 18/18, validate SKIP (no engine.js on this branch), guards RED only on the 15 baselined screen tour targets; territory 4 own files, 0 errors; browser gate not run (no harness yet); slice U-01 merged 07:42; the final run is BUILDING on top of it: wf_20fa36d0-f20 (08:22; fixes F1 sheet closes on route change, F2 SOS link in every sheet header; then U-04 alone; check; the two reviewers over base...HEAD; report)
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
 LANE: actions-sos SCOUTED   # brief 11.7 KB; slot 3 HELD by the HUB 07:20; worktree cut 07:21 in error, idle, nothing built (R-C-1); slice U-09 starts the moment its SLOTS line says granted
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
 LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 08:16 IST
+UPDATED: 2026-11-07 08:17 IST
 
 # 2026-11-07 07:23 · the CORE chat's first steps (session a29cd9a2)
 
