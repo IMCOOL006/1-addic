@@ -30,3 +30,11 @@ LogCreated{logId,type} · CheckinCompleted{logId,kind} · SkillUsed{skillId, hel
 
 ## Not provided
 No routes, UI.pages entries, data-tour targets or DOM hooks. Content keys it relies on, all at base: xp, masteryThresholds, milestones, ranks, badges, skills, regions, features, reveal, explorer, quests, tips, terms, paces, modules, references, cast, catalogs, schemaVersion. `Content.exercises` is absent at the base (content lane).
+
+## Fixed by the engine slice (U-05, 04fc0c1), written in by the CORE chat 2026-11-07 07:39 IST
+
+- **Day counters.** `total` counts completed local dates only (startDate up to yesterday; today is counted when it ends), and a counted date stays counted. A date is left out only when a SlipLogged (or a slip log row) with that date was logged (its `at`) on or before that date; a slip logged later for an earlier date never removes a banked day, so `total` never falls. `current` (the opt-in run) is the only number a slip restarts. Reached milestones come from `total` and every MilestoneSeen and never un-reach. No XP for days. `counters()` returns `tracking` = a startDate is set; the UI reads `settings.counters` and `showCurrentRun` to decide what to show.
+- **Writers (actions-sos U-09):** `SkillUsed{skillId, helpful: boolean, logId?}` (Actions writes true or false; the engine's reader accepts true/false and 0/1 only); `SlipLogged{date:'YYYY-MM-DD'}` with `at` = the time of logging; slip log rows carry `type:'slip'`, `date` and `at`. Events without a valid `at` or `type` are ignored.
+- `xpFromEvents().byType` lists XP-bearing types only (a zero-XP event never changes its shape). Every `events` parameter also accepts a view. `Engine.makeView` and `Engine.STORES` are exported from U-05.
+- `validateContent()` (U-08) skips the tryIt-exercise check while `Content.exercises` is absent and runs it as soon as it exists.
+- Defaults built: `net-weaver` counts safetyNet contacts ever added, active or not (a badge never disappears); `ExerciseDone` earns 10 every time (3.7 sets no daily cap).
