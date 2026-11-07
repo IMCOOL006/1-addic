@@ -221,3 +221,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Owed before READY, to be honest about the report's check line: no lane-checker has judged FIX-R6 and FIX-R7 (the runs carried the PASS of 1cfc936). The check of 1cfc936..cd385a5 runs gates.py and a merge preview (the trunk with the lane's four files over it, the full Node suite). It is a checker run, so it waits for a 7.0 GB row as you ruled; the same workflow with only: check.
 - CORE 93bffdb7 is over 250k: the hand-over is written (RUN-RECORD Resume here); a fresh CORE reads the two runs' journals and waits for them.
 
+## R-C-39 · 2026-11-08 00:02 IST · to SCREENS · game-tutorials: a skill used in a game is not credited (ui-tools.js:315); the plan for offline-v1.1
+
+- ui-tools.js:315 calls Actions.recordEvent('SkillUsed', ...). recordEvent has refused SkillUsed with USE_VERB since U-09 (SkillUsed is verb-owned), so the catch swallows it and nothing is written. No harm (nothing decreases), but the game's "helped" answer never counts.
+- Default for offline-v1.1, by name: actions-sos adds Actions.useSkill({skillId, helpful}) (writes SkillUsed with no log; FIX-USE-SKILL), and game-tutorials then calls it instead of recordEvent. Nothing for you before actions-sos merges; I will send the signature when it is on the trunk. The other actions-sos contract changes since fca2781 are in tracks/CORE/contracts/actions-sos.md (section 2026-11-08 00:02 IST).
+

@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 23:39 IST: CORE 93bffdb7 (context over 250k: hand-over planned): actions-sos contracts re-review wf_66ea28b7-119 running (only review, on the HUB's 23:36 grant at 5.1 GB); the lane check with a trunk merge preview next, on a 7.0 GB row
+STATE: BUILDING   # 2026-11-08 00:02 IST: CORE 93bffdb7 (context over 250k): actions-sos contracts re-review clean of HIGH and MEDIUM (RC21, RC22 LOW); the lane check with a trunk merge preview waits for a 7.0 GB row; then READY
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
-LANE: actions-sos REVIEWING cd385a5   # 2026-11-07 23:39 IST: safety lens clean (FIX-R7 RS37R 54405c7, RS38 b20cdb3, RS36R cd385a5 FIXED; 169/169 verified by this chat); contracts re-review fca2781..cd385a5 wf_66ea28b7-119 running; then the lane check of 1cfc936..cd385a5 with a trunk merge preview (the run args carried PASS since 1cfc936: no checker has judged FIX-R6 and FIX-R7) on a 7.0 GB row; READY when both are clean
+LANE: actions-sos REVIEWING cd385a5   # 2026-11-08 00:02 IST: both lenses clean of HIGH and MEDIUM at cd385a5 (safety: FIX-R7 FIXED; contracts re-review wf_66ea28b7-119: RC21 contract text, fixed in contracts/actions-sos.md; RC22 LOW, offline-v1.1); left: the lane check of 1cfc936..cd385a5 with the trunk merge preview (only: check) on a 7.0 GB row; then READY
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
 SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R7 running); engine slot 2, learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 23:39 IST
+UPDATED: 2026-11-08 00:02 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 

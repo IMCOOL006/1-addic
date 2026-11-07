@@ -159,3 +159,20 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - RS36's remainder: SOS reads stage and region from the person's own profile only (ui-sos.js :852, :539, :553 through isOwn; region default 'in'), as ruled 22:25. core's c.profile stays as it is (it hands the sample profile to screens that show the sample on purpose; no core change).
 - FIX-R7 = RS37R (MEDIUM), RS38 (LOW, folded into RS37R's helper), RS36R (MEDIUM); full text: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md, section FIX-R7. After FIX-R7: the contracts-and-tests lens re-reviews fca2781..HEAD (its last look was round 2), read-only.
 
+## Contract changes since fca2781 and rulings 2026-11-08 00:02 IST (CORE 93bffdb7; the contracts re-review wf_66ea28b7-119, RC21)
+
+These supersede the earlier lines they name (RC21: the code already does this; the text catches up):
+- Actions.sosSession(v) takes an optional `date` (YYYY-MM-DD, today or earlier: a session kept across a lock is dated the day it was tapped) (RC16; supersedes line 13).
+- Actions.saveResponse writes ArtifactSaved or ExerciseDone only for the kinds that earn them; another kind writes neither (RC17; supersedes line 16).
+- Actions.recordEvent refuses with USE_VERB the seven verb-owned types: SosCompleted, LogCreated, SkillUsed, SlipLogged, RecoveryPlanConfirmed, OnboardingCompleted, ModuleCompleted (RC19; supersedes line 74's four).
+- Actions.loadSample writes the sample's profile 'me' and settings 'app' (marked sample: true) only on a notebook with no own rows; it never writes over an own row; eraseSample removes only rows marked sample: true (RS-SAMPLE; supersedes line 43). Any change the person makes that changes a non-flag field of a sample row makes it theirs (claimRow, RS37R); a sample profile is not the person's for onboarding or SOS (RS36, RS36R).
+- Route #/sos/slip?kept=1 (a slip saved across a lock). Hooks onb-score-ok, sos-urgent-lead, sos-lead-number-<n>, sos-lead-all and id sos-lead-line; note spans sos-note-<n> with aria-describedby on the tel links (for tests-docs' hooks round).
+
+Rulings on the re-review's questions:
+- Q1 (a plan's status over a sample plan): status is a state, treated as a flag for claimRow (a status change keeps the sample mark); and plans.update writes BattlePlanCreated only for a row that is the person's. LOW, offline-v1.1 by name (RC23); the tag does not wait for it.
+- Q2 (a kept session after midnight: date the tap day, hour and at the unlock moment): accepted for offline-v1.1 (rare; nothing decreases; the heatmap shows it at the unlock hour). No engine change.
+- Q3: the trunk merge preview runs in the lane check (the same workflow, only: check) before READY.
+- Q4 (ui-tools.js:315 records SkillUsed through recordEvent, refused since U-09: a skill used in a game is not credited): offline-v1.1 by name: actions-sos adds a verb Actions.useSkill({skillId, helpful}) that writes SkillUsed with no log (FIX-USE-SKILL), then game-tutorials calls it (R-C-39 to SCREENS). Harmless meanwhile (the game catches it; nothing decreases).
+- Q5: yes, RS-SAMPLE's "theirs starts fresh" is meant for settings as for the profile (dormant: the trunk sample has no settings row).
+- RC22 (LOW, a test gap: the feeling flow's and the leave path's kept-session date are untested): offline-v1.1 by name.
+
