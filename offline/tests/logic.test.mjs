@@ -462,3 +462,35 @@ test('makeView: get by keyPath, list copies, count; missing stores give []', () 
   v.list('events').push({});
   assert.equal(v.count('events'), 1);
 });
+
+/* ── CORE rulings of 10:45: sample rows and the SosCompleted outcome ───────────────────── */
+
+test('sample: events and rows marked sample:true never award anything', () => {
+  const sample = [ev('LogCreated', { logId: 'l1', type: 'craving' }), ev('SosCompleted', { outcome: 'passed' }), ev('SkillUsed', { skillId: 'sober', helpful: true })]
+    .map((e) => Object.assign(e, { sample: true }));
+  assert.deepEqual(E.xpFromEvents(sample, NOW), E.xpFromEvents([], NOW));
+  assert.deepEqual(E.mastery(sample), {});
+  const v = E.makeView({ events: sample, contacts: [1, 2, 3].map((i) => ({ id: `c${i}`, role: 'safetyNet', active: true, sample: true })) });
+  assert.deepEqual(E.badges(v, NOW), []);
+  assert.deepEqual(E.gameState(v, NOW), E.gameState(E.makeView({}), NOW));
+});
+
+test('sample: erasing sample rows lowers nothing that real rows earned', () => {
+  const real = [ev('LogCreated', { logId: 'l1', type: 'craving' }), ev('SosCompleted', { outcome: 'passed' })];
+  const sample = [ev('LessonCompleted', { lessonId: 'x' }), ev('SosCompleted', { outcome: 'passed' })].map((e) => Object.assign(e, { sample: true }));
+  const withSample = E.gameState(E.makeView({ events: real.concat(sample) }), NOW);
+  const erased = E.gameState(E.makeView({ events: real }), NOW);
+  assert.deepEqual(erased, withSample);
+});
+
+test('sosOutcome: passed, still and used; anything else reads as other; still earns no First Wave', () => {
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'passed' })), 'passed');
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'still' })), 'still');
+  assert.equal(E.sosOutcome({ outcome: 'used' }), 'used');
+  assert.equal(E.sosOutcome(ev('SosCompleted', { outcome: 'maybe' })), 'other');
+  assert.equal(E.sosOutcome(ev('SosCompleted', {})), 'other');
+  assert.equal(E.sosOutcome(null), 'other');
+  const v = E.makeView({ events: [ev('SosCompleted', { outcome: 'still' })] });
+  assert.equal(E.badges(v, NOW).some((b) => b.id === 'first-wave'), false);
+  assert.ok(E.xpFromEvents(v, NOW).total > 0, 'a session that did not pass still earns its XP');
+});

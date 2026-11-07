@@ -153,11 +153,12 @@ const Engine = (() => {
 
   /* ── events ──────────────────────────────────────────────────────────────────────────────── */
 
-  /* Valid events (a type and a parseable at), sorted by at then id, each id counted once. */
+  /* Valid events (a type and a parseable at), sorted by at then id, each id counted once. Rows and events marked
+     sample: true are skipped by every derivation (CORE ruling 10:45): sample data never awards or lowers anything. */
   function cmpStr(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
   function normEvents(events) {
     const list = Array.isArray(events) ? events : (events && typeof events.list === 'function') ? arr(events.list('events')) : [];
-    const rows = list.filter((e) => e && typeof e.type === 'string' && !isNaN(msOf(e.at)));
+    const rows = list.filter((e) => e && e.sample !== true && typeof e.type === 'string' && !isNaN(msOf(e.at)));
     rows.sort((a, b) => (msOf(a.at) - msOf(b.at)) || cmpStr(String(a.id || ''), String(b.id || ''))
       || cmpStr(a.type, b.type) || cmpStr(JSON.stringify(a.payload || {}), JSON.stringify(b.payload || {})));
     const seen = new Set();
@@ -342,11 +343,11 @@ const Engine = (() => {
   const STORES = { profile: 'key', settings: 'key', meta: 'key', events: 'id', logs: 'id', responses: 'id', contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id', reveals: 'id', tips: 'id', recoveryPlan: 'key' };
   function rowsOf(view, store) {
     if (!view || typeof view.list !== 'function') return [];
-    try { return arr(view.list(store)).filter((r) => r && typeof r === 'object'); } catch (_) { return []; }
+    try { return arr(view.list(store)).filter((r) => r && typeof r === 'object' && r.sample !== true); } catch (_) { return []; }
   }
   function rowOf(view, store, key) {
     if (!view || typeof view.get !== 'function') return null;
-    try { return view.get(store, key) || null; } catch (_) { return null; }
+    try { const r = view.get(store, key) || null; return r && r.sample === true ? null : r; } catch (_) { return null; }
   }
   const byAt = (a, b) => (msOf(a.at) - msOf(b.at)) || cmpStr(String(a.id || ''), String(b.id || ''));
   const nth = (rows, n) => (rows.length >= n ? (rows[n - 1].at || null) : undefined);
@@ -369,10 +370,16 @@ const Engine = (() => {
   function responsesFor(view, exerciseId) {
     return rowsOf(view, 'responses').filter((r) => r.exerciseId === exerciseId && !r.draft && !isNaN(msOf(r.at))).sort(byAt);
   }
+  /* SosCompleted.outcome is 'passed'|'still'|'used' (CORE ruling 10:45); anything else reads as 'other'. */
+  const SOS_OUTCOMES = new Set(['passed', 'still', 'used']);
+  function sosOutcome(e) {
+    const o = (e && e.type) ? pl(e).outcome : (e && typeof e === 'object') ? e.outcome : e;
+    return SOS_OUTCOMES.has(o) ? o : 'other';
+  }
   function badges(view, now) {
     const ev = normEvents(view);
     const ofType = (t, f) => ev.filter((e) => e.type === t && (!f || f(e)));
-    const passed = ofType('SosCompleted', (e) => pl(e).outcome === 'passed');
+    const passed = ofType('SosCompleted', (e) => sosOutcome(e) === 'passed');
     const earned = {
       'smart-not-strong': questDoneAt(view, 'clear-space'),
       'first-wave': nth(passed, 1),
@@ -886,7 +893,7 @@ const Engine = (() => {
     xpFromEvents, mastery, regionLevels, momentum, rank, badges, modulesDone, lessonsDone, counters, gameState,
     roadmap, nextLesson, revealed, isRevealed, newDots, explorer, explorerDone, pickTip, quests,
     latest, history, reasonsCard, reasonsCardSections, comebacks, comebackRows, distractionDeck, spiralThoughts, triggerChips,
-    prefillRecoveryPlan,
+    prefillRecoveryPlan, sosOutcome,
     makeView, STORES,
   };
 })();
