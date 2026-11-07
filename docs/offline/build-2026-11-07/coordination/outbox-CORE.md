@@ -30,3 +30,14 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-6 · 2026-11-07 08:51 IST · to HUB · answer to R-H-6: actions-sos stops at its next commit
 
 - Its next run (wf_e95d54a9-f8e) was launched 08:52, after your 08:50 pause line (I read it late). Its builder has the C1 fix (loadSample) uncommitted in actions.js; I stop the run the moment that commit lands, and start nothing more on actions-sos until its SLOTS line says granted. core's final run (U-04, wf_20fa36d0-f20) keeps running as the chain head.
+
+## R-C-7 · 2026-11-07 09:12 IST · to HUB · the old CORE session died at 09:03; both runs relaunched from their branches
+
+- Session a29cd9a2 left `claude agents` at about 09:03 (its process is gone), so its runs died with it: core wf_20fa36d0-f20 in its check fix round (nothing committed; tip 06cdf34 = F1 4112ca4, F2 36a2fbf, U-04 06cdf34; check FIX on C4 and C5 only), actions-sos wf_5187f402-d73 in its first builder (nothing committed; tip 0699730). Both worktrees were clean.
+- Relaunched by CORE session 224074c0 at 09:10 on the same slots (1 and 3; no new lane): core wf_6b7ddbb3-2a7 (done U-01..U-04, diffFrom 06cdf34; fix by name FIX-C4-C5, check, two reviewers, report), actions-sos wf_379c12ed-2e4 (done U-09, diffFrom 1cb96a3; U-10, U-11, check, two reviewers, report). C4 is the proof of R-C-5's rule (replaceAll keeps the lock row) after a reload.
+
+## R-C-8 · 2026-11-07 09:12 IST · to SCREENS · the real Store shape (core U-04 at build/core 06cdf34) and the discreet flag
+
+- tracks/CORE/contracts/core.md, last section 'Additions from core's U-04 run': error codes (LOCKED, WRITE_FAILED, BAD_PIN, NO_CRYPTO, UNKNOWN_STORE, BAD_ROW, RESERVED, BAD_BACKUP), commit resolving with the rule's value, `{label}` to subscribers, the lock rules (autoLockMin 1/5/15/never; verify never unlocks), Forgot PIN = resetAll then import, export verifies the PIN first, no personal text in meta.
+- workbook-settings: discreet mode goes through `UI.applyDiscreet(on)` (device flag localStorage '1-addic:discreet', so the lock screen can say 'Notebook' and 'Help' while the settings row is sealed), building now in core's run; keep writing settings.discreet as well. The theme stays `UI.applyTheme` and '1-addic:theme'.
+

@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 09:02 IST: CORE session 224074c0 (launcher 08:58) took over from a29cd9a2; a29cd9a2 is still listed by claude agents, so its two runs are alive and are not relaunched: core wf_20fa36d0-f20 (check FIX C4, C5 in its fix round), actions-sos wf_5187f402-d73 (builder on U-10, U-11); this chat reads their journals
-LANE: core CHECKING   # slices 8bf7b5c (U-01), 4a43190 (U-03, U-02) MERGED; final run wf_20fa36d0-f20: F1 4112ca4, F2 36a2fbf, U-04 06cdf34 built; check FIX (C4 MEDIUM: the replaceAll-keeps-the-lock test must reload and unlock; C5), fix round running; then two reviewers, report
+STATE: BUILDING   # 2026-11-07 09:12 IST: CORE session 224074c0; a29cd9a2 died at about 09:03 and its two runs with it; both lanes relaunched 09:10 on their slots: core wf_6b7ddbb3-2a7, actions-sos wf_379c12ed-2e4
+LANE: core BUILDING   # slices 8bf7b5c (U-01), 4a43190 (U-03, U-02) MERGED; F1 4112ca4, F2 36a2fbf, U-04 06cdf34 committed and checked (FIX: C4, C5); run wf_6b7ddbb3-2a7 (09:10): fix by name FIX-C4-C5, check from 06cdf34, two reviewers, report
 LANE: engine MERGED   # slice U-05 04fc0c1 merged by the HUB 07:44 (merge 6089dad, trunk 33d2a04f); PAUSED (memory, R-H-5): the next run [U-06,U-07],[U-08] from 04fc0c1 waits for the SLOTS line to say granted; first fix by name: check C1 (helpfulValue)
-LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED 08:48 (7a9547c); C1 fixed 0699730; re-granted 08:56 (R-H-7); run wf_5187f402-d73 (08:57): builder on U-10, U-11; then check, two reviewers, report
+LANE: actions-sos BUILDING   # slice U-09 1cb96a3 MERGED (7a9547c); C1 fixed 0699730; run wf_379c12ed-2e4 (09:10): U-10, U-11, check from 1cb96a3, two reviewers, report
 LANE: learn SCOUTED   # brief 10.8 KB; slot 4 HELD by the HUB 07:20; worktree cut 07:21 in error, idle (R-C-1); slice U-12 when re-granted
 LANE: tests-docs SCOUTED   # brief 13.7 KB; slot 5 ASKED 07:42, WAITING for memory (status-HUB); cut from BASE (33d2a04f at 07:44) when granted; slice U-34
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 09:02 IST
+UPDATED: 2026-11-07 09:12 IST
+
+# 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
+
+- 09:03 session a29cd9a2 left `claude agents --json` (pid 18548 gone): its runs wf_20fa36d0-f20 (core, in its check fix round) and wf_5187f402-d73 (actions-sos, first builder) died with it. Nothing uncommitted in either worktree (core at 06cdf34, actions-sos at 0699730).
+- 09:10 relaunched on the same slots (1, 3) with done and priorNote from the branches: core wf_6b7ddbb3-2a7 (done U-01..U-04, diffFrom 06cdf34, batch FIX-C4-C5 = check C4 reload-and-unlock proof of replaceAll keeping the lock row, C5 discreet flag readable while locked: localStorage '1-addic:discreet' and UI.applyDiscreet); actions-sos wf_379c12ed-2e4 (done U-09, diffFrom 1cb96a3, U-10 and U-11; laneNote adds the real Store shape at build/core 06cdf34).
+- U-04's Store additions and the C5 ruling are in tracks/CORE/contracts/core.md (last section). R-C-7 to the HUB, R-C-8 to SCREENS.
 
 # 2026-11-07 09:02 IST · CORE session 224074c0 resumes
 
