@@ -187,7 +187,14 @@
 
 - wf_66ea28b7-119: RC21 LOW (the contract text behind the code: written into contracts/actions-sos.md 2026-11-08 00:02 IST), RC22 LOW (offline-v1.1); questions Q1-Q5 ruled there (RC23, FIX-USE-SKILL by name). R-C-39 to SCREENS. The lane check (only: check) is the last step before READY.
 
+## 2026-11-08 00:21 IST · CORE session 11310a7c-b949-4ec5-8ddc-1f7fa59bc77a (CORE 9) resumes; the actions-sos lane check relaunched
+
+- 93bffdb7 died 00:06 with HUB 7 and SCREENS (HUB 8's RESTART line on status-CORE.md, 00:18); it is not listed by `claude agents` at 00:20, so its runs died with it. Worktree actions-sos clean at cd385a5 (origin still 87030e3: the HUB pushes). Trunk build/offline-v1 cc98ba4. 13.3 GB free at 00:20; SLOTS-ALLOWED 1 for this check.
+- 00:21 wf_2b08aee9-a80: script C:/Users/ruchi/.claude-pro/jobs/11310a7c/tmp/wf_as_check_r7.js (a copy of tracks/CORE/args/wf_as_contracts_r3.js, name and description changed only), args {now: '2026-11-08 00:21 IST', only: 'check'}. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/11310a7c-b949-4ec5-8ddc-1f7fa59bc77a/subagents/workflows/wf_2b08aee9-a80/journal.jsonl. The checker's notes: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__check-r7.md; the merge preview tree C:/Users/ruchi/1-addic-wt/_logs/scratch/as-check-r7.
+
 ## Resume here
+
+- **(2026-11-08 00:21 IST) STATE BUILDING, CORE 11310a7c.** Running: the actions-sos lane check wf_2b08aee9-a80 (journal above). A fresh chat waits for it while 11310a7c is listed by `claude agents`; if 11310a7c is gone, relaunch the same script (copy tracks/CORE/args/wf_as_contracts_r3.js into the fresh job's tmp) with args {now, only: 'check'}. Its result decides READY (the 'Then' bullet below) or a FIX-R8.
 
 - **(2026-11-07 23:39 IST) STATE BUILDING, CORE 93bffdb7, context over 250k (hand-over planned).** engine MERGED 3ea2e13d; learn MERGED ce691c21; core MERGED a3081f33; tests-docs MERGED (tier 2 later). Only actions-sos is open, at cd385a5 (worktree clean, safety lens clean, 169/169).
 - **Done:** actions-sos contracts re-review wf_66ea28b7-119 (clean of HIGH and MEDIUM; RC21, RC22 LOW) (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/93bffdb7-4bab-4cfc-a69c-5f4a981d5968/subagents/workflows/wf_66ea28b7-119/journal.jsonl). A fresh chat never relaunches it while 93bffdb7 is listed in `claude agents`; if 93bffdb7 is gone, relaunch: Workflow scriptPath tracks/CORE/args/wf_as_contracts_r3.js (copy it into the fresh job's tmp first if the path is refused), args {now: <date>, only: 'review'}.
