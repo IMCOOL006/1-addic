@@ -1,6 +1,6 @@
 // Lane content's Node tests (node:test, no dependencies). U-31a: the M0-M3 exercises of BUILD-PLAN 3.8 and the
 // checkpoint, the content-core safety asks (R-C-13, R-C-18), and Engine.validateContent over the loaded content.
-// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6. U-30: lessons M7-M10.
+// U-31b: the M4-M10 exercises and checkpoints. U-29: lessons M4-M6. U-30: lessons M7-M10. U-32: practices, games, comebacks.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -13,7 +13,7 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
 globalThis.Content = require(src('content-core.js'));
-for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js']) {
+for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js', 'content-practices.js']) {
   if (existsSync(src(f))) require(src(f));
 }
 const C = globalThis.Content;
@@ -281,17 +281,75 @@ test('content: the spiral lesson carries clinicalReview and points to urgent hel
   assert.ok(!strings(C.modules).some((s) => /\breset/i.test(s)), 'no reset wording');
 });
 
-// U-30: lessons M7-M10. Rule 4: M9-M10 touch feelings, anger, slips and warning signs.
+// U-30: lessons M7-M10. U-32: practices, games, comebacks. Rule 4: M9-M10 touch feelings, anger, slips and warning signs.
 test('content: M9-M10 lessons carry clinicalReview', () => {
   for (const l of lessonsOf(['m9', 'm10'])) assert.equal(l.clinicalReview, true, l.id);
   const all = strings(lessonsOf(['m9', 'm10']));
   assert.ok(all.includes('#/sos/urgent'), 'urgent help is linked');
   assert.ok(all.includes('#/sos/slip') && all.includes('#/workbook/plan'), 'slip help and the plan are linked');
-  assert.ok(!all.some((s) => /reset|start (over|again) from (zero|day one)|dose/i.test(s)), 'no reset or dose wording');
+  assert.ok(!all.some((s) => /\breset|start (over|again) from (zero|day one)|\bdose\b/i.test(s)), 'no reset or dose wording');
 });
 
 test('content: 39 lessons in m4-m10 and the M7, M9, M10 milestones', () => {
   assert.equal(lessonsOf(['m4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10']).length, 39);
   const ms = Object.fromEntries(C.modules.map((m) => [m.id, m.milestone]));
   assert.deepEqual([ms.m7, ms.m9, ms.m10], ['navigator', 'builder', 'guide']);
+});
+
+// U-32: guided practices and games data (shapes pinned by the SCREENS chat, 16:27).
+const ROUTE_PRACTICES = ['breathe', 'body-scan', 'sober', 'urge-surf', 'shower', 'eating', 'walking'];
+const totalSecs = (p) => p.script.reduce((n, x) => n + (x.secs || 0), 0);
+
+test('content: practice ids match route ids', () => {
+  assert.deepEqual(Object.keys(C.practices).sort(), PRACTICE_IDS.slice().sort());
+  for (const [k, p] of Object.entries(C.practices)) {
+    assert.equal(p.id, k, `${k}: id is its key`);
+    assert.ok(p.title && p.minutes > 0 && p.intro && p.close, `${k}: title, minutes, intro, close`);
+    assert.ok(Array.isArray(p.script) && p.script.length && p.script.every((x) => typeof x.t === 'string' && x.t && (x.secs == null || x.secs > 0)), `${k}: script [{t, secs?}]`);
+  }
+  for (const id of ROUTE_PRACTICES) assert.ok(E.knownRoute(`#/practice/${id}`, C), `#/practice/${id}`);
+  for (const ex of exercises().filter((x) => x.practice)) assert.ok(C.practices[ex.practice], `${ex.id}: ${ex.practice}`);
+});
+
+test('content: sober steps, the breathing ladder with no pacing, a ten-minute body scan', () => {
+  const st = C.practices.sober.steps;
+  assert.equal(st.length, 5);
+  assert.ok(st.every((x) => typeof x === 'string' && x.length <= 70), 'five short plain strings');
+  assert.deepEqual(st.map((x) => x[0]).join(''), 'SOBER');
+  assert.deepEqual(C.practices.breathe.ladder, [5, 10, 15, 20, 25, 30]);
+  assert.ok(!strings(C.practices.breathe).some((s) => /\b(in for|out for|hold|count of|seconds?)\b|slow(er)? breath/i.test(s)), 'no pacing cue');
+  const bs = totalSecs(C.practices['body-scan']);
+  assert.ok(C.practices['body-scan'].minutes === 10 && bs >= 480 && bs <= 720, `body scan about 10 min (${bs} s)`);
+});
+
+test('content: games counts 12/3/6/4x3', () => {
+  const g = C.games;
+  const traps = new Set(C.catalogs.distortions.map((d) => d.id));
+  assert.equal(g.sort.length, 12);
+  assert.ok(g.sort.every((x) => x.id && x.thought && traps.has(x.trap)), 'sort: {id, thought, trap} with a catalog trap');
+  assert.equal(new Set(g.sort.map((x) => x.id)).size, 12, 'sort ids unique');
+  assert.equal(g.flag.redFlags.length, 3);
+  assert.ok(g.flag.redFlags.every((i) => Number.isInteger(i) && g.flag.lines[i]), 'red flags index lines');
+  assert.equal(g.bigGame.scenes.length, 6);
+  const scenes = new Set(g.bigGame.scenes.map((s) => s.id));
+  for (const s of g.bigGame.scenes) {
+    assert.ok(s.text && s.choices.length >= 2, `${s.id}: text and choices`);
+    for (const c of s.choices) assert.ok(c.t && c.note && (c.to === null || scenes.has(c.to)), `${s.id}: choice {t, to, note}`);
+  }
+  assert.ok(!Object.keys(C.cast).includes(g.bigGame.character.name.toLowerCase()), 'an original character');
+  assert.equal(g.refusal.length, 4);
+  for (const r of g.refusal) {
+    assert.ok(r.id && r.scene && r.responses.length === 3, `${r.id}: scene and 3 responses`);
+    assert.deepEqual(r.responses.map((x) => x.rating).sort(), ['best', 'ok', 'weak'], `${r.id}: one best, one ok, one weak`);
+    assert.ok(r.responses.every((x) => x.t && x.why), `${r.id}: {t, rating, why}`);
+  }
+  assert.equal(C.comebacks.length, 3);
+  assert.ok(C.comebacks.every((x) => typeof x === 'string' && x), 'comebacks are strings');
+});
+
+test('content: practices and games keep the restraint rules', () => {
+  const all = strings([C.practices, C.games, C.comebacks]);
+  assert.ok(!all.some((s) => /\baddicts?\b/i.test(s) && !/^\s*"[^"]*"\s*$/.test(s)), 'no addict noun');
+  assert.ok(!all.some((s) => /\b(reset|streak|points?|dose|mg)\b|hopeless|suicid/i.test(s)), 'no reset, streak, points, dose or crisis words');
+  assert.deepEqual(E.validateContent(C), []);
 });
