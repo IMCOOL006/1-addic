@@ -750,3 +750,43 @@ test('workbook-settings U-21: the plan prefills, edits, confirms, saves, refresh
   vm.runInNewContext(text, sandbox, { filename: 'ui-plan.js' }); // loads with no globals (it only loads)
   assert.equal(sandbox.module.exports.SECTIONS.length, 9);
 });
+
+/* ── check C5: a plan draft belongs to its notebook; erase everything and a backup brought back drop it ────── */
+test('workbook-settings U-21 C5: erase everything and a backup brought back drop an unsaved plan draft', async () => {
+  await S().resetAll();
+  PlanUI.reset();
+  const open = () => UI.pages.workbook(wctx(['plan']));
+  const draftLine = (line) => { const pg = open(); const f = byTest(pg, 'plan-item-motivation-0'); f.value = line; f.fire('input'); return pg; };
+  const anyValue = (pg, re) => pg.all((n) => n.tagName === 'input' && re.test(String(n.value || ''))).length > 0;
+
+  // A notebook to bring back later: its own reason, no saved plan.
+  await Actions.saveResponse('quick-reasons', { reasons: ['From the backup'] });
+  const backup = JSON.parse(JSON.stringify(Engine.exportBackup(S().view, { exportedAt: new Date().toISOString() })));
+  await S().resetAll();
+  await Actions.saveResponse('quick-reasons', { reasons: ['Old notebook reason'] });
+
+  // An ordinary change elsewhere keeps the draft.
+  draftLine('Old unsaved line');
+  await Actions.contacts.add({ name: 'Asha', role: 'safetyNet' });
+  assert.ok(byTest(open(), 'plan-unsaved'), 'a contact added elsewhere keeps the draft');
+
+  // A backup brought back: the plan shows the backup's notebook, never the old draft.
+  await Actions.importBackup(backup);
+  let pg = open();
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.ok(byTest(pg, 'plan-draft'));
+  assert.equal(byTest(pg, 'plan-item-motivation-0').value, 'From the backup');
+  assert.ok(!anyValue(pg, /Old unsaved line|Old notebook reason/));
+
+  // Erase everything: an empty first draft again, and Save writes nothing from before.
+  draftLine('Second unsaved line');
+  assert.ok(byTest(open(), 'plan-unsaved'));
+  await Actions.eraseAll();
+  pg = open();
+  assert.equal(byTest(pg, 'plan-unsaved'), undefined);
+  assert.ok(!anyValue(pg, /unsaved line|From the backup|Old notebook/));
+  byTest(pg, 'plan-save').fire('click');
+  await until(() => S().view.get('recoveryPlan', 'plan'));
+  assert.doesNotMatch(JSON.stringify(S().view.get('recoveryPlan', 'plan').sections), /unsaved line|From the backup|Old notebook/);
+  PlanUI.reset();
+});

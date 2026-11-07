@@ -237,8 +237,18 @@ const PlanUI = (function () {
     return root;
   }
 
-  /* For the tests: forget a draft being edited (a fresh page). */
+  /* Forget a draft being edited (a fresh page). */
   const reset = () => { state.draft = null; state.dirty = false; };
+
+  /* A draft belongs to the notebook it was started in (check C5). Erase everything (Store.resetAll) and a backup
+     brought back (Store.replaceAll) swap the whole notebook without a reload, so they drop the draft: the old
+     notebook's unsaved lines never show in, or save into, the new one. Store.subscribe hands each listener
+     { label }; every other change (the plan's own save among them) keeps the draft. No Store here: nothing to do. */
+  const DROPS = ['resetAll', 'replaceAll'];
+  safe(() => {
+    const S = ns('Store');
+    if (S && typeof S.subscribe === 'function') S.subscribe((e) => { if (e && DROPS.includes(e.label)) reset(); });
+  }, null);
 
   const PURE = ['SECTIONS', 'LABELS', 'TEXT', 'normalise', 'merge', 'allConfirmed', 'stillTrue', 'move', 'countItems'];
   return { SECTIONS, LABELS, TEXT, normalise, merge, allConfirmed, stillTrue, move, countItems, printNode, save, view, reset, PURE };
