@@ -2133,3 +2133,41 @@ describe('review round 2 rest (FIX-R2-REST)', () => {
   });
   // -- FIX-R2-REST tests end --
 });
+
+// ── FIX-R3 (2026-11-07, rulings 15:46): the safety re-check's new items RS19 to RS23 ──
+describe('review round 3 fixes (FIX-R3)', () => {
+  const H = require(src('ui-sos.js'));
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  // the feeling flow's Something else, typed and sent with Next
+  const typedTo = (t) => {
+    const d = sosDom();
+    const root = d.open(['sos', 'feeling']);
+    d.tapId(root, 'sos-feeling-other');
+    root.querySelectorAll('input').find((i) => i.attrs.id === 'sos-feel-text').value = t;
+    d.tap(root, 'Next');
+    return root;
+  };
+
+  const RS19_YES = [
+    'I want to be dead', 'I wish to be dead', "I'd rather be dead", 'I’d rather be dead', 'I am ready to be dead', 'I would be better off dead',
+    'I wish I could go to sleep and not wake up', 'I want to go to sleep and never wake up', 'my life is no longer worth living',
+    'I want it all to end', 'I just want it to end', 'I want to end my life', 'I want to end it all', 'I wish I was never born',
+    "I wish I'd never been born", 'I want to disappear forever', 'everyone would be better off without me',
+    "they'd be better off without me", 'there is no reason to live',
+  ];
+  for (const t of RS19_YES) {
+    test('RS19: typed "' + t + '" goes to the numbers', () => { assert.equal(H.isCrisisText(t, null), true, t); });
+  }
+  test('RS19: dead tired, killing time and I hurt my knee stay out; Next on Something else shows the numbers at once', () => {
+    for (const t of ['dead tired', 'I am dead tired', 'killing time', 'I hurt my knee']) assert.equal(H.isCrisisText(t, null), false, t);
+    for (const t of ['I want to be dead', 'I wish I was never born', 'everyone would be better off without me', 'I want it all to end']) {
+      const root = typedTo(t);
+      assert.ok(root.querySelector('[data-testid="sos-crisis"]'), t + ': the crisis view');
+      assert.ok(root.querySelector('[data-testid="urgent-number-1"]'), t + ': the numbers at once');
+    }
+    assert.equal(H.CRISIS.clinicalReview, true, 'the list is marked for clinical review');
+  });
+  // -- FIX-R3 tests end --
+});

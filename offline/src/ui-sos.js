@@ -86,10 +86,12 @@
       'suicid\\w*', 'kill(s|ing|ed)? (my ?self|me)', 'kms', 'self[- ]?harm(s|ing|ed)?', '(hurt|harm|cut|hang)(s|ing|ting|ed)? my ?self',
       'overdose on purpose', '(want(s|ed|ing)?|going|ready) to die', 'wanna die', 'wish i (was|were) dead', 'better off dead',
       'wish i (could|would) die', 'feel(s|ing)? like dying', '(thoughts?|think(s|ing)?) (of|about) (death|dying|suicide)',
-      "(not|isn'?t) worth living", 'never wake up', // RS10: the inflected and nearby forms; a false positive is allowed, a miss is not
+      "(not|isn'?t|no longer) worth living", '(not|never) wake up', // RS10, RS19: the inflected and nearby forms; a false positive is allowed, a miss is not
       "(do not|don'?t|not) (want|wanna)( to)? (live|be here|be alive|wake up)", "(can'?t|cannot) go on",
       'end(ing)? (it|it all|things|my life)', 'tak(e|ing) my (own )?life',
       'nothing to live for', 'no (reason|point)( (to|in|for))? (live|living|going on)',
+      '(want(s|ed|ing)?|wish(es|ed|ing)?|rather|ready)( to)? be dead', '(want|wish)(s|es|ed|ing)? (it|it all|this|everything) to (end|be over)', // RS19
+      'never (been )?born', 'disappear(s|ed|ing)? forever', 'better off without me',
     ],
   };
   const CRISIS_RE = new RegExp('\\b(' + CRISIS.patterns.join('|') + ')\\b', 'i');
