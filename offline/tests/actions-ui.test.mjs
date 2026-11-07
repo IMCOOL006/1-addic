@@ -259,7 +259,8 @@ test('actions: the hub and the screens still being built are honest (no dead but
     const hub = AU.page(ctxFor(E.makeView({}), R('/actions')));
     assert.equal(one(hub, 'actions-open-planner').getAttribute('href'), '#/actions/planner');
     assert.equal(one(hub, 'actions-open-battle').getAttribute('href'), '#/actions/battle');
-    for (const sub of ['review', 'quests', 'predictions', 'todos', 'elsewhere']) {
+    assert.equal(one(hub, 'actions-open-review').getAttribute('href'), '#/actions/review');
+    for (const sub of ['quests', 'predictions', 'todos', 'elsewhere']) {
       const root = AU.page(ctxFor(E.makeView({}), R('/actions/' + sub)));
       assert.equal(root.getAttribute('data-test'), 'actions-stub', sub);
       assert.match(root.textContent, /being built/);
@@ -472,4 +473,135 @@ test('battle: "Add to calendar" hands the .ics to UI.download as text/calendar; 
       for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
     });
   } finally { delete globalThis.UI; }
+});
+
+// ── U-24 Weekly Review ─────────────────────────────────────────────────────────────────────
+const reviews = () => Store.view.list('responses').filter((r) => r.exerciseId === 'weekly-review');
+const step = (root) => Number(one(root, 'review-step').getAttribute('data-step'));
+const NO_SCORE = /\b(score|points|streak|failed|missed|overdue|late|behind|graded?)\b/i;
+
+test('review: the week, the next review day and the weekly reminder .ics at 18:00 on profile.reviewDay', () => {
+  assert.deepEqual(P.reviewWeek(NOW), { today: TODAY, weekStart: '2026-11-02', from: '2026-11-01', to: TODAY });
+  assert.equal(P.nextReviewDate(0, TODAY), '2026-11-08');
+  assert.equal(P.nextReviewDate(6, TODAY), TODAY, 'today counts');
+  assert.equal(P.nextReviewDate(9, TODAY), '2026-11-08', 'an unknown day is Sunday');
+  const item = P.reviewIcsItem({ reviewDay: 3 }, NOW);
+  assert.deepEqual(item, { id: 'weekly-review', date: '2026-11-11', start: '18:00', end: '18:15', title: 'Weekly review', rrule: 'FREQ=WEEKLY;BYDAY=WE' });
+  assert.equal(P.reviewIcsItem({}, NOW).date, '2026-11-08');
+  const text = E.ics([item], { now: NOW });
+  assert.match(text, /\r\nDTSTART:20261111T180000\r\nDTEND:20261111T181500\r\nRRULE:FREQ=WEEKLY;BYDAY=WE\r\n/);
+  assert.deepEqual(P.wantToItem({ title: 'Swim', date: '2026-11-08', start: '23:30' }), { date: '2026-11-08', start: '23:30', end: '23:59', title: 'Swim', kind: 'want', risky: false, reward: null });
+});
+
+test('review: a synthetic week renders the highlights and the forecast check line from Engine', async () => {
+  AU.forgetReviews();
+  const view = E.makeView({
+    plans: [plan({ id: 'r1', date: '2026-11-04', start: '19:00', end: '21:00', title: 'Payday evening', kind: 'risky', risky: true, battlePlan: { plan: 'Go to the gym' } }),
+      plan({ id: 'r2', date: '2026-11-09', start: '20:00', end: '22:00', title: 'Old friends visit', kind: 'risky', risky: true })],
+    logs: [{ id: 'l1', type: 'craving', at: at(2026, 11, 4, 19, 40).toISOString(), intensity: 6 }, { id: 'l2', type: 'feeling', at: at(2026, 11, 5, 9).toISOString(), intensity: 3 }],
+  });
+  const fc = E.forecastCheck(view, '2026-11-01').find((d) => d.date === '2026-11-04');
+  assert.ok(fc && fc.line, 'Engine has a line for the planned day');
+  await withDom(async () => {
+    const root = AU.page(ctxFor(view, R('/actions/review')));
+    assert.ok(tours(root).includes('review-start'));
+    assert.match(root.textContent, /Nothing here is scored/);
+    await one(root, 'review-start').fire('click');
+    assert.equal(step(root), 1);
+    for (const l of E.weekSummary(view, '2026-11-01').highlights) assert.ok(root.textContent.includes(l), l);
+    await one(root, 'review-next').fire('click');
+    assert.equal(step(root), 2);
+    assert.equal(one(root, 'review-forecast-line').textContent, fc.line);
+    assert.match(one(root, 'review-forecast').textContent, /Logged: a feeling at/, 'a day without a line shows plain rows');
+    for (let s = 2; s < 5; s++) { assert.doesNotMatch(root.textContent, NO_SCORE, 'screen ' + s); await one(root, 'review-next').fire('click'); }
+    assert.equal(step(root), 5);
+    assert.doesNotMatch(root.textContent, NO_SCORE, 'screen 5');
+    await one(root, 'review-back').fire('click');
+    assert.equal(step(root), 4);
+    assert.match(one(root, 'review-ahead').textContent, /Old friends visit/);
+    assert.equal(one(root, 'review-bp-add').getAttribute('href'), '#/actions/battle?plan=r2');
+    assert.equal(one(root, 'review-bp-new').getAttribute('href'), '#/actions/battle?new=1');
+    // leaving for a Battle Plan and coming back resumes the same screen (memory only)
+    const back = AU.page(ctxFor(view, R('/actions/review')));
+    assert.equal(step(back), 4);
+  });
+  AU.forgetReviews();
+});
+
+test('review: Save writes one response, one WeeklyReviewCompleted, the want-tos and the re-rate; a second save adds no second event', async () => {
+  AU.forgetReviews();
+  await freshStore();
+  await withDom(async () => {
+    const root = AU.page(ctxFor(Store.view, R('/actions/review'), { profile: { reviewDay: 0 } }));
+    await one(root, 'review-start').fire('click');
+    one(root, 'review-f-note').value = 'Cooked twice';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    one(root, 'review-f-score').value = '7';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    byTest(root, 'review-want-title')[0].value = 'Swim';
+    byTest(root, 'review-want-reward')[0].value = 'A long shower';
+    one(root, 'review-f-focusSkill').value = 'trial';
+    await one(root, 'review-save').fire('click');
+    assert.match(one(root, 'review-error').textContent, /Choose the stage/, 'a number without a stage is asked about');
+    assert.equal(reviews().length, 0);
+    await one(root, 'review-back').fire('click');
+    await one(root, 'review-back').fire('click');
+    one(root, 'review-f-stage').value = 'action';
+    await one(root, 'review-next').fire('click');
+    await one(root, 'review-next').fire('click');
+    assert.equal(byTest(root, 'review-want-title')[0].value, 'Swim', 'answers stay in memory between screens');
+    await one(root, 'review-save').fire('click');
+    await until(() => reviews().length === 1);
+    assert.equal(reviews().length, 1);
+    const p = reviews()[0].payload;
+    assert.equal(p.weekStart, '2026-11-02');
+    assert.equal(p.focusSkill, 'trial');
+    assert.equal(p.highlights.note, 'Cooked twice');
+    assert.deepEqual(p.motivation, { stage: 'action', score: 7, plusOne: '' });
+    assert.equal(p.wantTos.length, 1);
+    assert.equal(p.wantTos[0].title, 'Swim');
+    assert.equal(evs('WeeklyReviewCompleted').length, 1);
+    const plans = Store.view.list('plans');
+    assert.equal(plans.length, 1);
+    assert.deepEqual([plans[0].kind, plans[0].date, plans[0].start, plans[0].end, plans[0].reward], ['want', '2026-11-08', '18:00', '19:00', 'A long shower']);
+    assert.equal(Store.view.list('motivation').length, 1);
+    one(root, 'review-saved');
+    assert.equal(one(root, 'review-start').getAttribute('data-tour'), 'review-start');
+    // again, the same week: a second response, still one event, no second want-to or re-rate
+    await one(root, 'review-start').fire('click');
+    for (let s = 1; s < 5; s++) await one(root, 'review-next').fire('click');
+    await one(root, 'review-save').fire('click');
+    await until(() => reviews().length === 2);
+    assert.equal(evs('WeeklyReviewCompleted').length, 1, 'once per week');
+    assert.equal(Store.view.list('plans').length, 1);
+    assert.equal(Store.view.list('motivation').length, 1);
+  });
+  AU.forgetReviews();
+});
+
+test('review: the reminder goes to UI.download as text/calendar; crisis words show the urgent-help line; no dead button', async () => {
+  AU.forgetReviews();
+  await freshStore();
+  await Actions.weeklyReview({ weekStart: '2026-11-02', highlights: {} });
+  const calls = [];
+  globalThis.UI = { download: (...a) => { calls.push(a); return true; }, toast() {} };
+  try {
+    await withDom(async () => {
+      const root = AU.page(ctxFor(Store.view, R('/actions/review'), { profile: { reviewDay: 6 } }));
+      assert.match(one(root, 'review-saved').textContent, /every Saturday at 6 pm/);
+      await one(root, 'review-ics').fire('click');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0][0], '1-addic-weekly-review.ics');
+      assert.match(calls[0][1], /RRULE:FREQ=WEEKLY;BYDAY=SA\r\n/);
+      assert.equal(calls[0][2], 'text/calendar');
+      await one(root, 'review-start').fire('click');
+      one(root, 'review-f-note').value = "I can't go on";
+      await one(root, 'review-next').fire('click');
+      assert.equal(one(root, 'review-help-go').getAttribute('href'), '#/sos/urgent');
+      for (const b of root.all((n) => n.tagName === 'button' && n.getAttribute('type') === 'button')) assert.ok((b.on.click || []).length, 'button ' + b.getAttribute('data-test'));
+      for (const x of root.all((n) => n.tagName === 'a')) assert.match(x.getAttribute('href') || '', /^#\//);
+    });
+  } finally { delete globalThis.UI; AU.forgetReviews(); }
 });
