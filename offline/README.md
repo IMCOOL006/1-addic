@@ -28,13 +28,13 @@ This joins the parts in `offline/src/` into `offline/1-addic.html` and prints it
 
 On a computer, double-click the file, or drag it onto a Chrome or Edge window.
 
-Always open the file from the **same place, in the same browser**. Once saving arrives (planned: see the last section), the browser keeps your data for that file; a copy in another folder, another browser or a private window starts empty.
+Always open the file from the **same place, in the same browser**. The browser keeps your data for that file; a copy in another folder, another browser or a private window starts empty.
 
 ## What the saved label means
 
 The top bar always says where your data is.
 
-**In this build** the data layer is not there yet (it is planned), so the label says **Not saved — export before closing**: nothing is kept when the tab closes, and there is no export yet. The table says what each label means once saving arrives.
+The app tries the browser's main storage first, then a simpler one, then memory only. Which label you see depends on the browser and the way the file was opened.
 
 | The label says | What it means | What to do |
 |---|---|---|
@@ -42,30 +42,32 @@ The top bar always says where your data is.
 | **Saved (fallback)** | The main storage was not available, so a simpler browser storage holds your data. | Export a backup now and then; open the file in a normal Chrome window when you can. |
 | **Not saved — export before closing** | The browser is blocking storage (often a private window, or a restricted way of opening the file). Your data lives **only in memory**: closing the tab loses it. | Export a backup before you close the tab, then open the file in a normal browser window and import it. |
 
-## Back up (planned)
+## Back up
 
-Export, import and the PIN arrive with the data layer and the Settings screen; none of them is in this build yet. This is how they will work.
+Your data never leaves the device on its own, so a backup is the only copy that can survive a lost phone or a cleared browser. In **Settings → Your data**, tap **Save a backup file** and keep the file somewhere safe. To restore, on this device or a new one, use **Bring back a backup** and choose the file: it replaces everything on this device, and you are asked first.
 
-Your data never leaves the device on its own, so a backup is the only copy that can survive a lost phone or a cleared browser. In **Settings → Your data** you will export a backup file and keep it somewhere safe, and import it to restore everything on this device or a new one. If you set a PIN, the export will ask for it.
+If you have a PIN, saving a backup asks for it. The backup file itself is not locked by the PIN, so keep it somewhere private.
 
-The PIN will be offered, never forced. A forgotten PIN cannot be recovered: the way back is to erase and import your latest backup.
+## The PIN
+
+A PIN is offered, never forced. Set one in **Settings → Privacy** (4 to 12 digits): your notes are then locked on this device and open only with it. The lock screen still reaches urgent help without the PIN. A forgotten PIN cannot be recovered: erase the notebook from the lock screen, then bring back your latest backup.
 
 ## Privacy
 
 - No network: the file makes no requests, and the browser is told to refuse them.
 - No trackers, no analytics, no ads, no account.
 - Contacts, logs and notes stay in this browser on this device. Nothing is sent, synced or shared.
-- Discreet mode shows the name "Notebook" and labels SOS as "Help". Its switch arrives with the Settings screen (planned).
+- Discreet mode (**Settings → Privacy**) shows the name "Notebook", labels SOS as "Help" and hides the day counters.
 
 ## Urgent-help numbers
 
-In this build SOS shows the India urgent-help numbers, each one a tap to call, under the note "India numbers: please verify", and a line for anyone elsewhere. **Every number is unverified until the owner checks it**, before anyone else uses the file. The full SOS screen, with an international list, is planned. If a number does not work, call your local emergency number.
+**Urgent help** in SOS lists the India numbers and an international list (**Elsewhere**: two helpline directories and your local emergency number), each line marked "please verify". Each number is a tap to call. **Every number is unverified until the owner checks it**, before anyone else uses the file. If a number does not work, call your local emergency number.
 
 ## What is in this build, and what is planned
 
-**In this build today:** the shell with its five tabs (a tab whose screen has not landed says "coming soon", and Today is a placeholder), the SOS button and the urgent-help page (it works with no other screen loaded), the saved label, the light and dark theme (the browser remembers your choice), and the content, engine and actions parts that the screens will use.
+**In this build:** onboarding (eight short steps; every one but the safety notice can be skipped), the five tabs (Today, Learn, Workbook, Track, Actions), SOS (craving, feeling, slip and urgent help, one tap from every screen), the practices, tools and games, saving on the device with the saved label, backup and restore, the optional PIN and its lock screen, discreet mode, the light and dark theme, and Settings. **Load sample data** (Settings → Your data) fills the app with made-up entries marked as sample, to try it out; **Erase sample data** removes them and keeps your own entries.
 
-**Planned:** the data layer (saving on the device, the optional PIN, export and import), Settings (Your data, the discreet mode switch, Load sample data), onboarding, the full SOS screen and the other screens. They arrive one by one; a screen that is not ready says so ("coming soon", a stub with one real action, or locked with one line on what it will be), never a dead button. The guide is `offline/docs/1-addic-Guide.docx`: a skeleton today, with its tutorial lessons planned for the next tag.
+**Not finished yet:** a tool, practice or Actions page whose content is not in this version says so, with a way back, never a dead button. The guide is `offline/docs/1-addic-Guide.docx`: a skeleton today. Its screenshots are in `offline/docs/images/`; its lessons are planned.
 
 ## For developers
 
@@ -78,4 +80,4 @@ In this build SOS shows the India urgent-help numbers, each one a tap to call, u
 | `npm run check` | Build, Node tests, browser suite and the guide, in that order |
 | `python offline/docs/build_guide.py` | Builds the guide `.docx` from `offline/docs/1-addic-Guide.md` |
 
-Layout: `offline/src/` (the parts: shell, styles, content, engine, actions, the UI core and boot today; the store and the screens are planned), `offline/build.mjs`, `offline/tests/` (Node tests, the browser suite and its helpers), `offline/docs/` (the guide). The decision record is `docs/decisions/0022-offline-edition.md`.
+Layout: `offline/src/` (the parts: shell, styles, content, engine, store, actions, the UI core, the screens and boot), `offline/build.mjs`, `offline/tests/` (Node tests, the browser suite and its helpers), `offline/docs/` (the guide). The decision record is `docs/decisions/0022-offline-edition.md`.
