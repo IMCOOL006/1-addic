@@ -1,0 +1,29 @@
+[
+ {
+  "id": "RS37R",
+  "severity": "MEDIUM",
+  "unit": "U-09",
+  "where": "offline/src/actions.js plans.update (:600-611), plans.debrief (:621-633), predictions.complete (:715-726), contacts.update (:531-539)",
+  "scenario": "A person exploring the sample rewrites the sample battle plan 'Office farewell dinner' into their own Friday plan, or debriefs it in their own words, or completes a sample prediction with their own score and notes: the row keeps sample: true and Erase sample deletes their words without a word (re-check probe 3 P1-P3, P6).",
+  "evidence": "actions-sos__review-safety.md Round 7 (RS37 PARTLY); probe _logs/reports/actions-sos/actions-sos__fr6recheck3.probe.test.mjs; log _logs/gates/actions-sos/test-20261107-224319.log lines 204-301",
+  "fix": "The ruled class rule (contract, rulings 2026-11-07 22:52 IST): a patch that changes the value of a field that is not a true/false flag makes a sample row the person's: drop sample. plans.update drops it then; plans.debrief and predictions.complete always write the person's words or score, so they always drop it. A patch that changes nothing, or only true/false flags (todos.done; contacts' active from showContact or deactivate), keeps the mark. One helper used by every update verb. Tests per verb, red first: loadSample, the verb, the row unmarked, eraseSample keeps it; todos.done on a sample to-do keeps the mark and eraseSample removes it; contacts.update(id, {active: true}) on a sample contact keeps the mark."
+ },
+ {
+  "id": "RS38",
+  "severity": "LOW",
+  "unit": "U-09",
+  "where": "offline/src/actions.js:536-538 (contacts.update, fix 1f4b61c)",
+  "scenario": "contacts.update deletes sample on every patch, a patch that changes nothing included: a person who opens 'Asha (sample)' and taps Save without editing (trunk ui-workbook.js:319 sends the whole form) makes it theirs, so Erase sample leaves 'Asha (sample)' with its made-up note in their Safety Net (probe 3 P5).",
+  "evidence": "actions-sos__review-safety.md Round 7 (New); log _logs/gates/actions-sos/test-20261107-224319.log lines 265-272",
+  "fix": "Covered by RS37R's helper: contacts.update drops the mark only when some non-flag key of the patch differs from the stored row (compare by value). Test: contacts.update(sampleId, {name: <the same name>}) keeps sample: true and eraseSample removes it; the RS37 test stays green."
+ },
+ {
+  "id": "RS36R",
+  "severity": "MEDIUM",
+  "unit": "U-10",
+  "where": "offline/src/ui-sos.js:852 (safe(() => c.profile.stage, null)), :539 and :553 (c.profile.region)",
+  "scenario": "With only the sample loaded, SOS > hard feeling > Done shows 'How is your motivation?' because the sample profile's stage is 'action'; the rating writes A.motivation.add({stage: 'action', ...}) (actions.js:701) with no sample mark, so the sample's made-up stage lands in the person's own motivation row and Erase sample keeps it.",
+  "evidence": "actions-sos__review-safety.md Round 7 (RS36 PARTLY); trunk ui-core.js:590 hands the sample profile to SOS as c.profile; contract ruling 22:25 line 152",
+  "fix": "As ruled 22:25: SOS reads stage and region from the person's own profile only: const own = isOwn(c.profile) ? c.profile : null (isOwn is at ui-sos.js:276); stage from own or null; region from own or 'in'. Test, red first: the feeling flow with only {stage: 'action', sample: true} shows no sos-motivation step; with the person's own profile at stage 'action' it does; region defaults to 'in' with a sample profile."
+ }
+]

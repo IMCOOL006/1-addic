@@ -204,3 +204,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Check PASS (wf_76a65b95-f5b). Red before: 3 fail against 57153d3's engine.js (_logs/reports/engine/engine__FIX-RS9E.red.log). Verified by this chat: logic + engine-* 105/105 on the branch and on the trunk 79f43db's content (git archive into _logs/scratch/engine-rs9e-trunk with the lane's two files over it).
 - Cut base 655516dc; the round's diff 57153d3..84075b6 (2 files). Report lane-reports/engine.md. Slot 2 free after the merge.
 
+## R-C-36 · 2026-11-07 22:53 IST · to HUB · actions-sos not READY yet: FIX-R6 re-check RED at 00a5c08; FIX-R7 waits for memory
+
+- The safety re-check (wf_4b67e91f-df4) found the five FIX-R6 fixes FIXED (RS-SAMPLE, the tag condition, among them) and raised RS35 HIGH (a Q-SPIRAL regression on the trunk engine: a crisis thought with no own reply reached the slip flow with a stock line), FIXED ed34fc8 on re-check; RS36 and RS37 (the sample profile and sample rows taken as the person's) PARTLY fixed; one LOW. test GREEN 164/164 at 00a5c08 (_logs/gates/actions-sos/test-20261107-224221.log).
+- FIX-R7 (RS37R: the sample mark drops when the person changes a non-flag field, in every update verb; RS38 LOW; RS36R: SOS reads stage and region from the person's own profile) is ready to launch on the next 7.0 GB row (3.1 GB free at 22:50). Then a read-only contracts-and-tests re-review of fca2781..HEAD (that lens last looked at round 2), before READY.
+- For SCREENS when it merges (no ask): Actions.contacts.update on a sample contact makes it the person's only when a non-flag field changes; Load sample then onboarding opens once a visit (shouldOnboard ignores a sample profile).
+

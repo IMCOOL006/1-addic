@@ -1,0 +1,145 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The Actions verbs, the SOS screens, the lock screen and onboarding.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/tests/actions.test.mjs"
+ ],
+ "units": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-SAFETY-AS",
+  "FIX-ONB-EMO",
+  "FIX-R2-SAFETY",
+  "FIX-R2-REST",
+  "FIX-R3",
+  "FIX-R4",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7"
+ ],
+ "batches": [
+  [
+   "U-09"
+  ],
+  [
+   "U-10",
+   "U-11"
+  ],
+  [
+   "FIX-SAFETY-AS"
+  ],
+  [
+   "FIX-ONB-EMO"
+  ],
+  [
+   "FIX-R2-SAFETY"
+  ],
+  [
+   "FIX-R2-REST"
+  ],
+  [
+   "FIX-R6"
+  ],
+  [
+   "FIX-R7"
+  ]
+ ],
+ "unitTier": {
+  "U-09": 1,
+  "U-10": 1,
+  "U-11": 1,
+  "FIX-SAFETY-AS": 1,
+  "FIX-ONB-EMO": 1,
+  "FIX-R2-SAFETY": 1,
+  "FIX-R2-REST": 1,
+  "FIX-R3": 1,
+  "FIX-R4": 1,
+  "FIX-R5": 1,
+  "FIX-R6": 1,
+  "FIX-R7": 1
+ },
+ "unitNotes": {
+  "U-09": "Actions (3 h): every verb of 3.2 with validation and events; actions.test.mjs in Node memory mode. Done when the tests prove: an SOS session writes a log and SkillUsed events; a drill writes nothing; a slip restarts only the run; export -> reset -> import is identical.",
+  "U-10": "SOS screens (4.5 h; flagged: safety copy): the craving, feeling and slipped flows of docs/PLAN.md 5.2, urgent help (region file, call/copy, 'please verify' labels: O3), drill and preview modes, the night palette, 'My plan' when confirmed. Done when every flow works offline and one-handed with two lines of text per screen at most, crisis routing (hopeless, thoughts of death) shows the numbers at once, and nothing gates or interrupts SOS.",
+  "U-11": "Lock screen and onboarding (2.5 h): the lock with urgent help and SOBER reachable without the PIN; the eight onboarding steps of docs/PLAN.md 5.1 (skippable except the safety notice); the early-access notice. Done when a new person lands on Today with the tour offered and a locked person still reaches urgent help in one tap.",
+  "FIX-SAFETY-AS": "Fixes by name (contracts/actions-sos.md rulings 10:45): RS2 HIGH widen CRISIS_RE (contractions, curly and missing apostrophes, the phrases listed) with positive and negative tests, clinicalReview; RS3 the withdrawal label; RS4 'Log it and go on' plus a ghost 'Just reading' that logs nothing; RS5 the opioid tolerance line; RS6 'please verify' on meetings; RS7 'What helped?' toggles start off; RS8 sosSoberView title 'Breathe' when discreet and a neutral step line; RS9 spiralPairs skips crisis or 'hopeless' thoughts; FALLBACK.talkback 'I can wait 15 minutes and let this wave pass.'; the crisis-mode verify note 'Please check these numbers.'",
+  "FIX-ONB-EMO": "Fixes by name (contracts/actions-sos.md rulings 10:45): the onboarding redirect from #/ or #/today only (09:33 ruling 1); sosSession's optional emotion (09:33 ruling 2: check caed857, add what is missing); an SOS commit failing with LOCKED kept and saved after the next unlock; RC10 the outcome enum 'passed'|'still'|'used'; PIN fields one-time-code, numeric, 4-12 digits, the 'Set a PIN before you write anything private.' line; O6 'Look around with sample data' on onboarding step 1; the drill's 'Nothing goes in your log.'; the motivation slider unset until moved; FUTURE_DATE; the slip flow's COPY.reach; leaving a craving flow saves the tools used as outcome 'still' after the next screen draws; recordEvent refuses the verb-owned types (USE_VERB); the test clock pinned; graduatedAt set once with RecoveryPlanConfirmed; imports only through Actions.importBackup.",
+  "FIX-R2-SAFETY": "Review round 2's open safety findings, in this order: RS10 (HIGH: ui-sos.js:85-93 the typed-text crisis check misses inflected forms), RS11 (ui-onboarding.js:296-312: Next with a typed PIN sets nothing), RS12 (the lock screen and title ignore discreet), RS13 (sample data on step 1 skips the safety step), RS14 (SOS shows sample contacts and reasons as the person's own). Full text: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md; the ruling for each: tracks/CORE/contracts/actions-sos.md, last section. Done when each has a test red before and green after, one commit per id.",
+  "FIX-R2-REST": "RS15 (locked: Call someone and Remind me why say hidden while locked, not empty), RS16 (#/sos/slip?logged=1: 'It is in your log.' and one Go on), RS17 (privacy step with a PIN set: no fields), and the check's C2 (a kept SOS save is dropped after a Store reset or an import) and C3 (the slider gets a confirm button). Full text: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md and C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__check.md; rulings in contracts/actions-sos.md, last section. Each a test red before.",
+  "FIX-R6": "One fix round by name: RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T (the rulings in tracks/CORE/contracts/actions-sos.md (sections 17:22 and 17:57)). Done when each has a test red before and green after and its own commit naming FIX-R6 and the id.",
+  "FIX-R7": "One fix round by name: RS37R, RS38, RS36R (rulings in tracks/CORE/contracts/actions-sos.md (rulings 22:25 and 2026-11-07 22:53 IST); full text in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md (Round 7 and section FIX-R7)). Done when each has a test red before and green after and its own commit naming FIX-R7 and the id."
+ },
+ "laneNote": "Flagged: safety copy (SOS, crisis routing, slips, the lock screen's urgent help) and the person's data. Owns actions.js, ui-sos.js, ui-onboarding.js, actions.test.mjs.\nCORE CHAT'S WORD (2026-11-07 22:53 IST, CORE session 93bffdb7-4bab-4cfc-a69c-5f4a981d5968): this run is one fix round by name, FIX-R7, of RS37R, RS38 and RS36R only; the rest of the lane is fixed and re-checked. Read each finding's full text in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md (Round 7 and section FIX-R7) before you fix it, and the rulings in tracks/CORE/contracts/actions-sos.md (rulings 22:25 and 2026-11-07 22:53 IST). The trunk shapes to test against (by a stand-in object of that shape in the test, or the trunk's real file read by path from git show into _logs/scratch): content-sample.js and ui-workbook.js on build/offline-v1; never copy trunk files into the worktree, never merge the trunk. No new copy, no new phrase. Each id: a test red before (log _logs/reports/actions-sos/actions-sos__<id>.red.log), one commit naming FIX-R7 and the id. Node tests and gates.py only. Trailers: 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 93bffdb7-4bab-4cfc-a69c-5f4a981d5968'; message from a file; git add by explicit path; never git worktree add/remove. In your note's done: each id with its SHA.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-SAFETY-AS",
+  "FIX-ONB-EMO",
+  "FIX-R2-SAFETY",
+  "FIX-R2-REST",
+  "FIX-R3",
+  "FIX-R4",
+  "FIX-R5",
+  "FIX-R6"
+ ],
+ "diffFrom": "00a5c08",
+ "base": "655516dc",
+ "slot": 3,
+ "session": "93bffdb7-4bab-4cfc-a69c-5f4a981d5968",
+ "now": "2026-11-07 22:53 IST",
+ "priorNote": "Run wf_4b67e91f-df4 (CORE 93bffdb7, 22:09-22:49, the FIX-R6 safety re-check): RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T re-checked FIXED; new RS35 HIGH FIXED ed34fc8, RS37 PARTLY 1f4b61c (contacts only), RS36 PARTLY 00a5c08 (onboarding only), one LOW (RS38). test GREEN 164/164 at 00a5c08 (_logs/gates/actions-sos/test-20261107-224221.log); guards the same 21 tour-target names as 87030e3, other lanes'. Worktree clean at 00a5c08. The full text of every finding: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md (Round 7 and section FIX-R7).",
+ "start": "review",
+ "carried": {
+  "check": {
+   "verdict": "PASS",
+   "tip": "00a5c08",
+   "findings": []
+  },
+  "review": [
+   {
+    "findings": [],
+    "questions": []
+   },
+   {
+    "findings": [
+     {
+      "id": "RS37R",
+      "severity": "MEDIUM",
+      "unit": "U-09",
+      "where": "offline/src/actions.js plans.update (:600-611), plans.debrief (:621-633), predictions.complete (:715-726), contacts.update (:531-539)",
+      "scenario": "A person exploring the sample rewrites the sample battle plan 'Office farewell dinner' into their own Friday plan, or debriefs it in their own words, or completes a sample prediction with their own score and notes: the row keeps sample: true and Erase sample deletes their words without a word (re-check probe 3 P1-P3, P6).",
+      "evidence": "actions-sos__review-safety.md Round 7 (RS37 PARTLY); probe _logs/reports/actions-sos/actions-sos__fr6recheck3.probe.test.mjs; log _logs/gates/actions-sos/test-20261107-224319.log lines 204-301",
+      "fix": "The ruled class rule (contract, rulings 2026-11-07 22:52 IST): a patch that changes the value of a field that is not a true/false flag makes a sample row the person's: drop sample. plans.update drops it then; plans.debrief and predictions.complete always write the person's words or score, so they always drop it. A patch that changes nothing, or only true/false flags (todos.done; contacts' active from showContact or deactivate), keeps the mark. One helper used by every update verb. Tests per verb, red first: loadSample, the verb, the row unmarked, eraseSample keeps it; todos.done on a sample to-do keeps the mark and eraseSample removes it; contacts.update(id, {active: true}) on a sample contact keeps the mark."
+     },
+     {
+      "id": "RS38",
+      "severity": "LOW",
+      "unit": "U-09",
+      "where": "offline/src/actions.js:536-538 (contacts.update, fix 1f4b61c)",
+      "scenario": "contacts.update deletes sample on every patch, a patch that changes nothing included: a person who opens 'Asha (sample)' and taps Save without editing (trunk ui-workbook.js:319 sends the whole form) makes it theirs, so Erase sample leaves 'Asha (sample)' with its made-up note in their Safety Net (probe 3 P5).",
+      "evidence": "actions-sos__review-safety.md Round 7 (New); log _logs/gates/actions-sos/test-20261107-224319.log lines 265-272",
+      "fix": "Covered by RS37R's helper: contacts.update drops the mark only when some non-flag key of the patch differs from the stored row (compare by value). Test: contacts.update(sampleId, {name: <the same name>}) keeps sample: true and eraseSample removes it; the RS37 test stays green."
+     },
+     {
+      "id": "RS36R",
+      "severity": "MEDIUM",
+      "unit": "U-10",
+      "where": "offline/src/ui-sos.js:852 (safe(() => c.profile.stage, null)), :539 and :553 (c.profile.region)",
+      "scenario": "With only the sample loaded, SOS > hard feeling > Done shows 'How is your motivation?' because the sample profile's stage is 'action'; the rating writes A.motivation.add({stage: 'action', ...}) (actions.js:701) with no sample mark, so the sample's made-up stage lands in the person's own motivation row and Erase sample keeps it.",
+      "evidence": "actions-sos__review-safety.md Round 7 (RS36 PARTLY); trunk ui-core.js:590 hands the sample profile to SOS as c.profile; contract ruling 22:25 line 152",
+      "fix": "As ruled 22:25: SOS reads stage and region from the person's own profile only: const own = isOwn(c.profile) ? c.profile : null (isOwn is at ui-sos.js:276); stage from own or null; region from own or 'in'. Test, red first: the feeling flow with only {stage: 'action', sample: true} shows no sos-motivation step; with the person's own profile at stage 'action' it does; region defaults to 'in' with a sample profile."
+     }
+    ],
+    "questions": []
+   }
+  ]
+ }
+}

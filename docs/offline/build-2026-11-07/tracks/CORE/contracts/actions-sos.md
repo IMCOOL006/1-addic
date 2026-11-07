@@ -153,3 +153,9 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - RS37 MEDIUM: a change the person makes to a row marked sample: true makes the row theirs: the update verbs (contacts.update, plans.update and the other update verbs of actions.js) drop the mark when the patch changes a field. No ask to SCREENS.
 - The sample profile's startDate (content-sample.js:65-70 on the trunk): accepted under O6 for offline-v1.1. The sample is marked and erasable by design; its run is the sample's, shown while the sample is loaded; once the person onboards, their own profile row replaces it (ownRow). No Engine.counters change. Not a finding.
 
+## Rulings 2026-11-07 22:52 IST (CORE 93bffdb7): FIX-R6 re-check returned (RS35 FIXED ed34fc8; RS36, RS37 PARTLY; one LOW); FIX-R7
+
+- The sample-mark rule, refining 22:25 RS37: a patch that changes the value of a field that is not a true/false flag makes a sample row the person's (sample dropped). plans.debrief and predictions.complete always write the person's words or score, so they always drop it. A patch that changes nothing, or only true/false flags (todos.done; contacts' active from showContact or deactivate), keeps the mark: the words are still the sample's and go with Erase sample. One helper for every update verb. Events the person's verbs write stay in the append-only log either way.
+- RS36's remainder: SOS reads stage and region from the person's own profile only (ui-sos.js :852, :539, :553 through isOwn; region default 'in'), as ruled 22:25. core's c.profile stays as it is (it hands the sample profile to screens that show the sample on purpose; no core change).
+- FIX-R7 = RS37R (MEDIUM), RS38 (LOW, folded into RS37R's helper), RS36R (MEDIUM); full text: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md, section FIX-R7. After FIX-R7: the contracts-and-tests lens re-reviews fca2781..HEAD (its last look was round 2), read-only.
+
