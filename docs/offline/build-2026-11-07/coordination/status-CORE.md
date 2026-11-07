@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-07 18:32 IST: CORE 60f08c84 resumed from 06285082's RESTART (nothing of it was running; 06285082 is no longer listed). Three fix rounds ready and simulated (wf_sim OK): actions-sos FIX-R6, learn FIX-RS9, engine FIX-RS9E. Free memory 3.9 GB at 18:31 (under the 4.0 floor): each launches at a row with 7.0 GB free, actions-sos first
+STATE: BUILDING   # 2026-11-07 18:37 IST: CORE 60f08c84; actions-sos FIX-R6 running (wf_45f788de-56d, launched 18:36 on the 18:35 row 7.8 GB); learn FIX-RS9 and engine FIX-RS9E ready (wf_sim OK), each at the next 7.0 GB row
 LANE: core READY 8e80951   # 2026-11-07 18:23 IST: FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) and its review fixes RC1 9b03126, RC3 15f99c6, RS19 58f309a, RC2 8e80951, each FIXED on its finder's re-check; check PASS; test GREEN 87/87; LOWs N1, N2, Q-a for offline-v1.1; report lane-reports/core.md (18258 B); cut base 655516dc; merged earlier as d4eed2a (957f333)
 LANE: engine MERGED 57153d3   # FIX-RS4 merged as 3720d119 (R-H-25); next: FIX-RS9E by name (x.item in recoveryPlanPrefill and ownWarningPlans; R-C-27), waiting for memory
-LANE: actions-sos REVIEWING 1cfc936   # FIX-R5 all six FIXED (wf_fa0d78f5-b07); NEXT FIX-R6 = RS-SAMPLE (tag condition), RS33 (MEDIUM regression), Q-BUILTIN, Q-SPIRAL, RS9T (a baselined test name), start review on the carried findings; waiting for memory
+LANE: actions-sos REVIEWING 1cfc936   # 2026-11-07 18:36 IST: FIX-R6 wf_45f788de-56d running (start review on the carried safety findings RS-SAMPLE, RS33, Q-BUILTIN, Q-SPIRAL, RS9T; diffFrom 1cfc936); then the safety re-check; READY when clean of HIGH and MEDIUM
 LANE: learn MERGED 4f5832f   # FIX-RS4 merged as cb0b427 (R-H-25); next: FIX-RS9 test-only (learn.test.mjs :424, :538-539, two baselined names; R-H-27), waiting for memory
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
 SLOTS-ASKED: 3   # actions-sos slot 3 (held, FIX-R6), learn slot 9 (FIX-RS9), engine slot 2 (FIX-RS9E); core slot 1 free when READY 8e80951 merges
-UPDATED: 2026-11-07 18:32 IST
+UPDATED: 2026-11-07 18:37 IST
 
 # 2026-11-07 18:32 IST · CORE session 60f08c84 resumes; three fix rounds ready, waiting for memory
 
