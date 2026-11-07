@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 17:13 IST: READY for the HUB: content 680f850; today-track MERGED; three runs live: workbook-settings U-20a..U-21 (slice merged 16:57), actions slice U-22 (slot 7), game-tutorials slice U-27 (slot 8); this chat hands over (context past 280k) once its live runs return
+STATE: RESTART   # 2026-11-07 17:30 IST: context past 300k: SCREENS chat 6721d28e hands over at a safe point (run record 'Resume here' 17:30). READY for the HUB: content 680f850, workbook-settings 9cbf630; today-track MERGED. Two slices still live in this session: actions U-22 wf_33b06a55-895, game-tutorials U-27 wf_8e6d4a60-85a: the next chat reads their journals, it does not relaunch them while this session is listed
 LANE: content READY 680f850   # U-31a..U-33 complete (slice 065699b merged 16:31); run wf_11307812-199 check PASS over 065699b..680f850; test 31/31, validate GREEN; three CORE test names red with it (R-S-9); sample profile risk (R-S-9); report tracks/SCREENS/lane-reports/content.md 9000 B; cut base 1ef2482e
 LANE: today-track MERGED 3f3001e   # READY 3f3001e merged 17:01 as 9f3026c6; complete; fix by name asked (R-H-24): close its styles.css section with /* -- end today-track -- */
-LANE: workbook-settings BUILDING   # slice cc1f1ea MERGED 16:57 (a17fd301); run wf_34a731b5-17f (C3, C4, U-20a, then U-20b+U-21; diffFrom cc1f1ea); next fix by name: Load sample data only without an own profile (R-S-9)
+LANE: workbook-settings READY 9cbf630   # U-19..U-21 complete (slice cc1f1ea merged 16:57); run wf_34a731b5-17f check FIX -> C5 5e80f01, C6 9cbf630 FIXED; test 21/21, validate GREEN; browser not re-run; C1 open by name; report tracks/SCREENS/lane-reports/workbook-settings.md 12408 B; cut base 1ef2482e
 LANE: actions BUILDING   # slot 7 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-22 run wf_33b06a55-895 (sliceRun)
 LANE: game-tutorials BUILDING   # slot 8 granted 16:33 (read 17:08); worktree cut 17:10 at BASE 9f3026c6; slice U-27 run wf_8e6d4a60-85a (sliceRun)
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 17:13 IST
+UPDATED: 2026-11-07 17:30 IST
+
+# 2026-11-07 17:30 IST · workbook-settings READY 9cbf630 (U-19..U-21 complete) · this chat hands over (RESTART)
+
+- For the HUB: merge build/workbook-settings at 9cbf630 (cut base 1ef2482e; the slice cc1f1ea is in the trunk since 16:57; this READY adds C3 high-contrast stop-gap and C4, U-20a Reasons Card and Support Network, U-20b workbook browser and artifacts, U-21 My Recovery Plan, and the check's C5 5e80f01 (PlanUI drops its unsaved draft on Store 'resetAll'/'replaceAll') and C6 9cbf630 (the practise-link test asserts both ways)). Files: ui-settings.js, ui-workbook.js (new), ui-plan.js (new), offline/tests/workbook-settings.test.mjs, its styles.css section (bannered with an end marker).
+- Gates on 9cbf630 (run wf_34a731b5-17f; check FIX -> C5, C6 FIXED on re-check): build GREEN, test GREEN 21/21, validate GREEN, guards RED by count on 11 tour-target names: 6 still baselined (planner-day, planner-gaps, planner-add, bp-new, bp-form, review-start: actions' screens), 5 (quicklog-*, insights-*) absent only because this branch's base 1ef2482e predates today-track's merge: they exist on the merged tree. Logs C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/*-20261107-1726*.log and *-1727*.log; territory cc1f1ea..HEAD 0 errors. Lifts workbook-groups, workbook-card, plan-sections, plan-print. NOT run in the fix round: the browser gate (green on the slice cc1f1ea). Report tracks/SCREENS/lane-reports/workbook-settings.md (12408 B).
+- Open by name: C1 (the eraseSample round trip waits for actions-sos and content U-33). Owed fix by name (next SCREENS chat): Settings offers Load sample data only when no own profile exists, until actions-sos's loadSample skips own rows (R-S-9).
+- Verified by me: the run's result (tip, check re-check states, gate lines). Assumed: the guard names as the checker read them; I did not re-run any gate.
 
 # 2026-11-07 17:09 IST · content READY 680f850 (U-31a..U-33 complete) · three more neighbour test names; one sample-data risk
 

@@ -1,20 +1,37 @@
 ## workbook-settings (SCREENS, 1-addic offline build): the slice report
 
-State: READY-SLICE. Branch build/workbook-settings. Base 1ef2482e. Tip cc1f1ea. Run 2026-11-07 16:15 IST.
+State: READY. Branch build/workbook-settings. Base 1ef2482e. Tip 9cbf630 (was cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
 Commits:
 - 83aa85b feat U-19 Settings page, seven tabs
 - e0af4fd test U-19 helpers, tab renders, memory round trips
 - cc1f1ea fix U-19 data actions also carry the base browser hooks
+Run 2 (2026-11-07 16:31 IST), after cc1f1ea:
+- 1097dad fix U-19 C3 high contrast on every screen from the saved setting
+- a0ac47b test U-19 C4 fresh-context guard says it only loads
+- 0b060a6 feat U-20a Reasons Card, big view, Support Network
+- 6ebb964 test U-20a wrap, contacts, card, image export, contact round trip
+- bfa0e93 feat U-20b workbook browser and every artifact page
+- 9d96690 feat U-21 My Recovery Plan
+- 5e80f01 fix U-21 C5 erase/import drop an unsaved plan draft
+- 9cbf630 test U-20b C6 practise link checked both ways
 
 ### Turn caps
 Builder (U-19): steps_used 36, returned a note. capHits 0.
+Run 2 (2026-11-07): builder U-20a steps_used 33; builder U-20b+U-21 steps_used 44; check-fix builder (C5, C6) returned a note. capHits 0.
 
 ### Units
 - U-19 Settings (83aa85b, e0af4fd, cc1f1ea). #/settings and #/settings/<tab> (privacy, look, rhythm, names, help, about, data; unknown goes to privacy). A person can: set, change, remove a PIN and the auto-lock (PIN asked first); toggle discreet mode; choose theme, text size, calm, high contrast, reduce motion, counters, current run; set check-in times, review day, pace; edit names; replay tour/drills (feature-detected, honest line if absent); read How do I; see About, credits, evidence; save and restore a backup (PIN asked for export; confirm on import; first three errors shown); print logs; load/erase sample (feature-detected, disabled with a plain line); erase everything (ERASE_PARTIAL text). Closes the chat's 16:15 questions: eraseSample/tutorial hooks feature-detected, auto-lock asks PIN, imports via Actions.importBackup, ERASE_PARTIAL said plainly, PIN help line, PIN field attributes.
 - Held/blocked: none.
-- To build: U-20a (ui-workbook.js: UI.pages.workbook, #/workbook/reasons, ?big=1, #/workbook/network; read engine.js:684-698 and actions.js:509-540), U-20b (artifact browser, ARTIFACTS/GROUPS, data-tour workbook-groups and workbook-card), U-21 (ui-plan.js: PlanUI.view/merge/SECTIONS, data-tour plan-sections and plan-print; Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save ~actions.js:870).
+Run 2 (2026-11-07 16:31 IST):
+- U-20a Reasons Card and Support Network (0b060a6, 6ebb964). #/workbook/reasons, ?big=1, #/workbook/network. A person sees the four-list card (via Engine.reasonsCardSections, so it matches what SOS reads), an honest empty state, a big view with Back to SOS and Call someone (no tips or tours), a 1080x1920 image download, contacts grouped by role, hide instead of delete, tel: links only, and a "Stays on this device" line. Contact reached goes through Actions.
+- U-20b Workbook browser (bfa0e93). All 18 artifacts in four groups; risks only behind "Show sensitive items"; latest answer as text, history newest first; Edit only when the exercise is known; print; "I said it" records ScriptUsed. At BASE Content.exercises is absent, so non-own artifacts show an honest "Coming in a later version" stub with no Edit; they become Edit buttons when content U-31b lands.
+- U-21 My Recovery Plan (9d96690). #/workbook/plan: prefilled, add, edit, reorder, remove, confirm per section, save (confirmedAt, RecoveryPlanConfirmed once), Refresh only adds, print lists only, "Still true?" after 30 days.
+- Questions closed: O7 honest stubs and empty state; code over brief on reasonsCardSections and ExerciseUI.exerciseFor/summarize.
+Held units run 2: none.
+- To build (earlier run): U-20a (ui-workbook.js: UI.pages.workbook, #/workbook/reasons, ?big=1, #/workbook/network; read engine.js:684-698 and actions.js:509-540), U-20b (artifact browser, ARTIFACTS/GROUPS, data-tour workbook-groups and workbook-card), U-21 (ui-plan.js: PlanUI.view/merge/SECTIONS, data-tour plan-sections and plan-print; Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save ~actions.js:870).
 
 ### Contract changes
+- (run 2) UI.pages.workbook (#/workbook/reasons, reasons?big=1, network, plan, browser); WorkbookUI (ARTIFACTS, GROUPS, reasonsSections, exerciseKnown); PlanUI (view, merge, SECTIONS, reset); data-tour workbook-groups, workbook-card, plan-sections, plan-print. html[data-contrast] now applied by the lane (1097dad).
 - UI.pages.settings in ui-settings.js. Consumers: ui-core router, today (link), onboarding (PIN link).
 - SettingsUI global: page, doExport, doImport, doErase, doLoadSample, doEraseSample, printLogs; pure on module.exports: TABS, TEXT, ABOUT, ERASE_PARTIAL_TEXT, normalTab, pinOk, pinError, backupName, logRows, errorText, importErrorText, importedText. Consumer: tests.
 - Routes: #/settings, #/settings/privacy|look|rhythm|names|help|about|data.
@@ -23,6 +40,15 @@ Builder (U-19): steps_used 36, returned a note. capHits 0.
 - Events, content keys, data-tour targets: none.
 
 ### Gates
+Run 2 (2026-11-07 16:31 IST), VERIFIED by the check at 9d96690, and at 9cbf630 by the re-check; logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
+- build GREEN 559958B: build-20261107-170726.log; 9cbf630: build-20261107-172657.log
+- test GREEN 20/0: test-20261107-170729.log; 9cbf630 21 passed: test-20261107-172659.log
+- validate GREEN: validate-20261107-170902.log; 9cbf630: validate-20261107-172713.log
+- guards RED pass 4 fail 11, all baselined, none this lane's (planner-*, bp-*, review-start still baselined; quicklog-*, insights-* lifted by today-track merge 9f3026c6, absent from this older base): guards-20261107-170903.log; 9cbf630: guards-20261107-172714.log. This lane's workbook-groups, workbook-card, plan-sections, plan-print now pass; the HUB can lift them.
+ASSUMED (not run by the check): browser-20261107-170132.log, browser-20261107-172225.log; builders' build-20261107-164020, test-20261107-164023, validate-20261107-164035, guards-20261107-164035.
+Territory run 2, 1ef2482e..HEAD: 5 files, 4 own (ui-plan.js, ui-settings.js, ui-workbook.js, tests/workbook-settings.test.mjs), 1 shared at append point (styles.css, no token redefined), 0 errors.
+
+Earlier run:
 VERIFIED (check run, tip cc1f1ea):
 - build GREEN size 495935B: C:\Users\ruchi\1-addic-wt\_logs\gates\workbook-settings\build-20261107-162757.log
 - test GREEN pass 10 fail 0: ...\test-20261107-162758.log
@@ -44,30 +70,42 @@ Verdict PASS at cc1f1ea. Findings (all LOW, no fix commits, none re-checked):
 - C4 test:133-136: comment says the file "renders" but the test only loads it and checks normalTab; correct the comment or add a render.
 Not checked: browser gate by the check; real-browser rendering (44 px, focus, contrast); reading level only by reading.
 
+Run 2 (2026-11-07 16:31 IST): verdict FIX at 9d96690, clean at 9cbf630. Not checked: browser gate; real-browser rendering and reading level; full Node suite; Edit round trip against real Content.exercises (content U-31b unmerged).
+- C3 FIXED 1097dad (test 11 passes). C4 FIXED a0ac47b. C1 stays OPEN by name (needs actions-sos eraseSample and content U-33).
+- C5 MEDIUM U-21 ui-plan.js:107,118-122,241 / ui-settings.js:521-539: unsaved plan draft survived Erase everything and Import. Fix 5e80f01 (plan resets on Store labels resetAll/replaceAll). Re-check: FIXED.
+- C6 LOW U-20b test:594-595: practise-link check ran only if (pr), could not fail. Fix 9cbf630. Re-check: FIXED.
+- New findings: none blocking.
+
 ### Review
 Not a flagged lane: no reviewers run.
 
 ### Safety and content marks
+- (run 2) Reasons big view is ungated and calm; no new numbers or clinical claims; risks behind Show sensitive items; tel: links only.
 - clinicalReview: true: offline/src/ui-settings.js ABOUT (line 58): the "in danger, open SOS and tap Urgent help" line and the not-medical-advice line. The reviewer checks the wording and that it points to SOS and Urgent help.
 - verify: true: none (no numbers; Urgent help is a link to #/sos/urgent).
 
 ### Requests for other lanes
+- (run 2) content U-31b: Content.exercises, then re-run node --test offline/tests/workbook-settings.test.mjs. HUB: lift baselines workbook-groups, workbook-card, plan-sections, plan-print. The core request for high contrast is moot: 1097dad applies it in-lane.
 - offline/src/ui-core.js (core): apply settings.highContrast (html[data-contrast]) on every render, beside textSize and reducedMotion at lines 645-646.
 - Actions.eraseSample (actions-sos) and Content.sample (content U-33): needed to enable the sample controls.
 - GuidanceUI.coach and GuidanceUI.training (guidance): the tour and drills buttons appear when these exist.
 - offline/tests/helpers/hooks.mjs (tests-docs): contract names use data-test; BASE hooks use data-testid; both are on the controls.
 
 ### Docs owed
+- (run 2) Guide: Reasons Card, Support Network, Workbook browser, My Recovery Plan. README: print of card and plan.
 - Guide (tests-docs): a Settings chapter covering the seven tabs.
 - offline/README.md: lines on backup (save and bring back), PIN (optional, forgot-PIN means erase then restore), and erase everything.
 - CLAUDE.md: none.
 
 ### Open questions
+4. (run 2) Brief says Engine does not export reasonsCardSections; it does (engine.js:1500); code used.
+5. (run 2) Stubs until Content.exercises exists; default: honest stub.
 1. Erase success: brief says #/onboarding; built stays on #/settings/data with Start again and the import control.
 2. Hook attribute: contract data-test, BASE hooks data-testid; both set.
 3. High contrast not applied by core on every render; asked of core.
 
 ### For the HUB at the merge
+- (run 2) styles.css lane section now lines 382-470; ui-plan.js already in build.mjs parts (line 38); never commit offline/1-addic.html. This lane's four tour names pass guards.
 - Shared file: offline/src/styles.css, one section appended at the end (lines 382-422), no token redefined. Expect an append-point conflict if other lanes also append there.
 - package.json and package-lock.json: unchanged. ui-settings.js was already in build.mjs parts (line 33); build.mjs untouched.
 - Territory warnings: none.
