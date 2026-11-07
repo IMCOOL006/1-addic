@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # 2026-11-07 11:41 IST: CORE 06ee0d0d at about 252k context: the hand-over is written (RUN-RECORD 'Resume here'). Its two live runs (core wf_bf29c997-958, actions-sos wf_0a47dae7-ba9) die with this session, so it writes RESTART only when they have returned or at 300k
-LANE: core BUILDING   # FIX-SAFETY (9 commits to b3cde8e) and FIX-RULINGS (d16be2c..cdfc0e9) are built, every open finding; next the check over 98f872d..HEAD, two reviewers, report; offline-v1.1
+LANE: core REVIEWING   # every open finding built to cdfc0e9; check PASS at cdfc0e9 (run wf_bf29c997-958, which skipped the reviewers: its notes named finding ids, not batch ids); review run wf_7940e583-fc9 (11:46): the two reviewers over base...HEAD, one fix round, re-checks, report; offline-v1.1
 LANE: engine PAUSED   # slice U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (10:45, unchecked); the HUB's 10:42 pause: run wf_35f6a75a-d62 stopped 10:46 at that commit, worktree clean; resumes after the tag with [U-07], [U-08], then check (offline-v1.1)
-LANE: actions-sos CHECKING   # FIX-SAFETY-AS (2c34299..f90d7cc) and FIX-ONB-EMO (to fca2781) are built; the check over c629cae..HEAD is running, then two reviewers, report; offline-v1.1
+LANE: actions-sos REVIEWING   # every open finding built to fca2781; check PASS at fca2781; the two reviewers over base...HEAD running (run wf_0a47dae7-ba9), then fix round, re-checks, report; offline-v1.1
 LANE: learn READY 19f373c   # U-12 a499dae MERGED; C1 9bbccd2, C2 dc248cb, U-13 + U-14 19f373c; check PASS at 19f373c 10:47 (run wf_c538e4c5-38a): test GREEN 28/28, build and validate SKIP at the lane base, guards no new failure (the 21 names as at a499dae), territory 0 errors; LOWs C3 (checkpoint toast '+10 XP' only the first time), C4 ('Why this works' without UI.sheet), C5 (trailer) go to offline-v1.1 by name; report tracks/CORE/lane-reports/learn.md (10952 B, 10:50); slot 4 free
 LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 11:41 IST
+UPDATED: 2026-11-07 11:52 IST
 
 # 2026-11-07 10:45 IST · 224074c0's runs died at 10:37; four runs relaunched; the review findings that never reached the fix rounds
 
