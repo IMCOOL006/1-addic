@@ -1,5 +1,5 @@
 {
-  "subagentPromptCacheTtl": "1h"
+  "subagentPromptCacheTtl": "1h",
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
     "SessionStart": [
