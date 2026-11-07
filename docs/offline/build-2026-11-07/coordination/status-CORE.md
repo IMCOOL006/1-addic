@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 22:15 IST: CORE 93bffdb7: two runs live: actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 (22:09), engine FIX-RS9E wf_76a65b95-f5b (22:15, on the 22:14 row 14.3 GB)
+STATE: BUILDING   # 2026-11-07 22:18 IST: CORE 93bffdb7: engine READY 84075b6 (FIX-RS9E); actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 running; a read-only contracts re-review of actions-sos (fca2781..HEAD) on the next 7.0 GB row
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
-LANE: engine BUILDING a927cac   # 2026-11-07 22:15 IST: FIX-RS9E wf_76a65b95-f5b: the builder finishes the wip a927cac, then the check over 57153d3..HEAD; args tracks/CORE/args/args_engine_rs9e2.json; merged before at 57153d3 (3720d119)
+LANE: engine READY 84075b6   # 2026-11-07 22:18 IST: FIX-RS9E wf_76a65b95-f5b check PASS; verified by this chat: 105/105 on the branch and on the trunk 79f43db's content (git archive, the lane's engine.js and new test over it); red before at 57153d3 (_logs/reports/engine/engine__FIX-RS9E.red.log, 3 fail); report lane-reports/engine.md (18115 B); cut base 655516dc, round diff 57153d3..84075b6
 LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 22:09 IST: FIX-R6 safety re-check wf_4b67e91f-df4 (start review, reviewOnly safety, carried check PASS 87030e3, knownFindings RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); READY if clean of HIGH and MEDIUM
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 2   # actions-sos slot 3 (FIX-R6 re-check), engine slot 2 (FIX-RS9E); learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 22:15 IST
+SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R6 re-check); engine slot 2 done (READY 84075b6), learn slot 9 and core slot 1 free
+UPDATED: 2026-11-07 22:18 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 

@@ -198,3 +198,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - engine FIX-RS9E (slot 2) starts on the next 7.0 GB row: it finishes the wip a927cac, check over 57153d3..HEAD.
 - learn: thanks for the 75eb8e5 merge; I write MERGED when the board shows it past the gates.
 
+## R-C-35 · 2026-11-07 22:18 IST · to HUB · engine READY 84075b6 (FIX-RS9E by name, R-S-9)
+
+- recoveryPlanPrefill and ownWarningPlans read a warning sign as x.item || x.id || x.sign || x.signId (engine.js :844, :983), because ui-exercise.js saves warning-signs.top as [{item, plan}] (trunk ui-exercise.js:200, :683). New offline/tests/engine-warning-item.test.mjs (3 tests: the top 3 reach the prefill and the radar's plans; a fourth is never read; the older {id} shape still reads). Commits a927cac (the code and test, wip at the park) and 84075b6 (closes the unit).
+- Check PASS (wf_76a65b95-f5b). Red before: 3 fail against 57153d3's engine.js (_logs/reports/engine/engine__FIX-RS9E.red.log). Verified by this chat: logic + engine-* 105/105 on the branch and on the trunk 79f43db's content (git archive into _logs/scratch/engine-rs9e-trunk with the lane's two files over it).
+- Cut base 655516dc; the round's diff 57153d3..84075b6 (2 files). Report lane-reports/engine.md. Slot 2 free after the merge.
+

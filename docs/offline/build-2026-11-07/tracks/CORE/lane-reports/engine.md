@@ -1,7 +1,9 @@
 ## engine (CORE, 1-addic offline build): the lane report
 
-State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base 655516dc. Tip 57153d3. Run time 2026-11-07 16:36 IST (CONTINUED from 227a07a; FIX-RS4 built, check PASS). (Earlier: READY at 227a07a, 14:34 IST; READY-SLICE at 04fc0c1, 2026-11-07 07:29 IST.)
-Commits (655516dc..HEAD), 2026-11-07 16:36 IST:
+State: READY. Branch build/engine, worktree C:/Users/ruchi/1-addic-wt/engine. Base 655516dc. Tip 84075b6. Run time 2026-11-07 22:08 IST (CONTINUED from 57153d3; FIX-RS9E built, check PASS). Earlier run time 2026-11-07 16:36 IST (CONTINUED from 227a07a; FIX-RS4 built, check PASS). (Earlier: READY at 227a07a, 14:34 IST; READY-SLICE at 04fc0c1, 2026-11-07 07:29 IST.)
+Commits (655516dc..HEAD), 2026-11-07 22:08 IST:
+- 84075b6 fix(engine, FIX-RS9E): recoveryPlanPrefill and ownWarningPlans read a warning sign as x.item (R-S-9)
+- a927cac wip(engine): FIX-RS9E, unfinished (run stopped at the owner's park, 19:10); finished by 84075b6
 - 57153d3 test(engine, FIX-RS4): tryIt and knownRoute tests pass with and without Content.exercises
 - 227a07a feat(engine, U-08): export, import, migrate, .ics, AppError, validateContent
 - f269942 feat(engine, U-07): insights, radar, planner, review, SOS guide sequence, crisis keywords
@@ -14,6 +16,7 @@ Commits (655516dc..HEAD), 2026-11-07 16:36 IST:
 - 07:29 run: builder [U-05]: steps_used 17, returned a note (yes). capHits 0.
 - 14:34 run: builder [U-07]: steps_used 24, note yes. Builder [U-08]: steps_used 17, note yes. capHits 0. (U-06 was built by the run before, stopped at the HUB's 10:42 pause.)
 - 16:36 run: builder [FIX-RS4]: steps_used 13, note yes. capHits 0.
+- 22:08 run: builder [FIX-RS9E]: steps_used 9, note yes. capHits 0.
 
 ### Units
 - U-05 (tier 1, built, 04fc0c1; files offline/src/engine.js, offline/tests/logic.test.mjs). For a person: nothing on a screen yet. The engine now computes from the append-only events the XP, skill mastery, six Harbor region lights, 14-day momentum, rank, 13 badges, lessons and modules done, and opt-in day counters (total, current run, milestones), which Today, the Harbor and Insights will show.
@@ -28,6 +31,7 @@ Commits (655516dc..HEAD), 2026-11-07 16:36 IST:
 - U-08 (tier 1, built, 227a07a; offline/tests/engine-data.test.mjs). For a person: the backup file export, import checks (plain-language errors), older-backup migration and .ics calendar files are ready to be wired by Settings. validateContent returns [] on the base (validate gate GREEN).
   Questions closed: a string that is wholly one quotation is not the app's voice, so the person's own thought at content-core.js:323 ("I slipped, so I'm a hopeless addict.") passes; a quoted word inside a sentence still fails (see C3). npm test needs no change: build/offline-v1 scripts.test already runs every offline/tests/*.test.mjs; run in this worktree, 102/102 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__npm-test-proof.log).
 - FIX-RS4 (tier 1, built, 57153d3, 16:36; offline/tests/engine-data.test.mjs, 3 lines added, 2 removed). For a person: nothing changes; tests only, no src. R-S-4 closed: the tryIt test deletes exercises from its clone before the 'waits' half; the knownRoute test uses the real id #/exercise/quick-reasons and asserts #/exercise/not-one is unknown only when Content.exercises is present (under Node engine.js loads content-exercises.js into the cached content module, so trunk 9b319256 has it, this branch does not). Against the trunk archive the file runs 15/15 (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__FIX-RS4.trunk.log).
+- FIX-RS9E (tier 1, built, a927cac wip + 84075b6 empty closing commit, 22:08; engine.js:844 recoveryPlanPrefill and :983 ownWarningPlans; offline/tests/engine-warning-item.test.mjs, new, 3 tests). For a person: the top 3 warning signs saved from the exercise as { item, plan } now reach the Recovery Plan prefill and the radar, a sign with no plan shows its label alone, the person's own plans win in the radar; the older { id } shape still reads. R-S-9 closed. Red-before: the test fails 3 of 3 against 57153d3's engine.js (C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__FIX-RS9E.red.log). The wip carried code and test already correct; 84075b6 records the proof without rewriting the pushed wip.
 - Held or blocked: none.
 - Still to build on this lane: none.
 
@@ -44,6 +48,13 @@ All on `Engine` (browser global; require('offline/src/engine.js') under Node). N
   - Engine.sosOutcome (R-outcome).
 
 ### Gates
+VERIFIED (check run at 84075b6, 22:08 IST):
+- test GREEN, 105 pass, 0 fail, 5 files. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261107-221647.log
+- validate GREEN. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261107-221647.log
+- guards GREEN, 2 pass, 3 skip. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261107-221647.log
+- build SKIP: no build.mjs. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261107-221647.log
+ASSUMED (22:08): browser gate not run (no browser tests). Builder's own gate run: logs test/validate/guards/build-20261107-221549.log in the same folder.
+Earlier block:
 VERIFIED (check run at 57153d3, 16:36 IST):
 - test GREEN, 102 pass, 0 fail, 4 files. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261107-164216.log
 - validate GREEN, 1 pass. log C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261107-164218.log
@@ -58,6 +69,7 @@ VERIFIED (check run at 227a07a, 14:34 IST):
 - build SKIP: offline/build.mjs absent on the branch, as in the baseline. log C:\Users\ruchi\1-addic-wt\_logs\gates\engine\build-20261107-151456.log
 - Earlier (04fc0c1): test GREEN 33 (test-20261107-073550.log), guards GREEN (guards-20261107-073553.log), build SKIP, validate SKIP.
 ASSUMED: browser and docs gates do not apply to this lane (no browser tests; the brief says so). Not run: npm test through package.json on the branch (none at 655516dc); the builder's proof is engine__npm-test-proof.log, engine__FIX-RS4.trunk.log.
+Territory (22:08 IST): check_territory engine 655516dc..HEAD: 6 files, 6 own, 0 shared, 0 nobody's, 0 errors, 0 warnings; since 57153d3 only offline/src/engine.js and offline/tests/engine-warning-item.test.mjs. 84075b6 has both trailers; a927cac carries session 60f08c84 (the earlier session that wrote it; CORE may confirm).
 Territory (16:36 IST): engine 655516dc..HEAD: 5 files, all the lane's own, 0 shared, 0 nobody's, 0 errors, no warnings; since 227a07a only offline/tests/engine-data.test.mjs; no src change. 57153d3 carries both trailers.
 Territory (14:34 IST): check_territory engine 655516dc..HEAD: 5 files, all the lane's own (engine.js, logic.test.mjs, engine-data, engine-insights, engine-roadmap tests); 0 shared, 0 nobody's, 0 errors, no warnings. No package.json, build.mjs, content or browser-test edits. No logs, node_modules or scratch in the commits after 04fc0c1. All five commits carry both trailers.
 
@@ -75,6 +87,8 @@ None. Not a flagged lane (reviewGates empty).
 Not checked: browser gate; npm test through package.json; line-by-line review of U-06 artifact and prefill helpers (spot-checked only); clinical review of CRISIS_PATTERNS (needs the clinical reviewer; compared only with the RS2/RS10 lists, which it covers).
 2026-11-07 16:36 IST: Verdict PASS at 57153d3 (judged commits after 227a07a). U-05 to U-08 present, unchanged since the earlier run. FIX-RS4 present, both R-S-4 fixes done. No findings (none open, none fixed).
 Not checked (16:36): browser gate; U-05 to U-08 again; the full suite on the trunk tree after merge; product rules (tests only, no src).
+2026-11-07 22:08 IST: Verdict PASS at 84075b6 (judged commits after 57153d3). FIX-RS9E present and meets its acceptance (reads x.item || x.id || x.sign || x.signId at engine.js:844 and :983, as R-S-9 rules; test fails 3 of 3 on the old engine.js). No findings (none open, none fixed).
+Not checked (22:08): browser gate; U-05 to U-08 and FIX-RS4 not re-judged; SOS, network, innerHTML, copy and O1-O8 not touched by this diff.
 
 ### Review
 Not a flagged lane: no reviewers run. Open review findings: 0.
@@ -85,6 +99,7 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 ### Requests for other lanes
 - actions-sos: use Engine.guideSequence and Engine.SOS_TOOLS, and crisisKeywords as string[].
 - workbook-settings: call validateBackup before migrateBackup; pass meta to exportBackup.
+- HUB: FIX-RS9E needs no action beyond the merge (engine.js and one new test only).
 - HUB: at the merge lift the two baselined names (engine-data 'validateContent: the tryIt exercise check waits for Content.exercises, then runs' and 'knownRoute: the 3.5 route table, by path').
 - CORE: write the U-07 and U-08 contract lines above into contracts/engine.md (C4).
 
@@ -92,6 +107,7 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 - tracks/CORE/contracts/engine.md (the lane cannot write there): the 07:29 notes (counters.total counts COMPLETED local dates; a banked day stays counted; current is the only number a slip restarts; reached milestones never un-reach; no XP for days; SkillUsed.helpful boolean, reader accepts true/false and 0/1; xpFromEvents.byType lists XP types only; events parameters accept a view) plus the 14:34 Contract changes above.
 - validateContent skips the tryIt-exercise check while Content.exercises is absent.
 - FIX-RS4: none owed.
+- FIX-RS9E: contracts/engine.md to say recoveryPlanPrefill and ownWarningPlans read { item, plan } (and the older { id }); no public shape changed.
 - offline/README.md, the guide, CLAUDE.md lines: none owed.
 
 ### Open questions
@@ -112,3 +128,4 @@ Engine.CRISIS = {clinicalReview: true, patterns[]}: the crisis phrase list needs
 - FIX-RS4 is test-only: passes on the branch (102) and against trunk 9b319256 content (15/15 in engine-data); lift the two baselined names.
 - After merge run npm test on build/offline-v1 (102 expected).
 - Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/engine/engine__units.md, engine__progress.md, engine__npm-test-proof.log.
+- 22:08: FIX-RS9E adds engine.js (readers only) and engine-warning-item.test.mjs; still no shared file; no new conflicts expected.
