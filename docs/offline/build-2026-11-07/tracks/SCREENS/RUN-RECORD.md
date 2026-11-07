@@ -78,10 +78,15 @@
 - 17:58 (8.9 GB row): workbook-settings FIX-SAMPLE wf_232baea7-f07 (units ... FIX-SAMPLE, done U-19..U-21, diffFrom 9cbf630, base 1ef2482e, slot 6; args tmp/args_ws_fixsample.json). 17:59 (8.5 GB row): actions wf_6effec68-3fd (done [U-22], diffFrom 710502f, batches [[U-22],[U-23,U-24],[U-25]]; args tmp/args_actions_next.json).
 - R-S-11 to CORE: the planner and guidance hooks for tests-docs.
 
+## 2026-11-07 18:28 IST · FIX-SAMPLE READY and merged; game-tutorials paused after U-28
+
+- workbook-settings FIX-SAMPLE wf_232baea7-f07 READY 0e76065 (03c3631, 0e76065; check PASS; test 25/25; builder's browser GREEN 10 pass 9 skip); merged by the HUB 18:13 (42d2467d). The HUB also merged game-tutorials 5af6665 (17:57) and actions 710502f (18:02).
+- game-tutorials wf_697f8fff-2d2: U-26 0f611e5, U-28 8dccbfb + d4c49d1; stopped by me 18:26 after the U-28 commit on a 3.9 GB row (pause rule). Check args ready: tmp/args_gt_check.json (start 'check', done [U-27], diffFrom 5af6665, browser gate asked).
+
 ## Resume here
 
-- Chat d6887185. Live in this session: workbook-settings FIX-SAMPLE wf_232baea7-f07 (worktree C:/Users/ruchi/1-addic-wt/workbook-settings; returns READY with the tip: write `LANE: workbook-settings READY <tip>` naming the fix by name), actions wf_6effec68-3fd (U-23, U-24, U-25; returns READY with the tip). Journals under C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/d6887185-82d2-4a14-8c98-cee7cc2b525d/subagents/workflows/<run>/journal.jsonl.
-- game-tutorials READY-SLICE 5af6665 (for the HUB to merge); its next batch wf_697f8fff-2d2 (U-26, then U-28; done [U-27], diffFrom 5af6665; args tmp/args_gt_next.json) launched 18:02 on a 10.2 GB row: live too.
-- A fresh chat: `claude agents --json`; if d6887185 is gone, relaunch each live run from its branch (done = the units committed, priorNote from the last commit and _logs/reports/<lane>/<lane>__progress.md, the args files in C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp).
-- Open by name: workbook-settings C1 (sample round trip); content LOWs C2-C4; today-track: embedding GuidanceUI.explorerRing/moreTools/dot and GameUI.panel in Today (behind typeof) is a later fix by name once game-tutorials merges.
-- Trunk BASE 71a65763 (17:51). Hub files: setlane.py and rr.py in tmp, tools/hub_commit.py; stamps from `date` only.
+- Chat d6887185. Live: actions wf_6effec68-3fd (U-23 42ce8aa, 25308cc; U-24 bd8be70, 0894beb; U-25 building; then its check over 710502f...HEAD). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/d6887185-82d2-4a14-8c98-cee7cc2b525d/subagents/workflows/wf_6effec68-3fd/journal.jsonl.
+- Paused: game-tutorials at d4c49d1 (all units built; no check yet): on the next 7.0 GB row launch lane.js with tmp/args_gt_check.json (stamp now and @NOW@). On its READY: the lane is complete (U-27 merged; U-26, U-28 in the READY).
+- A fresh chat: `claude agents --json`; if d6887185 is gone, relaunch actions from its branch (done = the units committed; if U-25 is committed, start 'check' over 710502f...HEAD) and game-tutorials as above. Args files: C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp (args_actions_next.json, args_gt_check.json).
+- After both READY: write the lane reports' state, `LANE: <lane> READY <tip>`; then the owed by-name items: today-track embedding GuidanceUI (explorerRing, moreTools, dot) and GameUI.panel in Today behind typeof (a fix by name on build/today-track once game-tutorials merges; ask the HUB for the slot); workbook-settings C1 after actions-sos merges; content LOWs C2-C4.
+- Trunk BASE 42d2467d (18:13). Pause rule: under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row. Hub files: setlane.py, rr.py in tmp; tools/hub_commit.py; stamps from `date` only.

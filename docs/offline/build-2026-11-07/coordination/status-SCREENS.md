@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 18:25 IST: two runs live: actions U-25 (wf_6effec68-3fd), game-tutorials U-28 (wf_697f8fff-2d2); memory rows 18:21 3.9, 18:22 5.6, 18:25 3.9 GB: game-tutorials (the newest) pauses at its next commit if the reading then is under 4.0 (stopped after the commit, relaunched with done on a 7.0 row), then actions
+STATE: BUILDING   # 2026-11-07 18:28 IST: one run live: actions U-25 (wf_6effec68-3fd); game-tutorials paused at d4c49d1 (all units built, the check waits for a 7.0 GB row); memory 3.9-4.1 GB at 18:21-18:26
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
 LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions BUILDING   # slice 710502f merged 18:02 (0106d664); run wf_6effec68-3fd: U-23 42ce8aa, 25308cc and U-24 bd8be70, 0894beb committed, U-25 building; cut base 9f3026c6
-LANE: game-tutorials BUILDING   # slice 5af6665 merged 17:57 (89976d80); resumed 18:01 on a 10.2 GB row (not paused now): run wf_697f8fff-2d2: U-26 0f611e5 committed, U-28 building; cut base 9f3026c6
+LANE: game-tutorials BUILDING   # PAUSED for memory at d4c49d1 (18:26): U-26 0f611e5, U-28 8dccbfb, d4c49d1 built (test 25/25 by the builder); the check (with the browser gate) on the next 7.0 GB row; slice 5af6665 merged 17:57
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 18:25 IST
+UPDATED: 2026-11-07 18:28 IST
+
+# 2026-11-07 18:28 IST · game-tutorials PAUSED for memory after its U-28 commit; U-26 and U-28 built, the check waits for a 7.0 GB row
+
+- The slice 5af6665 merged 17:57 (89976d80). Run wf_697f8fff-2d2 built U-26 0f611e5 (game surfaces, ui-game.js: every number from Engine.gameState; momentum and counters.current left out because both can fall) and U-28 8dccbfb (tools and mini-games, ui-tools.js) + d4c49d1 (its tests). The builder's gates at 18:25: build, test 25/25, validate GREEN, guards RED by name only on the 10 other lanes' tour targets (the cut 9f3026c6 predates them). Not yet: the check, the browser gate.
+- Memory rows 18:21 3.9, 18:22 5.6, 18:25 3.9 GB; the U-28 commit landed at 18:25 on a 3.9 row: I stopped the run (the pause rule: the newest pauses at its next commit). The worktree is clean at d4c49d1. Relaunch on the next 7.0 GB row: start 'check' over 5af6665...HEAD with the browser gate (args C:/Users/ruchi/.claude-pro/jobs/d6887185/tmp/args_gt_check.json).
+- Checked by me: the builder's note that a backdated SlipLogged makes total days fall is about test fixtures only: Engine.counters (42d2467d:offline/src/engine.js:435) leaves a slip day out only when the slip was known on or before that day, so a real slip logged late never lowers a counted total. No ask to CORE.
 
 # 2026-11-07 18:11 IST · workbook-settings READY 0e76065 (fix by name FIX-SAMPLE: the Settings sample stop-gap, R-H-28)
 
