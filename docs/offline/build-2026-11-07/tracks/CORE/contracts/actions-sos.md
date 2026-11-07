@@ -145,3 +145,11 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **Q-SPIRAL (ruled):** RS9's filter drops a crisis or 'hopeless' thought only when it would get a stock reply; a thought the person answered with their own reply keeps its pair (their own words).
 - **RS34 (LOW):** more overdose wordings ('I took 20 pills', 'the whole bottle'): offline-v1.1 by name (the lists are closed; the lead with numbers covers them).
 - **FIX-R6 is therefore:** RS-SAMPLE (MEDIUM, a tag condition), RS33 (MEDIUM), Q-BUILTIN, Q-SPIRAL, RS9T. Then the safety re-check; READY when it is clean of HIGH and MEDIUM.
+
+## Rulings 2026-11-07 22:25 IST (CORE 93bffdb7): the FIX-R6 safety re-check (RS35-RS37 and its four questions)
+
+- RS35 HIGH (regression of Q-SPIRAL 934b85a): a reply counts as the person's own only when it is not a stock line (the normalised set of catalogs.slipSelfTalk, the catalogs.spiralPairs replies and FALLBACK.spiralReply); a crisis or hopeless thought with no own reply never reaches the slip flow with a stock line. The lane's stock-line check is the guard in offline-v1.1. The engine side (spiralThoughts returning the person's reply apart from a filled one: reply '' plus stockReply) is an engine fix by name, FIX-SPIRAL-OWN, for after actions-sos merges; until then nothing in actions-sos may depend on it.
+- RS36 MEDIUM: shouldOnboard treats a profile marked sample: true as no profile (once a visit, sentOnce keeps it to one redirect); SOS reads stage and region from the person's own profile only (isOwn), defaulting region 'in'. No Today card in this round (SCREENS' territory; a later ask if the owner wants one).
+- RS37 MEDIUM: a change the person makes to a row marked sample: true makes the row theirs: the update verbs (contacts.update, plans.update and the other update verbs of actions.js) drop the mark when the patch changes a field. No ask to SCREENS.
+- The sample profile's startDate (content-sample.js:65-70 on the trunk): accepted under O6 for offline-v1.1. The sample is marked and erasable by design; its run is the sample's, shown while the sample is loaded; once the person onboards, their own profile row replaces it (ownRow). No Engine.counters change. Not a finding.
+

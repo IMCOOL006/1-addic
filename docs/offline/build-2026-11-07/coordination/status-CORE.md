@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 22:18 IST: CORE 93bffdb7: engine READY 84075b6 (FIX-RS9E); actions-sos FIX-R6 safety re-check wf_4b67e91f-df4 running; a read-only contracts re-review of actions-sos (fca2781..HEAD) on the next 7.0 GB row
+STATE: BUILDING   # 2026-11-07 22:25 IST: CORE 93bffdb7: actions-sos FIX-R6 run wf_4b67e91f-df4 in its fix round (RS35 HIGH, RS36, RS37 MEDIUM from the safety re-check); the contracts re-review (fca2781..HEAD) waits for that round to settle; engine READY 84075b6
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine READY 84075b6   # 2026-11-07 22:18 IST: FIX-RS9E wf_76a65b95-f5b check PASS; verified by this chat: 105/105 on the branch and on the trunk 79f43db's content (git archive, the lane's engine.js and new test over it); red before at 57153d3 (_logs/reports/engine/engine__FIX-RS9E.red.log, 3 fail); report lane-reports/engine.md (18115 B); cut base 655516dc, round diff 57153d3..84075b6
-LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 22:09 IST: FIX-R6 safety re-check wf_4b67e91f-df4 (start review, reviewOnly safety, carried check PASS 87030e3, knownFindings RS-SAMPLE 42f5a9a, RS33 f429ce7, Q-BUILTIN ff38655, Q-SPIRAL 934b85a, RS9T 87030e3); READY if clean of HIGH and MEDIUM
+LANE: actions-sos REVIEWING 87030e3   # 2026-11-07 22:25 IST: the safety re-check found the five FIX-R6 fixes FIXED (161/161) but raised RS35 HIGH (Q-SPIRAL regression on the trunk engine: a crisis thought with no own reply gets a stock line), RS36 MEDIUM (sample profile stops onboarding), RS37 MEDIUM (an edited sample contact stays sample); the run's fixer is on them; rulings in contracts/actions-sos.md (2026-11-07 22:25 IST)
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
 SLOTS-ASKED: 1   # actions-sos slot 3 (FIX-R6 re-check); engine slot 2 done (READY 84075b6), learn slot 9 and core slot 1 free
-UPDATED: 2026-11-07 22:18 IST
+UPDATED: 2026-11-07 22:25 IST
 
 # 2026-11-07 22:09 IST · CORE session 93bffdb7 resumes after the park
 
