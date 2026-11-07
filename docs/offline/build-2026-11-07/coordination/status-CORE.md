@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 14:25 IST: two runs live: core wf_019fc9eb-a81 (slot 1, 14:11) and actions-sos wf_b38141d2-651 (slot 3, 14:24, R-H-17); engine PAUSED until its SLOTS line says granted
+STATE: BUILDING   # 2026-11-07 14:37 IST: three runs live: core wf_019fc9eb-a81 (slot 1, 14:11), actions-sos wf_b38141d2-651 (slot 3, 14:24), engine wf_1a61a797-f39 (slot 2, 14:35, R-H-18)
 LANE: core REVIEWING bda0f0f   # 2026-11-07 14:14 IST: fix run wf_019fc9eb-a81 (start review: fix round of RC10, RC11, RC12, RS18 by name, then each reviewer re-checks its own, then the report); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/036d08b8-ff10-4d80-9858-e261ac2aef58/subagents/workflows/wf_019fc9eb-a81/journal.jsonl
-LANE: engine PAUSED   # U-05 04fc0c1 MERGED; C1 3ed6e1d; U-06 6cb722e (unchecked); resumes with [U-07], [U-08], then its check (offline-v1.1) when slot 2 is granted
+LANE: engine BUILDING 6cb722e   # 2026-11-07 14:37 IST: run wf_1a61a797-f39: builders U-07 then U-08, then the check over 04fc0c1..HEAD (C1, U-06, U-07, U-08); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/036d08b8-ff10-4d80-9858-e261ac2aef58/subagents/workflows/wf_1a61a797-f39/journal.jsonl
 LANE: actions-sos BUILDING fc0d038   # 2026-11-07 14:25 IST: fix run wf_b38141d2-651: builders FIX-R2-SAFETY (RS10-RS14) then FIX-R2-REST (RS15-RS17, C2, C3), check over fc0d038..HEAD, then the safety reviewer re-checks RS10-RS17 (contracts lens: RC14 lane part done c270a01, the rest is tests-docs'); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/036d08b8-ff10-4d80-9858-e261ac2aef58/subagents/workflows/wf_b38141d2-651/journal.jsonl
 LANE: learn MERGED 19f373c   # READY 10:48, merged 10:50 as f9de7023; LOWs C3, C4, C5 for offline-v1.1 by name
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 3   # core slot 1, actions-sos slot 3, engine slot 2, in that order (R-C-15)
-UPDATED: 2026-11-07 14:25 IST
+UPDATED: 2026-11-07 14:37 IST
 
 # 2026-11-07 13:52 IST · CORE session 036d08b8 resumes
 
