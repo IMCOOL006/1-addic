@@ -72,6 +72,11 @@
 - core FIX-C4-C5: C4 030f949, C5 98f872d (UI.applyDiscreet; contract line added bd240d2c); check PASS at 98f872d; reviewers running.
 - 09:30 tests-docs granted again (R-H: 9.2 GB free); slice run wf_5eb3e38a-14f (sliceRun, U-34, base 22c39654; args_tests-docs.json with the 09:30 word).
 
+## 2026-11-07 09:43 IST · core's reviewers: two HIGH (PIN change during derivation erases rows; fallback session writes plain rows), MEDIUMs (two tabs, autoLockMin reset, SOS guard untested); fix round running
+
+- Both reviewers of wf_6b7ddbb3-2a7 returned; fix:review:core runs with every finding; then each reviewer re-checks. Six reviewer questions ruled by the chat in contracts/core.md (last section: Q1 no auto-lock on #/sos*, Q2 boot try/catch with urgent numbers, Q3 frozen view rows, Q4 an unreadable row is never deleted, Q5 imports through Actions only, Q6 the browser flows are tests-docs U-34's). What the fix round does not cover goes into a core follow-up run (start 'build', a unit 'FIX-RULINGS', skipReview, check) after this run returns.
+- actions-sos check PASS at c629cae (C3 eraseSample written into contracts/actions-sos.md; C5, C6 = the chat's rulings, for the actions-sos follow-up 'FIX-ONB-EMO'); its reviewers run.
+
 ## Resume here
 
 - **Owner of the runs: CORE session 224074c0-9c4d-4302-b359-f52819443e37** (alive only while `claude agents --json` lists it). Running:
