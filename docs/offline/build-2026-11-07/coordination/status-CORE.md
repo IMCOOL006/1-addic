@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-07 16:21 IST: CORE 06285082 resumed from 036d08b8's RESTART (036d08b8 listed idle/done, no live runs); actions-sos FIX-R4 run wf_157ff262-161 launched 16:20 (fix by name RS24-RS28, the safety reviewer re-checks); nothing else open in CORE's tier 1
-LANE: core MERGED 957f333   # merged 15:29 as d4eed2a (trunk c3559b32); 2026-11-07 15:20 IST: run wf_019fc9eb-a81: RC10 3caf5bb, RC11 034a180, RC12 468a93c, RS18 957f333, each FIXED on its finder's re-check; openCheck 0, openReview 0; check PASS at cdfc0e9 (carried); 3 LOW + 2 questions from the re-check ruled for offline-v1.1 by name (contracts/core.md, last section); report lane-reports/core.md (18929 B); cut base 655516dc
-LANE: engine MERGED 227a07a   # merged 15:34 (trunk 1ef2482e; validate GREEN); 2026-11-07 15:23 IST: run wf_1a61a797-f39: R-sample/R-outcome b14c9a0, U-07 f269942, U-08 227a07a; check PASS over 04fc0c1..227a07a (C1, U-06, U-07, U-08) with LOWs C3 (the quoted-noun exemption in validateContent: ruled, R-C-18 to SCREENS) and C4 (contract lines: written into contracts/engine.md); report lane-reports/engine.md (12636 B); cut base 655516dc
+STATE: BUILDING   # 2026-11-07 16:39 IST: three runs live: actions-sos FIX-R4 wf_157ff262-161, engine FIX-RS4 wf_c2c0444c-8dc, learn FIX-RS4 wf_f4494348-6f1 (R-H-21); core FIX-V11 asked (R-C-22)
+LANE: core MERGED 957f333   # merged 15:29 as d4eed2a (trunk c3559b32); 2026-11-07 16:39 IST: fix round FIX-V11 asked (R-C-22: R-S-6 high contrast on every render, RC12 and RS18 follow-ups of contracts/core.md 15:20), waits for the HUB's slot; report lane-reports/core.md
+LANE: engine BUILDING 227a07a   # 2026-11-07 16:39 IST: MERGED lane, fix by name FIX-RS4 (R-H-21/R-S-4 1-2, test-only, engine-data.test.mjs) run wf_c2c0444c-8dc slot 2; was MERGED 227a07a (15:34, trunk 1ef2482e)
 LANE: actions-sos REVIEWING 1131827   # 2026-11-07 16:21 IST: FIX-R4 run wf_157ff262-161 (start review, carried check PASS at 1131827, carried safety findings RS24 HIGH, RS25-RS26 MEDIUM, RS27-RS28 LOW; rulings contracts/actions-sos.md 16:17); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/06285082-1542-4c84-9b2f-a2d27df214fe/subagents/workflows/wf_157ff262-161/journal.jsonl; READY only when every id is FIXED and no new HIGH or MEDIUM
-LANE: learn MERGED 19f373c   # READY 10:48, merged 10:50 as f9de7023; LOWs C3, C4, C5 for offline-v1.1 by name
+LANE: learn BUILDING 19f373c   # 2026-11-07 16:39 IST: MERGED lane, fix by name FIX-RS4 (R-H-21/R-S-4 3, test-only, learn.test.mjs) run wf_f4494348-6f1 slot 9; was MERGED 19f373c (10:50, f9de7023); LOWs C3-C5 for offline-v1.1
 LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
-SLOTS-ASKED: 1   # actions-sos slot 3 (granted 14:20, still held for its fix rounds)
-UPDATED: 2026-11-07 16:21 IST
+SLOTS-ASKED: 4   # actions-sos slot 3 (held, FIX-R4), engine slot 2 and learn slot 9 (R-H-21's fixes by name, running), core slot 1 (FIX-V11, asked 16:39)
+UPDATED: 2026-11-07 16:39 IST
+
+# 2026-11-07 16:39 IST · R-H-21 and R-S-4..6: engine and learn test fixes running; core FIX-V11 asked
+
+- R-H-21 (16:33): content U-31a merged (trunk 9b319256); three CORE test names red on the merged tree and baselined by the HUB (engine-data :243, :266; learn :265). Launched 16:36: engine FIX-RS4 wf_c2c0444c-8dc, learn FIX-RS4 wf_f4494348-6f1 (args C:/Users/ruchi/.claude-pro/jobs/06285082/tmp/args_<lane>_rs4.json; base 655516dc, diffFrom the merged tips; wf_sim OK).
+- R-S-4 actions-sos part: no change needed (ui-onboarding.js lineList reads `.text`). R-S-6: core FIX-V11 asked (R-C-22); the Settings hooks are tests-docs', after actions-sos merges.
 
 # 2026-11-07 16:21 IST · CORE session 06285082 resumes; actions-sos FIX-R4 launched
 
