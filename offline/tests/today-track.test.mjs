@@ -616,3 +616,85 @@ test('insights: without UI.svg the numbers still show as text', () => {
     assert.ok(byTest(root, 'insights-heat-table').length, 'the table stays');
   } finally { delete globalThis.document; }
 });
+
+/* ── U-18 Harbor scene ─────────────────────────────────────────────────────────────────── */
+const HBM = require(src('ui-harbor.js'));
+const HB = classic('ui-harbor.js', 'HarborUI');
+const used = (skillId, d, hr) => ev('SkillUsed', { skillId, helpful: true }, at(2026, 11, d, hr));
+const harborRows = () => ({
+  profile: [{ key: 'me', name: 'Asha', startDate: '2026-10-01' }],
+  events: [used('trial', 1, 9), used('trial', 2, 9), used('trial', 3, 9), used('sober', 3, 10), used('call', 4, 11), used('reasons', 5, 9), used('log-craving', 6, 9)],
+});
+const harborCtx = (extra) => Object.assign({ view: viewOf(harborRows()), E, settings: {}, now: NOW, calm: false, route: R('/today') }, extra || {});
+
+test('harbor: levels never fall after a slip', () => {
+  const rows = harborRows();
+  const before = HBM.lightLevels(viewOf(rows), NOW, E);
+  assert.deepEqual(Object.keys(before), ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather']);
+  assert.equal(before.lighthouse, 2, 'three uses of a lighthouse skill');
+  assert.ok(before.cove >= 1 && before.pier >= 1 && before.compass >= 1 && before.weather >= 1);
+  const after = HBM.lightLevels(viewOf(Object.assign({}, rows, {
+    events: rows.events.concat([ev('SlipLogged', { date: TODAY }, at(2026, 11, 7, 8))]),
+    logs: [{ id: 'slip1', type: 'slip', at: at(2026, 11, 7, 8).toISOString(), date: TODAY }],
+  })), at(2026, 11, 30, 9), E);
+  for (const k of HBM.PLACES) assert.ok(after[k] >= before[k], `${k} does not fall after a slip or with time`);
+  for (let n = 0; n < 5; n++) assert.ok(HBM.lightOpacity(n + 1) > HBM.lightOpacity(n), 'the glow rises with each level');
+  assert.equal(HBM.lightOpacity(0), 0);
+  assert.equal(HBM.lightOpacity(5), 1);
+  assert.deepEqual(HBM.lightLevels(viewOf({}), NOW, null), { lighthouse: 0, cove: 0, garden: 0, pier: 0, compass: 0, weather: 0 }, 'no engine: all unlit');
+});
+
+test('harbor: renders 6 places', () => withDom(() => {
+  const root = HB.scene(harborCtx());
+  assert.ok(root);
+  const svgEl = byTest(root, 'harbor-scene')[0];
+  assert.equal(svgEl.getAttribute('role'), 'img');
+  const places = svgEl.all((n) => n.getAttribute && n.getAttribute('data-place') !== null);
+  assert.deepEqual(places.map((n) => n.getAttribute('data-place')).sort(), ['compass', 'cove', 'garden', 'lighthouse', 'pier', 'weather']);
+  const label = svgEl.getAttribute('aria-label');
+  assert.match(label, /Lit: The Lighthouse, level 2 of 5/);
+  assert.match(label, /Waiting for light: The Garden/);
+  const lh = places.find((n) => n.getAttribute('data-place') === 'lighthouse');
+  assert.equal(lh.getAttribute('data-level'), '2');
+  assert.equal(lh.all((n) => n.getAttribute && /hb-light/.test(n.getAttribute('class') || ''))[0].getAttribute('opacity'), String(HBM.lightOpacity(2)));
+  const pier = places.find((n) => n.getAttribute('data-place') === 'pier');
+  assert.equal(pier.all((n) => /hb-lit/.test((n.getAttribute && n.getAttribute('class')) || '')).length, Number(pier.getAttribute('data-level')), 'a lantern per level');
+  globalThis.HarborUI = HB;
+  try {
+    const { root: today } = render(sampleRows());
+    const card = byTest(today, 'today-harbor')[0];
+    assert.ok(card && byTest(card, 'harbor-scene').length === 1, 'Today shows the scene once HarborUI is loaded');
+    assert.equal(card.getAttribute('aria-hidden'), null);
+  } finally { delete globalThis.HarborUI; }
+}));
+
+test('harbor: null in calm mode', () => withDom(() => {
+  assert.equal(HB.scene(harborCtx({ calm: true })), null);
+  assert.equal(HB.scene(harborCtx({ settings: { calm: true } })), null);
+  assert.equal(HB.scene(harborCtx({ settings: { discreet: true } })), null, 'and in discreet mode');
+  assert.ok(HB.scene(harborCtx()));
+}));
+
+test('harbor: reduced-motion class', () => withDom(() => {
+  const cls = (extra) => byTest(HB.scene(harborCtx(extra)), 'harbor-scene')[0].getAttribute('class');
+  assert.match(cls(), /hb-moving/);
+  assert.match(cls({ settings: { reducedMotion: true } }), /hb-still/);
+  assert.match(cls({ route: R('/sos') }), /hb-still/, 'never animates in SOS');
+  globalThis.window = { matchMedia: (q) => ({ matches: /reduce/.test(q) }) };
+  try { assert.match(cls(), /hb-still/, 'the system setting'); } finally { delete globalThis.window; }
+  const css = readFileSync(src('styles.css'), 'utf8');
+  const sec = css.slice(css.indexOf('/* -- today-track -- */'));
+  assert.match(sec, /@media \(prefers-reduced-motion: no-preference\) \{\s*\.hb-moving/);
+  assert.match(sec, /\.hb-still \*[^{]*\{ animation: none !important; \}/);
+  for (const m of sec.matchAll(/@keyframes hb-[a-z]+ \{([^}]*\}){2} \}/g)) assert.doesNotMatch(m[0], /opacity/, 'motion never dims the light');
+}));
+
+test('harbor: ui-harbor.js inserts text as text, makes no network call and exports pure names only', () => {
+  const code = readFileSync(src('ui-harbor.js'), 'utf8');
+  assert.doesNotMatch(code, /\.innerHTML\s*=|outerHTML\s*=|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(code, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|https?:\/\//);
+  assert.doesNotMatch(code, /localStorage|sessionStorage|indexedDB|Math\.random/);
+  assert.doesNotMatch(code, /globalThis\.(Content|Engine|Store|Actions|UI)\b/);
+  assert.equal(HBM.scene, undefined);
+  for (const k of ['lightLevels', 'lightOpacity', 'ariaLabel']) assert.equal(typeof HBM[k], 'function', k);
+});
