@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 04:12 IST: today-track READY da9bb6b (V-01b; check PASS, no findings) for the HUB; V-43 waits for that merge and then a fast-forward to the new trunk, so it builds on the real engine V-40. content V-10 slice wf_02dbd88e-f4a running (slot 4)
-LANE: content BUILDING 3bd5bf5d   # V3 V-10 slice wf_02dbd88e-f4a (slot 4, 04:06; worktree fast-forwarded 680f850..3bd5bf5d with --ff-only, no merge commit; package.json gained only the screens script); then V-42 on R-C-50 with the real validator (engine V-40 in the trunk), V-23 (T2), V-10b (I6). v1: MERGED 680f850
-LANE: today-track READY da9bb6b   # V3 V-01b: 90bab1c, 99a0c8c, da9bb6b on 127509e (wf_ccfdc4d0-2ae; check PASS, no findings; C1, C2 closed); merge base 127509e; V-01a MERGED 37d1a53c; next V-43 (brief annex) after this merge
+STATE: BUILDING   # 2026-11-08 04:22 IST: MEMORY 2.6 GB (04:20; the HUB's 04:19 row 3.0 GB, under the 4.0 floor). today-track V-43 NOT started (args filled, worktree fast-forwarded to 486288f1). content V-10 (wf_02dbd88e-f4a, the newest run) pauses at its next commit: the workflow is stopped when its builder's hand-off lands, before the check. Both resume on a row at or above 4.0 GB
+LANE: content BUILDING 3bd5bf5d   # V3 V-10 slice wf_02dbd88e-f4a (slot 4, 04:06): PAUSING at its next commit (memory under 4.0 GB, the HUB 04:20); the check runs on resume (lane.js start 'check'); then V-42, V-23 (T2), V-10b (I6). v1: MERGED 680f850
+LANE: today-track BUILDING 486288f1   # V-01b MERGED 486288f1 (04:19). V-43 HELD for memory (not started): branch and worktree fast-forwarded da9bb6b..486288f1 with --ff-only at 04:20, clean; args args/v3_tt_v43.json (base and diffFrom 486288f1); launches on slot 6 at the first row at or above 4.0 GB
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 04:12 IST
+UPDATED: 2026-11-08 04:22 IST
 
 # 2026-11-08 04:18 IST · from the HUB · today-track da9bb6b merged (trunk 486288f1); V-43 from 486288f1
 
