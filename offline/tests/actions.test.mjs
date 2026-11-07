@@ -2849,5 +2849,48 @@ describe('review round 5 fixes (FIX-R5)', () => {
     });
     // -- FIX-R6 tests end --
   });
+  // ── FIX-R7 (2026-11-07, ruling 22:52): RS37R, RS38 (U-09), RS36R (U-10) ──
+  describe('review round 7 fixes (FIX-R7)', () => {
+    beforeEach(async () => { await S().resetAll(); });
+    // the trunk's sample rows (build/offline-v1 content-sample.js:146-172) by stand-ins of their shape
+    const ISO = '2026-03-05T20:00:00.000Z';
+    const smp = () => ({
+      contacts: [{ id: 'smp-con-1', name: 'Asha (sample)', role: 'safetyNet', strategy: null, phone: '', note: 'Sister. Calls back the same day.', active: true, sample: true }],
+      plans: [
+        { id: 'smp-plan-1', date: daysAgo(-3), start: '19:00', end: '22:00', status: 'planned', sample: true, title: 'Office farewell dinner', kind: 'risky', risky: true,
+          battlePlan: { situation: 'Office farewell dinner', plan: 'Order a lime soda first and sit with Vikram.', backups: ['Step outside and call Asha.', 'Leave by ten.'], buddyId: 'smp-con-1', exit: 'Leave after the speeches.' } },
+        { id: 'smp-plan-2', date: daysAgo(-1), start: '18:30', end: '19:15', status: 'planned', sample: true, title: 'Evening walk', kind: 'want', risky: false, activity: 'A walk at dawn or dusk', reward: 'A favourite film after.' },
+        { id: 'smp-plan-3', date: daysAgo(-2), start: '10:00', end: '11:00', status: 'planned', sample: true, title: 'Support group', kind: 'recovery', risky: false },
+      ],
+      todos: [{ id: 'smp-todo-1', text: 'Clear the space at home', source: 'lesson', route: '#/learn/m4', due: null, done: false, at: ISO, sample: true }],
+      predictions: [{ id: 'smp-pred-1', activity: 'Evening walk', predicted: 30, actual: 70, at: ISO, completedAt: ISO, notes: 'Better than I thought.', sample: true }],
+    });
+    const loadSmp = () => withSample({ generate: () => ({ stores: smp() }) }, () => Actions.loadSample());
+    const row = (s, id) => S().view.get(s, id);
+    test("RS37R: the person's change over a sample plan, a debrief or a prediction's result makes the row theirs: unmarked, kept by eraseSample", async () => {
+      await loadSmp();
+      for (const [s, id] of [['plans', 'smp-plan-1'], ['plans', 'smp-plan-3'], ['predictions', 'smp-pred-1']]) assert.equal(row(s, id).sample, true, id + ': loaded, marked');
+      await Actions.plans.update('smp-plan-1', { title: 'Dinner with my team on Friday' });
+      await Actions.plans.debrief('smp-plan-3', { usedPlan: true, how: 'I ordered a soda first and left at ten.' });
+      await Actions.predictions.complete('smp-pred-1', { actual: 8, notes: 'Calmer than I thought.' });
+      const mine = [row('plans', 'smp-plan-1'), row('plans', 'smp-plan-3'), row('predictions', 'smp-pred-1')];
+      assert.deepEqual(mine.map((r) => r.sample === true), [false, false, false], "each row is the person's own");
+      assert.deepEqual([mine[0].title, mine[1].debrief.how, mine[2].actual, mine[2].notes], ['Dinner with my team on Friday', 'I ordered a soda first and left at ten.', 8, 'Calmer than I thought.']);
+      await Actions.eraseSample();
+      assert.deepEqual([row('plans', 'smp-plan-1'), row('plans', 'smp-plan-3'), row('predictions', 'smp-pred-1')], mine, 'eraseSample keeps their words as they were');
+    });
+    test('RS37R: a patch that changes nothing, or only true/false flags, keeps the mark: a ticked to-do, a hidden contact, a plan with the same title and a flag; eraseSample takes them', async () => {
+      await loadSmp();
+      await Actions.todos.done('smp-todo-1');
+      await Actions.contacts.deactivate('smp-con-1');
+      await Actions.plans.update('smp-plan-2', { title: 'Evening walk', risky: true });
+      const got = [row('todos', 'smp-todo-1'), row('contacts', 'smp-con-1'), row('plans', 'smp-plan-2')];
+      assert.deepEqual(got.map((r) => r.sample), [true, true, true], "still the sample's words");
+      assert.deepEqual([got[0].done, got[1].active, got[2].risky], [true, false, true], 'the flags are written');
+      await Actions.eraseSample();
+      assert.deepEqual([row('todos', 'smp-todo-1'), row('contacts', 'smp-con-1'), row('plans', 'smp-plan-2')], [null, null, null], 'eraseSample takes them');
+    });
+    // -- FIX-R7 tests end --
+  });
   // -- FIX-R5 tests end --
 });

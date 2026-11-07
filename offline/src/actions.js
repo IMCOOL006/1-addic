@@ -518,6 +518,21 @@ const Actions = (() => {
     if (!row) fail(code, `${what} not found.`);
     return row;
   }
+  /* RS37R, RS38 (ruling 2026-11-07 22:52 IST): every update verb goes through claimRow. A patch that changes the value
+     of a field that is not a true/false flag makes a sample row the person's (the mark goes, so eraseSample keeps their
+     words); a patch that changes nothing, or only flags (a to-do ticked, a contact hidden or shown), keeps it. A null
+     patch: the verb always writes the person's words or score (a debrief, a prediction's result). */
+  function sameValue(a, b) {
+    const blank = (v) => v === undefined || v === null || v === '';
+    if (blank(a) || blank(b)) return blank(a) && blank(b);
+    if (typeof a !== 'object' || typeof b !== 'object') return a === b;
+    if (Array.isArray(a) !== Array.isArray(b)) return false;
+    return [...new Set([...Object.keys(a), ...Object.keys(b)])].every((k) => sameValue(a[k], b[k]));
+  }
+  function claimRow(prev, patch, next) {
+    if (next.sample === true && (patch === null || Object.keys(patch).some((k) => !isBool(patch[k]) && !sameValue(patch[k], prev[k])))) delete next.sample;
+    return next;
+  }
   const contacts = {
     async add(c) {
       checkContact(c, false);
@@ -541,7 +556,10 @@ const Actions = (() => {
     },
     async deactivate(id) {
       if (!isId(id)) fail('bad-contact', 'Contact not found.');
-      return write('contact deactivate', stamp(), (tx) => tx.put('contacts', Object.assign({}, needRow(tx, 'contacts', id, 'bad-contact', 'Contact'), { active: false })));
+      return write('contact deactivate', stamp(), (tx) => {
+        const prev = needRow(tx, 'contacts', id, 'bad-contact', 'Contact');
+        return tx.put('contacts', claimRow(prev, { active: false }, Object.assign({}, prev, { active: false })));
+      });
     },
     async reached(id, how) {
       if (!isId(id)) fail('bad-contact', 'Contact not found.');
@@ -602,7 +620,8 @@ const Actions = (() => {
       checkPlan(patch, true);
       const p = clone(patch);
       return write('plan update', stamp(), (tx) => {
-        const plan = Object.assign({}, needRow(tx, 'plans', id, 'bad-plan', 'Plan item'), p, { id });
+        const prev = needRow(tx, 'plans', id, 'bad-plan', 'Plan item');
+        const plan = claimRow(prev, p, Object.assign({}, prev, p, { id }));
         if (!endsAfter(plan)) fail('bad-plan', 'The end time must be after the start time.');
         tx.put('plans', plan);
         if (plan.battlePlan && !tx.has('BattlePlanCreated', 'planId', id)) tx.event('BattlePlanCreated', { planId: id });
@@ -625,7 +644,8 @@ const Actions = (() => {
       if (!absent(d, 'how') && !isText(d.how, 1000)) fail('bad-plan', '"how" is too long.');
       const at = stamp();
       return write('plan debrief', at, (tx) => {
-        const plan = Object.assign({}, needRow(tx, 'plans', id, 'bad-plan', 'Plan item'), { debrief: { usedPlan: d.usedPlan, how: d.how || '', at } });
+        const prev = needRow(tx, 'plans', id, 'bad-plan', 'Plan item');
+        const plan = claimRow(prev, null, Object.assign({}, prev, { debrief: { usedPlan: d.usedPlan, how: d.how || '', at } }));
         tx.put('plans', plan);
         if (!tx.has('BattlePlanDebriefed', 'planId', id)) tx.event('BattlePlanDebriefed', { planId: id, usedPlan: d.usedPlan });
         return { plan, events: tx.events };
@@ -674,7 +694,7 @@ const Actions = (() => {
       const at = stamp();
       return write('todo done', at, (tx) => {
         const row = needRow(tx, 'todos', id, 'bad-plan', 'To-do');
-        return tx.put('todos', Object.assign({}, row, { done: true, doneAt: row.doneAt || at }));
+        return tx.put('todos', claimRow(row, { done: true }, Object.assign({}, row, { done: true, doneAt: row.doneAt || at })));
       });
     },
     async remove(id) {
@@ -722,7 +742,7 @@ const Actions = (() => {
       const at = stamp();
       return write('prediction complete', at, (tx) => {
         const row = needRow(tx, 'predictions', id, code, 'Prediction');
-        return tx.put('predictions', Object.assign({}, row, { actual: d.actual, completedAt: row.completedAt || at, notes: absent(d, 'notes') ? row.notes : d.notes }));
+        return tx.put('predictions', claimRow(row, null, Object.assign({}, row, { actual: d.actual, completedAt: row.completedAt || at, notes: absent(d, 'notes') ? row.notes : d.notes })));
       });
     },
   };
