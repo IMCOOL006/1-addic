@@ -21,7 +21,8 @@
    ],
    "units": [
     "V-01a",
-    "V-01b"
+    "V-01b",
+    "V-43"
    ],
    "batches": [
     [
@@ -29,17 +30,22 @@
     ],
     [
      "V-01b"
+    ],
+    [
+     "V-43"
     ]
    ],
    "unitTier": {
     "V-01a": 1,
-    "V-01b": 1
+    "V-01b": 1,
+    "V-43": 1
    },
    "unitNotes": {
     "V-01a": "The status page (3 h, V3-01): new offline/src/ui-status.js, namespace StatusUI, registered as UI.pages.status (ui-core.js pageKey accepts any registered segment: no core edit); one parts line in build.mjs after ui-harbor.js at the append point. Renders: HarborUI.scene(ctx) reused full width, with data-place='<region>' on each place (ui-harbor.js gets the attribute only) and a tap sheet listing that region's skills with level and uses from GameUI.model(gs).skills and the next level's count; 'Where you stand' from the same model object (GameUI.rankCard, xpBar, the badge count; total days only when counters are on and discreet is off; never the current run); 'Next small step' (the first undone Engine.explorer item, else Engine.nextLesson / Engine.roadmap().focus, else an open quest step; one link); Back to Today; an SOS link data-test status-sos (the chrome's #sos-btn stays). StatusUI.model(gs, extra) and StatusUI.diff(before, after) are pure (plain objects in, plain objects out; the diff lists rises only; a slip changes no level). Calm: no scene, XP or badges, the places as a plain list; discreet: no scene, no days; text as text, no innerHTML with data, no network. Hooks (data-test) exactly as PLAN-V3.md section 3: status-page, status-scene, status-place (data-region, data-level), status-stand, status-days, status-next, status-next-go, status-sos, status-back. offline/tests/status.test.mjs: model and diff pure and deterministic; a SkillUsed raises its region and the diff names it; a SlipLogged plus a slip log leaves every level equal and the diff empty; Calm and discreet rules; the page renders from an empty and a sample profile with no dead button and SOS one tap away; pure exports only. Done when #/status renders both profiles, every test passes by name, and the gates are green on the branch.",
-    "V-01b": "What changed, what to watch, the way in (2 h, V3-01, V3-02): 'What just changed' = StatusUI.diff of the model since the page was last drawn (memory only, this session, like GameUI's seen): a light that grew (place, level), XP today, a badge, a rank, an Explorer step, a quest step, a day banked; the matching place pulses once (class hb-grew on ui-harbor.js's place, transform scale 300 ms, transform only; none under prefers-reduced-motion, data-motion=reduce or on an SOS route: the words carry it); first open 'Here is where you stand.'; hooks status-change, status-change-item (data-kind). The 14-day strip of dated dots from Engine.momentum(...).dates (status-strip, status-strip-day with data-date and data-active; a history, never a count headline; decision V-Q4). 'What to watch' from Engine.warningSigns(view, now) with each sign's plan (own plans win), gentle wording, never red, empty state 'Nothing to watch right now.' (status-watch, status-watch-item data-sign); the same card at #/track/radar in ui-track.js (closes V3-02: the revealed radar feature led to plain Track). Today: a 'Your harbor' chip in the header quick row beside Log a craving and SOS (data-test today-status, data-tour status-open) and the harbor card becomes a link (today-harbor-go); GuidanceUI.dot on the chip once Content.features.status exists (typeof-guarded). data-tour status-scene, status-change, status-watch on the page. The CSS in today-track's styles.css section. status.test.mjs grows: the diff after a quick log names the rise; reduced motion adds no moving class; the radar renders on #/track/radar; Today's chip routes to #/status. Done when the page shows a rise after a logged skill use and nothing after a slip, by test."
+    "V-01b": "What changed, what to watch, the way in (2 h, V3-01, V3-02): 'What just changed' = StatusUI.diff of the model since the page was last drawn (memory only, this session, like GameUI's seen): a light that grew (place, level), XP today, a badge, a rank, an Explorer step, a quest step, a day banked; the matching place pulses once (class hb-grew on ui-harbor.js's place, transform scale 300 ms, transform only; none under prefers-reduced-motion, data-motion=reduce or on an SOS route: the words carry it); first open 'Here is where you stand.'; hooks status-change, status-change-item (data-kind). The 14-day strip of dated dots from Engine.momentum(...).dates (status-strip, status-strip-day with data-date and data-active; a history, never a count headline; decision V-Q4). 'What to watch' from Engine.warningSigns(view, now) with each sign's plan (own plans win), gentle wording, never red, empty state 'Nothing to watch right now.' (status-watch, status-watch-item data-sign); the same card at #/track/radar in ui-track.js (closes V3-02: the revealed radar feature led to plain Track). Today: a 'Your harbor' chip in the header quick row beside Log a craving and SOS (data-test today-status, data-tour status-open) and the harbor card becomes a link (today-harbor-go); GuidanceUI.dot on the chip once Content.features.status exists (typeof-guarded). data-tour status-scene, status-change, status-watch on the page. The CSS in today-track's styles.css section. status.test.mjs grows: the diff after a quick log names the rise; reduced motion adds no moving class; the radar renders on #/track/radar; Today's chip routes to #/status. Done when the page shows a rise after a logged skill use and nothing after a slip, by test.",
+    "V-43": "Today and Your Harbor show the three features (2 h, tier 1, R-O-6; after V-01b, and after the V-40, V-41, V-42 merges, on the contracts before): Today gets a 'Today's objectives' card (the three from Engine.dailyObjectives, tap to do through Actions.objective.done, one swap through Actions.objective.swap, the growth line), the run line in the header (current · best · total from Engine.run; 'kept' on a grace day; 'you came back' after a break; never a countdown or a shame line), and the quest-line's current step card with what it unlocks and the claim (Actions.questLine.claim; the reward sheet is game-tutorials' V-44, called behind typeof). Your Harbor: the growth elements drawn in the scene (one per Engine.growth unit, from the objective's grows kind; never removed; Calm shows the count as words; discreet unchanged), the spine 'Your way' (Engine.questLine steps done / current / locked with their rewards; locked steps show the title only), the run in 'Where you stand'. Hooks (data-test): objectives-card, objective (data-id, data-done), objective-done, objective-swap, run-line, run-current, run-best, run-total, run-kept, run-back, questline-card, questline-step (data-state), questline-claim, status-growth, status-growth-item, status-way. status.test.mjs and today-track.test.mjs grow by rule (a done objective adds one growth element and never removes one; a break shows 'you came back' and the same best and total)."
    },
-   "laneNote": "Builds on what is merged (f69bc68a): HarborUI, GameUI, GuidanceUI, Engine.gameState/explorer/quests/warningSigns/roadmap/nextLesson/momentum, Actions, Store.subscribe re-render through ui-core. Nothing new is computed in the DOM; the Engine is read, never written; the page never shows a decrease or the current run. The house rules of docs/BUILD-GUIDE.md and BUILD-PLAN.md section 2 bind (original words, grade 6-8, no promises). V3-IMPROVEMENTS.md section 2 is the proposal; PLAN-V3.md section 3 the contract. Questions V-Q3 to V-Q6 default at 03:30 IST unless outbox-OWNER.md says otherwise: a page, the strip as dated dots, 'changed' since the last draw this session, the name 'Your Harbor'."
+   "laneNote": "Builds on what is merged (f69bc68a): HarborUI, GameUI, GuidanceUI, Engine.gameState/explorer/quests/warningSigns/roadmap/nextLesson/momentum, Actions, Store.subscribe re-render through ui-core. Nothing new is computed in the DOM; the Engine is read, never written; the page never shows a decrease or the current run. The house rules of docs/BUILD-GUIDE.md and BUILD-PLAN.md section 2 bind (original words, grade 6-8, no promises). V3-IMPROVEMENTS.md section 2 is the proposal; PLAN-V3.md section 3 the contract. Questions V-Q3 to V-Q6 default at 03:30 IST unless outbox-OWNER.md says otherwise: a page, the strip as dated dots, 'changed' since the last draw this session, the name 'Your Harbor'. V-43 (R-O-6) is the third batch. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "tests-docs": {
    "lane": "tests-docs",
@@ -66,6 +72,7 @@
     "V-03",
     "V-06",
     "V-01t",
+    "V-45",
     "V-22a",
     "V-26b",
     "V-27",
@@ -86,6 +93,9 @@
      "V-01t"
     ],
     [
+     "V-45"
+    ],
+    [
      "V-22a",
      "V-26b",
      "V-27",
@@ -101,7 +111,8 @@
     "V-22a": 2,
     "V-26b": 2,
     "V-27": 2,
-    "V-29": 2
+    "V-29": 2,
+    "V-45": 1
    },
    "unitNotes": {
     "U-35": "Screenshots (1.5 h): as lane_args.json (running since 02:07 as wf_3e4ac20d-750; images committed dfc2703).",
@@ -112,9 +123,10 @@
     "V-22a": "C-TM-1 (0.2 h): the two writes in the markOnboarded helper become one, or are ordered and awaited; test-only.",
     "V-26b": "Boot-time budget (0.7 h, V3-26): a browser test that measures the time from navigation to the first ui:rendered on the built file, prints it in the log and bounds it (the bound from three runs on this machine, with margin); core prints per-part sizes in build.mjs (V-26a, by outbox if not yet merged).",
     "V-27": "Contrast guard (1 h, V3-27): a Node check (offline/tests/contrast.test.mjs or inside guards) of the fg/bg token pairs of styles.css in both themes at 4.5:1 for text and 3:1 for large text, by name; .coach-sos and .gt-dot included. A red names the pair and goes to the token's owner by outbox.",
-    "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others."
+    "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others.",
+    "V-45": "The R-O-6 features in the browser suite and the guide (1 h, tier 1; after today-track V-43 merges): flows 'an objective done grows the harbor' (status-growth-item count +1, never -1), 'a break keeps best and total' (two dated sessions through the test clock), 'a quest-line step unlocks a feature' (the claim, the reward sheet, the feature reachable); the hooks of PLAN-V3.md section 7 in hooks.mjs; the guide lessons for the three; the screenshots re-taken for Today and Your Harbor."
    },
-   "laneNote": "Runs on from U-35 without a new cut (fast-forwarded to f69bc68a 02:03). Tier 1 first: U-35, V-07, then V-03 and V-06, then V-01t when today-track V-01b is merged; tier 2 after. Every hook that must be added to another lane's file is asked by outbox with the attribute name and the element (the owner adds the attribute only). Under 4.0 GB free the run pauses at its next commit (the floor was crossed 02:23)."
+   "laneNote": "Runs on from U-35 without a new cut (fast-forwarded to f69bc68a 02:03). Tier 1 first: U-35, V-07, then V-03 and V-06, then V-01t when today-track V-01b is merged; tier 2 after. Every hook that must be added to another lane's file is asked by outbox with the attribute name and the element (the owner adds the attribute only). Under 4.0 GB free the run pauses at its next commit (the floor was crossed 02:23). V-45 (R-O-6) after V-01t. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "core": {
    "lane": "core",
@@ -179,6 +191,7 @@
    "units": [
     "V-08a",
     "V-SOS10",
+    "V-41",
     "V-25",
     "V-18",
     "V-17b"
@@ -187,6 +200,9 @@
     [
      "V-08a",
      "V-SOS10"
+    ],
+    [
+     "V-41"
     ],
     [
      "V-25",
@@ -201,50 +217,59 @@
     "V-25": 2,
     "V-18": 2,
     "V-17b": 2,
-    "V-SOS10": 1
+    "V-SOS10": 1,
+    "V-41": 1
    },
    "unitNotes": {
     "V-08a": "Actions.useSkill({skillId, helpful}) -> {ok, event} (0.5 h, V3-08, R-C-39): a skill used in a game or a tool is credited with a SkillUsed event through Actions (the USE_VERB refusal at ui-tools.js:315 is the symptom; the ruling in contracts/actions-sos.md:175). On a refusal (unknown skill, sample mode, locked) it returns ok:false and throws nothing. Tests: the event is written with the right fields; XP follows the Engine's rule; a sample profile writes nothing of the person's own. game-tutorials' V-08b calls it.",
     "V-25": "Unlock gives a sign of life (0.3 h, V3-25): an aria-live polite line 'Opening your notebook' in the lock form during the key derivation (ui-onboarding.js:240-252), cleared on success or failure; the controls stay disabled meanwhile as now; the owner times it on a phone (the PC takes about 1.2 s).",
     "V-18": "RC22, RC23, R8-RC1 (1 h, V3-18) as ruled in contracts/actions-sos.md:172, :177, :183: a status change over a sample plan keeps the mark and BattlePlanCreated only for the person's row; the two test gaps closed; test-only where the ruling says so.",
     "V-17b": "SOS marks its waiting saves with Store.status().lockId (0.5 h, V3-17; after core V-17a merges): a save queued before a lock is dropped when the lockId changed (another tab erased and set a new PIN); a test with a stub store whose lockId changes.",
-    "V-SOS10": "The SOS rating '10' wraps at 390 px (0.3 h, tier 1; CORE 10's finding in the U-35 screenshots, R-C-46): the rating row of the SOS craving screen keeps every value on one line at the phone width (ui-sos.js, the CSS in actions-sos' section); a Node test on the markup where possible and the U-35 screenshot re-taken by tests-docs after the merge. No copy change."
+    "V-SOS10": "The SOS rating '10' wraps at 390 px (0.3 h, tier 1; CORE 10's finding in the U-35 screenshots, R-C-46): the rating row of the SOS craving screen keeps every value on one line at the phone width (ui-sos.js, the CSS in actions-sos' section); a Node test on the markup where possible and the U-35 screenshot re-taken by tests-docs after the merge. No copy change.",
+    "V-41": "The verbs of R-O-6 (1 h, tier 1): Actions.objective.done(id) writes one ObjectiveDone {id, date} per objective per day (idempotent: a second call returns ok:true with no new event); Actions.objective.swap(id) once a day (ObjectiveSwapped {from, to, date}; the second call that day is refused ok:false); Actions.questLine.claim(stepId) writes QuestLineStepDone {id} and FeatureUnlocked {feature, by: 'questline'} only when Engine.questLine says the step is current with its condition met (else ok:false, nothing thrown); sample mode writes nothing of the person's own (RS-SAMPLE rule); the lock rule as every verb. The data model rows appended (BUILD-PLAN 3.4 additions). Tests in actions.test.mjs by rule. On the engine contract until V-40 merges (a stub engine in the tests)."
    },
-   "laneNote": "Flagged: the two reviewers on the final READY (safety copy, privacy, the person's data; contracts and tests). Fast-forward build/actions-sos to BASE first. Tier 1 is V-08a alone; its contract is published to game-tutorials by outbox the moment the signature is fixed."
+   "laneNote": "Flagged: the two reviewers on the final READY (safety copy, privacy, the person's data; contracts and tests). Fast-forward build/actions-sos to BASE first. Tier 1 is V-08a alone; its contract is published to game-tutorials by outbox the moment the signature is fixed. V-41 (R-O-6) follows the first batch; flagged as every actions-sos unit: the two reviewers on its READY. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "engine": {
    "lane": "engine",
    "chat": "CORE",
-   "tier": 2,
+   "tier": 1,
    "flagged": false,
-   "area": "The spiral reply's own flag; the exported tutorialDone.",
+   "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
    "files": [
     "offline/src/engine.js",
     "offline/tests/logic.test.mjs",
     "offline/tests/engine-roadmap.test.mjs",
     "offline/tests/engine-insights.test.mjs",
     "offline/tests/engine-data.test.mjs",
-    "offline/tests/engine-warning-item.test.mjs"
+    "offline/tests/engine-warning-item.test.mjs",
+    "offline/tests/engine-questline.test.mjs"
    ],
    "units": [
+    "V-40",
     "V-19",
     "V-30"
    ],
    "batches": [
+    [
+     "V-40"
+    ],
     [
      "V-19",
      "V-30"
     ]
    ],
    "unitTier": {
+    "V-40": 1,
     "V-19": 2,
     "V-30": 2
    },
    "unitNotes": {
     "V-19": "FIX-SPIRAL-OWN (0.5 h, V3-19): each spiral reply pair carries own: boolean; engine.js:719-729 fills an empty reply from catalogs.slipSelfTalk with own:false; the person's reply own:true; SOS (ui-sos.js, actions-sos) may then say 'a line to try' instead of 'you wrote'; a test per branch. Tell actions-sos by outbox.",
-    "V-30": "Export tutorialDone (0.2 h): ui-guidance.js:132 calls E.tutorialDone behind a typeof guard but engine.js exports only tour/drill wrappers (engine.js:611-623, the export list 1495-1505); export tutorialDone(view, id, allowSkipped) so the guidance uses the engine's rule; a test that it agrees with the wrappers."
+    "V-30": "Export tutorialDone (0.2 h): ui-guidance.js:132 calls E.tutorialDone behind a typeof guard but engine.js exports only tour/drill wrappers (engine.js:611-623, the export list 1495-1505); export tutorialDone(view, id, allowSkipped) so the guidance uses the engine's rule; a test that it agrees with the wrappers.",
+    "V-40": "Quest-line, objectives, growth, run (3 h, tier 1, R-O-6; the slice): Engine.questLine(view, now) -> {steps: [{...step, state: 'done'|'current'|'locked', doneAt?}], current} from Content.questLine in order, each condition {event, count, within?} evaluated over the events (a step is done when its condition held and a QuestLineStepDone exists, current when its condition is the next to meet or met and unclaimed, locked after); Engine.unlocked(view) -> Set of feature ids = revealed(view) ∪ the rewards of claimed steps (a superset of revealed, never smaller; a reward that names a protected feature is ignored and reported by validateContent); Engine.dailyObjectives(view, now) -> {date, items: [{...objective, done, swappable}], growth}: three a day, two drawn deterministically from Content.objectives by the date and the person's state (seeded, no Math.random), the third swapped once a day by an ObjectiveSwapped/ObjectiveDone pair as Actions writes it; done from ObjectiveDone or from the objective's doneBy event on that date; Engine.growth(view) = the count of objective days (a day with at least one done), never decreasing; Engine.run(view, now) -> {current, best, total, kept: [dates], cameBack, lastDay} over days shown up (any day with a log, a lesson, a practice, an objective or an SOS drill; never a counter/sober-day claim), one grace day per calendar week keeps the run and is listed in kept, a gap beyond it starts a new run with cameBack true until the next day shown up; best and total never decrease. Content.xp rows for ObjectiveDone and QuestLineStepDone honoured by the XP derivation. validateContent: questLine ids unique and in order, every reward an existing feature outside the protected set, every objective id unique with a doneBy that is 'tap' or a known event. Tests by rule in a new offline/tests/engine-questline.test.mjs (the lane's file): a break never lowers best or total; the grace day keeps; growth never decreases after a missed day; unlocked ⊇ revealed; the same date gives the same objectives; a claimed sober-day counter never counts as a day shown up. Until content V-42 merges, the tests use an inline fixture shaped as the contract; the real content is checked at the merge."
    },
-   "laneNote": "Tier 2: starts only when no tier 1 lane waits for a slot. One batch, two small units."
+   "laneNote": "V-40 is tier 1 and the slice (R-O-6, 03:03); V-19 and V-30 are tier 2 after it. On the content contract until V-42 merges. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "learn": {
    "lane": "learn",
@@ -287,16 +312,21 @@
     "offline/src/content-exercises.js",
     "offline/src/content-practices.js",
     "offline/src/content-sample.js",
-    "offline/tests/content.test.mjs"
+    "offline/tests/content.test.mjs",
+    "offline/src/content-quests.js"
    ],
    "units": [
     "V-10",
-    "V-10b",
-    "V-23"
+    "V-42",
+    "V-23",
+    "V-10b"
    ],
    "batches": [
     [
      "V-10"
+    ],
+    [
+     "V-42"
     ],
     [
      "V-23"
@@ -308,14 +338,16 @@
    "unitTier": {
     "V-10": 1,
     "V-10b": 1,
-    "V-23": 2
+    "V-23": 2,
+    "V-42": 1
    },
    "unitNotes": {
     "V-10": "The status feature's content (0.3 h, V3-28): Content.features.status (revealed with the Harbor, never later than m1), its JIT tutorial for the first open and its help entry; original words, grade 6-8, no promise of outcomes; validateContent green; a content test that the feature, tutorial and help entry exist and read as text.",
     "V-23": "C2 (both items so numbered in the lane report: the content-sample.js:6 header against plans 1-3 days ahead; the sample erase assertion), C3, C4 (0.3 h, V3-23): one comment, one assert, the 'guide' id note.",
-    "V-10b": "The India crisis numbers (0.5 h; only after the owner's I6 answer is in outbox-OWNER.md): the verify: true flags of content-core.js:421-432 cleared only for the numbers the owner confirms; the rest keep 'please verify'. Never a new number without the owner's word."
+    "V-10b": "The India crisis numbers (0.5 h; only after the owner's I6 answer is in outbox-OWNER.md): the verify: true flags of content-core.js:421-432 cleared only for the numbers the owner confirms; the rest keep 'please verify'. Never a new number without the owner's word.",
+    "V-42": "The quest-line and the daily objectives, in words (1.5 h, tier 1, R-O-6): new offline/src/content-quests.js (content's file; one parts line in build.mjs at the append point after the other content files) holding Content.questLine (8 to 12 steps in order: id, title, line, condition {event, count, within?}, reward (a feature id from Content.features in the unlockable set: tools and mini-games, game-surface extras, Harbor scenes and themes, the Explorer; never SOS, help, a lesson, Settings, export, the person's data), opened (one line saying what opened)); Content.objectives (a pool of about 20: id, title, line, doneBy {event} or 'tap', grows (the Harbor element: lantern, tree, boat, ...)); the run's words (the header line, 'kept', 'you came back'); Content.xp rows for ObjectiveDone and QuestLineStepDone (small, fixed, never for a claimed sober day); the JIT tutorials and help entries for the three features; the unlockable features' entries in Content.features where missing. Original words, grade 6 to 8, no promise of outcomes, no shame line; validateContent green; content.test.mjs checks the shapes and the protected set."
    },
-   "laneNote": "Tier 1 is V-10 (the status layer needs its feature and tutorial, house rule 5). The clinical-review fixes come by name after the reviewer's answers (V-09, the HUB's pack); hours by the answers."
+   "laneNote": "Tier 1 is V-10 (the status layer needs its feature and tutorial, house rule 5). The clinical-review fixes come by name after the reviewer's answers (V-09, the HUB's pack); hours by the answers. V-42 (R-O-6) is the second batch, right after V-10; The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "game-tutorials": {
    "lane": "game-tutorials",
@@ -332,6 +364,7 @@
    "units": [
     "V-08b",
     "V-28",
+    "V-44",
     "V-21"
    ],
    "batches": [
@@ -342,20 +375,25 @@
      "V-28"
     ],
     [
+     "V-44"
+    ],
+    [
      "V-21"
     ]
    ],
    "unitTier": {
     "V-08b": 1,
     "V-28": 1,
-    "V-21": 2
+    "V-21": 2,
+    "V-44": 1
    },
    "unitNotes": {
     "V-08b": "ui-tools.js credits a used skill through Actions.useSkill({skillId, helpful}) (0.5 h, V3-08; after actions-sos V-08a merges; on the contract before: typeof-guarded, the old refused call removed); a test that the call is made with the right fields and that a refusal shows nothing wrong to the person.",
     "V-28": "The status layer's tour step and dot (0.4 h, V3-28): a tour step on data-tour status-open (the Today chip; text from Content.tutorials), the JIT tutorial wiring for Content.features.status on the first open of #/status, GuidanceUI.dot on the chip while unseen; the data-tour target check stays green (the chip exists once today-track V-01b is merged: build on the contract, guard by typeof).",
-    "V-21": "C1 and the coach after a route change (1 h, V3-21): the tour ends as aborted when the route leaves Today (no centred card over another screen's button, the board's 01:39 finding); the narrow/flip branch (ui-guidance.js:329-335) gets a Node case for both branches."
+    "V-21": "C1 and the coach after a route change (1 h, V3-21): the tour ends as aborted when the route leaves Today (no centred card over another screen's button, the board's 01:39 finding); the narrow/flip branch (ui-guidance.js:329-335) gets a Node case for both branches.",
+    "V-44": "Unlocks and rewards (1 h, tier 1, R-O-6; after engine V-40 merges): the reward sheet on a claim ('You unlocked ...' with the feature's opened line, through GuidanceUI; reduced-motion rules; never over an SOS route; one tap to dismiss, one to open the feature); ui-tools.js and ui-game.js honour Engine.unlocked(view) in place of module reveal alone (typeof-guarded: when the function is absent the old reveal applies); the JIT tutorials for the quest-line, the objectives and the run (texts from content V-42); the tour steps on questline-card and objectives-card. Tests by rule in game-tutorials.test.mjs (a protected feature never appears as a reward; unlocked ⊇ revealed in the surfaces)."
    },
-   "laneNote": "Starts after today-track's slice (V-01a) is merged, or on a free slot with typeof guards."
+   "laneNote": "Starts after today-track's slice (V-01a) is merged, or on a free slot with typeof guards. V-44 (R-O-6) after V-28. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
   },
   "workbook-settings": {
    "lane": "workbook-settings",

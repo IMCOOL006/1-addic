@@ -1,5 +1,5 @@
 {
-  "about": "1-addic offline edition, build of 7 November 2026. From docs/offline/BUILD-PLAN.md section 5 (each lane's files) and section 9 (territory and append points). Read by tools/check_territory.py (OK / SHARED / ERROR / WARNING per changed path) and tools/gates.py (a lane's default test files). Paths are repo-relative with forward slashes; a glob's * stays inside one folder, ** crosses folders; an entry ending in / is a folder prefix. The HUB edits this file; lanes ask by outbox. V3 (2026-11-08 02:30 IST, HUB 9): today-track also owns offline/src/ui-status.js and offline/tests/status.test.mjs (PLAN-V3.md section 3).",
+  "about": "1-addic offline edition, build of 7 November 2026. From docs/offline/BUILD-PLAN.md section 5 (each lane's files) and section 9 (territory and append points). Read by tools/check_territory.py (OK / SHARED / ERROR / WARNING per changed path) and tools/gates.py (a lane's default test files). Paths are repo-relative with forward slashes; a glob's * stays inside one folder, ** crosses folders; an entry ending in / is a folder prefix. The HUB edits this file; lanes ask by outbox. V3 (2026-11-08 02:30 IST, HUB 9): today-track also owns offline/src/ui-status.js and offline/tests/status.test.mjs (PLAN-V3.md section 3); R-O-6 (2026-11-08 03:07 IST): content also owns offline/src/content-quests.js and engine offline/tests/engine-questline.test.mjs (PLAN-V3.md section 7).",
   "lanes": {
     "core": {
       "chat": "CORE",
@@ -19,9 +19,11 @@
     },
     "engine": {
       "chat": "CORE",
-      "files": ["offline/src/engine.js", "offline/tests/logic.test.mjs"],
+      "files": ["offline/src/engine.js", "offline/tests/logic.test.mjs",
+        "offline/tests/engine-questline.test.mjs"
+      ],
       "globs": ["offline/tests/engine-*.test.mjs"],
-      "tests": ["offline/tests/logic.test.mjs", "offline/tests/engine-*.test.mjs"]
+      "tests": ["offline/tests/logic.test.mjs", "offline/tests/engine-*.test.mjs", "offline/tests/engine-questline.test.mjs"]
     },
     "actions-sos": {
       "chat": "CORE",
@@ -105,6 +107,7 @@
         "offline/src/content-exercises.js",
         "offline/src/content-practices.js",
         "offline/src/content-sample.js",
+        "offline/src/content-quests.js",
         "offline/tests/content.test.mjs"
       ],
       "globs": [],
