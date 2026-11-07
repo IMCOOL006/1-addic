@@ -267,3 +267,5 @@
 - 2026-11-07 22:39 IST: the browser suite on _int at 7485e254 (lane hub; the first call with 'HUB' was refused by the lane-name pattern): GREEN 13/0/6; the six skips by name are the SOS lane's routes and the quick-log hook (named on status-HUB.md). 22:40 board report made with it.
 
 - 2026-11-07 22:50 IST: rows 22:45 7.2, 22:50 3.5 GB (the system also stopped the HUB's 23:10 reminder shell for memory). SLOTS-ALLOWED 1 under the floor: today-track FIX-EMBED pauses at its next commit (SCREENS told by message and the SLOTS line); actions-sos round 7 runs on. No heavy run of the HUB's.
+
+- 2026-11-07 23:07 IST: 23:10 report on the board. actions-sos FIX-R7 wf_ea2586a6-02e (22:56) runs alone on rows 3.9 and 2.6 GB (the R-C-32 default: the one tier 1 run continues); today-track paused at 6b0184b, check waits for a 7.0 GB row; engine line corrected on status-CORE.md. The pharma program (seven chats since 22:33) holds the memory; the owner is asked on the board.
