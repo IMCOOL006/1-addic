@@ -204,6 +204,12 @@
   let uid = 0;
   const nextId = (p) => 'onb-' + p + '-' + (++uid);
   let sentOnce = false; // the redirect to onboarding happens once in a visit
+  // RS12: the device flag of record for the locked chrome ('1' on, absent off; core contract). UI.applyDiscreet sets it
+  // and repaints; on a tree without it, the flag is written here through a guard, so the lock screen can read it.
+  function setDiscreet(on) {
+    if (typeof UI.applyDiscreet === 'function') { safe(() => UI.applyDiscreet(on), null); return; }
+    safe(() => { if (on) localStorage.setItem(DISCREET_KEY, '1'); else localStorage.removeItem(DISCREET_KEY); }, null);
+  }
 
   function field(label, input, hint) {
     if (!input.id) input.id = nextId('f');
@@ -220,7 +226,9 @@
   /* The lock screen */
   function lockPage() {
     const S = getStore();
-    const L = lockLabels(isDiscreet());
+    const discreet = isDiscreet();
+    const L = lockLabels(discreet);
+    if (discreet) safe(() => { document.title = L.title; }, null); // RS12: the tab title is discreet too while locked
     const pin = h('input', { id: 'lock-pin', type: PIN_ATTRS.type, inputmode: PIN_ATTRS.inputmode, pattern: PIN_ATTRS.pattern, autocomplete: PIN_ATTRS.autocomplete,
       'aria-describedby': 'lock-msg', dataset: tid('lock-pin') });
     const msg = h('p', { id: 'lock-msg', class: 'field-error', role: 'alert', hidden: true });
@@ -400,7 +408,7 @@
       const r = await finishOnboarding(A, answers, C);
       if (!r.ok && r.errors.some((x) => x.step === 'onboard' && x.code !== 'no-actions')) toast('Not saved on this device. You can set this up later.', 'warn');
       else if (r.patch.phoneDropped) toast('The phone number was not saved. You can add it later.', 'warn');
-      if (r.patch.settings.discreet === true && typeof UI.applyDiscreet === 'function') safe(() => UI.applyDiscreet(true), null);
+      if (r.patch.settings.discreet === true) setDiscreet(true);
       UI.go(then === 'drill' ? '#/sos?drill=1' : '#/today');
       if (then === 'tour' && UI.tour && typeof UI.tour.start === 'function') setTimeout(() => safe(() => UI.tour.start('tour'), null), 0);
     }

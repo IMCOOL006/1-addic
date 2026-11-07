@@ -962,9 +962,9 @@ function sosDom(opts) {
   }
   const body = new N('body');
   const UI = { h, pages: {}, go: (r, op) => { go.push(r); if (op && op.replace) replaced.push(r); }, toast: (m, tone) => { toasts.push([m, tone]); }, speak: () => false, stopSpeaking: () => {} };
-  const doc = { body, createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
+  const doc = { body, title: '', createElement: (t) => new N(t), createTextNode: text, documentElement: { hasAttribute: () => false },
     addEventListener: (t, fn) => { (docOn[t] = docOn[t] || []).push(fn); } };
-  const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto,
+  const ctx = vm.createContext({ UI, document: doc, navigator: {}, crypto: o.crypto, localStorage: o.localStorage,
     setInterval: () => 0, clearInterval: () => {}, setTimeout, Date, Content: C(), Store: o.store || S(), module: { exports: {} } }); // Date: the pinned clock, one clock as in a browser (RC16)
   vm.runInContext(readFileSync(src('ui-sos.js'), 'utf8'), ctx, { filename: 'ui-sos.js' });
   if (o.onboarding) vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
@@ -979,7 +979,7 @@ function sosDom(opts) {
     return b;
   };
   return {
-    UI, go, replaced, toasts, byId, docOn,
+    UI, go, replaced, toasts, byId, docOn, doc,
     fire: (type, detail) => { for (const fn of docOn[type] || []) fn({ type, detail }); },
     onb(c) {
       const root = UI.pages.onboarding(Object.assign({ A: Actions, settings: {} }, c));
@@ -1274,7 +1274,10 @@ describe('lock screen and onboarding (U-11)', () => {
 
   test('lock and onboarding make no network call and never keep the PIN', () => {
     assert.doesNotMatch(ONB_SRC, /https?:\/\//);
-    assert.doesNotMatch(ONB_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\.|localStorage\.setItem/);
+    assert.doesNotMatch(ONB_SRC, /\bfetch\(|XMLHttpRequest|WebSocket|sendBeacon|innerHTML|console\./);
+    assert.deepEqual(ONB_SRC.match(/localStorage\.\w+\([^)]*\)/g),
+      ['localStorage.getItem(DISCREET_KEY)', "localStorage.setItem(DISCREET_KEY, '1')", 'localStorage.removeItem(DISCREET_KEY)'],
+      'the device holds only the discreet flag, through a guard (RS12)');
     assert.doesNotMatch(ONB_SRC, /(settings|patch|commit|answers)\.?[^\n]*\bpin\b(?!\s*=\s*h\()/i, 'the PIN never goes into rows or answers');
     assert.match(ONB_SRC, /pin\.value = '';/, 'the field is cleared at once');
     assert.ok(O.COPY.early.length <= 80, 'the early-access notice is short');
@@ -1914,6 +1917,40 @@ describe('review round 2 safety fixes (FIX-R2-SAFETY)', () => {
     again.tapId(r2, 'onb-next');
     again.tapId(r2, 'onb-next');
     assert.ok(r2.querySelector('[data-testid="onb-step-3"]'), 'empty fields: Next goes on at once');
+  });
+  test('RS12: discreet chosen in onboarding sets the device flag; the lock screen and its title then read discreet', async () => {
+    const walk = async (d) => {
+      const root = d.onb({});
+      d.tapId(root, 'onb-next');
+      root.querySelectorAll('input').find((i) => i.attrs.name === 'discreet').checked = true;
+      d.tapId(root, 'onb-next');
+      for (let k = 0; !root.querySelector('[data-testid="onb-finish"]'); k += 1) {
+        assert.ok(k < 12, 'the last step comes');
+        d.tapId(root, root.querySelector('[data-testid="onb-safety-ok"]') ? 'onb-safety-ok' : 'onb-skip');
+      }
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+    };
+    const flags = new Map();
+    const localStorage = { getItem: (k) => (flags.has(k) ? flags.get(k) : null), setItem: (k, v) => { flags.set(k, String(v)); }, removeItem: (k) => { flags.delete(k); } };
+    const d = sosDom({ onboarding: true, localStorage });
+    await walk(d);
+    assert.equal(flags.get('1-addic:discreet'), '1', 'with no UI.applyDiscreet on the tree, the flag is set through the guard');
+    const lock = d.UI.pages.lock({});
+    const name = String(C().discreetName || 'Notebook');
+    assert.equal(lock.querySelector('h1').textContent.trim(), name);
+    assert.equal(d.byId(lock, 'lock-urgent').textContent.trim(), 'Help');
+    assert.equal(d.byId(lock, 'lock-sober').textContent.trim(), 'Breathe');
+    assert.equal(d.doc.title, name, 'the tab title is discreet while locked');
+    await S().resetAll();
+    const calls = [];
+    const d2 = sosDom({ onboarding: true, localStorage: { getItem: () => null, setItem: () => { calls.push('setItem'); }, removeItem: () => {} } });
+    d2.UI.applyDiscreet = (on) => { calls.push(on); return true; };
+    await walk(d2);
+    assert.deepEqual(calls, [true], 'with UI.applyDiscreet (core), it alone sets the flag');
+    const plain = sosDom({ onboarding: true, localStorage: { getItem: () => null } });
+    plain.UI.pages.lock({});
+    assert.equal(plain.doc.title, '', 'not discreet: the title is left to ui-core');
   });
   // -- FIX-R2-SAFETY tests end --
 });
