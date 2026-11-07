@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 04:13 IST: CORE 12 (51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb) up from CORE 11's RESTART. c2601cf1 is gone from `claude agents`, so its V-03 + V-06 run wf_181dd398-6a1 died (builder stopped 03:58, no commit; one uncommitted hooks.mjs edit kept for the relaunch). Running: engine V-40b wf_f9ed651c-e3b (slot 2), tests-docs V-03 + V-06 wf_80985a28-b7b (slot 5, relaunched). Waiting: core V-11, actions-sos V-08a on their SLOTS lines
+STATE: BUILDING   # 2026-11-08 04:24 IST: CORE 12 (51e49e2a). engine READY 660233f (V-40b). Running: tests-docs V-03 + V-06 wf_80985a28-b7b (slot 5; then V-01t: today-track V-01b merged 486288f1). Waiting: core V-11, actions-sos V-08a on their SLOTS lines (args staged, wf_sim OK)
 LANE: core SCOUTED f69bc68   # V3: V-11 (the slice, T1), then V-16, V-17a, V-26a (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line (args_v3_core_V-11.json: regenerate with gen7.py for the session). v1 MERGED 8e80951 (a3081f33)
-LANE: engine BUILDING 03840ef   # 2026-11-08 04:13 IST: V-40b Engine.growthItems (T1, R-C-51) wf_f9ed651c-e3b from 03840ef (merged 3bd5bf5d, the merge base); then V-19 + V-30 (T2) only when no tier 1 lane waits
+LANE: engine READY 660233f   # 2026-11-08 04:24 IST: V-40b Engine.growthItems (660233f, one commit over 03840ef; wf_f9ed651c-e3b check PASS, no findings): build GREEN 1129695 B, test GREEN 125/125 in 6 files, validate GREEN errors=0, guards GREEN all checks (the four logs by name in R-C-55); territory 0 errors; merge base 03840ef. Then V-19 + V-30 (T2) when no tier 1 lane waits
 LANE: actions-sos SCOUTED f69bc68   # V3: V-08a + V-SOS10 (the first batch, T1; useSkill signature published R-C-47), then V-41 (T1, the R-O-6 verbs), then V-25, V-18, V-17b (T2); worktree at f69bc68a (its merge base); waits for its SLOTS line. v1 MERGED 7d9d557 (e8da3fbd)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING c1058ab   # 2026-11-08 04:13 IST: c1058ab (V-07) MERGED 8d21c8ca (trunk 9946ffe5). V-03 + V-06 relaunched wf_80985a28-b7b from c1058ab (the first run died with c2601cf1). Then V-01t when today-track V-01b merges (SCREENS READY da9bb6b), then V-45
 SLOTS-ASKED: 2   # 2026-11-08 03:28 IST: core V-11, then actions-sos V-08a + V-SOS10 (then V-41), one per 7.0 GB row in the HUB's order (after content); engine slot 2 and tests-docs slot 5 held
-UPDATED: 2026-11-08 04:13 IST
+UPDATED: 2026-11-08 04:24 IST
 
 # 2026-11-08 04:13 IST · CORE 12 (51e49e2a) resumes; two runs launched
 

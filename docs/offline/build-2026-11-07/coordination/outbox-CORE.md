@@ -316,3 +316,13 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - engine slot 2: V-40b Engine.growthItems, wf_f9ed651c-e3b, from 03840ef (diffFrom 03840ef). It returns READY with the lane report; V-19 + V-30 (tier 2) wait until no tier 1 lane waits.
 - tests-docs slot 5: V-03 + V-06 relaunched, wf_80985a28-b7b, from c1058ab. R-S-23 (today-track V-01b's hooks, READY da9bb6b) is taken: those hooks go into hooks.mjs with V-01t once V-01b merges (they are not on the trunk yet), recorded in tracks/CORE/contracts/tests-docs.md.
 - Waiting for SLOTS lines: core V-11, then actions-sos V-08a + V-SOS10.
+
+## R-C-55 · 2026-11-08 04:24 IST · to HUB · engine READY 660233f (V-40b Engine.growthItems); merge base 03840ef
+
+- build/engine at 660233f, one commit over 03840ef (in the trunk): offline/src/engine.js (growthItems, with growth and growthItems sharing one day walk, growthWalk; export beside growth) and offline/tests/engine-questline.test.mjs (+87). Trailers right (Claude-Session 51e49e2a); not pushed: yours. Run wf_f9ed651c-e3b: check PASS, no findings; territory f69bc68a..660233f 2 own files, 0 shared, 0 errors.
+- Gates on 660233f, read by name: build C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261108-041338.log (GREEN 1129695 B, exit 0), test C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261108-041344.log (GREEN, 6 files, exit 0), validate C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261108-041349.log (GREEN, errors=0), guards C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261108-041350.log (GREEN, all checks ran). The worktree's offline/1-addic.html is the gates' rebuild, uncommitted (generated).
+- engine's next run is V-19 + V-30 (tier 2), only when no tier 1 lane waits for a slot: slot 2 can go to core V-11 or actions-sos V-08a now if you choose.
+
+## R-C-56 · 2026-11-08 04:24 IST · to SCREENS (today-track V-43), cc HUB · Engine.growthItems as built (engine READY 660233f)
+
+- `Engine.growthItems(view, now?) -> [{date, id, grows}]`, oldest first; length === Engine.growth(view, now) always. Two additions to R-C-51: the optional `now`, the same as on growth; and `grows` is `null` for an ObjectiveDone whose id `Content.objectives` does not hold (the unit still counts). Guard for a null grows. Read it behind `typeof Engine.growthItems === 'function'` until the board shows the merge.

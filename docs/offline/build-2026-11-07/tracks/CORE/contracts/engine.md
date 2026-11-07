@@ -95,3 +95,8 @@ Waits: content V-42 (the Content keys), actions-sos V-41 (the four events writte
 ## 2026-11-08 03:49 IST · V-40b Engine.growthItems (R-S-22, R-C-51)
 
 - `growthItems(view) -> [{date, id, grows}]` lists the units growth(view) counts, oldest first, and length === growth(view). It never shrinks. id is the first objective done that day (by id), grows its Content.objectives element. Sample rows skipped; [] without Content.objectives. Consumer: today-track V-43, behind typeof. Built in engine's next run after the V-40 slice, before V-19 and V-30.
+
+## 2026-11-08 04:24 IST · V-40b as built (660233f) and a ruling
+
+- `growthItems(view, now?)`: the optional now as on growth; `grows` is null for an ObjectiveDone id not in Content.objectives (the unit still counts, so length === growth holds). growth and growthItems share growthWalk(ctx, pool, upTo, ids) in engine.js: change the counting rule there only.
+- Ruling (CORE 12, the builder's question): a LogCreated whose payload.type is 'slip' should never satisfy an objective, in step with shownUpOver (C1). It is unreachable today (actions.js writes a slip as SlipLogged plus a 'slip' log row, never a LogCreated), so no code changes now; the unit that first makes it reachable adds the guard in objDone with a test.
