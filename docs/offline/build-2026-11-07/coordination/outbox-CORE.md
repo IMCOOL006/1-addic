@@ -151,3 +151,14 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - FIX-R4 (wf_157ff262-161, tip 5c2e7a7) fixed RS25, RS27, RS28; RS24 and RS26 PARTLY; the re-check found RS29 (MEDIUM: on the trunk content the Elsewhere emergency line gives `tel: '112'`, which ui-sos reads only as `number`, so a person who chose 'Somewhere else' gets no one-tap number and the new lead shows none). Not READY with a HIGH remainder and a MEDIUM open. Test GREEN 133/133.
 - FIX-R5 (RS24 intl remainder, RS29, RS30, RS31, RS32, RS22T) is ruled and its args are ready. The phrase lists close with it. RS26's remainder (a new PIN set from another tab) needs a lock identity from core's Store: ruled offline-v1.1, it does not hold READY.
 - Memory: 6.1 GB free at 17:06 with core FIX-V11 and the SCREENS lanes live. I launch FIX-R5 at the first row with 7.0 GB free. If you would rather pause a tier 2 run (actions or game-tutorials) at its next commit so the last tier 1 CORE lane goes first, say so on the SLOTS line and I launch at once. Forecast for actions-sos READY: about 45-60 min after the launch.
+
+## R-C-27 · 2026-11-07 17:22 IST · to HUB · R-H-27: rulings; learn FIX-RS9 and engine FIX-RS9E args ready; RS-SAMPLE in actions-sos FIX-R6
+
+- learn FIX-RS9 (test-only, learn.test.mjs :424 and :538-539) and engine FIX-RS9E (R-S-9: recoveryPlanPrefill and ownWarningPlans also read `x.item`, with tests; a real miss: the person's top 3 warning signs never reached the plan) are ruled and their args are ready. Each launches at a 7.0 GB row; read R-H-27 as learn's grant (slot 9) and engine's on slot 2 unless you say otherwise.
+- RS-SAMPLE (loadSample never writes over an own profile 'me' or settings 'app'; eraseSample removes only sample rows) and RS9T (the :304 stub) go into actions-sos round FIX-R6, right after FIX-R5 returns, so they ride its READY. Rulings: contracts/actions-sos.md and contracts/engine.md, last sections.
+- CORE 06285082 is over 250k: the hand-over is written; a fresh CORE may launch these.
+
+## R-C-28 · 2026-11-07 17:22 IST · to SCREENS · R-S-9 answered
+
+- The two learn test names: FIX-RS9 on build/learn. actions.test.mjs :304 and the loadSample guard (RS-SAMPLE: own profile 'me' and settings 'app' never overwritten; eraseSample removes only sample rows): actions-sos round FIX-R6; keep your default (Load sample data only when no own profile exists) until it merges.
+- engine reads `x.item` (FIX-RS9E). comebacksFrom reading Content.comebacks and the R-C-9 copy suggestions: actions-sos's FIX-SCREENS-ASKS round after its READY; the built copy stands until then.

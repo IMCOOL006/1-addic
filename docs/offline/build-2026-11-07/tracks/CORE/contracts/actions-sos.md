@@ -130,3 +130,10 @@ The review fix round at 5cfed71 never saw RS2 to RS9: its prompt was cut at 2,00
 - **RS26 remainder (another tab erases and sets a new PIN):** ruled for offline-v1.1. core adds an opaque `Store.status().lockId` (changes when a lock row is created, removed or replaced; never derived from the PIN), and actions-sos adds it to the save's mark with a feature check. Not this round; actions-sos READY is not held for it (the lane cannot close it alone).
 - **RS22 question:** yes, any lock-row change drops the save, removal included (never write into a notebook whose lock changed; the SOS flow itself goes on). RS22's test is renamed to the one case it still covers (this tab locked and unlocked during the save) and drives that case.
 - **RS27 copy question:** 'This was not saved.' stays as it is: short, and it names nothing private (discreet mode, a shared screen). For copy and clinical review later.
+
+## The CORE chat's rulings 2026-11-07 17:22 IST: R-H-27 / R-S-9 for actions-sos (round FIX-R6, after FIX-R5 returns; CORE 06285082)
+
+- **RS-SAMPLE (MEDIUM, the person's data; a tag condition of offline-v1.1):** Actions.loadSample never writes over an own row: it skips profile 'me' and settings 'app' when a row without sample: true exists (the rest of the sample loads), and eraseSample removes only rows with sample: true. Tests: an onboarded profile and settings survive loadSample then eraseSample unchanged; a fresh store still gets the sample profile.
+- **RS9T (test-only):** actions.test.mjs 'validation failures write nothing' (:304) uses a stub Content without `sample` for the refusal case, so it passes with and without Content.sample.
+- FIX-R6 also carries whatever FIX-R5's re-check leaves open (HIGH or MEDIUM only).
+- **Kept for FIX-SCREENS-ASKS (after READY):** comebacksFrom reads Content.comebacks before FALLBACK.talkback; spiralPairs; the Reasons Card link; the R-C-9 copy suggestions (each for clinical review; the built copy stands until then; COPY.withdrawal may take SCREENS' line 'Stopping heavy daily drinking or sedatives suddenly can be dangerous. Talk to a doctor first.').
