@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 16:26 IST: two READY-SLICE lines for the HUB (today-track 13eba28, content 065699b); three runs live: workbook-settings slice U-19, today-track U-16..U-18, content U-31b..U-33; actions, game-tutorials SCOUTED (tier 2, wait)
+STATE: BUILDING   # 2026-11-07 16:31 IST: three READY-SLICE lines for the HUB (today-track 13eba28, content 065699b, workbook-settings cc1f1ea); three runs live (today-track U-16..U-18, content U-31b..U-33, workbook-settings U-20a..U-21); actions, game-tutorials SCOUTED (tier 2, wait)
 LANE: content READY-SLICE 065699b   # U-31a (0bbb7e2, 065699b), check PASS, for the HUB to merge (mind the three neighbour test names, R-S-5); the lane continues on the branch: run wf_11307812-199 (U-31b+U-29, then U-30+U-32+U-33), launched 16:26
 LANE: today-track READY-SLICE 13eba28   # U-15 Today (f615567, 13eba28), check PASS, for the HUB to merge; the lane continues on the branch: run wf_f509ab5b-32d (C1, C2 by name, then U-16, then U-17+U-18), launched 16:24 (its args.now said 16:31 by mistake: the stamp from date is 16:24)
-LANE: workbook-settings BUILDING   # slice U-19 run wf_a8a3fbe3-437 (sliceRun, slot 6 granted 16:06); worktree cut 16:14 at 1ef2482e; brief 14967 B
+LANE: workbook-settings READY-SLICE cc1f1ea   # U-19 Settings (83aa85b, e0af4fd, cc1f1ea), check PASS, for the HUB to merge; the lane continues on the branch: run wf_34a731b5-17f (C3, C4 by name, U-20a, then U-20b+U-21), launched 16:31
 LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
 LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 16:26 IST
+UPDATED: 2026-11-07 16:31 IST
+
+# 2026-11-07 16:31 IST · workbook-settings READY-SLICE cc1f1ea (U-19 Settings)
+
+- For the HUB: merge build/workbook-settings at cc1f1ea (cut from BASE 1ef2482e; commits 83aa85b Settings page with seven tabs, e0af4fd its Node tests, cc1f1ea the base browser hooks on the data controls). Files: offline/src/ui-settings.js (new), offline/tests/workbook-settings.test.mjs (new), offline/src/styles.css (one section at the end, /* -- workbook-settings -- */ to /* -- end workbook-settings -- */; no token redefined). Note: today-track's slice also appends a section at the end of styles.css: an append conflict with both regions bannered.
+- Gates on the branch (run wf_a8a3fbe3-437, check PASS): build GREEN 495935 B, test GREEN 10/10 workbook-settings.test.mjs, validate GREEN, browser GREEN (the base flows 'PIN set lock unlock export' and 'export erase import restores everything' now run: the controls carry data-testid settings-export, settings-import, settings-erase), guards the 15 baselined tour targets only (logs C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/*-20261107-1627*.log).
+- LOWs: C1 (the eraseSample round trip waits for actions-sos and content U-33), C2 (ruled: after an erase the page stays on #/settings/data with 'Start again' and the import control), C3 (high contrast applied only while Settings renders: asked of core in R-S-6; the lane tries a fix in its own file first), C4 (a test comment): C3, C4 fixed by name in the next run.
+- Verified by me: the branch log, the tip, the checker's gate lines. Assumed: the browser runs as the checker reports them (not re-run by me).
 
 # 2026-11-07 16:25 IST · content READY-SLICE 065699b (U-31a exercises M0-M3) · three neighbour test names turn red on merge
 
