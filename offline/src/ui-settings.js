@@ -578,7 +578,7 @@ const SettingsUI = (function () {
     const view = c.view;
     const A = ns('Actions'); const C = ns('Content');
     const fileId = nextId('import');
-    const file = h('input', { type: 'file', id: fileId, accept: '.json,application/json', 'data-test': 'import-file', class: 'ws-file' });
+    const file = h('input', { type: 'file', id: fileId, accept: '.json,application/json', 'data-test': 'import-file', 'data-testid': 'settings-import', class: 'ws-file' });
     file.addEventListener('change', () => { doImport(file); });
     const last = st.lastBackupAt ? safe(() => localDate(st.lastBackupAt), null) : null;
     const remindId = nextId('remind');
@@ -592,7 +592,7 @@ const SettingsUI = (function () {
       h('section', { class: 'card ws-card' }, h('h3', { class: 'card-title', text: 'Backup' }),
         h('p', { 'data-test': 'last-backup', text: 'Last backup: ' + (last || 'never') }),
         h('p', { class: 'muted', text: TEXT.backupNote }),
-        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-test': 'export-btn', text: 'Save a backup file', onClick: () => { doExport(); } })),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-test': 'export-btn', 'data-testid': 'settings-export', text: 'Save a backup file', onClick: () => { doExport(); } })),
         h('div', { class: 'field' }, h('div', { class: 'choice' }, remind, h('label', { for: remindId, text: 'Remind me to save a backup' })))),
       h('section', { class: 'card ws-card' }, h('h3', { class: 'card-title', text: 'Bring back a backup' }),
         h('div', { class: 'field' }, h('label', { class: 'field-label', for: fileId, text: 'Choose a backup file' }), file,
@@ -609,7 +609,7 @@ const SettingsUI = (function () {
         eraseLine ? h('p', { class: 'muted', 'data-test': 'erase-sample-note', text: eraseLine }) : null),
       h('section', { class: 'card ws-card ws-danger' }, h('h3', { class: 'card-title', text: 'Erase everything' }),
         h('p', { text: 'Removes every entry, setting and the PIN from this device. You are asked first.' }),
-        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn danger', 'data-test': 'erase-all', text: 'Erase everything', onClick: () => { doErase(); } })),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn danger', 'data-test': 'erase-all', 'data-testid': 'settings-erase', text: 'Erase everything', onClick: () => { doErase(); } })),
         flash && flash.tab === 'data' && /erased\. You can start again/.test(flash.text) ? h('a', { class: 'btn primary', href: '#/onboarding', text: 'Start again' }) : null),
     ];
   }
