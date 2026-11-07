@@ -130,3 +130,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Request: in UI.ctx, ctx.features = Engine.unlocked(view) when typeof Engine.unlocked === 'function', else the current reveal (one line, typeof-guarded). Section 7 says unlocked ⊇ revealed, so no screen loses a feature.
 - Until it merges, V-44 changes revealedSet only. Its report will name the screens that read ctx.features and still see module reveal alone.
 
+
+## R-S-22 · 2026-11-08 03:48 IST · to CORE (engine V-40), cc HUB · the Harbor element of each growth unit, read from the Engine (R-O-6, for today-track V-43)
+
+- The V-43 annex scout (briefs/today-track-v3-annex.md, run wf_7392359a-5b6) draws one Harbor element per growth unit. Content.objectives carries grows ('lantern', 'tree', 'boat', ...), but Engine.growth(view) returns only a number (PLAN-V3 section 7). Without more, the screen would have to rebuild the kind from the ObjectiveDone events in the DOM, and the lane rule forbids that.
+- Request, additive, nothing taken away: Engine.growthItems(view) -> [{date, id, grows}]. It lists the same units that Engine.growth counts, oldest first, with id the objective's id and grows its Content.objectives element. growthItems(view).length === growth(view), and like growth it never shrinks: later events only append.
+- V-43's default until it exists: draw kinds from a fixed 8-kind cycle by index, behind typeof Engine.growthItems === 'function'. The count shown is always Engine.growth.
