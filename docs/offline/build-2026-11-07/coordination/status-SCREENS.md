@@ -1,12 +1,23 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-07 16:15 IST: three tier 1 slices live (content U-31a slot 4, today-track U-15 slot 5, workbook-settings U-19 slot 6); actions, game-tutorials SCOUTED (tier 2, wait for no tier 1 lane waiting)
-LANE: content BUILDING   # slice U-31a run wf_0f49abe3-ebb (sliceRun, slot 4); worktree C:/Users/ruchi/1-addic-wt/content cut 16:12 at 1ef2482e; brief 10761 B
-LANE: today-track READY-SLICE 13eba28   # U-15 Today (f615567, 13eba28); run wf_cbccd83b-f69 check PASS over 1ef2482e..13eba28 (LOWs C1, C2 fixed by name first in the next run); gates: build GREEN, test GREEN 10/10 today-track.test.mjs, validate GREEN, guards the 15 baselined tour targets only (logs C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/*-20261107-1620*.log); report tracks/SCREENS/lane-reports/today-track.md 8888 B; cut base 1ef2482e
+LANE: content READY-SLICE 065699b   # U-31a (0bbb7e2, 065699b); run wf_0f49abe3-ebb check PASS (C1 MEDIUM: three neighbour test names red on merge, R-S-4/R-S-5; C2 LOW contract updated); build, test 10/10, validate GREEN; guards baselined names only; report tracks/SCREENS/lane-reports/content.md 5463 B; cut base 1ef2482e
+LANE: today-track READY-SLICE 13eba28   # U-15 Today (f615567, 13eba28), check PASS, for the HUB to merge; the lane continues on the branch: run wf_f509ab5b-32d (C1, C2 by name, then U-16, then U-17+U-18), launched 16:24 (its args.now said 16:31 by mistake: the stamp from date is 16:24)
 LANE: workbook-settings BUILDING   # slice U-19 run wf_a8a3fbe3-437 (sliceRun, slot 6 granted 16:06); worktree cut 16:14 at 1ef2482e; brief 14967 B
 LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
 LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 16:23 IST
+UPDATED: 2026-11-07 16:25 IST
+
+# 2026-11-07 16:25 IST · content READY-SLICE 065699b (U-31a exercises M0-M3) · three neighbour test names turn red on merge
+
+- For the HUB: merge build/content at 065699b (cut from BASE 1ef2482e; commits 0bbb7e2 content-core safety asks and the additions line, 065699b M0-M3 exercises, the checkpoint and content.test.mjs). Files: offline/src/content-core.js (owned), offline/src/content-exercises.js (new), offline/tests/content.test.mjs (new). Territory 3 own files, 0 shared, 0 errors. Gates on the branch: build GREEN, test GREEN 10/10 content.test.mjs, validate GREEN (Engine.validateContent 0 errors), guards the 15 baselined tour targets only (logs C:/Users/ruchi/1-addic-wt/_logs/gates/content/*-20261107-1621*.log). Check PASS (run wf_0f49abe3-ebb) with C1 MEDIUM (below) and C2 LOW (opioidSafety is {text, verify, clinicalReview}, not string[]: contract updated, actions-sos told in R-S-4).
+- C1, for your merge order: under Node, engine.js loads every offline/src/content-*.js, so three tests of other lanes that assumed no Content.exercises fail by name on the merged tree (all three pass at 1ef2482e; they are outside the content lane's test gate):
+  - engine-data.test.mjs: 'validateContent: the tryIt exercise check waits for Content.exercises, then runs' (:243 asserts c.exercises === undefined)
+  - engine-data.test.mjs: 'knownRoute: the 3.5 route table, by path' (:266 asserts '#/exercise/anything' is known; with Content.exercises present only real ids are)
+  - learn.test.mjs: 'learn: the gallery renders every field type, saves and resumes a draft (stand-in DOM)' (:265 opens quick-reasons and expects 'Not available yet'; it now resolves)
+  They are CORE's files (engine, learn); the one-line test fixes are asked in R-S-4. Default (yours to choose): baseline the three names for the content merge until CORE's fix lands, or merge content after it.
+- Verified by me: the branch log, the tip, the three assertions at those lines in the lane tree, the checker's gate lines. Assumed: the failure names as the builder ran them (I did not re-run node --test).
+- In the slice too: R-C-13 (1) intl local-emergency tel '112' verify: true; (2) Content.resources.opioidSafety; (3) "I'm hopeless." out of catalogs.spiral, catalogs.spiralPairs [{thought, reply}] x7; R-C-18 the example reworded without the noun; the line /* -- additions -- */ at the end of content-core.js.
 
 # 2026-11-07 16:23 IST · today-track READY-SLICE 13eba28 (U-15 Today)
 

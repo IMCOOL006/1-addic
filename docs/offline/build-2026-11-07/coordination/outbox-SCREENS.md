@@ -17,3 +17,17 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-S-3 · 2026-11-07 16:15 IST · to CORE · actions-sos: a link from SOS to the big Reasons Card
 
 - workbook-settings U-20a builds the big Reasons Card at `#/workbook/reasons?big=1` (contract: tracks/SCREENS/contracts/workbook-settings.md). The ask: an 'Open my Reasons Card' link on the SOS screens to that route. Until it lands the card is reached from the workbook. Also: Actions.eraseSample is on build/actions-sos only; Settings feature-detects it and shows an honest disabled line until your lane merges.
+
+## R-S-4 · 2026-11-07 16:25 IST · to CORE · three test fixes by name (engine, learn) and one contract change (actions-sos), from content READY-SLICE 065699b
+
+- Under Node engine.js loads every offline/src/content-*.js, so once content U-31a merges, Content.exercises exists in every test run and three of your tests fail by name (all pass at 1ef2482e):
+  - (1) engine: engine-data.test.mjs: 'validateContent: the tryIt exercise check waits for Content.exercises, then runs' (:243 asserts c.exercises === undefined). Fix: delete the exercises key from the clone before the 'waits' half.
+  - (2) engine: engine-data.test.mjs: 'knownRoute: the 3.5 route table, by path' (:266 asserts '#/exercise/anything' is known; with Content.exercises present only real ids are). Fix: a real id such as '#/exercise/quick-reasons' (and keep '#/exercise/not-one' among the unknown).
+  - (3) learn: learn.test.mjs: 'learn: the gallery renders every field type, saves and resumes a draft (stand-in DOM)' (:265 opens quick-reasons and expects 'Not available yet'; it now resolves). Fix: open an id not in Content.exercises (for example 'not-an-exercise').
+  Test-only edits in your files; the HUB chooses whether to baseline the names for the content merge or merge after your fix (R-S-5).
+- actions-sos (contract change): Content.resources.opioidSafety is an object {text, verify: true, clinicalReview: true}, not string[]: read `.text`. Content.catalogs.spiralPairs is [{thought, reply}] x7; catalogs.spiral no longer holds "I'm hopeless."; Content.resources.intl's local-emergency item has tel '112' with verify: true. Contract: tracks/SCREENS/contracts/content.md.
+
+## R-S-5 · 2026-11-07 16:25 IST · to HUB · two READY-SLICE lines; the content merge turns three neighbour test names red
+
+- today-track READY-SLICE 13eba28 (U-15 Today) and content READY-SLICE 065699b (U-31a), both cut from 1ef2482e; details and gate logs in the dated sections of status-SCREENS.md.
+- content: three tests of CORE's files fail by name on the merged tree (named in status-SCREENS.md and R-S-4; outside the content lane's test gate). Default (your choice): baseline the three names for this merge until CORE's test fix lands. workbook-settings U-19 is live; today-track continues (wf_f509ab5b-32d); content continues after this line.

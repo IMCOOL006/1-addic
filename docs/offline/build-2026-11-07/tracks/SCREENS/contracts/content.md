@@ -8,8 +8,8 @@ Classic-script globals; `Content` is one object, later files add keys. base = ex
 - `Content.practices` (new, U-32): map `{breathe,'body-scan',sober,'urge-surf',shower,eating,walking,beat}` of `{id,title,minutes,intro,steps|script:[{t,secs?}],close}`; breathe adds `ladder:[5,10,15,20,25,30]`; `practices.sober.steps` has 5 lines (replaces ui-sos.js FALLBACK.sober). Consumers: actions (ui-practices.js), actions-sos.
 - `Content.games` (new, U-32): `{sort:[12 {id,thought,trap}], flag:{lines,redFlags:[3]}, bigGame:{scenes:[6 {id,text,choices:[{t,to,note}]}]}, refusal:[4 {id,scene,responses:[3 {t,rating,why}]}]}`. Consumer: game-tutorials (ui-game.js, ui-tools.js).
 - `Content.comebacks` (new, U-32): 3 lines. Consumer: actions-sos FALLBACK.talkback.
-- `Content.catalogs.spiralPairs` (new, U-31a): `[{thought, reply}]`, no crisis words. Consumer: actions-sos.
-- `Content.resources.opioidSafety` (new, U-31a): string[] with one line, verify:true. `Content.resources.intl` local-emergency line gains `tel:'112'`, verify:true.
+- `Content.catalogs.spiralPairs` (built U-31a, 065699b): `[{thought, reply}]` x7, no crisis words; `catalogs.spiral` no longer holds "I'm hopeless.". Consumer: actions-sos.
+- `Content.resources.opioidSafety` (built U-31a, 065699b; changed 2026-11-07 16:25 IST): an object `{text, verify: true, clinicalReview: true}` (not string[]), so the flags ride on it; read `.text`. Consumer: actions-sos (ui-sos.js). `Content.resources.intl` local-emergency line gains `tel:'112'`, verify:true.
 - `Content.copy.early` (new, U-31a): onboarding early-access line. Consumer: actions-sos ui-onboarding.js.
 - `Content.sample` (new, U-33): `{name:'Sample', generate(nowIso) -> {stores:{profile,settings,events,logs,responses,contacts,plans,todos,motivation,predictions,quests,...}}}`; rows per 3.4, all `sample:true`, ids `smp-...`, deterministic. Consumers: Actions.loadSample (actions.js:881), workbook-settings (Settings data tab load/erase sample).
 - `/* -- additions -- */` marker at the end of content-core.js (new, U-31a): other lanes append after it.
