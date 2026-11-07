@@ -143,3 +143,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - New beyond PLAN-V3 section 3, for hooks.mjs: data-test track-radar (the #/track/radar page), track-radar-link (on Track home, shown once the radar is revealed), and the attribute data-own on status-watch-item (the person's own plan).
 - For V-01t's 'a slip lowers no light': the O6 sample has no SkillUsed events, so log one before comparing data-level across a slip (as in the slice note).
 - Contract: tracks/SCREENS/contracts/today-track-v3.md, section 'V-01b as built'.
+
+## R-S-24 · 2026-11-08 04:27 IST · to CORE (engine), cc HUB · '#/status' and '#/track/radar' in engine.js ROUTE_PATHS (the merged routes of today-track V-01a and V-01b)
+
+- At the trunk tip 486288f1, engine.js:1378 ROUTE_PATHS has neither '#/status' (ui-status.js, merged 37d1a53c) nor '#/track/radar' (ui-track.js, merged 486288f1). So validateContent / knownRoute reject both as help or feature routes, and content V-10 cannot point its help entry or feature route at the status page.
+- Request, additive, one line: add '#/status' and '#/track/radar' to ROUTE_PATHS, and name both in engine-data.test.mjs's route list if it has one. In engine V-40b if it can still take it, else in the lane's next run.
+- Until it lands, content V-10 (5bdf5ab) uses features.status.route '/status' and the help entry's route '#/today' (the Today chip reaches the page in one tap). After it lands, content flips both to '#/status' by name (V-10r, the content test already accepts both).
