@@ -1,7 +1,7 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-07 10:02 IST: HUB session 3 (408a3f20) resumed; CORE 224074c0 alive with four runs (core review fixes, actions-sos reviewers, learn U-12, tests-docs U-37+U-36a); engine paused; memory 4.4 GB at 10:00; queue empty; FREEZE 10:55
+STATE: BUILDING   # 2026-11-07 10:20 IST: six merges done, learn U-12 merged at 10:18; CORE 224074c0 runs core review fixes, actions-sos reviewers, learn (C1, C2, U-13, U-14), tests-docs (U-37 committed 0019a3d, U-36a); engine paused; FREEZE 10:55
 BASE-READY: 2026-11-07 07:15 655516dc
-BASE: 2da0caa4 (the trunk after the tests-docs U-34 merge, 2026-11-07 09:55; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
+BASE: 4618e43c (the trunk after the learn U-12 merge, 2026-11-07 10:18; new lanes cut from here; lanes already cut stay on their own branches, no rebase; the base worktree C:\Users\ruchi\1-addic-wt\_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 4 running lanes at a time from 09:50 (core, actions-sos, tests-docs, learn); engine's resume at the first row with at least 7.0 GB free with four running, or when one finishes; measured cost 2 to 3 GB per running lane; under 4.0 GB free the newest lane pauses at its next commit
 TRACKS-ALLOWED: CORE   # SCREENS is added when the lowest of the last three samples is at least 4.0 + 1.5 + 0.7 x (granted lanes + 1) GB, that is 7.6 GB with two lanes granted, 8.3 GB with three, 9.0 GB with four
 SLOTS: core slot=1 granted 2026-11-07 07:15 (tier 1, flagged; cut from BASE 655516dc once its scout has written the brief)
@@ -9,16 +9,23 @@ SLOTS: engine slot=2 PAUSED since 07:38 (memory); resumes with [U-06,U-07],[U-08
 SLOTS: actions-sos slot=3 granted again 2026-11-07 08:56 (free memory 7.4 GB at 08:55 with core alone running; resume U-10 then U-11 from the branch tip; tier 1, flagged; pauses again at its next commit if a row goes under 4.0 GB)
 SLOTS: learn slot=4 granted 2026-11-07 09:50 (the 09:49 row shows 7.4 GB free with three runs live; start the slice U-12 now in the worktree cut 07:21 at 655516dc, on the real ui-core.js of the trunk by path; tier 1; READY-SLICE by 10:55 enters the tag, later it goes to offline-v1.1; pauses at its next commit if a row goes under 4.0 GB)
 SLOTS: tests-docs slot=5 granted 2026-11-07 09:30 (the 09:29 row shows 9.2 GB free with core and actions-sos live: start U-34 now in the worktree cut 09:21 from 22c39654; tier 1; U-37, U-36a after; pauses at its next commit if a row goes under 4.0 GB)
-MERGING: learn READY-SLICE a499dae (U-12), started 2026-11-07 10:14
-MERGE-QUEUE: learn a499dae (in the merge)
+MERGING: none
+MERGE-QUEUE: (empty)
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
 MERGED: core READY-SLICE 4a43190 (U-03, U-02) -> merge 063b261, trunk 68371bb5, pushed 08:19 (build GREEN 187464 B; test GREEN store.test.mjs; validate SKIP until U-08; guards GREEN by name; the only conflict was the generated 1-addic.html, rebuilt from the merged sources)
 MERGED: actions-sos READY-SLICE 1cb96a3 (U-09) -> merge 7a9547c, trunk 22c39654, pushed 08:48 (build GREEN 240874 B; test GREEN actions.test.mjs against the real engine.js; validate SKIP until U-08; guards GREEN by name; flagged lane: its two reviewers run before its final READY)
 MERGED: tests-docs READY-SLICE 310780d (U-34 browser harness) -> trunk 2da0caa4, pushed 09:55 (build GREEN 240874 B; test GREEN harness.test.mjs; validate SKIP until U-08; guards GREEN by name; package.json merged clean, tests-docs keys)
+MERGED: learn READY-SLICE a499dae (U-12 exercise engine) -> merge 4618e43c, trunk 4618e43c, pushed 10:18 (build GREEN 298714 B; test GREEN learn.test.mjs; validate SKIP until U-08; guards GREEN by name; merged clean, 2 files)
 QUIET: no
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-07 10:14 IST
+UPDATED: 2026-11-07 10:20 IST
+
+# 2026-11-07 10:20 · learn U-12 merged (the sixth merge)
+
+- learn READY-SLICE a499dae (U-12 exercise engine: offline/src/ui-exercise.js, offline/tests/learn.test.mjs, the #/dev/fields gallery; check PASS, LOWs C1, C2 fixed in its next run wf_7e30a83f) merged clean as 4618e43c at 10:18; trunk pushed with build/learn (new on origin). Gates on the merged tree: build GREEN 298714 B, test GREEN learn.test.mjs, validate SKIP (U-08), guards GREEN by name (only the 15 baselined tour targets), territory 0 errors. BASE 4618e43c.
+- Memory 5.4 GB at 10:10 with four runs live; no grant changes; engine still paused (7.0 GB mark). Candidates before the FREEZE: core READY (U-04), actions-sos READY (U-10, U-11), tests-docs READY-SLICE (U-37, U-36a).
+- Commit e08db34e's message claims these records; its python step had failed on a path escape and only the board was regenerated. This commit carries the edits.
 
 # 2026-11-07 10:02 · HUB session 3 (408a3f20, started by the launcher 09:58) resumes
 

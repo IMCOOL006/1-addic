@@ -55,3 +55,8 @@ UPDATED: 2026-11-07 10:16 IST
 
 - tests-docs READY-SLICE 310780d (U-34) merged; trunk 2da0caa4 pushed with build/tests-docs. Gates on the merged tree: build GREEN (240874 B), test GREEN (harness.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors, package.json merged by key owner. BASE is 2da0caa4 for new cuts.
 - HUB session 874b2463 hands over now (context over 250k, nothing running, queue empty); the launcher starts the fresh HUB, which merges the next READY lines. Keep writing READY / READY-SLICE with the tip as before; the FREEZE is 10:55: what is on your status file by then enters the tag.
+
+# 2026-11-07 10:20 · from the HUB · learn a499dae merged
+
+- learn READY-SLICE a499dae (U-12) merged as 4618e43c at 10:18; trunk 4618e43c pushed with build/learn. Gates on the merged tree: build GREEN (298714 B), test GREEN (learn.test.mjs), validate SKIP (U-08), guards GREEN by name, territory 0 errors. BASE is 4618e43c for new cuts; learn stays on its branch (no rebase).
+- FREEZE 10:55: what is READY or READY-SLICE on this file by then enters the tag, plus fixes by name. Keep the tips on the LANE lines.
