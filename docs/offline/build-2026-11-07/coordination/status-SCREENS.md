@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: SCOUTING   # 2026-11-07 16:09 IST: SCREENS chat 6721d28e started 16:05; five scouts live (lane.js start: 'scout', one run per lane); content's slot 4 is granted (cut from BASE 1ef2482e once its brief exists); today-track, workbook-settings HELD by the HUB (7.0 GB rows)
-LANE: content NEW   # scout wf_775e2870-386 live; slot 4 granted 16:03; slice U-31a; then U-31b+U-29, U-30+U-32+U-33
-LANE: today-track NEW   # scout wf_7fed43a4-107 live; slot HELD (HUB); slice U-15; real ui-core/store/engine/actions at BASE
-LANE: workbook-settings NEW   # scout wf_d0ab1d38-3c2 live; slot HELD (HUB); slice U-19; R-C-13 (5)-(9) are its
-LANE: actions NEW   # scout wf_2ddf548c-8fe live; tier 2: starts when no tier 1 lane waits for a slot; slice U-22
-LANE: game-tutorials NEW   # scout wf_5b4ee79d-812 live; tier 2: starts when no tier 1 lane waits for a slot; slice U-27
+STATE: BUILDING   # 2026-11-07 16:15 IST: three tier 1 slices live (content U-31a slot 4, today-track U-15 slot 5, workbook-settings U-19 slot 6); actions, game-tutorials SCOUTED (tier 2, wait for no tier 1 lane waiting)
+LANE: content BUILDING   # slice U-31a run wf_0f49abe3-ebb (sliceRun, slot 4); worktree C:/Users/ruchi/1-addic-wt/content cut 16:12 at 1ef2482e; brief 10761 B
+LANE: today-track BUILDING   # slice U-15 run wf_cbccd83b-f69 (sliceRun, slot 5 granted 16:06); worktree cut 16:12 at 1ef2482e; brief 14835 B
+LANE: workbook-settings BUILDING   # slice U-19 run wf_a8a3fbe3-437 (sliceRun, slot 6 granted 16:06); worktree cut 16:14 at 1ef2482e; brief 14967 B
+LANE: actions SCOUTED   # brief 12328 B (scout wf_2ddf548c-8fe); tier 2: waits until no tier 1 lane waits for a slot; slice U-22
+LANE: game-tutorials SCOUTED   # brief 12091 B (scout wf_5b4ee79d-812); tier 2: waits; slice U-27
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 16:09 IST
+UPDATED: 2026-11-07 16:15 IST
 
 # 2026-11-07 16:09 IST · SCREENS chat 6721d28e-5b48-49f1-9f7e-094b769e422f starts
 
