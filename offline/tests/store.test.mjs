@@ -1855,6 +1855,35 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.deepEqual({ ...T.view.get('events', 'p1') }, row);
   });
 
+  test('RC18: a lock while a stale snapshot is taken in leaves none of its rows in memory', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await S.load();
+    await S.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged' }); });
+    await S.lock.set('2468');
+    ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1, stores: { events: [{ id: 'f1', type: 'CravingLogged', note: MARK }] } }));
+    // A copy of store.js that also hands out its state: no public read reaches the working set while locked.
+    const src = fs.readFileSync(STORE_PATH, 'utf8');
+    const code = src.replace('  return {\n    STORES, load,', '  return {\n    __state: state, STORES, load,');
+    assert.notEqual(code, src, 'the probe found its place');
+    const P = new Function(code + '\nreturn Store;')();
+    await P.load();
+    const get = ls.getItem;
+    let armed = true;
+    ls.getItem = function (k) {
+      if (armed && k === '1-addic:snapshot') { armed = false; setTimeout(() => P.lock.lockNow(), 0); }
+      return get.call(this, k);
+    };
+    assert.equal(await P.lock.unlock('2468'), true);
+    ls.getItem = get;
+    assert.equal(armed, false, 'the take-in read the snapshot');
+    assert.equal(P.status().locked, true, 'Lock now came while the snapshot was taken in');
+    for (const [n, m] of Object.entries(P.__state.rows)) assert.equal(m.size, 0, n + ': nothing in memory while locked');
+    assert.equal(await P.lock.unlock('2468'), true);
+    assert.equal(P.view.get('events', 'f1').note, MARK, 'the row was sealed in and opens at the next unlock');
+  });
+
   test('Q4: a backup that holds the same id replaces the row that will not open; resetAll leaves nothing to count', async () => {
     const one = await damaged();
     await one.S.replaceAll({ stores: { events: [{ id: 'b', type: 'CravingLogged', note: 'from the backup' }] } });

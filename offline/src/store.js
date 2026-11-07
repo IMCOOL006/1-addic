@@ -685,6 +685,7 @@ const Store = (function () {
   // IndexedDB (lock.set, unlock), the snapshot's rows this device lacks are sealed in and the snapshot goes; a row that
   // will not open with this key stays behind in it, sealed. Without a PIN the snapshot is left as it is.
   async function takeIn(key) {
+    const epoch = state.epoch;
     const ls = state.mode === 'indexeddb' && key ? storage() : null;
     const snap = ls && readSnapshot(ls);
     if (!snap) return;
@@ -703,7 +704,7 @@ const Store = (function () {
     }
     if (puts.length) {
       await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] });
-      for (const [n, id, v] of puts) state.rows[n].set(id, v);
+      if (epoch === state.epoch) for (const [n, id, v] of puts) state.rows[n].set(id, v); // locked meanwhile: not in memory (RC18)
     }
     if (Object.keys(left).length) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: left }));
     else ls.removeItem(SNAPSHOT);
