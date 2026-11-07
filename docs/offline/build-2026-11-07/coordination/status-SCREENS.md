@@ -1,12 +1,26 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 02:48 IST: SCREENS 1c2cf086, V3. today-track V-01a (the slice) is building on slot 6 as wf_6851b095-834 (lane.js sliceRun; args tracks/SCREENS/args/v3_tt_slice.json). The content and game-tutorials scouts are done (briefs/<lane>-v3.md); their slots are asked for the next 7.0 GB rows, after today-track's slice
-LANE: content SCOUTED 680f850   # V3 brief briefs/content-v3.md (7299 B): V-10 slice (features.status, reveal.m1, JIT tutorial, help entry), V-23 (T2), V-10b (waits for the owner's I6; default nothing cleared); slot asked. v1: MERGED 680f850
-LANE: today-track BUILDING f69bc68a   # V3 V-01a slice wf_6851b095-834 from 02:47 (slot 6; brief briefs/today-track-v3.md 13205 B, contract contracts/today-track-v3.md); then READY-SLICE <tip>, then V-01b. v1: MERGED 6b0184b
+STATE: BUILDING   # 2026-11-08 03:15 IST: SCREENS 1c2cf086, V3 with R-O-6 (PLAN-V3 section 7, R-H-40). today-track V-01a is built (50aae69, 758f8cb, 127509e; the builder's gates GREEN) and its check is running in wf_6851b095-834. Append scouts are running: content V-42 (wf_c5b05222-47a) and game-tutorials V-44 (wf_247f1e2a-70b). today-track's V-43 section comes before its third batch
+LANE: content SCOUTED 680f850   # V3 V-10 slice, V-42 (R-O-6, content-quests.js; append scout wf_c5b05222-47a), V-23 (T2), V-10b (owner's I6); brief briefs/content-v3.md; slot asked (on a 7.0 GB row after engine V-40's start). v1: MERGED 680f850
+LANE: today-track CHECKING 127509e   # V3 V-01a slice in wf_6851b095-834: built 50aae69 (ui-status.js, status.test.mjs, the parts line), 758f8cb (styles block), 127509e (no days without a start date); builder gates build, test 43/43 (status 12/12), validate, guards 5/5, browser 16/0/3 GREEN (03:03-03:06); the lane-checker next; then READY-SLICE. Then V-01b, V-43 (R-O-6). v1: MERGED 6b0184b
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials SCOUTED bd2e085   # V3 brief briefs/game-tutorials-v3.md (8990 B): V-08b slice (useSkill behind typeof; waits for actions-sos V-08a), V-28 (status dot and JIT; step text from content V-10), V-21 (T2); slot asked. v1: MERGED bd2e085
+LANE: game-tutorials SCOUTED bd2e085   # V3 V-08b slice (after actions-sos V-08a), V-28, V-44 (R-O-6, after engine V-40; append scout wf_247f1e2a-70b), V-21 (T2); brief briefs/game-tutorials-v3.md; slot asked. v1: MERGED bd2e085
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 02:48 IST
+UPDATED: 2026-11-08 03:15 IST
+
+# 2026-11-08 03:15 IST · R-O-6 read (R-H-40); V-01a built, its check running
+
+- R-H-40 (03:09, commit 819a72b) adds the quest-line, the daily objectives and the run as V3 tier 1 work (PLAN-V3.md section 7, binding contracts; V-Q9..V-Q13 default at 04:00 IST). The SCREENS units:
+  - content V-42: content-quests.js; the second batch, right after V-10.
+  - today-track V-43: the third batch, after V-01b and the V-40, V-41 and V-42 merges; built on the contracts before them.
+  - game-tutorials V-44: after engine V-40 merges.
+- Append scouts (03:11; lane.js start 'scout' over the existing -v3 briefs, old sections kept):
+  - content V-42: wf_c5b05222-47a.
+  - game-tutorials V-44: wf_247f1e2a-70b.
+  - Args: tracks/SCREENS/args/v3_scout2_<lane>.json.
+- V-01a: the builder's progress file shows three commits on build/today-track: 50aae69, 758f8cb and 127509e. Its gates (logs *-20261108-030318..030331): build, test 43/43 (status.test.mjs 12/12), validate, guards 5/5, browser 16/0/3, all GREEN. Territory: 0 errors. The lane-checker runs next in the same run.
+- Note for V-43: section 7 puts the run ('days shown up', with current, best and total) in Your Harbor's 'Where you stand'. Section 3 says the current run never appears on the page. Section 7 is the later, owner-driven contract, so V-43 follows it; V-01a and V-01b keep section 3 as it stands ('Nothing of V-01a changes').
+- Memory: 6.0 GB free at 03:10. The HUB's rows at 03:03 and 03:05 read 4.5 and 4.6 GB.
 
 # 2026-11-08 02:48 IST · V3 scouts done; today-track V-01a building (wf_6851b095-834)
 
