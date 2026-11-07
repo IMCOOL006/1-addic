@@ -3,7 +3,7 @@ STATE: BUILDING   # 2026-11-08 00:38 IST: HUB 8 (8474decd). CORE 9 (11310a7c) is
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 4006fae2 (the trunk after the today-track 6b0184b merge, 2026-11-07 23:31 IST; new lanes cut from here; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 1 (2026-11-08 00:18 IST: the row 00:15 15.8 GB free with nothing running; one start: the actions-sos lane check (builder-weight) by CORE 9; no other lane needs a slot (every other lane is merged and complete; R-S-17 closes C1 by re-check without a slot); the HUB runs its light pre-read of the same gates now and the full gates at QUIET)
-TRACKS-ALLOWED: CORE SCREENS   # SCREENS added 2026-11-07 16:03: the rows 16:00 13.4, 16:01 13.6, 16:02 13.9 GB free with one lane live clear the mark 4.0 + 1.5 + 3.0 x (live lanes + 1) = 11.5 GB on the lowest of the last three; the launcher starts the SCREENS chat (Prompt 2); its scouts run first, then slots per lane below
+TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
 SLOTS: core slot=1 free from 2026-11-07 18:27: FIX-V11 READY 8e80951 merged (a3081f33); the lane is complete; fixes by name only (LOWs N1, N2, Q-a for offline-v1.1)
 SLOTS: engine slot=2 free from 2026-11-07 22:19 IST: FIX-RS9E READY 84075b6 merged (3ea2e13d); the lane is complete; fixes by name only
 SLOTS: actions-sos slot=3 granted again 2026-11-07 14:20 (tier 1, flagged); U-09 merged; at 1131827 (16:18, pushed) RS19-RS23 FIXED on the safety re-check, test GREEN 119/119, but the re-check raised RS24 HIGH (more typed death wishes missed; ruled by class: any typed text shows the urgent line) and RS25-RS28: not READY; FIX-R4 by name is the fresh CORE's first run (args ready in jobs/036d08b8/tmp/args_as_r4.json); the HUB merges READY after the safety reviewer's re-check passes
@@ -46,10 +46,16 @@ MERGED: game-tutorials READY bd2e085 (U-26 game surfaces ui-game.js new, U-28 to
 MERGED: today-track READY 6b0184b (FIX-EMBED: Today embeds GameUI.panel, GuidanceUI.explorerRing, moreTools and dot behind typeof guards; ui-today.js, today-track.test.mjs) -> merge 4006fae2, trunk 4006fae2, pushed 23:31 (build GREEN 1015555 B; test GREEN 31/31; validate GREEN; guards GREEN by name; territory 0 errors over 7485e254..6b0184b; the branch fast-forwarded to 7485e254 by SCREENS 22:38, so the merge base is the trunk tip; merged clean, 2 files; the lane's browser gate on 6b0184b GREEN 13/0/6, the same names as the trunk; the lane is complete)
 QUIET: done 10:57 (green by name); TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST | BASE-READY 07:15 | scouts 07:15-08:15 | lanes from about 08:00 tier 1 first | first slices about 09:45 | FREEZE 10:55 | QUIET 10:55-11:40 | TAG offline-v1.0 11:55 | hand-off 12:10 | HANDOVER by 12:25
-UPDATED: 2026-11-08 00:38 IST
+UPDATED: 2026-11-08 01:17 IST
 
 
 
+
+# 2026-11-08 01:17 IST · SCREENS track paused until the actions-sos merge; FIX-R8 still running
+
+- The owner's window (afc0ccd2, by message 01:16): SCREENS d06645fa died about 01:13 after an hour idle (no process, no error text), as 4d443a20 did after 23:33; the launcher relaunched 1c2cf086 at 01:15 on NO CHAT. Observation for the board: idle background chats of this program die after about an hour; the 00:06 deaths were different (busy chats, with the pharma chats). Each relaunch costs about 1.5 GB and a fresh read.
+- 01:17 `--pause-track SCREENS` (PAUSED TRACK SCREENS in the launcher log): no SCREENS launches until the HUB resumes the track at the actions-sos merge (C1 re-check by SCREENS, R-S-17; later tests-docs' hooks round is CORE's). The live 1c2cf086 is left alone.
+- The launcher's 01:14 check counts CORE "live 1" (11310a7c only): the dead entry 60f08c84 is no longer listed, so the NO CHAT path works for CORE again. FIX-R8 wf_9d9b1d01-ce1 runs since 00:37 (40 min); rows 00:49 6.1, 01:10 12.6 GB.
 # 2026-11-08 00:38 IST · the actions-sos check returned FIX (test defects on the merge preview); FIX-R8 test-only runs
 
 - CORE 9 relaunched the check at 00:21 (wf_2b08aee9-a80); 00:37 FIX: on the trunk merge preview 8 of the lane's 536 tests are red (C-R7-1..3 MEDIUM, test defects confirmed by a skeptic): six lock/PIN tests wait 10 ms for the real Store's PBKDF2 (the lane's stand-in store was instant), RS9 and the RS24 case assume the lane's older content. No other lane's test fails. The product code is not in question; the round is test-only, by name. The HUB's own pre-read on the worktree alone (00:18): test GREEN 169/169; build, validate SKIP and guards RED on the 21 tour-target names, as expected off the trunk.
