@@ -1,8 +1,9 @@
 ## today-track (SCREENS, 1-addic offline build): lane report
 
-State: READY at tip 3f3001e (2026-11-07 16:31 IST). Earlier: READY-SLICE at 13eba28 (16:13 IST). Branch build/today-track. Base 1ef2482e. Worktree C:/Users/ruchi/1-addic-wt/today-track. Units U-15 to U-18 all built; none held.
+State: READY at tip 6b0184b (2026-11-07 23:17 IST). Earlier: READY at 3f3001e (16:31 IST); READY-SLICE at 13eba28 (16:13 IST). Branch build/today-track. Base 1ef2482e. Worktree C:/Users/ruchi/1-addic-wt/today-track. Units U-15 to U-18 and FIX-EMBED all built; none held.
 
 Commits (1ef2482e..HEAD, newest first):
+- 6b0184b feat(offline, U-15, FIX-EMBED): Today embeds GameUI.panel, GuidanceUI.explorerRing, moreTools and dot (continued run, base 7485e254, 22:48)
 - 3f3001e style(today-track, U-18): Harbor scene rules and transform-only motion in the today-track section
 - c467fae feat(today-track, U-18): Harbor scene in ui-harbor.js with its Node tests
 - bd06841 style(today-track, U-17): Insights chart rules in the today-track section of styles.css
@@ -17,6 +18,7 @@ Commits (1ef2482e..HEAD, newest first):
 ### Turn caps
 - 16:13 run: builder batch [U-15]: steps_used 19. capHits 0.
 - 16:31 run: builder [U-16] steps_used 38 (also C1, C2); builder [U-17, U-18] steps_used 27. capHits 0.
+- 2026-11-07 run (continued from 7485e254, slot 5): builder [FIX-EMBED] run wf_8859379a-bb6, committed 6b0184b 22:48. capHits 0. The SCREENS chat stopped that run at 22:52 (memory pause) during the checker's gates; the check was redone at 23:17.
 
 ### Units
 Per-unit record: C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track__units.md.
@@ -47,6 +49,10 @@ Per-unit record: C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track
   - Today's Harbor card shows a layered SVG: sea, breakwater, Lighthouse, Garden, Pier, Compass Rose, Weather Station, each lit by its level 0-5 from E.gameState regions. Caption: "Each place grows brighter as you use its skills. The light never goes out." Screen readers hear each place and its level.
   - Motion is transform only, still under the reduced-motion setting, the system setting, data-motion=reduce or an SOS route. No keyframe touches opacity, so the light never dims.
   - Calm and discreet modes: no scene.
+- FIX-EMBED Today embeds game-tutorials' pieces (tier 2), 2026-11-07: built. SHA 6b0184b (ui-today.js +40/-7, today-track.test.mjs +86).
+  - On Today a person sees "Your progress" (GameUI.panel) after Momentum; the Explorer ring (GuidanceUI.explorerRing) in place of Today's own Explorer card; "More tools" (GuidanceUI.moreTools) after the tip; a "New" dot (GuidanceUI.dot) only by the Planner link of the plan card and the Quests link.
+  - Calm: no panel, no ring. Discreet: no panel. Maintenance: the five basics only. Without GuidanceUI/GameUI Today renders as before. GuidanceUI.tipCard is never rendered (one tip card only). A null ring shows nothing. Each piece is behind typeof, in safe(), given the ctx as received.
+  - Questions closed: dot placement (Planner and Quests links only; Want card and Battle Plan links get none); 'more' shows in Calm and discreet.
 - Held or blocked: none.
 
 ### Contract changes
@@ -56,6 +62,7 @@ Per-unit record: C:/Users/ruchi/1-addic-wt/_logs/reports/today-track/today-track
 - Global HarborUI: scene(ctx) -> Node|null (a div.hb-wrap holding the svg and caption); pure TEXT, PLACES, lightLevels(view, now, E?) -> {lighthouse, cove, garden, pier, compass, weather: 0-5}, lightOpacity, ariaLabel, hidden, still. Consumers: Today (typeof guard), game-tutorials may embed.
 - data-tour names added: quicklog-button, quicklog-intensity, quicklog-save, insights-triggers, insights-heatmap (written as literal pairs; a variable does not count for guards).
 - data-test hooks (consumer: tests-docs hooks.mjs): Today: today-page, today-log-craving, today-sos, today-checkin, today-checkin-go, today-plan, today-battle, today-want, today-learn, today-quests, today-reasons, today-counters, today-momentum, today-explorer, today-tip, today-tip-go, today-tip-dismiss, today-backup, today-backup-dismiss, today-milestone, today-milestone-thanks, today-maintenance, today-harbor. Track: track-page, track-add, track-sos, track-back, track-counters, track-timeline, timeline-row (data-type), timeline-more, timeline-log-first, track-insights-link, track-choose, log-kind-<type>, log-<type>, log-<field> (intensity, triggerIds, emotion, thought, redFlag, tried, helped, notes, mood, anxiety, peakCraving, pleasantCount, used, sleep, meeting, intention, kind, minutes, name, enjoyment, date, substance, situation), log-checkin-morning, log-checkin-evening, log-error, log-save, slip-lead, slip-steps, slip-done, slip-next, slip-back. Insights: insights-page, insights-empty, insights-log, insights-back, insights-card (data-card), insights-caveat, insights-trend, insights-bars, insights-heat, insights-heat-table, insights-skills, insights-unavailable. Harbor: harbor-scene; classes hb-still, hb-moving.
+- FIX-EMBED: TodayUI.cardsFor now lists 'game' (after 'momentum') and 'more' (after 'tip'); maintenance list unchanged. No new route, event, data-test or data-tour name.
 - No events, content keys or Actions verbs added. Verbs used: A.settings.patch, A.recordEvent, A.markTipShown, A.logCraving, A.logFeeling, A.checkin, A.logActivity, A.logSlip.
 - Routes linked: #/track/log/*, #/track/insights, #/sos, #/sos/slip?preview=1 and ?logged=1 (actions-sos), #/actions/planner, #/actions/battle, #/actions/quests, #/workbook/reasons, #/settings/data, #/learn.
 
@@ -76,6 +83,14 @@ ASSUMED (not run):
 - Builder logs: ...\build-20261107-163908.log, build-20261107-164159.log, test-20261107-164201.log, validate-20261107-164215.log, guards-20261107-164215.log (same folder).
 - offline/1-addic.html is build output, left uncommitted.
 
+VERIFIED at tip 6b0184b (check, 2026-11-07 23:17 IST, commits after 7485e254):
+- build GREEN: C:\Users\ruchi\1-addic-wt\_logs\gates\today-track\build-20261107-231952.log
+- test GREEN, 31 pass 0 fail 0 skip (five FIX-EMBED tests, ok 27-31): ...\test-20261107-232003.log
+- validate GREEN: ...\validate-20261107-232007.log
+- guards GREEN 5/5: ...\guards-20261107-232008.log
+- Territory 7485e254..HEAD: 2 files, 2 own (ui-today.js, today-track.test.mjs), 0 shared; 0 errors, 0 warnings; shell.html, ui-core.js, engine.js, store.js, actions.js, styles.css untouched.
+ASSUMED (not run, 23:17): browser gate. Builder reports GREEN 13/0/6 before and after (browser-20261107-224054.log, browser-20261107-224528.log, same folder); the check did not confirm (memory short). The 6 skips: #/onboarding x2, #/sos x3 (actions-sos not merged), hook quicklog-button (on #/track only, flow starts on Today; R-S-16 to CORE).
+
 ### Review gates
 None (not flagged).
 
@@ -86,8 +101,11 @@ None (not flagged).
 2026-11-07 16:31 IST: PASS at 3f3001e, judged commits after 13eba28 (U-16, U-17, U-18). Findings: none. Each unit's named tests exist and pass; a slip changes no total (:418-447); tour-name test (:531-532); fallback test without UI.svg; scene returns null in Calm and discreet.
 Not checked: browser gate, reading level by tool, clinical review of slip copy, actions-sos slip routes.
 
+2026-11-07 23:17 IST: PASS at 6b0184b, judged commits after 7485e254 (FIX-EMBED). Findings: none. Meets R-S-14 (ui-today.js and its test only). U-15 to U-18 present in base, confirmed by passing named tests and lifted guard names, not re-read.
+Not checked: browser gate; U-15 to U-18 line by line; GuidanceUI.dot with the real module on a profile with newDots planner/quests (stand-in only).
+
 ### Review
-Not a flagged lane: no reviewers run. Review findings: none.
+Not a flagged lane: no reviewers run. Review findings: none (2026-11-07 23:17 run: none).
 
 ### Safety and content marks
 No clinicalReview: true passages and no verify: true resources added (no Content added). Reviewer candidates, UI strings: ui-today.js TEXT milestoneBody and backupBody; ui-track.js TEXT slipLead ("A slip can happen. Noting it helps you and your plan learn what to change. Nothing you have built is taken away."), slipDone, slipDoneBody, and the redFlag label. SOS is never gated; no overdue wording, no streak words; risky times and types shown in words, not colour alone; slip is logged with no total changed; Harbor light never dims and motion is off under reduced motion and on SOS routes; insights make no cause claims and show the small-sample caveat; all data stays on the device.
@@ -97,6 +115,8 @@ No clinicalReview: true passages and no verify: true resources added (no Content
 - actions (offline/src/actions.js:165): SETTINGS_DEFAULTS counters: true; confirm intended.
 - actions-sos: #/sos/slip?preview=1 and ?logged=1 must render (linked from the slip log).
 - game-tutorials: coach marks may target the five new data-tour names.
+- game-tutorials: Today now embeds GameUI.panel, GuidanceUI.explorerRing, moreTools and dot; keep those names and signatures. Real-module dot test is open.
+- core (R-S-16): add the quicklog-button hook where the flow starts on Today, not only on #/track.
 - engine: none; rowsOf/rowOf drop sample rows, which this lane follows for Insights counts.
 
 ### Docs owed
@@ -113,6 +133,7 @@ No clinicalReview: true passages and no verify: true resources added (no Content
 8. Check-in with no kind: morning before 15:00, else evening.
 9. Track line counts own logs only (code over brief); U-16 test now expects 2.
 10. Tour targets sit on the insights cards, not the SVGs.
+12. FIX-EMBED: dot only by Planner (plan card) and Quests links; ring in a plain section.card; 'more' shows in Calm and discreet.
 11. Prediction wording is neutral. scene(ctx) returns a div.hb-wrap, not the bare svg; without UI.svg no scene.
 
 ### For the HUB at the merge
@@ -121,4 +142,5 @@ No clinicalReview: true passages and no verify: true resources added (no Content
 - Conflicts to expect: styles.css append point only.
 - Guards stays RED on the 10 other-lane tour names in baselines.md; this lane lifts five.
 - Uncommitted offline/1-addic.html is regenerated build output; never commit it.
+- FIX-EMBED touches ui-today.js only; no new conflict point.
 - Browser tests for these pages wait on tests-docs adding the hooks.

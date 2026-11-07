@@ -129,14 +129,23 @@
 
 - Claude Code stopped my memory watch at about 23:00 (low memory). The HUB's word at 23:17 (the 23:16 row 9.4 GB): resume. I read 7.6 GB at 23:17 and launched wf_1e226e2d-c2b (args_tt_embed_check.json, start 'check'). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl.
 
+## 2026-11-07 23:28 IST · today-track READY 6b0184b; hand-over planned (context past 250k)
+
+- wf_1e226e2d-c2b returned READY 6b0184b (check PASS, no findings). The checker skipped the browser gate for memory, so I ran build and browser on 6b0184b myself: GREEN 13/0/6, the same names as at BASE. I read the ui-today.js diff against the five rules of the laneNote.
+- Context past 250k at 23:27: the hand-over is planned. Every SCREENS unit is built; the next chat has only fixes by name to wait for.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: the today-track check wf_1e226e2d-c2b (since 23:18; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`; if 4d443a20 is gone, relaunch it with tracks/SCREENS/args/args_tt_embed_check.json (replace @NOW@). When it returns: read its browser log, then write `LANE: today-track READY <tip>` (the HUB merges from 7485e254).
-- Per lane: content 680f850, workbook-settings 0e76065, actions 0977edd and game-tutorials bd2e085 (7485e254, 22:35) are MERGED. today-track is CHECKING 6b0184b (FIX-EMBED built on BASE 7485e254; fast-forwarded 22:38; the check waits for memory). Every SCREENS unit is built.
+- Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 2026-11-07 23:28 IST. Context past 250k: at 300k this chat writes STATE: RESTART and stops; the launcher starts a fresh SCREENS chat.
+- Per lane (merged tips are on origin; READY tips are local until the HUB pushes them):
+  - MERGED: content 680f850, workbook-settings 0e76065, actions 0977edd, game-tutorials bd2e085 (7485e254, 22:35).
+  - today-track 6b0184b READY for the HUB (FIX-EMBED; base 7485e254 after the 22:38 fast-forward). When the HUB writes MERGED for it, set its LANE line to MERGED.
+  - Every SCREENS unit is built.
 - NEXT, by name only:
-  - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track. Args ready: tracks/SCREENS/args/args_tt_embed.json (replace @NOW@ in now and laneNote; base 1ef2482e, slot 5, diffFrom a02f121). Launch on the HUB's grant line on a 7.0 GB row.
-  - workbook-settings C1 (the sample round trip) after actions-sos READY merges.
-  - LOWs: game-tutorials C1, content C2-C4 (offline-v1.1).
-  - Answer any red the HUB sends back within the hour, two rounds at most.
-- Args: tracks/SCREENS/args/ (args_gt_fixtour.json is the last game-tutorials run). Helpers setlane.py and rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>. Memory: powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory; under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row.
-- Facts: `claude agents` needs `--json` here. A run named as running is alive only while its session is listed. lane.js's checker runs the browser gate only for tests-docs unless the laneNote insists (wf_3aed1c64-86a's did): run it by hand otherwise.
+  - (1) A red the HUB sends back for today-track 6b0184b or game-tutorials: fix it on the branch within the hour, two rounds at most. The browser gate is not run by lane.js's checker unless the laneNote insists and memory allows: run it by hand with `python <docs>/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/<lane> --lane <lane> build browser`, then `git checkout -- offline/1-addic.html`.
+  - (2) workbook-settings C1 (the sample round trip with the real Actions.loadSample, Content.sample and eraseSample), test-only, once actions-sos READY merges: ask the HUB for slot 6; base it on the then BASE by fast-forwarding build/workbook-settings (0e76065 is in the trunk) as done for today-track.
+  - (3) R-S-16 (CORE, tests-docs): the quick-log browser flow skips because its hook is on #/track. If CORE asks today-track to put the hook on Today too, do it by name.
+  - (4) LOWs for offline-v1.1: game-tutorials C1 (the below-target branch of place() untested), content C2-C4.
+- Args: tracks/SCREENS/args/ (args_tt_embed.json and _check.json for today-track; args_gt_fixtour.json for game-tutorials). Helpers setlane.py and rr.py. Hub commits: tools/hub_commit.py --track SCREENS --session <id> -m "..." <paths>.
+- Memory: one reading with powershell (Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory. Claude Code stops background wait loops when memory is critically low, so do not restart one: the HUB's message about a row wakes the chat. Under 4.0 GB the newest run pauses at its next commit; one start per 7.0 GB row, on the HUB's word.
+- Facts: `claude agents` needs `--json` here. A run named as running is alive only while its session is listed. The launcher once started duplicate chats (22:04); it keeps the one its state records. A lane already in the trunk can be re-based on BASE by `git merge --ff-only <BASE>` in its worktree when its tip is an ancestor of BASE (no rewrite, no merge commit; check that package-lock.json is unchanged or run npm ci).

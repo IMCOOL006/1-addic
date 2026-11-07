@@ -1,12 +1,26 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 23:18 IST: today-track check of FIX-EMBED 6b0184b live as wf_1e226e2d-c2b (the HUB's word 23:17, the 23:16 row 9.4 GB; mine 7.6 GB at 23:17). READY with the tip when it returns. No other SCREENS run
+STATE: BUILDING   # 2026-11-07 23:28 IST: today-track READY 6b0184b for the HUB (FIX-EMBED; check PASS; browser GREEN 13/0/6 run and read by me). No SCREENS run live. Every SCREENS unit is built; left by name: workbook-settings C1 (after actions-sos), R-S-16 (CORE's answer), LOWs for offline-v1.1. Hand-over planned (context past 250k)
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track CHECKING 6b0184b   # check wf_1e226e2d-c2b live since 23:18 (start 'check', base and diffFrom 7485e254; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_1e226e2d-c2b/journal.jsonl); FIX-EMBED built 6b0184b 22:48 (builder's gates GREEN, browser 13/0/6 read by me)
+LANE: today-track READY 6b0184b   # FIX-EMBED 6b0184b on BASE 7485e254 (fast-forwarded 22:38; base and diffFrom 7485e254; ui-today.js and its test only); check PASS wf_1e226e2d-c2b (test 31/31, validate, guards 5/5 GREEN; territory 2 own, 0 errors); browser GREEN 13/0/6 by me on 6b0184b
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 23:18 IST
+UPDATED: 2026-11-07 23:28 IST
+
+# 2026-11-07 23:28 IST · today-track READY 6b0184b (FIX-EMBED by name, R-S-14)
+
+- For the HUB: merge build/today-track at 6b0184b. Its real base is 7485e254: at 22:38 I fast-forwarded the branch from a02f121, already in the trunk, to BASE 7485e254, with no merge commit. One commit: 6b0184b, feat(offline, U-15, FIX-EMBED) (ui-today.js +40/-7, today-track.test.mjs +86).
+- What Today now does, each piece behind typeof and in safe():
+  - GameUI.panel in a 'game' slot after momentum (gone in Calm and discreet).
+  - GuidanceUI.explorerRing in place of Today's own Explorer card (its null shows nothing).
+  - GuidanceUI.moreTools in a 'more' slot after the tip.
+  - GuidanceUI.dot beside the Planner and Quests links only.
+  - Today's own tip card stays; GuidanceUI.tipCard is never rendered, so no double tip.
+  - Maintenance mode keeps its five cards.
+- Gates: the check (wf_1e226e2d-c2b, PASS, no findings): build GREEN 1015555 B, test GREEN 31/31 (the five FIX-EMBED names ok 27-31), validate GREEN, guards GREEN 5/5. Territory 7485e254..HEAD 2 own, 0 shared, 0 errors.
+- Browser, run by me on 6b0184b (the checker skipped it for memory, and the builder's after-edit run predates its commit): GREEN exit 0, pass 13, fail 0, skip 6 (C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/browser-20261107-232314.log). The skips are #/onboarding x2 and #/sos x3 (actions-sos is not merged), plus quicklog-button (R-S-16). They are the same names as at 7485e254 before the edit (browser-20261107-224054.log).
+- Report: tracks/SCREENS/lane-reports/today-track.md (17971 B). Verified by me: the ui-today.js diff against the five rules, both browser logs, the trailers on 6b0184b, the clean worktree. Assumed: the node, validate and guards counts as the checker ran them.
 
 # 2026-11-07 22:33 IST · game-tutorials READY bd2e085 (U-26, U-28, FIX-TOUR; the lane is complete)
 
