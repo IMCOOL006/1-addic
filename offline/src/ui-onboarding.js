@@ -40,6 +40,7 @@
     sample: 'Look around with sample data',
     sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
     sampleFailed: 'The sample data could not load.',
+    notSet: 'Not set',
   };
 
   // The eight steps of PLAN 5.1. Only the safety notice cannot be skipped.
@@ -328,11 +329,16 @@
       }
       if (id === 'where') {
         const stages = (C.stages || []).map((s) => choice('radio', 'stage', s.id, s.name + ': ' + s.gist));
-        const slider = h('input', { type: 'range', min: '0', max: '10', step: '1', value: '5', 'aria-valuetext': '5 of 10' });
-        slider.addEventListener('input', () => slider.setAttribute('aria-valuetext', slider.value + ' of 10'));
+        // No value until the person moves it: an untouched slider saves nothing.
+        const slider = h('input', { type: 'range', min: '0', max: '10', step: '1', value: '5', 'aria-valuetext': COPY.notSet, dataset: tid('onb-score') });
+        const shown = h('p', { class: 'muted', 'aria-hidden': 'true', text: COPY.notSet });
+        let moved = false;
+        const touch = () => { moved = true; slider.setAttribute('aria-valuetext', slider.value + ' of 10'); shown.textContent = slider.value + ' of 10'; };
+        slider.addEventListener('input', touch);
+        slider.addEventListener('change', touch);
         return {
-          body: [group('Which is closest?', stages), field('How much do you want to change? 0 to 10', slider)],
-          read() { const s = stages.find((x) => x.input.checked); answers.stage = s ? s.input.value : undefined; answers.score = s ? Number(slider.value) : undefined; },
+          body: [group('Which is closest?', stages), field('How much do you want to change? 0 to 10', slider), shown],
+          read() { const s = stages.find((x) => x.input.checked); answers.stage = s ? s.input.value : undefined; answers.score = s && moved ? Number(slider.value) : undefined; },
         };
       }
       if (id === 'safety') {

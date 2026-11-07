@@ -1533,5 +1533,29 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.match(W.drillDone.line, /Nothing goes in your log\./);
     assert.doesNotMatch(W.drillBanner + ' ' + W.drillDone.line, /nothing is saved|nothing was saved/i, 'the drill keeps its own mark, so never nothing is saved');
   });
+  test('SLIDER: the motivation slider has no value until moved; untouched, no motivation is saved', async () => {
+    const run = async (move) => {
+      await S().resetAll();
+      const d = sosDom({ onboarding: true });
+      const root = d.onb({});
+      for (let k = 0; k < 3; k += 1) d.tapId(root, 'onb-next');
+      const stage = root.querySelectorAll('input').find((i) => i.attrs.type === 'radio' && i.attrs.name === 'stage');
+      stage.checked = true;
+      const sl = root.querySelectorAll('input').find((i) => i.attrs.type === 'range');
+      assert.equal(sl.dataset.testid, 'onb-score');
+      assert.equal(sl.attrs['aria-valuetext'], 'Not set');
+      if (move) { sl.value = '8'; for (const fn of sl.on.input) fn({}); }
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-safety-ok');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-next');
+      d.tapId(root, 'onb-finish');
+      await d.settle();
+      assert.ok(S().view.get('profile', 'me').stage, 'the stage is saved either way');
+      return list('motivation').map((x) => x.score);
+    };
+    assert.deepEqual(await run(false), [], 'never moved: nothing saved');
+    assert.deepEqual(await run(true), [8], 'moved: saved');
+  });
   // -- FIX-ONB-EMO tests end --
 });
