@@ -994,6 +994,33 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(group.getAttribute('aria-invalid'), null, 'no longer marked');
   });
 
+  test('RC12: UI.form: a required custom field is marked on its node and its first control takes the focus', () => {
+    setup();
+    findIn(globalThis.document);
+    const node = (tag, text) => { const e = globalThis.document.createElement(tag); if (text) e.textContent = text; return e; };
+    let picked = null;
+    let box = null;
+    let morning = null;
+    const f = UI.form({ fields: [
+      { name: 'when', type: 'custom', label: 'When', required: true, render: () => {
+        box = node('div');
+        const row = node('div');
+        morning = node('button', 'Morning');
+        row.appendChild(morning);
+        row.appendChild(node('button', 'Evening'));
+        box.appendChild(node('p', 'Pick a time.'));
+        box.appendChild(row);
+        return { el: box, get: () => picked, set: (v) => { picked = v; } };
+      } },
+    ] });
+    assert.equal(f.validate(), false);
+    assert.equal(box.getAttribute('aria-invalid'), 'true', 'the custom node is marked invalid');
+    assert.equal(document.activeElement, morning, 'its first control takes the focus');
+    f.set('when', 'morning');
+    assert.equal(f.validate(), true);
+    assert.equal(box.getAttribute('aria-invalid'), null, 'no longer marked');
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
