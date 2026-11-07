@@ -21,6 +21,8 @@ import re
 import subprocess
 import sys
 import tempfile
+import zipfile
+from datetime import datetime
 
 STRICT_IMAGES = False
 
@@ -112,6 +114,18 @@ def size_status_tables(doc):
     return sized
 
 
+def make_reproducible(path):
+    """Fixed dates in the .docx and its zip entries, so a rebuild of an unchanged guide is byte-identical
+    (the docs gate rebuilds it; a committed .docx then stays clean)."""
+    with zipfile.ZipFile(path) as z:
+        items = [(i.filename, z.read(i.filename)) for i in z.infolist()]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, data in items:
+            info = zipfile.ZipInfo(name, date_time=(2026, 11, 7, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(info, data)
+
+
 def main():
     if not os.path.exists(SRC):
         sys.exit("build_guide: the guide source is missing: " + SRC)
@@ -134,7 +148,12 @@ def main():
     n = restart_numbering_per_section(doc)
     b = page_breaks_onto_headings(doc)
     s = size_status_tables(doc)
+    stamp = datetime(2026, 11, 7)
+    doc.core_properties.created = stamp
+    doc.core_properties.modified = stamp
+    doc.core_properties.last_printed = stamp
     doc.save(OUT)
+    make_reproducible(OUT)
     print("numbering restarted in %d sections; %d page breaks moved onto headings; %d status tables sized; "
           "%d image(s) missing%s -> %s" % (n, b, s, len(missing), " (skeleton mode)" if missing else "", OUT))
     return 0
