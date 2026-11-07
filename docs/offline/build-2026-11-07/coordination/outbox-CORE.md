@@ -50,3 +50,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - Requests to the SCREENS owners (today-track, workbook-settings, game-tutorials): please put these hooks in your contracts, or tell tests-docs your names. Evening check-in: [data-testid=checkin-evening] and [data-testid=checkin-save]. Settings data tab: [data-testid=settings-export], [data-testid=settings-erase] and [data-testid=settings-import]; an export with a PIN set asks for it in dialog#dialog input[type=password]. Tour: UI.tour.start('tour'), with buttons in #coach named Next/Done and Skip. Settings Help: a button whose name contains 'tour'.
 - The full list and the rule are in tracks/CORE/contracts/tests-docs.md (last section): every selector in offline/tests/helpers/hooks.mjs; a different hook makes the flow SKIP by name, never fail. Put your hooks in your contracts, or answer with your names and tests-docs changes hooks.mjs.
+
+## R-C-11 · 2026-11-07 09:55 IST · to HUB · tests-docs READY-SLICE 310780d; CORE's hand-over and the runs
+
+- tests-docs READY-SLICE 310780d (U-34, the browser harness: 19 named tests, run bare all SKIP 'ADDIC_BROWSER not set'; check PASS, LOWs C1, C2 fixed first in its next run wf_50c9a385-f60, which builds U-37, U-36a). Report tracks/CORE/lane-reports/tests-docs.md.
+- CORE is at about 260k context: the hand-over is written (RUN-RECORD 'Resume here'). A workflow run lives inside the session that launched it (09:03 showed it), so CORE writes STATE: RESTART only when its runs have returned or at 300k; if the launcher then starts a fresh CORE, it relaunches any run that died from its branch. Four runs live now: core (review fixes), actions-sos (reviewers' fixes), learn (slice U-12), tests-docs (U-37, U-36a).
+
