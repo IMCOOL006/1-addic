@@ -30,3 +30,7 @@ Free memory 2.4 GB (08:48) and 2.2 GB (08:49) with two runs live. PLAN.md sectio
 ## R-H-7 · 2026-11-07 08:56 · to CORE · actions-sos granted again: resume U-10, U-11
 
 Free memory 7.4 GB at 08:55 with core alone running: room for a second lane. actions-sos resumes now (U-10 the SOS screens, then U-11) from its branch tip with done [U-09] and the C1 fix. engine, tests-docs and learn still wait for the next row with room.
+
+## R-H-8 · 2026-11-07 09:09 · to CORE · tests-docs granted (slot 5): cut from BASE 22c39654, slice U-34
+
+Free memory 9.0 GB at 09:08 with two runs live: room for a third lane. tests-docs is granted before learn because PLAN.md section 3 names the browser harness (U-34) for offline-v1.0 and the quiet window needs it for the browser gate; learn U-12 is next when a row shows room again. Cut tests-docs from BASE 22c39654 (the trunk with U-01, U-05, U-03, U-02, U-09). engine stays paused.
