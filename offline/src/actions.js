@@ -184,6 +184,7 @@ const Actions = (() => {
     if (has('substances') && !(Array.isArray(p.substances) && p.substances.length <= 20 && p.substances.every((s) => isName(s, 120)))) bad('substances');
     if (has('term') && !(typeof p.term === 'string' && known(C.terms, p.term))) bad('term');
     if (has('startDate') && !(p.startDate === null || p.startDate === '' || isDate(p.startDate))) bad('startDate');
+    if (has('startDate') && isDate(p.startDate) && p.startDate > localDate(stamp())) fail('FUTURE_DATE', 'A start date cannot be after today.');
     if (has('notSure') && !isBool(p.notSure)) bad('notSure');
     if (has('stage') && !(p.stage === null || (typeof p.stage === 'string' && known(C.stages, p.stage)))) bad('stage');
     if (has('region') && !['in', 'intl'].includes(p.region)) bad('region');

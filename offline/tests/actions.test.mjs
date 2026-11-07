@@ -1557,5 +1557,22 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
     assert.deepEqual(await run(false), [], 'never moved: nothing saved');
     assert.deepEqual(await run(true), [8], 'moved: saved');
   });
+  test('FUTURE: a start date after today is refused with FUTURE_DATE and writes nothing; the date input has a max', async () => {
+    const today = E().todayStr(new Date());
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    await refused(Actions.onboard({ startDate: E().todayStr(t) }), 'FUTURE_DATE');
+    assert.ok(!S().view.get('profile', 'me'), 'nothing written');
+    await Actions.onboard({ startDate: today });
+    assert.equal(S().view.get('profile', 'me').startDate, today, 'today is fine');
+    const O = require(src('ui-onboarding.js'));
+    assert.notEqual(O.buildPatch({ startDate: '2999-01-01' }, C()).profile.startDate, '2999-01-01', 'dropped before the verb');
+    assert.equal(O.buildPatch({ startDate: today }, C()).profile.startDate, today);
+    const d = sosDom({ onboarding: true });
+    const root = d.onb({});
+    d.tapId(root, 'onb-next');
+    d.tapId(root, 'onb-next');
+    const date = root.querySelectorAll('input').find((i) => i.attrs.type === 'date');
+    assert.match(String(date.attrs.max), /^\d{4}-\d{2}-\d{2}$/, 'the input has a max');
+  });
   // -- FIX-ONB-EMO tests end --
 });

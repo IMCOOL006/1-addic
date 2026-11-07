@@ -61,6 +61,7 @@
   const getStore = () => safe(() => (typeof Store !== 'undefined' ? Store : null), null);
   const str = (v, max) => (typeof v === 'string' && v.trim() && v.trim().length <= max ? v.trim() : null);
   const isDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v + 'T00:00:00'));
+  const todayLocal = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   const isTime = (v) => typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
   const known = (list, id) => Array.isArray(list) && list.some((x) => x && x.id === id);
 
@@ -92,7 +93,7 @@
     if (other && !subs.includes(other)) subs.push(other);
     if (subs.length) profile.substances = subs.slice(0, 20);
     if (typeof a.term === 'string' && known(content.terms, a.term)) profile.term = a.term;
-    if (a.notSure === true) { profile.notSure = true; profile.startDate = null; } else if (isDate(a.startDate)) profile.startDate = a.startDate;
+    if (a.notSure === true) { profile.notSure = true; profile.startDate = null; } else if (isDate(a.startDate) && a.startDate <= todayLocal()) profile.startDate = a.startDate; // a future date is dropped (FUTURE_DATE)
     if (typeof a.stage === 'string' && known(content.stages, a.stage)) profile.stage = a.stage;
     if (a.medical && typeof a.medical === 'object') {
       profile.medical = { heavyDaily: a.medical.heavyDaily === true, sedatives: a.medical.sedatives === true, opioids: a.medical.opioids === true };
@@ -314,7 +315,7 @@
         const subs = (C.substances || []).map((s) => choice('checkbox', 'substance', s, s));
         const other = h('input', { type: 'text', maxlength: '120', autocomplete: 'off' });
         const terms = (C.terms || []).map((t, i) => choice('radio', 'term', t.id, t.word, i === 0));
-        const date = h('input', { type: 'date' });
+        const date = h('input', { type: 'date', max: todayLocal() });
         const unsure = choice('checkbox', 'notSure', '1', 'I am not sure yet');
         return {
           body: [group('What do you want to change?', subs), field('Anything else (optional)', other), group('Which word fits you?', terms),
