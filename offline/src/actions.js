@@ -716,6 +716,9 @@ const Actions = (() => {
       });
     },
   };
+  /* RC15: a row a sample load wrote under a Content id (quests, tutorials, reveals) is not the person's: their own act
+     starts a fresh, unmarked row in its place, so it is counted and eraseSample never takes it. */
+  const ownRow = (tx, name, id) => { const r = tx.get(name, id); return r && r.sample === true ? null : r; };
   const quests = {
     /* a tick is never taken back; completedAt is set once every step is ticked */
     async tick(questId, stepId) {
@@ -727,7 +730,7 @@ const Actions = (() => {
       if (!steps.includes(stepId)) fail(code, 'Unknown step.');
       const at = stamp();
       return write(`quest ${questId}`, at, (tx) => {
-        const row = Object.assign({ id: questId, startedAt: at, ticks: {}, completedAt: null }, tx.get('quests', questId) || {});
+        const row = Object.assign({ id: questId, startedAt: at, ticks: {}, completedAt: null }, ownRow(tx, 'quests', questId) || {});
         row.ticks = Object.assign({}, row.ticks);
         if (!row.ticks[stepId]) row.ticks[stepId] = at;
         if (!row.completedAt && steps.every((sid) => row.ticks[sid])) row.completedAt = at;
@@ -746,7 +749,7 @@ const Actions = (() => {
       const skipped = o.skipped === true;
       const at = stamp();
       return write(`tutorial ${id}`, at, (tx) => {
-        const prev = tx.get('tutorials', id);
+        const prev = ownRow(tx, 'tutorials', id);
         const row = tx.put('tutorials', Object.assign({ id, completedAt: null, skipped, replays: 0, stepsSeen: 0 }, prev || {}, {
           completedAt: (prev && prev.completedAt) || at, skipped: prev && prev.completedAt ? prev.skipped === true && skipped : skipped,
         }));
@@ -757,7 +760,7 @@ const Actions = (() => {
     async replay(id) {
       if (!tutorialKnown(id)) fail('bad-tutorial', 'Unknown tutorial.');
       return write(`tutorial replay ${id}`, stamp(), (tx) => {
-        const prev = tx.get('tutorials', id);
+        const prev = ownRow(tx, 'tutorials', id);
         const row = Object.assign({ id, completedAt: null, skipped: false, replays: 0, stepsSeen: 0 }, prev || {});
         row.replays = (Number(row.replays) || 0) + 1;
         return tx.put('tutorials', row);
@@ -773,7 +776,7 @@ const Actions = (() => {
     for (const k of ['seen', 'forced']) if (!absent(o, k) && !isBool(o[k])) fail('bad-feature', `"${k}" must be true or false.`);
     const at = stamp();
     return write(`reveal ${featureId}`, at, (tx) => {
-      const row = Object.assign({ id: featureId, revealedAt: at, seenAt: null, forced: o.forced === true }, tx.get('reveals', featureId) || {});
+      const row = Object.assign({ id: featureId, revealedAt: at, seenAt: null, forced: o.forced === true }, ownRow(tx, 'reveals', featureId) || {});
       if (o.seen === true && !row.seenAt) row.seenAt = at;
       tx.put('reveals', row);
       if (!tx.has('FeatureRevealed', 'featureId', featureId)) tx.event('FeatureRevealed', { featureId });

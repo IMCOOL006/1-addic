@@ -1761,5 +1761,29 @@ describe('review round 2 fixes (RC14-RC20)', () => {
     for (const id of ['sos-step-next', 'sos-step-done', 'sos-helped-yes', 'sos-helped-no', 'sos-checkin', 'sos-rate-skip']) assert.ok(!id.startsWith('sos-tool-'), 'never under the prefix sosAnyTool matches');
     assert.deepEqual(d.toasts.filter((t) => t[1] === 'warn'), []);
   });
+  test('RC15: a tick, tutorial or reveal on a row a sample wrote belongs to the person, and Erase sample keeps it', async () => {
+    const feature = Object.keys(C().features)[0];
+    await withSample({ generate: (now) => ({ stores: {
+      quests: [{ id: 'clear-space', startedAt: now, ticks: {}, completedAt: null }],
+      tutorials: [{ id: 'tour', completedAt: null, skipped: false, replays: 0, stepsSeen: 0 }],
+      reveals: [{ id: feature, revealedAt: now, seenAt: null, forced: false }],
+    } }) }, async () => {
+      assert.equal((await Actions.loadSample()).count, 3);
+      await Actions.quests.tick('clear-space', 'list');
+      await Actions.tutorial.done('tour');
+      await Actions.tutorial.replay('tour');
+      await Actions.reveal(feature, { seen: true });
+      for (const [store, id] of [['quests', 'clear-space'], ['tutorials', 'tour'], ['reveals', feature]]) {
+        assert.notEqual(S().view.get(store, id).sample, true, `${store} ${id} is the person's own row now`);
+      }
+      await Actions.eraseSample();
+      assert.ok(S().view.get('quests', 'clear-space') && S().view.get('quests', 'clear-space').ticks.list, 'the tick stays');
+      assert.ok(S().view.get('tutorials', 'tour') && S().view.get('tutorials', 'tour').completedAt, 'the tutorial stays done');
+      assert.equal(S().view.get('tutorials', 'tour').replays, 1);
+      assert.ok(S().view.get('reveals', feature) && S().view.get('reveals', feature).seenAt, 'the reveal stays seen');
+      assert.equal(events('TutorialCompleted').length, 1);
+      assert.equal(events('FeatureRevealed').length, 1);
+    });
+  });
   // -- review round 2 tests end --
 });
