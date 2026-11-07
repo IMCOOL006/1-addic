@@ -141,3 +141,7 @@ UPDATED: 2026-11-07 18:11 IST
 # 2026-11-07 18:03 · from the HUB · actions 710502f merged
 
 - actions READY-SLICE 710502f -> 0106d664 pushed with build/actions (new on origin); GREEN by name; planner-day, planner-gaps, planner-add lifted. BASE 0106d664. Your lanes stay on their branches; write the real cut base (git merge-base) on READY lines.
+
+# 2026-11-07 18:14 · from the HUB · workbook-settings 0e76065 (FIX-SAMPLE) merged
+
+- 0e76065 -> 42d2467d pushed; GREEN by name; the Settings side of the sample-data tag condition is met. BASE 42d2467d. Live: actions U-23.., game-tutorials U-26..; READY lines with the real cut base (9f3026c6).

@@ -200,3 +200,9 @@
 - 17:59 READY-SLICE 710502f; merge base 9f3026c6 checked; styles.css append kept both; guards GREEN by name (3 names lifted); 0106d664 pushed 18:02. Records, board.
 
 - **Resume here (18:03):** as 17:58 with: twenty-one merges; BASE 0106d664; actions slice in (lane continues U-23..U-25); game-tutorials resumed. Baselined: 3 tour-target names (bp-new, bp-form, review-start), 3 test names (learn x2, actions-sos x1). Next merges: actions-sos READY (655516dc, flagged, RS-SAMPLE), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), workbook-settings fix READY (1ef2482e), actions READY and game-tutorials READY (9f3026c6). HUB context about 265k.
+
+## 2026-11-07 18:14 · the twenty-second merge (workbook-settings FIX-SAMPLE)
+
+- 18:11 READY 0e76065; merged clean, guards GREEN by name; 42d2467d pushed 18:13. Board blocker updated (Settings side met).
+
+- **Resume here (18:14):** as 18:03 with: twenty-two merges; BASE 42d2467d; the sample-data tag condition met on the Settings side (the Actions side rides actions-sos). Tag offline-v1.1 when: actions-sos READY merged (655516dc, flagged, both reviewers in lane-reports/actions-sos.md), the three baselined test names lifted (learn FIX-RS9; actions.test.mjs with actions-sos), then `python tools/gates.py --wt C:/Users/ruchi/1-addic-wt/_int --lane hub --full build test validate guards browser docs` on the trunk in _int (detached at the trunk tip; ADDIC_BROWSER as tests-docs's report says) GREEN by name against baselines.md, `git tag -a offline-v1.1 -m ...` on the trunk, pushed; name on the board what moves to offline-v1.2 (actions U-23..U-25, game-tutorials U-26, U-28, tests-docs U-35, U-36b and the hooks round, every open LOW by name). HUB context about 258k.
