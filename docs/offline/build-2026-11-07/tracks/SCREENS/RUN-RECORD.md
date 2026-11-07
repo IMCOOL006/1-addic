@@ -114,10 +114,16 @@
 
 - FIX-TOUR wf_3aed1c64-86a returned READY bd2e085 (b677dbd: UI.tour.* return nothing; bd2e085: the popover keeps clear of #sos-btn, the second cause the builder found). Check PASS, LOW C1 open (the below-target branch untested). Browser GREEN 12/0/7, read by me in browser-20261107-223109.log.
 
+## 2026-11-07 22:40 IST · game-tutorials merged; today-track FIX-EMBED launched
+
+- The HUB merged game-tutorials bd2e085 as 7485e254 at 22:35 (BASE 7485e254) and granted slot 5 for FIX-EMBED (R-H-32: cut from BASE, or continue on the branch).
+- I fast-forwarded build/today-track at 22:38 from a02f121 (an ancestor of the trunk) to 7485e254 with `git merge --ff-only`. That rewrote no history and made no merge commit. package.json and package-lock.json are unchanged, so no npm ci was needed. The real GuidanceUI and GameUI are now in the lane's tree.
+- wf_8859379a-bb6 launched 22:40 on a 12.5 GB row (args tracks/SCREENS/args/args_tt_embed.json; base and diffFrom 7485e254; batches [[FIX-EMBED]]). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl.
+
 ## Resume here
 
-- Chat 4d443a20 (SCREENS). STATE BUILDING. NO SCREENS run live at 22:33.
-- Per lane: content 680f850, today-track a02f121, workbook-settings 0e76065 and actions 0977edd are MERGED. game-tutorials bd2e085 is READY for the HUB (real cut base 9f3026c6; FIX-TOUR mends the trunk's tour hang, R-S-15). Every SCREENS unit is built.
+- Chat 4d443a20 (SCREENS). STATE BUILDING. LIVE: today-track FIX-EMBED wf_8859379a-bb6 (since 22:40; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl). A fresh chat does not relaunch it while 4d443a20 is listed by `claude agents --json`. If 4d443a20 is gone, relaunch with tracks/SCREENS/args/args_tt_embed.json (start 'check' if a FIX-EMBED commit is on the branch).
+- Per lane: content 680f850, workbook-settings 0e76065, actions 0977edd and game-tutorials bd2e085 (7485e254, 22:35) are MERGED. today-track is BUILDING FIX-EMBED at BASE 7485e254 (fast-forwarded 22:38). Every SCREENS unit is built.
 - NEXT, by name only:
   - today-track FIX-EMBED: GameUI.panel and GuidanceUI.explorerRing/moreTools/dot in Today, each behind typeof. Ask the HUB for slot 5 (R-S-14) after game-tutorials MERGES; on build/today-track after a02f121; worktree C:/Users/ruchi/1-addic-wt/today-track. Args ready: tracks/SCREENS/args/args_tt_embed.json (replace @NOW@ in now and laneNote; base 1ef2482e, slot 5, diffFrom a02f121). Launch on the HUB's grant line on a 7.0 GB row.
   - workbook-settings C1 (the sample round trip) after actions-sos READY merges.

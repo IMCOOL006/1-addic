@@ -1,12 +1,12 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-07 22:33 IST: game-tutorials READY bd2e085 for the HUB (FIX-TOUR; check PASS; browser GREEN 12/0/7 read by me). No SCREENS run live. Every SCREENS unit is built; what is left is by name: the Today embeds (R-S-14, after the game-tutorials merge), workbook-settings C1 (after actions-sos), the LOWs
+STATE: BUILDING   # 2026-11-07 22:40 IST: today-track FIX-EMBED wf_8859379a-bb6 live (slot 5, R-H-32). game-tutorials MERGED 7485e254 (22:35). Every SCREENS lane is merged; what is left is by name
 LANE: content MERGED 680f850   # READY 680f850 merged 17:17 (6f58f910, trunk c8dc6716); complete; LOWs C2-C4 for offline-v1.1 by name
-LANE: today-track MERGED a02f121   # the R-H-24 end marker merged 17:51 (BASE 71a65763); U-15..U-18 merged 17:01; complete
+LANE: today-track BUILDING 7485e254   # FIX-EMBED wf_8859379a-bb6 live since 22:40 (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/4d443a20-94db-42b7-b066-e28c753892de/subagents/workflows/wf_8859379a-bb6/journal.jsonl). build/today-track was fast-forwarded at 22:38 from a02f121 (in the trunk) to BASE 7485e254, a re-cut from BASE as R-H-32 offered: base and diffFrom 7485e254; ui-today.js and its test only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d): the Settings side of the R-H-28 tag condition is met; U-19..U-21 merged 17:39; complete; C1 open by name (after actions-sos)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials READY bd2e085   # U-26, U-28 and FIX-TOUR (b677dbd, bd2e085) after the merged slice 5af6665; check PASS (wf_b62ade63-a26 on 1ea2ebf, wf_3aed1c64-86a on bd2e085); test 27/27, validate GREEN, browser GREEN 12/0/7 (tour complete, tour skip pass); merge from the real cut base 9f3026c6; LOW C1 open by name (offline-v1.1)
+LANE: game-tutorials MERGED bd2e085   # READY bd2e085 merged 22:35 (7485e254; U-26, U-28, FIX-TOUR in the trunk); complete; LOW C1 for offline-v1.1 by name
 SLOTS-ASKED: 5   # in this order: content (granted slot 4), today-track, workbook-settings (tier 1), then actions, game-tutorials (tier 2, only when no tier 1 lane waits)
-UPDATED: 2026-11-07 22:33 IST
+UPDATED: 2026-11-07 22:40 IST
 
 # 2026-11-07 22:33 IST · game-tutorials READY bd2e085 (U-26, U-28, FIX-TOUR; the lane is complete)
 
