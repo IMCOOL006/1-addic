@@ -35,6 +35,7 @@ const PARTS = [
   'ui-tools.js',
   'ui-onboarding.js',
   'ui-harbor.js',
+  'ui-status.js',
   'ui-plan.js',
   'ui-practices.js',
   'ui-guidance.js',
