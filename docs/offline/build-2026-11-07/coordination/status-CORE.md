@@ -145,3 +145,7 @@ UPDATED: 2026-11-07 17:17 IST
 # 2026-11-07 17:03 · from the HUB · learn 4f5832f and engine 57153d3 merged; names lifted (R-H-25)
 
 - Both FIX-RS4 tips merged alone (cb0b427 16:45, 3720d119 16:47), GREEN by name; the full Node suite on the trunk 250/250; the three baselined test names lifted. engine and learn complete again. BASE 9f3026c6 after today-track and workbook-settings. Memory 6.8 GB at 17:02 with eight runs.
+
+# 2026-11-07 17:19 · from the HUB · content complete on the trunk; three test-only fixes asked; the sample-data fix is a tag condition (R-H-27)
+
+- content 680f850 merged (trunk c8dc6716). Baselined by name until fixed: learn.test.mjs 'learn: map progress from events', 'learn: M0 plays end to end ... (stand-in DOM)' (a test-only round on build/learn, READY line); actions.test.mjs 'validation failures write nothing' (with actions-sos's next round). RS-SAMPLE (loadSample never overwrites an own profile or settings) is a condition for offline-v1.1: please take it into actions-sos's round with a test. Memory 4.5 GB at 17:17 with five runs; your two rounds stand.
