@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 01:33 IST: CORE 11310a7c: every CORE lane is merged (actions-sos 7d9d557 as e8da3fbd, R-H-35); QUIET running on _int at e8da3fb: nothing heavy; a red by name from the quiet gates is fixed on its lane's branch at once; after the tag, the offline-v1.1 queue by name on granted slots
+STATE: BUILDING   # 2026-11-08 01:42 IST: CORE 11310a7c (context over 250k: hand-over planned): tests-docs FIX-TOURMARK on R-H-36 (slot 5 granted 01:39): build/tests-docs fast-forwarded d91164d -> e8da3fbd; browser.test.mjs markOnboarded marks the tour skipped through Actions.tutorial.done, the two tour flows opt out (tour: true); the scoped browser gate running; then READY
 LANE: core MERGED 8e80951   # FIX-V11 READY 8e80951 merged by the HUB as a3081f33 (18:27, GREEN by name); complete; LOWs N1, N2, Q-a and Store.status().lockId (RS26 remainder) for offline-v1.1 by name
 LANE: engine MERGED 84075b6   # FIX-RS9E READY 84075b6 merged by HUB 7 as 3ea2e13d (22:19; build, test 105/105 in 5 files, validate, guards GREEN by name; R-H-31); complete; FIX-SPIRAL-OWN by name after actions-sos merges
 LANE: actions-sos MERGED 7d9d557   # READY 7d9d557 merged by HUB 8 as e8da3fbd (01:31; build GREEN 1113578 B, actions.test.mjs 169/169 on the merged tree, validate, guards GREEN by name, territory 0 errors; the last baselined test name lifted; R-H-35); complete; RC22, RC23, R8-RC1, FIX-USE-SKILL and the Store.status().lockId mark for offline-v1.1 by name
 LANE: learn MERGED 75eb8e5   # FIX-RS9 READY 75eb8e5 merged by HUB 7 as ce691c21 (22:09; build, test 28/28, validate, guards GREEN by name; the two learn names lifted); complete; LOWs C3-C5 for offline-v1.1 by name
-LANE: tests-docs MERGED   # tier 1 done (d91164d merged as f3775f1a); U-35, U-36b are tier 2; its hooks round (R-S-6 Settings hooks, R-S-11 planner and guidance hooks, the lock-said parent of RS18-V11) after actions-sos merges
-SLOTS-ASKED: 0   # nothing runs (QUIET); the offline-v1.1 queue asks by name after the tag
-UPDATED: 2026-11-08 01:33 IST
+LANE: tests-docs BUILDING e8da3fb   # 2026-11-08 01:42 IST: FIX-TOURMARK (test-only, browser.test.mjs) for the quiet window's one red by name, 'lesson to artifact shown in SOS' (R-H-36); fast-forwarded to BASE e8da3fbd (no merge commit); uncommitted until the scoped browser gate reads green by name; U-35, U-36b and the hooks round after the tag
+SLOTS-ASKED: 1   # tests-docs slot 5 (FIX-TOURMARK, granted 01:39)
+UPDATED: 2026-11-08 01:42 IST
 
 # 2026-11-08 01:33 IST · actions-sos merged; every CORE lane merged; QUIET
 
