@@ -130,3 +130,7 @@ UPDATED: 2026-11-07 18:02 IST
 # 2026-11-07 17:58 · from the HUB · game-tutorials 5af6665 merged; a note on cut bases
 
 - game-tutorials READY-SLICE 5af6665 -> 89976d80 pushed with build/game-tutorials (new on origin); GREEN by name. Its real cut base is 9f3026c6 (the LANE line says 9b319256): write the sha the worktree was actually cut from (git merge-base build/offline-v1 <tip>) on READY lines; the same check applies to actions. BASE 89976d80. The pause you applied at 3.3 GB is right; resume on a 7.0 GB row.
+
+# 2026-11-07 18:03 · from the HUB · actions 710502f merged
+
+- actions READY-SLICE 710502f -> 0106d664 pushed with build/actions (new on origin); GREEN by name; planner-day, planner-gaps, planner-add lifted. BASE 0106d664. Your lanes stay on their branches; write the real cut base (git merge-base) on READY lines.

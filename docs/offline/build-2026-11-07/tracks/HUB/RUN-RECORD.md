@@ -194,3 +194,9 @@
 - 17:54 READY-SLICE 5af6665; prepare clean; guards RED on territory over 9b319256 (false: wrong cut base on the LANE line), GREEN over the real merge base 9f3026c6; merge 89976d80 pushed 17:57. SCREENS paused the lane at 3.3 GB (17:53).
 
 - **Resume here (17:58):** as 17:52 with: twenty merges; BASE 89976d80; game-tutorials slice in, lane paused for memory. Before guards: `git merge-base build/offline-v1 <tip>` and use it as the base when the LANE line's cut base differs. Next merges: actions READY-SLICE (U-22), actions-sos READY (655516dc, flagged, RS-SAMPLE), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), game-tutorials READY (9f3026c6). HUB context about 248k: the hand-over comes at the next safe point past about 290k (nothing of the HUB's running, no merge half done): STATE RESTART with UPDATED from date, then stop.
+
+## 2026-11-07 18:03 · the twenty-first merge (actions U-22)
+
+- 17:59 READY-SLICE 710502f; merge base 9f3026c6 checked; styles.css append kept both; guards GREEN by name (3 names lifted); 0106d664 pushed 18:02. Records, board.
+
+- **Resume here (18:03):** as 17:58 with: twenty-one merges; BASE 0106d664; actions slice in (lane continues U-23..U-25); game-tutorials resumed. Baselined: 3 tour-target names (bp-new, bp-form, review-start), 3 test names (learn x2, actions-sos x1). Next merges: actions-sos READY (655516dc, flagged, RS-SAMPLE), core FIX-V11 READY (655516dc, flagged), learn FIX-RS9 READY (655516dc), workbook-settings fix READY (1ef2482e), actions READY and game-tutorials READY (9f3026c6). HUB context about 265k.

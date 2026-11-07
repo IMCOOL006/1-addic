@@ -26,9 +26,9 @@ Add a line here only when a check is red on the base itself (`- <gate>: <failure
 - ~~guards: guard: tour-target quicklog-button (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:01: today-track READY 3f3001e merged (9f3026c6), the target exists
 - ~~guards: guard: tour-target quicklog-intensity (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:01: today-track READY 3f3001e merged (9f3026c6), the target exists
 - ~~guards: guard: tour-target quicklog-save (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:01: today-track READY 3f3001e merged (9f3026c6), the target exists
-- guards: guard: tour-target planner-day (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target planner-gaps (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
-- guards: guard: tour-target planner-add (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
+- ~~guards: guard: tour-target planner-day (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 18:02: actions READY-SLICE 710502f merged (0106d664), the target exists
+- ~~guards: guard: tour-target planner-gaps (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 18:02: actions READY-SLICE 710502f merged (0106d664), the target exists
+- ~~guards: guard: tour-target planner-add (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 18:02: actions READY-SLICE 710502f merged (0106d664), the target exists
 - guards: guard: tour-target bp-new (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
 - guards: guard: tour-target bp-form (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)
 - ~~guards: guard: tour-target workbook-groups (seen 2026-11-07 07:39, C:\Users\ruchi\1-addic-wt\_logs\gates\core\guards-20261107-073928.log)~~ LIFTED 2026-11-07 17:39: workbook-settings READY 9cbf630 merged (be0f806d), the target exists
