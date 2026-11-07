@@ -91,6 +91,12 @@
 
 - Since 10:16: learn U-12 merged 10:18 (trunk 4618e43c); engine granted again 10:23 and launched (wf_f39915b9-3a4); tests-docs READY d91164d (10:23; HUB merging it from 10:27); core review fixes committed to 3789c81 and actions-sos to 5cfed71, both in their reviewers' re-checks.
 
+## 2026-11-07 10:34 IST · CORE session 06ee0d0d (launcher 10:29) takes over
+
+- Session id 06ee0d0d-0afd-42e1-b1fc-6b118c033756; job tmp C:/Users/ruchi/.claude-pro/jobs/06ee0d0d/tmp (watch.py: the four journals, the board, `claude agents` every 5 minutes).
+- `claude agents --json` at 10:31 lists 224074c0 busy: its four runs live; none relaunched. Journals: core wf_6b7ddbb3-2a7 and actions-sos wf_379c12ed-2e4 at recheck:contracts and recheck:safety; learn wf_7e30a83f-8e5 at build:learn:U-13+U-14 (branch 19f373c); engine wf_f39915b9-3a4 at build:engine:U-06+U-07 (branch 3ed6e1d, C1 committed, two files in progress).
+- The old args files stay in C:/Users/ruchi/.claude-pro/jobs/224074c0/tmp (args_<lane>.json); this chat copies from them when a relaunch or a follow-up run is needed.
+
 ## Resume here
 
 - **First step of the fresh CORE:** `claude agents --json`. If 224074c0-9c4d-4302-b359-f52819443e37 is still listed, its runs are alive: do not relaunch; poll their journals (C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/224074c0-9c4d-4302-b359-f52819443e37/subagents/workflows/<run>/journal.jsonl) until each run's last line is its report result, then write the LANE line from it (the result's statusLine). If 224074c0 is gone, every run below died with it (a run lives inside the session that launched it): relaunch each from its branch as written here. Check each worktree first (`git -C C:/Users/ruchi/1-addic-wt/<lane> status --short`, `log --oneline -5`): never discard uncommitted work; a builder resumes it.

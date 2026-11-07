@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-07 10:28 IST: session 224074c0 hands over at 302k context; its four runs (core wf_6b7ddbb3-2a7 re-checks, actions-sos wf_379c12ed-2e4 re-checks, learn wf_7e30a83f-8e5 U-13/U-14, engine wf_f39915b9-3a4 U-06..U-08) live only while 224074c0 is listed by claude agents; the fresh CORE reads tracks/CORE/RUN-RECORD.md 'Resume here'
-LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 030f949 + 98f872d, check PASS; review fixes committed to 3789c81; the two reviewers re-check (run wf_6b7ddbb3-2a7), then report
-LANE: engine BUILDING   # slice U-05 04fc0c1 MERGED 07:44; slot 2 granted again 10:23; run wf_f39915b9-3a4 (10:23): C1 helpfulValue by name, [U-06, U-07], [U-08], check, report
-LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae, check PASS; review fixes committed to 5cfed71; the two reviewers re-check (run wf_379c12ed-2e4), then report; a follow-up FIX-ONB-EMO after it
-LANE: learn BUILDING   # slice U-12 a499dae MERGED 10:18 (trunk 4618e43c); run wf_7e30a83f-8e5 (10:16): C1, C2 by name, U-13, U-14, check, report
+STATE: BUILDING   # 2026-11-07 10:33 IST: CORE session 06ee0d0d (launcher 10:29) takes over from 224074c0; 224074c0 is still listed by claude agents (busy), so its four runs are alive and are not relaunched; this chat reads their journals and writes the LANE lines
+LANE: core REVIEWING   # slices 8bf7b5c, 4a43190 MERGED; U-04 06cdf34, FIX-C4-C5 030f949 + 98f872d, check PASS; review fixes to 3789c81; the two reviewers re-check (run wf_6b7ddbb3-2a7, live at 10:31), then report; then FIX-RULINGS
+LANE: engine BUILDING   # slice U-05 04fc0c1 MERGED; run wf_f39915b9-3a4 (10:23): C1 helpfulValue 3ed6e1d, builder on [U-06, U-07], then [U-08], check, report; lands after the FREEZE (offline-v1.1)
+LANE: actions-sos REVIEWING   # slice U-09 1cb96a3 MERGED; U-10 1507640, U-11 c629cae, check PASS; review fixes to 5cfed71; the two reviewers re-check (run wf_379c12ed-2e4, live at 10:31), then report; then FIX-ONB-EMO
+LANE: learn BUILDING   # slice U-12 a499dae MERGED; run wf_7e30a83f-8e5 (10:16): U-13, U-14 committed 19f373c (C1, C2 by name in it); builder hand-off, then check, report
 LANE: tests-docs MERGED   # tier 1 done: d91164d (U-34, U-37, U-36a) merged 10:26 as f3775f1a (BASE); U-35, U-36b are tier 2 (after the SCREENS tier-1 merges)
 SLOTS-ASKED: 5
-UPDATED: 2026-11-07 10:28 IST
+UPDATED: 2026-11-07 10:33 IST
+
+# 2026-11-07 10:33 IST · CORE session 06ee0d0d resumes
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE f3775f1a, SLOTS-ALLOWED 5, all five CORE lanes granted, QUIET no, FREEZE 10:55, QUIET 10:55-11:40), outbox-HUB.md to R-H-9, outbox-CORE.md to R-C-11, lane.js header.
+- `claude agents --json` at 10:31 lists 224074c0 ('CORE 08:58', busy): its runs live on and are not relaunched. Journals at 10:31: core wf_6b7ddbb3-2a7 and actions-sos wf_379c12ed-2e4 at the two re-checks; learn wf_7e30a83f-8e5 builder (branch 19f373c, U-13 + U-14 committed); engine wf_f39915b9-3a4 builder on [U-06, U-07] (branch 3ed6e1d, C1 committed; tree has work in progress).
+- A watcher reads the four journals, the board and the session list every 30 s; if 224074c0 leaves the list, each run is relaunched from its branch as RUN-RECORD 'Resume here' says.
 
 # 2026-11-07 09:12 IST · the old session's runs died; both lanes relaunched
 
