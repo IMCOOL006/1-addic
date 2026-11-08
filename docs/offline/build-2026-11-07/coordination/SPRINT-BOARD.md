@@ -1,15 +1,16 @@
-STATE: HUB 12 running since 09:02. MERGED 09:50: the quest-line's words, the objectives pool and the run words (content V-42), trunk ab784c9a pushed. Seven merges since 06:00. Running now (four lanes): the one-line test fix the new content needs (engine FIX-RS27, since 09:36), the objectives and quest-line verbs' last review round (actions-sos V-41, since 09:08), the three browser flows and the guide (tests-docs V-45, since 09:27), the reward sheet and the feature routes (game-tutorials V-28 + V-44, since 09:38). MEMORY 09:24-09:46: 8.8, 9.1, 7.1 GB: every lane that can run is running. The chain left for the tag: FIX-RS27 -> V-41 -> V-44 -> V-45, each merged as it says READY; FREEZE at V-45's READY.
+STATE: HUB 12 running since 09:02. MERGED 10:30 and 10:50: the one-line test fix the new content needed (engine FIX-RS27) and the objectives and quest-line verbs with their review fixes (actions-sos V-41), trunk 3235375c pushed; the full Node suite on the trunk is 640/640, every gate green by name. Nine merges since 06:00. Running now (two lanes, the last two tier 1 units): the three browser flows, the hooks and the guide (tests-docs V-45, since 09:27); the reward sheet (game-tutorials V-44, since 10:08; V-28 done). MEMORY 10:41-10:57: 3.6, 3.2, 3.9 GB (the HUB's own gates were part of it): game-tutorials pauses at its next commit unless the 11:03 row is at 4 GB or more. CORE 14 is near its context limit and hands over at a clean point; nothing is lost by it. FREEZE at V-45's READY; then the full gates in the quiet window and the tag offline-v3.0.
 NEEDS YOU: your R-O-9 (08:53) is recorded: at 98% of your weekly usage the program parks (launcher stopped first, every chat at a clean point, the hand-over and the resume-prompt document written); you are the only one who can read /usage, so tell your window the reading when you can, and the word 'park' when it is time. Otherwise nothing for the build unless you disagree with one reading (R-H-44, 06:51: the quest-line opens tools and games earlier, it never locks what you can already use in v1.1; answer only to change it). Otherwise nothing (your R-O-7 at 04:44 decided V-Q1 to V-Q13 at their defaults and authorised the launcher's maintenance lines; recorded in outbox-OWNER.md). Still yours, when you can: the walk of the v1.1 file on phone and computer (findings in one message); the India crisis numbers (I6: which are confirmed; until then every number says 'please verify'); who reads CLINICAL-REVIEW-PACK.md and when. The memory brake: the pharma program's chats take about 25 GB when live; pausing them is your call, not the HUB's. Keep the machine awake.
-NEXT (HUB 12, in order): merge engine FIX-RS27, actions-sos V-41, game-tutorials V-28 + V-44 and tests-docs V-45 as each says READY, one at a time, pushing the trunk after each; the board every two hours (next by 11:00) and at every merge; FREEZE when V-45 is READY; the full gates in the quiet window; the tag offline-v3.0.
+NEXT (HUB 12, in order): merge tests-docs V-45 and game-tutorials V-44 as each says READY, one at a time, pushing the trunk after each; FREEZE when V-45 is READY (the tag's list on the board); the full gates on the trunk in the quiet window (build, test, validate, guards, browser 25 flows, docs); the tag offline-v3.0, pushed; the hand-off note. Tier 2 units start only on 7 GB rows and stop first under 4 GB. The board at every merge and by 13:00.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-08 09:50 IST by `board.py`.
+Rewritten 2026-11-08 11:00 IST by `board.py`.
 
 ## For the owner (more)
 
+FORECAST (2026-11-08 11:00 IST, re-cut): the 09:52 cut holds. Left: V-45 (READY about 11:15-11:45) and V-44 (about 11:30-12:00), each merged in 20 min with its browser run. If the rows hold at 4 GB: FREEZE about 11:45, the full gates to about 12:45, TAG offline-v3.0 about 13:00 IST. Each hour under 4 GB adds an hour (game-tutorials pauses first).
 FORECAST (2026-11-08 09:50 IST, re-cut): V-42 merged 09:50 (the 08:55 cut said about 09:30). Left: FIX-RS27 (about 10:00) and V-41's review round (about 10:15-10:30), each merged in 20 min; V-28 + V-44 (about 11:00-11:15) and V-45 (about 10:45-11:00) run in parallel now. If the rows hold at 4 GB: FREEZE about 11:15-11:45, the full gates to about 12:30, TAG offline-v3.0 about 12:45 IST. Each hour under 4 GB adds an hour.
 FORECAST (2026-11-08 08:55 IST, re-cut): the lanes are ahead of the 06:41 cut (six merges by 08:51 against four expected), but memory took about an hour from 08:28. Left: V-42's check (30 min at 4 GB), V-41's fix round (30 min), each merged (20 min); then V-28 + V-44 (1.5 h) and V-45 (1 h) in parallel, merged. If the rows hold at 4 GB from 09:00: FREEZE about 11:30-12:00, the full gates to about 12:45, TAG offline-v3.0 about 13:00 IST. Each hour under 4 GB adds an hour.
 FORECAST (2026-11-08 06:41 IST, re-cut from the running lanes): the chain left is V-08b (about 07:00) and V-01t (about 07:45) running, V-43 READY about 08:15, V-41 about 08:00, V-42 about 1.5 h after its 7 GB row (about 08:45 if the row comes by 07:15), then game-tutorials V-28 + V-44 (1.5 h after V-42 merges, about 10:30) and tests-docs V-45 (1 h after V-43 merges, about 09:45); each merge 15-30 min of the HUB's time. If memory holds at 4 GB rows and V-42's 7 GB row comes by 07:30: FREEZE about 11:00-11:30, the full gates to about 12:15, TAG offline-v3.0 about 12:30 IST. Each hour the rows stay under 4 GB (a run paused) or under 7 GB (V-42 waiting) moves it an hour. The earlier forecast (04:46) said FREEZE 14:00, TAG 15:00; the lanes ran faster than that through the night.
@@ -26,41 +27,43 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 ## The HUB
 
 - STATE: RUNNING — 2026-11-08 09:13 IST: HUB 12 (3e9a8ea0, 'HUB 09:02', started by the launcher on HUB 11's RESTART line) resumed: read PLAN.md, status-HUB.md, the run record's Resume here (09:00), status-CORE.md…
-- BASE: ab784c9a (the trunk tip after the content eb38166 merge, 2026-11-08 09:50 IST; new lanes cut from here; merge bases: engine 3fbd08f6 (FIX-RS27, BUILDING), actions-sos 87582bd4 (V-41, REVIEWING b735852), tests-docs 3fbd08f6 (V-45, BUILDING), game-tutorials 3fbd08f6 (V-28 + V-44, BUILDING), core fbc663d (tier 2), content eb38166, today-track 670df19; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- BASE: 3235375c (the trunk tip after the engine 97ac73a and actions-sos b735852 merges, 2026-11-08 11:00 IST; new lanes cut from here; merge bases: tests-docs 3fbd08f6 (V-45, BUILDING), game-tutorials 3fbd08f6 (V-28 + V-44, BUILDING 7214a52), core fbc663d (tier 2), actions-sos b735852 (tier 2 V-25, V-18, V-17b, then the whole-lane review), engine 97ac73a (complete), content eb38166 (complete), today-track 670df19 (complete), learn 75eb8e5 (V-20 tier 2); the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
 - QUIET: done 2026-11-08 01:31-01:57 on _int (e8da3fb: build, test 536/536, validate, guards, docs GREEN, browser one red by name; f69bc68 after the fix: browser GREEN 16/0/3); TAG offline-v1.1 at f69bc68 pushed 01:59. Earlier: QUIET done 2026-11-07 10:57; TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 (PLAN-V3.md section 7: tier 1 about 30 h; FREEZE about 13:30, QUIET to 14:15, TAG offline-v3.0 about 14:30 IST with three lanes from 03:30 on 7.0 GB rows, two hours later with two; re-cut on the board every two hours from the rows)
-- UPDATED: 2026-11-08 09:50 IST
+- UPDATED: 2026-11-08 11:00 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 3e9a8ea0 (launcher-started 2026-11-08 09:03) | RUNNING — 2026-11-08 09:13 IST: HUB 12 (3e9a8ea0, 'HUB 09:02', started by the launcher on HUB 11's RESTART line) resumed: read… | 134k | 2026-11-08 09:50 IST |
-| CORE | 4c79e5f7 (launcher-started 2026-11-08 08:44) | BUILDING — 2026-11-08 09:30 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43') running: actions-sos V-41 review fix… | 210k | 2026-11-08 09:38 IST |
-| SCREENS | 6508c21d (launcher-started 2026-11-08 08:44) | RUNNING — 2026-11-08 09:40 IST: SCREENS 6508c21d. Live: game-tutorials V-28 + V-44 wf_e5593f15-752 (09:38… | 222k | 2026-11-08 09:40 IST |
+| HUB | 3e9a8ea0 (launcher-started 2026-11-08 09:03) | RUNNING — 2026-11-08 09:13 IST: HUB 12 (3e9a8ea0, 'HUB 09:02', started by the launcher on HUB 11's RESTART line) resumed: read… | 174k | 2026-11-08 11:00 IST |
+| CORE | 4c79e5f7 (launcher-started 2026-11-08 08:44) | BUILDING — 2026-11-08 10:56 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43'): engine and actions-sos merged (HUB… | 271k | 2026-11-08 10:56 IST |
+| SCREENS | 6508c21d (launcher-started 2026-11-08 08:44) | RUNNING — 2026-11-08 10:12 IST: SCREENS 6508c21d. Live: game-tutorials wf_e5593f15-752 (V-28 done 7214a52; the V-44 builder since… | 248k | 2026-11-08 10:12 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | MERGED | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-11 the slice (the safety line before boot, words from boot.js COPY only… |
-| `engine` | CORE | 1 |  | slot 2 | BUILDING | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | REVIEWING | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
+| `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | NEW | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits; tip 75eb8e5 |
 | `tests-docs` | CORE | 1 |  | slot 5 | BUILDING | GRANTED 2026-11-08 02:01 IST for tier 2 (R-O-3): U-35 screenshots first (npm run screens; the guide images), then U-36b guide Part 3, then the hooks round… |
 | `today-track` | SCREENS | 1 |  | slot 6 | MERGED | GRANTED 2026-11-08 02:34 IST for V3 tier 1 (the row 02:33 8.8 GB with nothing heavy running; PLAN-V3.md: V-01a the status page, the slice, then V-01b… |
 | `workbook-settings` | SCREENS | 1 |  | slot ? | MERGED | GRANTED slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged…; FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25… |
 | `actions` | SCREENS | 2 |  | slot ? | MERGED | GRANTED slot=7 free from 2026-11-07 18:50: READY 0977edd merged…; READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only… |
 | `game-tutorials` | SCREENS | 2 |  | slot 8 | BUILDING | GRANTED 2026-11-08 05:05 IST for V3 tier 1 (the row 05:02 8.0 GB; R-O-7; PLAN-V3.md: V-08b the slice on actions-sos V-08a's published useSkill shape (R-C-47… |
-| `content` | SCREENS | 1 |  | slot 4 | READY | GRANTED 2026-11-08 04:02 IST for V3 tier 1 (the row 03:58 7.3 GB; PLAN-V3.md: V-10 the slice, then V-42 content-quests.js on the section 7 contracts and… |
+| `content` | SCREENS | 1 |  | slot 4 | MERGED | GRANTED 2026-11-08 04:02 IST for V3 tier 1 (the row 03:58 7.3 GB; PLAN-V3.md: V-10 the slice, then V-42 content-quests.js on the section 7 contracts and… |
+
+Warning: no LANE state read for `actions-sos` (shown NEW; the chat's status file has no `LANE: <lane> <STATE>` line in its header).
 
 Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the formula at 8.0; R-O-7): tests-docs 5, today-track 6, engine 2 (idle after V-40c; V-19 + V-30 tier 2 only when no tier 1 lane waits), content 4, core 1, actions-sos 3, game-tutorials 8 granted now. Every tier 1 lane has a slot; nothing waits. Under 4.0 GB the newest run pauses at its next commit, the next newest on the following row under 4.0). Granted: 10 lanes (`core` slot 1, `engine` slot 2, `actions-sos` slot 3, `learn` slot ?, `tests-docs` slot 5, `content` slot 4, `today-track` slot 6, `workbook-settings` slot ?, `actions` slot ?, `game-tutorials` slot 8).
 
 ## Merges
 
-- the merge queue: none; next in arrival order: engine FIX-RS27 (base 3fbd08f6; BUILDING since 09:36, wf_67a818f3-083, CORE 14; the one red by name on the trunk now), actions-sos V-41 (base 87582bd4; REVIEWING b735852 since 09:08, wf_2c2466fa-36a, CORE 14; flagged: the two reviewers' re-check before its READY), tests-docs V-45 (base 3fbd08f6; BUILDING since 09:27, wf_180b5230-4d4, CORE 14), game-tutorials V-28 + V-44 (base 3fbd08f6; BUILDING since 09:38, wf_e5593f15-752, SCREENS 9); core tier 2 (base fbc663d) when no tier 1 lane waits
+- the merge queue: none; next in arrival order: tests-docs V-45 (base 3fbd08f6; BUILDING since 09:27, wf_180b5230-4d4, CORE 14; FREEZE at its READY), game-tutorials V-28 + V-44 (base 3fbd08f6; V-28 done 7214a52, V-44's builder since 10:08, wf_e5593f15-752, SCREENS 9); tier 2 only when no tier 1 lane waits and on a 7.0 GB row: core V-16, V-17a, V-26a (base fbc663d), actions-sos V-25, V-18, V-17b (base b735852), learn V-20; the flagged lanes' whole-lane review before their final READY
 
 - 07:41 core READY-SLICE 8bf7b5c (U-01) -> 7eaf7f4, trunk fde4bbbd. build GREEN 103409 B; guards GREEN by name (15 screen tour-target names baselined until the screens land).
 - 07:44 engine READY-SLICE 04fc0c1 (U-05) -> 6089dad, trunk 33d2a04f. build GREEN 127289 B; test GREEN (logic.test.mjs); validate SKIP until U-08.
@@ -106,10 +109,12 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 - 08:17 core READY-SLICE fbc663d (V-46: a reward the quest-line opens shows in the app's chrome, because the chrome now reads the unlocked set) -> 852d3852, trunk 24baaf71. build 1184473 B, test, validate, guards GREEN by name. Merge base 87582bd4.
 - 08:55 tests-docs READY d964202 (V-01t: the status page's four browser flows, its screenshots and guide lesson 'Your Harbor', the hooks; the check's four fixes) -> 3fbd08f6, trunk 3fbd08f6. build 1184473 B, test, validate, guards, docs GREEN by name; browser on the branch 25 flows, 25 pass, 0 skip. Merge base 30cb12ff.
 - 09:50 content READY eb38166 (V-42: the quest-line's words and rewards, the objectives pool, the run words, the tour steps; the XP rows) -> 899f77e4, trunk ab784c9a. build 1194592 B, test 40/40, validate, guards GREEN by name on the merged tree; the full Node suite 622/623, the one red the engine test FIX-RS27 fixes (R-H-45; in its build). Merge base 87582bd4.
+- 10:30 engine READY 97ac73a (FIX-RS27: the engine's XP test now reads the real content rows; test-only) -> 0db0a9f7, trunk c8b553ce. build, test, validate, guards GREEN by name; the full Node suite 623/623 (the one red since 09:52 closed). Merge base 3fbd08f6.
+- 10:50 actions-sos READY-SLICE b735852 (V-41: mark an objective done, swap one once a day, claim a quest-line step and its reward, with its protections; the review fixes) -> 3235375c, trunk 3235375c. build 1201371 B, test 191/0/0, validate, guards GREEN by name; the full Node suite 640/640. Merge base 87582bd4. The lane continues with tier 2 and its whole-lane review.
 
 ## Blockers and questions
 
-- 09:50 One engine test reads red on the trunk until engine's FIX-RS27 merges (about 10:00): the test assumed the content had no XP rows for objectives and quest-line steps; V-42 rightly adds them (R-S-27, ruled R-H-45: a one-line test fix, engine's by territory; no app code changes). Not a blocker for the tag if it merges before the quiet window.
+- 10:30 CLOSED: the one engine test red on the trunk since 09:52 (R-S-27 / R-H-45) is fixed by engine FIX-RS27, merged at c8b553ce; the Node suite is 640/640 on the trunk 3235375c.
 
 - 07:17 today-track V-43 (Today's objectives card, the run line, the quest-line step; Your Harbor's growth and 'Your way') came back READY at 07:04 and went back to its lane with one failing test by name on the merged tree (its Today page asks for a 'New' dot on the status chip now that the status feature exists in the trunk, and its own test allowed two dots only). A one-commit fix, round 1 of 2; nothing else is affected; the merge order (V-43 before V-42) stands.
 
@@ -138,7 +143,7 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Machine
 
-- Free memory 7.1 GB of 31.8 GB at 2026-11-08 09:46 IST; claude 36, node 40 processes; 4 slots by the rule (lane-widening.md).
+- Free memory 3.2 GB of 31.8 GB at 2026-11-08 10:52 IST; claude 38, node 43 processes; 0 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 25324); its last launch: HUB 3e9a8ea0 at 2026-11-08 09:03.
 
 ## Files of the build
