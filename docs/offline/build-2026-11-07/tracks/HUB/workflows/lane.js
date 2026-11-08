@@ -335,11 +335,12 @@ ${NEIGHBOURS}
 Return the structured result: briefPath and contractPath (the docs paths), briefBytes, units (one line each), questions, read.`
 }
 
-function builderPrompt(batch, prevNote, extra) {
+function builderPrompt(batch, prevNote, extra, findingsNote) {
   const fixRound = batch[0] === 'the fix round'
-  if (laneNote) extra = (extra ? extra + '\n' : '') + `THE BUILD CHAT'S WORD (${chat}; it wins over the brief where they differ):\n` + laneNote
+  // findingsNote (a fix round only): {text, files}, the finders' findings, placed between extra and the build chat's word.
+  const word = laneNote ? `THE BUILD CHAT'S WORD (${chat}; it wins over the brief where they differ):\n` + laneNote : ''
   const isSlice = !fixRound && (sliceRun || (batchesToRun.length > 0 && !doneBefore.length && batchesToRun[0].some(u => batch.includes(u))))
-  const compose = prev => `You are a lane builder of build chat ${chat}, lane ${lane}${FLAGGED ? ' (flagged: two reviewers judge the whole lane at its end: contracts and tests; safety copy, privacy and the person\'s data)' : ''}, the 1-addic offline edition build of 7 November 2026. The clock said ${NOW} when this run started: never invent a date; take stamps from date.
+  const compose = (prev, fnd) => `You are a lane builder of build chat ${chat}, lane ${lane}${FLAGGED ? ' (flagged: two reviewers judge the whole lane at its end: contracts and tests; safety copy, privacy and the person\'s data)' : ''}, the 1-addic offline edition build of 7 November 2026. The clock said ${NOW} when this run started: never invent a date; take stamps from date.
 
 YOUR BATCH, in this order, each unit as its own commits (the build chat's notes; the brief has the detail):
 ${fixRound ? '- the fix round (below)' : batchText(batch)}
@@ -347,18 +348,26 @@ Build these and nothing else.${isSlice ? ' THIS BATCH IS THE SLICE: it ends comm
 
 READ: the brief ${W.brief} (plan, files, acceptance, append points, open questions with defaults) and the contract ${W.contract} (what you build to; where the base code and the brief disagree, the code wins: say so in your note).
 RESUME FIRST, in one step: the FIRST STEP below; git -C ${W.wt} status --short; git -C ${W.wt} log --oneline --first-parent ${base}..HEAD; read ${W.progress} if it exists. Never redo a committed unit; never discard uncommitted work unread (a half-done unit of your batch is yours to finish).
-${prev ? '\nTHE PREVIOUS BUILDER\'S HAND-OFF NOTE:\n' + prev + '\n' : ''}${extra ? '\n' + extra + '\n' : ''}
+${prev ? '\nTHE PREVIOUS BUILDER\'S HAND-OFF NOTE:\n' + prev + '\n' : ''}${extra || fnd || word ? '\n' + [extra, fnd ? 'THE FINDINGS:\n' + fnd : '', word].filter(Boolean).join('\n') + '\n' : ''}
 ${WHERE}
 
 ${NOTE_RULES}`
-  // Under 12 KB: the prior note (at most 2,000 characters) is cut further to fit; the rest is on disk.
+  // Under 12 KB: the prior note (at most 2,000 characters) is cut further to fit; the rest is on disk. A fix round's
+  // findings travel in full, at most 12,000 characters, and are cut to fit the same way (V3-15); the rest is in the
+  // finders' notes files, which the tail names.
   const LIMIT = 12000
   const tail = ' ... (cut to fit the prompt: the rest is in ' + W.progress + ' and git log)'
+  const fTail = findingsNote ? ' ... (cut to fit the prompt: the full findings are in ' + (findingsNote.files || []).join(' or ') + ')' : ''
   let prev = prevNote ? (String(prevNote).length > 2000 ? cut(prevNote, 2000) + tail : String(prevNote)) : ''
-  let text = compose(prev)
+  let fnd = findingsNote ? (String(findingsNote.text).length > LIMIT ? cut(findingsNote.text, LIMIT) + fTail : String(findingsNote.text)) : ''
+  let text = compose(prev, fnd)
+  if (text.length > LIMIT && fnd) {
+    fnd = cut(fnd, Math.max(300, fnd.length - (text.length - LIMIT) - fTail.length)) + fTail
+    text = compose(prev, fnd)
+  }
   if (text.length > LIMIT && prev) {
     prev = cut(prev, Math.max(300, prev.length - (text.length - LIMIT) - tail.length)) + tail
-    text = compose(prev)
+    text = compose(prev, fnd)
   }
   return text
 }
@@ -390,18 +399,16 @@ ${notesText(notes)}
 Return the structured result: verdict PASS or FIX; tip; units present or missing; findings (each with an id C1, C2, ..., severity, unit, file:line, what is expected, the evidence path); gates (one line each with its log path); territory; not_checked.`
 }
 
-// A fix round's findings are compacted to keep the builder prompt under 12 KB; past 2,000 characters only the ids and
-// places travel in the prompt and the fixer reads the rest in the finders' notes files.
+// A fix round's findings go to the fixer in full, one JSON line each, and name the finders' notes files (the checker's
+// ${lane}__check.md; each reviewer's ${lane}__review-<lens>.md, written as the reviewer goes); builderPrompt caps them at
+// 12,000 characters and cuts them to fit the prompt as it does the prior note (V3-15: the old 2,000-character compaction
+// left the fixer the ids only, R-C-12).
 function findingsText(findings, files) {
-  const full = (findings || []).map(f => JSON.stringify({ id: f.id, severity: f.severity, unit: f.unit, where: cut(f.where, 200), what: cut(f.scenario || f.expected, 400), evidence: cut(f.evidence, 200), fix: cut(f.fix, 300) })).join('\n')
-  if (full.length <= 2000) return full
-  return (findings || []).map(f => JSON.stringify({ id: f.id, severity: f.severity, unit: f.unit, where: cut(f.where, 120) })).join('\n').slice(0, 2000) + `\n(the full findings are over 2,000 characters: read each one in ${files.join(' or ')} before you fix it)`
+  return (findings || []).map(f => JSON.stringify({ id: f.id, severity: f.severity, unit: f.unit, where: cut(f.where, 200), what: cut(f.scenario || f.expected, 400), evidence: cut(f.evidence, 200), fix: cut(f.fix, 300) })).join('\n') + `\n(each finder's full notes: ${files.join(' or ')})`
 }
 
 function fixPrompt(findings, source, files) {
-  return builderPrompt(['the fix round'], null, `THIS SESSION IS A FIX ROUND, not a batch of units: the lane's units are built; ${source} returned the findings below. Fix each finding once, in its own commit naming the finding's id (BLOCKER, HIGH and MEDIUM always; a LOW one only when it is a small, safe change inside the lane's files; a finding you judge wrong is not fixed: say why in your note's one_thing with the evidence). Run the touched tests and the gates through the gates script. In your note, "done" lists each finding id with its fix SHAs (unit = the finding id), and "blocked" lists the ones you did not fix with the reason.
-THE FINDINGS:
-${findingsText(findings, files)}`)
+  return builderPrompt(['the fix round'], null, `THIS SESSION IS A FIX ROUND, not a batch of units: the lane's units are built; ${source} returned the findings below. Fix each finding once, in its own commit naming the finding's id (BLOCKER, HIGH and MEDIUM always; a LOW one only when it is a small, safe change inside the lane's files; a finding you judge wrong is not fixed: say why in your note's one_thing with the evidence). Run the touched tests and the gates through the gates script. In your note, "done" lists each finding id with its fix SHAs (unit = the finding id), and "blocked" lists the ones you did not fix with the reason.`, { text: findingsText(findings, files), files })
 }
 
 function recheckPrompt(findings, fixNote, lens) {
