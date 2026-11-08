@@ -79,6 +79,7 @@ export const HOOKS = {
   pinCurrent: dt('pin-current'), // ui-settings.js:263
   pinSave: dt('pin-save'), // ui-settings.js:243
   removePin: dt('remove-pin'), // ui-settings.js:327
+  pinError: 'form.ws-pin-form p.field-error[role="alert"]', // ui-settings.js:226 (the sheet's "wrong PIN" line; hidden until a check says no)
   lockNow: dt('lock-now'), // ui-settings.js:325
   autoLock: dt('auto-lock'), // ui-settings.js:318
   noCrypto: dt('no-crypto'), // ui-settings.js:315

@@ -383,24 +383,29 @@ flow('PIN set lock unlock export', { globals: ['Store.lock'] }, async ({ page })
 });
 
 // Settings > Privacy by its own buttons (ui-settings.js:314 set-pin, :327 remove-pin, the sheet's pin-* and pin-save).
+// Each PIN check derives a key (PBKDF2, store.js ITERATIONS) and a wrong one then waits (store.js refused), and the sheet
+// drops a tap while its check runs (ui-settings.js:230): so the flow waits for the "wrong PIN" line before the right
+// PIN, and gives every check PIN_MS on a busy machine (C1: a fixed 800 ms lost the second tap in full runs).
+const PIN_MS = 20000;
+const pinErrorShown = (sel) => Array.from(document.querySelectorAll(sel)).some((e) => !e.hidden && e.textContent.trim() !== '');
 flow('Settings PIN set and remove', { routes: ['settings'], globals: ['Store.lock'], start: '#/settings/privacy' }, async ({ page }) => {
   assert.equal(await page.evaluate(() => Store.status().hasLock), false, 'no PIN at the start');
   await F.click(page, HOOKS.setPin);
   await (await F.need(page, HOOKS.pinInput, 4000)).fill(F.TEST_PIN);
   await (await F.need(page, HOOKS.pinInput2)).fill(F.TEST_PIN);
   await F.click(page, HOOKS.pinSave);
-  await F.waitFor(page, () => Store.status().hasLock === true);
+  await F.waitFor(page, () => Store.status().hasLock === true, undefined, PIN_MS);
   assert.equal(await page.evaluate(() => Store.status().locked), false, 'setting a PIN does not lock the open notebook');
   await F.go(page, '#/settings/privacy');
   await F.click(page, HOOKS.removePin);
   const wrong = await F.need(page, HOOKS.pinInput, 4000);
   await wrong.fill('0000');
   await F.click(page, HOOKS.pinSave);
-  await page.waitForTimeout(800);
+  await F.waitFor(page, pinErrorShown, HOOKS.pinError, PIN_MS);
   assert.equal(await page.evaluate(() => Store.status().hasLock), true, 'a wrong PIN does not remove the lock');
   await (await F.need(page, HOOKS.pinInput)).fill(F.TEST_PIN);
   await F.click(page, HOOKS.pinSave);
-  await F.waitFor(page, () => Store.status().hasLock === false);
+  await F.waitFor(page, () => Store.status().hasLock === false, undefined, PIN_MS);
   await F.go(page, '#/settings/privacy');
   await F.need(page, HOOKS.setPin);
 });
