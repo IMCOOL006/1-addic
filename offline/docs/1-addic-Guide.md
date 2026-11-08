@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 8 November 2026, 616 of 616 logic checks passed; 26 of 28 browser checks passed and 2 were skipped by name (Part 4)
+Tested: 8 November 2026, 651 of 651 logic checks passed; 28 of 28 browser checks passed (Part 4)
 ---
 
 > [!SUMMARY]
@@ -15,7 +15,7 @@ Tested: 8 November 2026, 616 of 616 logic checks passed; 26 of 28 browser checks
 
 ## How to use this guide
 
-Part 1 explains the app: what it is, why it exists, when to reach for it and how it thinks. Part 2 helps you make it yours in one sitting: the first-run steps, your reasons, the people you can call, and a routine for the first week. Part 3 is a hands-on tutorial in fifteen short lessons; Lesson 1 is a test drive with sample data, so you can try everything before you type anything real. Part 4 covers problems, known quirks and how this guide was checked. Words with a small number after them are explained at the bottom of the page and again in the Glossary at the end.
+Part 1 explains the app: what it is, why it exists, when to reach for it and how it thinks. Part 2 helps you make it yours in one sitting: the first-run steps, your reasons, the people you can call, and a routine for the first week. Part 3 is a hands-on tutorial in sixteen short lessons; Lesson 1 is a test drive with sample data, so you can try everything before you type anything real. Part 4 covers problems, known quirks and how this guide was checked. Words with a small number after them are explained at the bottom of the page and again in the Glossary at the end.
 
 | You want to… | Go to |
 |---|---|
@@ -444,10 +444,10 @@ None of these lose data. They are rough edges to be aware of in this early versi
 
 ## How this guide was checked
 
-The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. The pictures in Lesson 16 were taken from a build that already holds the daily objectives and Your way, the two parts still being added to the file. Two kinds of checks are run on the same file.
+The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
-- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **all 616** logic checks passed, in 15 test files.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **28** of them. In one full run **26 passed** and 2 were skipped by name: finishing an objective and claiming a step of Your way wait for the parts they check to join the file.
+- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **all 651** logic checks passed, in 15 test files.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **28** of them. In one full run **all 28 passed**.
 
 | Area | What is checked | Status |
 |---|---|---|
@@ -458,7 +458,7 @@ The steps in Part 3 were written against the screens of the real file, and every
 | SOS craving and drill | The craving flow with the timer and both outcomes; a drill saves nothing | Pass |
 | Logging | A quick log and an evening check-in are saved | Pass |
 | Your Harbor | Opens from Today in one tap with SOS still there; shows what changed after a quick log; a slip lowers no place; nothing moves under reduced motion | Pass |
-| Your day | An objective done grows the harbor by one; after missed days the best run and the total never drop; a claimed step of Your way opens its feature | Partly (1 of 3) |
+| Your day | An objective done grows the harbor by one; after missed days the best run and the total never drop; a claimed step of Your way opens its feature | Pass |
 | Learning | A lesson's page in the Workbook, then shown in SOS | Pass |
 | Privacy | A PIN locks and unlocks; saving a backup asks for it; the discreet lock screen shows "Notebook" and Help | Pass |
 | Settings | A PIN is set and removed from Settings → Privacy; a wrong PIN removes nothing | Pass |
@@ -466,7 +466,7 @@ The steps in Part 3 were written against the screens of the real file, and every
 | Backup | Export, erase and import bring back every record | Pass |
 | Looks | The dark theme applies and stays; the print view of the plan; the saved label always shows | Pass |
 
-Every other row passed in the browser on 8 November 2026. In the Your day row, the check on days shown up passed, and the other two are skipped by name until their parts join the file. The logic checks cover the same ground underneath.
+Every row passed in the browser on 8 November 2026. The logic checks cover the same ground underneath.
 
 ### The privacy proof
 
