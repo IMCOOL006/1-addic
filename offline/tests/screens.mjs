@@ -19,6 +19,8 @@ export const SIZES = {
 };
 // A fixed clock (Date only; timers still run), so the sample's dates and the images repeat from run to run.
 export const FIXED_NOW = '2026-11-04T09:30:00+05:30';
+// ADDIC_SHOTS=a,b takes only those slugs (a re-shoot of a few); unset, every shot is taken.
+const ONLY = String(process.env.ADDIC_SHOTS || '').split(',').map((x) => x.trim()).filter(Boolean);
 
 /* ── the shots: {slug, route, setup, size, profile, hook, own} ──────────────────────────────────────────────────
    route: a hash, or a function of the page returning one (null: the content is absent, the shot skips by name).
@@ -79,6 +81,20 @@ async function centre(page, sel) {
   await loc.evaluate((el) => el.scrollIntoView({ block: 'center' }));
 }
 
+// The run line counts only the person's own days (sample rows count for nothing): a craving logged yesterday and one
+// today, on the fixed clock, then the line on Today (V-45).
+async function ownRun(page) {
+  await needGlobals(page, ['Actions.logCraving', 'Engine.run']);
+  const now = new Date(FIXED_NOW).getTime();
+  for (const at of [now - 86400000, now]) {
+    await page.clock.setFixedTime(new Date(at));
+    await page.evaluate(() => Actions.logCraving({ intensity: 4, triggerIds: [], feelings: [], skills: [] }));
+  }
+  await page.clock.setFixedTime(new Date(FIXED_NOW));
+  await F.go(page, '#/today');
+  await centre(page, HOOKS.runLine);
+}
+
 export const SHOTS = [
   // getting started
   { slug: 'onboarding', route: '#/onboarding', profile: 'fresh', hook: HOOKS.onbStep },
@@ -89,6 +105,11 @@ export const SHOTS = [
   { slug: 'today', route: '#/today' },
   { slug: 'today-harbor', route: '#/today', hook: '[data-test="today-harbor"]', setup: (page) => centre(page, '[data-test="today-harbor"]') },
   { slug: 'status', route: '#/status', hook: HOOKS.statusPage }, // Your Harbor (V-01t); a look writes nothing
+  // R-O-6 (V-45): the objectives, the run line and the quest-line on Today; "Your way" on Your Harbor
+  { slug: 'today-objectives', route: '#/today', hook: HOOKS.objectivesCard, setup: (page) => centre(page, HOOKS.objectivesCard) },
+  { slug: 'today-run', route: '#/today', own: true, setup: (page) => ownRun(page) },
+  { slug: 'today-way', route: '#/today', hook: HOOKS.questlineCard, setup: (page) => centre(page, HOOKS.questlineCard) },
+  { slug: 'status-way', route: '#/status', hook: HOOKS.statusWay, setup: (page) => centre(page, HOOKS.statusWay) },
   // SOS and urgent help
   { slug: 'sos-hub', route: '#/sos', hook: HOOKS.sosHub },
   { slug: 'sos-craving', route: '#/sos/craving', hook: HOOKS.sosCraving },
@@ -297,6 +318,7 @@ export async function main() {
       let shared = null;
       for (const shot of SHOTS) {
         if (!(shot.size || Object.keys(SIZES)).includes(size)) continue;
+        if (ONLY.length && !ONLY.includes(shot.slug)) continue;
         const name = `${shot.slug}-${size}`;
         const file = OUT + name + '.png';
         const own = (shot.profile || 'sample') !== 'sample' || shot.own === true;
