@@ -50,8 +50,10 @@ Each check:
   ... --self-test
   ... --coord <dir> --kickoff <file>   other status files / prompts (tests; with ADDIC_HUB_HOME for another state)
 
-State and log: %LOCALAPPDATA%\\1-addic-hub\\launcher\\ (state.json, launcher.log, loop.pid; ADDIC_HUB_HOME overrides
-the base). `claude agents` lists the launched chats; `claude attach <id>` opens one in a terminal.
+State and log: %LOCALAPPDATA%\\1-addic-hub\\launcher\\ (state.json, launcher.log, loop.pid, once.lock while a check
+runs, launching-<TRACK>.json for 3 minutes after a launch; ADDIC_HUB_HOME overrides the base). A listed session whose
+pid is gone or whose transcript was last written 30 minutes ago is not live. `claude agents` lists the launched chats;
+`claude attach <id>` opens one in a terminal.
 """
 from __future__ import annotations
 
@@ -110,6 +112,12 @@ HEAD_BYTES = 300 * 1024
 MIN_FREE_GB = 4.0          # never launch under this
 GB_PER_SLOT = 0.7
 MEM_EVERY = 600            # the loop's memory sample, seconds
+STILL_MIN = 30             # a listed session whose transcript was last written this long ago is dead (V3-14)
+LOCK_STALE_MIN = 10        # once.lock older than this, or with its pid gone, is broken (V3-13)
+LEASE_MIN = 3              # a track's launching lease holds this long (V3-13)
+# The keys once() owns in state.json; the others (paused, paused_tracks) are written by --pause and --pause-track and
+# must survive a check that ran meanwhile (V3-12).
+ONCE_KEYS = ("last_run", "last_memory", "last_decisions", "last_dry_run", "heads", "launches", "failures")
 IST = cn.IST
 
 
@@ -153,6 +161,80 @@ def save_state(st):
     os.replace(tmp, p)
 
 
+def save_once(st):
+    """Saves once()'s own keys (ONCE_KEYS) into a freshly loaded state, so a --pause or --pause-track written while
+    the check ran is kept (V3-12)."""
+    cur = load_state()
+    for k in ONCE_KEYS:
+        if k in st:
+            cur[k] = st[k]
+    save_state(cur)
+
+
+def once_lock():
+    """Takes the check lock (home()/once.lock: 'pid stamp'), non-blocking -> True. False when another once() holds it:
+    its pid alive and the lock under LOCK_STALE_MIN old. A stale lock (pid gone, or older than that) is broken (V3-13)."""
+    p = home() / "once.lock"
+    for _ in range(2):
+        try:
+            fd = os.open(str(p), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write("%d %s" % (os.getpid(), now_ist().isoformat()))
+            return True
+        except FileExistsError:
+            pass
+        except OSError:
+            return False
+        try:
+            pid_s, _, stamp = io.open(p, encoding="utf-8").read().strip().partition(" ")
+            age = (now_ist() - datetime.datetime.fromisoformat(stamp)).total_seconds() / 60
+            held = pid_alive(pid_s) and age < LOCK_STALE_MIN
+        except Exception:
+            # Not readable yet (the other process between its create and its write): held while the file is young.
+            try:
+                held = (time.time() - p.stat().st_mtime) / 60 < LOCK_STALE_MIN
+            except OSError:
+                held = False
+        if held:
+            return False
+        try:
+            p.unlink()
+        except OSError:
+            return False
+    return False
+
+
+def once_unlock():
+    try:
+        (home() / "once.lock").unlink()
+    except OSError:
+        pass
+
+
+def lease_path(track):
+    return home() / ("launching-%s.json" % track)
+
+
+def lease_held(track, now=None):
+    """The track's launching lease ({track, sid, when}) when it is under LEASE_MIN old, else None (V3-13)."""
+    try:
+        L = json.load(io.open(lease_path(track), encoding="utf-8"))
+        age = ((now or now_ist()) - datetime.datetime.fromisoformat(L["when"])).total_seconds() / 60
+        return L if 0 <= age < LEASE_MIN else None
+    except Exception:
+        return None
+
+
+def lease_write(track, sid, now):
+    L = {"track": track, "sid": sid, "when": now.isoformat()}
+    p = lease_path(track)
+    tmp = str(p) + ".tmp"
+    with io.open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(L, fh)
+    os.replace(tmp, p)
+    return L
+
+
 def claude_exe():
     return shutil.which("claude") or str(Path.home() / ".local" / "bin" / "claude.exe")
 
@@ -189,10 +271,42 @@ def parse_agents(out, repo=None):
     return rows
 
 
+def transcript_path(sid, root=None):
+    """The session's transcript, <root>/<full session id>.jsonl (the file context_now.py and scan() read)."""
+    return Path(root or cn.ROOT) / (sid + ".jsonl")
+
+
+def dead_reason(a, root=None, now=None):
+    """Why a listed row is dead, or None: its pid is given and gone, or its transcript's last write is STILL_MIN or more
+    old. A row with no pid and no transcript (the cloud or background rows) is live (V3-14)."""
+    pid = a.get("pid")
+    if pid not in (None, "", 0) and not pid_alive(pid):
+        return "pid %s gone" % pid
+    try:
+        age = ((now or time.time()) - transcript_path(a.get("sid") or "", root).stat().st_mtime) / 60
+    except OSError:
+        return None
+    return "transcript %.0f min still" % age if age >= STILL_MIN else None
+
+
+def drop_dead(rows, root=None, now=None):
+    """The rows minus the dead ones (dead_reason), the dropped ones logged in one line."""
+    if not rows:
+        return rows
+    keep, dead = [], []
+    for a in rows:
+        why = dead_reason(a, root, now)
+        (dead if why else keep).append("%s (%s)" % (a["sid"][:8], why) if why else a)
+    if dead:
+        log("dropped %d listed session(s) as dead: %s" % (len(dead), "; ".join(dead)))
+    return keep
+
+
 def live_sessions():
-    """The live sessions of this program (the owner's windows and the background sessions), or None on failure."""
+    """The live sessions of this program (the owner's windows and the background sessions) minus the dead listed ones
+    (drop_dead), or None on failure."""
     out, code = run_claude(["agents", "--json"], timeout=60)
-    return parse_agents(out)
+    return drop_dead(parse_agents(out))
 
 
 def head_info(path):
@@ -409,11 +523,17 @@ def launch(track, prev_sid, reason, st, dry):
         log("DRY RUN %s: would launch '%s' (%d chars of prompt; %s) because %s" % (
             track, name, len(prompt), " ".join((cfg["model"],) + tuple(cfg["extra"])), reason))
         return None
+    held = lease_held(track, now)
+    if held:
+        log("%s: a launch is under way (lease %s, %s); not launched again" % (track, (held.get("sid") or "-")[:8], held.get("when", "")[:19]))
+        return None
+    lease_write(track, None, now)
     sid8, out = bg_launch(name, prompt, model=cfg["model"], extra=cfg["extra"])
     if not sid8:
         log("LAUNCH FAILED %s: %s" % (track, " ".join(out.split())[:300]))
         st.setdefault("failures", []).append({"when": now.isoformat(), "track": track, "out": out[:500]})
         return None
+    lease_write(track, sid8, now)
     full = full_sid(sid8)
     try:
         roles_add(sid8, track, now.strftime("%d %b %H:%M"))
@@ -560,18 +680,29 @@ def append_mem_row(row, co=None):
 # --- one check ---------------------------------------------------------------------------------------------------
 
 def once(dry=False, live=None, found=None, mem=None):
-    """One check. `live`, `found` and `mem` (free GB, total GB) may be given (the self-test); else read here."""
+    """One check under the check lock (once.lock): a second once() that finds it held (the loop's tick and
+    --launch-missing at the same moment) logs one line and returns without launching (V3-13)."""
+    if not once_lock():
+        log("another check holds %s; this one does nothing" % (home() / "once.lock"))
+        return 1
+    try:
+        return check(dry, live, found, mem)
+    finally:
+        once_unlock()
+
+
+def check(dry=False, live=None, found=None, mem=None):
+    """The check itself (once() runs it under the lock). `live`, `found` and `mem` (free GB, total GB) may be given
+    (the self-test); else read here. The pause flags are re-read from disk right before deciding, and only once()'s
+    own keys are saved (save_once), so a --pause written meanwhile is kept (V3-12)."""
     st = load_state()
     now = now_ist()
     st["last_run"] = now.isoformat()
-    paused = st.get("paused")
-    paused_tracks = paused_tracks_of(st)
-    st["paused_tracks"] = sorted(paused_tracks)
     if live is None:
         live = live_sessions()
     if live is None:
         log("claude agents --json failed; nothing launched this check")
-        save_state(st)
+        save_once(st)
         return 1
     heads = st.setdefault("heads", {})
     if found is None:
@@ -582,6 +713,9 @@ def once(dry=False, live=None, found=None, mem=None):
     # A dry run decides on a copy: care()'s marks (stepped, noted, removed) are not kept.
     work = copy.deepcopy(st) if dry else st
     gates = {g: header(g) for g in sorted({c["gate"][0] for c in TRACK.values() if c.get("gate")})}
+    fresh = load_state()           # the pause flags as they are now, not as they were when this check began
+    paused = fresh.get("paused")
+    paused_tracks = paused_tracks_of(fresh)
     decisions = {}
     for track in TRACKS:
         try:
@@ -613,7 +747,7 @@ def once(dry=False, live=None, found=None, mem=None):
     st["last_decisions"] = decisions
     st["last_dry_run"] = bool(dry)
     st["heads"] = {k: v for k, v in heads.items() if k in found}
-    save_state(st)
+    save_once(st)
     return 0
 
 
@@ -998,6 +1132,75 @@ def self_test():
     checks.append(("under 4.0 GB free nothing launches, and it is logged", d.get("CORE", {}).get("reason") is None
                    and (d.get("CORE", {}).get("held") or "").startswith("NO CHAT")
                    and "free memory is 3.5 GB, under 4.0 GB: not launched" in io.open(home() / "launcher.log", encoding="utf-8").read()))
+    # V3-12: a --pause and a --pause-track written while the check runs (here: during its first header() read, after
+    # it loaded the state) survive its save and hold the launch.
+    real_header = header
+
+    def pausing_header(track, co=None):
+        if not load_state().get("paused"):
+            main(["--pause", "written during the check"])
+            main(["--pause-track", "SCREENS"])
+        return real_header(track, co)
+    globals()["header"] = pausing_header
+    once(dry=True, live=hubwin, found=found, mem=(8.0, 16.0))
+    globals()["header"] = real_header
+    st2 = load_state()
+    logtxt = io.open(home() / "launcher.log", encoding="utf-8").read()
+    checks.append(("V3-12: a --pause and a --pause-track written during a check survive its save and hold the launch",
+                   (st2.get("paused") or {}).get("reason") == "written during the check" and paused_tracks_of(st2) == {"SCREENS"}
+                   and "CORE needs a fresh chat (NO CHAT" in logtxt and "but the launcher is paused: written during the check" in logtxt
+                   and ((st2.get("last_decisions") or {}).get("CORE") or {}).get("reason", "").startswith("NO CHAT")
+                   and st2.get("last_run") and st2.get("last_memory")))
+    main(["--resume"])
+    main(["--resume-track", "SCREENS"])
+    # V3-13: a second once() while the lock is held (a live pid, a fresh stamp) does nothing; a lock whose pid is gone
+    # is broken and the check runs.
+    lock = home() / "once.lock"
+    io.open(lock, "w", encoding="utf-8").write("%d %s" % (os.getpid(), now_ist().isoformat()))
+    before = load_state().get("last_run")
+    rc = once(dry=True, live=hubwin, found=found, mem=(8.0, 16.0))
+    held_ok = rc == 1 and load_state().get("last_run") == before and lock.exists() \
+        and "another check holds" in io.open(home() / "launcher.log", encoding="utf-8").read()
+    io.open(lock, "w", encoding="utf-8").write("4000000 %s" % now_ist().isoformat())
+    rc = once(dry=True, live=hubwin, found=found, mem=(8.0, 16.0))
+    checks.append(("V3-13: a once() under a held lock logs one line and returns without a check; a lock whose pid is gone is broken",
+                   held_ok and rc == 0 and load_state().get("last_run") != before and not lock.exists()))
+    # V3-13: the per-track launching lease. A lease under LEASE_MIN old refuses a second launch of the track; an expired
+    # one lets it through (bg_launch, full_sid and roles_add replaced by fakes: nothing starts, the roles file untouched).
+    lease_write("HUB", "oldsid00", now_ist())
+    st_l = {}
+    r_ = launch("HUB", None, "test", st_l, dry=False)
+    lease_ok = r_ is None and not st_l and "HUB: a launch is under way (lease oldsid00" in io.open(home() / "launcher.log", encoding="utf-8").read()
+    lease_write("HUB", "oldsid00", now_ist() - datetime.timedelta(minutes=LEASE_MIN + 1))
+    real = (bg_launch, full_sid, roles_add)
+    globals()["bg_launch"] = lambda name, prompt, model=MODEL, extra=(): ("deadbeef", "backgrounded deadbeef")
+    globals()["full_sid"] = lambda sid8, tries=15: sid8 + "-full"
+    globals()["roles_add"] = lambda sid8, track, when_str, path=None: True
+    r_ = launch("HUB", None, "test", st_l, dry=False)
+    globals()["bg_launch"], globals()["full_sid"], globals()["roles_add"] = real
+    L = lease_held("HUB")
+    checks.append(("V3-13: a launching lease under 3 min old refuses a second launch of the track; an expired one lets it through and is renewed with the sid",
+                   lease_ok and r_ == "deadbeef-full" and bool(L) and L.get("sid") == "deadbeef" and L.get("track") == "HUB"
+                   and (st_l.get("launches") or {}).get("HUB", [{}])[-1].get("sid") == "deadbeef-full"))
+    # V3-14: a listed row with its pid gone, or its transcript STILL_MIN or more still, is dropped; the others stay.
+    troot = tmp / "transcripts"
+    troot.mkdir()
+    for sid, back in (("live1111-x", 1), ("still222-x", 31), ("fresh29x-x", 29)):
+        p = troot / (sid + ".jsonl")
+        io.open(p, "w", encoding="utf-8").write("{}\n")
+        os.utime(p, (time.time() - back * 60, time.time() - back * 60))
+    rows = [{"sid": "deadpid0-x", "kind": "interactive", "pid": 4000000, "name": "CORE"},
+            {"sid": "live1111-x", "kind": "interactive", "pid": os.getpid(), "name": "HUB"},
+            {"sid": "still222-x", "kind": "background", "pid": None, "name": "SCREENS 09:00"},
+            {"sid": "fresh29x-x", "kind": "background", "pid": None, "name": "SCREENS 09:30"},
+            {"sid": "nopidnot-x", "kind": "background", "pid": None, "name": "CORE 10:00"}]
+    kept = drop_dead(rows, root=troot)
+    logtxt = io.open(home() / "launcher.log", encoding="utf-8").read()
+    checks.append(("V3-14: a row with its pid gone or its transcript 31 min still is dropped; a live pid with a fresh transcript, a 29-min one "
+                   "and a row with no pid and no transcript stay; None (agents failed) passes through",
+                   [a["sid"][:8] for a in kept] == ["live1111", "fresh29x", "nopidnot"] and "deadpid0 (pid 4000000 gone)" in logtxt
+                   and "still222 (transcript 31 min still)" in logtxt and drop_dead(None) is None
+                   and transcript_path("abc") == Path(cn.ROOT) / "abc.jsonl"))
     CO, KICKOFF_FILE = saved
     checks.append(("pid_alive: this process yes, pid 4000000 no", pid_alive(os.getpid()) and not pid_alive(4000000)))
     checks.append(("the state lives under ADDIC_HUB_HOME (the real %LOCALAPPDATA%\\1-addic-hub untouched by the test)",
