@@ -7694,7 +7694,9 @@ const UI = (function () {
     const settings = safe(() => view.get('settings', 'app'), null) || {};
     const defTerm = safe(() => C.terms.find((t) => t.id === profile.term) || C.terms[0], null) || { word: '', days: 'days', adjective: '' };
     const term = (E && typeof E.term === 'function' && safe(() => E.term(profile), null)) || defTerm;
-    const features = (E && typeof E.revealed === 'function' && safe(() => E.revealed(view), null)) ||
+    // V-46: Engine.unlocked (revealed plus claimed quest-line rewards and FeatureUnlocked features), then revealed.
+    const features = (E && typeof E.unlocked === 'function' && safe(() => E.unlocked(view), null)) ||
+      (E && typeof E.revealed === 'function' && safe(() => E.revealed(view), null)) ||
       new Set(safe(() => C.reveal.always, []) || []);
     return { view, E, A, profile, settings, term, now: new Date(), features, calm: !!settings.calm, route: r || route() };
   }
