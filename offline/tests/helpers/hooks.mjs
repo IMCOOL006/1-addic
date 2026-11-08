@@ -177,6 +177,24 @@ export const HOOKS = {
   harborPlace: '[data-place]', // ui-harbor.js:78 (data-level on each place of the scene)
   harborGrew: '.hb-grew', // ui-status.js:357 (the one-off pulse of a place that grew; never when still)
   harborMoving: '.hb-moving', // ui-harbor.js (the drifting water and beam; never when still)
+  // R-O-6: the objectives, the run, the quest-line (data-test; today-track V-43 as built, READY c7145c9; R-S-26)
+  objectivesCard: dt('objectives-card'), // ui-today.js:567 (also data-tour objectives-card; needs Engine.dailyObjectives items)
+  objective: dt('objective'), // ui-today.js:556 (data-id, data-done)
+  objectiveDone: dt('objective-done'), // ui-today.js:561 (only with Actions.objective.done, actions-sos V-41)
+  objectiveSwap: dt('objective-swap'), // ui-today.js:563 (only with Actions.objective.swap, once a day)
+  runLine: dt('run-line'), // ui-today.js:580 (also data-tour run-line; once Engine.run's total is above 0)
+  runCurrent: dt('run-current'), // ui-today.js:582, ui-status.js:379 (the number in a strong)
+  runBest: dt('run-best'), // ui-today.js:582, ui-status.js:379
+  runTotal: dt('run-total'), // ui-today.js:582, ui-status.js:379
+  runKept: dt('run-kept'), // ui-today.js:583, ui-status.js:380 (a grace day holding the run)
+  runBack: dt('run-back'), // ui-today.js:584, ui-status.js:381 (you came back, after a break)
+  questlineCard: dt('questline-card'), // ui-today.js:598 (also data-tour questline-card; needs Content.questLine, content V-42)
+  questlineStep: dt('questline-step'), // ui-today.js:610 (data-state current, data-id), ui-status.js:395 (done|current|locked)
+  questlineClaim: dt('questline-claim'), // ui-today.js:616 (only when the step is claimable and Actions.questLine.claim exists)
+  statusGrowth: dt('status-growth'), // ui-status.js:385
+  statusGrowthItem: dt('status-growth-item'), // ui-status.js:388 (data-kind; one per growth unit, never removed)
+  statusGrowthLayer: dt('status-growth-layer'), // ui-harbor.js:120 (an svg g in the scene)
+  statusWay: dt('status-way'), // ui-status.js:393 (the spine "Your way")
 };
 
 // Stable skip reasons (the contract's strings; the chat reads them by name).
