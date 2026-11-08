@@ -251,27 +251,33 @@
 - V-42's args gained the three first-run tour steps (status-open, objectives-card, questline-card). V-10 had left status-open out, and the V-44 brief puts the other two in V-42 (a5f51792).
 - A background check (Bash bihaqa7vx) waits for a launcher row at or above 7.0 GB in lane-widening.md.
 
+## 2026-11-08 07:24 IST · V-43 red fixed (READY 670df19); V-42 running; hand-over planned (context ~270k)
+
+- HUB 11 (07:14) returned V-43 red on 1 name on the merged tree: today-track.test.mjs:778, 'dots only for one-to-one feature ids'. Content V-10's features.status makes the chip ask for dot('status').
+- The fix is 670df19, one test line, with the trailers. Merged-tree scratch (fe5aa91 + the lane's 6 files): 67/67 on the two lane tests and 608/608 on all node tests. READY 670df19, merge base 94c51632. This chat made the fix itself, with no builder or checker.
+- HUB 11 merged V-08b at fe5aa913 (07:19). V-42 launched at 07:23 as wf_cbf01cc8-1a7 on slot 4. CORE answered R-S-26 as R-C-65: growthItems' grows is the object by design, with no engine change.
+
 ## Resume here
 
-- Chat b632a0d9 (SCREENS) is live. NO lane run is live at this point; the 7.0 GB row check is Bash bihaqa7vx.
+- Chat b632a0d9 (SCREENS) is live, with context about 270k. It hands over with STATE RESTART when V-42 returns.
+- RUNNING: content V-42, wf_cbf01cc8-1a7, launched 07:23 IST on slot 4, merge base 87582bd4. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl.
+  - If b632a0d9 is not listed by `claude agents --json`, the run died with it. Relaunch lane.js with args/v3_content_v42.json: restamp now and session, add any V-42 commits on build/content after 87582bd4 to the priorNote, and pass no resumeFromRunId.
+  - If it returned: verify it (trailers, territory, log verdicts, restore offline/1-addic.html), then write LANE: content READY <tip> with merge base 87582bd4.
+  - Expected red on the branch alone: the guards tour-target questline-card, objectives-card and run-line, until V-43 (670df19) merges.
 - Board for the HUB:
-  - today-track READY c7145c9 (merge base 94c51632). The lane's V3 units are complete.
-  - game-tutorials READY-SLICE 241e9bb (merge base 30cb12ff).
-  - content MERGED 4ae98eb, with V-42 next.
+  - today-track READY 670df19 (merge base 94c51632; the lane's V3 tier 1 units are complete).
+  - game-tutorials MERGED 241e9bb (V-08b, at fe5aa913).
 - NEXT:
-  - (1) On the first row at or above 7.0 GB: content V-42. Restamp now in args/v3_content_v42.json (python tmp script mk_v42.py, or edit 'now'), then launch lane.js with it.
-    - The worktree is at 87582bd4, clean. Merge base 87582bd4.
-    - Expected red by name on the branch alone: guards tour-target questline-card, objectives-card and run-line, until V-43 merges.
-  - (2) Then game-tutorials V-28 + V-44 on the next 7.0 GB row.
-    - After the HUB merges 241e9bb (and c7145c9), fast-forward build/game-tutorials and its worktree to the trunk tip (--ff-only).
-    - Write args/v3_gt_v28_v44.json from args/v3_gt_slice.json: units [V-08b, V-28, V-44], batches one each (V-21 is tier 2: leave it out), done + V-08b, sliceRun false, base and diffFrom the new trunk tip, priorNote the V-08b builder's note (wf_522ed1be-f6b journal).
-    - Its laneNote: the V-28 and V-44 brief sections, R-H-44 (nothing re-locks; tools and games open; rewards are module-revealed features), R-S-21 being core V-46, R-C-50's claim verbs (actions-sos V-41, behind typeof), V-43's hooks, and content V-42's tour steps and JITs (behind data presence).
-  - (3) After V-42 READY: content's V3 tier 1 is complete. V-23 (tier 2) only when no tier 1 lane waits; V-10b waits for the owner's I6.
-  - (4) Watch outbox-OWNER.md for I6 (V-10b).
+  - (1) game-tutorials V-28 + V-44 on a row at or above 7.0 GB.
+    - Fast-forward build/game-tutorials and its worktree to the trunk tip (it contains 241e9bb; --ff-only).
+    - Write args/v3_gt_v28_v44.json from args/v3_gt_slice.json: units [V-08b, V-28, V-44], batches one each (V-21 is tier 2: leave it out), done = U-27, U-26, U-28, FIX-TOUR, V-08b, sliceRun false, base and diffFrom = the new tip, priorNote = the V-08b builder's note (the wf_522ed1be-f6b journal, its first result line).
+    - Its laneNote takes: the brief sections V-28 and V-44 (briefs/game-tutorials-v3.md lines 19-39); R-H-44 (nothing re-locks; the rewards are module-revealed features; the tools and games stay open); R-S-21 = core V-46 (ctx.features from Engine.unlocked, being built); R-C-50 (Actions.questLine.claim -> FeatureUnlocked payload.feature; actions-sos V-41 not merged: behind typeof); V-43's hooks (contracts/today-track-v3-annex.md 'V-43 as built'; today-track's claim button calls GuidanceUI.rewardSheet(feature, ctx) behind typeof); content V-42's tour steps (status-open, objectives-card, questline-card, right after nav-today) and its JITs for questLine, objectives and run (merged or not: guard by data presence).
+  - (2) content V-23 (tier 2) only when no tier 1 lane waits. V-10b waits for the owner's I6 (outbox-OWNER.md).
+  - (3) workbook-settings V-24 and V-22b, game-tutorials V-21 (tier 2), later.
 - Facts:
-  - setlane.py takes "PREFIX=full line" pairs plus an optional --section; run it from a Python file in the job tmp folder (subprocess) to dodge shell quoting. Heredocs with nested quotes break: use the Write tool for tmp scripts. rr.py takes <section-file> <resume-file>.
+  - setlane.py takes "PREFIX=full line" pairs plus an optional --section; run it from a Python file written with the Write tool into the job tmp folder (heredocs with nested quotes break). rr.py takes <section-file> <resume-file>.
   - hub_commit.py runs from the repo root with repo-relative paths.
-  - claude agents needs --json.
-  - The launcher's memory rows are the table at the end of coordination/lane-widening.md.
-  - HUB 11 = SendMessage to "uds:\\.\pipe\LOCAL\cc-msg-fcf6b06d9d19a8f521ccbe67a8258a6f" ("HUB 05:50"). CORE 13 = "uds:\\.\pipe\LOCAL\cc-msg-a351dea6a6c99dc62f066015656a5849" ("CORE 05:43").
-  - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it with git checkout before writing READY.
+  - claude agents needs --json. The memory rows are the table at the end of coordination/lane-widening.md.
+  - HUB 11 = "uds:\\.\pipe\LOCAL\cc-msg-fcf6b06d9d19a8f521ccbe67a8258a6f" ("HUB 05:50"). CORE 13 = "uds:\\.\pipe\LOCAL\cc-msg-a351dea6a6c99dc62f066015656a5849" ("CORE 05:43").
+  - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
+  - A merged-tree scratch proof: git archive build/offline-v1 offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test.
