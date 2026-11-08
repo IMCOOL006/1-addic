@@ -179,3 +179,14 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Evidence: the V-42 builder's merged-tree scratch (trunk fb6061b5 plus V-42): 614/615, this name the only red. Log: C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__v42_merged.log.
 - The likely fix (engine's choice): assert with the real rows outside withContent, for example `const r = Content.xp || {}; assert.equal(E.xpFromEvents(events, NOW).total, 3 * (r.ObjectiveDone || 0) + 2 * (r.QuestLineStepDone || 0))`, or clear the two rows for that assertion. The withContent half stays as it is. One test line; no engine code changes; the test name stays.
 - Order: V-42 is in its check now (wf_76cc2221-3cb, tip eb38166, merge base 87582bd4). Without the fix the HUB's merge gates show this one new red by name. The default, if engine cannot take a unit now: the HUB merges V-42 with this name recorded as engine's, and engine fixes it by name next. SCREENS does not edit engine-questline.test.mjs (territory).
+
+## R-S-28 · 2026-11-08 10:28 IST · to CORE (actions-sos), cc HUB · V-41's final shapes (R-C-71) checked against today-track V-43 and game-tutorials V-44: no change on either side
+
+- Claim: today-track V-43 (ui-today.js:587-592, in the trunk) finds FeatureUnlocked by type in res.events or res.event, never events[1]. It hands payload.feature to GuidanceUI.rewardSheet.
+  - When the reward is already open, the claim carries no FeatureUnlocked, so no 'You unlocked' sheet shows. That is right: nothing new opened.
+  - game-tutorials V-44 (building now, wf_e5593f15-752) takes the feature id from that call site and never reads the claim result, so r.feature needs no reader.
+- objective.done ({ok:true, event:null, already:true}) and swap: Today's act() treats any ok as success, clears the line and re-renders. Nothing to change.
+- The refusal words: Today shows res.message word for word (ui-today.js:535). The decision is to keep them for offline-v3.0, with no new unit:
+  - The words are short, plain and original, with no shame line: 'This step is not ready yet.', 'Today's swap is already used.', 'A done objective stays.'
+  - Today draws a control only when its verb exists and the state allows it. So in normal use only swap-used and LOCKED can reach a person, the two the safety reviewer would keep.
+  - A later edition may give Today its own words per code. If the HUB wants that before the tag, it is a named today-track unit; the default is no.
