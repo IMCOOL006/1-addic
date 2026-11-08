@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-08 11:47 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs READY 44a07e0 (FIX-COUNTS by name, merge base 5ee84d5a) with the HUB for the tag offline-v3.0. QUIET until the tag: nothing heavy. After the tag: tier 2, one start per 7.0 GB row across both tracks, alternating with SCREENS (CORE first; SCREENS 11:07's message): core V-16 + V-17a + V-26a staged (args_v3_core_V-16.json, wf_sim OK 11529 B)
-LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
+STATE: WAITING   # 2026-11-08 12:04 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs FIX-COUNTS 44a07e0 merged (trunk 60dffe33) and offline-v3.0 tagged there (HUB 12, 11:56); QUIET over. Tier 2 toward offline-v3.1: one start per row at or above 7.0 GB across both tracks, alternating with SCREENS (CORE first). core, actions-sos, learn, tests-docs fast-forwarded to 60dffe33 (merge base); args staged, wf_sim OK, nothing cut. 12:00 by hand 3.79 GB: no start yet; core V-16 + V-17a + V-26a starts on the first 7.0 row
+LANE: core MERGED fbc663d   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-16 + V-17a + V-26a (slot 1; args_v3_core_V-16.json) on the first 7.0 GB row; then the whole-lane two-lens review (V-11, V-46 and the batch) before the final READY
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 10:56 IST: V-41 + RC1-RC4, RS1 merged 3235375c (trunk 3235375c; test 191/0/0, full Node suite 640/640). Next (T2, when no tier 1 lane waits, a 7.0 GB row): V-25, V-18, V-17b + C2 after a fast-forward to the trunk; then the whole-lane review from f69bc68a
-LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs READY 44a07e0   # 2026-11-08 11:47 IST: FIX-COUNTS by name (the counts true on the trunk 5ee84d5a: Node 651/0/0 in 15 files, browser 28/28/0, the HUB's quiet gates); merge base 5ee84d5a; territory 0 errors; the tag offline-v3.0 on its merge. Then tier 2 V-22a, V-26b, V-27, V-29
+LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
+LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
+LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 11:47 IST
+UPDATED: 2026-11-08 12:04 IST
+
+# 2026-11-08 12:04 IST · from the HUB (HUB 12, 11:56, by message) · FIX-COUNTS merged; offline-v3.0 tagged at 60dffe33; tier 2 now
+
+- tests-docs FIX-COUNTS 44a07e0 merged (trunk 60dffe33; build, test, validate, guards, docs GREEN on the merged tree); the tag offline-v3.0 on 60dffe331a2f9c1dc4333ff524ec4729486b19d5, annotated, pushed; every build/* branch on origin. QUIET over.
+- Tier 2 under the same gates: one start per row at or above 7.0 GB across both tracks, alternating with SCREENS (CORE the first qualifying row); every lane fast-forwards to 60dffe33 first (merge base that tip); the newest run pauses first under 4.0; the flagged lanes' two reviewers at the lane end before the final READY; READY-SLICE after each run and the HUB merges each. CORE's order: core V-16, V-17a, V-26a (slot 1); actions-sos V-25, V-18, V-17b, then its whole-lane review from f69bc68a (slot 3); learn V-20 (slot 9); tests-docs V-22a, V-26b, V-27, V-29 (slot 5). The next edition is offline-v3.1.
+- Done 12:01: core (the gates' rebuild of offline/1-addic.html dropped), actions-sos, learn, tests-docs fast-forwarded to 60dffe33, clean. Launch files (tracks/CORE/args/, base and diffFrom 60dffe33, wf_sim OK, no prior note cut): args_v3_core_V-16.json (slot 1, skipReview: the whole-lane two-lens review of V-11, V-46 and this batch over core's own commits follows as CORE's run), args_v3_actions-sos_V-25.json (slot 3, skipReview, V-25 + V-18), args_v3_learn_V-20.json (slot 9, the slice), args_v3_tests-docs_V-22a.json (slot 5).
 
 # 2026-11-08 11:47 IST · tests-docs READY 44a07e0 (FIX-COUNTS); the tier 2 order after the tag
 

@@ -1,0 +1,86 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The screenshots, the guide, the browser harness and the hooks round, the offline docs true, the status layer's browser tests, the boot-time and contrast checks.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-35",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45",
+  "V-22a",
+  "V-26b",
+  "V-27",
+  "V-29"
+ ],
+ "batches": [
+  [
+   "U-35",
+   "V-07",
+   "V-03",
+   "V-06",
+   "V-01t",
+   "V-45"
+  ],
+  [
+   "V-22a",
+   "V-26b",
+   "V-27",
+   "V-29"
+  ]
+ ],
+ "unitTier": {
+  "U-35": 1,
+  "V-07": 1,
+  "V-03": 1,
+  "V-06": 1,
+  "V-01t": 1,
+  "V-22a": 2,
+  "V-26b": 2,
+  "V-27": 2,
+  "V-29": 2,
+  "V-45": 1
+ },
+ "unitNotes": {
+  "V-22a": "C-TM-1 (0.2 h): the two writes in the markOnboarded helper become one, or are ordered and awaited; test-only.",
+  "V-26b": "Boot-time budget (0.7 h, V3-26): a browser test that measures the time from navigation to the first ui:rendered on the built file, prints it in the log and bounds it (the bound from three runs on this machine, with margin); core prints per-part sizes in build.mjs (V-26a, by outbox if not yet merged).",
+  "V-27": "Contrast guard (1 h, V3-27): a Node check (offline/tests/contrast.test.mjs or inside guards) of the fg/bg token pairs of styles.css in both themes at 4.5:1 for text and 3:1 for large text, by name; .coach-sos and .gt-dot included. A red names the pair and goes to the token's owner by outbox.",
+  "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others."
+ },
+ "laneNote": "Tier 2 now; every tier 1 unit is merged. A hook another lane's file needs is asked by outbox (element and attribute; the owner adds it). CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 80a57fa8-75f9-4552-9327-c1b964682602'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45"
+ ],
+ "base": "60dffe33",
+ "session": "80a57fa8-75f9-4552-9327-c1b964682602",
+ "now": "2026-11-08 11:55 IST",
+ "diffFrom": "60dffe33",
+ "slot": 5,
+ "sliceRun": false,
+ "priorNote": "CORE 15: V-45 (949f0f7) and FIX-COUNTS (44a07e0: Node 651/0/0 in 15 files, browser 28/28/0) are merged; offline-v3.0 is tagged at 60dffe33. The worktree was fast-forwarded to the trunk tip (diffFrom): build V-22a, V-26b, V-27, V-29 as one batch; the checker judges the commits after diffFrom. V-26b: if core V-26a is not in the trunk, the boot test does not depend on it (say so). V-27: never fix a red pair here; note it (pair, theme, ratio, styles.css:line, owner by territory.json) for CORE's outbox. New tests change the counts: after the batch, run npm test and the browser suite once on the lane tree and write the true numbers in CLAUDE.md ('Tests as of'), README.md, offline/README.md and the guide (Tested line, Part 4); rebuild the .docx."
+}

@@ -40,7 +40,7 @@ a.update(base=base, session=SESSION, now=now, diffFrom=diff)
 if os.environ.get('SLOT'): a['slot'] = int(os.environ['SLOT'])
 a['sliceRun'] = not before
 if prior: a['priorNote'] = prior
-a['laneNote'] = (a.get('laneNote', '') + " CORE 13's word (" + now + "): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/" + lane +
+a['laneNote'] = (a.get('laneNote', '') + " CORE's word (" + now + "): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/" + lane +
     "/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). "
     "No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: " + SESSION + "'; message from a file; add by path. "
     "offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.")
