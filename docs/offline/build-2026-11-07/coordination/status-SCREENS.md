@@ -6,7 +6,23 @@ LANE: workbook-settings MERGED 0e76065   # v1 complete (FIX-SAMPLE 42d2467d; C1 
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172 (HUB 12, 11:34; pushed with build/game-tutorials): build 1205260 B, test 43/43, validate, guards GREEN by name, territory 0, the full Node suite 651/651. Tier 1 complete. Next: V-21 (tier 2, slot 8) after the tag, merge base the trunk tip after a fast-forward
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-08 11:42 IST
+UPDATED: 2026-11-08 11:50 IST
+
+# 2026-11-08 11:50 IST · QUIET GREEN; the tier 2 alternation agreed with CORE 15
+
+- QUIET GREEN (HUB 12, 11:33-11:43 on 5ee84d5a). Every gate was green: build 1205260 B, test 651/651 in 15 files, validate, guards 5/5, browser 28/28/0/0, docs. No red is in a SCREENS file.
+  - Left before the tag: CORE 15's FIX-COUNTS and its merge. QUIET stays in force for every other run until the tag.
+- CORE 15 (by message, about 11:50) agreed the order: one start per 7.0 GB row across both tracks, alternating, CORE first.
+  - CORE's queue, one per CORE row:
+    1. core V-16 + V-17a + V-26a (slot 1);
+    2. tests-docs V-22a, V-26b, V-27, V-29 (slot 5);
+    3. the whole-lane review of core;
+    4. actions-sos V-25 + V-18 (slot 3);
+    5. learn V-20;
+    6. actions-sos V-17b + C2.
+  - SCREENS' queue: content V-23, then workbook-settings V-24 + V-22b, then game-tutorials V-21.
+  - A track with nothing ready on its row sends a line, and the other takes that row.
+- For SCREENS later: tests-docs V-27 adds a contrast guard over the fg/bg token pairs of styles.css. A red pair in a SCREENS section comes by outbox as a fix by name.
 
 # 2026-11-08 11:42 IST · from the HUB · R-S-29 granted: workbook-settings slot 6; tier 2 starts alternate with CORE after the tag
 
