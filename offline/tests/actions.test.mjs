@@ -2989,3 +2989,157 @@ describe('review round 5 fixes (FIX-R5)', () => {
   });
   // -- FIX-R5 tests end --
 });
+
+// ── V3 (2026-11-08, PLAN-V3.md): V-08a Actions.useSkill; V-SOS10 the SOS rating row at 390 px ──
+describe('V3 actions-sos (V-08a, V-SOS10)', () => {
+  beforeEach(async () => { await S().resetAll(); });
+  // useSkill never throws: the call and its promise are both guarded, so a throw fails the test by name
+  async function useSkill(arg) {
+    assert.equal(typeof Actions.useSkill, 'function', 'Actions.useSkill is exported');
+    let p;
+    assert.doesNotThrow(() => { p = Actions.useSkill(arg); }, 'no synchronous throw');
+    assert.ok(p && typeof p.then === 'function', 'useSkill returns a promise');
+    try { return await p; } catch (e) { return assert.fail(`useSkill threw ${e && e.code}: ${e && e.message}`); }
+  }
+  const PAYLOAD_KEYS = ['helpful', 'skillId'];
+
+  test('V-08a useSkill writes SkillUsed with the right fields', async () => {
+    const r = await useSkill({ skillId: 'ride-wave', helpful: true });
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.equal(r.event.type, 'SkillUsed');
+    assert.deepEqual(r.event.payload, { skillId: 'ride-wave', helpful: true }, 'exactly skillId and helpful, no logId');
+    assert.match(r.event.at, ISO_RE);
+    assert.equal(typeof r.event.id, 'string');
+    assert.equal(r.event.sample, undefined, "the person's own, unmarked");
+    assert.deepEqual(events('SkillUsed').map((e) => [e.id, e.payload]), [[r.event.id, { skillId: 'ride-wave', helpful: true }]], 'one row, the one returned');
+    assert.equal(list('logs').length, 0, 'no log row: a skill used in a game or a tool');
+    // helpful false; keys beyond the two are not written (the ruling refuses only the four cases below)
+    const r2 = await useSkill({ skillId: 'distract', helpful: false, logId: 'not-mine', note: 'x' });
+    assert.equal(r2.ok, true);
+    assert.deepEqual(Object.keys(r2.event.payload).sort(), PAYLOAD_KEYS);
+    assert.deepEqual(r2.event.payload, { skillId: 'distract', helpful: false });
+    assert.equal(events('SkillUsed').length, 2, 'every use is its own event: not once-only');
+    // credited: the Engine counts it for the skill's mastery
+    const m = E().mastery(events());
+    assert.equal(m['ride-wave'].uses, 1);
+    assert.equal(m.distract.uses, 1);
+    // recordEvent still refuses SkillUsed: the verb is the way in (USEVERB)
+    await refused(Actions.recordEvent('SkillUsed', { skillId: 'ride-wave', helpful: true }), 'USE_VERB');
+    assert.equal(events('SkillUsed').length, 2);
+  });
+
+  test('V-08a useSkill XP follows the Engine rule', async () => {
+    const xp = C().xp;
+    const base = xp.SkillUsed;
+    const full = Number(xp.repeatFull);
+    const half = Number(xp.repeatHalf);
+    assert.ok(base > 0 && full >= 1 && half >= full, 'Content.xp has the SkillUsed rule');
+    const now = new Date();
+    const got = () => E().xpFromEvents(events(), now).byType.SkillUsed || 0;
+    const total = () => E().xpFromEvents(events(), now).total;
+    let want = 0;
+    let last = total();
+    for (let n = 1; n <= half + 1; n += 1) {
+      const r = await useSkill({ skillId: n % 2 ? 'ride-wave' : 'distract', helpful: n % 2 === 1 });
+      assert.equal(r.ok, true, `use ${n}: ${r.code}`);
+      assert.deepEqual(Object.keys(r.event.payload).sort(), PAYLOAD_KEYS, 'Actions writes no XP of its own');
+      const step = n <= full ? base : n <= half ? Math.floor(base / 2) : 0;
+      want += step;
+      assert.equal(got(), want, `use ${n} of the day`);
+      assert.ok(total() >= last, 'XP never decreases');
+      last = total();
+    }
+    assert.equal(base, 5, 'the first use of a day is worth 5 (content-core.js xp.SkillUsed)');
+    assert.ok(Math.floor(base / 2) < base, 'repeats are diminished');
+  });
+
+  test('V-08a useSkill refuses without throwing and writes nothing (unknown skill, bad helpful, locked)', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    const cases = [
+      [undefined, 'bad-event'], [null, 'bad-event'], ['ride-wave', 'bad-event'], [['ride-wave', true], 'bad-event'], [7, 'bad-event'],
+      [{ helpful: true }, 'bad-skill'], [{ skillId: 'no-such-skill', helpful: true }, 'bad-skill'], [{ skillId: 42, helpful: true }, 'bad-skill'],
+      [{ skillId: '', helpful: true }, 'bad-skill'], [{ skillId: 'Ride the wave!', helpful: true }, 'bad-skill'],
+      [{ skillId: 'ride-wave' }, 'bad-event'], [{ skillId: 'ride-wave', helpful: 1 }, 'bad-event'],
+      [{ skillId: 'ride-wave', helpful: 'yes' }, 'bad-event'], [{ skillId: 'ride-wave', helpful: null }, 'bad-event'],
+    ];
+    for (const [arg, code] of cases) {
+      const r = await useSkill(arg);
+      assert.deepEqual([r.ok, r.code], [false, code], JSON.stringify(arg) || String(arg));
+      assert.equal(r.event, undefined);
+      assert.ok(typeof r.message === 'string' && r.message.length > 0 && r.message.length < 200, 'a short plain message');
+    }
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    // no store: the verb's own refusal, still no throw
+    const real = globalThis.Store;
+    globalThis.Store = undefined;
+    try {
+      const r = await useSkill({ skillId: 'ride-wave', helpful: true });
+      assert.deepEqual([r.ok, r.code], [false, 'no-store']);
+    } finally { globalThis.Store = real; }
+    // locked: the store's own refusal, passed through
+    if (!S().lock || typeof S().lock.set !== 'function') return;
+    await S().lock.set('2468', { autoLockMin: 5 });
+    S().lock.lockNow();
+    try {
+      const r = await useSkill({ skillId: 'ride-wave', helpful: true });
+      assert.deepEqual([r.ok, r.code], [false, 'LOCKED']);
+      assert.doesNotMatch(r.message, /Asha|2468|ride-wave/, 'no person data in the message');
+    } finally {
+      assert.equal(await S().lock.unlock('2468'), true);
+    }
+    assert.equal(events('SkillUsed').length, 0, 'nothing written while locked');
+    await S().lock.remove('2468');
+    assert.equal((await useSkill({ skillId: 'ride-wave', helpful: true })).ok, true, 'unlocked: written');
+  });
+
+  test("V-08a useSkill with a sample loaded writes one unmarked SkillUsed, the person's own, and changes no sample row", async () => {
+    await withSample(TRUNK_SAMPLE, () => Actions.loadSample());
+    const sampleRows = async () => Object.fromEntries(Object.entries(await snapshot()).map(([k, rows]) => [k, rows.filter((x) => x && x.sample === true)]));
+    const before = await sampleRows();
+    assert.ok(before.events.length > 0, 'the sample is loaded');
+    const r = await useSkill({ skillId: 'ride-wave', helpful: true });
+    assert.equal(r.ok, true, `a loaded sample is not a refusal (R-C-48): ${r.code}`);
+    assert.equal(r.event.sample, undefined, 'unmarked');
+    assert.deepEqual(events('SkillUsed').map((e) => [e.id, e.sample === true, e.payload]), [[r.event.id, false, { skillId: 'ride-wave', helpful: true }]]);
+    assert.deepEqual(await sampleRows(), before, 'no sample row changed');
+    assert.equal(E().xpFromEvents(events(), new Date()).byType.SkillUsed, C().xp.SkillUsed, "credited as the person's own");
+    await Actions.eraseSample();
+    assert.deepEqual(events('SkillUsed').map((e) => e.id), [r.event.id], "eraseSample keeps it: the person's own");
+  });
+
+  test('V-SOS10 rating row keeps every value on one line', async () => {
+    const px = (s) => { const m = /^(\d+(?:\.\d+)?)px$/.exec(String(s)); return m ? Number(m[1]) : NaN; };
+    const values = Array.from({ length: 11 }, (_, n) => String(n));
+    const d = sosDom();
+    const craving = d.open(['sos', 'craving']); // the craving flow opens on its rating
+    const feeling = d.open(['sos', 'feeling']);
+    d.tapId(feeling, 'sos-feeling-' + d.calm());
+    d.toRating(feeling); // the feeling flow's closing rating
+    for (const [name, root] of [['craving', craving], ['feeling', feeling]]) {
+      const row = d.byId(root, 'sos-rating');
+      assert.equal(row.attrs.class, 'sos-rating', name);
+      assert.equal(row.attrs['aria-label'], '0 to 10', `${name}: no copy change`);
+      const cols = /^repeat\((\d+), minmax\((\d+)px, 1fr\)\)$/.exec(row.style.gridTemplateColumns);
+      assert.ok(cols, `${name}: the grid of columns stays`);
+      const btns = row.querySelectorAll('button');
+      assert.deepEqual(btns.map((b) => b.dataset.value), values, `${name}: 11 buttons, data-value 0 to 10`);
+      assert.deepEqual(btns.map((b) => b.textContent.trim()), values, `${name}: the numbers, nothing else`);
+      for (const b of btns) {
+        const at = `${name} ${b.dataset.value}`;
+        assert.equal(b.style.whiteSpace, 'nowrap', `${at}: never wraps`);
+        assert.equal(b.style.fontVariantNumeric, 'tabular-nums', `${at}: even digits`);
+        const pl = px(b.style.paddingLeft);
+        const pr = px(b.style.paddingRight);
+        assert.ok(pl <= 6 && pr <= 6, `${at}: inline padding of 6 px or less (got ${b.style.paddingLeft}, ${b.style.paddingRight})`);
+        assert.equal(b.style.minHeight, '56px', `${at}: the tall one-handed target stays`);
+        // the narrowest column the grid allows still fits two digits: 1 px border each side, about 0.6 em a digit at 18 px
+        assert.ok(Number(cols[2]) - pl - pr - 2 >= 2 * 0.6 * 18, `${at}: "10" fits in a ${cols[2]} px column`);
+      }
+    }
+  });
+});
+// -- V3 actions-sos tests end --

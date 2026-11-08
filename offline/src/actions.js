@@ -269,6 +269,26 @@ const Actions = (() => {
     });
   }
 
+  /* ── useSkill (V-08a) ────────────────────────────────────────────────────────────────────── */
+  // A skill used in a game or a tool, credited with one SkillUsed {skillId, helpful} and no log; XP and mastery are the
+  // Engine's. Unlike every other verb it never throws: a refusal comes back as {ok: false, code, message} and writes
+  // nothing. It refuses a non-object, a skillId not an id or not in Content.skills, a non-boolean helpful, and the
+  // store's own refusal (no store, locked), passed through. A loaded sample is not a refusal (R-C-48): the event is the
+  // person's own, unmarked. The drill records nothing: its caller does not call (ui-tools.js isDrill).
+  async function useSkill(v) {
+    try {
+      if (!isObj(v)) fail('bad-event', 'useSkill takes {skillId, helpful}.');
+      if (!isId(v.skillId) || !known(getContent().skills, v.skillId)) fail('bad-skill', 'Unknown skill.');
+      if (!isBool(v.helpful)) fail('bad-event', 'A skill\'s "helpful" must be true or false.');
+      const p = { skillId: v.skillId, helpful: v.helpful };
+      const event = await write('event SkillUsed', stamp(), (tx) => tx.event('SkillUsed', p));
+      return { ok: true, event };
+    } catch (e) {
+      const coded = e && typeof e.code === 'string' && e.code;
+      return { ok: false, code: coded ? e.code : 'error', message: coded && typeof e.message === 'string' ? e.message : 'The skill could not be saved.' };
+    }
+  }
+
   /* ── logs ────────────────────────────────────────────────────────────────────────────────── */
   function checkSkills(list, code) {
     if (!Array.isArray(list) || list.length > 20) fail(code, 'Skills must be a short list.');
@@ -970,7 +990,7 @@ const Actions = (() => {
   }
 
   return {
-    onboard, settings: { patch: patchSettings }, recordEvent,
+    onboard, settings: { patch: patchSettings }, recordEvent, useSkill,
     logCraving, logFeeling, checkin, logActivity, logSlip, sosSession,
     completeLesson, checkpoint, saveResponse,
     contacts, plans, weeklyReview, todos,
