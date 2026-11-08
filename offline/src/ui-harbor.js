@@ -14,6 +14,7 @@ const HarborUI = (() => {
     dark: (parts) => ` Waiting for light: ${parts}.`,
     level: (name, n) => `${name}, level ${n} of ${MAX}`,
     caption: 'Each place grows brighter as you use its skills. The light never goes out.',
+    growing: (n) => (n === 1 ? ' 1 thing growing.' : ` ${n} things growing.`),
     names: { lighthouse: 'The Lighthouse', cove: 'The Cove', garden: 'The Garden', pier: 'The Pier', compass: 'The Compass Rose', weather: 'The Weather Station' },
   };
 
@@ -68,6 +69,58 @@ const HarborUI = (() => {
       safe(() => document.documentElement.getAttribute('data-motion') === 'reduce', false) === true;
   }
 
+  /* ── V-43 growth: one element per Engine.growth unit (Today's objectives), never removed ──────────── */
+  const GROW_KINDS = ['lantern', 'tree', 'boat', 'bench', 'flag', 'gull', 'garden', 'bell'];
+  const GROW_MAX = 60;
+  /* A fixed table of 60 spots off the places' tap areas: the sky over the water edge, the sky over the hill, the far
+     water and the left shore, taken in turn so the harbor fills evenly. Spot k never moves. */
+  const SPOTS = (() => {
+    const grid = (xs, ys) => ys.flatMap((y) => xs.map((x) => [x, y]));
+    const zones = [
+      grid([70, 84, 98, 112, 126, 140, 154, 168, 182], [120, 104, 88]),
+      grid([204, 222, 240, 258, 276, 294, 312], [56, 40, 22]),
+      grid([186, 204, 222, 240, 258, 276], [186]).concat(grid([14, 26], [116, 96, 76])),
+    ];
+    const out = [];
+    for (let i = 0; out.length < GROW_MAX; i++) for (const z of zones) if (i < z.length && out.length < GROW_MAX) out.push(z[i]);
+    return out;
+  })();
+  /* The kind of unit i: its Engine.growthItems grows (a kind, or the objective that holds one), else the cycle. */
+  function kindAt(items, i) {
+    const it = Array.isArray(items) ? items[i] : null;
+    const g = isObj(it) ? (typeof it.grows === 'string' ? it.grows : isObj(it.grows) ? it.grows.grows : null) : null;
+    return GROW_KINDS.includes(g) ? g : GROW_KINDS[i % GROW_KINDS.length];
+  }
+  /* growthSpots(n, items?) -> [{x, y, kind}], at most 60. growthSpots(n + 1) begins with growthSpots(n). */
+  function growthSpots(n, items) {
+    const k = Math.max(0, Math.min(GROW_MAX, Math.floor(Number(n) || 0)));
+    return SPOTS.slice(0, k).map((p, i) => ({ x: p[0], y: p[1], kind: kindAt(items, i) }));
+  }
+  const GLYPH = {
+    lantern: (s) => [s('rect', { x: '-2', y: '-4', width: '4', height: '6', rx: '1' }), s('circle', { class: 'hb-g-glow', cx: '0', cy: '-1', r: '1.2' })],
+    tree: (s) => [s('path', { d: 'M0 -5 L4 2 H-4 Z' }), s('rect', { x: '-0.8', y: '2', width: '1.6', height: '3' })],
+    boat: (s) => [s('path', { d: 'M-5 1 H5 L3 4 H-3 Z' }), s('path', { class: 'hb-g-line', d: 'M0 1 V-5 L3 -1 H0' })],
+    bench: (s) => [s('rect', { x: '-4', y: '-1', width: '8', height: '1.6' }), s('path', { class: 'hb-g-line', d: 'M-3 0.6 V4 M3 0.6 V4 M-4 -3 H4' })],
+    flag: (s) => [s('path', { class: 'hb-g-line', d: 'M-2 5 V-5' }), s('path', { d: 'M-2 -5 L4 -3 L-2 -1 Z' })],
+    gull: (s) => [s('path', { class: 'hb-g-line', d: 'M-5 0 Q-2.5 -3 0 0 Q2.5 -3 5 0' })],
+    garden: (s) => [s('circle', { cx: '-3', cy: '1', r: '1.5' }), s('circle', { cx: '0', cy: '-1', r: '1.5' }), s('circle', { cx: '3', cy: '1', r: '1.5' })],
+    bell: (s) => [s('path', { d: 'M-3 2 Q-3 -4 0 -4 Q3 -4 3 2 Z' }), s('circle', { cx: '0', cy: '3', r: '1' })],
+  };
+  /* Engine.growth and Engine.growthItems behind typeof (count 0 when absent). */
+  function growthOf(c) {
+    const E = c.E === undefined ? ns('Engine') : c.E;
+    const call = (fn) => (E && typeof E[fn] === 'function' ? safe(() => E[fn](c.view, c.now), null) : null);
+    const items = call('growthItems');
+    const n = Math.floor(Number(call('growth')) || 0);
+    return { count: n > 0 ? n : (Array.isArray(items) ? items.length : 0), items: Array.isArray(items) ? items : [] };
+  }
+  /* The growth layer: no data-place and no pointer events, so the place taps under it keep working. */
+  function growthLayer(s, spots) {
+    if (!spots.length) return null;
+    return s('g', { class: 'hb-growth', 'data-test': 'status-growth-layer', 'pointer-events': 'none' },
+      spots.map((p) => s('g', { class: `hb-g hb-g-${p.kind}`, 'data-kind': p.kind, transform: `translate(${p.x} ${p.y})` }, GLYPH[p.kind](s))));
+  }
+
   /* ── the scene ─────────────────────────────────────────────────────────────────────────── */
   function lights(s, n, spots, cls) {
     return spots.map((p, i) => s('g', { class: i < n ? 'hb-lantern hb-lit' : 'hb-lantern' },
@@ -88,7 +141,9 @@ const HarborUI = (() => {
     if (!U || typeof U.svg !== 'function' || typeof document === 'undefined') return null;
     const s = U.svg;
     const L = lightLevels(c.view, c.now, c.E === undefined ? undefined : c.E);
-    const svgEl = s('svg', { viewBox: '0 0 360 200', class: 'hb-scene ' + (still(c) ? 'hb-still' : 'hb-moving'), role: 'img', 'aria-label': ariaLabel(L),
+    const G = growthOf(c);
+    const spots = growthSpots(G.count, G.items);
+    const svgEl = s('svg', { viewBox: '0 0 360 200', class: 'hb-scene ' + (still(c) ? 'hb-still' : 'hb-moving'), role: 'img', 'aria-label': ariaLabel(L) + (G.count ? TEXT.growing(G.count) : ''),
       'data-test': 'harbor-scene', focusable: 'false', preserveAspectRatio: 'xMidYMid slice' },
       s('rect', { class: 'hb-sky', x: '0', y: '0', width: '360', height: '200' }),
       place(s, 'garden', L.garden,
@@ -123,7 +178,8 @@ const HarborUI = (() => {
         lights(s, L.pier, [[187, 138], [209, 138], [231, 138], [253, 138], [275, 138]], 'hb-bulb')),
       place(s, 'compass', L.compass,
         glow(s, L.compass, { cx: '322', cy: '176', rx: '20', ry: '16' }),
-        s('path', { class: L.compass ? 'hb-rose hb-on' : 'hb-rose', d: 'M322 162 L326 172 L336 176 L326 180 L322 190 L318 180 L308 176 L318 172 Z' })));
+        s('path', { class: L.compass ? 'hb-rose hb-on' : 'hb-rose', d: 'M322 162 L326 172 L336 176 L326 180 L322 190 L318 180 L308 176 L318 172 Z' })),
+      growthLayer(s, spots));
     const wrap = document.createElement('div');
     wrap.setAttribute('class', 'hb-wrap');
     wrap.appendChild(svgEl);
@@ -134,8 +190,8 @@ const HarborUI = (() => {
     return wrap;
   }
 
-  const PURE = ['TEXT', 'PLACES', 'lightLevels', 'lightOpacity', 'ariaLabel', 'hidden', 'still'];
-  return { TEXT, PLACES, lightLevels, lightOpacity, ariaLabel, hidden, still, scene, PURE };
+  const PURE = ['TEXT', 'PLACES', 'lightLevels', 'lightOpacity', 'ariaLabel', 'hidden', 'still', 'GROW_KINDS', 'growthSpots'];
+  return { TEXT, PLACES, lightLevels, lightOpacity, ariaLabel, hidden, still, GROW_KINDS, growthSpots, scene, PURE };
 })();
 
 if (typeof module !== 'undefined' && module.exports) {

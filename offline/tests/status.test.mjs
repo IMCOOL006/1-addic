@@ -492,3 +492,165 @@ test('Today chip routes to #/status and the harbor card links', () => withDom(()
     assert.equal(d[0].getAttribute('data-feature'), 'status');
   } finally { delete globalThis.GuidanceUI; if (!had) delete Content.features.status; }
 }));
+
+/* ── V-43: the growth in the scene, Your way, the run in Where you stand ─────────────────────── */
+// The real engine with a test Content.objectives pool for growth; stub Engine.questLine until content V-42 merges.
+const stubE = (o) => Object.assign(Object.create(E), o || {});
+const OBJECTIVES = [
+  { id: 'o-a', title: 'Take a slow breath', line: 'One minute.', doneBy: 'tap', grows: 'boat' },
+  { id: 'o-b', title: 'Write one reason', line: 'Just one.', doneBy: 'tap', grows: 'bell' },
+  { id: 'o-c', title: 'Drink some water', line: 'A glass.', doneBy: 'tap', grows: 'tree' },
+  { id: 'o-d', title: 'Step outside', line: 'Five minutes.', doneBy: 'tap', grows: 'flag' },
+];
+function withPool(fn) {
+  const had = Object.prototype.hasOwnProperty.call(Content, 'objectives'); const old = Content.objectives;
+  Content.objectives = OBJECTIVES;
+  try { return fn(); } finally { if (had) Content.objectives = old; else delete Content.objectives; }
+}
+const doneOn = (id, d) => ev('ObjectiveDone', { id, date: `2026-11-0${d}` }, at(2026, 11, d, 10));
+const growRows = (...evs) => Object.assign(baseRows(), { events: evs });
+const kindsOf = (root) => byTest(root, 'status-growth-item').map((n) => n.getAttribute('data-kind'));
+const layer = (root) => byTest(root, 'status-growth-layer')[0];
+const layerKinds = (root) => (layer(root) ? layer(root).children.map((n) => n.getAttribute('data-kind')) : []);
+
+test('growth: a done objective adds one growth element and never removes one', () => withPool(() => withDom((U) => {
+  ST._reset();
+  const one = render(growRows(doneOn('o-a', 5)));
+  assert.deepEqual(kindsOf(one), ['boat'], 'the kind of the objective it grew from');
+  assert.deepEqual(layerKinds(one), ['boat'], 'one element drawn in the scene');
+  const two = render(growRows(doneOn('o-a', 5), doneOn('o-b', 6)));
+  assert.deepEqual(kindsOf(two), ['boat', 'bell']);
+  assert.deepEqual(layerKinds(two), ['boat', 'bell']);
+  assert.match(byTest(two, 'status-growth')[0].textContent, /2 things growing in your harbor\./);
+  assert.ok(changeItems(two).some((n) => n.getAttribute('data-kind') === 'growth'), 'the rise is named');
+  assert.equal(kindsOf(render(growRows(doneOn('o-a', 5), doneOn('o-b', 6), doneOn('o-c', 6)))).length, 2, 'one unit per objective day');
+  const slip = growRows(doneOn('o-a', 5), doneOn('o-b', 6), ev('SlipLogged', { date: '2026-11-07' }));
+  slip.logs = [{ id: 'l-slip', type: 'slip', at: NOW.toISOString(), date: '2026-11-07' }];
+  assert.deepEqual(kindsOf(render(slip)), ['boat', 'bell'], 'a slip removes nothing');
+  const empty = render(growRows());
+  assert.match(byTest(empty, 'status-growth')[0].textContent, /Nothing growing yet\./);
+  assert.equal(layer(empty), undefined);
+  for (let n = 0; n <= 60; n++) assert.deepEqual(HarborUI.growthSpots(n + 1).slice(0, n), HarborUI.growthSpots(n), `spots ${n} to ${n + 1} only add`);
+  assert.equal(layer(two).getAttribute('pointer-events'), 'none');
+  assert.equal(layer(two).getAttribute('data-place'), null);
+  const cove = byTest(two, 'harbor-scene')[0].all((n) => n.getAttribute && n.getAttribute('data-place') === 'cove')[0];
+  byTest(two, 'status-scene')[0].fire('click', { target: cove });
+  assert.equal(U.sheets.length, 1, 'the place taps still work');
+  assert.match(byTest(two, 'harbor-scene')[0].getAttribute('aria-label'), /2 things growing\.$/);
+})));
+
+test('growth: same units give the same elements', () => withPool(() => withDom(() => {
+  const rows = () => growRows(doneOn('o-c', 3), doneOn('o-a', 5));
+  const a = render(rows()); const b = render(rows());
+  assert.deepEqual(kindsOf(a), ['tree', 'boat']);
+  assert.deepEqual(kindsOf(b), kindsOf(a));
+  const pos = (root) => layer(root).children.map((n) => n.getAttribute('transform'));
+  assert.deepEqual(pos(b), pos(a));
+  assert.deepEqual(HarborUI.growthSpots(9).map((p) => p.kind), [...HarborUI.GROW_KINDS, 'lantern'], 'without items: the 8-kind cycle');
+  const all = HarborUI.growthSpots(500);
+  assert.equal(all.length, 60, 'at most 60 drawn');
+  assert.equal(new Set(all.map((p) => `${p.x},${p.y}`)).size, 60, 'each spot its own');
+  const TAPS = [[38, 58, 34, 132], [10, 172, 132, 198], [176, 286, 138, 171], [196, 360, 70, 140], [330, 350, 48, 88], [308, 336, 162, 190]];
+  for (const p of all) assert.ok(!TAPS.some(([x0, x1, y0, y1]) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1), `spot ${p.x},${p.y} is off the places`);
+  const many = render(growRows(), { E: stubE({ growth: () => 75, growthItems: () => [] }) });
+  assert.equal(kindsOf(many).length, 60);
+  assert.match(byTest(many, 'status-growth')[0].textContent, /75 things growing in your harbor\.[\s\S]*and 15 more/);
+})));
+
+test('growth: Calm shows the count as words, no elements', () => withPool(() => withDom(() => {
+  const root = render(Object.assign(growRows(doneOn('o-a', 5), doneOn('o-b', 6)), { settings: [settingsRow({ calm: true })] }));
+  assert.equal(byTest(root, 'status-growth').length, 1);
+  assert.match(byTest(root, 'status-growth')[0].textContent, /2 things growing in your harbor\./);
+  assert.equal(byTest(root, 'status-growth-item').length, 0);
+  assert.equal(byTest(root, 'status-scene').length + byTest(root, 'status-growth-layer').length, 0);
+})));
+
+test('growth: discreet draws nothing new', () => withPool(() => withDom(() => {
+  const rows = Object.assign(growRows(doneOn('o-a', 5)), { settings: [settingsRow({ discreet: true })] });
+  const root = render(rows);
+  for (const k of ['status-growth', 'status-growth-item', 'status-growth-layer', 'status-scene', 'harbor-scene']) assert.equal(byTest(root, k).length, 0, k);
+  assert.equal(HarborUI.scene(ctxFor(rows)), null, 'the scene stays hidden');
+})));
+
+const STEPS = () => [
+  { id: 'q1', title: 'First light', line: 'Log one craving.', reward: 'tReward', opened: 'You opened the test tool.', state: 'done', doneAt: NOW.toISOString(), progress: { have: 1, need: 1 }, claimable: false },
+  { id: 'q2', title: 'Second step', line: 'Use a skill three times.', reward: 'tReward', opened: 'x', condition: { event: 'SkillUsed', count: 3 }, state: 'current', progress: { have: 1, need: 3 }, claimable: false },
+  { id: 'q3', title: 'Third step', line: 'A hidden line.', reward: 'tReward', opened: 'A hidden opening.', condition: { event: 'SkillUsed', count: 9 }, state: 'locked', progress: { have: 1, need: 9 }, claimable: false },
+];
+const wayE = (steps) => stubE({ questLine: () => { const s = steps || STEPS(); return { steps: s, current: s.find((x) => x.state === 'current') || null, done: s.filter((x) => x.state === 'done').length, total: s.length }; } });
+function withReward(fn) {
+  const had = Object.prototype.hasOwnProperty.call(Content, 'features'); const F = Content.features;
+  Content.features = Object.assign({}, F || {}, { tReward: { name: 'The Test Tool', gist: 'A tool for the test.', route: '#/today' } });
+  try { return fn(); } finally { if (had) Content.features = F; else delete Content.features; }
+}
+const stepEl = (root, state) => byTest(root, 'questline-step').filter((n) => n.getAttribute('data-state') === state);
+
+test('way: a locked step shows its title only', () => withReward(() => withDom(() => {
+  const root = render(sampleRows(), { E: wayE() });
+  assert.equal(byTest(root, 'status-way').length, 1);
+  const locked = stepEl(root, 'locked');
+  assert.equal(locked.length, 1);
+  assert.equal(locked[0].textContent, 'Later: Third step');
+  assert.equal(locked[0].all((n) => n.tagName === 'a' || n.tagName === 'button').length, 0);
+})));
+
+test('way: current shows reward and progress, done shows opened', () => withReward(() => withDom(() => {
+  const root = render(sampleRows(), { E: wayE() });
+  const cur = stepEl(root, 'current')[0];
+  assert.match(cur.textContent, /^Now: Second step/);
+  assert.match(cur.textContent, /Use a skill three times\./);
+  assert.match(cur.textContent, /Unlocks: The Test Tool/);
+  assert.match(cur.textContent, /Progress: 1 of 3/);
+  assert.equal(cur.all((n) => n.tagName === 'a').length, 0, 'not claimable: no link');
+  const done = stepEl(root, 'done')[0];
+  assert.match(done.textContent, /^Done: First light/);
+  assert.match(done.textContent, /You opened the test tool\./);
+  const ix = (k) => root.children.indexOf(byTest(root, k)[0]);
+  assert.equal(ix('status-way'), ix('status-stand') + 1, 'Your way follows Where you stand');
+  const s = STEPS(); s[1].claimable = true; s[1].progress = { have: 3, need: 3 };
+  const go = stepEl(render(sampleRows(), { E: wayE(s) }), 'current')[0].all((n) => n.tagName === 'a');
+  assert.equal(go.length, 1);
+  assert.equal(go[0].getAttribute('href'), '#/today');
+  assert.equal(go[0].textContent, 'Claim it on Today');
+  const disc = Object.assign(sampleRows(), { settings: [settingsRow({ discreet: true })] });
+  assert.doesNotMatch(byTest(render(disc, { E: wayE() }), 'status-way')[0].textContent, /Test Tool/, 'discreet: no reward names');
+})));
+
+test("run: a break shows 'you came back' and the same best and total", () => withDom(() => {
+  const days = [1, 2, 3].map((d) => ev('CheckinCompleted', { kind: 'evening' }, at(2026, 11, d, 21)));
+  const rows = () => Object.assign(baseRows(), { events: days.slice() });
+  const nums = (root) => ['run-current', 'run-best', 'run-total'].map((k) => byTest(byTest(root, 'status-stand')[0], k)[0].textContent);
+  assert.deepEqual(nums(render(rows(), { now: at(2026, 11, 3, 22) })), ['Now 3', 'Best 3', 'In all 3']);
+  const gap = render(rows(), { now: at(2026, 11, 6, 9) });
+  assert.deepEqual(nums(gap).slice(1), ['Best 3', 'In all 3'], 'a break keeps best and total');
+  assert.equal(byTest(gap, 'run-back').length, 0);
+  const back = rows(); back.events.push(ev('CheckinCompleted', { kind: 'morning' }, at(2026, 11, 7, 8)));
+  const after = render(back);
+  assert.equal(byTest(after, 'run-back')[0].textContent, 'You came back.');
+  assert.deepEqual(nums(after), ['Now 1', 'Best 3', 'In all 4'], 'the same best; the day back adds to the total');
+  assert.doesNotMatch(byTest(after, 'status-stand')[0].textContent, /streak|lost|broken|reset|in a row|current run/i);
+  assert.match(byTest(render(Object.assign(back, { settings: [settingsRow({ discreet: true })] })), 'status-stand')[0].textContent, /Days active: /);
+}));
+
+test('diff: growth, best and total only rise', () => {
+  const gs = E.gameState(viewOf({}), NOW);
+  const mk = (count, best, total, current) => STP.model(gs, { growth: { count, kinds: [] }, run: { current, best, total, holding: null, cameBack: false } });
+  const kinds = (a, b) => STP.diff(a, b).items.map((i) => i.kind).filter((k) => ['growth', 'best', 'total'].includes(k));
+  assert.deepEqual(kinds(mk(2, 3, 5, 3), mk(3, 4, 6, 4)), ['growth', 'best', 'total']);
+  assert.deepEqual(kinds(mk(3, 4, 6, 4), mk(2, 3, 5, 0)), [], 'lower: nothing');
+  assert.deepEqual(kinds(mk(3, 4, 6, 4), mk(3, 4, 6, 0)), [], 'a run that starts again is not a change');
+  for (const i of STP.diff(mk(2, 3, 5, 3), mk(3, 4, 6, 4)).items) assert.doesNotMatch(i.text, /down|lost|lower|streak|reset|broken/i);
+  const bare = STP.model(gs, {});
+  assert.deepEqual([bare.growth, bare.shownUp, bare.way], [null, null, null]);
+});
+
+test('way: Engine.questLine absent means no block and no dead button', () => withDom(() => {
+  const engines = [stubE({ questLine: undefined }), stubE({ questLine: () => { throw new Error('x'); } })].concat(Array.isArray(Content.questLine) ? [] : [E]);
+  for (const E2 of engines) {
+    const root = render(sampleRows(), { E: E2 });
+    assert.equal(byTest(root, 'status-way').length, 0);
+    for (const b of root.all((n) => n.tagName === 'button')) assert.ok((b.on.click || []).length > 0, 'button acts');
+    for (const a of root.all((n) => n.tagName === 'a')) assert.match(a.getAttribute('href') || '', /^#\//);
+  }
+  assert.equal(byTest(withPool(() => render(growRows(doneOn('o-a', 5)), { E: stubE({ growth: undefined }) })), 'status-growth').length, 0, 'no Engine.growth: no growth block');
+}));
