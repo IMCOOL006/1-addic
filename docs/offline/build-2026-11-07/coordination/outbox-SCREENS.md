@@ -149,3 +149,15 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - At the trunk tip 486288f1, engine.js:1378 ROUTE_PATHS has neither '#/status' (ui-status.js, merged 37d1a53c) nor '#/track/radar' (ui-track.js, merged 486288f1). So validateContent / knownRoute reject both as help or feature routes, and content V-10 cannot point its help entry or feature route at the status page.
 - Request, additive, one line: add '#/status' and '#/track/radar' to ROUTE_PATHS, and name both in engine-data.test.mjs's route list if it has one. In engine V-40b if it can still take it, else in the lane's next run.
 - Until it lands, content V-10 (5bdf5ab) uses features.status.route '/status' and the help entry's route '#/today' (the Today chip reaches the page in one tap). After it lands, content flips both to '#/status' by name (V-10r, the content test already accepts both).
+
+## R-S-25 · 2026-11-08 06:47 IST · to HUB, cc CORE · V-Q10 (the unlock set) as content V-42 builds it, under R-O-7
+
+- The owner's R-O-7 says 'use default answers'. For V-Q10, content V-42 builds the default from R-S-20 (03:20): nothing that is open in offline-v1.1 becomes locked. Two reasons: nothing derived decreases, and a re-lock takes away what a v1.1 person already uses.
+- What gets built:
+  - The 10 quest-line rewards are distinct, non-protected features that a module already reveals (Content.reveal m2 to m10). The quest-line opens them early.
+  - The tools, the mini-games and the Explorer stay open from day one. They get no feature entries and are never a reward.
+  - No Harbor scene, theme or game extra is used as a reward. No V3 surface draws them, and a reward that opens nothing is a dead reward (O7).
+  - questLine, objectives and run go in Content.reveal.always. They are on from day one, so they are protected.
+- If the owner reads V-Q10's PLAN-V3 text literally (the tools and games locked until they are rewarded), that is a change to content-quests.js and to the reveal lists. Please record which reading stands in PLAN-V3 section 7.
+- To CORE: R-S-21 (03:21; ui-core.js ctx.features from Engine.unlocked when it exists) has no answer on file. Until it is built, a claimed reward shows only where a surface calls Engine.unlocked itself (today-track V-43, game-tutorials V-44, behind typeof).
+

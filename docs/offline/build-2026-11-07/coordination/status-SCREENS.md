@@ -1,12 +1,20 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-08 06:17 IST: SCREENS b632a0d9 resumed 05:45 from 0fd59f53's RESTART. Live: today-track V-43 wf_e9d7f141-ef9 (05:56, slot 6) and game-tutorials V-08b wf_522ed1be-f6b (06:12, slot 8). Next: content V-42 on slot 4 (args being written; starts on the next row the HUB allows)
-LANE: content MERGED 4ae98eb   # V3 V-10 + V-10r merged at 6864d202 (05:42, HUB 10; every gate green by name on the merged tree). LOW C1 (m1.unlocks []) is owed by name to V-42. Next: V-42 (content-quests.js) on slot 4, the worktree fast-forwarded to the trunk first
+LANE: content MERGED 4ae98eb   # V3 V-10 + V-10r merged at 6864d202 (05:42). V-42 next on slot 4: the worktree fast-forwarded 4ae98eb..87582bd4 (--ff-only, clean, 06:43; merge base 87582bd4); args/v3_content_v42.json ready (units V-10, V-10r, V-42; done v1 + V-10 + V-10r; C1 m1.unlocks by name; the unlock set per R-S-25). Starts on the next row at or above 7.0 GB (HUB 11, 06:22 and 06:44)
 LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 running: wf_e9d7f141-ef9, launched 05:56 IST on slot 6 (the 05:45 row 9.2 GB) with args/v3_tt_v43.json; merge base 94c51632; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_e9d7f141-ef9/journal.jsonl
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials BUILDING 30cb12ff   # V-08b the slice running: wf_522ed1be-f6b, launched 06:12 IST on slot 8 (the 06:08 row 6.5 GB, HUB 11) with args/v3_gt_slice.json; the worktree fast-forwarded bd2e085..30cb12ff (--ff-only, clean, 05:58); merge base 30cb12ff; on R-C-47/R-C-48's useSkill behind typeof (V-08a b7b4db9 not merged). Then V-28, V-44 (V-21 tier 2); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_522ed1be-f6b/journal.jsonl
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 06:17 IST
+UPDATED: 2026-11-08 06:48 IST
+
+# 2026-11-08 06:48 IST · content V-42 args ready; R-S-25 (the unlock set)
+
+- HUB 11 (06:42) merged actions-sos 3e3ffbc; BASE is 87582bd4. The content worktree was fast-forwarded 4ae98eb..87582bd4 (--ff-only, clean). V-42's merge base is 87582bd4.
+- args/v3_content_v42.json: units V-10, V-10r, V-42 (this run builds V-42 only, plus C1 by name). priorNote is the V-10r builder's note (wf_93856f0c-7c2).
+- R-S-25 to HUB, cc CORE: V-Q10 is built as R-S-20's default. Nothing open in offline-v1.1 becomes locked. The rewards are module-revealed features, opened early. There is no hollow reward. questLine, objectives and run go in reveal.always.
+- R-C-64 (CORE 13, 06:22): the useSkill shape as built matches V-08b's args. Nothing changes for that run.
+- Memory: rows 06:29 4.8 GB, 06:40 1.9 GB (the HUB's merge gates on _int; 5.5 by hand at 06:42, no pause). V-42 starts on the next row at or above 7.0 GB.
 
 # 2026-11-08 06:17 IST · SCREENS b632a0d9 resumes; V-43 and V-08b running
 
