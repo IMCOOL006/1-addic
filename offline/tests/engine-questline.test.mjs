@@ -458,7 +458,8 @@ test('growthItems: a later event never lowers the length nor changes or reorders
 test('XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only', () => {
   const events = [ev('ObjectiveDone', { id: 'o1', date: TODAY }), ev('ObjectiveDone', { id: 'o1', date: TODAY }), ev('ObjectiveDone', { id: 'o1', date: day(-1) }, at(day(-1))),
     ev('ObjectiveDone', { id: 'o2', date: TODAY }), ev('QuestLineStepDone', { id: 'q1' }), ev('QuestLineStepDone', { id: 'q1' }), ev('QuestLineStepDone', { id: 'q2' })];
-  assert.equal(E.xpFromEvents(events, NOW).total, 0);
+  const r = C.xp || {};
+  assert.equal(E.xpFromEvents(events, NOW).total, 3 * (r.ObjectiveDone || 0) + 2 * (r.QuestLineStepDone || 0));
   withContent(() => {
     const x = E.xpFromEvents(events, NOW);
     assert.equal(x.byType.ObjectiveDone, 15);
