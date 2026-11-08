@@ -56,7 +56,8 @@ export async function newPage(browser, opts = {}) {
     // window.print() would open a dialog; count the calls instead (the print view is checked by media emulation).
     await page.addInitScript(() => { window.__printed = 0; window.print = () => { window.__printed += 1; }; });
   }
-  if (clock) await page.clock.install();
+  // clock: true installs the page clock at the real time; {time} installs it at that time (V-45's dated sessions).
+  if (clock) await page.clock.install(clock === true ? undefined : clock);
   return { page, context, problems };
 }
 

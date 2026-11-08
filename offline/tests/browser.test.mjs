@@ -361,6 +361,119 @@ flow('lesson to artifact shown in SOS', { routes: ['exercise', 'sos'], globals: 
   await F.waitFor(page, (txt) => document.getElementById('main').textContent.includes(txt), reason, 5000);
 });
 
+/* ── R-O-6: the daily objectives, the run, the quest-line (V-45; PLAN-V3.md section 7; hooks: today-track V-43) ── */
+
+// The run line on Today: days shown up now, the best run and the total (Engine.run; never the sober-day counters).
+async function runNums(page) {
+  await F.go(page, '#/today');
+  await F.need(page, HOOKS.runLine, 4000);
+  const n = (sel) => page.locator(`${HOOKS.runLine} ${sel} strong`).first().textContent().then((x) => Number(String(x).trim()));
+  return { current: await n(HOOKS.runCurrent), best: await n(HOOKS.runBest), total: await n(HOOKS.runTotal) };
+}
+
+// The page's own local date (by the page clock), as YYYY-MM-DD.
+const pageDay = (page) => page.evaluate(() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+});
+
+// A Monday and the Tuesday after it (session one), then the Sunday of that week (session two): four days missed,
+// more than the one grace day a week, so the run breaks.
+const RUN_DAYS = { mon: '2026-11-02T10:00:00+05:30', tue: '2026-11-03T10:00:00+05:30', sun: '2026-11-08T10:00:00+05:30' };
+
+// Where a quest-line reward opens when Content.features gives it no route (the routes of the screens it names).
+const FEATURE_AT = {
+  network: '#/workbook/network', workbook: '#/workbook', insights: '#/track/insights', weeklyReview: '#/actions/review',
+  planner: '#/actions/planner', radar: '#/track/radar', practices: '#/practice', predictions: '#/actions/predictions',
+};
+
+flow('an objective done grows the harbor', { routes: ['status'], globals: ['Store', 'Actions.objective.done', 'Content.objectives', 'Engine.dailyObjectives'], hooks: [HOOKS.objectiveDone] }, async ({ page }) => {
+  await openStatus(page);
+  const n0 = await page.locator(HOOKS.statusGrowthItem).count();
+  await F.go(page, '#/today');
+  // A tap objective first (doneBy 'tap'); any objective with its Done button otherwise.
+  const id = await page.evaluate(({ row, done }) => {
+    const tap = new Set((Array.isArray(Content.objectives) ? Content.objectives : []).filter((o) => o && o.doneBy === 'tap').map((o) => o.id));
+    const open = Array.from(document.querySelectorAll(row)).filter((li) => li.getAttribute('data-done') !== 'true' && li.querySelector(done));
+    const pick = open.find((li) => tap.has(li.getAttribute('data-id'))) || open[0];
+    return pick ? pick.getAttribute('data-id') : null;
+  }, { row: HOOKS.objective, done: HOOKS.objectiveDone });
+  if (!id) throw new F.Skip(REASON.hook(HOOKS.objectiveDone));
+  const done0 = await F.events(page, 'ObjectiveDone');
+  await F.click(page, `${HOOKS.objective}[data-id="${id}"] ${HOOKS.objectiveDone}`);
+  await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'ObjectiveDone').length >= n, done0 + 1);
+  await F.go(page, '#/today');
+  assert.equal(await page.locator(`${HOOKS.objective}[data-id="${id}"]`).first().getAttribute('data-done'), 'true', `objective ${id} shows as done on Today`);
+  await openStatus(page);
+  await F.need(page, HOOKS.statusGrowthItem, 4000);
+  const kinds = await page.locator(HOOKS.statusGrowthItem).evaluateAll((els) => els.map((e) => e.getAttribute('data-kind')));
+  assert.equal(kinds.length, n0 + 1, `one objective day adds one growth item on #/status (${n0} -> ${kinds.length})`);
+  assert.ok(kinds.every(Boolean), 'each growth item names its kind: ' + kinds.join(', '));
+});
+
+flow('a break keeps best and total', { routes: ['track'], globals: ['Store', 'Actions', 'Engine.run'], page: { clock: { time: new Date(RUN_DAYS.mon) } } }, async ({ page }) => {
+  // Session one: a quick log on the Monday and on the Tuesday (days shown up; never a claimed sober day).
+  await F.go(page, '#/track');
+  await quickCraving(page);
+  await page.clock.setSystemTime(new Date(RUN_DAYS.tue));
+  await F.go(page, '#/track');
+  await quickCraving(page);
+  const one = await runNums(page);
+  assert.ok(one.current >= 2 && one.best >= 2 && one.total >= 2, 'two days in a row make a run of two: ' + JSON.stringify(one));
+  // Session two, on the Sunday: the page opens again after four missed days.
+  await page.clock.setSystemTime(new Date(RUN_DAYS.sun));
+  await page.reload();
+  await ready(page);
+  if ((await pageDay(page)) !== '2026-11-08') await page.clock.setSystemTime(new Date(RUN_DAYS.sun));
+  assert.equal(await pageDay(page), '2026-11-08', 'the second session runs on its own date by the page clock');
+  const gap = await runNums(page);
+  assert.ok(gap.best >= one.best, `the best run never drops after missed days (${one.best} -> ${gap.best})`);
+  assert.ok(gap.total >= one.total, `the total never drops after missed days (${one.total} -> ${gap.total})`);
+  await F.go(page, '#/track');
+  await quickCraving(page);
+  const two = await runNums(page);
+  assert.ok(two.best >= one.best, `the best run is kept after the break (${one.best} -> ${two.best})`);
+  assert.ok(two.total > one.total, `the day back adds to the total (${one.total} -> ${two.total})`);
+  assert.equal(two.current, 1, 'a new run starts on the day back');
+  assert.ok(await present(page, `${HOOKS.runLine} ${HOOKS.runBack}`, 2000), 'the run line says you came back');
+});
+
+flow('a quest-line step unlocks a feature', { routes: ['sos'], globals: ['Store', 'Actions.questLine.claim', 'Content.questLine', 'Engine.questLine', 'Engine.unlocked'], page: { clock: true } }, async ({ page }) => {
+  const step = await page.evaluate(() => {
+    const s = Engine.questLine(Store.view, new Date()).current;
+    return s ? { id: s.id, reward: s.reward, cond: s.condition || {}, had: Engine.unlocked(Store.view).has(s.reward) } : null;
+  });
+  if (!step) throw new F.Skip('no current quest-line step');
+  // V-42's first step is the SOS drill (TutorialCompleted {id: 'drill'}); another first step is driven by no flow yet.
+  const isDrill = step.cond.event === 'TutorialCompleted' && step.cond.where && step.cond.where.id === 'drill';
+  if (!isDrill) throw new F.Skip(`the first quest-line step ${step.id} is not the SOS drill`);
+  assert.equal(step.had, false, `the reward ${step.reward} is not open before its step is claimed`);
+  await F.go(page, '#/sos?drill=1');
+  await F.need(page, HOOKS.sosDrillBanner);
+  if (!(await present(page, HOOKS.sosCraving, 1500))) await F.click(page, HOOKS.sosCravingBtn);
+  await F.cravingSession(page, { used: false, loop: false, start: null });
+  await F.go(page, '#/today');
+  await F.need(page, `${HOOKS.questlineCard} ${HOOKS.questlineStep}[data-id="${step.id}"]`, 4000);
+  await F.click(page, `${HOOKS.questlineCard} ${HOOKS.questlineClaim}`);
+  await F.waitFor(page, (f) => Store.view.list('events').some((e) => e.type === 'FeatureUnlocked' && e.payload && e.payload.feature === f), step.reward);
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), 'the SOS button stays visible after a claim');
+  const after = await page.evaluate((s) => ({
+    open: Engine.unlocked(Store.view).has(s.reward),
+    state: (Engine.questLine(Store.view, new Date()).steps.find((x) => x.id === s.id) || {}).state,
+    route: (Content.features && Content.features[s.reward] && Content.features[s.reward].route) || '',
+  }), step);
+  assert.equal(after.open, true, `Engine.unlocked has ${step.reward} after the claim`);
+  assert.equal(after.state, 'done', `step ${step.id} is done after the claim`);
+  const route = after.route || FEATURE_AT[step.reward];
+  if (!route) throw new F.Skip(`no route known for feature ${step.reward}`);
+  const seg = route.replace(/^#\//, '').split(/[/?]/)[0];
+  if (!(await routeRegistered(page, seg))) throw new F.Skip(REASON.route(seg));
+  await F.go(page, route);
+  await F.waitRoute(page, seg);
+  assert.equal(await page.locator('main#main [data-test$="-locked"]:visible').count(), 0, `${route} opens, not a locked page`);
+  assert.ok(((await page.locator('main#main').textContent()) || '').trim().length > 0, `${route} draws its page`);
+});
+
 /* ── Lock, data ── */
 
 flow('PIN set lock unlock export', { globals: ['Store.lock'] }, async ({ page }) => {
