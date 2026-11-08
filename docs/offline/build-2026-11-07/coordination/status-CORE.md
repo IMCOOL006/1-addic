@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 10:23 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43'): engine READY 97ac73a (R-C-70) and actions-sos READY-SLICE b735852 (R-C-71) with the HUB; tests-docs V-45 wf_180b5230-4d4 live (from 09:27). Context over 250k: hand-over planned (RUN-RECORD 'Resume here')
+STATE: BUILDING   # 2026-11-08 10:56 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43'): engine and actions-sos merged (HUB 10:55); the only CORE run is tests-docs V-45 wf_180b5230-4d4 (from 09:27; last commit 263f752). Context over 250k: hand-over at a clean point (RUN-RECORD 'Resume here' 10:24 + 10:58)
 LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
-LANE: engine READY 97ac73a   # 2026-11-08 10:23 IST: FIX-RS27 (R-S-27, R-H-45; test-only, engine-questline.test.mjs) check PASS wf_67a818f3-083; build, test 133/0/0, validate, guards GREEN; merge base 3fbd08f6 (R-C-70)
-LANE: actions-sos READY-SLICE b735852   # 2026-11-08 10:23 IST: V-41 + its review fix round (RC1-RC4, RS1 FIXED on re-check, no new finding; wf_2c2466fa-36a); check PASS; build, validate, test 191/0/0, guards GREEN at b735852; merge base 87582bd4 (R-C-71). Next: tier 2 V-25, V-18, V-17b + C2, then the whole-lane review from f69bc68a
+LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
+LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 10:56 IST: V-41 + RC1-RC4, RS1 merged 3235375c (trunk 3235375c; test 191/0/0, full Node suite 640/640). Next (T2, when no tier 1 lane waits, a 7.0 GB row): V-25, V-18, V-17b + C2 after a fast-forward to the trunk; then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING 3fbd08f6   # 2026-11-08 09:27 IST: V-45 wf_180b5230-4d4 (fast-forwarded d964202..3fbd08f6; merge base 3fbd08f6): the three R-O-6 browser flows, hooks, guide lessons, screenshots, and the docs-true count line (HUB 08:55); flows skip by name until V-41 and V-42 merge
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (engine 2, actions-sos 3, tests-docs 5; core 1 for tier 2)
-UPDATED: 2026-11-08 10:23 IST
+UPDATED: 2026-11-08 10:56 IST
 
 # 2026-11-08 09:30 IST · CORE 14 · resumed from CORE 13's RESTART (08:44); two runs live; FIX-RS27 next
 
