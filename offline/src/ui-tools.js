@@ -303,16 +303,17 @@ const ToolsUI = (function () {
       })));
   }
 
-  /* XP comes only from the Actions event; a drill or a missing Actions records nothing */
+  /* XP comes only from Actions.useSkill (one SkillUsed); a drill or no useSkill records nothing and draws no button.
+     A refusal or a throw ends on the same neutral line: a refused credit loses nothing and is never called a failure. */
   function helpedRow(ctx, skill) {
     const box = el('div', { class: 'tl-row', 'data-test': 'game-helped' });
     if (isDrill(ctx)) { box.appendChild(el('p', { text: TEXT.drillDone })); return box; }
     const A = ns('Actions');
-    if (!A || typeof A.recordEvent !== 'function') return box;
+    if (!A || typeof A.useSkill !== 'function') return box;
     let sent = false;
     const send = (helpful) => async () => {
       if (sent) return; sent = true;
-      try { await A.recordEvent('SkillUsed', { skillId: skill, helpful }); } catch (e) { /* the game still ends well */ }
+      try { await A.useSkill({ skillId: skill, helpful }); } catch (e) { /* the game still ends well */ }
       clear(box); box.appendChild(el('p', { role: 'status', text: TEXT.noted }));
     };
     box.appendChild(btn(TEXT.helped, send(true), { 'data-test': 'game-helped-yes' }));

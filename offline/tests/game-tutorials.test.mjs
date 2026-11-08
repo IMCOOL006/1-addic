@@ -573,7 +573,10 @@ function toolsWorld(opts) {
   globalThis.Actions = {
     saveResponse: async (id, p, x) => { calls.push(['save', id, p, x]); return { response: { id: 'r1' } }; },
     recordEvent: async (t, p) => { calls.push(['event', t, p]); return {}; },
+    useSkill: async (p) => { calls.push(['useSkill', p]); return { ok: true, event: { type: 'SkillUsed', payload: p } }; },
   };
+  if (o.useSkill === null) delete globalThis.Actions.useSkill;
+  else if (typeof o.useSkill === 'function') globalThis.Actions.useSkill = async (p) => { calls.push(['useSkill', p]); return o.useSkill(p); };
   return { doc, calls, restore() { C.games = saved.games; if (saved.games === undefined) delete C.games; C.exercises = saved.exercises; for (const k of ['document', 'location', 'Actions']) delete globalThis[k]; } };
 }
 function arrOf(x) { return Array.isArray(x) ? x : []; }
@@ -635,7 +638,7 @@ test('tools: distortion sort scores from catalogs', async () => {
     assert.equal(one(n, 'sort-score').textContent, T.TEXT.sorted(items.length - 1, items.length));
     one(n, 'game-helped-yes').click();
     await flush();
-    assert.deepEqual(w.calls, [['event', 'SkillUsed', { skillId: 'spot-trap', helpful: true }]]);
+    assert.deepEqual(w.calls, [['useSkill', { skillId: 'spot-trap', helpful: true }]]);
   } finally { w.restore(); }
   const w2 = toolsWorld({ games: GAMES_STANDIN });
   try {
@@ -713,8 +716,100 @@ test('tools: refusal is a stub without Content.games.refusal', async () => {
     one(n, 'rf-end');
     one(n, 'game-helped-no').click();
     await flush();
-    assert.deepEqual(w2.calls, [['event', 'SkillUsed', { skillId: 'refuse', helpful: false }]]);
+    assert.deepEqual(w2.calls, [['useSkill', { skillId: 'refuse', helpful: false }]]);
   } finally { w2.restore(); }
+});
+
+/* V-08b: the skill credit goes through Actions.useSkill({skillId, helpful}) only */
+function endRefusal(hash) {
+  const n = page(hash || '#/games/refusal');
+  one(n, 'rf-option-1').click();
+  one(n, 'rf-next').click();
+  one(n, 'rf-end');
+  return n;
+}
+const NO_ERROR = /fail|error|wrong|could not|locked|try again|retry/i;
+
+test('tools: a used skill is credited through Actions.useSkill with skillId and helpful', async () => {
+  const w = toolsWorld({ games: GAMES_STANDIN });
+  try {
+    const n = endRefusal();
+    const yes = one(n, 'game-helped-yes');
+    const no = one(n, 'game-helped-no');
+    yes.click(); yes.click(); no.click();
+    await flush();
+    assert.deepEqual(w.calls, [['useSkill', { skillId: 'refuse', helpful: true }]], 'helped sends once, a second tap sends nothing');
+    const box = one(n, 'game-helped');
+    assert.equal(box.textContent, T.TEXT.noted);
+    assert.ok(box.find((x) => x.getAttribute('role') === 'status'), 'the noted line is a status');
+    assert.equal(byTest(n, 'game-helped-yes').length + byTest(n, 'game-helped-no').length, 0, 'the buttons are gone');
+    const m = endRefusal();
+    one(m, 'game-helped-no').click();
+    await flush();
+    assert.deepEqual(w.calls.slice(1), [['useSkill', { skillId: 'refuse', helpful: false }]], 'not now sends helpful: false');
+    assert.ok(!w.calls.some((c) => c[0] === 'event'), 'never recordEvent');
+  } finally { w.restore(); }
+});
+
+test('tools: a refused useSkill shows nothing wrong', async () => {
+  const cases = [
+    ['refused', () => ({ ok: false, code: 'locked', message: 'The app is locked.' })],
+    ['thrown', () => { throw new Error('The skill could not be saved.'); }],
+  ];
+  for (const [label, fn] of cases) {
+    const w = toolsWorld({ games: GAMES_STANDIN, useSkill: fn });
+    try {
+      const n = endRefusal();
+      one(n, 'game-helped-yes').click();
+      await flush();
+      assert.equal(w.calls.length, 1, label + ': one call, no second path');
+      const box = one(n, 'game-helped');
+      assert.equal(box.textContent, T.TEXT.noted, label + ': the same neutral line');
+      assert.doesNotMatch(box.textContent, NO_ERROR, label + ': no error word');
+      assert.ok(box.find((x) => x.getAttribute('role') === 'status'), label + ': a status line');
+      assert.equal(box.all((x) => x.tagName === 'button').length, 0, label + ': no retry');
+      assert.ok(!box.all(() => true).some((x) => /error|danger|alert/.test(x.className) || x.getAttribute('role') === 'alert'), label + ': no red, no alert');
+      assert.ok(!w.calls.some((c) => c[0] === 'event'), label + ': never recordEvent');
+    } finally { w.restore(); }
+  }
+});
+
+test('tools: no useSkill, no row, no throw', async () => {
+  const w = toolsWorld({ games: GAMES_STANDIN, useSkill: null });
+  try {
+    const n = endRefusal();
+    const box = one(n, 'game-helped');
+    assert.equal(box.children.length, 0, 'the empty box, no dead button');
+    const s = page('#/games/distortion-sort');
+    assert.equal(byTest(s, 'game-helped-yes').length, 0);
+    await flush();
+    assert.deepEqual(w.calls, [], 'no fallback to recordEvent');
+  } finally { w.restore(); }
+  const w2 = toolsWorld({ games: GAMES_STANDIN });
+  delete globalThis.Actions;
+  try {
+    const n = endRefusal();
+    assert.equal(one(n, 'game-helped').children.length, 0, 'no Actions at all: the empty box');
+  } finally { w2.restore(); }
+});
+
+test('tools: drill records nothing', async () => {
+  const w = toolsWorld({ games: GAMES_STANDIN });
+  try {
+    const n = endRefusal('#/games/refusal?drill=1');
+    const box = one(n, 'game-helped');
+    assert.equal(box.textContent, T.TEXT.drillDone);
+    assert.equal(box.all((x) => x.tagName === 'button').length, 0, 'a drill offers no credit');
+    await flush();
+    assert.deepEqual(w.calls, [], 'nothing recorded');
+  } finally { w.restore(); }
+});
+
+test("tools: ui-tools.js holds no recordEvent('SkillUsed')", () => {
+  const code = readFileSync(src('ui-tools.js'), 'utf8');
+  assert.doesNotMatch(code, /recordEvent\s*\(\s*['"`]SkillUsed/);
+  assert.match(code, /typeof A\.useSkill [!=]== 'function'/);
+  assert.ok(code.includes('A.useSkill({ skillId: skill, helpful })'), 'the credit goes through useSkill');
 });
 
 test('tools: big game branches and ends on to: null; red flags score from Content.games.flag or catalogs', () => {
