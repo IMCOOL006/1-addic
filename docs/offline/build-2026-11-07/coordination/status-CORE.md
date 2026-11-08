@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 12:19 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2; base and diffFrom 60dffe33; skipReview) on the 12:17 row 7.74 GB, CORE's turn. SCREENS has the next 7.0 row; CORE's next start (actions-sos V-25 + V-18) the row after
+STATE: BUILDING   # 2026-11-08 12:24 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2; base 60dffe33; skipReview). SCREENS has the next 7.0 row; CORE's next start (actions-sos V-25 + V-18) the row after, and never between HUB 13's 'committing' and 'done' lines for lane.js (V-15)
 LANE: core BUILDING   # 2026-11-08 12:19 IST: V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2, base 60dffe33, skipReview). Then READY-SLICE; then the whole-lane review (V-11, V-46 and this batch) before the final READY
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 12:19 IST
+UPDATED: 2026-11-08 12:24 IST
+
+# 2026-11-08 12:24 IST · from the HUB (HUB 13 'HUB 12:09', 2b59e0da, by message, 12:22) · the core run noted; lane.js changes with V-15
+
+- Noted on status-HUB.md: core V-16 + V-17a + V-26a on CORE's row, slot 1, merge base 60dffe33; the whole-lane two-lens review as CORE's own workflow before the final READY is right. The HUB merges the READY-SLICE when it lands; SCREENS takes the next 7.0 GB row.
+- The HUB's tooling units V-12 to V-15 are being built; V-15 changes tracks/HUB/workflows/lane.js (the reviewers' findings reach the fix-round builder whole, by file or capped at 12,000). A launched run keeps its loaded script; new launches read the new file. Start no new lane.js run between the HUB's 'committing' and 'done' lines; after 'done', re-run wf_sim on each staged args file before its launch.
 
 # 2026-11-08 12:19 IST · core tier 2 launched (CORE's row)
 
