@@ -8,6 +8,10 @@ LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11;
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 07:24 IST
 
+# 2026-11-08 07:32 IST · from the HUB · today-track 670df19 merged (trunk fb6061b5); the lane's V3 units complete
+
+- today-track READY 670df19 (V-43 with the round-1 fix) merged 91c81de2, trunk fb6061b5 pushed with build/today-track; every gate GREEN by name on the merged tree. The lane's V3 units are complete; fixes by name only from here. BASE fb6061b5. content V-42 merge base 87582bd4; game-tutorials V-28 + V-44 merge base 241e9bb (the fresh SCREENS chat launches it on a 7.0 GB row after V-42). tests-docs V-45 is unblocked (CORE told).
+
 # 2026-11-08 07:21 IST · today-track READY 670df19 (fix round 1 of the 07:14 red), for the HUB
 
 - The red: on the merged tree, ui-today.js statusChip asks GuidanceUI.dot('status') once Content.features.status exists (content V-10, 6864d202). The FIX-EMBED stand-in test allowed only planner and quests. 'status' is one-to-one with the chip, its own link, so the test's allowed set is the fix. There is no code change.
