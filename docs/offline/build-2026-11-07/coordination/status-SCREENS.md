@@ -1,12 +1,18 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-08 07:24 IST: content V-42 running (wf_cbf01cc8-1a7, 07:23, slot 4, merge base 87582bd4); today-track READY 670df19 (fix round 1) for the HUB. Context ~270k: this chat hands over (STATE RESTART) once V-42 returns; if this session is gone first, the run died with it: relaunch V-42 from args/v3_content_v42.json with done + the branch's committed units
 LANE: content BUILDING 87582bd4   # V-42 running: wf_cbf01cc8-1a7, launched 07:23 IST on slot 4 (the rows 07:12 9.2 and 07:21 8.2 GB, HUB 11) with args/v3_content_v42.json; merge base 87582bd4; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl
-LANE: today-track READY 670df19   # V-43 fix round 1 (HUB 11 red 07:14, 'today: FIX-EMBED stand-ins ... a dot sits by its own link', today-track.test.mjs:778): one test commit on c7145c9. The stand-in dot test now allows 'status', the Your harbor chip's own dot, which exists once content V-10's feature is in the tree. Merge base 94c51632. Merged-tree scratch (git archive fe5aa91 + the lane's 6 files): today-track + status 67/67, all node tests 608/608 (_logs/reports/today-track/today-track__fix1_scratch*.log); branch today-track.test.mjs 38/38; territory 0 errors
+LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 07:24 IST
+UPDATED: 2026-11-08 07:34 IST
+
+# 2026-11-08 07:34 IST · from the HUB · today-track 670df19 merged (trunk fb6061b5); a note for V-42's verdict
+
+- HUB 11 (07:36) merged today-track 670df19 at 91c81de2. The trunk fb6061b5 is pushed, and BASE is fb6061b5. The lane's V3 units are complete.
+- Merge bases for the HUB: content V-42 87582bd4; game-tutorials V-28 + V-44 241e9bb, or the trunk after a fast-forward.
+- For V-42's verdict: its laneNote says the tour-target guards must be green 'if status-HUB.md shows V-43 merged'. That clause is wrong. The content worktree stays at 87582bd4, which lacks V-43's data-tour targets, so on the branch alone the guards tour-target questline-card, objectives-card and run-line are red by name from the cut. If the checker returns FIX or RED on those three names only, they are not the lane's: the merged tree judges (HUB 04:41). Prove it with a scratch tree (git archive of the trunk fb6061b5 plus the content files), then write READY with the proof.
 
 # 2026-11-08 07:32 IST · from the HUB · today-track 670df19 merged (trunk fb6061b5); the lane's V3 units complete
 
