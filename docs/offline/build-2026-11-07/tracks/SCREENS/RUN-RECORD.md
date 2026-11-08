@@ -257,16 +257,22 @@
 - The fix is 670df19, one test line, with the trailers. Merged-tree scratch (fe5aa91 + the lane's 6 files): 67/67 on the two lane tests and 608/608 on all node tests. READY 670df19, merge base 94c51632. This chat made the fix itself, with no builder or checker.
 - HUB 11 merged V-08b at fe5aa913 (07:19). V-42 launched at 07:23 as wf_cbf01cc8-1a7 on slot 4. CORE answered R-S-26 as R-C-65: growthItems' grows is the object by design, with no engine change.
 
+## 2026-11-08 08:34 IST · V-42 PAUSED eb38166; hand-over at about 295k
+
+- The V-42 builder finished at eb38166. I stopped wf_cbf01cc8-1a7 at 08:32 as its checker began: the rows read 2.3 and 1.1 GB (HUB 11, 08:31).
+- HUB 11 merged today-track 670df19 at 91c81de2 and core V-46 at 24baaf71 (BASE). R-C-67: ctx.features comes from Engine.unlocked.
+- The resume args are args/v3_content_v42_check.json.
+
 ## Resume here
 
-- Chat b632a0d9 (SCREENS) is live, with context about 270k. It hands over with STATE RESTART when V-42 returns.
-- RUNNING: content V-42, wf_cbf01cc8-1a7, launched 07:23 IST on slot 4, merge base 87582bd4. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl.
-  - If b632a0d9 is not listed by `claude agents --json`, the run died with it. Relaunch lane.js with args/v3_content_v42.json: restamp now and session, add any V-42 commits on build/content after 87582bd4 to the priorNote, and pass no resumeFromRunId.
-  - If it returned: verify it (trailers, territory, log verdicts, restore offline/1-addic.html), then write LANE: content READY <tip> with merge base 87582bd4.
-  - Expected red on the branch alone: the guards tour-target questline-card, objectives-card and run-line, until V-43 (670df19) merges.
+- Chat b632a0d9 (SCREENS) handed over with STATE RESTART at a clean point. NO SCREENS run is live.
+- PAUSED, not running: content V-42 at eb38166, merge base 87582bd4. The builder finished; the check never ran (stopped at 08:32 under the floor).
+  - On a row at or above 4.0 GB, tier 1 first: Workflow lane.js with args/v3_content_v42_check.json (restamp now; session = your link, and the trailers in its laneNote too). It is start 'check', the priorNote is the builder's note, and no resumeFromRunId.
+  - On PASS: verify (trailers, territory, log verdicts, restore offline/1-addic.html), then write LANE: content READY <tip> with merge base 87582bd4.
+  - The three tour-target guard reds are from the cut (merged-tree scratch proof).
 - Board for the HUB:
-  - today-track READY 670df19 (merge base 94c51632; the lane's V3 tier 1 units are complete).
-  - game-tutorials MERGED 241e9bb (V-08b, at fe5aa913).
+  - today-track MERGED 670df19 (91c81de2; the lane's V3 units are complete).
+  - game-tutorials MERGED 241e9bb (V-08b, at fe5aa913); V-28 + V-44 next, merge base 241e9bb, or fast-forward to BASE 24baaf71 first. Add R-C-67 to its laneNote: core V-46 is merged, so ctx.features = Engine.unlocked when present.
 - NEXT:
   - (1) game-tutorials V-28 + V-44 on a row at or above 7.0 GB.
     - Fast-forward build/game-tutorials and its worktree to the trunk tip (it contains 241e9bb; --ff-only).

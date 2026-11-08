@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 07:24 IST: content V-42 running (wf_cbf01cc8-1a7, 07:23, slot 4, merge base 87582bd4); today-track READY 670df19 (fix round 1) for the HUB. Context ~270k: this chat hands over (STATE RESTART) once V-42 returns; if this session is gone first, the run died with it: relaunch V-42 from args/v3_content_v42.json with done + the branch's committed units
-LANE: content BUILDING 15600a9   # V-42 running: wf_cbf01cc8-1a7 (07:23, slot 4, merge base 87582bd4); the builder committed 15600a9 and is in its gates (07:49). MEMORY (HUB 11, 07:47): rows 07:44 3.5 and 07:46 3.1 GB. If the 07:55 row is under 4.0, V-42 (the newest tier 1 run) pauses at its next commit; its builder reads memory before each gate and stops PAUSED. It resumes on a row at or above 4.0: relaunch lane.js with args/v3_content_v42.json, the priorNote from the builder's note in the journal (or 15600a9's message), start 'check' if the builder finished V-42, no resumeFromRunId. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl
+STATE: RESTART   # 2026-11-08 08:34 IST: SCREENS b632a0d9 hands over at about 295k context, at a clean point: NO SCREENS run is live. content V-42 is PAUSED at eb38166 (the builder finished; I stopped wf_cbf01cc8-1a7 as its checker began, rows 08:28 2.3 and 08:30 1.1 GB). The fresh chat relaunches the check on a row at or above 4.0 GB with args/v3_content_v42_check.json (start 'check'), then game-tutorials V-28 + V-44. RUN-RECORD.md 'Resume here'
+LANE: content PAUSED eb38166   # V-42 built: 15600a9 (the quest-line, objectives, run words, tour steps, C1) and eb38166 (the run words fit V-43). Merge base 87582bd4. The builder's gates and the note are in wf_cbf01cc8-1a7's journal (first result line). The check did not run: relaunch lane.js with args/v3_content_v42_check.json (start 'check', the builder note as priorNote; restamp now), without resumeFromRunId
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 08:16 IST
+UPDATED: 2026-11-08 08:34 IST
+
+# 2026-11-08 08:34 IST · content V-42 PAUSED eb38166 (memory); hand-over
+
+- The V-42 builder finished: 15600a9 and eb38166, with C1 in 15600a9. Five files: content-quests.js (new), content-core.js, content-lessons-a.js, content.test.mjs and build.mjs (one parts line).
+- HUB 11 (08:31) read the rows 08:28 2.3 GB and 08:30 1.1 GB, under the floor. V-42 was the newest run, so I stopped wf_cbf01cc8-1a7 with TaskStop at 08:32 as its lane-checker began. Nothing was lost: the builder's note is in the journal, and offline/1-addic.html is restored.
+- Resume: args/v3_content_v42_check.json (start 'check'). It corrects the laneNote's guard clause: on the branch alone the three tour-target guards are red by name from the cut, even with V-43 merged.
 
 # 2026-11-08 08:16 IST · R-C-67 (core V-46 READY-SLICE fbc663d): ctx.features from Engine.unlocked; V-42 at eb38166
 
