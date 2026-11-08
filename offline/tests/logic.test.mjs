@@ -534,3 +534,30 @@ test('V-19 spiralThoughts: without the slipSelfTalk catalog an empty reply stays
   }
   assert.deepEqual(E.spiralThoughts(E.makeView({})), []);
 });
+
+/* ── V-30: Engine.tutorialDone is exported and is the rule the Explorer items use ──────── */
+
+test('V-30 tutorialDone: exported, agrees with the Explorer tour (allowSkipped false) and drill (true) items', () => {
+  assert.equal(typeof E.tutorialDone, 'function');
+  const item = (view, id) => E.explorer(view).find((x) => x.id === id);
+  assert.ok(item(E.makeView({}), 'tour') && item(E.makeView({}), 'drill'), 'the Explorer lists tour and drill');
+  const cases = {
+    row: (tid) => ({ tutorials: [{ id: tid, completedAt: NOW, skipped: false }] }),
+    skippedRow: (tid) => ({ tutorials: [{ id: tid, completedAt: NOW, skipped: true }] }),
+    event: (tid) => ({ events: [ev('TutorialCompleted', { id: tid, skipped: false })] }),
+    skippedEvent: (tid) => ({ events: [ev('TutorialCompleted', { id: tid, skipped: true })] }),
+    openRow: (tid) => ({ tutorials: [{ id: tid, completedAt: null }] }),
+    nothing: () => ({}),
+  };
+  const want = { row: [true, true], skippedRow: [false, true], event: [true, true], skippedEvent: [false, true], openRow: [false, false], nothing: [false, false] };
+  for (const [name, rows] of Object.entries(cases)) {
+    const tourView = E.makeView(rows('tour'));
+    const drillView = E.makeView(rows('drill'));
+    assert.equal(E.tutorialDone(tourView, 'tour', false), item(tourView, 'tour').done, `${name}: tour agrees`);
+    assert.equal(E.tutorialDone(drillView, 'drill', true), item(drillView, 'drill').done, `${name}: drill agrees`);
+    assert.deepEqual([E.tutorialDone(tourView, 'tour', false), E.tutorialDone(drillView, 'drill', true)], want[name], name);
+    assert.equal(E.tutorialDone(tourView, 'drill', true), false, `${name}: another tutorial id is not done`);
+  }
+  const sample = E.makeView({ events: [Object.assign(ev('TutorialCompleted', { id: 'tour' }), { sample: true })] });
+  assert.equal(E.tutorialDone(sample, 'tour', false), item(sample, 'tour').done, 'a sample event: tour agrees');
+});

@@ -1801,6 +1801,7 @@ const Engine = (() => {
     exportBackup, validateBackup, migrateBackup, ics, weeklyRrule, AppError, validateContent, knownRoute,
     makeView, STORES,
     questLine, unlocked, dailyObjectives, growth, growthItems, run, isProtectedFeature, shownUpDays,
+    tutorialDone,
   };
 })();
 
