@@ -1,12 +1,29 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 09:04 IST: SCREENS 6508c21d (started 08:45 on b632a0d9's RESTART). Live: content V-42's check wf_76cc2221-3cb (09:00, start 'check', tip eb38166). Next: game-tutorials V-28 + V-44 on a 7.0 GB row. RUN-RECORD.md 'Resume here'
-LANE: content CHECKING eb38166   # V-42 (15600a9, eb38166; C1 in 15600a9); the check wf_76cc2221-3cb since 09:00 IST (args/v3_content_v42_check.json, start 'check'). Merge base 87582bd4. Expected on the branch alone: tour-target questline-card, objectives-card, run-line red by name from the cut (the merged tree judges). R-S-27: engine-questline.test.mjs's XP test needs a test-only fix from engine before or with the merge
+STATE: RUNNING   # 2026-11-08 09:33 IST: SCREENS 6508c21d. content READY eb38166 (V-42; check wf_76cc2221-3cb PASS). Nothing of SCREENS live; game-tutorials V-28 + V-44 (args/v3_gt_v28_v44.json, worktree at BASE 3fbd08f6) starts on the next row at or above 7.0 GB (CORE took the 09:24 row for V-45). RUN-RECORD.md 'Resume here'
+LANE: content READY eb38166   # V-42 + C1 (15600a9, eb38166), merge base 87582bd4; check wf_76cc2221-3cb PASS: build, test 40/40, validate GREEN; guards RED by name on the branch alone only: tour-target objectives-card, questline-card, run-line (V-43's targets are on the trunk; the merged tree judges); C1 = R-S-27/R-H-45 engine FIX-RS27 by name; report lane-reports/content.md
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
+LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913. Next: V-28 + V-44, args/v3_gt_v28_v44.json; branch and worktree fast-forwarded 241e9bb..3fbd08f6 (09:2x, --ff-only, clean); merge base 3fbd08f6; on the next 7.0 GB row
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 09:04 IST
+UPDATED: 2026-11-08 09:33 IST
+
+# 2026-11-08 09:33 IST · content READY eb38166 (V-42 and C1), for the HUB
+
+- Merge build/content at eb38166 alone. The merge base is 87582bd4. There are two commits, each with both trailers:
+  - 15600a9: the quest-line "Your way", the daily objectives and the run, in words, plus C1 (m1 unlocks ['status']).
+  - eb38166: the run words fit what V-43 draws.
+- 5 files: content-quests.js (new), content-core.js, content-lessons-a.js and content.test.mjs are the lane's own; build.mjs is shared and gets one parts line, 'content-quests.js', after 'content-sample.js'. Territory: 0 errors (I ran it myself over 87582bd4..eb38166).
+- Check wf_76cc2221-3cb: PASS (09:00-09:23). Logs are in C:/Users/ruchi/1-addic-wt/_logs/gates/content/*-20261108-0908* and -0909*.
+  - Green: build (1172899 B), test (content.test.mjs 40/40), validate (validateContent []).
+  - Guards RED by name on the branch alone, as expected from the cut: 'guard: tour-target objectives-card', 'guard: tour-target questline-card' and 'guard: tour-target run-line'. V-43's data-tour targets are on the trunk at ui-today.js:567, 580 and 598. The merged tree judges (HUB 04:41, R-H-44).
+- Findings:
+  - C1 MEDIUM is R-S-27 / R-H-45: engine-questline.test.mjs:458 'XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only' goes red on the merged tree (29 !== 0). It is engine's test-only FIX-RS27 by name.
+  - C2 LOW: the content contract's list of new feature ids for the tools, the games and the Explorer was not built, which follows R-H-44. It is recorded.
+- Browser, the builder's run: 20 pass / 1 fail on the full suite (browser-20261108-080920.log), with 'Settings PIN set and remove' timing out under load. That flow alone was GREEN (browser-20261108-081930.log, 1/1). The lane adds no DOM and no browser test. tests-docs V-01t's C1 (the PIN flow's wait, c0ecdbe) is in the trunk now.
+- Verified by me: the tip and both trailers, territory, the build, test, validate and guards verdicts in the logs, both browser logs, offline/1-addic.html restored, and a clean worktree.
+- Assumed, not re-run by me: the merged-tree Node suite (the builder's content__v42_merged.log, 614/615, with the one engine name above).
+- Report: tracks/SCREENS/lane-reports/content.md (18124 B).
 
 # 2026-11-08 09:04 IST · SCREENS 6508c21d resumes; content V-42's check relaunched; R-S-27
 
