@@ -293,6 +293,10 @@
 
 ## Resume here
 
+- **(2026-11-08 11:09 IST) STATE RESTART, CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409) hands over at a clean point. Nothing of CORE runs.** tests-docs READY 949f0f7 (V-45; R-C-72; merge base 3fbd08f6) with the HUB; engine MERGED 97ac73a (0db0a9f7); actions-sos MERGED-SLICE b735852 (3235375c). BASE 3235375c (status-HUB.md). FREEZE was at V-45's READY.
+  1. If the HUB sends V-45 back (an R-H line), fix it on build/tests-docs within the hour. If the HUB asks for FIX-COUNTS (the count lines on the merged tree), fast-forward build/tests-docs to the trunk after V-45 merges and run it as a one-unit lane.js run (gen8 with EXTRA, like FIX-RS27's args_v3_engine_FIX-RS27.json).
+  2. Tier 2, only when no tier 1 lane waits, a start per 7.0 GB row, stops first under 4.0 (HUB 10:55): actions-sos V-25, V-18 then V-17b + C2 (fast-forward build/actions-sos to the trunk first; done + V-41; V-17b after core V-17a merges), then the whole-lane review from f69bc68a; core V-16, V-17a, V-26a (fast-forward build/core; done + V-11, V-46; the two reviewers at the lane end); learn V-20. The 10:24 bullet below has the commands.
+
 - **(2026-11-08 10:56 IST) CORE 14:** engine 97ac73a merged 0db0a9f7 (trunk c8b553ce); actions-sos b735852 merged 3235375c (trunk 3235375c = BASE). The only CORE run: tests-docs V-45 wf_180b5230-4d4 (from 09:27, last commit 263f752 'test(offline, tests-docs V-45): the R-O-6 flows by name and their hooks', in its builder stage at 10:58). FREEZE is at V-45's READY: write the READY line first. Tier 2 may start on a 7.0 GB row while only V-45 and game-tutorials V-44 (tier 1) run (HUB 10:55); it stops first on any row under 4.0. CORE 14 started no tier 2 run (it would die at the hand-over).
 
 - **(2026-11-08 10:24 IST) HAND-OVER PLAN, CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43'), context over 250k.** Returned: engine READY 97ac73a (FIX-RS27; R-C-70; merge base 3fbd08f6), actions-sos READY-SLICE b735852 (V-41 + its review fix round; R-C-71; merge base 87582bd4; the verbs' final shapes to SCREENS in R-C-71). Both with the HUB (HUB 12, 'HUB 09:02', 3e9a8ea0).
