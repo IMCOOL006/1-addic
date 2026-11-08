@@ -1,12 +1,19 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-08 07:04 IST: today-track READY c7145c9 (V-43) and game-tutorials READY-SLICE 241e9bb (V-08b) for the HUB; no SCREENS run is live. Next: content V-42 on the first row at or above 7.0 GB (07:01 read 2.3 GB), then game-tutorials V-28 + V-44
 LANE: content MERGED 4ae98eb   # V3 V-10 + V-10r merged at 6864d202 (05:42). V-42 next on slot 4: the worktree fast-forwarded 4ae98eb..87582bd4 (--ff-only, clean, 06:43; merge base 87582bd4); args/v3_content_v42.json ready (units V-10, V-10r, V-42; done v1 + V-10 + V-10r; C1 m1.unlocks by name; the unlock set per R-S-25). Starts on the next row at or above 7.0 GB (HUB 11, 06:22 and 06:44)
-LANE: today-track READY c7145c9   # V3 complete (V-01a, V-01b merged; V-43 4568551, 37f6892, c7145c9). Merge base 94c51632. wf_e9d7f141-ef9 check PASS, no findings: build GREEN, test GREEN 67/67, validate GREEN, guards GREEN 5/5, browser GREEN 16/0/3 (the same names as V-01b, at this cut). Territory 5 own, 1 shared (styles.css inside the lane's V3 block), 0 errors. Report lane-reports/today-track.md (19948 B)
+LANE: today-track READY 670df19   # V-43 fix round 1 (HUB 11 red 07:14, 'today: FIX-EMBED stand-ins ... a dot sits by its own link', today-track.test.mjs:778): one test commit on c7145c9. The stand-in dot test now allows 'status', the Your harbor chip's own dot, which exists once content V-10's feature is in the tree. Merge base 94c51632. Merged-tree scratch (git archive fe5aa91 + the lane's 6 files): today-track + status 67/67, all node tests 608/608 (_logs/reports/today-track/today-track__fix1_scratch*.log); branch today-track.test.mjs 38/38; territory 0 errors
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials READY-SLICE 241e9bb   # V-08b (1 commit: ui-tools.js, game-tutorials.test.mjs). Merge base 30cb12ff. wf_522ed1be-f6b check PASS, no findings: build GREEN, test GREEN 32/32 (the 4 V-08b names and the source check ok), validate GREEN, guards GREEN 5/5, browser GREEN 21/0/0. Territory 2 own, 0 errors. Next: V-28 + V-44 (sliceRun false, done + V-08b, diffFrom 241e9bb) on a 7.0 GB row after V-42
+LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 07:04 IST
+UPDATED: 2026-11-08 07:21 IST
+
+# 2026-11-08 07:21 IST · today-track READY 670df19 (fix round 1 of the 07:14 red), for the HUB
+
+- The red: on the merged tree, ui-today.js statusChip asks GuidanceUI.dot('status') once Content.features.status exists (content V-10, 6864d202). The FIX-EMBED stand-in test allowed only planner and quests. 'status' is one-to-one with the chip, its own link, so the test's allowed set is the fix. There is no code change.
+- The fix is 670df19, one commit on c7145c9 (offline/tests/today-track.test.mjs, one line), with both trailers. Merge base 94c51632.
+- The proof: a scratch tree from git archive of the trunk fe5aa91 plus the lane's 6 files. today-track.test.mjs and status.test.mjs pass 67/67, and every node test passes 608/608 (exit 0). The logs are _logs/reports/today-track/today-track__fix1_scratch.log and __fix1_scratch_all.log. On the branch alone today-track.test.mjs passes 38/38. Territory: 0 errors.
+- Said plainly: this chat made the one-line fix and ran the proof itself. No builder or lane-checker ran, because the fix is one test line and the merge gates on _int are the independent judge.
 
 # 2026-11-08 07:17 IST · from the HUB · game-tutorials 241e9bb merged (trunk fe5aa913); today-track c7145c9 RED 1 by name, back to the lane
 
