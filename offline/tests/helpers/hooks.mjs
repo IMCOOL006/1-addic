@@ -63,11 +63,11 @@ export const HOOKS = {
   sosStepNext: tid('sos-step-next'), // ui-sos.js:603
   sosStepDone: tid('sos-step-done'), // ui-sos.js:603, :620, :623
   // today-track (ui-track.js, ui-today.js; data-test)
-  logKind: (k) => dt('log-kind-' + k), // ui-track.js:524 (#/track/log)
-  logSave: dt('log-save'), // ui-track.js:546 (also data-tour quicklog-save)
+  logKind: (k) => dt('log-kind-' + k), // ui-track.js:542 (#/track/log)
+  logSave: dt('log-save'), // ui-track.js:564 (also data-tour quicklog-save)
   todayCheckinGo: dt('today-checkin-go'), // ui-today.js:313 (Today's check-in card)
-  checkinEvening: dt('log-checkin-evening'), // ui-track.js:570 ('log-checkin-' + k: the check-in's Morning/Evening switch)
-  checkinSave: dt('log-save'), // ui-track.js:546
+  checkinEvening: dt('log-checkin-evening'), // ui-track.js:588 ('log-checkin-' + k: the check-in's Morning/Evening switch)
+  checkinSave: dt('log-save'), // ui-track.js:564
   // workbook-settings (ui-settings.js; data-test, the data tab also data-testid)
   settingsPage: dt('settings-page'), // ui-settings.js:643
   settingsTab: (tab) => dt('settings-tab-' + tab), // ui-settings.js:647
@@ -150,6 +150,30 @@ export const HOOKS = {
   moreTools: dt('more-tools'), // ui-guidance.js:556
   showNow: dt('show-now'), // ui-guidance.js:542
   newDot: dt('new-dot'), // ui-guidance.js:565
+  // status layer (data-test; today-track V-01b, #/status; PLAN-V3.md section 3, R-H-39)
+  statusPage: dt('status-page'), // ui-status.js:334, :382
+  statusScene: dt('status-scene'), // ui-status.js:346 (also data-tour status-scene; absent in Calm and discreet mode)
+  statusPlace: dt('status-place'), // ui-status.js:362 (data-region, data-level)
+  statusChange: dt('status-change'), // ui-status.js:288 (also data-tour status-change)
+  statusChangeItem: dt('status-change-item'), // ui-status.js:291 (data-kind)
+  statusStand: dt('status-stand'), // ui-status.js:370
+  statusDays: dt('status-days'), // ui-status.js:375 (only while day counters show)
+  statusStrip: dt('status-strip'), // ui-status.js:296
+  statusStripDay: dt('status-strip-day'), // ui-status.js:300 (data-date, data-active)
+  statusWatch: dt('status-watch'), // ui-status.js:310 (also data-tour status-watch)
+  statusWatchItem: dt('status-watch-item'), // ui-status.js:313 (data-sign, data-own)
+  statusNext: dt('status-next'), // ui-status.js:377
+  statusNextGo: dt('status-next-go'), // ui-status.js:379 (data-kind)
+  statusBack: dt('status-back'), // ui-status.js:331
+  statusSos: dt('status-sos'), // ui-status.js:332
+  todayStatus: dt('today-status'), // ui-today.js:497 (also data-tour status-open)
+  todayHarborGo: dt('today-harbor-go'), // ui-today.js:479 (the Harbor scene on Today, one link)
+  statusOpen: tour('status-open'), // ui-today.js:497
+  trackRadar: dt('track-radar'), // ui-track.js:534 (#/track/radar)
+  trackRadarLink: dt('track-radar-link'), // ui-track.js:527 (Track home, once the radar is revealed)
+  harborPlace: '[data-place]', // ui-harbor.js:78 (data-level on each place of the scene)
+  harborGrew: '.hb-grew', // ui-status.js:357 (the one-off pulse of a place that grew; never when still)
+  harborMoving: '.hb-moving', // ui-harbor.js (the drifting water and beam; never when still)
 };
 
 // Stable skip reasons (the contract's strings; the chat reads them by name).

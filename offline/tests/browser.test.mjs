@@ -234,7 +234,7 @@ flow('SOS reachable and not gated before onboarding or on lock screen', { onboar
 
 /* ── Today, Learn ── */
 
-// The quick log is Track's "Add" (data-tour quicklog-button, ui-track.js:452): a kind, then the form. The check-in
+// The quick log is Track's "Add" (data-tour quicklog-button, ui-track.js:455): a kind, then the form. The check-in
 // opens from Today's card when it shows at this hour, else from Track's kinds; the switch picks Evening.
 flow('quick log and evening check-in', { globals: ['Store', 'Actions'], start: '#/track', hooks: [HOOKS.quicklogButton] }, async ({ page }) => {
   const logs0 = await F.count(page, 'logs');
@@ -251,6 +251,82 @@ flow('quick log and evening check-in', { globals: ['Store', 'Actions'], start: '
   await F.fillVisible(page);
   await F.click(page, HOOKS.checkinSave);
   await F.waitFor(page, () => Store.view.list('events').some((e) => e.type === 'CheckinCompleted' && e.payload && e.payload.kind === 'evening'));
+});
+
+/* ── the status layer: Your Harbor (#/status, today-track V-01b; hooks in helpers/hooks.mjs) ── */
+
+// A craving quick log from Track's "Add" (the same steps as the quick log flow above).
+async function quickCraving(page) {
+  const logs0 = await F.count(page, 'logs');
+  await F.click(page, HOOKS.quicklogButton);
+  if (await present(page, HOOKS.logKind('craving'), 1500)) await F.click(page, HOOKS.logKind('craving'));
+  if (await present(page, HOOKS.quicklogIntensity, 1500)) await F.setRating(page, HOOKS.quicklogIntensity, 6);
+  await F.click(page, HOOKS.quicklogSave);
+  await F.waitFor(page, (n) => Store.view.count('logs') >= n, logs0 + 1);
+}
+
+// [region, level] of each place: the list of places (status-place) or the scene's own places (data-place).
+const levelsOf = (page, sel, attr) => page.locator(sel).evaluateAll((els, a) =>
+  els.map((e) => [e.getAttribute(a), Number(e.getAttribute('data-level'))]), attr);
+
+async function openStatus(page) {
+  await F.go(page, '#/status');
+  await F.waitRoute(page, 'status');
+  return F.need(page, HOOKS.statusPage);
+}
+
+flow('status opens from Today in one tap', { routes: ['status'], hooks: [HOOKS.todayStatus] }, async ({ page }) => {
+  await F.click(page, HOOKS.todayStatus);
+  await F.waitRoute(page, 'status');
+  const root = await F.need(page, HOOKS.statusPage);
+  assert.ok(await root.isVisible(), 'Your Harbor shows after one tap on Today');
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), 'the SOS button stays on the status page');
+  assert.ok(await present(page, HOOKS.statusSos, 1500), 'the status page has its own SOS link');
+  assert.equal(await page.locator(HOOKS.statusSos).first().getAttribute('href'), '#/sos', 'its SOS link opens SOS');
+});
+
+flow('status shows the change after a quick log', { routes: ['status'], globals: ['Store', 'Actions'], hooks: [HOOKS.todayStatus] }, async ({ page }) => {
+  await openStatus(page); // the first look sets the base: "Here is where you stand."
+  await F.go(page, '#/track');
+  await quickCraving(page);
+  await openStatus(page);
+  await F.need(page, HOOKS.statusChangeItem, 4000);
+  const kinds = await page.locator(HOOKS.statusChangeItem).evaluateAll((els) => els.map((e) => e.getAttribute('data-kind')));
+  assert.ok(kinds.length >= 1 && kinds.every(Boolean), 'What just changed lists the change, each with its kind: ' + kinds.join(', '));
+});
+
+flow('status: a slip lowers no light', { routes: ['status', 'sos'], globals: ['Store', 'Actions'], page: { clock: true } }, async ({ page }) => {
+  // The O6 sample has no SkillUsed: a craving session that helped logs one (the wave tool), so a place has light.
+  const used0 = await F.events(page, 'SkillUsed');
+  await F.cravingSession(page, { used: false, loop: false });
+  await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'SkillUsed').length >= n, used0 + 1);
+  await openStatus(page);
+  await F.need(page, HOOKS.statusPlace);
+  const places0 = await levelsOf(page, HOOKS.statusPlace, 'data-region');
+  const scene0 = await levelsOf(page, `${HOOKS.statusScene} ${HOOKS.harborPlace}`, 'data-place');
+  assert.ok(places0.length > 0, 'the status page lists its places');
+  const slip0 = await F.events(page, 'SlipLogged');
+  await F.cravingSession(page, { used: true, loop: false });
+  await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'SlipLogged').length >= n, slip0 + 1);
+  await openStatus(page);
+  await F.need(page, HOOKS.statusPlace);
+  const places1 = new Map(await levelsOf(page, HOOKS.statusPlace, 'data-region'));
+  const scene1 = new Map(await levelsOf(page, `${HOOKS.statusScene} ${HOOKS.harborPlace}`, 'data-place'));
+  for (const [id, lv] of places0) assert.ok((places1.get(id) ?? -1) >= lv, `status-place ${id} never lowers after a slip (${lv} -> ${places1.get(id)})`);
+  for (const [id, lv] of scene0) assert.ok((scene1.get(id) ?? -1) >= lv, `scene place ${id} never lowers after a slip (${lv} -> ${scene1.get(id)})`);
+});
+
+flow('status under reduced motion has no moving class', { routes: ['status'], globals: ['Store', 'Actions'], hooks: [HOOKS.todayStatus], page: { reducedMotion: 'reduce' } }, async ({ page }) => {
+  assert.equal(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches), true, 'the context asks for reduced motion');
+  await openStatus(page);
+  await F.go(page, '#/track');
+  await quickCraving(page); // a change, so a place could grow
+  await openStatus(page);
+  await page.waitForTimeout(400);
+  const moving = await page.locator(`${HOOKS.harborGrew}, ${HOOKS.harborMoving}, main#main [class*="pulse"]`).count();
+  assert.equal(moving, 0, 'no hb-grew, hb-moving or pulse class under reduced motion');
+  const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
+  assert.equal(running, 0, 'nothing on the status page animates under reduced motion');
 });
 
 flow('lesson to artifact shown in SOS', { routes: ['exercise', 'sos'], globals: ['Store', 'Actions', 'Content.exercises'] }, async ({ page }) => {
