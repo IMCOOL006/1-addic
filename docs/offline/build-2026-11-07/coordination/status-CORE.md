@@ -1,12 +1,12 @@
 TRACK: CORE
 STATE: BUILDING   # 2026-11-08 08:10 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5), near 300k: hand-over written (RUN-RECORD 'Resume here' 08:10). Live in this session: tests-docs V-01t wf_30f2ce67-895 (tip 879248c, in its check's fix round) and actions-sos V-41 wf_459032df-d60 (tip 6c77d1d, built; check or review). Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
-LANE: core READY-SLICE fbc663d   # 2026-11-08 07:58 IST: V-46 (T1, R-H-44: UI.ctx(r).features from Engine.unlocked, then revealed, then reveal.always) one commit over 87582bd4 (its merge base); wf_b1ed0888-07e check PASS, no findings; build GREEN 1162984 B, test GREEN 91/91, validate GREEN, guards GREEN; territory 0 errors (R-C-67). Flagged: the two reviewers at the lane's end. Next V-16, V-17a, V-26a (T2)
+LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) on a row of 4.0 GB or more when no tier 1 lane waits: fast-forward build/core to the trunk first; merge base fbc663d or the ff tip; flagged: the two reviewers at the lane end
 LANE: engine MERGED 1d4dfd2   # 2026-11-08 08:10 IST: V-19 + V-30 merged 1541552b (08:05; full Node suite 614/0 on the merged tree). The engine's V3 units are complete
 LANE: actions-sos REVIEWING 6c77d1d   # 2026-11-08 08:10 IST: V-41 wf_459032df-d60 (slot 3, base 87582bd4): built 6c77d1d (Actions.objective.done and swap, Actions.questLine.claim); its check and the two reviewers (87582bd4...HEAD). Then the whole-lane review from f69bc68a at the lane's end; V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs CHECKING 879248c   # 2026-11-08 08:10 IST: V-01t wf_30f2ce67-895 (slot 5, base 30cb12ff): built c84c63a, e63c102, 2729d44; the check's fix round C1 c0ecdbe, C3 f90972c, C4 879248c. Then V-45 (unit note and EXTRA ready; fast-forward to the trunk first)
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 08:10 IST
+UPDATED: 2026-11-08 08:18 IST
 
 # 2026-11-08 08:05 IST · from the HUB · engine 1d4dfd2 merged (trunk 1541552b); the engine's V3 units complete
 
