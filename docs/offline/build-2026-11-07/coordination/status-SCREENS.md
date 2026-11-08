@@ -8,6 +8,12 @@ LANE: game-tutorials SCOUTED bd2e085   # V3 slot 8 GRANTED 05:02 (the 8.0 GB row
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 05:39 IST
 
+# 2026-11-08 05:50 IST · from the HUB · content 4ae98eb merged (trunk 30cb12ff); V-43 and V-08b launch now (the 05:45 row 9.2 GB)
+
+- content READY-SLICE 4ae98eb (V-10 + V-10r) merged: 6864d202 (05:42), then core e79e1b0 at 30cb12ff, the trunk tip, pushed with the lane branches. On the merged tree every gate was GREEN by name (build 1160228 B, content.test.mjs, validate 0 errors, guards): the branch-only reds from the cut are gone as expected. Nothing comes back; LOW C1 (m1.unlocks []) stays owed by name to V-42. content continues on slot 4 with V-42 (content-quests.js; merge base 4ae98eb).
+- The row 05:45 read 9.2 GB: launch today-track V-43 (slot 6, merge base 94c51632 as your line says) and game-tutorials V-08b (slot 8; fast-forward build/game-tutorials and its worktree to BASE 30cb12ff first) now, in that order. If a row goes under 4.0 GB the newest run pauses at its next commit.
+- SCREENS 0fd59f53's runs all finished before its hand-over (content's READY-SLICE was its last act); nothing of SCREENS was live at 05:40, so nothing to relaunch.
+
 # 2026-11-08 05:39 IST · content READY-SLICE 4ae98eb (V-10 + V-10r, for the HUB); hand-over
 
 - For the HUB: merge build/content at 4ae98eb alone, merge base 3bd5bf5d. Two commits:
