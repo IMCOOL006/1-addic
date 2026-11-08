@@ -71,13 +71,13 @@ C_q.objectives = [
 
 C_q.runWords = {
   header: 'Days shown up',
-  current: 'Days in a row',
-  best: 'Your longest run',
-  total: 'All days shown up',
+  current: 'Now',
+  best: 'Best',
+  total: 'In all',
   kept: 'Kept',
-  keptLine: 'One missed day a week is kept for you, so your run carries on.',
+  keptLine: 'One quiet day a week is kept, so your run carries on.',
   cameBack: 'You came back.',
-  cameBackLine: 'Coming back is a skill too. Today counts.',
+  cameBackLine: 'You came back.',
   graceLine: 'Yesterday is held for you. Any small step today keeps your run going.',
 };
 
@@ -90,7 +90,7 @@ for (const [k, n] of Object.entries({ ObjectiveDone: 3, QuestLineStepDone: 10 })
 Object.assign(C_q.features, {
   questLine: { name: 'Your way', gist: 'Ten small steps in order. Each one opens a part of the app early.', tab: 'today', route: '#/today' },
   objectives: { name: 'Small things for today', gist: 'A few easy acts for the day. Each one done grows your Harbor.', tab: 'today', route: '#/today' },
-  run: { name: 'Days shown up', gist: 'The days you did something for yourself. One missed day a week is kept.', tab: 'today', route: '#/today' },
+  run: { name: 'Days shown up', gist: 'The days you did something for yourself. One quiet day a week is kept.', tab: 'today', route: '#/today' },
 });
 for (const id of ['questLine', 'objectives', 'run']) {
   if (!C_q.reveal.always.includes(id)) C_q.reveal.always.push(id);
@@ -104,14 +104,14 @@ C_q.tutorials.push(
     { target: 'objectives-card', text: 'Here are a few small things for today. Do any of them, or none. Each one done grows your Harbor.' },
   ] },
   { id: 'run', name: 'Days shown up', kind: 'jit', feature: 'run', steps: [
-    { target: 'run-line', text: 'This counts the days you did something for yourself. One missed day a week is kept for you.' },
+    { target: 'run-line', text: 'This counts the days you did something for yourself. One quiet day a week is kept for you.' },
   ] },
 );
 
 C_q.help.push(
   { q: 'What is Your way?', a: 'A path of ten small steps on Today. Do them in order. Each step done opens a part of the app a little early. You can skip it.', route: '#/today' },
   { q: 'What are the small things for today?', a: 'A few easy acts on Today. Some are done when you do them in the app; others you tap when they are done. Each one grows your Harbor.', route: '#/today' },
-  { q: 'What does "Days shown up" count?', a: 'Each day you did something for yourself: a check-in, a lesson, a skill or a small thing. One missed day a week is kept for you.', route: '#/today' },
+  { q: 'What does "Days shown up" count?', a: 'Each day you did something for yourself: a check-in, a lesson, a skill or a small thing. One quiet day a week is kept for you.', route: '#/today' },
 );
 
 if (typeof module !== 'undefined' && module.exports) module.exports = C_q;
