@@ -302,18 +302,25 @@
 - Worktrees: content eb38166 and workbook-settings 0e76065 fast-forward to 3235375c; game-tutorials 3aefecb does not (it waits for its merge). All three are clean.
 - R-S-29 to HUB: tier 2 waits for the tag's quiet window; one slot asked for workbook-settings.
 
+## 2026-11-08 11:36 IST · game-tutorials MERGED 3aefecb (34f70172); FREEZE, QUIET; tier 2 args prepared
+
+- 11:34 HUB 12 by message: game-tutorials 3aefecb merged at 34f70172, pushed with build/game-tutorials; on the merged tree build 1205260 B, test 43/43, validate, guards GREEN by name, territory 0, the full Node suite 651/651. tests-docs V-45 followed (trunk 5ee84d5a). Every tier 1 V3 unit is in.
+- FREEZE now; QUIET about 11:33-12:10 (the full gates on the trunk): nothing heavy on SCREENS until the HUB says it is over. Tier 2 after the tag (about 12:45-13:00) on 7.0 GB rows.
+- Checked: 3aefecb is an ancestor of build/offline-v1 (5ee84d5).
+- Prepared: args/gen_t2.py (python gen_t2.py <lane> <BASE> "<now>" [<merged-at>]) writes args/v3_<lane>_t2.json for content V-23 (slot 4), workbook-settings V-24 + V-22b (slot asked, R-S-29; set 'slot' when granted), game-tutorials V-21 (slot 8). The drafts on disk carry base 3235375c: regenerate with the post-tag BASE.
+
 ## Resume here
 
-- Chat c26b6cc6 (SCREENS 11:07), live. NO SCREENS run is live.
-- Waiting for the HUB's merge: game-tutorials READY 3aefecb (V-28 7214a52 + V-44 3aefecb), merge base 3fbd08f6. The HUB is HUB 12 'HUB 09:02' (or the name ListAgents shows; 'HUB 08 Nov hh:mm' names belong to another project).
-- FREEZE came with tests-docs V-45 READY 949f0f7 (11:09). Only READY lanes and fixes by name enter offline-v3.0.
+- Chat c26b6cc6 (SCREENS 11:07), live, WAITING. NO SCREENS run is live.
+- Every SCREENS tier 1 V3 unit is merged (game-tutorials 3aefecb at 34f70172, 11:34). FREEZE and the QUIET window (about 11:33-12:10): nothing heavy until the HUB says it is over.
 - NEXT:
-  - (1) A red from the HUB on 3aefecb: fix it on build/game-tutorials within the hour, by name; merge base 3fbd08f6; two rounds at most.
-  - (2) After the tag's quiet window, on a 7.0 GB row (one start per row): content V-23 (slot 4), then workbook-settings V-24 + V-22b (slot asked in R-S-29), then game-tutorials V-21 (slot 8, after the merge and a --ff-only fast-forward).
-  - Each run: fast-forward the branch and worktree to BASE (--ff-only), write args/v3_<lane>_<unit>.json from lane_args_v3.json's lane object with base and diffFrom = BASE, done = the lane's finished units, batches = only the tier 2 batch, sliceRun false, then launch lane.js.
+  - (1) A red by name from the quiet gates in a SCREENS file: fix it on its lane's branch within the hour (the HUB sends the name and the log); two rounds at most.
+  - (2) After the tag offline-v3.0 (about 12:45-13:00), on a 7.0 GB row, one start per row: content V-23 (slot 4), then workbook-settings V-24 + V-22b (slot asked in R-S-29), then game-tutorials V-21 (slot 8).
+  - Each run: git -C <wt>/<lane> merge --ff-only <BASE> (the branch and the worktree; never cut_lane.py over an existing worktree; not a fast-forward: ask the HUB); python tracks/SCREENS/args/gen_t2.py <lane> <BASE> "<date>" [<merged-at>]; set "slot" for workbook-settings when granted; then Workflow({scriptPath: '.../tracks/HUB/workflows/lane.js', args: <the json>}). On return: verify tip, trailers, territory, gate logs, restore offline/1-addic.html, LANE: <lane> READY <tip>.
 - Facts (kept from 6508c21d):
   - setlane.py takes "<now>" then "PREFIX=full line" pairs, plus --section (no '-' placeholder). Run it from a Python file in the job tmp folder. rr.py takes <section-file> <resume-file>.
   - hub_commit.py runs from the repo root with repo-relative paths. The HUB pushes.
   - Memory: the rows are the table at the end of coordination/lane-widening.md; by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory. One new start per row at or above 7.0 GB; paused work resumes at 4.0; under 4.0 the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
   - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
   - A merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test <files>.
+  - ListAgents: HUB 'HUB hh:mm' (HUB 12 is 'HUB 09:02'), CORE 'CORE hh:mm'; 'HUB 08 Nov hh:mm' belongs to another project.

@@ -1,12 +1,23 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 11:25 IST: SCREENS 11:07 (c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7) resumed from 6508c21d's RESTART (11:07). Nothing of SCREENS is live. game-tutorials READY 3aefecb waits for the HUB's merge. FREEZE has come (tests-docs V-45 READY 949f0f7, CORE 11:09). Memory by hand 3.3 GB at 11:20, under the 4.0 floor: no start. Tier 2 next (content V-23, workbook-settings V-24 + V-22b, game-tutorials V-21) on a 7.0 GB row after the tag's quiet window (R-S-29)
+STATE: WAITING   # 2026-11-08 11:36 IST: SCREENS 11:07 (c26b6cc6). Every SCREENS tier 1 V3 unit is merged (game-tutorials 3aefecb at 34f70172, HUB 12 11:34). FREEZE; the QUIET window runs the full gates on the trunk (about 11:33-12:10): nothing heavy on SCREENS until the HUB says it is over (no tier 2 start, no scout, no browser run). After the tag offline-v3.0 (about 12:45-13:00): tier 2 on 7.0 GB rows, one start per row: content V-23, workbook-settings V-24 + V-22b, game-tutorials V-21; args prepared (args/gen_t2.py)
 LANE: content MERGED eb38166   # V-42 + C1 merged 899f77e4 (09:52, HUB 12; trunk ab784c9a; every gate green by name on the merged tree, the three tour-target names green). Next: V-23 (tier 2) when no tier 1 lane waits; V-10b after the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials READY 3aefecb   # V-28 7214a52 + V-44 3aefecb, merge base 3fbd08f6; check wf_e5593f15-752 PASS (build, test 43/43, validate, guards 5/5 GREEN; builder browser 25/0/0); merged-tree scratch 3235375c + lane files 150/150 in 4 test files; LOW C1 the renamed test (the laneNote's name); report lane-reports/game-tutorials.md
+LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172 (HUB 12, 11:34; pushed with build/game-tutorials): build 1205260 B, test 43/43, validate, guards GREEN by name, territory 0, the full Node suite 651/651. Tier 1 complete. Next: V-21 (tier 2, slot 8) after the tag, merge base the trunk tip after a fast-forward
 SLOTS-ASKED: 1   # tier 2, after the tag's quiet window, on a 7.0 GB row: workbook-settings V-24 + V-22b (one batch, about 0.5 h) needs a slot (slot 6 went to today-track). content V-23 runs on its slot 4 and game-tutorials V-21 on its slot 8 (the 05:05 grant names V-21), after 3aefecb merges and the fast-forward
-UPDATED: 2026-11-08 11:25 IST
+UPDATED: 2026-11-08 11:36 IST
+
+# 2026-11-08 11:36 IST · from the HUB · game-tutorials 3aefecb merged (34f70172); FREEZE and QUIET; tier 2 after the tag
+
+- HUB 12 (11:34, by message): game-tutorials READY 3aefecb (V-28 + V-44) merged at 34f70172 and pushed with build/game-tutorials.
+  - On the merged tree: build 1205260 B, test 43/43, validate, guards GREEN by name, territory 0, the full Node suite 651/651.
+  - tests-docs V-45 followed (trunk 5ee84d5a). Every tier 1 V3 unit of both tracks is in.
+- FREEZE is now. The QUIET window runs the full gates on the trunk (about 11:33-12:10). Nothing heavy on SCREENS until the HUB says it is over: no tier 2 start, no scout, no browser run.
+- A red by name from the quiet gates in a SCREENS file is a fix by name within the hour (the HUB sends the name and the log).
+- After the tag offline-v3.0 (about 12:45-13:00): tier 2 on 7.0 GB rows; the merge bases are the trunk tip after a fast-forward. This agrees with R-S-29's default.
+- Checked by me: 3aefecb is an ancestor of build/offline-v1 (tip 5ee84d5).
+- Prepared, nothing launched: args/gen_t2.py writes args/v3_<lane>_t2.json from lane_args_v3.json (base and diffFrom = the BASE given; done; the laneNote with the cited lines checked on 3235375c: ui-settings.js:65, workbook-settings.test.mjs:278-294, content-sample.js:6, content-core.js:133/149). Run again with the post-tag BASE before each launch.
 
 # 2026-11-08 11:25 IST · SCREENS 11:07 resumes; nothing live; FREEZE; tier 2 after the tag (R-S-29)
 
