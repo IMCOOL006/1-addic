@@ -1,12 +1,12 @@
 STATE: HUB 11 running since 05:51 (the fresh HUB the launcher started; nothing was lost). MERGED 06:41: the SOS lane's slice: a skill used in a game is credited (Actions.useSkill) and the SOS rating '10' sits on one line at phone width, proved in Chrome on the merged tree (4 SOS flows pass); trunk 87582bd4 pushed. Running now (five lanes, every tier 1 lane holds a slot): today-track V-43 (Today's objectives card, the run line, the quest-line step; Your Harbor's growth and 'Your way'; since 05:56), game-tutorials V-08b (the tools credit a used skill; since 06:12), tests-docs V-01t (the status page's browser flows; since 06:07), actions-sos V-41 (the objectives and quest-line verbs; launching now on the fresh trunk), content V-42 (the quest-line's words and the objectives pool; starts on the next row at or above 7 GB). MEMORY: rows 8.7 GB (05:55), 6.5 (06:08), 4.8 (06:18, 06:29) with four runs live: above the 4 GB floor, under the 7 GB a new start needs. Pausing the pharma chats is your call; it is the one thing that moves the tag earlier. Earlier today: ten merges 03:23-05:47 (Your Harbor, the quest-line's rules, the hooks round, the guide's Parts 3-4, the safety line before boot) and the tag offline-v1.1 at 01:59.
-NEEDS YOU: nothing for the build (your R-O-7 at 04:44 decided V-Q1 to V-Q13 at their defaults and authorised the launcher's maintenance lines; recorded in outbox-OWNER.md). Still yours, when you can: the walk of the v1.1 file on phone and computer (findings in one message); the India crisis numbers (I6: which are confirmed; until then every number says 'please verify'); who reads CLINICAL-REVIEW-PACK.md and when. The memory brake: the pharma program's chats take about 25 GB when live; pausing them is your call, not the HUB's. Keep the machine awake.
+NEEDS YOU: nothing for the build unless you disagree with one reading (R-H-44, 06:51: the quest-line opens tools and games earlier, it never locks what you can already use in v1.1; answer only to change it). Otherwise nothing (your R-O-7 at 04:44 decided V-Q1 to V-Q13 at their defaults and authorised the launcher's maintenance lines; recorded in outbox-OWNER.md). Still yours, when you can: the walk of the v1.1 file on phone and computer (findings in one message); the India crisis numbers (I6: which are confirmed; until then every number says 'please verify'); who reads CLINICAL-REVIEW-PACK.md and when. The memory brake: the pharma program's chats take about 25 GB when live; pausing them is your call, not the HUB's. Keep the machine awake.
 NEXT (HUB 11, in order): merge game-tutorials V-08b, tests-docs V-01t, today-track V-43, actions-sos V-41, content V-42, then V-44 (the reward sheet) and V-45 (the three browser flows) as each says READY, one at a time, pushing the trunk after each; the board every two hours (next by 09:00) and at every merge; FREEZE when V-45 is READY; the full gates in the quiet window; the tag offline-v3.0.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-08 06:41 IST by `board.py`.
+Rewritten 2026-11-08 06:51 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -29,15 +29,15 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
 - QUIET: done 2026-11-08 01:31-01:57 on _int (e8da3fb: build, test 536/536, validate, guards, docs GREEN, browser one red by name; f69bc68 after the fix: browser GREEN 16/0/3); TAG offline-v1.1 at f69bc68 pushed 01:59. Earlier: QUIET done 2026-11-07 10:57; TAG offline-v1.0 at 45473b2 pushed 11:40
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 (PLAN-V3.md section 7: tier 1 about 30 h; FREEZE about 13:30, QUIET to 14:15, TAG offline-v3.0 about 14:30 IST with three lanes from 03:30 on 7.0 GB rows, two hours later with two; re-cut on the board every two hours from the rows)
-- UPDATED: 2026-11-08 06:37 IST
+- UPDATED: 2026-11-08 06:43 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 24de56ed (launcher-started 2026-11-08 05:51) | RUNNING — 2026-11-08 06:00 IST: HUB 11 (24de56ed, 'HUB 05:50') resumed from HUB 10's Resume here (05:50): trunk 30cb12ff pushed… | 139k | 2026-11-08 06:37 IST |
-| CORE | 981b2dd9 (launcher-started 2026-11-08 05:43) | BUILDING — 2026-11-08 06:20 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t… | 182k | 2026-11-08 06:20 IST |
-| SCREENS | b632a0d9 (launcher-started 2026-11-08 05:43) | BUILDING — 2026-11-08 06:17 IST: SCREENS b632a0d9 resumed 05:45 from 0fd59f53's RESTART. Live: today-track V-43 wf_e9d7f141-ef9… | 180k | 2026-11-08 06:17 IST |
+| HUB | 24de56ed (launcher-started 2026-11-08 05:51) | RUNNING — 2026-11-08 06:00 IST: HUB 11 (24de56ed, 'HUB 05:50') resumed from HUB 10's Resume here (05:50): trunk 30cb12ff pushed… | 150k | 2026-11-08 06:43 IST |
+| CORE | 981b2dd9 (launcher-started 2026-11-08 05:43) | BUILDING — 2026-11-08 06:46 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t… | 202k | 2026-11-08 06:46 IST |
+| SCREENS | b632a0d9 (launcher-started 2026-11-08 05:43) | BUILDING — 2026-11-08 06:17 IST: SCREENS b632a0d9 resumed 05:45 from 0fd59f53's RESTART. Live: today-track V-43 wf_e9d7f141-ef9… | 201k | 2026-11-08 06:48 IST |
 
 ## Lanes (10)
 
@@ -45,7 +45,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | MERGED | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-11 the slice (the safety line before boot, words from boot.js COPY only… |
 | `engine` | CORE | 1 |  | slot 2 | PAUSED | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | READY-SLICE | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | BUILDING | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits; tip 75eb8e5 |
 | `tests-docs` | CORE | 1 |  | slot 5 | BUILDING | GRANTED 2026-11-08 02:01 IST for tier 2 (R-O-3): U-35 screenshots first (npm run screens; the guide images), then U-36b guide Part 3, then the hooks round… |
 | `today-track` | SCREENS | 1 |  | slot 6 | BUILDING | GRANTED 2026-11-08 02:34 IST for V3 tier 1 (the row 02:33 8.8 GB with nothing heavy running; PLAN-V3.md: V-01a the status page, the slice, then V-01b… |
@@ -101,6 +101,8 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Blockers and questions
 
+- 06:51 V-Q10 read (R-H-44): the quest-line opens things EARLIER, it never locks what a v1.1 person already uses; the tools, mini-games and Explorer stay open and are never a reward; the rewards are features the modules reveal later, opened early. Default in force (content V-42 builds it). Say 'V-Q10: lock <names> until earned' only if you want some tools locked until earned, knowing it takes away from a v1.1 person. Also ruled: a claimed reward must show in the app's chrome, so core gets one small tier 1 unit (V-46) for it.
+
 - 17:19 A condition for the offline-v1.1 tag (found by the content lane's reviewer, R-S-9): 'Load sample data' wrote the sample's profile over a person's own profile. MET on the Settings side 18:13: the button is offered only on a notebook without an own profile (workbook-settings 0e76065, tested by name). The Actions side (loadSample itself refusing to overwrite an own profile) comes with actions-sos's round.
 - 17:19 Memory: 6.2 GB (17:06) -> 4.8 (17:16) -> 4.5 (17:17) with five runs live. Under 4 GB the newest lane (the guidance engine) pauses at its next commit, then the planner. Closing other heavy programs on the machine frees a slot.
 
@@ -124,7 +126,7 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Machine
 
-- Free memory 1.9 GB of 31.8 GB at 2026-11-08 06:40 IST; claude 36, node 50 processes; 0 slots by the rule (lane-widening.md).
+- Free memory 4.9 GB of 31.8 GB at 2026-11-08 06:51 IST; claude 36, node 51 processes; 1 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 25324); its last launch: HUB 24de56ed at 2026-11-08 05:51.
 
 ## Files of the build
