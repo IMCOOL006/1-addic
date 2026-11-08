@@ -3142,4 +3142,433 @@ describe('V3 actions-sos (V-08a, V-SOS10)', () => {
     }
   });
 });
+// ── V3 V-41 (R-O-6, R-C-50): Actions.objective.done / swap and Actions.questLine.claim over the real Engine (V-40) ──
+describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
+  beforeEach(async () => { await S().resetAll(); });
+  // Content.objectives and Content.questLine come with content V-42: each test seeds them on the one Content object the
+  // Engine and Actions read, and puts back what was there after. Test fixtures only, never shown.
+  const OBJECTIVES = ['walk', 'water', 'call', 'breathe', 'note', 'stretch'].map((k) => ({ id: `obj-${k}`, title: `T ${k}`, line: `L ${k}`, doneBy: 'tap', grows: k }));
+  const BY_EVENT = ['a', 'b', 'c', 'd'].map((k) => ({ id: `obj-ev-${k}`, title: `T ${k}`, line: `L ${k}`, doneBy: { event: 'LogCreated' }, grows: k }));
+  const STEPS = [
+    { id: 'qs-log', title: 'T log', line: 'L log', condition: { event: 'LogCreated', count: 1 }, reward: 'insights', opened: 'O log' },
+    { id: 'qs-skill', title: 'T skill', line: 'L skill', condition: { event: 'SkillUsed', count: 1 }, reward: 'weeklyReview', opened: 'O skill' },
+    { id: 'qs-two', title: 'T two', line: 'L two', condition: { event: 'SkillUsed', count: 2 }, reward: 'motivation', opened: 'O two' },
+  ];
+  const SEED = { objectives: OBJECTIVES, questLine: STEPS };
+  const ownKey = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+  async function withV41(seed, fn) {
+    const had = ['objectives', 'questLine'].map((k) => [k, ownKey(C(), k), C()[k]]);
+    for (const [k] of had) { if (seed[k] === undefined) delete C()[k]; else C()[k] = seed[k]; }
+    try { return await fn(); } finally { for (const [k, h, v] of had) { if (h) C()[k] = v; else delete C()[k]; } }
+  }
+  const t41 = (name, fn, seed = SEED) => test(name, () => withV41(seed, fn));
+  // the verbs never throw: the call and its promise are both guarded, so a throw fails the test by name
+  async function call(group, verb, arg) {
+    assert.equal(typeof (Actions[group] && Actions[group][verb]), 'function', `Actions.${group}.${verb} is exported`);
+    let p;
+    assert.doesNotThrow(() => { p = Actions[group][verb](arg); }, 'no synchronous throw');
+    assert.ok(p && typeof p.then === 'function', 'returns a promise');
+    try { return await p; } catch (e) { return assert.fail(`${group}.${verb} threw ${e && e.code}: ${e && e.message}`); }
+  }
+  const done = (id) => call('objective', 'done', id);
+  const swap = (id) => call('objective', 'swap', id);
+  const claim = (id) => call('questLine', 'claim', id);
+  const nowIso = () => new Date().toISOString();
+  const draw = () => E().dailyObjectives(S().view, nowIso());
+  const line = () => E().questLine(S().view, nowIso());
+  const today = () => E().todayStr(new Date());
+  const DAY = 24 * 3600 * 1000;
+  function no(r, code, what) {
+    assert.deepEqual([r.ok, r.code], [false, code], `${what}: ${r.message}`);
+    assert.ok(typeof r.message === 'string' && r.message.length > 0 && r.message.length < 200, 'a short plain message');
+    assert.equal(r.event, undefined);
+    assert.equal(r.events, undefined);
+  }
+  async function withEngine(patch, fn) {
+    const real = globalThis.Engine;
+    globalThis.Engine = Object.assign(Object.create(real), patch);
+    try { return await fn(); } finally { globalThis.Engine = real; }
+  }
+  const FOUR = ['ObjectiveDone', 'ObjectiveSwapped', 'QuestLineStepDone', 'FeatureUnlocked'];
+  const four = () => events().filter((e) => FOUR.includes(e.type));
+
+  t41('V-41 objective.done writes ObjectiveDone {id,date} once a day', async () => {
+    const d = draw();
+    assert.equal(d.items.length, 3, 'three a day (the Engine)');
+    const id = d.items[0].id;
+    const r = await done(id);
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.equal(r.event.type, 'ObjectiveDone');
+    assert.deepEqual(r.event.payload, { id, date: today() }, 'exactly id and the local date');
+    assert.match(r.event.at, ISO_RE);
+    assert.equal(r.event.sample, undefined, "the person's own, unmarked");
+    assert.deepEqual(events('ObjectiveDone').map((e) => e.id), [r.event.id], 'one row, the one returned');
+    assert.equal(draw().items.find((o) => o.id === id).done, true, 'the Engine reads it as done');
+    assert.equal(list('logs').length, 0, 'no other row');
+    shiftClock(DAY);
+    try {
+      const next = draw().items[0].id;
+      const r2 = await done(next);
+      assert.equal(r2.ok, true, `the next day: ${r2.code}`);
+      assert.deepEqual(r2.event.payload, { id: next, date: today() }, 'a new day, a new event');
+      assert.notEqual(r2.event.payload.date, r.event.payload.date);
+      assert.equal(events('ObjectiveDone').length, 2, 'per objective per day');
+    } finally { shiftClock(-DAY); }
+  });
+
+  t41('V-41 objective.done twice the same day is ok with no new event', async () => {
+    const [a, b] = draw().items.map((o) => o.id);
+    assert.equal((await done(a)).ok, true);
+    const again = await done(a);
+    assert.deepEqual([again.ok, again.event, again.already], [true, null, true], 'a second tap: ok, nothing new');
+    assert.equal(events('ObjectiveDone').length, 1);
+    // a double tap: two calls at once, one event (the check and the write are in one commit)
+    const both = await Promise.all([done(b), done(b)]);
+    assert.deepEqual(both.map((r) => r.ok), [true, true]);
+    assert.equal(both.filter((r) => r.event).length, 1, 'one of the two wrote');
+    assert.equal(events('ObjectiveDone').filter((e) => e.payload.id === b).length, 1);
+    assert.equal(events('ObjectiveDone').length, 2);
+  });
+
+  test('V-41 objective.done of an objective its own event already did is ok with no new event', () => withV41({ objectives: BY_EVENT, questLine: STEPS }, async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const items = draw().items;
+    assert.ok(items.length === 3 && items.every((o) => o.done), 'the log did all three (the Engine)');
+    const r = await done(items[0].id);
+    assert.deepEqual([r.ok, r.event, r.already], [true, null, true], 'done by its event: no tap event, no XP twice');
+    assert.equal(events('ObjectiveDone').length, 0);
+  }));
+
+  t41('V-41 objective.done refuses unknown and not-today ids without throwing and writes nothing', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    for (const id of [undefined, null, 7, '', 'Bad id!', ['obj-walk'], { id: 'obj-walk' }, 'no-such-objective']) no(await done(id), 'bad-objective', JSON.stringify(id) || String(id));
+    const shown = draw().items.map((o) => o.id);
+    const other = OBJECTIVES.map((o) => o.id).find((x) => !shown.includes(x));
+    no(await done(other), 'not-today', 'in the pool, not drawn today');
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    await withV41({ questLine: STEPS }, async () => no(await done(shown[0]), 'not-ready', 'no Content.objectives'));
+    await withEngine({ dailyObjectives: undefined }, async () => no(await done(shown[0]), 'not-ready', 'no Engine.dailyObjectives'));
+    await withEngine({ dailyObjectives: () => { throw new TypeError('boom'); } }, async () => {
+      const r = await done(shown[0]);
+      no(r, 'error', 'an Engine throw');
+      assert.doesNotMatch(r.message, /boom|Asha/, 'the plain message, never the error or person data');
+    });
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    assert.equal(four().length, 0);
+  });
+
+  // RC2: the same refusals for swap; none of them uses up today's swap
+  t41('V-41 objective.swap refuses unknown and not-today ids without throwing and writes nothing', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    for (const id of [undefined, null, 7, '', 'Bad id!', ['obj-walk'], { id: 'obj-walk' }, 'no-such-objective']) no(await swap(id), 'bad-objective', JSON.stringify(id) || String(id));
+    const shown = draw().items.map((o) => o.id);
+    const other = OBJECTIVES.map((o) => o.id).find((x) => !shown.includes(x));
+    no(await swap(other), 'not-today', 'in the pool, not drawn today');
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    await withV41({ questLine: STEPS }, async () => no(await swap(shown[0]), 'not-ready', 'no Content.objectives'));
+    await withEngine({ dailyObjectives: undefined }, async () => no(await swap(shown[0]), 'not-ready', 'no Engine.dailyObjectives'));
+    await withEngine({ dailyObjectives: () => { throw new TypeError('boom'); } }, async () => {
+      const r = await swap(shown[0]);
+      no(r, 'error', 'an Engine throw');
+      assert.doesNotMatch(r.message, /boom|Asha/, 'the plain message, never the error or person data');
+    });
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    assert.equal(four().length, 0);
+    assert.equal(draw().swapped, false, "today's swap is not used up");
+  });
+
+  t41('V-41 objective.swap writes ObjectiveSwapped {from,to,date} once a day and the second is ok:false', async () => {
+    const d = draw();
+    assert.equal(d.swapped, false);
+    const [from, keep] = d.items.map((o) => o.id);
+    const to = d.items[0].swapTo;
+    assert.ok(typeof to === 'string' && d.items[0].swappable === true, 'the Engine offers a swap');
+    const r = await swap(from);
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.equal(r.event.type, 'ObjectiveSwapped');
+    assert.deepEqual(r.event.payload, { from, to, date: today() }, "to is the Engine's swapTo");
+    assert.equal(r.event.sample, undefined);
+    const after = draw();
+    assert.equal(after.swapped, true);
+    assert.deepEqual(after.items.map((o) => o.id), d.items.map((o) => (o.id === from ? to : o.id)), 'to takes the place of from');
+    const snap = await snapshot();
+    no(await swap(keep), 'swap-used', 'a second swap the same day');
+    no(await swap(to), 'swap-used', 'the swapped-in one');
+    assert.deepEqual(await snapshot(), snap, 'the refusals wrote nothing');
+    assert.equal(events('ObjectiveSwapped').length, 1);
+    no(await done(from), 'not-today', 'the swapped-out one is not today\'s now');
+    assert.equal((await done(to)).ok, true, 'the swapped-in one can be done');
+  });
+
+  t41('V-41 swap never picks a done or shown objective and is deterministic', async () => {
+    assert.doesNotMatch(readFileSync(src('actions.js'), 'utf8'), /Math\.random/, 'no randomness in Actions');
+    const run = async () => {
+      const d = draw();
+      const [a, b] = d.items.map((o) => o.id);
+      assert.equal((await done(a)).ok, true);
+      const snap = await snapshot();
+      no(await swap(a), 'bad-objective', 'a done objective stays');
+      assert.deepEqual(await snapshot(), snap);
+      const r = await swap(b);
+      assert.equal(r.ok, true, `refused: ${r.code}`);
+      const to = r.event.payload.to;
+      assert.ok(!d.items.some((o) => o.id === to), 'never one already shown');
+      assert.notEqual(to, a, 'never a done one');
+      assert.equal(to, d.items[1].swapTo);
+      const after = draw();
+      assert.equal(after.items.find((o) => o.id === a).done, true, 'the done one stays done');
+      assert.equal(after.items.find((o) => o.id === to).done, false);
+      return [d.items.map((o) => o.id), to];
+    };
+    const first = await run();
+    await S().resetAll();
+    assert.deepEqual(await run(), first, 'the same day and state: the same draw and the same swap');
+    // the Engine's swapTo is trusted and still checked: one already shown, unknown or missing is never written
+    await S().resetAll();
+    const real = E().dailyObjectives;
+    for (const bad of [(d) => d.items[0].id, () => 'no-such-objective', () => null]) {
+      const patch = { dailyObjectives: (v, n) => { const d = real(v, n); d.items = d.items.map((o, i) => (i === 1 ? Object.assign({}, o, { swapTo: bad(d) }) : o)); return d; } };
+      await withEngine(patch, async () => no(await swap(draw().items[1].id), 'no-swap', 'a bad swapTo'));
+    }
+    assert.equal(four().length, 0);
+    // a pool of three: nothing to swap in
+    await S().resetAll();
+    await withV41({ objectives: OBJECTIVES.slice(0, 3), questLine: STEPS }, async () => {
+      no(await swap(draw().items[0].id), 'no-swap', 'a pool of three');
+      assert.equal(four().length, 0);
+    });
+  });
+
+  t41('V-41 questLine.claim writes QuestLineStepDone and FeatureUnlocked together', async () => {
+    no(await claim('qs-log'), 'not-claimable', 'before its condition holds');
+    assert.equal(four().length, 0);
+    await Actions.logCraving({ intensity: 3 });
+    assert.deepEqual([line().current.id, line().current.claimable], ['qs-log', true], 'the Engine says it can be claimed');
+    const r = await claim('qs-log');
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.deepEqual(r.events.map((e) => [e.type, e.payload]), [['QuestLineStepDone', { id: 'qs-log' }], ['FeatureUnlocked', { feature: 'insights', by: 'questline' }]]);
+    assert.equal(r.events[0].at, r.events[1].at, 'one commit');
+    assert.equal(r.feature, 'insights');
+    assert.deepEqual(four().map((e) => e.id), r.events.map((e) => e.id), 'the two rows, the ones returned');
+    assert.ok(r.events.every((e) => e.sample === undefined), "the person's own");
+    assert.ok(E().unlocked(S().view).has('insights'), 'the Engine opens the reward');
+    assert.equal(line().current.id, 'qs-skill', 'the next step is current');
+    // a double tap: two claims at once, one pair of events
+    await Actions.useSkill({ skillId: 'ride-wave', helpful: true });
+    const both = await Promise.all([claim('qs-skill'), claim('qs-skill')]);
+    assert.deepEqual(both.map((x) => x.ok), [true, true]);
+    assert.deepEqual(both.map((x) => x.events.length).sort(), [0, 2]);
+    assert.equal(events('QuestLineStepDone').filter((e) => e.payload.id === 'qs-skill').length, 1);
+    assert.equal(events('FeatureUnlocked').filter((e) => e.payload.feature === 'weeklyReview').length, 1);
+  });
+
+  // RC1: two steps may share one reward (the Engine checks only that step ids are unique): the second claim writes its
+  // QuestLineStepDone alone (FeatureUnlocked is once-only by feature) and still names the feature
+  t41('V-41 claim of a step whose reward is already open writes QuestLineStepDone only and returns feature', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const first = await claim('qs-log');
+    assert.deepEqual(first.events.map((e) => e.type), ['QuestLineStepDone', 'FeatureUnlocked'], 'the first claim opens insights');
+    await Actions.logCraving({ intensity: 2 });
+    assert.deepEqual([line().current.id, line().current.claimable], ['qs-log-again', true], 'the twin step is current and ready');
+    const open = [...E().unlocked(S().view)].sort();
+    assert.ok(open.includes('insights'));
+    const r = await claim('qs-log-again');
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.deepEqual(r.events.map((e) => [e.type, e.payload]), [['QuestLineStepDone', { id: 'qs-log-again' }]], 'one event: the reward is open already');
+    assert.equal(r.feature, 'insights', 'the result still names the feature');
+    assert.equal(events('FeatureUnlocked').filter((e) => e.payload.feature === 'insights').length, 1, 'one FeatureUnlocked for the feature');
+    assert.deepEqual([...E().unlocked(S().view)].sort(), open, 'Engine.unlocked unchanged');
+    assert.deepEqual(four().map((e) => e.id).sort(), [...first.events, ...r.events].map((e) => e.id).sort(), 'the three rows, the ones returned');
+  }, { objectives: OBJECTIVES, questLine: [STEPS[0], Object.assign({}, STEPS[0], { id: 'qs-log-again', title: 'T again', line: 'L again', opened: 'O again' })] });
+
+  t41('V-41 claim of a done step is ok with no new event; of a locked step ok:false', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    assert.equal((await claim('qs-log')).ok, true);
+    const snap = await snapshot();
+    const again = await claim('qs-log');
+    assert.deepEqual([again.ok, again.events], [true, []], 'a done step: ok, nothing new');
+    no(await claim('qs-two'), 'not-claimable', 'a locked step');
+    await Actions.useSkill({ skillId: 'ride-wave', helpful: true });
+    await Actions.useSkill({ skillId: 'distract', helpful: false });
+    const two = line().steps.find((s) => s.id === 'qs-two');
+    assert.deepEqual([two.state, two.met], ['locked', true], 'met, still locked behind qs-skill');
+    const snap2 = await snapshot();
+    no(await claim('qs-two'), 'not-claimable', 'a met but locked step');
+    assert.deepEqual(await snapshot(), snap2, 'the refusal wrote nothing');
+    assert.equal(events('QuestLineStepDone').length, 1);
+    assert.deepEqual(snap.events.filter((e) => FOUR.includes(e.type)), four(), 'only the first claim');
+  });
+
+  t41('V-41 claim without Engine.questLine or Content.questLine is not-ready and writes nothing', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const snap = await snapshot();
+    await withV41({ objectives: OBJECTIVES }, async () => no(await claim('qs-log'), 'not-ready', 'no Content.questLine'));
+    await withEngine({ questLine: undefined }, async () => no(await claim('qs-log'), 'not-ready', 'no Engine.questLine'));
+    for (const id of [undefined, null, 3, '', 'Bad step!', 'no-such-step']) no(await claim(id), 'bad-step', JSON.stringify(id) || String(id));
+    await withEngine({ questLine: () => { throw new TypeError('boom'); } }, async () => no(await claim('qs-log'), 'error', 'an Engine throw'));
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    assert.equal(four().length, 0);
+  });
+
+  t41('V-41 claim refuses a protected or unknown reward', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const snap = await snapshot();
+    const refuse = (reward, what) => withV41({ objectives: OBJECTIVES, questLine: [Object.assign({}, STEPS[0], { reward })] }, async () => {
+      assert.equal(line().current.claimable, true, 'the step itself is ready');
+      no(await claim('qs-log'), 'bad-reward', `${String(reward)}: ${what}`);
+    });
+    // sos, help, settings, export, data: never a reward; glossary is on the learn tab, talkBack and feelingTools on the
+    // SOS tab, training on the Settings tab; today is always on
+    const REWARDS = ['sos', 'urgent', 'help', 'lessons', 'settings', 'export', 'data', 'glossary', 'talkBack', 'feelingTools', 'training', 'today', 'no-such-feature', 42, undefined];
+    for (const reward of REWARDS) await refuse(reward, 'with the Engine');
+    // RS1: each protection alone. help and quicklog as if they were features on the Today tab (fixtures, put back after):
+    // help is refused by NEVER_REWARD only, quicklog by Content.reveal.always only, the tab ones by the tab rule only,
+    // and a plain feature the Engine protects by the Engine's isProtectedFeature only
+    const feats = C().features;
+    const seeded = ['help', 'quicklog'].filter((k) => !ownKey(feats, k));
+    assert.deepEqual(seeded, ['help', 'quicklog'], 'neither is a feature in Content');
+    for (const k of seeded) feats[k] = { name: `F ${k}`, gist: `G ${k}`, tab: 'today' };
+    try {
+      await withEngine({ isProtectedFeature: undefined }, async () => {
+        for (const reward of REWARDS) await refuse(reward, 'without the Engine check');
+        await refuse('quicklog', 'always on, so never a reward');
+      });
+      await withEngine({ isProtectedFeature: (f) => f === 'insights' }, () => refuse('insights', 'the Engine protects it'));
+    } finally { for (const k of seeded) delete feats[k]; }
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    assert.equal(four().length, 0);
+    assert.equal((await claim('qs-log')).ok, true, 'a plain reward: claimed');
+  });
+
+  t41("V-41 with a sample loaded the events are the person's own and sample rows never count", async () => {
+    const d0 = draw();
+    const [x, y] = d0.items.map((o) => o.id);
+    const smp = (id, type, payload) => ({ id, type, at: nowIso(), payload, sample: true });
+    const SAMPLE = { name: 'Sample', generate: (now) => {
+      const g = TRUNK_SAMPLE.generate(now);
+      g.stores.events.push(smp('smp-od', 'ObjectiveDone', { id: x, date: today() }), smp('smp-os', 'ObjectiveSwapped', { from: y, to: d0.items[1].swapTo, date: today() }),
+        smp('smp-lc', 'LogCreated', { logId: 'smp-log-1', type: 'craving' }), smp('smp-qs', 'QuestLineStepDone', { id: 'qs-log' }),
+        smp('smp-fu', 'FeatureUnlocked', { feature: 'insights', by: 'questline' }));
+      return g;
+    } };
+    await withSample(SAMPLE, () => Actions.loadSample());
+    const sampleRows = async () => Object.fromEntries(Object.entries(await snapshot()).map(([k, rows]) => [k, rows.filter((r) => r && r.sample === true)]));
+    const before = await sampleRows();
+    assert.equal(before.events.filter((e) => FOUR.includes(e.type)).length, 4, 'the sample is loaded');
+    const d = draw();
+    assert.deepEqual([d.swapped, d.items.find((o) => o.id === x).done], [false, false], 'sample rows never count');
+    no(await claim('qs-log'), 'not-claimable', "a sample log does not meet the step and a sample claim is not the person's");
+    const r = await done(x);
+    assert.equal(r.ok, true, `a loaded sample is not a refusal (R-C-48): ${r.code}`);
+    assert.equal(r.event.sample, undefined, 'unmarked');
+    const s = await swap(y);
+    assert.equal(s.ok, true, `the sample swap is not the person's: ${s.code}`);
+    await Actions.logCraving({ intensity: 3 });
+    const c = await claim('qs-log');
+    assert.equal(c.ok, true, `refused: ${c.code}`);
+    assert.deepEqual(c.events.map((e) => [e.type, e.sample === true]), [['QuestLineStepDone', false], ['FeatureUnlocked', false]], "the person's own pair, the sample's skipped");
+    assert.deepEqual(await sampleRows(), before, 'no sample row changed');
+    const mine = four().filter((e) => e.sample !== true).map((e) => e.id);
+    assert.equal(mine.length, 4);
+    await Actions.eraseSample();
+    assert.deepEqual(four().map((e) => e.id).sort(), mine.sort(), "eraseSample keeps the person's own and takes the sample's");
+  });
+
+  // RC3: a backup carries the four events, and the Engine reads the same from them after an import
+  t41('V-41 export reset import keeps the four events and what the Engine reads from them', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const [a, b] = draw().items.map((o) => o.id);
+    assert.equal((await done(a)).ok, true);
+    assert.equal((await swap(b)).ok, true);
+    assert.equal((await claim('qs-log')).ok, true);
+    const reads = () => ({ objectives: draw(), steps: line().steps.map((s) => [s.id, s.state]), claimed: line().done, unlocked: [...E().unlocked(S().view)].sort() });
+    const before = { snap: await snapshot(), reads: reads() };
+    assert.deepEqual([...new Set(four().map((e) => e.type))].sort(), [...FOUR].sort(), 'the four types are in the notebook');
+    assert.ok(before.reads.objectives.swapped && before.reads.objectives.items.some((o) => o.done) && before.reads.unlocked.includes('insights'));
+    const exported = JSON.parse(JSON.stringify(await S().exportJson()));
+    await Actions.eraseAll();
+    assert.equal(four().length, 0, 'erased');
+    assert.ok(!E().unlocked(S().view).has('insights'), 'the reward is not open in an empty notebook');
+    const r = await Actions.importBackup(exported);
+    assert.equal(r.imported, true);
+    assert.deepEqual(await snapshot(), before.snap, 'the same rows, the four events among them');
+    assert.deepEqual(reads(), before.reads, 'the same draw, swap and done flags, claimed steps and open features');
+  });
+
+  t41('V-41 recordEvent refuses the four types with USE_VERB', async () => {
+    const snap = await snapshot();
+    const id = draw().items[0].id;
+    const cases = [['ObjectiveDone', { id, date: today() }], ['ObjectiveSwapped', { from: id, to: 'obj-walk', date: today() }],
+      ['QuestLineStepDone', { id: 'qs-log' }], ['FeatureUnlocked', { feature: 'insights', by: 'questline' }]];
+    for (const [type, payload] of cases) await refused(Actions.recordEvent(type, payload), 'USE_VERB');
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+  });
+
+  t41('V-41 nothing is removed or lowered', async () => {
+    const view = () => S().view;
+    const measure = async () => ({ snap: await snapshot(), growth: E().growth(view(), nowIso()), unlocked: [...E().unlocked(view())],
+      claimed: line().done, xp: E().xpFromEvents(events(), new Date()).total, doneToday: draw().items.filter((o) => o.done).map((o) => o.id) });
+    let prev = await measure();
+    // RC4: a slip (the day before and today) after an objective and a claim restarts only the opt-in run
+    const slipOn = (date) => async () => { const r = await Actions.logSlip({ date }); assert.ok(r && r.log, `the slip of ${date} is saved`); };
+    const steps = [
+      () => Actions.logCraving({ intensity: 4 }), () => done(draw().items[0].id), () => done(draw().items[0].id),
+      () => swap(draw().items[1].id), () => swap(draw().items[2].id), () => claim('qs-two'), () => claim('qs-log'), () => claim('qs-log'),
+      slipOn(daysAgo(1)), slipOn(today()),
+      () => Actions.useSkill({ skillId: 'ride-wave', helpful: true }), () => claim('qs-skill'), slipOn(today()), () => done('no-such-objective'),
+    ];
+    for (const [i, step] of steps.entries()) {
+      await step();
+      const now = await measure();
+      for (const [name, rows] of Object.entries(prev.snap)) {
+        const kp = STORES()[name] || 'id';
+        for (const row of rows) assert.ok(now.snap[name].some((r) => r[kp] === row[kp]), `step ${i}: ${name} ${row[kp]} is kept`);
+      }
+      for (const e of prev.snap.events) assert.deepEqual(now.snap.events.find((r) => r.id === e.id), e, `step ${i}: event ${e.type} unchanged`);
+      assert.ok(now.growth >= prev.growth, `step ${i}: growth never decreases`);
+      assert.ok(prev.unlocked.every((f) => now.unlocked.includes(f)), `step ${i}: nothing is locked again`);
+      assert.ok(now.claimed >= prev.claimed, `step ${i}: claimed steps stay claimed`);
+      assert.ok(prev.doneToday.every((id) => now.doneToday.includes(id)), `step ${i}: today's done objectives stay done`);
+      assert.ok(now.xp >= prev.xp, `step ${i}: XP never decreases`);
+      prev = now;
+    }
+    assert.ok(prev.growth >= 1 && prev.claimed === 2, 'the run did grow and claim');
+    // no refusal blocks SOS: it still saves after every refusal above
+    const sos = await Actions.sosSession({ kind: 'craving', ratingBefore: 7, ratingAfter: 3, tools: [{ skillId: 'ride-wave', helpful: true }] });
+    assert.ok(sos, 'SOS saves');
+    assert.equal(events('SosCompleted').length, 1);
+  });
+
+  t41('V-41 locked store refuses without throwing', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    await Actions.logCraving({ intensity: 3 });
+    const [a, b] = draw().items.map((o) => o.id);
+    const snap = await snapshot();
+    const real = globalThis.Store;
+    globalThis.Store = undefined;
+    try {
+      for (const r of [await done(a), await swap(b), await claim('qs-log')]) no(r, 'no-store', 'no store');
+    } finally { globalThis.Store = real; }
+    assert.ok(S().lock && typeof S().lock.set === 'function', 'the Store has a lock (no early return)');
+    await S().lock.set('2468', { autoLockMin: 5 });
+    S().lock.lockNow();
+    try {
+      for (const r of [await done(a), await swap(b), await claim('qs-log')]) {
+        no(r, 'LOCKED', 'locked');
+        assert.doesNotMatch(r.message, /Asha|2468|obj-|qs-/, 'no person data in the message');
+      }
+    } finally {
+      assert.equal(await S().lock.unlock('2468'), true);
+    }
+    assert.deepEqual((await snapshot()).events, snap.events, 'nothing written while locked');
+    await S().lock.remove('2468');
+    assert.equal((await done(a)).ok, true, 'unlocked: written');
+  });
+});
 // -- V3 actions-sos tests end --

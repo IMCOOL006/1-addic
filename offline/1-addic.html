@@ -6361,15 +6361,19 @@ const Actions = (() => {
   const EVENT_TYPES = ['LogCreated', 'CheckinCompleted', 'SkillUsed', 'SosCompleted', 'LessonCompleted', 'ModuleCompleted',
     'CheckpointCompleted', 'ArtifactSaved', 'ExerciseDone', 'BattlePlanCreated', 'BattlePlanDebriefed', 'ActivityDone',
     'MindfulMinute', 'WeeklyReviewCompleted', 'SlipLogged', 'SlipReviewed', 'ContactReached', 'ScriptUsed',
-    'TutorialCompleted', 'ExplorerCompleted', 'FeatureRevealed', 'MilestoneSeen', 'RecoveryPlanConfirmed', 'OnboardingCompleted'];
+    'TutorialCompleted', 'ExplorerCompleted', 'FeatureRevealed', 'MilestoneSeen', 'RecoveryPlanConfirmed', 'OnboardingCompleted',
+    'ObjectiveDone', 'ObjectiveSwapped', 'QuestLineStepDone', 'FeatureUnlocked']; // V-41 (R-O-6): the last four
   /* once-only events, keyed by this payload field ('' = once ever) */
   const ONCE = { TutorialCompleted: 'id', LessonCompleted: 'lessonId', CheckpointCompleted: 'moduleId', ModuleCompleted: 'moduleId',
-    ExplorerCompleted: '', OnboardingCompleted: '', RecoveryPlanConfirmed: '', MilestoneSeen: 'milestone', FeatureRevealed: 'featureId' };
+    ExplorerCompleted: '', OnboardingCompleted: '', RecoveryPlanConfirmed: '', MilestoneSeen: 'milestone', FeatureRevealed: 'featureId',
+    QuestLineStepDone: 'id', FeatureUnlocked: 'feature' };
   /* required payload fields */
   const NEEDS = {
     SkillUsed: { skillId: isId, helpful: isBool }, SlipLogged: { date: isDate }, MilestoneSeen: { milestone: (n) => isInt(n, 1, 100000) },
     TutorialCompleted: { id: isId }, LessonCompleted: { lessonId: isId }, CheckpointCompleted: { moduleId: isId }, ModuleCompleted: { moduleId: isId },
     FeatureRevealed: { featureId: isId }, ContactReached: { contactId: isId }, ScriptUsed: { responseId: isId }, WeeklyReviewCompleted: { weekStart: isDate },
+    ObjectiveDone: { id: isId, date: isDate }, ObjectiveSwapped: { from: isId, to: isId, date: isDate }, QuestLineStepDone: { id: isId },
+    FeatureUnlocked: { feature: isId },
   };
   function onceDone(tx, type, payload) {
     if (!own(ONCE, type)) return false;
@@ -6472,9 +6476,10 @@ const Actions = (() => {
   /* ── recordEvent ─────────────────────────────────────────────────────────────────────────── */
   // Each is written by its own verb, with the row or the rule it needs (RC19: a plan confirmed with no plan row, an
   // onboarding with no profile row, a module whose lessons are not all done).
-  const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted'];
+  const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted',
+    'ObjectiveDone', 'ObjectiveSwapped', 'QuestLineStepDone', 'FeatureUnlocked'];
   async function recordEvent(type, payload) {
-    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson or checkpoint).`);
+    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson, checkpoint, objective.done, objective.swap or questLine.claim).`);
     if (!EVENT_TYPES.includes(type)) fail('bad-event', `Unknown event type "${type}".`);
     const pl = payload === undefined ? {} : payload;
     if (!isObj(pl) || jsonSize(pl) > 5000) fail('bad-event', 'An event payload must be a small object.');
@@ -7038,6 +7043,104 @@ const Actions = (() => {
       });
     },
   };
+
+  /* ── daily objectives and the quest line (V-41; R-O-6, PLAN-V3.md section 7, R-C-50) ─────────── */
+  // Four events, in `events` (no new row): ObjectiveDone {id, date}, ObjectiveSwapped {from, to, date},
+  // QuestLineStepDone {id}, FeatureUnlocked {feature, by: 'questline'}. Like useSkill these verbs never throw: a refusal
+  // is {ok: false, code, message} and writes nothing. The Engine decides (today's three, the swap's replacement, the
+  // current step and whether it can be claimed), read inside the one commit over the draft, so a double tap writes once.
+  // Actions never re-checks a condition, never draws at random and gives no XP (the Engine's, from Content.xp).
+  // Sample rows never count and a loaded sample is not a refusal (R-C-48). SOS, help, lessons, Settings, export and the
+  // data are never a reward, so no claim can gate them.
+  const NEVER_REWARD = ['sos', 'urgent', 'help', 'lessons', 'learn', 'settings', 'export', 'data', 'backup'];
+  async function refusing(fallback, fn) {
+    try { return await fn(); } catch (e) {
+      const coded = e && typeof e.code === 'string' && e.code;
+      return { ok: false, code: coded ? e.code : 'error', message: coded && typeof e.message === 'string' ? e.message : fallback };
+    }
+  }
+  const engineView = (tx) => ({ get: tx.get, list: tx.list, count: (s) => tx.list(s).length });
+  const contentList = (k) => (Array.isArray(getContent()[k]) ? getContent()[k].filter(isObj) : null);
+  const ownEvent = (tx, type, test) => tx.list('events').some((e) => e && e.sample !== true && e.type === type && test(isObj(e.payload) ? e.payload : {}));
+  function objectiveFirst(id) {
+    const E = getEngine();
+    const pool = contentList('objectives');
+    if (!E || typeof E.dailyObjectives !== 'function' || !pool) fail('not-ready', 'Daily objectives are not in this version yet.');
+    if (!isId(id) || !pool.some((o) => o.id === id)) fail('bad-objective', 'Unknown objective.');
+    return pool;
+  }
+  function todaysDraw(tx) {
+    const r = getEngine().dailyObjectives(engineView(tx), tx.at);
+    return { date: isDate(r && r.date) ? r.date : localDate(tx.at), items: Array.isArray(r && r.items) ? r.items.filter(isObj) : [], swapped: !!(r && r.swapped) };
+  }
+  const doneToday = (tx, d, id) => ownEvent(tx, 'ObjectiveDone', (p) => p.id === id && p.date === d.date);
+  const objective = {
+    /* one ObjectiveDone per objective per day; done already (a tap or its own event) -> ok with no event */
+    done(id) {
+      return refusing('The objective could not be saved.', async () => {
+        objectiveFirst(id);
+        return write(`objective done ${id}`, stamp(), (tx) => {
+          const d = todaysDraw(tx);
+          const item = d.items.find((o) => o.id === id);
+          if (!item) fail('not-today', 'That is not one of today\'s objectives.');
+          if (item.done === true || doneToday(tx, d, id)) return { ok: true, event: null, already: true };
+          return { ok: true, event: tx.event('ObjectiveDone', { id, date: d.date }) };
+        });
+      });
+    },
+    /* one swap a day: `to` is the Engine's swapTo for the item */
+    swap(id) {
+      return refusing('The swap could not be saved.', async () => {
+        const pool = objectiveFirst(id);
+        return write(`objective swap ${id}`, stamp(), (tx) => {
+          const d = todaysDraw(tx);
+          if (d.swapped || ownEvent(tx, 'ObjectiveSwapped', (p) => p.date === d.date)) fail('swap-used', 'Today\'s swap is already used.');
+          const item = d.items.find((o) => o.id === id);
+          if (!item) fail('not-today', 'That is not one of today\'s objectives.');
+          if (item.done === true || doneToday(tx, d, id)) fail('bad-objective', 'A done objective stays.');
+          const to = item.swapTo;
+          if (item.swappable !== true || !isId(to) || !pool.some((o) => o.id === to) || d.items.some((o) => o.id === to) || doneToday(tx, d, to)) {
+            fail('no-swap', 'There is no other objective to swap in today.');
+          }
+          return { ok: true, event: tx.event('ObjectiveSwapped', { from: id, to, date: d.date }) };
+        });
+      });
+    },
+  };
+  function rewardOk(f) {
+    const C = getContent();
+    const feats = C.features;
+    if (!isId(f) || !isObj(feats) || !own(feats, f) || NEVER_REWARD.includes(f)) return false;
+    const always = isObj(C.reveal) && Array.isArray(C.reveal.always) ? C.reveal.always : [];
+    if (always.includes(f) || (isObj(feats[f]) && ['sos', 'settings', 'learn'].includes(feats[f].tab))) return false;
+    const E = getEngine();
+    return !(E && typeof E.isProtectedFeature === 'function' && E.isProtectedFeature(f) !== false);
+  }
+  const questLine = {
+    /* QuestLineStepDone and FeatureUnlocked in one commit, only while the Engine's current step is this one and claimable */
+    claim(stepId) {
+      return refusing('The step could not be saved.', async () => {
+        const E = getEngine();
+        const steps = contentList('questLine');
+        if (!E || typeof E.questLine !== 'function' || !steps) fail('not-ready', 'The quest line is not in this version yet.');
+        const step = isId(stepId) ? steps.find((s) => s.id === stepId) : null;
+        if (!step) fail('bad-step', 'Unknown step.');
+        const feature = step.reward;
+        if (!rewardOk(feature)) fail('bad-reward', 'This step has no reward that can be opened.');
+        return write(`quest line ${stepId}`, stamp(), (tx) => {
+          if (ownEvent(tx, 'QuestLineStepDone', (p) => p.id === stepId)) return { ok: true, events: [] };
+          const q = E.questLine(engineView(tx), tx.at);
+          const st = q && Array.isArray(q.steps) ? q.steps.find((s) => isObj(s) && s.id === stepId) : null;
+          if (st && st.state === 'done') return { ok: true, events: [] };
+          const cur = q && isObj(q.current) ? q.current : null;
+          if (!cur || cur.id !== stepId || cur.claimable !== true) fail('not-claimable', 'This step is not ready yet.');
+          tx.event('QuestLineStepDone', { id: stepId });
+          if (!ownEvent(tx, 'FeatureUnlocked', (p) => p.feature === feature)) tx.event('FeatureUnlocked', { feature, by: 'questline' });
+          return { ok: true, events: tx.events.slice(), feature };
+        });
+      });
+    },
+  };
   async function reveal(featureId, opts) {
     const feats = getContent().features;
     if (typeof featureId !== 'string' || !(isObj(feats) ? own(feats, featureId) : isId(featureId))) fail('bad-feature', 'Unknown feature.');
@@ -7215,7 +7318,7 @@ const Actions = (() => {
     completeLesson, checkpoint, saveResponse,
     contacts, plans, weeklyReview, todos,
     motivation, predictions, quests,
-    tutorial, reveal, markTipShown,
+    tutorial, objective, questLine, reveal, markTipShown,
     recoveryPlan, scriptUsed, loadSample, eraseSample, eraseAll, importBackup,
   };
 })();
