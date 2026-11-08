@@ -26,5 +26,12 @@
  "11310a7c": {"role": "CORE", "label": "offline-v1 CORE session 9, 08 Nov 00:18- (launcher)"},
  "1c2cf086": {"role": "SCREENS", "label": "offline-v1 SCREENS session 6, 08 Nov 01:15- (launcher)"},
  "6c9dfc8f": {"role": "CORE", "label": "offline-v1 CORE session 10, 08 Nov 01:56- (launcher)"},
- "90539ba6": {"role": "HUB", "label": "offline-v1 HUB session 11, 08 Nov 02:10- (launcher)"}
+ "90539ba6": {"role": "HUB", "label": "offline-v1 HUB session 11, 08 Nov 02:10- (launcher)"},
+ "c2601cf1": {"role": "CORE", "label": "offline-v1 CORE session 11, 08 Nov 02:42- (launcher)"},
+ "4bd5570f": {"role": "HUB", "label": "offline-v1 HUB session 12, 08 Nov 03:17- (launcher)"},
+ "0fd59f53": {"role": "SCREENS", "label": "offline-v1 SCREENS session 7, 08 Nov 03:26- (launcher)"},
+ "51e49e2a": {"role": "CORE", "label": "offline-v1 CORE session 12, 08 Nov 03:56- (launcher)"},
+ "981b2dd9": {"role": "CORE", "label": "offline-v1 CORE session 13, 08 Nov 05:43- (launcher)"},
+ "b632a0d9": {"role": "SCREENS", "label": "offline-v1 SCREENS session 8, 08 Nov 05:43- (launcher)"},
+ "24de56ed": {"role": "HUB", "label": "offline-v1 HUB session 13, 08 Nov 05:50- (launcher)"}
 }
