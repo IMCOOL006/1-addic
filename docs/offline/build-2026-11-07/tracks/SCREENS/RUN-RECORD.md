@@ -294,26 +294,26 @@
 - Verified by me: the trailers, territory, the gate logs, browser 25/0/0, the restored built file and a clean tree. The merged-tree scratch (3235375c plus the lane's two files) passed 150/150 in four test files.
 - LANE game-tutorials READY 3aefecb is written. Context about 260k: STATE RESTART at this clean point.
 
+## 2026-11-08 11:27 IST · SCREENS 11:07 resumes (c26b6cc6); nothing live; R-S-29
+
+- Started 11:07 on 6508c21d's RESTART line. Its two runs (wf_76cc2221-3cb, wf_e5593f15-752) had both returned, so there was nothing to wait on or relaunch.
+- Read: status-SCREENS.md, the Resume here above, status-HUB.md (BASE 3235375c; NEXT; the 11:00 forecast TAG about 13:00), status-CORE.md (tests-docs READY 949f0f7 at 11:09 = the FREEZE), the outboxes (R-H-45, R-C-72, R-S-28 the last), the rows (11:03 7.0 GB), lane.js's header, lane_args_v3.json's SCREENS lanes, the V3 briefs (V-23 in content-v3.md, V-21 in game-tutorials-v3.md; workbook-settings has no V3 brief, so its unitNotes are the brief).
+- 11:20 free memory by hand 3.3 GB: no start.
+- Worktrees: content eb38166 and workbook-settings 0e76065 fast-forward to 3235375c; game-tutorials 3aefecb does not (it waits for its merge). All three are clean.
+- R-S-29 to HUB: tier 2 waits for the tag's quiet window; one slot asked for workbook-settings.
+
 ## Resume here
 
-- Chat 6508c21d (SCREENS 9, 'SCREENS 08:44') handed over with STATE RESTART at about 11:06 IST, at a clean point. NO SCREENS run is live. Its runs (wf_76cc2221-3cb, wf_e5593f15-752) both returned; nothing needs a relaunch.
-- Waiting for the HUB's merge: game-tutorials READY 3aefecb (V-28 7214a52 + V-44 3aefecb), merge base 3fbd08f6. The HUB is HUB 12 'HUB 09:02', or its successor by the name ListAgents shows.
-- Merged and complete: content (V-42 at 899f77e4), today-track (V-43), workbook-settings, actions. game-tutorials becomes complete for tier 1 once 3aefecb merges.
-- NEXT for the fresh chat:
-  - (1) A red from the HUB on 3aefecb: fix it on build/game-tutorials within the hour, scoped by name; the merge base stays 3fbd08f6; two rounds at most.
-  - (2) FREEZE comes at tests-docs V-45's READY (CORE). After it, only READY lanes and fixes by name enter offline-v3.0.
-  - (3) Tier 2, only when no tier 1 lane waits and on a 7.0 GB row:
-    - content V-23 (V-10b waits for the owner's I6, outbox-OWNER.md);
-    - workbook-settings V-24 and V-22b;
-    - game-tutorials V-21, the coach after a route change; its brief section is in briefs/game-tutorials-v3.md.
-    - Each: fast-forward the branch and worktree to BASE (--ff-only), write the args from lane_args_v3.json with done = the lane's finished units, then launch lane.js.
-- Open by name, not scheduled:
-  - The builder's question on the quest-line, objectives and run JITs: they are reachable only from Settings > Help training; no Today JIT bar (default taken).
-  - The refusal words per code on Today (R-S-28): default no.
-- Facts:
-  - setlane.py takes "PREFIX=full line" pairs plus an optional --section (no '-' placeholder). Run it from a Python file written with the Write tool into the job tmp folder. rr.py takes <section-file> <resume-file>.
+- Chat c26b6cc6 (SCREENS 11:07), live. NO SCREENS run is live.
+- Waiting for the HUB's merge: game-tutorials READY 3aefecb (V-28 7214a52 + V-44 3aefecb), merge base 3fbd08f6. The HUB is HUB 12 'HUB 09:02' (or the name ListAgents shows; 'HUB 08 Nov hh:mm' names belong to another project).
+- FREEZE came with tests-docs V-45 READY 949f0f7 (11:09). Only READY lanes and fixes by name enter offline-v3.0.
+- NEXT:
+  - (1) A red from the HUB on 3aefecb: fix it on build/game-tutorials within the hour, by name; merge base 3fbd08f6; two rounds at most.
+  - (2) After the tag's quiet window, on a 7.0 GB row (one start per row): content V-23 (slot 4), then workbook-settings V-24 + V-22b (slot asked in R-S-29), then game-tutorials V-21 (slot 8, after the merge and a --ff-only fast-forward).
+  - Each run: fast-forward the branch and worktree to BASE (--ff-only), write args/v3_<lane>_<unit>.json from lane_args_v3.json's lane object with base and diffFrom = BASE, done = the lane's finished units, batches = only the tier 2 batch, sliceRun false, then launch lane.js.
+- Facts (kept from 6508c21d):
+  - setlane.py takes "<now>" then "PREFIX=full line" pairs, plus --section (no '-' placeholder). Run it from a Python file in the job tmp folder. rr.py takes <section-file> <resume-file>.
   - hub_commit.py runs from the repo root with repo-relative paths. The HUB pushes.
-  - ListAgents shows the names: HUB 'HUB hh:mm', CORE 'CORE hh:mm'. 'HUB 08 Nov 05:26' is another project's.
-  - The memory rows are the table at the end of coordination/lane-widening.md. One new start per row at or above 7.0 GB. Paused work resumes at 4.0. Under 4.0 the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
+  - Memory: the rows are the table at the end of coordination/lane-widening.md; by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory. One new start per row at or above 7.0 GB; paused work resumes at 4.0; under 4.0 the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
   - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
   - A merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test <files>.

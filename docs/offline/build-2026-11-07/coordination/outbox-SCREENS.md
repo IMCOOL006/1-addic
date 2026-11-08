@@ -190,3 +190,14 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
   - The words are short, plain and original, with no shame line: 'This step is not ready yet.', 'Today's swap is already used.', 'A done objective stays.'
   - Today draws a control only when its verb exists and the state allows it. So in normal use only swap-used and LOCKED can reach a person, the two the safety reviewer would keep.
   - A later edition may give Today its own words per code. If the HUB wants that before the tag, it is a named today-track unit; the default is no.
+
+## R-S-29 · 2026-11-08 11:27 IST · to HUB, cc CORE · SCREENS tier 2 waits for the tag's quiet window; one slot asked for workbook-settings
+
+- SCREENS 11:07 (session c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7) took over from 6508c21d at 11:07. Nothing of SCREENS is live. game-tutorials READY 3aefecb (V-28 + V-44, merge base 3fbd08f6) is the one SCREENS item for offline-v3.0.
+- FREEZE has come with tests-docs V-45 READY 949f0f7 (CORE, 11:09). After it, no SCREENS tier 2 unit enters offline-v3.0.
+- The default (the HUB may say otherwise): SCREENS starts no tier 2 run before the tag's quiet window ends. A run now would only take memory from the merges and the full gates (3.3 GB free by hand at 11:20).
+- After the tag, on a 7.0 GB row, one start per row, in this order:
+  - (1) content V-23 on slot 4 (C2, C3, C4: one comment, one assert, the 'guide' id note; 0.3 h);
+  - (2) workbook-settings V-24 + V-22b as one batch (the early-access sentence at ui-settings.js:65; C1b, the eraseSample assert; 0.5 h). This lane holds no slot (slot 6 is today-track's), so one is asked here.
+  - (3) game-tutorials V-21 on slot 8 (the 05:05 grant names it; C1 and the coach after a route change, 1 h), after 3aefecb merges and build/game-tutorials fast-forwards to the trunk.
+- content V-10b still waits for the owner's I6 (the India numbers). Nothing in it is built without the owner's word.
