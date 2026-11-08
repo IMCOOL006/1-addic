@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 06:20 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5, from 06:07). actions-sos V-08a + V-SOS10 did not die: wf_f776514a-ccd finished in 51e49e2a before it closed (builder, check PASS, report). V-41 launches when the HUB merges the slice (fast-forward first, so it meets the real Engine.questLine)
+STATE: BUILDING   # 2026-11-08 06:46 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5, from 06:07) and actions-sos V-41 wf_459032df-d60 (slot 3, from 06:45). Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
 LANE: core MERGED e79e1b0   # 2026-11-08 06:20 IST: the V-11 slice merged 30cb12ff (05:47). Next V-16, V-17a, V-26a (T2) when no tier 1 lane waits and a row holds 4.0 GB; diffFrom 30cb12ff after a fast-forward; flagged: the two reviewers at the lane's end
 LANE: engine PAUSED 1d4dfd2   # 2026-11-08 06:20 IST: V-19 (64136cd) + V-30 (1d4dfd2) built; only the check is left (T2): args_v3_engine_V-19.json + start 'check', priorNote tracks/CORE/args/engine_v19_buildnote.json; on a row of 4.0 GB or more when no tier 1 lane waits (06:20 read 4.4 GB: held)
-LANE: actions-sos READY-SLICE 3e3ffbc   # 2026-11-08 06:20 IST: V-08a (b7b4db9, Actions.useSkill) + V-SOS10 (3e3ffbc, the rating '10' on one line); merge base f69bc68a; wf_f776514a-ccd check PASS, two LOWs (C1 contract lines, fixed in contracts/actions-sos.md; C2 a test guard, to V-41's run); build GREEN, test GREEN 174/174, validate GREEN, guards GREEN, territory 0 errors (R-C-63). Flagged: two reviewers at the lane's end. Next V-41 (T1) after this merges
+LANE: actions-sos BUILDING 87582bd   # 2026-11-08 06:46 IST: the slice 3e3ffbc merged f127aa3d (trunk 87582bd4; browser --grep SOS 4/0/0 on the merged tree); the worktree fast-forwarded to 87582bd4; V-41 wf_459032df-d60 (slot 3; base and diffFrom 87582bd4; R-H-41 and LOW C2 first in its prior note; flagged: its two reviewers judge V-41). V-08a + V-SOS10 get their own two-lens review (f69bc68a...3e3ffbc, the three lane files) before the lane's final READY. Then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING 30cb12ff   # 2026-11-08 06:20 IST: V-01t wf_30f2ce67-895 (slot 5, launched 06:07; the worktree fast-forwarded to the trunk 30cb12ff; base and diffFrom 30cb12ff; the recount first, R-C-60). Then V-45 after today-track V-43 merges
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 06:20 IST
+UPDATED: 2026-11-08 06:46 IST
+
+# 2026-11-08 06:46 IST · CORE 13 · actions-sos V-41 launched; the slice's review owed
+
+- 06:39 build/actions-sos and its worktree fast-forwarded to 87582bd4 (--ff-only; the gates' rebuild of offline/1-addic.html dropped first, the generated file only). 06:43 two readings of 5.6 and 4.5 GB, the HUB's word 06:44: V-41 wf_459032df-d60 launched 06:45 on slot 3 (args tracks/CORE/args/args_v3_actions-sos_V-41.json: gen8.py, then the lane and unit notes shortened so the prior note is whole; the unit note restated to the R-C-50 shapes with the old 'sample writes nothing' and 'stub engine' lines gone; wf_sim OK, 11558 B).
+- The flagged lane's review: lane.js's reviewers judge base...HEAD, here 87582bd4...HEAD (V-41 only). V-08a and V-SOS10 merged as a slice without reviewers, so they get a separate two-lens pass over f69bc68a...3e3ffbc (actions.js, ui-sos.js, actions.test.mjs) before the lane's final READY.
+- engine's check and core's tier 2 wait for a row at or above 4.0 GB with headroom (HUB 06:44).
 
 # 2026-11-08 06:37 IST · from the HUB · actions-sos 3e3ffbc merged (trunk 87582bd4); V-41 next; V-01t and the tier 2 check
 

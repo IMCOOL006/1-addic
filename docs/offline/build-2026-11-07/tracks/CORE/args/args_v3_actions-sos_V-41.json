@@ -1,0 +1,55 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "Actions.useSkill, the unlock sign of life, the actions-sos LOWs, SOS waiting saves marked with lockId.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/src/styles.css",
+  "offline/tests/actions.test.mjs"
+ ],
+ "units": [
+  "V-08a",
+  "V-SOS10",
+  "V-41"
+ ],
+ "batches": [
+  [
+   "V-08a",
+   "V-SOS10"
+  ],
+  [
+   "V-41"
+  ]
+ ],
+ "unitTier": {
+  "V-08a": 1,
+  "V-SOS10": 1,
+  "V-41": 1
+ },
+ "unitNotes": {
+  "V-41": "The verbs of R-O-6 (tier 1): Actions.objective.done(id) writes one ObjectiveDone {id, date} per objective per day (a second call: ok:true, no new event); Actions.objective.swap(id) once a day (ObjectiveSwapped {from, to: the Engine's swapTo, date}; a second swap that day ok:false); Actions.questLine.claim(stepId) writes QuestLineStepDone {id} and FeatureUnlocked {feature, by: 'questline'} only while Engine.questLine's current step is that step with claimable true (else ok:false). No verb throws; the lock rule as every verb. Data model rows appended (BUILD-PLAN 3.4 additions). Tests in actions.test.mjs by rule; names in tracks/CORE/briefs/actions-sos/V-41.md."
+ },
+ "laneNote": "The contracts: PLAN-V3.md section 7 and R-C-50 (coordination/outbox-CORE.md); a change to one is asked of its owner by outbox. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 13's word (2026-11-08 06:44 IST): build on the trunk's code in your worktree (never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/actions-sos/V-41.md. A hook in another lane's file: never edit it; put a request line in your note. No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 981b2dd9-8f46-4067-948e-a9fe177fdce5'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser run at a time (--grep is case-sensitive: 'SOS'). Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "V-08a",
+  "V-SOS10"
+ ],
+ "base": "87582bd4",
+ "session": "981b2dd9-8f46-4067-948e-a9fe177fdce5",
+ "now": "2026-11-08 06:44 IST",
+ "diffFrom": "87582bd4",
+ "slot": 3,
+ "sliceRun": false,
+ "priorNote": "FIRST (R-H-41, R-C-48): a loaded sample is not a refusal: the person's own events are written; sample rows stay skipped. Engine V-40 is in this tree (fast-forwarded to the trunk): use the real Engine.questLine and dailyObjectives (R-C-50 shapes), no stub. Content.questLine and Content.objectives come with content V-42 (not merged): typeof guards; the tests seed them and restore after. Slice LOW C2: the locked test asserts Store.lock.set exists (no early return); add a test of useSkill's 'error' code. New tests inside the 'V3 actions-sos' block, before '// -- V3 actions-sos tests end --'."
+}
