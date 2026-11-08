@@ -1,12 +1,21 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 09:56 IST: SCREENS 6508c21d. Live: game-tutorials V-28 + V-44 wf_e5593f15-752 (09:38, args/v3_gt_v28_v44.json, merge base 3fbd08f6). content MERGED eb38166 (899f77e4). RUN-RECORD.md 'Resume here'
+STATE: RUNNING   # 2026-11-08 10:12 IST: SCREENS 6508c21d. Live: game-tutorials wf_e5593f15-752 (V-28 done 7214a52; the V-44 builder since 10:08). RUN-RECORD.md 'Resume here'
 LANE: content MERGED eb38166   # V-42 + C1 merged 899f77e4 (09:52, HUB 12; trunk ab784c9a; every gate green by name on the merged tree, the three tour-target names green). Next: V-23 (tier 2) when no tier 1 lane waits; V-10b after the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials BUILDING 3fbd08f6   # V-28 then V-44: wf_e5593f15-752 since 09:38 IST (args/v3_gt_v28_v44.json; slot 8). Fast-forwarded 241e9bb..3fbd08f6 (--ff-only, clean); merge base 3fbd08f6. V-41 and V-42 behind typeof/data presence; V-21 tier 2 later
+LANE: game-tutorials BUILDING 7214a52   # V-28 done 7214a52 (test-only; builder gates green: test 36/36, guards 5/5, browser 25/0/0); V-44 building in wf_e5593f15-752 since 10:08; merge base 3fbd08f6. If stopped: relaunch with done [U-27, U-26, U-28, FIX-TOUR, V-08b, V-28], priorNote = the V-28 builder note (journal), diffFrom 3fbd08f6 (V-28 not yet checked)
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 09:56 IST
+UPDATED: 2026-11-08 10:12 IST
+
+# 2026-11-08 10:12 IST · game-tutorials: V-28 done at 7214a52; V-44 building; no pause (the 10:08 row 4.3 GB)
+
+- HUB 12 (09:59) read the rows 09:57 3.6 GB and 09:59 3.4 GB by hand, under the floor. This run was the newest, so it was to pause at its next commit.
+- V-28's commit 7214a52 had landed at 09:54, before the low rows. I let the V-28 builder finish so the run could stop between batches.
+- The note arrived at 10:08, and the 10:08 row read 4.3 GB (HUB 12, 10:09). The run was never stopped and goes on with V-44.
+- V-28 (7214a52, test-only, game-tutorials.test.mjs +97, both trailers): the code already did all three parts, so no new export, hook, CSS or words.
+- The builder's gates were green: build, test 36/36, validate, guards 5/5, browser 25/0/0. Territory: 1 own file, 0 errors.
+- Memory at the builder's reads: 6.85 GB before the gates, 4.72 GB before the browser run, 2.86 GB after it.
 
 # 2026-11-08 09:56 IST · from the HUB · content eb38166 merged (899f77e4, trunk ab784c9a); R-C-69
 
