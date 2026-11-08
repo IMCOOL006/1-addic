@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-08 11:09 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43') hands over at a clean point (context over 270k). Nothing of CORE runs: tests-docs READY 949f0f7 (V-45, R-C-72) with the HUB; engine MERGED 97ac73a; actions-sos MERGED-SLICE b735852. CORE 15: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 11:09 IST)
+STATE: WAITING   # 2026-11-08 11:22 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10') resumed from CORE 14's RESTART (11:09). Nothing of CORE runs. tests-docs READY 949f0f7 with the HUB (game-tutorials 3aefecb merging since 11:08, tests-docs next). Free memory 3.4 GB 11:14 (under the 4.0 floor): nothing starts. Every CORE unit left is tier 2 (core V-16, V-17a, V-26a; actions-sos V-25, V-18, V-17b; learn V-20; tests-docs V-22a, V-26b, V-27, V-29): staged now, launched one per 7.0 GB row after the tag's QUIET window
 LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 10:56 IST: V-41 + RC1-RC4, RS1 merged 3235375c (trunk 3235375c; test 191/0/0, full Node suite 640/640). Next (T2, when no tier 1 lane waits, a 7.0 GB row): V-25, V-18, V-17b + C2 after a fast-forward to the trunk; then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs READY 949f0f7   # 2026-11-08 11:09 IST: V-45 (263f752 flows + hooks, 936c5ea screens, 949f0f7 Lesson 16 + counts) check PASS wf_180b5230-4d4; build, test, validate, guards, docs GREEN; browser 26/0/2 (two skips by name: V-41/V-42 absent on the lane tree); merge base 3fbd08f6 (R-C-72). Then FIX-COUNTS by name if the HUB asks (the count lines on the merged tree)
-SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (engine 2, actions-sos 3, tests-docs 5; core 1 for tier 2)
-UPDATED: 2026-11-08 11:09 IST
+SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
+UPDATED: 2026-11-08 11:22 IST
+
+# 2026-11-08 11:22 IST · CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602) resumes; nothing runs; tier 2 staged
+
+- Read: this file (CORE 14's RESTART 11:09), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 3235375c; MERGING game-tutorials 3aefecb since 11:08; the trunk at 34f7017 on _int; MERGE-QUEUE tests-docs V-45 next), outbox-HUB.md to R-H-45 (no R-H for V-45), outbox-OWNER.md to R-O-9.
+- `claude agents --json` 11:14: 4c79e5f7 (CORE 14) not listed; it had no run live, so nothing to relaunch. Free memory 3.43 GB at 11:14 (Win32_OperatingSystem): under 4.0, nothing new starts.
+- Next: V-45's merge (a red comes back as an R-H line: fixed within the hour). Then tier 2 on rows of 7.0 GB or more, after QUIET: tests-docs V-22a, V-26b, V-27, V-29 (one batch, after the fast-forward to the trunk); core V-16, V-17a, V-26a (flagged: the two reviewers at the lane end, over f69bc68a...tip); actions-sos V-25, V-18, then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a; learn V-20.
 
 # 2026-11-08 09:30 IST · CORE 14 · resumed from CORE 13's RESTART (08:44); two runs live; FIX-RS27 next
 
