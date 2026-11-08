@@ -1176,6 +1176,97 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  // V-16: the custom field's node rules (contracts/core.md N1, N2, Q-a).
+  const customField = (label, render) => {
+    setup();
+    findIn(globalThis.document);
+    const f = UI.form({ fields: [{ name: 'x', type: 'custom', label, required: true, render }] });
+    const field = f.el.children.find((e) => e.dataset.name === 'x');
+    const labelOf = (node) => field.all().find((e) => e.id && e.id === node.getAttribute('aria-labelledby'));
+    return { f, labelOf };
+  };
+
+  test('field N1: ul keeps implicit role', () => {
+    for (const tag of ['ul', 'ol', 'table', 'svg', 'div', 'span']) {
+      let node = null;
+      const { f, labelOf } = customField('Steps', () => {
+        node = globalThis.document.createElement(tag);
+        return { el: node, get: () => null, set() {} };
+      });
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, node, tag + ': the node takes the focus');
+      assert.equal(node.getAttribute('tabindex'), '-1', tag + ': outside the tab order');
+      assert.equal(labelOf(node) && labelOf(node).textContent.trim(), 'Steps', tag + ': named by the field label');
+      const plain = tag === 'div' || tag === 'span';
+      assert.equal(node.getAttribute('role'), plain ? 'group' : null, tag + (plain ? ': a plain node is a group' : ': keeps its own role'));
+    }
+  });
+
+  test('field N2: contenteditable keeps tab stop', () => {
+    for (const v of ['', 'true']) {
+      let node = null;
+      const { f, labelOf } = customField('Note', () => {
+        node = globalThis.document.createElement('div');
+        node.setAttribute('contenteditable', v);
+        return { el: node, get: () => null, set() {} };
+      });
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, node, 'contenteditable="' + v + '": it takes the focus');
+      assert.equal(node.getAttribute('tabindex'), null, 'contenteditable="' + v + '": keeps its tab stop');
+      assert.equal(node.getAttribute('role'), null, 'contenteditable="' + v + '": no role=group written on it');
+      assert.equal(node.getAttribute('aria-invalid'), 'true');
+      assert.equal(labelOf(node) && labelOf(node).textContent.trim(), 'Note', 'named by the field label');
+    }
+    let box = null;
+    let inner = null;
+    const { f } = customField('Note', () => {
+      box = globalThis.document.createElement('div');
+      const p = globalThis.document.createElement('p');
+      inner = globalThis.document.createElement('div');
+      inner.setAttribute('contenteditable', 'true');
+      box.appendChild(p);
+      box.appendChild(inner);
+      return { el: box, get: () => null, set() {} };
+    });
+    assert.equal(f.validate(), false);
+    assert.equal(document.activeElement, inner, 'an editable node inside takes the focus');
+    assert.equal(inner.getAttribute('aria-invalid'), 'true', 'and carries the mark');
+    assert.equal(box.getAttribute('tabindex'), null, 'the wrapper is left as it was');
+    let off = null;
+    customField('Note', () => {
+      off = globalThis.document.createElement('div');
+      off.setAttribute('contenteditable', 'false');
+      return { el: off, get: () => null, set() {} };
+    }).f.validate();
+    assert.equal(off.getAttribute('tabindex'), '-1', 'contenteditable="false" is no control');
+  });
+
+  test('field Q-a: bare control is named', () => {
+    for (const tag of ['select', 'input', 'textarea', 'button', 'a']) {
+      let ctl = null;
+      const { f, labelOf } = customField('When', () => {
+        ctl = globalThis.document.createElement(tag);
+        if (tag === 'a') ctl.setAttribute('href', '#/plan');
+        return ctl;
+      });
+      assert.equal(labelOf(ctl) && labelOf(ctl).textContent.trim(), 'When', tag + ': named by the field label before any focus');
+      assert.equal(f.validate(), false);
+      assert.equal(ctl.getAttribute('aria-labelledby'), labelOf(ctl).id, tag + ': the name holds after validate');
+      assert.equal(ctl.getAttribute('role'), null, tag + ': no role written');
+      assert.equal(ctl.getAttribute('tabindex'), null, tag + ': keeps its tab stop');
+    }
+    let named = null;
+    customField('When', () => {
+      named = globalThis.document.createElement('select');
+      named.setAttribute('aria-label', 'Day');
+      return named;
+    }).f.validate();
+    assert.equal(named.getAttribute('aria-labelledby'), null, 'a name the page gave is kept');
+    let bare = null;
+    customField(undefined, () => { bare = globalThis.document.createElement('select'); return bare; });
+    assert.equal(bare.getAttribute('aria-labelledby'), null, 'with no field label there is no label to point at');
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },

@@ -352,6 +352,12 @@ const UI = (function () {
       const made = typeof f.render === 'function' ? f.render(f) : null;
       const isNode = made && typeof made.nodeType === 'number';
       const el = isNode ? made : (made && made.el) || h('div');
+      // A control, link or editable node the render returned keeps its own tab stop and role, and the field's label
+      // names it unless the page named it (N2, Q-a).
+      const own = ownControl(el);
+      if (own && f.label && el.getAttribute('aria-labelledby') === null && el.getAttribute('aria-label') === null) {
+        el.setAttribute('aria-labelledby', id + '-label');
+      }
       get = isNode ? () => made.value : () => (made && typeof made.get === 'function' ? made.get() : undefined);
       set = isNode ? (v) => { made.value = v; } : (v) => { if (made && typeof made.set === 'function') made.set(v); };
       // The custom node carries the mark and its first enabled, visible control takes the focus, as a chips group does;
@@ -369,12 +375,12 @@ const UI = (function () {
           const c = target();
           // A node with nothing to press is made focusable outside the tab order; a control or link the render
           // returned keeps its own tab stop, also while it is disabled (RC1). Unless the page named that node, the
-          // field's label names it, as a group, as a chips group is named (RC3).
-          const own = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName) || (el.tagName === 'A' && el.getAttribute('href') !== null);
+          // field's label names it, as a group, as a chips group is named (RC3). Only a plain div or span becomes a
+          // group; a list, table or picture keeps its own role (N1).
           if (c === el && !own) {
             if (c.getAttribute('tabindex') === null) c.setAttribute('tabindex', '-1');
             if (f.label && c.getAttribute('aria-labelledby') === null && c.getAttribute('aria-label') === null) {
-              if (c.getAttribute('role') === null) c.setAttribute('role', 'group');
+              if (c.getAttribute('role') === null && /^(DIV|SPAN)$/.test(c.tagName)) c.setAttribute('role', 'group');
               c.setAttribute('aria-labelledby', id + '-label');
             }
           }
@@ -393,18 +399,30 @@ const UI = (function () {
   }
 
   // The node itself or its first descendant that can take the focus: a control that is not disabled, a link, or a
-  // tabindex of 0 or more. A hidden or disabled branch is skipped (RC12).
+  // tabindex of 0 or more, or an editable node (N2). A hidden or disabled branch is skipped (RC12).
   function firstFocusable(node) {
     if (!node || node.nodeType !== 1 || node.hidden || node.disabled) return null;
     const tag = node.tagName;
     const tab = node.getAttribute('tabindex');
     if ((/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag) && node.getAttribute('type') !== 'hidden')
-      || (tag === 'A' && node.getAttribute('href') !== null) || (tab !== null && Number(tab) >= 0)) return node;
+      || (tag === 'A' && node.getAttribute('href') !== null) || (tab !== null && Number(tab) >= 0) || editable(node)) return node;
     for (const k of Array.from(node.children || [])) {
       const c = firstFocusable(k);
       if (c) return c;
     }
     return null;
+  }
+
+  // A node a person types into in place: contenteditable "" or "true" (N2).
+  function editable(node) {
+    const v = node.getAttribute('contenteditable');
+    return v === '' || v === 'true';
+  }
+
+  // A native control, a link or an editable node: it has its own tab stop and its own role (RC1, N2, Q-a).
+  function ownControl(node) {
+    return node.nodeType === 1 && (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(node.tagName)
+      || (node.tagName === 'A' && node.getAttribute('href') !== null) || editable(node));
   }
 
   // Adds or removes one id in a node's aria-describedby, keeping the node's own ids (RC12).
