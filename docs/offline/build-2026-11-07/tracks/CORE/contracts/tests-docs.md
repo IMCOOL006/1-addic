@@ -37,3 +37,9 @@ Waits for today-track V-01b: #/status (UI.pages.status), data-test status-*, tod
 - data-test (live on build/today-track at da9bb6b, not on the trunk yet): status-change, status-change-item[data-kind], status-strip, status-strip-day[data-date][data-active], status-watch, status-watch-item[data-sign] (with data-own on the person's own plan), today-status, today-harbor-go, track-radar (#/track/radar), track-radar-link (Track home, once the radar is revealed). data-tour: status-change, status-watch, status-open.
 - V-01t adds them to hooks.mjs with file:line once the board shows V-01b merged; V-03 (running from c1058ab) does not, because the trunk has no such elements yet.
 - V-01t's 'a slip lowers no light': the O6 sample has no SkillUsed events, so the test logs one before comparing data-level across a slip. Source: tracks/SCREENS/contracts/today-track-v3.md, 'V-01b as built'.
+
+## 2026-11-08 07:10 IST · V-45's input: today-track V-43's hooks as built (R-S-26; READY c7145c9)
+
+- All data-test (source: tracks/SCREENS/contracts/today-track-v3-annex.md, 'V-43 as built'). Today: objectives-card, objective[data-id][data-done], objective-done, objective-swap, run-line, run-current, run-best, run-total, run-kept, run-back, questline-card, questline-step[data-state][data-id], questline-claim. Your Harbor: status-growth, status-growth-item[data-kind], status-growth-layer, status-way. data-tour: objectives-card, questline-card, run-line.
+- growthItems' grows is the Content.objectives element (R-C-65); the kind is grows.grows.
+

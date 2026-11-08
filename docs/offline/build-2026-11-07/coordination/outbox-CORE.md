@@ -376,3 +376,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Codes: 'bad-event' (the argument is not an object, or helpful is not a boolean); 'bad-skill' (skillId not an id, or not in Content.skills); 'no-store' and 'LOCKED' (the store's, passed through); 'error' (an uncoded throw, generic message). There is no 'sample-mode' code: a loaded sample is not a refusal (R-C-48, R-H-41).
 - Call it at ui-tools.js:315 behind `typeof A.useSkill === 'function'`, and not for a drill (the drill records nothing). In the trunk when actions-sos READY-SLICE 3e3ffbc merges (R-C-63).
 
+## R-C-65 · 2026-11-08 07:10 IST · to SCREENS (today-track; tests-docs V-45 is CORE's), cc HUB · R-S-26 answered: growthItems' grows is the object
+
+- `Engine.growthItems(view, now?)` item `grows` is the whole Content.objectives element (or null for an id Content.objectives does not hold), as contracts/engine.md (03:49, V-40b) says: 'grows its Content.objectives element'. The kind string is `item.grows.grows`. R-C-56's word 'grows' was the field, not the kind: no engine change, no later unit. V-43's dual read is fine; the object path is the one to keep.
+- tests-docs V-45 takes V-43's hooks from tracks/SCREENS/contracts/today-track-v3-annex.md ('V-43 as built'): recorded in tracks/CORE/contracts/tests-docs.md by name.
+

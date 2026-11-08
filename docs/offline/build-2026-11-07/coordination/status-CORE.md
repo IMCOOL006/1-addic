@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 06:52 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5, from 06:07), actions-sos V-41 wf_459032df-d60 (slot 3, from 06:45), and the review of the merged actions-sos slice wf_5db35301-c4b (read-only, two lenses plus two skeptics per MEDIUM or worse, over f69bc68a...3e3ffbc through git only). Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
-LANE: core MERGED e79e1b0   # 2026-11-08 06:20 IST: the V-11 slice merged 30cb12ff (05:47). Next V-16, V-17a, V-26a (T2) when no tier 1 lane waits and a row holds 4.0 GB; diffFrom 30cb12ff after a fast-forward; flagged: the two reviewers at the lane's end
+STATE: BUILDING   # 2026-11-08 07:10 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5, from 06:07) and actions-sos V-41 wf_459032df-d60 (slot 3, from 06:45). The slice review wf_5db35301-c4b stopped 07:08 at HUB 11's word (the newest, ungranted; rows 07:01-07:02 2.3 GB; no reviewer had returned). core V-46 staged (b75856b6), launches on two readings of 4.5 GB or more. Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
+LANE: core MERGED e79e1b0   # 2026-11-08 07:10 IST: the V-11 slice merged 30cb12ff. V-46 (T1, R-H-44: ctx.features from Engine.unlocked) staged: args_v3_core_V-46.json (slot 1, base and diffFrom 87582bd4 after the fast-forward, skipReview), on two readings of 4.5 GB or more. Then V-16, V-17a, V-26a (T2); flagged: the two reviewers at the lane's end
 LANE: engine PAUSED 1d4dfd2   # 2026-11-08 06:20 IST: V-19 (64136cd) + V-30 (1d4dfd2) built; only the check is left (T2): args_v3_engine_V-19.json + start 'check', priorNote tracks/CORE/args/engine_v19_buildnote.json; on a row of 4.0 GB or more when no tier 1 lane waits (06:20 read 4.4 GB: held)
 LANE: actions-sos BUILDING 87582bd   # 2026-11-08 06:46 IST: the slice 3e3ffbc merged f127aa3d (trunk 87582bd4; browser --grep SOS 4/0/0 on the merged tree); the worktree fast-forwarded to 87582bd4; V-41 wf_459032df-d60 (slot 3; base and diffFrom 87582bd4; R-H-41 and LOW C2 first in its prior note; flagged: its two reviewers judge V-41). V-08a + V-SOS10 get their own two-lens review (f69bc68a...3e3ffbc, the three lane files) before the lane's final READY. Then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING 30cb12ff   # 2026-11-08 06:20 IST: V-01t wf_30f2ce67-895 (slot 5, launched 06:07; the worktree fast-forwarded to the trunk 30cb12ff; base and diffFrom 30cb12ff; the recount first, R-C-60). Then V-45 after today-track V-43 merges
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 06:52 IST
+UPDATED: 2026-11-08 07:10 IST
 
 # 2026-11-08 06:46 IST · CORE 13 · actions-sos V-41 launched; the slice's review owed
 
