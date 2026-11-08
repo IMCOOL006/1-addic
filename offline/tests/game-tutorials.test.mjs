@@ -898,3 +898,100 @@ test('guidance: the coach popover keeps clear of the SOS button', async () => {
     assert.equal(await p, 'done');
   } finally { cleanup(); }
 });
+
+/* ── V-28: the status page's tour step, JIT and New dot ─────────────────────────────────────── */
+
+const STATUS_CTX = (view, extra) => Object.assign({ route: { path: '/status', parts: ['status'], query: {} }, view, profile: {}, now: new Date('2026-11-08T10:00:00+05:30') }, extra || {});
+const statusJit = () => C.tutorials.find((t) => t && t.kind === 'jit' && t.feature === 'status');
+
+test('guidance: featureOfRoute maps /status', () => {
+  assert.equal(C.features.status && C.features.status.route, '#/status', 'content declares the route');
+  assert.equal(G.featureOfRoute('/status'), 'status');
+  assert.equal(G.featureOfRoute('#/status'), 'status');
+  assert.equal(G.featureOfRoute('#/status?from=today'), 'status');
+  assert.equal(G.routeOfFeature('status'), '#/status');
+  assert.equal(G.featureOfRoute('#/today'), 'today', 'Today stays Today');
+});
+
+test('guidance: jitFor offers the status tutorial once', () => {
+  const jit = statusJit();
+  assert.ok(jit && Array.isArray(jit.steps) && jit.steps.length, 'content has a status JIT');
+  const always = (C.reveal.always || []).filter((x) => x !== 'status');
+  const revealed = new Set(always.concat(['status']));
+  const base = { path: '#/status', revealed, isDone: () => false, asked: {}, today: '2026-11-08' };
+  assert.equal(G.jitFor(base).id, jit.id, 'offered on the first open');
+  assert.equal(G.jitFor(Object.assign({}, base, { isDone: (id) => id === jit.id })), null, 'not once done');
+  assert.equal(G.jitFor(Object.assign({}, base, { revealed: new Set(always) })), null, 'not before it is revealed');
+  assert.equal(G.jitFor(Object.assign({}, base, { path: '#/sos' })), null, 'never on SOS');
+  // through afterRender: one bar on the first open; Later keeps it away today; done keeps it away for good
+  const done = new Set();
+  const w = world({ hash: '#/status', engine: { revealed: () => new Set(revealed), tutorialDone: (v, id) => done.has(id) } });
+  try {
+    const main = w.doc.getElementById('main');
+    G.afterRender(STATUS_CTX(w.view));
+    const bars = byTest(main, 'jit-bar');
+    assert.equal(bars.length, 1, 'one JIT bar');
+    assert.equal(bars[0].getAttribute('data-tutorial'), jit.id);
+    byTest(bars[0], 'jit-later')[0].click();
+    assert.equal(w.calls.filter((c) => c[0] === 'done').length, 0, 'Later marks nothing');
+    G.afterRender(STATUS_CTX(w.view));
+    assert.equal(byTest(main, 'jit-bar').length, 0, 'not again today');
+    G._reset();
+    done.add(jit.id);
+    G.afterRender(STATUS_CTX(w.view));
+    assert.equal(byTest(main, 'jit-bar').length, 0, 'not after it is done');
+  } finally { cleanup(); }
+});
+
+test("guidance: dot('status') only while unseen", () => {
+  let unseen = true;
+  const w = world({ hash: '#/status', engine: { newDots: () => (unseen ? new Set(['status']) : new Set()), tutorialDone: () => true } });
+  try {
+    const d = G.dot('status', { view: w.view });
+    assert.ok(d, 'a dot while unseen');
+    assert.equal(d.getAttribute('data-test'), 'new-dot');
+    assert.equal(d.getAttribute('data-feature'), 'status');
+    assert.equal(d.textContent, 'New');
+    G.afterRender(STATUS_CTX(w.view));
+    G.afterRender(STATUS_CTX(w.view));
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'reveal'), [['reveal', 'status', { seen: true }]], 'the first visit marks it seen, once');
+    unseen = false; // the Engine drops it from newDots once the seen mark is logged
+    assert.equal(G.dot('status', { view: w.view }), null, 'no dot once seen');
+  } finally { cleanup(); }
+});
+
+test('guidance: a tour step with a missing target still ends', async () => {
+  const real = globalThis.Content;
+  const tour0 = C.tutorials.find((t) => t.id === 'tour');
+  const has = tour0.steps.some((s) => s && s.target === 'status-open');
+  // until content V-42 adds the status-open step, a copy of Content carries one (the real Content is never changed)
+  const probe = { target: 'status-open', text: 'Probe step for the status chip.' };
+  const tour = has ? tour0 : Object.assign({}, tour0, { steps: tour0.steps.slice(0, 1).concat([probe], tour0.steps.slice(1)) });
+  if (!has) globalThis.Content = Object.assign({}, real, { tutorials: real.tutorials.map((t) => (t.id === 'tour' ? tour : t)) });
+  const w = world({ hash: '#/today' });
+  try {
+    for (const s of tour.steps) if (s.target !== 'status-open') target(w.doc, s.target);
+    const layer = w.doc.getElementById('coach');
+    const p = G.coach('tour');
+    let centred = 0;
+    for (let i = 0; i < tour.steps.length; i++) {
+      const pop = byClass(layer, 'coach-pop')[0];
+      assert.ok(pop, 'the coach is open at step ' + (i + 1));
+      const missing = tour.steps[i].target === 'status-open';
+      assert.equal(pop.className.includes('coach-center'), missing, 'step ' + (i + 1) + (missing ? ' is a centred card' : ' is spotlit'));
+      if (missing) { centred += 1; assert.ok(byClass(layer, 'coach-ring')[0].hasAttribute('hidden'), 'no spotlight on nothing'); }
+      byClass(layer, 'coach-next')[0].click();
+    }
+    assert.equal(centred, 1, 'the status-open step was shown');
+    assert.equal(await p, 'done', 'the tour ends done');
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'done'), [['done', 'tour', undefined]]);
+    // skipped at the missing step ends too
+    const idx = tour.steps.findIndex((s) => s.target === 'status-open');
+    const p2 = G.coach('tour', { replay: true });
+    for (let i = 0; i < idx; i++) byClass(layer, 'coach-next')[0].click();
+    assert.ok(byClass(layer, 'coach-pop')[0].className.includes('coach-center'));
+    byClass(layer, 'coach-skip')[0].click();
+    assert.equal(await p2, 'skipped', 'the tour ends skipped');
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'done')[1], ['done', 'tour', { skipped: true }]);
+  } finally { cleanup(); globalThis.Content = real; }
+});
