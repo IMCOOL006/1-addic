@@ -6,7 +6,13 @@ LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials BUILDING 30cb12ff   # V-08b the slice running: wf_522ed1be-f6b, launched 06:12 IST on slot 8 (the 06:08 row 6.5 GB, HUB 11) with args/v3_gt_slice.json; the worktree fast-forwarded bd2e085..30cb12ff (--ff-only, clean, 05:58); merge base 30cb12ff; on R-C-47/R-C-48's useSkill behind typeof (V-08a b7b4db9 not merged). Then V-28, V-44 (V-21 tier 2); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_522ed1be-f6b/journal.jsonl
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 06:48 IST
+UPDATED: 2026-11-08 06:53 IST
+
+# 2026-11-08 06:53 IST · from the HUB · R-H-44: R-S-20's reading of V-Q10 stands; R-S-21 becomes core V-46
+
+- HUB 11 (06:54) recorded R-H-44 in outbox-HUB.md, PLAN-V3.md section 7 and the board. 'Unlocks' means opened earlier than the modules would, and nothing is ever locked anew. content V-42 builds the unlock set as R-S-25 lists it. The owner's line to change it is on the board, with the default in force.
+- R-S-21 is ruled tier 1 on core as V-46 (ui-core.js ctx.features from Engine.unlocked behind typeof). V-43 and V-44 keep their own typeof-guarded reads.
+- V-43 merges before V-42 when both are READY. V-42's tour-target reds on the branch alone are expected; the merged tree judges. The 06:51 row read 4.9 GB: V-42 still waits for a 7.0 GB row.
 
 # 2026-11-08 06:48 IST · content V-42 args ready; R-S-25 (the unlock set)
 
