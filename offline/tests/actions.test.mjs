@@ -3111,5 +3111,35 @@ describe('V3 actions-sos (V-08a, V-SOS10)', () => {
     assert.deepEqual(events('SkillUsed').map((e) => e.id), [r.event.id], "eraseSample keeps it: the person's own");
   });
 
+  test('V-SOS10 rating row keeps every value on one line', async () => {
+    const px = (s) => { const m = /^(\d+(?:\.\d+)?)px$/.exec(String(s)); return m ? Number(m[1]) : NaN; };
+    const values = Array.from({ length: 11 }, (_, n) => String(n));
+    const d = sosDom();
+    const craving = d.open(['sos', 'craving']); // the craving flow opens on its rating
+    const feeling = d.open(['sos', 'feeling']);
+    d.tapId(feeling, 'sos-feeling-' + d.calm());
+    d.toRating(feeling); // the feeling flow's closing rating
+    for (const [name, root] of [['craving', craving], ['feeling', feeling]]) {
+      const row = d.byId(root, 'sos-rating');
+      assert.equal(row.attrs.class, 'sos-rating', name);
+      assert.equal(row.attrs['aria-label'], '0 to 10', `${name}: no copy change`);
+      const cols = /^repeat\((\d+), minmax\((\d+)px, 1fr\)\)$/.exec(row.style.gridTemplateColumns);
+      assert.ok(cols, `${name}: the grid of columns stays`);
+      const btns = row.querySelectorAll('button');
+      assert.deepEqual(btns.map((b) => b.dataset.value), values, `${name}: 11 buttons, data-value 0 to 10`);
+      assert.deepEqual(btns.map((b) => b.textContent.trim()), values, `${name}: the numbers, nothing else`);
+      for (const b of btns) {
+        const at = `${name} ${b.dataset.value}`;
+        assert.equal(b.style.whiteSpace, 'nowrap', `${at}: never wraps`);
+        assert.equal(b.style.fontVariantNumeric, 'tabular-nums', `${at}: even digits`);
+        const pl = px(b.style.paddingLeft);
+        const pr = px(b.style.paddingRight);
+        assert.ok(pl <= 6 && pr <= 6, `${at}: inline padding of 6 px or less (got ${b.style.paddingLeft}, ${b.style.paddingRight})`);
+        assert.equal(b.style.minHeight, '56px', `${at}: the tall one-handed target stays`);
+        // the narrowest column the grid allows still fits two digits: 1 px border each side, about 0.6 em a digit at 18 px
+        assert.ok(Number(cols[2]) - pl - pr - 2 >= 2 * 0.6 * 18, `${at}: "10" fits in a ${cols[2]} px column`);
+      }
+    }
+  });
 });
 // -- V3 actions-sos tests end --

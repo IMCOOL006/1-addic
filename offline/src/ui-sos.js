@@ -441,7 +441,9 @@
       style: { display: 'grid', gridTemplateColumns: 'repeat(6, minmax(44px, 1fr))', gap: '8px' } });
     for (let n = 0; n <= 10; n += 1) {
       row.appendChild(h('button', { type: 'button', class: 'btn', text: String(n), dataset: { value: String(n) },
-        style: { minHeight: '56px', width: '100%' }, onClick: () => onPick(n) }));
+        // V-SOS10: '10' stays on one line in a 44 px column at 390 px (.btn's 18 px side padding left about 6 px for it)
+        style: { minHeight: '56px', width: '100%', paddingLeft: '4px', paddingRight: '4px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' },
+        onClick: () => onPick(n) }));
     }
     return row;
   }
