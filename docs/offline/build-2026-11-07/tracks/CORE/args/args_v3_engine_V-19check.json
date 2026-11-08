@@ -1,0 +1,63 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-roadmap.test.mjs",
+  "offline/tests/engine-insights.test.mjs",
+  "offline/tests/engine-data.test.mjs",
+  "offline/tests/engine-warning-item.test.mjs",
+  "offline/tests/engine-questline.test.mjs"
+ ],
+ "units": [
+  "V-40",
+  "V-40b",
+  "V-40c",
+  "V-19",
+  "V-30"
+ ],
+ "batches": [
+  [
+   "V-40",
+   "V-40b",
+   "V-40c"
+  ],
+  [
+   "V-19",
+   "V-30"
+  ]
+ ],
+ "unitTier": {
+  "V-40": 1,
+  "V-19": 2,
+  "V-30": 2
+ },
+ "unitNotes": {
+  "V-19": "FIX-SPIRAL-OWN (0.5 h, V3-19): each spiral reply pair carries own: boolean; engine.js:719-729 fills an empty reply from catalogs.slipSelfTalk with own:false; the person's reply own:true; SOS (ui-sos.js, actions-sos) may then say 'a line to try' instead of 'you wrote'; a test per branch. Tell actions-sos by outbox.",
+  "V-30": "Export tutorialDone (0.2 h): ui-guidance.js:132 calls E.tutorialDone behind a typeof guard but engine.js exports only tour/drill wrappers (engine.js:611-623, the export list 1495-1505); export tutorialDone(view, id, allowSkipped) so the guidance uses the engine's rule; a test that it agrees with the wrappers."
+ },
+ "laneNote": "V-40 is tier 1 and the slice (R-O-6, 03:03); V-19 and V-30 are tier 2 after it. On the content contract until V-42 merges. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 12's word (2026-11-08 05:07 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/engine/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 981b2dd9-8f46-4067-948e-a9fe177fdce5'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E",
+  "V-40",
+  "V-40b",
+  "V-40c"
+ ],
+ "base": "f69bc68a",
+ "session": "981b2dd9-8f46-4067-948e-a9fe177fdce5",
+ "now": "2026-11-08 07:16 IST",
+ "diffFrom": "4330d9f",
+ "slot": 2,
+ "sliceRun": false,
+ "priorNote": "CHECK ONLY (CORE 13, 2026-11-08 07:16 IST): the 05:08 run built V-19 and V-30 and was stopped in its check under the memory floor (05:35); nothing changed on the branch since. Builder's note: V-19 64136cd, V-30 1d4dfd2, tip 1d4dfd2. Engine.spiralThoughts now returns [{thought, reply, own}]: own is x.reply !== '' after trimming, before the stock fill, so a reply made only of spaces counts as own false. The two deepEqual checks in engine-roadmap.test.mjs:299/303 had to gain own: true. Any test elsewhere that deepEquals the real engine output on {thought, reply} would now fail; actions.test.mjs uses stand-ins only, so it is unaffected. tutorialDone is exported on its own line after the V-40 line; its rule did not change. Gates then: build, test 133/133, validate, guards GREEN (C:/Users/ruchi/1-addic-wt/_logs/gates/engine/build-20261108-052219.log, C:/Users/ruchi/1-addic-wt/_logs/gates/engine/test-20261108-052238.log, C:/Users/ruchi/1-addic-wt/_logs/gates/engine/validate-20261108-052830.log, C:/Users/ruchi/1-addic-wt/_logs/gates/engine/guards-20261108-052832.log). offline/1-addic.html is the gates' rebuild, not committed.",
+ "start": "check"
+}

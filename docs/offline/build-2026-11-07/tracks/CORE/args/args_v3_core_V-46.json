@@ -34,7 +34,7 @@
  "unitNotes": {
   "V-46": "V-46 (tier 1, 0.3 h; R-H-44 on R-S-21): in offline/src/ui-core.js ctx() (:594) build features from Engine.unlocked(view) when typeof E.unlocked === 'function' (engine.js:1566: revealed plus claimed quest-line rewards and FeatureUnlocked features, never a protected id), else Engine.revealed(view), else the Content.reveal.always set; still a Set, still inside safe(). Tests in store.test.mjs (core's): through UI.ctx(), ctx.features is a superset of Engine.revealed(view); a FeatureUnlocked feature shows in it; with Engine.unlocked absent the revealed path holds. Red before, one mutation proof. No new copy, no new public name."
  },
- "laneNote": "Flagged: both reviewers (contracts and tests; safety copy, privacy and the person's data) on the final READY as before. Fast-forward build/core to BASE first. Tier 1 is V-11 alone. CORE 13's word (2026-11-08 06:58 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/core/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 981b2dd9-8f46-4067-948e-a9fe177fdce5'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "laneNote": "Flagged: both reviewers (contracts and tests; safety copy, privacy and the person's data) on the final READY as before. V-46 is tier 1 (R-H-44); the worktree is already at the trunk. CORE 13's word (2026-11-08 07:12 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/core/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 981b2dd9-8f46-4067-948e-a9fe177fdce5'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
  "done": [
   "U-01",
   "U-03",
@@ -45,7 +45,7 @@
  ],
  "base": "87582bd4",
  "session": "981b2dd9-8f46-4067-948e-a9fe177fdce5",
- "now": "2026-11-08 06:58 IST",
+ "now": "2026-11-08 07:12 IST",
  "diffFrom": "87582bd4",
  "slot": 1,
  "sliceRun": false,
