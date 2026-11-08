@@ -17,7 +17,7 @@ SLOTS: today-track slot=6 granted 2026-11-08 02:34 IST for V3 tier 1 (the row 02
 SLOTS: workbook-settings slot=6 granted 2026-11-08 11:38 IST for V3 tier 2 (R-S-29; V-24 then V-22b; starts only after the tag offline-v3.0, on a 7.0 GB row, one start per row across both tracks, when no tier 1 lane waits; fast-forward build/workbook-settings and its worktree to the trunk tip first, merge base that tip; pauses first on any row under 4.0 GB). Earlier: slot=6 free from 2026-11-07 17:39: READY 9cbf630 merged (be0f806d), FIX-SAMPLE READY 0e76065 merged 18:13 (42d2467d); the v1 lane complete; C1 CLOSED e8da3fbd
 SLOTS: actions slot=7 free from 2026-11-07 18:50: READY 0977edd merged (49f1c1d4; U-22..U-25 in the trunk); the lane is complete; fixes by name only
 SLOTS: game-tutorials slot=8 granted 2026-11-08 05:05 IST for V3 tier 1 (the row 05:02 8.0 GB; R-O-7; PLAN-V3.md: V-08b the slice on actions-sos V-08a's published useSkill shape (R-C-47; the real code when V-08a merges), V-28 (routeOfFeature and the LOW C1), V-44 the reward sheet on section 7's contracts and R-C-50 (Engine.questLine and unlocked are in the trunk since 3bd5bf5d), then V-21 tier 2; fast-forward build/game-tutorials and its worktree to BASE 94c51632 first; pauses at its next commit if a row goes under 4.0 GB). Earlier: slot=8 free from 2026-11-07 22:37 IST (READY bd2e085 merged 7485e254; the v1 lane complete)
-MERGING: none
+MERGING: none   # 2026-11-08 12:25 IST: core tier 2 V-16 + V-17a + V-26a running since 12:17 (CORE 15, wf_ebf2f562-296, slot 1, the row 12:17 7.74 GB by hand; merge base 60dffe33; READY-SLICE expected; the whole-lane two-lens review of V-11, V-46 and this batch follows as CORE's run wf_lane_end_review.js before the final READY). SCREENS takes the next 7.0 GB row (content V-23)
 MERGE-QUEUE: none; tier 2 toward offline-v3.1, each lane READY-SLICE per unit: CORE: core V-16, V-17a, V-26a (slot 1; two reviewers at the end); actions-sos V-25, V-18, V-17b then its whole-lane review from f69bc68a (slot 3); learn V-20 (slot 9); tests-docs V-22a, V-26b, V-27, V-29 (slot 5). SCREENS: content V-23 (slot 4); workbook-settings V-24, V-22b (slot 6); game-tutorials V-21 (slot 8). The HUB's tooling V-12 to V-15 and the review pack V-09 by a plain sub-agent in a quiet moment
 MERGED: core READY-SLICE 8bf7b5c (U-01) -> merge 7eaf7f4, trunk fde4bbbd, pushed 07:41 (build GREEN 103409 B; test, validate SKIP; guards GREEN by name, 15 tour-target names baselined)
 MERGED: engine READY-SLICE 04fc0c1 (U-05) -> merge 6089dad, trunk 33d2a04f, pushed 07:44 (build GREEN 127289 B; test GREEN logic.test.mjs; validate SKIP until U-08; guards GREEN by name)
@@ -74,7 +74,7 @@ MERGED: tests-docs READY 44a07e0 (FIX-COUNTS: the counts true on the trunk; CLAU
 QUIET: done   # 11:33-11:43 IST on _int at 5ee84d5a, exit 0, every name read: build GREEN 1205260 B; test GREEN 651 pass 0 fail 0 skip in 15 files; validate GREEN; guards GREEN 5/5 all checks; browser GREEN 28 flows 28 pass 0 fail 0 skip in one full run; docs GREEN; logs _logs/gates/hub/{build-20261108-113233,test-20261108-113239,validate-20261108-113456,guards-20261108-113458,browser-20261108-113459,docs-20261108-114156}.log; no name to classify. FIX-COUNTS (docs only) merged after it with build, test, validate, guards, docs GREEN; TAG offline-v3.0 at 60dffe33 11:55
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | FIX-COUNTS merged 11:54 | TAG offline-v3.0 11:55 IST (60dffe33) | hand-off note 12:05 | tier 2 on the branches toward offline-v3.1, one start per 7.0 GB row; the launcher stays up
 TAG: offline-v3.0 = 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (2026-11-08 11:55 IST, annotated, pushed). Earlier: offline-v1.1 = f69bc68a (02:01), offline-v1.0 = 45473b2 (2026-11-07 11:40)
-UPDATED: 2026-11-08 12:18 IST
+UPDATED: 2026-11-08 12:39 IST
 
 
 
@@ -82,6 +82,10 @@ UPDATED: 2026-11-08 12:18 IST
 
 
 
+
+# 2026-11-08 12:39 IST · the tooling units V-12 to V-15 in the trunk; R-H-47; two tier 2 runs live
+
+- The HUB's tier 2 tooling in the trunk: V-12, V-13, V-14 (launcher, dbbd1bb; self-test 53/53) and V-15 (lane.js, 7ac7bad; wf_sim OK). R-H-47: the launcher loop keeps the old code until the owner's --restart (default: today at a quiet moment); V-14's 30-minute rule named as a risk with the alternative 'STILL_MIN 90'. V-09 (CLINICAL-REVIEW-PACK.md) was already in the trunk. Memory 12:21 7.1 (core V-16 started 12:17 on CORE's row by hand 7.74; content V-23 started 12:25 on the 12:21 row), 12:28 5.4, 12:31 6.2, 12:34 by hand 3.9 (a dip), 12:36 by hand 5.3: nothing paused.
 
 # 2026-11-08 12:18 IST · HUB 13 (2b59e0da) resumes; nothing runs; tier 2 waits for a 7.0 GB row
 
