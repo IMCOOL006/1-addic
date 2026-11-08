@@ -291,7 +291,13 @@
 
 - 05:26 tests-docs V-01t wf_2e6b1d27-92c stopped before any commit (the newest run, under the floor; R-C-61). 05:36 engine V-19 + V-30 wf_a3640bbf-6fd stopped in its check (builder done: 64136cd, 1d4dfd2; its note saved to tracks/CORE/args/engine_v19_buildnote.json). core V-11 READY-SLICE e79e1b0 (wf_f4937d0d-06e check PASS; R-C-62).
 
+## 2026-11-08 11:22 IST · CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10') resumes
+
+- 4c79e5f7 gone from `claude agents --json` (11:14); it had nothing live. tests-docs READY 949f0f7 with the HUB (game-tutorials 3aefecb merging since 11:08). Free memory 3.43 GB: nothing starts. Every CORE unit left is tier 2; staging their launch files.
+
 ## Resume here
+
+- **(2026-11-08 11:22 IST) STATE WAITING, CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10').** Nothing of CORE runs. tests-docs READY 949f0f7 with the HUB. Next: V-45's merge or its R-H red (fixed within the hour); then tier 2 on rows of 7.0 GB or more after the tag's QUIET (the 11:09 bullet's list, plus tests-docs V-22a, V-26b, V-27, V-29 and learn V-20).
 
 - **(2026-11-08 11:09 IST) STATE RESTART, CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409) hands over at a clean point. Nothing of CORE runs.** tests-docs READY 949f0f7 (V-45; R-C-72; merge base 3fbd08f6) with the HUB; engine MERGED 97ac73a (0db0a9f7); actions-sos MERGED-SLICE b735852 (3235375c). BASE 3235375c (status-HUB.md). FREEZE was at V-45's READY.
   1. If the HUB sends V-45 back (an R-H line), fix it on build/tests-docs within the hour. If the HUB asks for FIX-COUNTS (the count lines on the merged tree), fast-forward build/tests-docs to the trunk after V-45 merges and run it as a one-unit lane.js run (gen8 with EXTRA, like FIX-RS27's args_v3_engine_FIX-RS27.json).
