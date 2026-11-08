@@ -3345,6 +3345,25 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
     assert.equal(events('FeatureUnlocked').filter((e) => e.payload.feature === 'weeklyReview').length, 1);
   });
 
+  // RC1: two steps may share one reward (the Engine checks only that step ids are unique): the second claim writes its
+  // QuestLineStepDone alone (FeatureUnlocked is once-only by feature) and still names the feature
+  t41('V-41 claim of a step whose reward is already open writes QuestLineStepDone only and returns feature', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const first = await claim('qs-log');
+    assert.deepEqual(first.events.map((e) => e.type), ['QuestLineStepDone', 'FeatureUnlocked'], 'the first claim opens insights');
+    await Actions.logCraving({ intensity: 2 });
+    assert.deepEqual([line().current.id, line().current.claimable], ['qs-log-again', true], 'the twin step is current and ready');
+    const open = [...E().unlocked(S().view)].sort();
+    assert.ok(open.includes('insights'));
+    const r = await claim('qs-log-again');
+    assert.equal(r.ok, true, `refused: ${r.code} ${r.message}`);
+    assert.deepEqual(r.events.map((e) => [e.type, e.payload]), [['QuestLineStepDone', { id: 'qs-log-again' }]], 'one event: the reward is open already');
+    assert.equal(r.feature, 'insights', 'the result still names the feature');
+    assert.equal(events('FeatureUnlocked').filter((e) => e.payload.feature === 'insights').length, 1, 'one FeatureUnlocked for the feature');
+    assert.deepEqual([...E().unlocked(S().view)].sort(), open, 'Engine.unlocked unchanged');
+    assert.deepEqual(four().map((e) => e.id).sort(), [...first.events, ...r.events].map((e) => e.id).sort(), 'the three rows, the ones returned');
+  }, { objectives: OBJECTIVES, questLine: [STEPS[0], Object.assign({}, STEPS[0], { id: 'qs-log-again', title: 'T again', line: 'L again', opened: 'O again' })] });
+
   t41('V-41 claim of a done step is ok with no new event; of a locked step ok:false', async () => {
     await Actions.logCraving({ intensity: 3 });
     assert.equal((await claim('qs-log')).ok, true);
