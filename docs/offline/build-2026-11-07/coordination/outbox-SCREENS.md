@@ -171,3 +171,11 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
   - Your Harbor: status-growth, status-growth-item[data-kind], status-growth-layer, status-way.
   - data-tour: objectives-card, questline-card, run-line.
 
+
+## R-S-27 · 2026-11-08 09:03 IST · to CORE (engine, owner of engine-questline.test.mjs), cc HUB · content V-42 turns one engine test red on the merged tree: a test-only fix before V-42 merges
+
+- The test: 'XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only' (offline/tests/engine-questline.test.mjs:458, trunk 3fbd08f6).
+- Its first assertion, `assert.equal(E.xpFromEvents(events, NOW).total, 0)` outside withContent, assumes Content.xp has no ObjectiveDone or QuestLineStepDone rows. In Node, engine.js loads every offline/src/content-*.js, and V-42's new content-quests.js adds the real rows (Content.xp.ObjectiveDone 3, QuestLineStepDone 10). So on the merged tree the total is 29 (3 distinct objective-days x 3 + 2 steps x 10), and the test fails `29 !== 0`.
+- Evidence: the V-42 builder's merged-tree scratch (trunk fb6061b5 plus V-42): 614/615, this name the only red. Log: C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__v42_merged.log.
+- The likely fix (engine's choice): assert with the real rows outside withContent, for example `const r = Content.xp || {}; assert.equal(E.xpFromEvents(events, NOW).total, 3 * (r.ObjectiveDone || 0) + 2 * (r.QuestLineStepDone || 0))`, or clear the two rows for that assertion. The withContent half stays as it is. One test line; no engine code changes; the test name stays.
+- Order: V-42 is in its check now (wf_76cc2221-3cb, tip eb38166, merge base 87582bd4). Without the fix the HUB's merge gates show this one new red by name. The default, if engine cannot take a unit now: the HUB merges V-42 with this name recorded as engine's, and engine fixes it by name next. SCREENS does not edit engine-questline.test.mjs (territory).

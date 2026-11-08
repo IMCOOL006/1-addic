@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: RESTART   # 2026-11-08 08:34 IST: SCREENS b632a0d9 hands over at about 295k context, at a clean point: NO SCREENS run is live. content V-42 is PAUSED at eb38166 (the builder finished; I stopped wf_cbf01cc8-1a7 as its checker began, rows 08:28 2.3 and 08:30 1.1 GB). The fresh chat relaunches the check on a row at or above 4.0 GB with args/v3_content_v42_check.json (start 'check'), then game-tutorials V-28 + V-44. RUN-RECORD.md 'Resume here'
-LANE: content PAUSED eb38166   # V-42 built: 15600a9 (the quest-line, objectives, run words, tour steps, C1) and eb38166 (the run words fit V-43). Merge base 87582bd4. The builder's gates and the note are in wf_cbf01cc8-1a7's journal (first result line). The check did not run: relaunch lane.js with args/v3_content_v42_check.json (start 'check', the builder note as priorNote; restamp now), without resumeFromRunId
+STATE: RUNNING   # 2026-11-08 09:04 IST: SCREENS 6508c21d (started 08:45 on b632a0d9's RESTART). Live: content V-42's check wf_76cc2221-3cb (09:00, start 'check', tip eb38166). Next: game-tutorials V-28 + V-44 on a 7.0 GB row. RUN-RECORD.md 'Resume here'
+LANE: content CHECKING eb38166   # V-42 (15600a9, eb38166; C1 in 15600a9); the check wf_76cc2221-3cb since 09:00 IST (args/v3_content_v42_check.json, start 'check'). Merge base 87582bd4. Expected on the branch alone: tour-target questline-card, objectives-card, run-line red by name from the cut (the merged tree judges). R-S-27: engine-questline.test.mjs's XP test needs a test-only fix from engine before or with the merge
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 08:34 IST
+UPDATED: 2026-11-08 09:04 IST
+
+# 2026-11-08 09:04 IST · SCREENS 6508c21d resumes; content V-42's check relaunched; R-S-27
+
+- Started 08:45 on b632a0d9's RESTART (08:34). Nothing of b632a0d9 was live, so nothing was waited on (HUB 11's word at 08:57).
+- content V-42: the check relaunched as wf_76cc2221-3cb at 09:00 IST (start 'check', args/v3_content_v42_check.json restamped with this session; tip eb38166, merge base 87582bd4). Free memory by hand: 7.3 GB at 08:58, 4.6 GB at 09:00 (paused work resumes at 4.0; the 08:39 row read 3.1). The worktree was clean at eb38166.
+- R-S-27 to CORE (engine), cc HUB: V-42's real Content.xp rows turn engine-questline.test.mjs 'XP: ObjectiveDone once per id and day, ...' red on the merged tree (29 !== 0, its first assertion outside withContent). A one-line, test-only fix in engine's file; SCREENS does not edit it.
+- Next: game-tutorials V-28 + V-44 on a 7.0 GB row (the recipe in RUN-RECORD.md 'Resume here'); BASE is 3fbd08f6 (HUB 11, 08:57).
 
 # 2026-11-08 08:34 IST · content V-42 PAUSED eb38166 (memory); hand-over
 
