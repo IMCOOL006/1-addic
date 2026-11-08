@@ -13,7 +13,7 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
 const src = (f) => join(SRC, f);
 
 globalThis.Content = require(src('content-core.js'));
-for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js', 'content-practices.js', 'content-sample.js']) {
+for (const f of ['content-lessons-a.js', 'content-lessons-b.js', 'content-lessons-c.js', 'content-exercises.js', 'content-practices.js', 'content-sample.js', 'content-quests.js']) {
   if (existsSync(src(f))) require(src(f));
 }
 const C = globalThis.Content;
@@ -475,5 +475,142 @@ test('content: status words promise no outcome', () => {
   for (const s of words) {
     assert.ok(!/guarantee|will (be|stay)|streak|lose|lost/i.test(s), `no outcome promise or streak wording: ${s}`);
     assert.ok(!/\b(drops?|down|addicts?)\b/i.test(s), `no loss wording, person-first: ${s}`);
+  }
+});
+
+/* ── V-42: the quest-line "Your way", the daily objectives and the run (content-quests.js) ── */
+const ownKey = (o, k) => isObj(o) && Object.prototype.hasOwnProperty.call(o, k);
+const ACTION_EVENTS = ['LogCreated', 'CheckinCompleted', 'SkillUsed', 'SosCompleted', 'LessonCompleted', 'ModuleCompleted',
+  'CheckpointCompleted', 'ArtifactSaved', 'ExerciseDone', 'BattlePlanCreated', 'BattlePlanDebriefed', 'ActivityDone',
+  'MindfulMinute', 'WeeklyReviewCompleted', 'SlipLogged', 'SlipReviewed', 'ContactReached', 'ScriptUsed',
+  'TutorialCompleted', 'ExplorerCompleted', 'FeatureRevealed', 'MilestoneSeen', 'RecoveryPlanConfirmed', 'OnboardingCompleted'];
+/* an SOS session writes these, or they are about slips, milestones or sober days: never a quest-line condition */
+const NEVER_COUNTED = ['SosCompleted', 'SlipLogged', 'SlipReviewed', 'MilestoneSeen', 'LogCreated', 'SkillUsed', 'ContactReached'];
+const GROWS = ['lantern', 'tree', 'boat', 'bench', 'flag', 'gull', 'garden', 'bell'];
+const TOOL_GAME_IDS = ['trial', 'should-i-go', 'problem-solver', 'distortion-sort', 'spot-red-flag', 'big-game', 'refusal', 'rewrite', 'explorer'];
+const NEW_IDS = ['questLine', 'objectives', 'run'];
+const NEW_TARGETS = { questLine: 'questline-card', objectives: 'objectives-card', run: 'run-line' };
+const NEW_HELP = /Your way|small things|Days shown up/;
+const NO_LOSS = /streak|lost|broken|reset|fail|sober day/i;
+const plain = (s) => typeof s === 'string' && s.trim() !== '' && !/[<>]/.test(s);
+const questStrings = () => strings([C.questLine, C.objectives, C.runWords,
+  NEW_IDS.map((id) => C.features[id]), C.tutorials.filter((t) => NEW_IDS.includes(t.id)),
+  C.help.filter((x) => NEW_HELP.test(x.q || ''))]);
+const emptyView = { list: () => [], get: () => null, count: () => 0 };
+
+test('content: quest-line shape and order', () => {
+  const q = C.questLine;
+  assert.ok(Array.isArray(q) && q.length >= 8 && q.length <= 12, '8 to 12 steps');
+  assert.equal(q.length, 10, 'ten steps');
+  assert.equal(new Set(q.map((s) => s.id)).size, q.length, 'unique ids');
+  for (const s of q) {
+    for (const k of ['id', 'title', 'line', 'opened', 'reward']) assert.ok(plain(s[k]), `${s.id}: ${k}`);
+    const c = s.condition;
+    assert.ok(isObj(c) && ACTION_EVENTS.includes(c.event), `${s.id}: a real event`);
+    assert.ok(!NEVER_COUNTED.includes(c.event), `${s.id}: never counts an SOS session, a slip, a milestone or a sober day`);
+    assert.ok(Number.isInteger(c.count) && c.count >= 1, `${s.id}: count`);
+    assert.ok(c.within === undefined || ['day', 'week'].includes(c.within), `${s.id}: within`);
+    assert.ok(c.where === undefined || isObj(c.where), `${s.id}: where`);
+    if (c.event === 'TutorialCompleted') assert.deepEqual(c.where, { id: 'drill' }, `${s.id}: only the SOS drill`);
+  }
+  const ql = E.questLine(emptyView, NOW);
+  assert.deepEqual(ql.steps.map((s) => s.id), q.map((s) => s.id), 'the Engine keeps the order');
+  assert.equal(ql.current && ql.current.id, q[0].id, 'the first step is current');
+  assert.deepEqual(E.validateContent(C), []);
+});
+
+test('content: quest-line rewards are unlockable, never protected', () => {
+  const rv = C.reveal;
+  const moduleIds = Object.keys(rv).filter((k) => /^m([2-9]|10)$/.test(k));
+  const rewards = C.questLine.map((s) => s.reward);
+  assert.equal(new Set(rewards).size, rewards.length, 'distinct rewards');
+  for (const r of rewards) {
+    assert.ok(ownKey(C.features, r), `${r}: a Content.features id`);
+    assert.equal(E.isProtectedFeature(r, C), false, `${r}: not protected`);
+    assert.ok(!['sos', 'settings', 'learn'].includes(C.features[r].tab), `${r}: not on a protected tab`);
+    assert.ok(!(rv.always || []).includes(r), `${r}: not on from day one`);
+    assert.ok(moduleIds.some((m) => rv[m].includes(r)), `${r}: a module from m2 to m10 reveals it`);
+    assert.ok(!TOOL_GAME_IDS.includes(r), `${r}: never a tool or game (open from day one)`);
+  }
+  for (const id of NEW_IDS) assert.ok(rv.always.includes(id) && E.isProtectedFeature(id, C), `${id}: on from day one`);
+});
+
+test('content: objectives pool shape', () => {
+  const o = C.objectives;
+  assert.ok(Array.isArray(o) && o.length >= 18 && o.length <= 24, '18 to 24 objectives');
+  assert.equal(new Set(o.map((x) => x.id)).size, o.length, 'unique ids');
+  let byEvent = 0;
+  for (const x of o) {
+    assert.ok(plain(x.id) && plain(x.title) && plain(x.line), `${x.id}: words`);
+    assert.ok(GROWS.includes(x.grows), `${x.id}: grows ${x.grows} is in the list`);
+    if (x.doneBy === 'tap') continue;
+    byEvent++;
+    assert.ok(isObj(x.doneBy) && ACTION_EVENTS.includes(x.doneBy.event), `${x.id}: doneBy tap or a real event`);
+    assert.ok(!['SosCompleted', 'SlipLogged', 'SlipReviewed', 'MilestoneSeen'].includes(x.doneBy.event), `${x.id}: not an SOS session or a slip`);
+  }
+  assert.ok(byEvent >= 6 && o.length - byEvent >= 10, 'about 8 by event, about 12 by tap');
+  for (const x of o) {
+    for (const s of [x.title, x.line]) {
+      assert.ok(!/craving|sober|\bus(e|ed|ing)\b|drink(?! a glass of water)|alcohol|drug/i.test(s), `no substance, craving, use or sober day: ${s}`);
+    }
+  }
+});
+
+test('content: run words and xp rows', () => {
+  const w = C.runWords;
+  for (const k of ['header', 'current', 'best', 'total', 'kept', 'keptLine', 'cameBack', 'cameBackLine', 'graceLine']) assert.ok(plain(w[k]), `runWords.${k}`);
+  assert.equal(w.header, 'Days shown up');
+  assert.equal(w.kept, 'Kept');
+  assert.equal(w.cameBack, 'You came back.');
+  for (const k of ['ObjectiveDone', 'QuestLineStepDone']) assert.ok(Number.isInteger(C.xp[k]) && C.xp[k] > 0 && C.xp[k] <= 25, `xp.${k}: small positive integer`);
+  const all = questStrings();
+  assert.ok(all.length > 60, 'the new strings are walked');
+  for (const s of all) {
+    assert.ok(!NO_LOSS.test(s), `no loss or sober-day wording: ${s}`);
+    assert.ok(!/[<>]/.test(s), `no angle brackets: ${s}`);
+    assert.ok(!/guarantee|\baddicts?\b/i.test(s), `no promise, person-first: ${s}`);
+  }
+});
+
+test('content: new tutorials and help exist', () => {
+  for (const id of NEW_IDS) {
+    const f = C.features[id];
+    assert.ok(isObj(f) && plain(f.name) && plain(f.gist) && f.tab === 'today', `feature ${id}`);
+    const t = C.tutorials.filter((x) => x.id === id);
+    assert.equal(t.length, 1, `one tutorial ${id}`);
+    assert.equal(t[0].kind, 'jit');
+    assert.equal(t[0].feature, id);
+    assert.ok(plain(t[0].name), `${id}: name`);
+    assert.deepEqual(t[0].steps.map((s) => s.target), [NEW_TARGETS[id]], `${id}: target`);
+    for (const s of t[0].steps) assert.ok(plain(s.text), `${id}: plain text`);
+  }
+  const help = C.help.filter((x) => NEW_HELP.test(x.q || ''));
+  assert.equal(help.length, 3, 'three help entries');
+  for (const x of help) {
+    assert.ok(plain(x.q) && plain(x.a), 'help words');
+    assert.ok(['#/today', '#/status'].includes(x.route) && E.knownRoute(x.route, C), `help route ${x.route}`);
+  }
+});
+
+test('content: m1 unlocks status', () => {
+  const m1 = C.modules.find((m) => m.id === 'm1');
+  assert.deepEqual(m1.unlocks, ['status']);
+  for (const m of C.modules) assert.ok((m.unlocks || []).every((f) => ownKey(C.features, f)), `${m.id}: unlocks are feature ids`);
+});
+
+test('content: the tour shows the harbor chip, the objectives and the quest-line', () => {
+  const NEW_TOUR = ['status-open', 'objectives-card', 'questline-card'];
+  const tour = C.tutorials.find((t) => t.id === 'tour');
+  const targets = tour.steps.map((s) => s.target);
+  const at = targets.indexOf('nav-today');
+  assert.ok(at >= 0, 'nav-today step');
+  assert.deepEqual(targets.slice(at + 1, at + 4), NEW_TOUR, 'the three steps right after nav-today');
+  assert.deepEqual(targets.filter((t) => !NEW_TOUR.includes(t)),
+    ['nav-today', 'nav-learn', 'nav-workbook', 'nav-track', 'nav-actions', 'sos-button'], 'the old steps, in order');
+  assert.equal(targets[targets.length - 1], 'sos-button', 'sos-button last');
+  for (const s of tour.steps.slice(at + 1, at + 4)) {
+    assert.ok(plain(s.text) && sentences(s.text) === 1, `${s.target}: one plain sentence`);
+    assert.ok(/optional|up to you|skip/i.test(s.text), `${s.target}: says it is optional`);
+    assert.ok(!NO_LOSS.test(s.text), `${s.target}: no loss wording`);
   }
 });

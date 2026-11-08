@@ -230,6 +230,9 @@ const Content = {
   tutorials: [
     { id: 'tour', name: 'First-run tour', kind: 'tour', steps: [
       { target: 'nav-today', text: 'This is Today: your plan for the day, your check-in, and the next best step.' },
+      { target: 'status-open', text: 'Your harbor shows what grew from what you have done, and opening it is optional.' },
+      { target: 'objectives-card', text: 'These small things for today are easy acts, and doing any of them is up to you.' },
+      { target: 'questline-card', text: 'Your way is a path of small steps that opens parts of the app early, and you can follow it or skip it.' },
       { target: 'nav-learn', text: 'Learn is the journey: eleven short stops, each with a lesson and a real exercise.' },
       { target: 'nav-workbook', text: 'Workbook keeps what you build: your reasons, triggers, people and plans.' },
       { target: 'nav-track', text: 'Track is the logbook: cravings, feelings, check-ins, and the patterns in them.' },

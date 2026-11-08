@@ -55,7 +55,7 @@ C_a.modules.push(
 
 { id: 'm1', step: null, name: 'Understand Addiction', harbor: 'The Weather Station, ground floor', book: 1,
   blurb: 'How use becomes a need, the signs, why it happened to you, and how to ask for help.',
-  unlocks: [], lessons: [
+  unlocks: ['status'], lessons: [
   { id: 'm1-l1', title: 'How a habit becomes a need', minutes: 4,
     moment: { cast: 'dev', text: 'Second year, exam week. A friend handed Dev one pill and said it would keep him sharp till morning. It did. Two years later he could not open a textbook without one.' },
     cards: [
