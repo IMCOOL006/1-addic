@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 8 November 2026, 536 of 536 logic checks and 21 of 21 browser checks passed, none skipped (Part 4)
+Tested: 8 November 2026, 581 of 582 logic checks and 25 of 25 browser checks passed, none skipped (Part 4)
 ---
 
 > [!SUMMARY]
@@ -15,7 +15,7 @@ Tested: 8 November 2026, 536 of 536 logic checks and 21 of 21 browser checks pas
 
 ## How to use this guide
 
-Part 1 explains the app: what it is, why it exists, when to reach for it and how it thinks. Part 2 helps you make it yours in one sitting: the first-run steps, your reasons, the people you can call, and a routine for the first week. Part 3 is a hands-on tutorial in fourteen short lessons; Lesson 1 is a test drive with sample data, so you can try everything before you type anything real. Part 4 covers problems, known quirks and how this guide was checked. Words with a small number after them are explained at the bottom of the page and again in the Glossary at the end.
+Part 1 explains the app: what it is, why it exists, when to reach for it and how it thinks. Part 2 helps you make it yours in one sitting: the first-run steps, your reasons, the people you can call, and a routine for the first week. Part 3 is a hands-on tutorial in fifteen short lessons; Lesson 1 is a test drive with sample data, so you can try everything before you type anything real. Part 4 covers problems, known quirks and how this guide was checked. Words with a small number after them are explained at the bottom of the page and again in the Glossary at the end.
 
 | You want to… | Go to |
 |---|---|
@@ -25,6 +25,7 @@ Part 1 explains the app: what it is, why it exists, when to reach for it and how
 | Get through a craving right now | Lesson 3 — SOS: a craving |
 | Learn a skill | Lesson 6 — Learn a module |
 | See what helps you | Lesson 8 — Track and Insights |
+| See where you stand | Lesson 15 — Your Harbor |
 | Plan for a risky evening | Lesson 9 — The planner and Battle Plans |
 | Never lose your data | Lesson 12 — Back up and restore |
 | Put it on your phone | Lesson 13 — Use it on a phone |
@@ -110,6 +111,7 @@ The app is built in four layers that feed each other, with SOS standing apart fr
 | Workbook | The third tab | Your pages, newest first |
 | Track | The fourth tab | Logs, check-ins and Insights |
 | Actions | The fifth tab | Planner, Battle Plans, activities, Weekly Review |
+| Your Harbor | The Your harbor button on Today | Where you stand, what just changed, a next small step |
 | SOS | The SOS button, on every screen | Craving, feeling, slip and urgent help |
 | Settings | The Settings button in the top bar | Your data, privacy, look, help |
 
@@ -188,7 +190,7 @@ Load the marked sample data and look around every screen before you type anythin
 4. Open **Track** and read the sample log. Sample entries do not count towards your Insights.
 5. When you are done, go to **Settings → Your data** and tap **Erase sample data**, then **Erase the sample**. Only the items marked as sample go; anything you wrote stays.
 
-![Today with the sample data loaded: a greeting, the Log a craving and SOS buttons, and the Morning check-in card](images/today-phone.png)
+![Today with the sample data loaded: a greeting, the Log a craving, SOS and Your harbor buttons, and the Morning check-in card](images/today-phone.png)
 
 > [!TIP]
 > Sample data is only offered on a fresh notebook. Once you have your own profile, the app will not load the sample over it.
@@ -368,6 +370,23 @@ Set a PIN, lock the app, and make it look like a plain notebook.
 > [!WARNING]
 > A forgotten PIN cannot be recovered. Keep a recent backup (Lesson 12), so that erasing and restoring is always an option.
 
+## Lesson 15 — Your Harbor
+
+See where you stand, what changed since you last looked, and one small next step.
+
+1. On **Today**, tap **Your harbor**, next to **Log a craving** and **SOS**. You can also tap the harbor picture on Today. **Your Harbor** opens. The round **SOS** button stays in the corner, and the page has its own **SOS** button at the top.
+2. **What just changed** comes first. On your first visit it says "Here is where you stand." After you log something, use a skill or finish a lesson, it lists what grew since your last look.
+3. The picture shows your harbor. Each place stands for a group of skills: **The Lighthouse** for thinking clearly, **The Cove** for calm, **The Garden** for joy, **The Pier** for people, and a few more. Below the picture, each place has a button with its level out of 5. Tap one to see its skills and how many more uses take it to the next level.
+4. **Where you stand** shows your rank, your XP and your badges. **Next small step** offers one thing to do next, such as a lesson.
+5. **Your last 14 days** marks each day you did something for your recovery with a filled dot. An empty day is just empty: nothing is taken away.
+6. **What to watch** lists a few patterns from your own logs that may be worth a look, each with a plan.
+
+A slip never dims a place. Levels only go up, because they count the skills you have used, and that never un-happens. With reduced motion on, on your device or in Settings, the harbor stays still. In Calm mode and in discreet mode the picture is left out, and the list of places still shows.
+
+![Your Harbor on a computer screen: What just changed, the harbor picture, and the places with their levels](images/status-desktop.png)
+
+![Your Harbor on a phone: Back to Today and SOS at the top, What just changed, the harbor picture, and The Lighthouse, The Cove and The Garden at level 0 of 5](images/status-phone.png)
+
 <!-- pagebreak -->
 
 # Part 4 — Help
@@ -401,8 +420,8 @@ None of these lose data. They are rough edges to be aware of in this early versi
 
 The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
-- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **536 of 536** logic checks passed, in 13 test files.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **21** of them, and **all 21 passed**: none failed and none was skipped.
+- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **581 of 582** logic checks passed, in 15 test files. The one that failed checks where the small "New" dots sit on Today; its fix is with the team that builds Today.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **25** of them, and **all 25 passed** in one full run, none skipped.
 
 | Area | What is checked | Status |
 |---|---|---|
@@ -412,6 +431,7 @@ The steps in Part 3 were written against the screens of the real file, and every
 | SOS | Reachable before onboarding and on the lock screen, never gated | Pass |
 | SOS craving and drill | The craving flow with the timer and both outcomes; a drill saves nothing | Pass |
 | Logging | A quick log and an evening check-in are saved | Pass |
+| Your Harbor | Opens from Today in one tap with SOS still there; shows what changed after a quick log; a slip lowers no place; nothing moves under reduced motion | Pass |
 | Learning | A lesson's page in the Workbook, then shown in SOS | Pass |
 | Privacy | A PIN locks and unlocks; saving a backup asks for it; the discreet lock screen shows "Notebook" and Help | Pass |
 | Settings | A PIN is set and removed from Settings → Privacy; a wrong PIN removes nothing | Pass |

@@ -88,6 +88,7 @@ export const SHOTS = [
   // Today
   { slug: 'today', route: '#/today' },
   { slug: 'today-harbor', route: '#/today', hook: '[data-test="today-harbor"]', setup: (page) => centre(page, '[data-test="today-harbor"]') },
+  { slug: 'status', route: '#/status', hook: HOOKS.statusPage }, // Your Harbor (V-01t); a look writes nothing
   // SOS and urgent help
   { slug: 'sos-hub', route: '#/sos', hook: HOOKS.sosHub },
   { slug: 'sos-craving', route: '#/sos/craving', hook: HOOKS.sosCraving },
