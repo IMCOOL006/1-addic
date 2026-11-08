@@ -295,7 +295,19 @@
 
 - 4c79e5f7 gone from `claude agents --json` (11:14); it had nothing live. tests-docs READY 949f0f7 with the HUB (game-tutorials 3aefecb merging since 11:08). Free memory 3.43 GB: nothing starts. Every CORE unit left is tier 2; staging their launch files.
 
+## 2026-11-08 12:15 IST · FIX-COUNTS merged; offline-v3.0 tagged at 60dffe33; tier 2 staged; the whole-lane review script
+
+- 11:44 FIX-COUNTS 44a07e0 (tests-docs, by name; R-C-73, R-C-74): the HUB's quiet-gate numbers (Node 651/0/0 in 15 files, browser 28/28/0) in CLAUDE.md, README.md, offline/README.md and the guide (.docx rebuilt); territory 0. Merged 11:56 (trunk 60dffe33); the tag offline-v3.0 there. HUB 12 handed over 12:06 (HUB 13 next, 'HUB 12:xx').
+- 12:01 core, actions-sos, learn, tests-docs fast-forwarded to 60dffe33 (core's generated 1-addic.html rebuild dropped first). Launch files, base and diffFrom 60dffe33, wf_sim OK with no prior note cut (lane.js cuts the prior note when the builder prompt passes 12000 characters: measure with --dump, not the 12288 line).
+- tracks/CORE/args/wf_lane_end_review.js: the flagged lanes' whole-lane review (lane.js's reviewers judge base...HEAD, which after the fast-forwards holds every lane's trunk work): two lane-reviewers over the lane's own commits by unit, two skeptics per MEDIUM+ finding (a third on a split), one lane-builder-flagged fix round, each lens's re-check and a lane-checker on the gates; returns state READY or RED.
+
 ## Resume here
+
+- **(2026-11-08 12:15 IST) STATE WAITING, CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10').** offline-v3.0 is tagged at 60dffe33; nothing of CORE runs; tier 2 toward offline-v3.1. One start per row at or above 7.0 GB across both tracks, alternating with SCREENS (CORE first; SCREENS 11:07's starts: content V-23, workbook-settings V-24 + V-22b, game-tutorials V-21). CORE's starts in order, each on its own row (Workflow scriptPath C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js, args = the file with now refreshed):
+  1. core V-16 + V-17a + V-26a: tracks/CORE/args/args_v3_core_V-16.json (slot 1, skipReview). Return -> `LANE: core READY-SLICE <tip>` (merge base 60dffe33), R-C to the HUB; V-17a's lockId shape into contracts/core.md and contracts/actions-sos.md; V-26a's size-line format to tests-docs V-26b.
+  2. actions-sos V-25 + V-18: args_v3_actions-sos_V-25.json (slot 3, skipReview). Then V-17b + C2 after core V-17a merges (gen8 with done + V-25, V-18).
+  3. learn V-20: args_v3_learn_V-20.json (slot 9; the slice). 4. tests-docs V-22a, V-26b, V-27, V-29: args_v3_tests-docs_V-22a.json (slot 5).
+  5. At each flagged lane's end, before its final READY: Workflow scriptPath tracks/CORE/args/wf_lane_end_review.js, args {lane, wt, tip, units: [{id, shas}], context, files, session, now, browserGrep}: core units V-11 e79e1b0, V-46 fbc663d, plus the T2 commits; actions-sos units V-08a b7b4db9, V-SOS10 3e3ffbc, V-25, V-18, V-17b, context V-41 6c77d1d..b735852 (reviewed by lane.js 09:08). READY -> `LANE: <lane> READY <tip>`.
 
 - **(2026-11-08 11:22 IST) STATE WAITING, CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10').** Nothing of CORE runs. tests-docs READY 949f0f7 with the HUB. Next: V-45's merge or its R-H red (fixed within the hour); then tier 2 on rows of 7.0 GB or more after the tag's QUIET (the 11:09 bullet's list, plus tests-docs V-22a, V-26b, V-27, V-29 and learn V-20).
 
