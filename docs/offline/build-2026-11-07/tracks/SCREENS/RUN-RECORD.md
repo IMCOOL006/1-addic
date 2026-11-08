@@ -325,7 +325,7 @@
   - (1) content V-23 (slot 4): Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js', args: <tracks/SCREENS/args/v3_content_t2.json>});
   - (2) workbook-settings V-24 then V-22b (slot 6), args/v3_workbook-settings_t2.json;
   - (3) game-tutorials V-21 (slot 8), args/v3_game-tutorials_t2.json.
-  - All three worktrees are at 60dffe33, clean. If the trunk moves before a launch, no new fast-forward is needed: the merge base stays 60dffe33. Restamp 'now' with python gen_t2.py <lane> 60dffe33 "<date>" [34f70172 for game-tutorials].
+  - All three worktrees are at 60dffe33, clean. HUB 13 ('HUB 12:09', up 12:18): fast-forward to the trunk tip at the launch (git -C <wt> merge --ff-only build/offline-v1; the trunk was 5fc162a0 at 12:18, docs commits after the tag), then python gen_t2.py <lane> <that tip> "<date>" [34f70172 for game-tutorials]; the merge base is that tip.
 - READY-SLICE per unit (HUB 12, 12:06): content V-23 and workbook-settings V-24 are sliceRun true (READY-SLICE <tip>); workbook-settings V-22b is then the relaunch with done + ['V-24'], priorNote = the V-24 builder's note, diffFrom = the V-24 tip, sliceRun false; game-tutorials V-21 is sliceRun false (READY). HUB 12 handed over at 12:06; HUB 13 ('HUB 12:xx' in ListAgents) merges in arrival order.
 - On return: verify the tip, both trailers, territory (python tools/check_territory.py <lane>), the gate logs by name; restore offline/1-addic.html; LANE: <lane> READY <tip> (merge base 60dffe33); the report is at tracks/SCREENS/lane-reports/<lane>.md (lane.js writes over it).
 - Under 4.0 GB, the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
