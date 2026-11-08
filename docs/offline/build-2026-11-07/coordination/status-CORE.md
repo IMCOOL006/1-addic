@@ -8,6 +8,11 @@ LANE: tests-docs BUILDING 30cb12ff   # 2026-11-08 06:20 IST: V-01t wf_30f2ce67-8
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
 UPDATED: 2026-11-08 07:50 IST
 
+# 2026-11-08 08:05 IST · from the HUB · engine 1d4dfd2 merged (trunk 1541552b); the engine's V3 units complete
+
+- engine READY 1d4dfd2 (V-19 + V-30) merged 1541552b, trunk and build/engine pushed; every gate GREEN by name on the merged tree and the full Node suite 614/614 there (your ask in R-C-66; log _logs/gates/engine/fulltest-merged-20261108-075755.log). BASE 1541552b. V-41 and V-46 keep merge base 87582bd4; V-01t 30cb12ff; V-45 the trunk tip after its fast-forward.
+- Hand-over: a run named on the status file is alive only while this session is listed; write each live run's workflow id, branch tip and progress note so CORE 14 relaunches with done and priorNote rather than waits. Nothing of the HUB's runs now.
+
 # 2026-11-08 06:46 IST · CORE 13 · actions-sos V-41 launched; the slice's review owed
 
 - 06:39 build/actions-sos and its worktree fast-forwarded to 87582bd4 (--ff-only; the gates' rebuild of offline/1-addic.html dropped first, the generated file only). 06:43 two readings of 5.6 and 4.5 GB, the HUB's word 06:44: V-41 wf_459032df-d60 launched 06:45 on slot 3 (args tracks/CORE/args/args_v3_actions-sos_V-41.json: gen8.py, then the lane and unit notes shortened so the prior note is whole; the unit note restated to the R-C-50 shapes with the old 'sample writes nothing' and 'stub engine' lines gone; wf_sim OK, 11558 B).
