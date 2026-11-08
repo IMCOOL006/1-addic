@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 8 November 2026, 581 of 582 logic checks and 25 of 25 browser checks passed, none skipped (Part 4)
+Tested: 8 November 2026, 616 of 616 logic checks passed; 26 of 28 browser checks passed and 2 were skipped by name (Part 4)
 ---
 
 > [!SUMMARY]
@@ -26,6 +26,7 @@ Part 1 explains the app: what it is, why it exists, when to reach for it and how
 | Learn a skill | Lesson 6 — Learn a module |
 | See what helps you | Lesson 8 — Track and Insights |
 | See where you stand | Lesson 15 — Your Harbor |
+| Small steps for today | Lesson 16 — Your day: objectives, days shown up and Your way |
 | Plan for a risky evening | Lesson 9 — The planner and Battle Plans |
 | Never lose your data | Lesson 12 — Back up and restore |
 | Put it on your phone | Lesson 13 — Use it on a phone |
@@ -112,6 +113,7 @@ The app is built in four layers that feed each other, with SOS standing apart fr
 | Track | The fourth tab | Logs, check-ins and Insights |
 | Actions | The fifth tab | Planner, Battle Plans, activities, Weekly Review |
 | Your Harbor | The Your harbor button on Today | Where you stand, what just changed, a next small step |
+| Your day | On Today, under the check-in | Three small objectives, days shown up, and the next step of Your way |
 | SOS | The SOS button, on every screen | Craving, feeling, slip and urgent help |
 | Settings | The Settings button in the top bar | Your data, privacy, look, help |
 
@@ -387,6 +389,30 @@ A slip never dims a place. Levels only go up, because they count the skills you 
 
 ![Your Harbor on a phone: Back to Today and SOS at the top, What just changed, the harbor picture, and The Lighthouse, The Cove and The Garden at level 0 of 5](images/status-phone.png)
 
+## Lesson 16 — Your day: objectives, days shown up and Your way
+
+Three small things to do each day, a count of the days you showed up, and a path of steps that opens parts of the app early.
+
+1. On **Today**, under the check-in, **Today's objectives** lists three small things for today, such as *Take a short walk* or *Try one exercise*. Tap **Done** when you have done one. Some are marked done for you when you do the matching thing in the app, such as finishing a lesson.
+2. Not right for today? Tap **Swap** on one of them to get another. You can swap once a day.
+3. The first objective you finish on a day adds one thing to your harbor, such as a lantern, a tree or a boat. It stays there. A day with nothing done adds nothing and takes nothing away. Tap **Your harbor** to see what has grown.
+4. Under the buttons at the top of Today, **Days shown up** shows three numbers: **Now** (days in a row), **Best** (your longest run) and **In all** (every day you showed up). A day counts when you log something, finish a lesson, do a practice, finish an objective or do the SOS practice drill. Sober days are not part of it: they are counted on their own, and only if you turn them on.
+5. Missing one day in a week keeps your run going, and the line says so. Miss more and a new run starts the next time you show up, with the words "You came back." **Best** and **In all** never go down.
+6. **Your way** is a path of steps, one at a time. The card on Today shows the step you are on, what it asks, what it opens (the first step, the SOS practice drill, opens the Support Network) and how far along you are. When the step is done, tap **Claim**. What it opens is ready straight away.
+7. On **Your harbor**, **Your way** lists every step: the one you are on now, the ones done, and the ones for later.
+
+Nothing here is ever taken back. SOS, urgent help, the lessons, Settings and your data are never part of the path: they are always open.
+
+![Today's objectives on a phone: three objectives, each with Done and Swap, and the line "The first one grows when you do one."](images/today-objectives-phone.png)
+
+![Today on a phone with the line "Days shown up: Now 2 · Best 2 · In all 2" under the Log a craving, SOS and Your harbor buttons](images/today-run-phone.png)
+
+![The Your way card on Today, on a phone: Try the SOS drill, what it unlocks (Support Network) and Progress 0 of 1](images/today-way-phone.png)
+
+![Your way on Your Harbor, on a phone: the step for now, Try the SOS drill, then the later steps by their titles](images/status-way-phone.png)
+
+![Today on a computer screen with Today's objectives](images/today-objectives-desktop.png)
+
 <!-- pagebreak -->
 
 # Part 4 — Help
@@ -418,10 +444,10 @@ None of these lose data. They are rough edges to be aware of in this early versi
 
 ## How this guide was checked
 
-The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
+The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. The pictures in Lesson 16 were taken from a build that already holds the daily objectives and Your way, the two parts still being added to the file. Two kinds of checks are run on the same file.
 
-- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **581 of 582** logic checks passed, in 15 test files. The one that failed checks where the small "New" dots sit on Today; its fix is with the team that builds Today.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **25** of them, and **all 25 passed** in one full run, none skipped.
+- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **all 616** logic checks passed, in 15 test files.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **28** of them. In one full run **26 passed** and 2 were skipped by name: finishing an objective and claiming a step of Your way wait for the parts they check to join the file.
 
 | Area | What is checked | Status |
 |---|---|---|
@@ -432,6 +458,7 @@ The steps in Part 3 were written against the screens of the real file, and every
 | SOS craving and drill | The craving flow with the timer and both outcomes; a drill saves nothing | Pass |
 | Logging | A quick log and an evening check-in are saved | Pass |
 | Your Harbor | Opens from Today in one tap with SOS still there; shows what changed after a quick log; a slip lowers no place; nothing moves under reduced motion | Pass |
+| Your day | An objective done grows the harbor by one; after missed days the best run and the total never drop; a claimed step of Your way opens its feature | Partly (1 of 3) |
 | Learning | A lesson's page in the Workbook, then shown in SOS | Pass |
 | Privacy | A PIN locks and unlocks; saving a backup asks for it; the discreet lock screen shows "Notebook" and Help | Pass |
 | Settings | A PIN is set and removed from Settings → Privacy; a wrong PIN removes nothing | Pass |
@@ -439,7 +466,7 @@ The steps in Part 3 were written against the screens of the real file, and every
 | Backup | Export, erase and import bring back every record | Pass |
 | Looks | The dark theme applies and stays; the print view of the plan; the saved label always shows | Pass |
 
-Every row passed in the browser on 8 November 2026, and the logic checks cover the same ground underneath.
+Every other row passed in the browser on 8 November 2026. In the Your day row, the check on days shown up passed, and the other two are skipped by name until their parts join the file. The logic checks cover the same ground underneath.
 
 ### The privacy proof
 
