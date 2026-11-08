@@ -19,6 +19,7 @@ const PARTS = [
   'content-exercises.js',
   'content-practices.js',
   'content-sample.js',
+  'content-quests.js',
   'engine.js',
   'store.js',
   'actions.js',
