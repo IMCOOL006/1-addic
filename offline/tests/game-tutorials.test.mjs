@@ -898,3 +898,264 @@ test('guidance: the coach popover keeps clear of the SOS button', async () => {
     assert.equal(await p, 'done');
   } finally { cleanup(); }
 });
+
+/* ── V-28: the status page's tour step, JIT and New dot ─────────────────────────────────────── */
+
+const STATUS_CTX = (view, extra) => Object.assign({ route: { path: '/status', parts: ['status'], query: {} }, view, profile: {}, now: new Date('2026-11-08T10:00:00+05:30') }, extra || {});
+const statusJit = () => C.tutorials.find((t) => t && t.kind === 'jit' && t.feature === 'status');
+
+test('guidance: featureOfRoute maps /status', () => {
+  assert.equal(C.features.status && C.features.status.route, '#/status', 'content declares the route');
+  assert.equal(G.featureOfRoute('/status'), 'status');
+  assert.equal(G.featureOfRoute('#/status'), 'status');
+  assert.equal(G.featureOfRoute('#/status?from=today'), 'status');
+  assert.equal(G.routeOfFeature('status'), '#/status');
+  assert.equal(G.featureOfRoute('#/today'), 'today', 'Today stays Today');
+});
+
+test('guidance: jitFor offers the status tutorial once', () => {
+  const jit = statusJit();
+  assert.ok(jit && Array.isArray(jit.steps) && jit.steps.length, 'content has a status JIT');
+  const always = (C.reveal.always || []).filter((x) => x !== 'status');
+  const revealed = new Set(always.concat(['status']));
+  const base = { path: '#/status', revealed, isDone: () => false, asked: {}, today: '2026-11-08' };
+  assert.equal(G.jitFor(base).id, jit.id, 'offered on the first open');
+  assert.equal(G.jitFor(Object.assign({}, base, { isDone: (id) => id === jit.id })), null, 'not once done');
+  assert.equal(G.jitFor(Object.assign({}, base, { revealed: new Set(always) })), null, 'not before it is revealed');
+  assert.equal(G.jitFor(Object.assign({}, base, { path: '#/sos' })), null, 'never on SOS');
+  // through afterRender: one bar on the first open; Later keeps it away today; done keeps it away for good
+  const done = new Set();
+  const w = world({ hash: '#/status', engine: { revealed: () => new Set(revealed), tutorialDone: (v, id) => done.has(id) } });
+  try {
+    const main = w.doc.getElementById('main');
+    G.afterRender(STATUS_CTX(w.view));
+    const bars = byTest(main, 'jit-bar');
+    assert.equal(bars.length, 1, 'one JIT bar');
+    assert.equal(bars[0].getAttribute('data-tutorial'), jit.id);
+    byTest(bars[0], 'jit-later')[0].click();
+    assert.equal(w.calls.filter((c) => c[0] === 'done').length, 0, 'Later marks nothing');
+    G.afterRender(STATUS_CTX(w.view));
+    assert.equal(byTest(main, 'jit-bar').length, 0, 'not again today');
+    G._reset();
+    done.add(jit.id);
+    G.afterRender(STATUS_CTX(w.view));
+    assert.equal(byTest(main, 'jit-bar').length, 0, 'not after it is done');
+  } finally { cleanup(); }
+});
+
+test("guidance: dot('status') only while unseen", () => {
+  let unseen = true;
+  const w = world({ hash: '#/status', engine: { newDots: () => (unseen ? new Set(['status']) : new Set()), tutorialDone: () => true } });
+  try {
+    const d = G.dot('status', { view: w.view });
+    assert.ok(d, 'a dot while unseen');
+    assert.equal(d.getAttribute('data-test'), 'new-dot');
+    assert.equal(d.getAttribute('data-feature'), 'status');
+    assert.equal(d.textContent, 'New');
+    G.afterRender(STATUS_CTX(w.view));
+    G.afterRender(STATUS_CTX(w.view));
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'reveal'), [['reveal', 'status', { seen: true }]], 'the first visit marks it seen, once');
+    unseen = false; // the Engine drops it from newDots once the seen mark is logged
+    assert.equal(G.dot('status', { view: w.view }), null, 'no dot once seen');
+  } finally { cleanup(); }
+});
+
+test('guidance: a tour step with a missing target still ends', async () => {
+  const real = globalThis.Content;
+  const tour0 = C.tutorials.find((t) => t.id === 'tour');
+  const has = tour0.steps.some((s) => s && s.target === 'status-open');
+  // until content V-42 adds the status-open step, a copy of Content carries one (the real Content is never changed)
+  const probe = { target: 'status-open', text: 'Probe step for the status chip.' };
+  const tour = has ? tour0 : Object.assign({}, tour0, { steps: tour0.steps.slice(0, 1).concat([probe], tour0.steps.slice(1)) });
+  if (!has) globalThis.Content = Object.assign({}, real, { tutorials: real.tutorials.map((t) => (t.id === 'tour' ? tour : t)) });
+  const w = world({ hash: '#/today' });
+  try {
+    for (const s of tour.steps) if (s.target !== 'status-open') target(w.doc, s.target);
+    const layer = w.doc.getElementById('coach');
+    const p = G.coach('tour');
+    let centred = 0;
+    for (let i = 0; i < tour.steps.length; i++) {
+      const pop = byClass(layer, 'coach-pop')[0];
+      assert.ok(pop, 'the coach is open at step ' + (i + 1));
+      const missing = tour.steps[i].target === 'status-open';
+      assert.equal(pop.className.includes('coach-center'), missing, 'step ' + (i + 1) + (missing ? ' is a centred card' : ' is spotlit'));
+      if (missing) { centred += 1; assert.ok(byClass(layer, 'coach-ring')[0].hasAttribute('hidden'), 'no spotlight on nothing'); }
+      byClass(layer, 'coach-next')[0].click();
+    }
+    assert.equal(centred, 1, 'the status-open step was shown');
+    assert.equal(await p, 'done', 'the tour ends done');
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'done'), [['done', 'tour', undefined]]);
+    // skipped at the missing step ends too
+    const idx = tour.steps.findIndex((s) => s.target === 'status-open');
+    const p2 = G.coach('tour', { replay: true });
+    for (let i = 0; i < idx; i++) byClass(layer, 'coach-next')[0].click();
+    assert.ok(byClass(layer, 'coach-pop')[0].className.includes('coach-center'));
+    byClass(layer, 'coach-skip')[0].click();
+    assert.equal(await p2, 'skipped', 'the tour ends skipped');
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'done')[1], ['done', 'tour', { skipped: true }]);
+  } finally { cleanup(); globalThis.Content = real; }
+});
+
+/* ── V-44: unlocks and rewards (R-O-6; R-H-44: the rewards are module-revealed features opened early) ────────── */
+
+const PROTECTED = ['sos', 'urgent', 'help', 'lessons', 'learn', 'settings', 'export', 'data', 'backup'];
+const isProt = (id) => PROTECTED.includes(id) || (C.reveal.always || []).includes(id)
+  || ['sos', 'settings', 'learn'].includes(((C.features || {})[id] || {}).tab);
+// features a module reveals later (not on from day one, never protected), each with a screen to open
+const lateFeatures = () => Object.keys(C.features).filter((id) => !isProt(id) && G.routeOfFeature(id));
+function uiStub(w) {
+  const sheets = [];
+  globalThis.UI = {
+    sheet(title, body, opts) { const s = { title, body, opts, closed: null, close(why) { if (!this.closed) this.closed = why || 'closed'; } }; sheets.push(s); return s; },
+    go(r) { w.calls.push(['go', r]); },
+  };
+  return sheets;
+}
+const shownNow = (node) => (node ? byTest(node, 'show-now').map((b) => b.getAttribute('data-feature')) : []);
+const paras = (node) => node.all((n) => n.tagName === 'p').map((p) => p.textContent);
+
+test('unlock: revealedSet is a superset of revealed', () => {
+  const [a, b] = lateFeatures();
+  assert.ok(a && b, 'two features a module reveals');
+  const always = C.reveal.always || [];
+  // the Engine's unlocked set leaves out a revealed feature on purpose: the guidance gates still keep it open
+  const w = world({ engine: { revealed: () => new Set(always.concat([a])), unlocked: () => new Set(always.concat([b])) } });
+  try {
+    const shown = shownNow(G.moreTools({ view: w.view }));
+    assert.ok(!shown.includes(a), 'a revealed feature stays open');
+    assert.ok(!shown.includes(b), 'an unlocked feature is open');
+    for (const id of always) assert.ok(!shown.includes(id), 'always open: ' + id);
+    assert.ok(shown.length > 0, 'the rest stay listed');
+    // ctx.features (UI.ctx, from V-46 Engine.unlocked) is taken as it is
+    const viaCtx = shownNow(G.moreTools({ view: w.view, features: new Set(always.concat([a, b])) }));
+    assert.ok(!viaCtx.includes(a) && !viaCtx.includes(b));
+  } finally { cleanup(); }
+});
+
+test('unlock: no Engine.unlocked falls back to revealed', () => {
+  const [a, b] = lateFeatures();
+  const always = C.reveal.always || [];
+  for (const unlocked of [undefined, () => { throw new Error('x'); }, () => ['not', 'a', 'set']]) {
+    const w = world({ engine: { revealed: () => new Set(always.concat([a])), unlocked } });
+    try {
+      const shown = shownNow(G.moreTools({ view: w.view }));
+      assert.ok(!shown.includes(a), 'revealed is open');
+      assert.ok(shown.includes(b), 'not revealed stays listed');
+    } finally { cleanup(); }
+  }
+});
+
+test('unlock: a protected feature never gets a reward sheet', () => {
+  const w = world({ hash: '#/today' });
+  const sheets = uiStub(w);
+  try {
+    const ids = PROTECTED.concat(C.reveal.always || [], Object.keys(C.features).filter(isProt), ['no-such-feature', '', 42]);
+    for (const id of ids) assert.equal(G.rewardSheet(id, { view: w.view }), null, 'no sheet: ' + id);
+    assert.equal(sheets.length, 0, 'nothing shown');
+    // the Engine's own rule is honoured too
+    const [a] = lateFeatures();
+    globalThis.Engine.isProtectedFeature = (id) => id === a;
+    assert.equal(G.rewardSheet(a, { view: w.view }), null);
+    assert.equal(sheets.length, 0);
+    // and no quest-line step rewards a protected feature (by rule, whatever the content holds)
+    for (const s of Array.isArray(C.questLine) ? C.questLine : []) assert.ok(!isProt(s.reward), 'a protected reward: ' + s.reward);
+  } finally { cleanup(); delete globalThis.UI; }
+});
+
+test('unlock: no reward sheet on an SOS route or with the coach open', async () => {
+  const [a] = lateFeatures();
+  for (const hash of ['#/sos', '#/sos/urge', '#/lock', '#/onboarding']) {
+    const w = world({ hash });
+    const sheets = uiStub(w);
+    try {
+      assert.equal(G.rewardSheet(a, { view: w.view }), null, 'none on ' + hash);
+      assert.equal(sheets.length, 0);
+    } finally { cleanup(); delete globalThis.UI; }
+  }
+  const w = world({ hash: '#/today' });
+  const sheets = uiStub(w);
+  try {
+    assert.equal(G.rewardSheet(a, { view: w.view, route: { path: '/sos', query: {} } }), null, 'none for an SOS route in ctx');
+    globalThis.Store.status = () => ({ locked: true });
+    assert.equal(G.rewardSheet(a, { view: w.view }), null, 'none while locked');
+    globalThis.Store.status = () => ({ locked: false });
+    const p = G.coach('tour');
+    assert.ok(G.isOpen(), 'the coach is open');
+    assert.equal(G.rewardSheet(a, { view: w.view }), null, 'none with the coach open');
+    assert.equal(sheets.length, 0);
+    byClass(w.doc.getElementById('coach'), 'coach-skip')[0].click();
+    await p;
+    assert.ok(G.rewardSheet(a, { view: w.view }), 'a refused sheet used up nothing: it shows once the coach is closed');
+    assert.equal(sheets.length, 1);
+  } finally { cleanup(); delete globalThis.UI; }
+});
+
+test('unlock: the sheet shows the opened line, Open it navigates, Later dismisses', () => {
+  const real = globalThis.Content;
+  const [a, b] = lateFeatures();
+  // a copy of Content with one step for a (the real Content is never changed); b has no step: its gist is the line
+  globalThis.Content = Object.assign({}, real, { questLine: [{ id: 'ql-probe', title: 'Probe', line: 'Probe.', reward: a, opened: 'Probe opened line <b>.' }] });
+  const w = world({ hash: '#/today' });
+  const sheets = uiStub(w);
+  try {
+    const body = G.rewardSheet(a, { view: w.view });
+    assert.ok(body, 'a sheet');
+    assert.equal(body.getAttribute('data-test'), 'reward-sheet');
+    assert.equal(sheets.length, 1);
+    assert.equal(sheets[0].title, 'You unlocked ' + (real.features[a].name || a));
+    assert.ok(paras(body).includes('Probe opened line <b>.'), 'the opened line, as text');
+    const open = byTest(body, 'reward-open');
+    assert.equal(open.length, 1, 'one Open it');
+    assert.equal(open[0].textContent, 'Open it');
+    open[0].click();
+    assert.equal(sheets[0].closed, 'open', 'one tap closes the sheet');
+    assert.deepEqual(w.calls.filter((c) => c[0] === 'go'), [['go', G.routeOfFeature(a)]], 'and opens the feature');
+    assert.ok(G.routeOfFeature(a).startsWith('#/') && !G.routeOfFeature(a).startsWith('#/sos'));
+    const body2 = G.rewardSheet(b, { view: w.view });
+    assert.ok(paras(body2).includes(real.features[b].gist), 'no step: the gist');
+    const later = byTest(body2, 'reward-later');
+    assert.equal(later.length, 1);
+    assert.equal(later[0].textContent, 'Later');
+    later[0].click();
+    assert.equal(sheets[1].closed, 'dismissed', 'Later dismisses');
+    assert.equal(w.calls.filter((c) => c[0] === 'go').length, 1, 'Later goes nowhere');
+    assert.equal(w.calls.filter((c) => c[0] === 'done' || c[0] === 'reveal' || c[0] === 'event').length, 0, 'the sheet writes nothing');
+  } finally { cleanup(); delete globalThis.UI; globalThis.Content = real; }
+});
+
+test('unlock: jitFor offers an early-opened feature only when unlocked', () => {
+  const real = globalThis.Content;
+  const [a] = lateFeatures();
+  const route = G.routeOfFeature(a);
+  const probe = { id: 'probe-early', name: 'Probe', kind: 'jit', feature: a, steps: [{ target: 'probe-target', text: 'Probe step.' }] };
+  globalThis.Content = Object.assign({}, real, { tutorials: real.tutorials.concat([probe]) });
+  const always = real.reveal.always || [];
+  const path = G.pathOf(route);
+  const ctx = (view) => ({ route: { path, parts: path.split('/').filter(Boolean), query: {} }, view, profile: {}, now: new Date('2026-11-08T10:00:00+05:30') });
+  try {
+    assert.equal(G.featureOfRoute(route), a);
+    let w = world({ hash: route, engine: { revealed: () => new Set(always) } });
+    G.afterRender(ctx(w.view));
+    assert.equal(byTest(w.doc.getElementById('main'), 'jit-bar').length, 0, 'not while it is locked');
+    cleanup();
+    w = world({ hash: route, engine: { revealed: () => new Set(always), unlocked: () => new Set(always.concat([a])) } });
+    G.afterRender(ctx(w.view));
+    const bars = byTest(w.doc.getElementById('main'), 'jit-bar');
+    assert.equal(bars.length, 1, 'offered once the quest-line opened it');
+    const t = globalThis.Content.tutorials.find((x) => x.id === bars[0].getAttribute('data-tutorial'));
+    assert.ok(t && t.kind === 'jit' && t.feature === a);
+  } finally { cleanup(); globalThis.Content = real; }
+});
+
+test('unlock: the reward sheet shows once per feature', () => {
+  const [a, b] = lateFeatures();
+  const w = world({ hash: '#/today' });
+  const sheets = uiStub(w);
+  try {
+    assert.ok(G.rewardSheet(a, { view: w.view }));
+    assert.equal(G.rewardSheet(a, { view: w.view }), null, 'not twice in a session');
+    assert.equal(sheets.length, 1);
+    assert.ok(G.rewardSheet(b, { view: w.view }), 'another feature shows');
+    assert.equal(sheets.length, 2);
+  } finally { cleanup(); delete globalThis.UI; }
+});

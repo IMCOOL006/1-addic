@@ -49,6 +49,7 @@ const GuidanceUI = (function () {
     showNow: 'Show now',
     shown: (n) => `${n} is open now.`,
     newDot: 'New',
+    unlocked: (n) => `You unlocked ${n}`, openIt: 'Open it',
   };
 
   /* ── Routes ─────────────────────────────────────────────────────────────────────────────── */
@@ -133,10 +134,15 @@ const GuidanceUI = (function () {
     const row = listOf(view, 'tutorials').find((r) => r && r.id === id);
     return !!(row && row.completedAt && (allowSkipped || row.skipped !== true));
   }
+  /* The features open now: ctx.features (UI.ctx, Engine.unlocked from V-46); else Engine.unlocked joined with
+     Engine.revealed (a quest-line step opens a feature early, V-44); else Engine.revealed; else reveal.always. Always
+     a superset of what the modules revealed: nothing re-locks. */
   function revealedSet(view, ctx) {
     if (ctx && ctx.features instanceof Set) return ctx.features;
     const E = ns('Engine');
     const s = E && typeof E.revealed === 'function' ? safe(() => E.revealed(view), null) : null;
+    const u = E && typeof E.unlocked === 'function' ? safe(() => E.unlocked(view), null) : null;
+    if (u instanceof Set) { const out = new Set(u); if (s instanceof Set) for (const f of s) out.add(f); return out; }
     return s instanceof Set ? s : new Set(arr((content().reveal || {}).always));
   }
   const hasEvent = (view, type) => listOf(view, 'events').some((e) => e && e.type === type);
@@ -565,9 +571,57 @@ const GuidanceUI = (function () {
     return el('span', { class: 'dot gt-dot', 'data-test': 'new-dot', 'data-feature': featureId, text: TEXT.newDot });
   }
 
+  /* ── Unlocks: the reward sheet after a quest-line claim (V-44, R-O-6) ───────────────────── */
+
+  /* SOS, help, lessons, Settings, export and the person's data are never gated, so never a reward (the Engine's rule,
+     engine.js isProtectedFeature, kept here too for when the Engine lacks it). */
+  const PROTECTED_IDS = new Set(['sos', 'urgent', 'help', 'lessons', 'learn', 'settings', 'export', 'data', 'backup']);
+  const PROTECTED_TABS = new Set(['sos', 'settings', 'learn']);
+  function isProtected(id) {
+    const C = content();
+    const f = C.features && own(C.features, id) ? C.features[id] : null;
+    if (PROTECTED_IDS.has(id) || arr((C.reveal || {}).always).includes(id) || (f && PROTECTED_TABS.has(f.tab))) return true;
+    const E = ns('Engine');
+    return !!(E && typeof E.isProtectedFeature === 'function' && safe(() => E.isProtectedFeature(id), false) === true);
+  }
+  /* The quest-line step's opened line for a reward, else the feature's gist, else ''. */
+  function openedLine(id) {
+    const C = content();
+    const step = arr(C.questLine).find((x) => x && x.reward === id && str(x.opened));
+    return step ? step.opened : str(((C.features || {})[id] || {}).gist);
+  }
+  /* rewardSheet(featureId, ctx) -> the sheet's body node | null. "You unlocked <name>", the opened line, "Open it"
+     (one tap to the feature) and "Later" (Escape and the backdrop too). Nothing for a protected or unknown feature,
+     on an SOS or quiet route, while locked, while the coach is open, or a second time in a session: the unlock then
+     simply shows on Today. No animation of its own (the sheet has none; reduced motion stays still); the sheet
+     carries its own SOS link (UI.sheet) and returns focus on close. Text as text. */
+  function rewardSheet(featureId, ctx) {
+    const U = ns('UI');
+    if (!hasDOM() || !U || typeof U.sheet !== 'function' || typeof featureId !== 'string' || !featureId) return null;
+    const C = content();
+    const feat = C.features && own(C.features, featureId) ? C.features[featureId] : null;
+    if (!feat || isProtected(featureId) || memo.rewarded.has(featureId)) return null;
+    const c = ctx || {};
+    if (isQuietPath(pathOf(curHash())) || (c.route && isQuietPath(pathOf(c.route)))) return null;
+    if (locked() || isOpen()) return null;
+    memo.rewarded.add(featureId);
+    const name = str(feat.name) || featureId;
+    const line = openedLine(featureId);
+    const r = routeOfFeature(featureId);
+    let sh = null;
+    const open = r && !isQuietPath(pathOf(r)) ? el('button', { type: 'button', class: 'btn primary', 'data-test': 'reward-open', text: TEXT.openIt,
+      'aria-label': TEXT.openIt + ': ' + name, onClick: () => { if (sh) sh.close('open'); goTo(r); } }) : null;
+    const later = el('button', { type: 'button', class: 'btn ghost', 'data-test': 'reward-later', text: TEXT.later,
+      onClick: () => { if (sh) sh.close('dismissed'); } });
+    const body = el('div', { class: 'stack gt-reward', 'data-test': 'reward-sheet', 'data-feature': featureId },
+      line ? el('p', { text: line }) : null, el('div', { class: 'row' }, open, later));
+    sh = safe(() => U.sheet(TEXT.unlocked(name), body), null);
+    return sh ? body : null;
+  }
+
   /* ── After each render: the tour, JIT, seen marks, ?tour= and ?tutorial= ────────────────── */
 
-  const memo = { tourChecked: false, asked: {}, seen: new Set(), query: '' };
+  const memo = { tourChecked: false, asked: {}, seen: new Set(), query: '', rewarded: new Set() };
   let bar = null;
   const dayOf = (d) => { const x = d instanceof Date ? d : new Date(); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); };
   function clearBar() { detach(bar); bar = null; }
@@ -652,10 +706,10 @@ const GuidanceUI = (function () {
   if (U0 && typeof U0 === 'object' && !own(U0, 'tour')) safe(() => { U0.tour = { start: (id) => { coach(id || 'tour', { replay: true }); }, replay: () => { replayTour(); } }; }, null);
 
   return {
-    coach, replayTour, isOpen, maybeTour, featureOfRoute, training, tipCard, explorerRing, moreTools, dot,
+    coach, replayTour, isOpen, maybeTour, featureOfRoute, training, tipCard, explorerRing, moreTools, dot, rewardSheet,
     // pure parts, for the Node tests and for consumers that only need the numbers
     shouldTour, jitFor, lockedFeatures, routeOfFeature, pathOf, afterRender, checkExplorer, TRAINING,
-    _reset() { memo.tourChecked = false; memo.asked = {}; memo.seen = new Set(); memo.query = ''; explorerHidden = false; explorerLogged = false; if (active) close('aborted'); clearBar(); },
+    _reset() { memo.tourChecked = false; memo.asked = {}; memo.seen = new Set(); memo.query = ''; memo.rewarded = new Set(); explorerHidden = false; explorerLogged = false; if (active) close('aborted'); clearBar(); },
   };
 })();
 
