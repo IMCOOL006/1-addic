@@ -130,6 +130,7 @@ const Content = {
     { id: 'strategist', name: 'Strategist', gist: 'You outsmart the addicted brain with plans and trials.', when: 'm6' },
     { id: 'navigator', name: 'Mindful Navigator', gist: 'You can stay present through a wave.', when: 'm7' },
     { id: 'builder', name: 'Builder', gist: 'You are building a life with joy and steadier moods.', when: 'm9' },
+    // M10's milestone is this base rank id 'guide' (keep the id); the 'graduate' badge below is another thing: My Recovery Plan built.
     { id: 'guide', name: 'Guide', gist: 'You have a plan you trust and you know how to use it.', when: 'm10' },
   ],
 

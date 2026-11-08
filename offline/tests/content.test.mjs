@@ -378,6 +378,7 @@ test('content: sample passes backup validation', () => {
 test('content: all rows sample:true', () => {
   const st = C.sample.generate(NOW).stores;
   assert.ok(sampleRows(st).every((r) => r.sample === true), 'every row and event is marked');
+  for (const [name, rows] of Object.entries(st)) assert.ok(rows.every((r) => r && r.sample === true), `${name}: every row generate() returns carries sample: true (the meta row is Actions.loadSample's), so erasing the sample leaves nothing`);
   for (const [name, rows] of Object.entries(st)) if (name !== 'profile') assert.ok(rows.every((r) => /^smp-/.test(r.id)), `${name}: ids smp-`);
   assert.equal(st.profile[0].name, 'Sample');
   assert.ok(st.contacts.every((c) => !/\d/.test(c.phone || '') && /sample/i.test(c.name)), 'invented contacts, no numbers');
@@ -425,8 +426,10 @@ test('content: the sample loads through Actions.loadSample, shows as sample and 
       if (s === 'meta') continue;
       assert.ok(rows.every((r) => r.sample === true), `${s}: every loaded row is sample`);
     }
-    // Erase the sample: drop every sample row and the meta row; nothing of it is left.
-    for (const s of Object.keys(data)) data[s] = data[s].filter((r) => r.sample !== true && !(s === 'meta' && r.key === 'sample'));
+    // V-23 (C3): erase the sample through Actions.eraseSample; every row it wrote and the meta row go, nothing is left.
+    const erased = await A.eraseSample();
+    assert.equal(erased.erased, out.count, 'eraseSample takes every row loadSample put');
+    assert.equal(draft.get('meta', 'sample'), null, 'the meta sample row is gone');
     assert.equal(Object.values(data).flat().length, 0, 'nothing left after erasing the sample');
   } finally {
     globalThis.Store = before;
