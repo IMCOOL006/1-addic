@@ -309,18 +309,23 @@
 - Checked: 3aefecb is an ancestor of build/offline-v1 (5ee84d5).
 - Prepared: args/gen_t2.py (python gen_t2.py <lane> <BASE> "<now>" [<merged-at>]) writes args/v3_<lane>_t2.json for content V-23 (slot 4), workbook-settings V-24 + V-22b (slot asked, R-S-29; set 'slot' when granted), game-tutorials V-21 (slot 8). The drafts on disk carry base 3235375c: regenerate with the post-tag BASE.
 
+## 2026-11-08 12:04 IST · offline-v3.0 tagged (60dffe33); QUIET over; three lanes fast-forwarded; tier 2 args at base 60dffe33
+
+- 11:43 QUIET GREEN on 5ee84d5a, every gate by name. 11:53 tests-docs FIX-COUNTS merged. 11:57 HUB 12: the tag offline-v3.0 is at 60dffe33, pushed; QUIET is over.
+- 11:50 CORE 15 agreed the alternation (CORE first). CORE's queue: core V-16 + V-17a + V-26a, then tests-docs V-22a/V-26b/V-27/V-29, the core review, actions-sos V-25 + V-18, learn V-20, actions-sos V-17b + C2.
+- 12:00: content, workbook-settings and game-tutorials were fast-forwarded (--ff-only) to 60dffe33; all clean. args/v3_<lane>_t2.json were regenerated with base 60dffe33; workbook-settings is batches [[V-24],[V-22b]].
+- Rows: 11:47 5.4, 11:58 4.3 GB.
+
 ## Resume here
 
-- Chat c26b6cc6 (SCREENS 11:07), live, WAITING. NO SCREENS run is live.
-- Every SCREENS tier 1 V3 unit is merged (game-tutorials 3aefecb at 34f70172, 11:34). FREEZE and the QUIET window (about 11:33-12:10): nothing heavy until the HUB says it is over.
-- NEXT:
-  - (1) A red by name from the quiet gates in a SCREENS file: fix it on its lane's branch within the hour (the HUB sends the name and the log); two rounds at most.
-  - (2) After the tag offline-v3.0 (about 12:45-13:00), on a 7.0 GB row, one start per row: content V-23 (slot 4), then workbook-settings V-24 + V-22b (slot asked in R-S-29), then game-tutorials V-21 (slot 8).
-  - Each run: git -C <wt>/<lane> merge --ff-only <BASE> (the branch and the worktree; never cut_lane.py over an existing worktree; not a fast-forward: ask the HUB); python tracks/SCREENS/args/gen_t2.py <lane> <BASE> "<date>" [<merged-at>]; set "slot" for workbook-settings when granted; then Workflow({scriptPath: '.../tracks/HUB/workflows/lane.js', args: <the json>}). On return: verify tip, trailers, territory, gate logs, restore offline/1-addic.html, LANE: <lane> READY <tip>.
-- Facts (kept from 6508c21d):
-  - setlane.py takes "<now>" then "PREFIX=full line" pairs, plus --section (no '-' placeholder). Run it from a Python file in the job tmp folder. rr.py takes <section-file> <resume-file>.
-  - hub_commit.py runs from the repo root with repo-relative paths. The HUB pushes.
-  - Memory: the rows are the table at the end of coordination/lane-widening.md; by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory. One new start per row at or above 7.0 GB; paused work resumes at 4.0; under 4.0 the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
-  - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
-  - A merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test <files>.
-  - ListAgents: HUB 'HUB hh:mm' (HUB 12 is 'HUB 09:02'), CORE 'CORE hh:mm'; 'HUB 08 Nov hh:mm' belongs to another project.
+- Chat c26b6cc6 (SCREENS 11:07), live, WAITING for its 7.0 GB row. NO SCREENS run is live.
+- The tag offline-v3.0 is at 60dffe33 (11:57). Tier 2 goes toward offline-v3.1. The HUB merges each READY as it lands.
+- The start rule: one start per 7.0 GB row (the table at the end of coordination/lane-widening.md) across both tracks, alternating. CORE takes the first qualifying row after the tag, SCREENS the next, and so on. A track with nothing ready sends a line and the other takes the row.
+- SCREENS' order:
+  - (1) content V-23 (slot 4): Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js', args: <tracks/SCREENS/args/v3_content_t2.json>});
+  - (2) workbook-settings V-24 then V-22b (slot 6), args/v3_workbook-settings_t2.json;
+  - (3) game-tutorials V-21 (slot 8), args/v3_game-tutorials_t2.json.
+  - All three worktrees are at 60dffe33, clean. If the trunk moves before a launch, no new fast-forward is needed: the merge base stays 60dffe33. Restamp 'now' with python gen_t2.py <lane> 60dffe33 "<date>" [34f70172 for game-tutorials].
+- On return: verify the tip, both trailers, territory (python tools/check_territory.py <lane>), the gate logs by name; restore offline/1-addic.html; LANE: <lane> READY <tip> (merge base 60dffe33); the report is at tracks/SCREENS/lane-reports/<lane>.md (lane.js writes over it).
+- Under 4.0 GB, the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
+- Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; ListAgents: HUB 12 is 'HUB 09:02', CORE 15 is 'CORE 11:10'; 'HUB 08 Nov hh:mm' names belong to another project.

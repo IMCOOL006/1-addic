@@ -16,7 +16,9 @@
   ],
   "batches": [
     [
-      "V-24",
+      "V-24"
+    ],
+    [
       "V-22b"
     ]
   ],
@@ -28,7 +30,7 @@
     "V-24": "The early-access sentence (0.2 h, V3-24): ui-settings.js:65 'Some screens are still being built' becomes what is true now (every screen is in; honest stubs show only where content is missing); one sentence, original words.",
     "V-22b": "C1b (0.3 h): workbook-settings.test.mjs:284-294 asserts the eraseSample round trip instead of skipping when absent."
   },
-  "laneNote": "V3 V-24 + V-22b (tier 2, one batch, one builder; PLAN-V3.md section 2; SCREENS 11:07, 2026-11-08 11:40 IST). The v1 units U-19, U-20a, U-20b, U-21 and FIX-SAMPLE are done and merged (42d2467d); C1 was closed on e8da3fbd (R-S-18). The worktree C:/Users/ruchi/1-addic-wt/workbook-settings was fast-forwarded with merge --ff-only (no merge commit) to BASE 3235375c, the trunk after the offline-v3.0 FREEZE: base and diffFrom are 3235375c. Tier 2: this unit goes toward the next tag, not offline-v3.0. Under 4.0 GB free memory (PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory) before a heavy gate: commit what is clean and return the note (the chat pauses the newest run). Test names are failure identities: add new names, never rename or delete one. Restore offline/1-addic.html (git checkout -- offline/1-addic.html) after any build so the tree ends clean. One commit per unit, the unit id in the message, both trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7). No V3 brief or contract exists for this lane: this note and the unit notes are the spec; the v1 brief tracks/SCREENS/briefs/workbook-settings.md gives the lane's files and rules. V-24: offline/src/ui-settings.js:65, TEXT.early ('This is an early-access version. Some screens are still being built and say so. Your notes stay on this device while it grows.') becomes words that are true now: every screen is in; where content is still coming, the screen says so plainly (O7, honest stubs); the notes stay on this device. One or two short sentences, original words, grade 6-8, no promise of outcomes, no version number. Grep every test and helper (offline/tests/, including browser.test.mjs, helpers/, screens.mjs) and offline/docs for the old words: change only the lane's own test; a test or doc in another lane's file that reads the old words goes in for_the_chat (its owner fixes it by outbox), never edited here. V-22b (C1b): offline/tests/workbook-settings.test.mjs:278-294, the sample card test: Content.sample.generate and Actions.eraseSample are both in the trunk now, so assert that both exist (assert.ok with a message naming each) and run the load / own log / erase round trip without the if; keep the test's name. Files: ui-settings.js, workbook-settings.test.mjs (own). Gates: build, test, validate, guards through gates.py; add browser --grep Settings only if a browser flow reads the changed words.",
+  "laneNote": "V3 V-24 + V-22b (tier 2, two one-unit batches, a fresh builder each, V-24 first; PLAN-V3.md section 2; SCREENS 11:07, 2026-11-08 12:01 IST). The v1 units U-19, U-20a, U-20b, U-21 and FIX-SAMPLE are done and merged (42d2467d); C1 was closed on e8da3fbd (R-S-18). The worktree C:/Users/ruchi/1-addic-wt/workbook-settings was fast-forwarded with merge --ff-only (no merge commit) to BASE 60dffe33, the commit of the tag offline-v3.0 (pushed 11:57 IST): base and diffFrom are 60dffe33. Tier 2: this goes toward offline-v3.1; the HUB merges it as it lands. Under 4.0 GB free memory (PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory) before a heavy gate: commit what is clean and return the note (the chat pauses the newest run). Test names are failure identities: add new names, never rename or delete one. Restore offline/1-addic.html (git checkout -- offline/1-addic.html) after any build so the tree ends clean. One commit per unit, the unit id in the message, both trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7). No V3 brief or contract exists for this lane: this note and the unit notes are the spec; the v1 brief tracks/SCREENS/briefs/workbook-settings.md gives the lane's files and rules. V-24: offline/src/ui-settings.js:65, TEXT.early ('This is an early-access version. Some screens are still being built and say so. Your notes stay on this device while it grows.') becomes words that are true now: every screen is in; where content is still coming, the screen says so plainly (O7, honest stubs); the notes stay on this device. One or two short sentences, original words, grade 6-8, no promise of outcomes, no version number. Grep every test and helper (offline/tests/, including browser.test.mjs, helpers/, screens.mjs) and offline/docs for the old words: change only the lane's own test; a test or doc in another lane's file that reads the old words goes in for_the_chat (its owner fixes it by outbox), never edited here. V-22b (C1b): offline/tests/workbook-settings.test.mjs:278-294, the sample card test: Content.sample.generate and Actions.eraseSample are both in the trunk now, so assert that both exist (assert.ok with a message naming each) and run the load / own log / erase round trip without the if; keep the test's name. Files: ui-settings.js, workbook-settings.test.mjs (own). Gates: build, test, validate, guards through gates.py; add browser --grep Settings only if a browser flow reads the changed words.",
   "done": [
     "U-19",
     "U-20a",
@@ -40,10 +42,10 @@
   "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/workbook-settings.md",
   "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/workbook-settings.md",
   "slot": 6,
-  "base": "3235375c",
-  "diffFrom": "3235375c",
+  "base": "60dffe33",
+  "diffFrom": "60dffe33",
   "session": "https://claude.ai/code/session_c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7",
-  "now": "2026-11-08 11:40 IST",
+  "now": "2026-11-08 12:01 IST",
   "sliceRun": false,
   "start": "build",
   "priorNote": ""

@@ -10,8 +10,8 @@ merged_at = sys.argv[4] if len(sys.argv) > 4 else ''
 L = json.load(open(D + 'tracks/HUB/workflows/lane_args_v3.json', encoding='utf-8'))['lanes'][lane]
 a = dict(L)
 WT = 'C:/Users/ruchi/1-addic-wt/' + lane
-COMMON = (f" The worktree {WT} was fast-forwarded with merge --ff-only (no merge commit) to BASE {base}, the trunk after the"
-          " offline-v3.0 FREEZE: base and diffFrom are " + base + ". Tier 2: this unit goes toward the next tag, not offline-v3.0."
+COMMON = (f" The worktree {WT} was fast-forwarded with merge --ff-only (no merge commit) to BASE {base}, the commit of the tag"
+          " offline-v3.0 (pushed 11:57 IST): base and diffFrom are " + base + ". Tier 2: this goes toward offline-v3.1; the HUB merges it as it lands."
           " Under 4.0 GB free memory (PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory) before a heavy gate:"
           " commit what is clean and return the note (the chat pauses the newest run). Test names are failure identities: add new"
           " names, never rename or delete one. Restore offline/1-addic.html (git checkout -- offline/1-addic.html) after any build"
@@ -37,9 +37,9 @@ if lane == 'content':
         " (the 'graduate' badge at :149 is a different thing, My Recovery Plan built); no id change. Files: content-sample.js,"
         " content.test.mjs, content-core.js (own). Gates: build, test, validate, guards through gates.py; no browser (no DOM change).")
 elif lane == 'workbook-settings':
-    a.update(done=['U-19', 'U-20a', 'U-20b', 'U-21', 'FIX-SAMPLE', 'C1'],
+    a.update(units=['V-24', 'V-22b'], batches=[['V-24'], ['V-22b']], done=['U-19', 'U-20a', 'U-20b', 'U-21', 'FIX-SAMPLE', 'C1'],
              brief=D + 'tracks/SCREENS/briefs/workbook-settings.md', contract=D + 'tracks/SCREENS/briefs/workbook-settings.md', slot=6)
-    a['laneNote'] = ("V3 V-24 + V-22b (tier 2, one batch, one builder; PLAN-V3.md section 2; SCREENS 11:07, " + now + ")."
+    a['laneNote'] = ("V3 V-24 + V-22b (tier 2, two one-unit batches, a fresh builder each, V-24 first; PLAN-V3.md section 2; SCREENS 11:07, " + now + ")."
         " The v1 units U-19, U-20a, U-20b, U-21 and FIX-SAMPLE are done and merged (42d2467d); C1 was closed on e8da3fbd (R-S-18)." + COMMON +
         " No V3 brief or contract exists for this lane: this note and the unit notes are the spec; the v1 brief"
         " tracks/SCREENS/briefs/workbook-settings.md gives the lane's files and rules. V-24: offline/src/ui-settings.js:65, TEXT.early"

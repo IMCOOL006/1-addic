@@ -1,12 +1,24 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-08 11:36 IST: SCREENS 11:07 (c26b6cc6). Every SCREENS tier 1 V3 unit is merged (game-tutorials 3aefecb at 34f70172, HUB 12 11:34). FREEZE; the QUIET window runs the full gates on the trunk (about 11:33-12:10): nothing heavy on SCREENS until the HUB says it is over (no tier 2 start, no scout, no browser run). After the tag offline-v3.0 (about 12:45-13:00): tier 2 on 7.0 GB rows, one start per row: content V-23, workbook-settings V-24 + V-22b, game-tutorials V-21; args prepared (args/gen_t2.py)
-LANE: content MERGED eb38166   # V-42 + C1 merged 899f77e4 (09:52, HUB 12; trunk ab784c9a; every gate green by name on the merged tree, the three tour-target names green). Next: V-23 (tier 2) when no tier 1 lane waits; V-10b after the owner's I6
+STATE: WAITING   # 2026-11-08 12:04 IST: SCREENS 11:07 (c26b6cc6). The tag offline-v3.0 is at 60dffe33 (HUB 12, 11:57) and QUIET is over. Tier 2 runs one start per 7.0 GB row across both tracks, alternating: CORE takes the first qualifying row, SCREENS the next. content, workbook-settings and game-tutorials are fast-forwarded to 60dffe33 and clean; the args are written with base 60dffe33. The 11:58 row was 4.3 GB: no start. First: content V-23
+LANE: content MERGED eb38166   # fast-forwarded to the tag 60dffe33 (12:00, clean). Next: V-23 (tier 2, slot 4) on SCREENS' first 7.0 GB row; args/v3_content_t2.json. V-10b waits for the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings MERGED 0e76065   # v1 complete (FIX-SAMPLE 42d2467d; C1 CLOSED e8da3fbd, R-S-18). V3 tier 2 V-24 + V-22b on slot 6 (granted 11:38), after the tag, on a 7.0 GB row; args/v3_workbook-settings_t2.json (slot 6)
+LANE: workbook-settings MERGED 0e76065   # fast-forwarded to 60dffe33 (12:00, clean). Next: V-24 then V-22b (tier 2, slot 6), two one-unit batches; args/v3_workbook-settings_t2.json
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172 (HUB 12, 11:34; pushed with build/game-tutorials): build 1205260 B, test 43/43, validate, guards GREEN by name, territory 0, the full Node suite 651/651. Tier 1 complete. Next: V-21 (tier 2, slot 8) after the tag, merge base the trunk tip after a fast-forward
+LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-08 11:50 IST
+UPDATED: 2026-11-08 12:04 IST
+
+# 2026-11-08 12:04 IST · from the HUB · offline-v3.0 tagged at 60dffe33; QUIET over; tier 2 by row; three lanes fast-forwarded
+
+- HUB 12 (11:57, by message): the tag offline-v3.0 is on the trunk 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (after tests-docs FIX-COUNTS), annotated and pushed. Every build/* branch is on origin. QUIET is over.
+- The tier 2 rules:
+  - one start per row at or above 7.0 GB across both tracks, alternating with CORE (CORE takes the first qualifying row);
+  - every lane fast-forwards to 60dffe33 first, and its merge base is that tip;
+  - the newest run pauses first on any row under 4.0 GB;
+  - READY after each unit; the HUB merges each as it lands. The next edition is offline-v3.1, once tier 2 is in.
+- Done by me (12:00): `git merge --ff-only 60dffe33` in content (from eb38166), workbook-settings (from 0e76065) and game-tutorials (from 3aefecb). All three are at 60dffe3, on their own branches, clean.
+- args/gen_t2.py was re-run with base 60dffe33. workbook-settings is now two one-unit batches (V-24, then V-22b, a fresh builder each). The cited files (ui-settings.js, workbook-settings.test.mjs, content-sample.js, content-core.js, content.test.mjs) are unchanged between 3235375c and 60dffe33.
+- Rows: 11:47 5.4 GB, 11:58 4.3 GB. No start.
 
 # 2026-11-08 11:50 IST · QUIET GREEN; the tier 2 alternation agreed with CORE 15
 
