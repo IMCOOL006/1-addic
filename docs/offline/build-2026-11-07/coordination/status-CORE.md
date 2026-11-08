@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-08 11:36 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs 949f0f7 merged (trunk 5ee84d5a, HUB 12 11:33); FREEZE now; the tag's QUIET window on _int (results about 12:10): nothing heavy on CORE until the HUB says it is over. FIX-COUNTS (tests-docs, by name) prepared on the worktree, committed only on the HUB's numbers; then READY with merge base the trunk tip. Tier 2 after the tag, on 7.0 GB rows
+STATE: WAITING   # 2026-11-08 11:47 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs READY 44a07e0 (FIX-COUNTS by name, merge base 5ee84d5a) with the HUB for the tag offline-v3.0. QUIET until the tag: nothing heavy. After the tag: tier 2, one start per 7.0 GB row across both tracks, alternating with SCREENS (CORE first; SCREENS 11:07's message): core V-16 + V-17a + V-26a staged (args_v3_core_V-16.json, wf_sim OK 11529 B)
 LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 10:56 IST: V-41 + RC1-RC4, RS1 merged 3235375c (trunk 3235375c; test 191/0/0, full Node suite 640/640). Next (T2, when no tier 1 lane waits, a 7.0 GB row): V-25, V-18, V-17b + C2 after a fast-forward to the trunk; then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs MERGED 949f0f7   # 2026-11-08 11:33 IST: V-45 merged (trunk 5ee84d5a; build 1205260 B, test, validate, guards, docs GREEN by name; the three flows 3/3). FIX-COUNTS by name next, on the HUB's numbers from the quiet gates (about 12:10); then tier 2 V-22a, V-26b, V-27, V-29 after the tag
+LANE: tests-docs READY 44a07e0   # 2026-11-08 11:47 IST: FIX-COUNTS by name (the counts true on the trunk 5ee84d5a: Node 651/0/0 in 15 files, browser 28/28/0, the HUB's quiet gates); merge base 5ee84d5a; territory 0 errors; the tag offline-v3.0 on its merge. Then tier 2 V-22a, V-26b, V-27, V-29
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 11:36 IST
+UPDATED: 2026-11-08 11:47 IST
+
+# 2026-11-08 11:47 IST · tests-docs READY 44a07e0 (FIX-COUNTS); the tier 2 order after the tag
+
+- HUB 12 (11:44, by message): the quiet gates on 5ee84d5a all GREEN by name (build 1205260 B; test 651/0/0 in 15 files; validate; guards 5/5; browser 28/28/0 in one full run, _logs/gates/hub/browser-20261108-113459.log; docs). FIX-COUNTS 44a07e0 on build/tests-docs (fast-forwarded to 5ee84d5a): CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md and .docx (rebuilt by build_guide.py, 0 images missing); no test run (the HUB's gates are the proof); territory 0 errors (5 own files). R-C-74.
+- SCREENS 11:07 (c26b6cc6, by message, from HUB 12's 11:42 word): after the tag, one start per 7.0 GB row across both tracks, alternating, CORE first. SCREENS' starts: content V-23 (slot 4), workbook-settings V-24 + V-22b (slot 6), game-tutorials V-21 (slot 8). CORE's: core V-16 + V-17a + V-26a (skipReview; the whole-lane two-lens review of V-11, V-46 and this batch after it), then tests-docs V-22a, V-26b, V-27, V-29, actions-sos V-25 + V-18, learn V-20, actions-sos V-17b + C2 after core V-17a merges.
 
 # 2026-11-08 11:36 IST · from the HUB (HUB 12, 11:33, by message) · tests-docs 949f0f7 merged (trunk 5ee84d5a); FREEZE; QUIET; FIX-COUNTS
 
