@@ -1,12 +1,27 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 05:27 IST: HUB 05:24, the memory row 05:23 read 2.6 GB: V-43 and game-tutorials V-08b stay NOT launched until a row reads 4.0 GB or more, then V-43 first, then V-08b (this binds the fresh chat too). content V-10r + check wf_93856f0c-7c2 continues (older than CORE's runs). After it returns: READY-SLICE, then STATE: RESTART
-LANE: content BUILDING 5bdf5ab   # V3 V-10 5bdf5ab + V-10r (route flip to '#/status' after engine V-40c 94c51632) and the check with the browser gate: wf_93856f0c-7c2 (05:08, slot 4, args/v3_content_v10r.json); merge base 3bd5bf5d; the merged tree is the judge (HUB 04:41)
+STATE: RESTART   # 2026-11-08 05:39 IST: SCREENS 0fd59f53 hands over at ~295k context, at a clean point: NO SCREENS run is live. content READY-SLICE 4ae98eb for the HUB. The fresh chat launches, on the first memory row at or above 4.0 GB (HUB 05:24), V-43 first (args/v3_tt_v43.json), then game-tutorials V-08b (slot 8; fast-forward to BASE, write its args). RUN-RECORD.md 'Resume here'
+LANE: content READY-SLICE 4ae98eb   # V3 V-10 5bdf5ab + V-10r 4ae98eb on 3bd5bf5d (wf_93856f0c-7c2; check PASS, LOW C1 m1.unlocks [] no product effect). On the branch alone, red BY NAME FROM THE CUT (engine V-40c's '#/status' is not in it): validate 'route #/status is not in the route table' x2; tests 8 validateContent zero errors, 27 restraint rules, 32 status feature; guards status-change, status-watch. Merged-tree scratch proof 60/60 + validateContent 0 (C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__v10r_scratch.log). browser GREEN 16/0/3; territory 2 own, 0 errors; merge base 3bd5bf5d
 LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 ready to launch: build/today-track and its worktree fast-forwarded 486288f1..94c51632 (--ff-only, clean, 05:07; merge base 94c51632); args/v3_tt_v43.json filled (base, diffFrom 94c51632, slot 6); memory 7.5 GB at 05:07
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials SCOUTED bd2e085   # V3 slot 8 GRANTED 05:02 (the 8.0 GB row, R-O-7; HUB b784e4ec): fast-forward build/game-tutorials and its worktree to BASE 94c51632, then V-08b the slice (actions-sos's published useSkill shape, the real code when V-08a merges), V-28 (with routeOfFeature accepting a route without '#'), V-44 (Engine.questLine and unlocked real in the trunk; R-C-50, R-S-20, R-S-21); brief briefs/game-tutorials-v3.md; args still to write (from lane_args_v3.json lanes.game-tutorials, like v3_content_slice.json)
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 05:27 IST
+UPDATED: 2026-11-08 05:39 IST
+
+# 2026-11-08 05:39 IST · content READY-SLICE 4ae98eb (V-10 + V-10r, for the HUB); hand-over
+
+- For the HUB: merge build/content at 4ae98eb alone, merge base 3bd5bf5d. Two commits:
+  - 5bdf5ab V-10: the status feature, its JIT tutorial and its help entry.
+  - 4ae98eb V-10r: features.status.route and the help route set to '#/status'.
+  - 2 files (content-core.js, content.test.mjs), both own; territory 0 errors (run by me).
+- The judge is the merged tree (HUB 04:41). The scratch tree is git archive 94c51632 plus the two files: content and game-tutorials tests 60/60, validateContent 0 errors (C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__v10r_scratch.log). That includes 'guidance: training lists the drills, the SOS drill, the tour and every JIT'.
+- On the branch alone, these are red by name from the cut (logs C:/Users/ruchi/1-addic-wt/_logs/gates/content/*-20261108-0529*):
+  - validate: features.status.route and help[13].route, 'route #/status is not in the route table'.
+  - test: 8 'content: Engine.validateContent returns zero errors', 27 'content: practices and games keep the restraint rules', 32 'content: status feature, tutorial and help entry exist'.
+  - guards: tour-target status-change and status-watch.
+  - build GREEN; browser GREEN 16/0/3 (browser-20261108-051742.log).
+- Check wf_93856f0c-7c2: PASS. LOW C1: m1.unlocks stays [] (content-lessons-a.js:58). It has no product effect, because ui-learn.js merges reveal.m1. It is a later content batch's by name.
+- Verified by me: the two commits, both trailers on 4ae98eb, territory, the browser verdict, the scratch log's 60/60 and 0 errors, and the branch failure names. offline/1-addic.html restored; the worktree is clean. Report: tracks/SCREENS/lane-reports/content.md (12782 B).
 
 # 2026-11-08 05:05 IST · from the HUB · engine V-40c merged (trunk 94c51632): V-10r now; game-tutorials granted slot 8
 

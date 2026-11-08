@@ -223,29 +223,32 @@
 - The args: v3_content_v10r.json (units V-10, V-10r; done = v1 + V-10; diffFrom 3bd5bf5d; fill <V40C_TIP> in its laneNote and V-10r note). v3_tt_v43.json is re-based to cb356d9c (growthItems marked merged). v3_content_check.json is superseded.
 - Claude Code killed my background memory watcher (critically low memory). Not restarted.
 
+## 2026-11-08 05:39 IST · content READY-SLICE 4ae98eb; hand-over at ~295k
+
+- wf_93856f0c-7c2 built V-10r 4ae98eb, check PASS (LOW C1). The merged-tree proof is green; the branch-only reds are by name from the cut, as the HUB's 04:41 ruling allows. READY-SLICE 4ae98eb on the board.
+- Memory: the HUB's 05:23 row read 2.6 GB. V-43 and V-08b were not launched.
+
 ## Resume here
 
-- Chat 0fd59f53 (SCREENS) is live, with context over 250k and the hand-over planned.
-- Runs live: NONE. wf_02dbd88e-f4a was stopped at 04:25 for memory, and V-43 was never launched.
+- Chat 0fd59f53 (SCREENS) handed over with STATE RESTART at a clean point. NO SCREENS run is live.
 - Board:
-  - today-track BUILDING 486288f1: V-01a and V-01b MERGED; V-43 HELD for memory.
-  - content PAUSED 5bdf5ab (V-10 committed; the check and the browser gate are owed).
-  - game-tutorials SCOUTED; it waits for a 7.0 GB row after core V-11 and actions-sos V-08a.
-  - SLOTS: today-track 6, content 4.
-- NEXT, in order, at the first memory row at or above 4.0 GB (read it with powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB", or wait for the HUB's line):
-  - (1) content (R-H-43: no baseline). Wait for the HUB's word that engine V-40c is merged, with its trunk tip. Then fill <V40C_TIP> in args/v3_content_v10r.json (laneNote and unitNotes.V-10r) and set now. Launch lane.js with it: it builds V-10r on 5bdf5ab, then checks 3bd5bf5d..HEAD with the browser gate. On READY: LANE: content READY-SLICE <tip>, and tell the HUB. v3_content_check.json is superseded.
-  - (2) V-43, on the first row at or above 4.0 GB (after V-40c's start). First git -C C:/Users/ruchi/1-addic-wt/today-track merge --ff-only cb356d9c, on a clean worktree at 486288f1. Then launch lane.js with args/v3_tt_v43.json (filled: base and diffFrom cb356d9c, slot 6); set now. When it returns READY: LANE: today-track READY <tip>.
-  - (3) content V-42 after the slice merges: done [v1, V-10, V-10r], priorNote, diffFrom = the slice tip. The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), and the data-tour targets objectives-card, questline-card, run-line.
-  - (4) game-tutorials on its SLOTS line: fast-forward to BASE. Then V-08b (after actions-sos V-08a, R-C-48), then V-28 (with routeOfFeature accepting a route without '#', ui-guidance.js:108, which closes the baselined training name), then V-44 (R-C-50, R-S-20, R-S-21).
-  - (5) Watch outbox-OWNER.md for I6 (V-10b), and the HUB's answer on the baseline (04:28 ask).
+  - content READY-SLICE 4ae98eb (the HUB merges it alone; merge base 3bd5bf5d).
+  - today-track BUILDING 94c51632 (V-01a and V-01b MERGED; V-43 not launched).
+  - game-tutorials SCOUTED (slot 8 granted 05:02).
+  - workbook-settings and actions are tier 2 (later).
+- NEXT, in order:
+  - (1) Wait for a memory row at or above 4.0 GB (HUB 05:24; the HUB messages, or read powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB" once).
+  - (2) V-43 first. The worktree C:/Users/ruchi/1-addic-wt/today-track is clean at 94c51632 (fast-forwarded 05:07); if the HUB moved BASE and asks, fast-forward with --ff-only. Launch Workflow lane.js with the args of args/v3_tt_v43.json, setting now from date and session to your own link (also in its laneNote's COMMITS trailer). It holds units [V-01a, V-01b, V-43], done = v1 + V-01a + V-01b, base and diffFrom 94c51632, slot 6, the annex brief and contract, and priorNote (V-01b's note). When it returns READY: LANE: today-track READY <tip>.
+  - (3) game-tutorials V-08b, the slice. git -C C:/Users/ruchi/1-addic-wt/game-tutorials merge --ff-only <BASE> (it is at bd2e085, an ancestor). Write args/v3_gt_slice.json from lane_args_v3.json lanes.game-tutorials, shaped like args/v3_content_slice.json: sliceRun true; done = the v1 units U-27, U-26, U-28, FIX-TOUR; base and diffFrom = BASE; slot 8; brief and contract briefs/contracts game-tutorials-v3.md; a laneNote with actions-sos's published useSkill shape (R-C-48 in outbox-CORE.md; the real code once V-08a merges), data-test hooks, the gates, the memory rule and the trailers. Then V-28 (with routeOfFeature in ui-guidance.js:108 also accepting a route without '#', or confirm it is moot now that content uses '#/status'), then V-44 (Engine.questLine and Engine.unlocked are real in the trunk; R-C-50, R-S-20, R-S-21).
+  - (4) After content's slice merges: V-42 (content-quests.js) with done [v1, V-10, V-10r], diffFrom 4ae98eb, priorNote from wf_93856f0c-7c2's journal. Fast-forward first if the HUB's merge makes it possible (the trunk will contain 4ae98eb). The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), data-tour objectives-card, questline-card, run-line; and C1 (m1.unlocks gets 'status', one line in content-lessons-a.js).
+  - (5) Watch outbox-OWNER.md for I6 (V-10b).
 - Facts:
   - setlane.py takes "PREFIX=full line" pairs plus an optional --section; never pass "-". rr.py takes <section> <resume>.
   - hub_commit.py runs from the repo root with repo-relative paths.
   - claude agents needs --json.
-  - lane.js start 'check' judges doneBefore plus unitsToRun without a builder.
+  - lane.js start 'check' judges done plus the units without a builder. With sliceRun false and done covering batch 1, it builds the next batch and checks diffFrom..HEAD.
   - lane.js writes its report over lane-reports/<lane>.md.
   - HUB 10 = SendMessage to "uds:\.\pipe\LOCAL\cc-msg-61fc232d7d4c0109accb2e284a2456fd" (HUB 03:17); CORE 12 = "CORE 03:56".
   - Complex quoting in a bash heredoc broke once: write the Python to the job tmp folder and run it.
-  - Do not run a wait loop; one background until-loop for a single condition is fine.
-  - HUB 04:41: for content V-10 + V-10r, a validate finding on the branch alone that names only '#/status' is expected and does not block. Write READY-SLICE <tip> and name that finding plus the scratch-tree proof in the LANE note.
-  - HUB 05:24: V-43 and game-tutorials V-08b launch only on a memory row at or above 4.0 GB, in that order (V-43 first). content V-10r + check wf_93856f0c-7c2 (05:08) runs in 0fd59f53. today-track is at 94c51632 (V-43 args filled for it). game-tutorials slot 8 granted 05:02: fast-forward to BASE 94c51632 and write its V-08b slice args from lane_args_v3.json.
+  - Claude Code kills background memory watchers when memory is critically low: rely on the HUB's rows.
+  - Do not run a wait loop.
