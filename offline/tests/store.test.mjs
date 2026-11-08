@@ -2380,3 +2380,55 @@ describe('boot.js: a start failure shows one line and the urgent-help numbers', 
     assert.equal(main.children.length, 0);
   });
 });
+
+// V-46 (R-H-44 on R-S-21): the chrome's features come from Engine.unlocked when the engine has it, so a feature that a
+// claimed quest-line reward or a FeatureUnlocked event opened shows in the chrome. Last in the file on purpose: the
+// real engine loads every content file into the shared Content.
+describe('ui-core ctx.features reads Engine.unlocked (V-46)', () => {
+  afterEach(clearStandIns);
+  const AT = '2026-11-08T01:00:00.000Z';
+  function seeded() {
+    const Engine = require('../src/engine.js');
+    const view = Engine.makeView({
+      reveals: [{ id: 'workbook' }],
+      events: [
+        { id: 'v46-1', type: 'FeatureUnlocked', at: AT, payload: { feature: 'planner' } },
+        { id: 'v46-2', type: 'FeatureUnlocked', at: AT, payload: { feature: 'settings' } },
+      ],
+    });
+    return { Engine, view };
+  }
+  const sorted = (s) => [...s].sort();
+
+  test('V-46: UI.ctx features are Engine.unlocked(view): every revealed feature plus a FeatureUnlocked one', () => {
+    const { Engine, view } = seeded();
+    globalThis.Content = Content;
+    globalThis.Engine = Engine;
+    globalThis.Store = { view };
+    const f = UI.ctx().features;
+    assert.ok(f instanceof Set, 'still a Set');
+    const rev = Engine.revealed(view);
+    assert.ok(rev.has('workbook'), 'the seeded view reveals workbook');
+    for (const id of rev) assert.ok(f.has(id), 'revealed, so in ctx.features: ' + id);
+    assert.equal(rev.has('planner'), false, 'the seeded view does not reveal planner by module');
+    assert.ok(f.has('planner'), 'a FeatureUnlocked feature shows in the chrome');
+    assert.equal(f.has('settings'), false, 'a protected id is never added');
+    assert.deepEqual(sorted(f), sorted(Engine.unlocked(view)));
+  });
+
+  test('V-46: with Engine.unlocked absent or throwing, UI.ctx features are Engine.revealed(view); both failing, the day-one set', () => {
+    const { Engine, view } = seeded();
+    globalThis.Content = Content;
+    globalThis.Store = { view };
+    const rev = sorted(Engine.revealed(view));
+    globalThis.Engine = { revealed: Engine.revealed };
+    assert.deepEqual(sorted(UI.ctx().features), rev, 'no Engine.unlocked: the revealed path holds');
+    assert.equal(UI.ctx().features.has('planner'), false, 'and adds nothing of its own');
+    globalThis.Engine = { unlocked() { throw new Error('bad'); }, revealed: Engine.revealed };
+    assert.deepEqual(sorted(UI.ctx().features), rev, 'a throwing Engine.unlocked falls through to Engine.revealed');
+    globalThis.Engine = { unlocked: () => null, revealed: Engine.revealed };
+    assert.deepEqual(sorted(UI.ctx().features), rev, 'an empty answer falls through to Engine.revealed');
+    globalThis.Engine = { unlocked() { throw new Error('bad'); }, revealed() { throw new Error('bad'); } };
+    assert.deepEqual(sorted(UI.ctx().features), sorted(Content.reveal.always), 'both throwing: the day-one set');
+  });
+});
