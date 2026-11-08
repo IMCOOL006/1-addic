@@ -428,3 +428,6 @@
 
 
 - 2026-11-08 08:05 IST: engine READY 1d4dfd2 (V-19 + V-30, tier 2; its check had returned before the 07:47 stop word) merged: MERGED-CLEAN (engine.js, engine-roadmap.test.mjs, logic.test.mjs), guards GREEN by name (build 1184269 B, test 6 files, validate, guards), plus the full Node suite on _int at CORE's ask (R-C-66): 614/614 (_logs/gates/engine/fulltest-merged-20261108-075755.log); commit and finish 1541552b, trunk and build/engine pushed. BASE 1541552b. Memory: 07:55 8.4 GB (the pharma dip passed; no pause happened). Four merges this session so far; CORE 13 over 250k plans its hand-over; SCREENS 8 at about 270k after V-42's READY.
+
+
+- 2026-11-08 08:17 IST: core READY-SLICE fbc663d (V-46) merged: MERGED-CLEAN (ui-core.js, store.test.mjs), guards GREEN by name (build 1184473 B, test, validate, guards), commit 852d3852, finish 24baaf71 (CORE's docs commits folded), trunk and build/core pushed. BASE 24baaf71. Five merges this session. CORE 13 near 300k: hand-over written 08:10 with each live run's id, tip and relaunch args (V-01t 879248c in its check's fix round; V-41 6c77d1d in its check or review); it writes RESTART when its context ends; CORE 14 relaunches what did not return. Memory 08:06 7.7 GB.
