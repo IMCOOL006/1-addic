@@ -1,5 +1,5 @@
 TRACK: HUB
-STATE: RESTART   # 2026-11-08 12:04 IST: HUB 12 (3e9a8ea0, 'HUB 09:02') hands over at a safe point (about 236k context; the tag offline-v3.0 pushed at 11:55 on 60dffe33; nothing of the HUB's runs; no merge in flight; _int detached at the trunk tip 60dffe33; the trunk pushed). Six merges 09:52-11:54 (content eb38166, engine 97ac73a, actions-sos b735852, game-tutorials 3aefecb, tests-docs 949f0f7 and 44a07e0); QUIET 11:33-11:43 all GREEN; rulings R-H-45, R-H-46; R-S-29 granted. Both build chats WAITING for a 7.0 GB row (tier 2). HUB 13 first: read this file whole and the run record's Resume here (12:04), then merge each tier 2 READY-SLICE alone with the merge base its status line names (the trunk tip after the lane's fast-forward); the board by 14:00; the tag offline-v3.1 when tier 2 is in
+STATE: RUNNING   # 2026-11-08 12:18 IST: HUB 13 (2b59e0da, 'HUB 12:09') started by the launcher 12:10 on HUB 12's RESTART line. Read: PLAN.md, this file whole, the run record's Resume here (12:04) and the hand-off note, status-CORE.md and status-SCREENS.md, outbox-OWNER.md to R-O-9, the outbox tails (R-C-74, R-S-29, R-H-46), board-notes.md, lane-widening.md. claude agents: CORE 11:10 (80a57fa8) and SCREENS 11:07 (c26b6cc6) live and busy, both WAITING for a 7.0 GB row (rows 12:09 4.1, 12:14 by hand 3.9 GB); the owner's window afc0ccd2 busy. Nothing READY and unmerged; the trunk 9730c82 (60dffe33 + four docs commits) pushed 12:16; _int detached at 60dffe33. Tier 2 toward offline-v3.1: the HUB merges each READY-SLICE alone with the merge base its status line names
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: 60dffe33 (the trunk tip = the tag offline-v3.0, 2026-11-08 12:00 IST; new lanes cut from here; merge bases: every lane the trunk tip after its fast-forward (core from fbc663d, actions-sos from b735852, learn from 75eb8e5, tests-docs from 44a07e0, content from eb38166, workbook-settings from 0e76065, game-tutorials from 3aefecb); engine 97ac73a and today-track 670df19 complete; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the formula at 8.0; R-O-7): tests-docs 5, today-track 6, engine 2 (idle after V-40c; V-19 + V-30 tier 2 only when no tier 1 lane waits), content 4, core 1, actions-sos 3, game-tutorials 8 granted now. Every tier 1 lane has a slot; nothing waits. Under 4.0 GB the newest run pauses at its next commit, the next newest on the following row under 4.0)
@@ -74,7 +74,7 @@ MERGED: tests-docs READY 44a07e0 (FIX-COUNTS: the counts true on the trunk; CLAU
 QUIET: done   # 11:33-11:43 IST on _int at 5ee84d5a, exit 0, every name read: build GREEN 1205260 B; test GREEN 651 pass 0 fail 0 skip in 15 files; validate GREEN; guards GREEN 5/5 all checks; browser GREEN 28 flows 28 pass 0 fail 0 skip in one full run; docs GREEN; logs _logs/gates/hub/{build-20261108-113233,test-20261108-113239,validate-20261108-113456,guards-20261108-113458,browser-20261108-113459,docs-20261108-114156}.log; no name to classify. FIX-COUNTS (docs only) merged after it with build, test, validate, guards, docs GREEN; TAG offline-v3.0 at 60dffe33 11:55
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | FIX-COUNTS merged 11:54 | TAG offline-v3.0 11:55 IST (60dffe33) | hand-off note 12:05 | tier 2 on the branches toward offline-v3.1, one start per 7.0 GB row; the launcher stays up
 TAG: offline-v3.0 = 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (2026-11-08 11:55 IST, annotated, pushed). Earlier: offline-v1.1 = f69bc68a (02:01), offline-v1.0 = 45473b2 (2026-11-07 11:40)
-UPDATED: 2026-11-08 12:04 IST
+UPDATED: 2026-11-08 12:18 IST
 
 
 
@@ -82,6 +82,10 @@ UPDATED: 2026-11-08 12:04 IST
 
 
 
+
+# 2026-11-08 12:18 IST · HUB 13 (2b59e0da) resumes; nothing runs; tier 2 waits for a 7.0 GB row
+
+- HUB 13 (2b59e0da) resumes. S-00, S-01 stand. The tag offline-v3.0 at 60dffe33 stands. Both build chats live and WAITING (tier 2, one start per 7.0 GB row, CORE first); memory 12:09 4.1 GB, 12:14 by hand 3.9 GB: no start. The trunk pushed (9730c82: CORE's and SCREENS' docs commits after the tag). Watching the status files for READY lines; the board by 14:00; the tooling units V-12 to V-15 and the review pack V-09 in a quiet moment.
 
 # 2026-11-08 03:08 IST · R-O-6 cut (PLAN-V3.md section 7); the hours re-cut; R-H-40
 
