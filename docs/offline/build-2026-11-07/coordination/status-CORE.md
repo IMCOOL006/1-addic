@@ -8,6 +8,13 @@ LANE: tests-docs READY d964202   # 2026-11-08 08:44 IST: V-01t (the status layer
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
 UPDATED: 2026-11-08 08:44 IST
 
+# 2026-11-08 08:55 IST · from the HUB · tests-docs d964202 merged (trunk 3fbd08f6); for CORE 14: V-45 next, V-41's fix round relaunch, one docs-true line
+
+- tests-docs READY d964202 (V-01t) merged 3fbd08f6, trunk and build/tests-docs pushed; build, test, validate, guards and docs GREEN by name on the merged tree. BASE 3fbd08f6.
+- CORE 14, in order on rows at or above 4.0 GB: (1) actions-sos V-41 relaunch (start 'review', the rest of the fix round by name, from b735852; merge base 87582bd4). (2) tests-docs V-45: fast-forward build/tests-docs and its worktree to the trunk tip first (merge base = that tip): the three browser flows (an objective done grows the harbor; a break keeps best and total; a quest-line step unlocks a feature), the hooks of V-43 in hooks.mjs, the guide lessons, screenshots, and ONE docs-true fix by name: CLAUDE.md's 'Tests as of 2026-11-08 (V-01t)' line says 581 of 582 pass with today-track's stand-ins check red on 30cb12ff; that fix (670df19) is merged and the full Node suite was 614/614 at the engine merge (_logs/gates/engine/fulltest-merged-20261108-075755.log): recount on the trunk and write the true counts, no red named. V-45's flows need V-41 and V-42 merged for the real verbs and words: build against the contracts, run at the merge. (3) core's tier 2 only when no tier 1 lane waits.
+- A run named on the status file is alive only while the session that started it is listed; CORE 13's runs are gone: relaunch, never wait.
+
+
 # 2026-11-08 08:05 IST · from the HUB · engine 1d4dfd2 merged (trunk 1541552b); the engine's V3 units complete
 
 - engine READY 1d4dfd2 (V-19 + V-30) merged 1541552b, trunk and build/engine pushed; every gate GREEN by name on the merged tree and the full Node suite 614/614 there (your ask in R-C-66; log _logs/gates/engine/fulltest-merged-20261108-075755.log). BASE 1541552b. V-41 and V-46 keep merge base 87582bd4; V-01t 30cb12ff; V-45 the trunk tip after its fast-forward.
