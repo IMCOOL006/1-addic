@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-08 11:22 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602, 'CORE 11:10') resumed from CORE 14's RESTART (11:09). Nothing of CORE runs. tests-docs READY 949f0f7 with the HUB (game-tutorials 3aefecb merging since 11:08, tests-docs next). Free memory 3.4 GB 11:14 (under the 4.0 floor): nothing starts. Every CORE unit left is tier 2 (core V-16, V-17a, V-26a; actions-sos V-25, V-18, V-17b; learn V-20; tests-docs V-22a, V-26b, V-27, V-29): staged now, launched one per 7.0 GB row after the tag's QUIET window
+STATE: WAITING   # 2026-11-08 11:36 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs 949f0f7 merged (trunk 5ee84d5a, HUB 12 11:33); FREEZE now; the tag's QUIET window on _int (results about 12:10): nothing heavy on CORE until the HUB says it is over. FIX-COUNTS (tests-docs, by name) prepared on the worktree, committed only on the HUB's numbers; then READY with merge base the trunk tip. Tier 2 after the tag, on 7.0 GB rows
 LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 10:56 IST: V-41 + RC1-RC4, RS1 merged 3235375c (trunk 3235375c; test 191/0/0, full Node suite 640/640). Next (T2, when no tier 1 lane waits, a 7.0 GB row): V-25, V-18, V-17b + C2 after a fast-forward to the trunk; then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs READY 949f0f7   # 2026-11-08 11:09 IST: V-45 (263f752 flows + hooks, 936c5ea screens, 949f0f7 Lesson 16 + counts) check PASS wf_180b5230-4d4; build, test, validate, guards, docs GREEN; browser 26/0/2 (two skips by name: V-41/V-42 absent on the lane tree); merge base 3fbd08f6 (R-C-72). Then FIX-COUNTS by name if the HUB asks (the count lines on the merged tree)
+LANE: tests-docs MERGED 949f0f7   # 2026-11-08 11:33 IST: V-45 merged (trunk 5ee84d5a; build 1205260 B, test, validate, guards, docs GREEN by name; the three flows 3/3). FIX-COUNTS by name next, on the HUB's numbers from the quiet gates (about 12:10); then tier 2 V-22a, V-26b, V-27, V-29 after the tag
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 11:22 IST
+UPDATED: 2026-11-08 11:36 IST
+
+# 2026-11-08 11:36 IST · from the HUB (HUB 12, 11:33, by message) · tests-docs 949f0f7 merged (trunk 5ee84d5a); FREEZE; QUIET; FIX-COUNTS
+
+- tests-docs READY 949f0f7 (V-45) merged: trunk 5ee84d5a, pushed with build/tests-docs; on the merged tree build 1205260 B, test, validate, guards, docs GREEN by name, territory 0; the three flows by name 3/3. game-tutorials 3aefecb merged just before (34f70172; full Node suite 651/651). Every tier 1 V3 unit is in. FREEZE now; QUIET runs the full gates on _int (about 12:10).
+- For CORE: nothing heavy until the HUB ends the quiet window (no tier 2 start, no scout). FIX-COUNTS by name: fast-forward build/tests-docs to the trunk tip, the count lines to the trunk's true numbers (the HUB's: Node 651 checks, browser 28 flows expected 28 pass 0 skip; final numbers from the quiet gates), no test run (the HUB's merged-tree gates are the proof), commit only on the HUB's line, then READY <tip> with merge base the trunk tip; the HUB tags offline-v3.0 on it.
+- CORE found the stale lines at 5ee84d5a: CLAUDE.md:43, README.md:22 (the Offline edition section), offline/README.md:85, offline/docs/1-addic-Guide.md:10 and :450 (the .docx rebuilt from it by build_guide.py; no test run).
 
 # 2026-11-08 11:22 IST · CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602) resumes; nothing runs; tier 2 staged
 
