@@ -1,6 +1,8 @@
 ## core (CORE, 1-addic offline build): the slice report
 
-State: READY-SLICE (2026-11-08 04:55 IST, continued from f69bc68a; tip e79e1b0; check PASS; review not run; open 0; build, test 89/89, validate, guards 5/5 GREEN). Earlier: READY (2026-11-07 17:16 IST, tip 8e80951, open 0). Earlier states in the annex. Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. All units built: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS, FIX-R2, FIX-V11, V-11 (tier 1). Dates 2026-11-07 07:26 to 2026-11-08 05:14 IST.
+State: READY (2026-11-08 07:12 IST, continued from 87582bd4; tip fbc663d; check PASS; review not run (lane end); open 0; build, test 91/91, validate, guards 5/5 GREEN). Earlier: READY-SLICE (2026-11-08 04:55 IST, continued from f69bc68a; tip e79e1b0; check PASS; review not run; open 0; build, test 89/89, validate, guards 5/5 GREEN). Earlier: READY (2026-11-07 17:16 IST, tip 8e80951, open 0). Earlier states in the annex. Branch build/core, worktree C:/Users/ruchi/1-addic-wt/core. Base 655516dc. All units built: U-01, U-03, U-02, U-04, FIX-C4-C5, FIX-SAFETY, FIX-RULINGS, FIX-R2, FIX-V11, V-11 (tier 1). Dates 2026-11-07 07:26 to 2026-11-08 05:14 IST.
+Commits 87582bd4..HEAD (2026-11-08 07:12 IST, tip fbc663d):
+- fbc663d V-46: the chrome reads Engine.unlocked (R-H-44 on R-S-21)
 Commits (655516dc..HEAD, tip e79e1b0, newest first):
 - e79e1b0 V-11: static safety line in the shell before boot
 - 8e80951 RC2: test, high contrast follows a store change and boot paths
@@ -19,12 +21,14 @@ Earlier 957f333 to 770c86c (RS18 to RC12): see annex.
 Then cdfc0e9 and every earlier commit (8bf7b5c to cdfc0e9, with messages: C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md).
 
 ### Turn caps
+- 2026-11-08 07:12 IST (continued from 87582bd4): one builder, V-46, 17 steps, capHits 0; no reviewers.
 - 2026-11-08 04:55 IST (continued from f69bc68a): one builder, V-11, 20 steps, capHits 0; no reviewers.
 - 2026-11-07 17:16 IST (continued from b4ccce4): no builders (builders []; capHits 0); two reviewers plus one fix round (RC1, RC3, RS19, RC2) and the re-checks.
 - Older runs (16:41, 14:11, 11:58, 10:41, 07:40, 07:26 IST): capHits 0; lines in the annex.
 
 
 ### Units
+- 2026-11-08 07:12 IST V-46 (tier 1), fbc663d. For a person: nothing visible changes yet; the chrome now shows features the engine unlocks (revealed, claimed quest-line rewards, FeatureUnlocked), never a protected id. UI.ctx(r).features reads Engine.unlocked(view), then Engine.revealed(view), then Content.reveal.always, each in safe(); still a Set, a superset of revealed. Red first and mutation 4/4: _logs/reports/core/core__V-46-red.log, core__V-46-mut.log. Held: none. Questions closed: R-H-44 on R-S-21.
 - 2026-11-07 17:16 IST: no unit built this run; FIX-V11 (R-S-6 16df9e7, RC12-V11 36c08fd, RS18-V11 b4ccce4) was judged. Review fixes: RC1 9b03126 (a select, input or button a custom field returns keeps its natural tab stop after a failed Save); RC3 15f99c6 (the field label names the focused node, aria-labelledby, role group when bare); RS19 58f309a (high contrast no longer drops on the lock page or SOS while locked); RC2 8e80951 (test: high contrast follows store change and boot paths, 4 mutants red). Questions closed: RC12 marks the focused control; locked look stays as the session left it. Detail: _logs/reports/core/core__units.md:582, core__units-V11.md:57.
 - 2026-11-07 16:41 IST run (from 957f333; built this run: FIX-V11, 16df9e7 R-S-6, 36c08fd RC12-V11, b4ccce4 RS18-V11). Held: none. Person-visible: high contrast stays on from the first screen after reload (not on the lock screen); a required custom field left empty takes focus on its first usable control, read as invalid with its error line; the no-crypto lock page reads both lines together. No words changed. Closed: R-S-6, RC12 and RS18 follow-ups. Detail: _logs/reports/core/core__units.md line 527 on.
 - 2026-11-07 14:11 IST run (continued from bda0f0f; built this run: none; FIX-R2 fixes below). Held: none.
@@ -55,6 +59,7 @@ Then cdfc0e9 and every earlier commit (8bf7b5c to cdfc0e9, with messages: C:/Use
 - 2026-11-08 V-11 (tier 1), e79e1b0. For a person: from the first byte of 1-addic.html, before any script runs, the page shows the emergency line, a one-tap tel:112 link and "Please verify these numbers."; the first render replaces it, a start failure shows boot.js's block instead. Red first: core__V-11-red.log, mutant core__V-11-mut.log. Questions closed: wording (CORE 11 ruling). Evidence: core__units.md:640.
 
 ### Contract changes
+- 2026-11-08 V-46: no public name changed; UI.ctx(r).features source widened to Engine.unlocked (contracts/core.md:134-136).
 - 2026-11-08: DOM p.boot-line inside main (shell.html:22-27), removed only by the first main.replaceChildren; bootPending(t,hash,box,before) test helper. No function, event or route change.
 - 2026-11-07 16:41 IST: html[data-contrast=high] set by chrome() every render; UI.form custom field marks focus target (aria-invalid, error id in aria-describedby, node fallback tabindex=-1); lock page div.lock-said[role=alert] holds #lock-msg and #lock-where (#lock-msg no longer role=alert). No Store API change.
 - U-01 build and shell contracts (build.mjs output and exit codes, parts list, head/CSP, DOM hooks A, data-tour targets, boot.js, tokens, package.json): unchanged, full text in core-report-annex.md.
@@ -85,13 +90,8 @@ Slice checks C1-C4 and earlier reviews: see annex.
 ### Review
 Slice: not run. 2026-11-07 10:41 IST: two reviewers judged 655516dc..HEAD; no review findings returned (their earlier re-checks died with their session; the earlier fixes RC1-RC4, RC8, RS1-RS8 are built, each with a test). openReview 0.
 
-### Check (2026-11-07 11:58 IST)
-Verdict PASS at cdfc0e9; judged commits after cdfc0e9 (none); findings none; openCheck 0. Territory: core's files only (run wf_bf29c997-958's check). Earlier check C1 fixed in 6afc262; re-check: not run.
-
-### Review (2026-11-07 11:58 IST)
-(text: core-report-annex.md)
-
 ### Safety and content marks
+- 2026-11-08 V-46: no new text; SOS and protected ids never gated by unlocked.
 - 2026-11-08: shell line is crisis copy marked clinicalReview (HTML comment, shell.html:23-25), words only from boot.js COPY, no new number, no network, SOS not gated. Shown before boot even in discreet mode (safety reviewer to note).
 - 2026-11-07 16:41 IST: no new copy, no network, no event-log change, SOS not gated; none new clinicalReview.
 - 2026-11-07 14:11 IST: RS18 adds one non-clinical line on the lock page when crypto.subtle is missing; it does not name erase and is not marked clinicalReview. Forgot-PIN erase line unchanged.
@@ -99,6 +99,7 @@ Slice: none. 2026-11-07 10:41 IST: URGENT.builtIn 112 in ui-core.js carries veri
 
 - 2026-11-07 11:58 IST: start-failure crisis lines now carry clinicalReview (6afc262); they still need the clinical review. SOS: whole coach layer hidden; the hold keeps the timer from locking SOS; discreet mode says Help everywhere.
 ### Requests for other lanes
+- 2026-11-08 V-46: to SCREENS (outbox at READY-SLICE): ctx features is now Engine.unlocked; your typeof-guarded reads can stay. To HUB/content: after content V-42 merges, add one UI.ctx test for a claimed quest-line reward at the end of store.test.mjs (Content.questLine is empty on the trunk).
 - 2026-11-08: tests-docs: no-JS browser check of the line; guide may mention it.
 - 2026-11-07 16:41 IST: workbook-settings may drop its data-contrast stop-gap in ui-settings.js; tests-docs: hooks looking for #lock-msg[role=alert] look at its parent .lock-said.
 - 2026-11-07 14:11 IST: none new.
@@ -107,12 +108,14 @@ None recorded in the notes' for_the_chat beyond: the HUB baselines the 15 tour-t
 - 2026-11-07 11:58 IST: actions-sos: do not call Store.lock.touch() as a keep-alive on SOS; ui-core holds via Store.lock.hold(on). Redraw private rows on the lock notification.
 
 ### Docs owed
-See C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md (Docs owed).
+See C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md. 2026-11-08 V-46: none.
 
 ### Open questions
+- 2026-11-08 V-46: claimed-reward path through UI.ctx untested until content V-42; default: engine V-40 tests cover it.
 2026-11-08: link text is bare '112' (clinical reviewer); line stays in view while the Store loads off SOS (RS6). Earlier questions and defaults: core-report-annex.md. New ones: see Review 17:16 IST.
 
 ### For the HUB at the merge
+- 2026-11-08: V-46 is one commit (fbc663d) in ui-core.js and store.test.mjs; the V-46 tests must stay the last describe in store.test.mjs. Send the SCREENS outbox.
 - 2026-11-08: tip e79e1b0 replaces 8e80951 (one commit; shell.html, styles.css one rule, store.test.mjs +2, rebuilt html 1114310 B). Territory: 4 own files, 0 shared. Guards fully GREEN, no baselined name left.
 - 2026-11-07 16:41 IST: tip b4ccce4 replaces 957f333 (3 commits; ui-core.js, styles.css one rule, store.test.mjs +4, rebuilt html 208924 B). 3 of 15 tour-target REDs (quicklog-*) lift once the trunk's 3f3001e is merged; rest baselined.
 - 2026-11-07 14:11 IST: tip 957f333 replaces bda0f0f; offline/1-addic.html rebuilt and committed; add p#lock-where and #lock-pin aria-describedby 'lock-msg lock-where' to the hooks if the browser suite needs them. RC10-RC12 and RS18 closed; RS11 still not built.
@@ -128,35 +131,6 @@ See C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md (Docs owed).
 
 - 2026-11-07 11:58 IST: tip bda0f0f replaces cdfc0e9. Record Store.lock.hold(on), NO_CRYPTO and the autoLockMin rule (1, 5, 15, never; else 5) in contracts/core.md. offline/1-addic.html rebuilt (205925 B). Guards RED = the 15 baselined names only. Resolve RS11 and the 3 PARTLY items first if the HUB wants READY.
 
-### Check (2026-11-07 14:11 IST)
-Verdict PASS at cdfc0e9 (judged only commits after bda0f0f by the check; none to judge); findings none; openCheck 0. Territory: core's files only.
-
-### Review (2026-11-07 14:11 IST)
-Contracts and safety judged 655516dc...HEAD; fix round FIX-R2 to 957f333; re-checked by the finders. openReview 0.
-- RC10 MEDIUM U-04 3caf5bb: FIXED (test only; re-check FIXED). RC11 MEDIUM U-04 034a180: FIXED (re-check FIXED). RC12 LOW U-03 468a93c: FIXED (re-check FIXED). RS18 LOW U-04 957f333: FIXED (re-check FIXED, no new findings).
-- New from the RC re-check, not fixed, no fix owed unless the lane agrees: LOW U-03 ui-core.js:359 (a custom f ... (rest: core-report-annex.md)
-Evidence: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__units.md.
-
-### Gates (2026-11-07 16:41 IST)
-VERIFIED: build GREEN 208924 B (_logs/gates/core/build-20261107-170636.log); test GREEN 84/0/0 (test-20261107- ... (rest: core-report-annex.md)
-
-### Check (2026-11-07 16:41 IST)
-PASS at b4ccce4; findings none; open 0. FIX-V11 meets rulings (contracts/core.md 112-113, R-C-23). Review: not run (reviewers []), open 0.
-
-### Gates (2026-11-07 17:16 IST)
-VERIFIED at 8e80951 by the re-checker: build GREEN (_logs/gates/core/build-20261107-180846.log); test GREEN 87/87 (test-20261107-180848.log); validate SKIP, engine.js absent (validate-20261107-181706.log); guards RED by the same 15 tour-target names, none new (guards-20261107-181706.log). ASSUMED: no browser suite run; no real-browser check of textContent spacing (Q-m).
-
-### Check (2026-11-07 17:16 IST)
-PASS at b4ccce4 (judged only commits after b4ccce4: none); findings none. Territory: core's files only (ui-core.js, store.test.mjs, 1-addic.html rebuilt); no shared file touched.
-
-### Review (2026-11-07 17:16 IST)
-Contracts and safety judged 957f333...HEAD; one fix round; re-checked by the finders. openReview 0.
-- RC1 MEDIUM RC12-V11 36c08fd: fix 9b03126, FIXED. RC3 LOW RC12-V11: fix 15f99c6, FIXED. RC2 LOW R-S-6 16df9e7: fix 8e80951 (test only), FIXED. RS19 LOW R-S-6: fix 58f309a, FIXED, no new findings.
-- New from the RC re-check, not fixed: N1 LOW ui-core.js:377 (role=group replaces an implicit role such as list or table); N2 LOW :373-378 (a contenteditable node loses its tab stop and gets role group). Q-a: a bare native control returned as the node has no accessible name from the label.
-- Open questions from the reviewers: chips follow the aria-invalid rule (Q-chips); firstFocusable ignores class-hidden or closed-details controls (Q-n); text size and motion dropped on locked renders (Q-k); RS18 second line missing on the real NO_CRYPTO lock page in ui-onboarding.js:144 (Q-l, actions-sos lane); Q-m above. Defaults: no change.
-- Contract: custom-field focus rules (RC1, RC3) and the locked-chrome rule (data attributes left as the session left them while locked or loading) to be recorded in contracts/core.md. Requests: actions-sos align the NO_CRYPTO line (Q-l). Docs owed: none new. For the HUB at the merge: tip 8e80951 replaces b4ccce4; offline/1-addic.html rebuilt; guards RED = the 15 baselined names only; no test should expect data-contrast removed on a locked render.
-
-
 ### Gates (2026-11-08 04:55 IST)
 VERIFIED at e79e1b0 by the checker: build GREEN 1114310 B (_logs/gates/core/build-20261108-052126.log); test GREEN 89/89 (test-20261108-052130.log); validate GREEN (validate-20261108-052641.log); guards GREEN 5/5 (guards-20261108-052643.log). ASSUMED: browser gate not run (no browser tests added; no-JS check is tests-docs').
 
@@ -165,3 +139,14 @@ PASS at e79e1b0 (judged only commits after f69bc68a); findings none; open 0. Ter
 
 ### Review (2026-11-08 04:55 IST)
 Not run (reviewers []); findings none; open 0.
+
+### Gates (2026-11-08 07:12 IST)
+VERIFIED at fbc663d by the checker: build GREEN 1162984 B (_logs/gates/core/build-20261108-074639.log); test GREEN 91/91 (test-20261108-074644.log); validate GREEN (validate-20261108-074902.log); guards GREEN 5/5 (guards-20261108-074906.log). Builder run: build-20261108-072651.log, test-20261108-072700.log, validate-20261108-073058.log, guards-20261108-073100.log. ASSUMED: browser gate not run (no browser tests added). Territory: 87582bd4..HEAD 2 files, 2 own (ui-core.js, store.test.mjs), 0 shared, 0 errors.
+
+### Check (2026-11-08 07:12 IST)
+PASS at fbc663d (judged only commits after 87582bd4); findings none; open 0. V-46 meets briefs/core/V-46.md. Not checked: the SCREENS outbox (build chat's); the red log not re-run; ctx-level reward test. Notes: _logs/reports/core/core__check.md.
+
+### Review (2026-11-08 07:12 IST)
+Not run in this run (reviewers []); findings none; open 0.
+
+Earlier 2026-11-07 gates, checks and reviews (11:58 to 17:16 IST): C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md

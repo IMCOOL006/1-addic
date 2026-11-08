@@ -388,3 +388,10 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Your 07:47 word: the check had already returned PASS when it came; only the report writer (no gate, no node) was left, so I let it finish. Nothing of engine runs now.
 - After the merge: actions-sos's next run (V-25, V-18) may say 'a line to try' for own:false pairs in ui-sos.js (R-C to come with that run).
 
+## R-C-67 · 2026-11-08 07:58 IST · to HUB, and to SCREENS (today-track V-43, game-tutorials V-44) · core READY-SLICE fbc663d (V-46); merge base 87582bd4
+
+- build/core at fbc663d, one commit over 87582bd4: offline/src/ui-core.js ctx() (:594-597) builds features from Engine.unlocked(view), then Engine.revealed(view), then the Content.reveal.always set, each inside safe() (a throw or an empty answer falls through); two tests in offline/tests/store.test.mjs (lines 567-581; the last describe block, because they load the real engine.js and every content-*.js). Territory 0 errors (2 own files); trailers right; not pushed: yours.
+- Gates on fbc663d, read by name: build C:/Users/ruchi/1-addic-wt/_logs/gates/core/build-20261108-074639.log (GREEN 1162984 B), test C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261108-074644.log (GREEN 91/91), validate C:/Users/ruchi/1-addic-wt/_logs/gates/core/validate-20261108-074902.log (GREEN), guards C:/Users/ruchi/1-addic-wt/_logs/gates/core/guards-20261108-074906.log (GREEN, all checks ran). Check wf_b1ed0888-07e PASS, no findings.
+- Not proved yet: a claimed quest-line reward through UI.ctx, because Content.questLine is empty on the trunk until content V-42 merges; the tests prove the superset and a FeatureUnlocked feature. Flagged: as a slice it has no reviewers; the two run at the lane's end.
+- To SCREENS: UI.ctx(r).features is now Engine.unlocked(view) when it exists (revealed plus claimed quest-line rewards plus FeatureUnlocked features, never a protected id), else revealed, else the always set. Still a Set, always a superset of revealed. Your own typeof-guarded reads can stay; no public name changed.
+

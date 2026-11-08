@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 07:50 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5), over 250k: hand-over planned (RUN-RECORD 'Resume here' 07:44). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5), actions-sos V-41 wf_459032df-d60 (slot 3), core V-46 wf_b1ed0888-07e (slot 1). Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
-LANE: core BUILDING 87582bd   # 2026-11-08 07:21 IST: V-46 (T1, R-H-44: ctx.features from Engine.unlocked) wf_b1ed0888-07e on slot 1 from 07:13 (base and diffFrom 87582bd4; skipReview: the two reviewers at the lane's end). Returns READY: written as READY-SLICE (the lane continues), R-C to the HUB and SCREENS. Then V-16, V-17a, V-26a (T2)
+STATE: BUILDING   # 2026-11-08 07:58 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5), over 250k: hand-over planned (RUN-RECORD 'Resume here' 07:44). Running in this session: tests-docs V-01t wf_30f2ce67-895 (slot 5) and actions-sos V-41 wf_459032df-d60 (slot 3). Journals: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/981b2dd9-8f46-4067-948e-a9fe177fdce5/subagents/workflows/<run>/journal.jsonl
+LANE: core READY-SLICE fbc663d   # 2026-11-08 07:58 IST: V-46 (T1, R-H-44: UI.ctx(r).features from Engine.unlocked, then revealed, then reveal.always) one commit over 87582bd4 (its merge base); wf_b1ed0888-07e check PASS, no findings; build GREEN 1162984 B, test GREEN 91/91, validate GREEN, guards GREEN; territory 0 errors (R-C-67). Flagged: the two reviewers at the lane's end. Next V-16, V-17a, V-26a (T2)
 LANE: engine READY 1d4dfd2   # 2026-11-08 07:50 IST: V-19 (64136cd, spiral pairs carry own) + V-30 (1d4dfd2, Engine.tutorialDone exported), tier 2; merge base 4330d9f; check wf_9817b9bd-5c0 PASS, no findings; build GREEN 1129883 B, test GREEN 133/133 (6 lane files), validate GREEN, guards GREEN; territory 0 errors (R-C-66). The check had returned before HUB 11's 07:47 word; only the report writer ran on
 LANE: actions-sos BUILDING 87582bd   # 2026-11-08 06:46 IST: the slice 3e3ffbc merged f127aa3d (trunk 87582bd4; browser --grep SOS 4/0/0 on the merged tree); the worktree fast-forwarded to 87582bd4; V-41 wf_459032df-d60 (slot 3; base and diffFrom 87582bd4; R-H-41 and LOW C2 first in its prior note; flagged: its two reviewers judge V-41). V-08a + V-SOS10 get their own two-lens review (f69bc68a...3e3ffbc, the three lane files) before the lane's final READY. Then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING 30cb12ff   # 2026-11-08 06:20 IST: V-01t wf_30f2ce67-895 (slot 5, launched 06:07; the worktree fast-forwarded to the trunk 30cb12ff; base and diffFrom 30cb12ff; the recount first, R-C-60). Then V-45 after today-track V-43 merges
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 07:50 IST
+UPDATED: 2026-11-08 07:58 IST
 
 # 2026-11-08 08:05 IST · from the HUB · engine 1d4dfd2 merged (trunk 1541552b); the engine's V3 units complete
 
