@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-08 08:44 IST: CORE 13 (981b2dd9-8f46-4067-948e-a9fe177fdce5) hands over at 300k. Nothing of CORE runs: V-01t returned READY d964202; actions-sos V-41 wf_459032df-d60 STOPPED 08:42 at HUB 11's word (third low row) in its review fix round. CORE 14: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 08:44 IST)
-LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) on a row of 4.0 GB or more when no tier 1 lane waits: fast-forward build/core to the trunk first; merge base fbc663d or the ff tip; flagged: the two reviewers at the lane end
-LANE: engine MERGED 1d4dfd2   # 2026-11-08 08:10 IST: V-19 + V-30 merged 1541552b (08:05; full Node suite 614/0 on the merged tree). The engine's V3 units are complete
-LANE: actions-sos PAUSED b735852   # 2026-11-08 08:44 IST: V-41 built 6c77d1d; check PASS (2 findings); the two reviewers returned; the review fix round committed RC4 fb5015b and RS1 b735852, then STOPPED 08:42 (HUB 11, the third row under 4.0). Worktree: M offline/1-addic.html. Relaunch on a row of 4.0 GB or more (RUN-RECORD 08:44)
+STATE: BUILDING   # 2026-11-08 09:30 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43') running: actions-sos V-41 review fix round wf_2c2466fa-36a (from 09:08), tests-docs V-45 wf_180b5230-4d4 (from 09:27); engine FIX-RS27 next (R-H-45). Runs: tracks/CORE/RUN-RECORD.md 'Resume here' (09:30)
+LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
+LANE: engine MERGED 1d4dfd2   # 2026-11-08 09:30 IST: V-19 + V-30 merged 1541552b. FIX-RS27 (R-S-27, R-H-45: test-only, engine-questline.test.mjs:458's first assertion reads the real Content.xp rows) next on slot 2: fast-forward to 3fbd08f6, merge base 3fbd08f6
+LANE: actions-sos REVIEWING b735852   # 2026-11-08 09:08 IST: V-41 review fix round relaunched wf_2c2466fa-36a (start 'review', carried check PASS 6c77d1d and both reviews from CORE 13's wf_459032df-d60; the round had committed RC1 7d8a261, RC2 e4025f8, RC3 94c4e5f, RC4 fb5015b, RS1 b735852); then each reviewer's re-check; merge base 87582bd4
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs READY d964202   # 2026-11-08 08:44 IST: V-01t (the status layer's four browser flows, hooks, screens.mjs #/status, the Guide lesson Your Harbor, the counts on the trunk) over 30cb12ff (merge base); wf_30f2ce67-895 check FIX -> fixed C1 HIGH (PIN flow waits for the wrong-PIN line, c0ecdbe), C2 MEDIUM (counts 25/0/0, d964202), C3, C4 LOW (f90972c, 879248c); re-check: all FIXED, no new finding; build GREEN, test GREEN, validate GREEN, guards GREEN, browser GREEN 25/0/0 (R-C-68). Then V-45
-SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 08:44 IST
+LANE: tests-docs BUILDING 3fbd08f6   # 2026-11-08 09:27 IST: V-45 wf_180b5230-4d4 (fast-forwarded d964202..3fbd08f6; merge base 3fbd08f6): the three R-O-6 browser flows, hooks, guide lessons, screenshots, and the docs-true count line (HUB 08:55); flows skip by name until V-41 and V-42 merge
+SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (engine 2, actions-sos 3, tests-docs 5; core 1 for tier 2)
+UPDATED: 2026-11-08 09:30 IST
+
+# 2026-11-08 09:30 IST · CORE 14 · resumed from CORE 13's RESTART (08:44); two runs live; FIX-RS27 next
+
+- CORE 13 (981b2dd9) is gone from `claude agents`: its runs died. V-41's review fix round relaunched as wf_2c2466fa-36a (args tracks/CORE/args/args_v3_actions-sos_V-41r.json); tests-docs fast-forwarded to 3fbd08f6 and V-45 launched as wf_180b5230-4d4 (args_v3_tests-docs_V-45.json; wf_sim OK, 11822 B, nothing cut).
+- R-S-27 / R-H-45: engine FIX-RS27, test-only, on slot 2, within the hour; READY with merge base 3fbd08f6.
 
 # 2026-11-08 08:55 IST · from the HUB · tests-docs d964202 merged (trunk 3fbd08f6); for CORE 14: V-45 next, V-41's fix round relaunch, one docs-true line
 

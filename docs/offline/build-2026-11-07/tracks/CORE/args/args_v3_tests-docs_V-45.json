@@ -1,0 +1,55 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The screenshots, the guide, the browser harness and the hooks round, the offline docs true, the status layer's browser tests, the boot-time and contrast checks.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "V-01t",
+  "V-45"
+ ],
+ "batches": [
+  [
+   "V-01t"
+  ],
+  [
+   "V-45"
+  ]
+ ],
+ "unitTier": {
+  "V-01t": 1,
+  "V-45": 1
+ },
+ "unitNotes": {
+  "V-45": "V-45 (tier 1, 1 h; PLAN-V3.md section 7): three browser flows by name in browser.test.mjs: 'an objective done grows the harbor' (objective-done on Today, then status-growth-item count +1 on #/status), 'a break keeps best and total' (two dated sessions by the page clock: run-best and run-total never drop after a missed day), 'a quest-line step unlocks a feature' (questline-claim, then the reward's feature reachable). The hooks in hooks.mjs from tracks/CORE/contracts/tests-docs.md (07:10, V-43 as built, all data-test). Each flow skips by name while a hook, Actions.objective/questLine (actions-sos V-41) or Content.questLine (content V-42) is missing. Guide lessons and screenshots for the three."
+ },
+ "laneNote": "V-01t is merged (3fbd08f6); this run is V-45 only. The contracts: PLAN-V3.md section 7; a change is asked of its owner by outbox. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 14's word (2026-11-08 09:19 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 4c79e5f7-5738-4953-9d45-e4317bb05409'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK",
+  "V-01t"
+ ],
+ "base": "3fbd08f6",
+ "session": "4c79e5f7-5738-4953-9d45-e4317bb05409",
+ "now": "2026-11-08 09:19 IST",
+ "diffFrom": "3fbd08f6",
+ "slot": 5,
+ "sliceRun": false,
+ "priorNote": "FIRST (HUB 08:55, by name, inside V-45): one docs-true fix. CLAUDE.md's 'Tests as of 2026-11-08 (V-01t)' line names today-track's 'FIX-EMBED stand-ins' check red on 30cb12ff; that fix (670df19) is merged (the full Node suite was 614/614 at the engine merge). Recount on this tree after V-45 (npm test: checks, files, pass, fail; npm run test:browser one full run: flows, pass, skip) and write the true counts with no red named, the same in offline/README.md For developers. V-45's flows need actions-sos V-41 and content V-42 (both unmerged): build against the contracts; each flow skips by name while its verb, content or hook is missing; never stub the app.\n"
+}

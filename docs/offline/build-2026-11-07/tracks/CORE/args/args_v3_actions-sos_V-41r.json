@@ -1,0 +1,242 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "Actions.useSkill, the unlock sign of life, the actions-sos LOWs, SOS waiting saves marked with lockId.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/src/styles.css",
+  "offline/tests/actions.test.mjs"
+ ],
+ "units": [
+  "V-08a",
+  "V-SOS10",
+  "V-41"
+ ],
+ "batches": [
+  [
+   "V-08a",
+   "V-SOS10"
+  ],
+  [
+   "V-41"
+  ]
+ ],
+ "unitTier": {
+  "V-08a": 1,
+  "V-SOS10": 1,
+  "V-41": 1
+ },
+ "unitNotes": {
+  "V-41": "The verbs of R-O-6 (tier 1): Actions.objective.done(id) writes one ObjectiveDone {id, date} per objective per day (a second call: ok:true, no new event); Actions.objective.swap(id) once a day (ObjectiveSwapped {from, to: the Engine's swapTo, date}; a second swap that day ok:false); Actions.questLine.claim(stepId) writes QuestLineStepDone {id} and FeatureUnlocked {feature, by: 'questline'} only while Engine.questLine's current step is that step with claimable true (else ok:false). No verb throws; the lock rule as every verb. Data model rows appended (BUILD-PLAN 3.4 additions). Tests in actions.test.mjs by rule; names in tracks/CORE/briefs/actions-sos/V-41.md."
+ },
+ "laneNote": "FIRST (CORE 14, 2026-11-08 09:07 IST): THIS FIX ROUND RESUMES ONE THAT WAS STOPPED. CORE 13's session ended while its review fix round ran; that round had already committed all five findings: RC1 7d8a261, RC2 e4025f8, RC3 94c4e5f, RC4 fb5015b, RS1 b735852 (git -C C:/Users/ruchi/1-addic-wt/actions-sos log --oneline 6c77d1d..HEAD); its hand-off note was never returned. Do not redo them: read each commit against its finding (the review files actions-sos__review-contracts.md and actions-sos__review-safety.md in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/), finish only what a commit leaves undone (RC1 and RC2 ask a failing test plus the matching mutation in actions-sos__V-41.mut.mjs: run it), run the gates through the gates script (the gates rewrite offline/1-addic.html: git checkout -- offline/1-addic.html before you finish, never commit it), and return done with each id and its SHA. The reviewers' questions are not findings: answer none in code.\nThe contracts: PLAN-V3.md section 7 and R-C-50 (coordination/outbox-CORE.md); a change to one is asked of its owner by outbox. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 13's word (2026-11-08 06:44 IST): build on the trunk's code in your worktree (never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/actions-sos/V-41.md. A hook in another lane's file: never edit it; put a request line in your note. No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 4c79e5f7-5738-4953-9d45-e4317bb05409'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser run at a time (--grep is case-sensitive: 'SOS'). Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "V-08a",
+  "V-SOS10"
+ ],
+ "base": "87582bd4",
+ "session": "4c79e5f7-5738-4953-9d45-e4317bb05409",
+ "now": "2026-11-08 09:07 IST",
+ "diffFrom": "87582bd4",
+ "slot": 3,
+ "sliceRun": false,
+ "priorNote": "FIRST (R-H-41, R-C-48): a loaded sample is not a refusal: the person's own events are written; sample rows stay skipped. Engine V-40 is in this tree (fast-forwarded to the trunk): use the real Engine.questLine and dailyObjectives (R-C-50 shapes), no stub. Content.questLine and Content.objectives come with content V-42 (not merged): typeof guards; the tests seed them and restore after. Slice LOW C2: the locked test asserts Store.lock.set exists (no early return); add a test of useSkill's 'error' code. New tests inside the 'V3 actions-sos' block, before '// -- V3 actions-sos tests end --'.",
+ "start": "review",
+ "carried": {
+  "check": {
+   "verdict": "PASS",
+   "tip": "6c77d1d",
+   "units": [
+    {
+     "unit": "V-41",
+     "state": "present: one commit 6c77d1d. It adds Actions.objective.done and swap and Actions.questLine.claim, plus the four events in EVENT_TYPES, ONCE, NEEDS and VERB_OWNED. The 14 V-41 tests pass by name, and the mutations M1-M10 are each red by name."
+    },
+    {
+     "unit": "U-09",
+     "state": "present: merged before base 87582bd4, so it is not in this diff (moved to v1-annex)"
+    },
+    {
+     "unit": "U-10",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "U-11",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "FIX-R5",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "FIX-R6",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "FIX-R7",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "FIX-R8",
+     "state": "present: merged before base 87582bd4, so it is not in this diff"
+    },
+    {
+     "unit": "V-08a",
+     "state": "present: merged at f127aa3 (READY-SLICE 3e3ffbc), before base. Its tests are still green in this run."
+    },
+    {
+     "unit": "V-SOS10",
+     "state": "present: merged at f127aa3, before base. Its tests are still green in this run."
+    }
+   ],
+   "findings": [
+    {
+     "id": "C3",
+     "severity": "LOW",
+     "unit": "V-41",
+     "where": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/contracts/actions-sos.md (the R-O-6 section, the Actions.questLine.claim line)",
+     "expected": "The contract should record the R-C-50 code 'not-claimable' in place of 'locked', and the additive `feature` field returned on success. This is a HUB-owned file, so it is not a lane defect. The builder already asked for the change in for_the_chat.",
+     "evidence": "git -C C:/Users/ruchi/1-addic-wt/actions-sos diff 87582bd4...HEAD -- offline/src/actions.js (claim refuses with fail('not-claimable') and returns {ok:true, events, feature}); C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__check.md"
+    },
+    {
+     "id": "C2",
+     "severity": "LOW",
+     "unit": "V-08a (carried from the slice check, not in this batch)",
+     "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:3084",
+     "expected": "Assert the lock API instead of using `if (!S().lock || typeof S().lock.set !== 'function') return;`, and add a test for the 'error' path (an uncoded throw). The V-41 locked test already does this with an assert at the matching point.",
+     "evidence": "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__check.md (slice check C2); grep of actions.test.mjs:3084"
+    }
+   ],
+   "gates": [
+    "build GREEN pass=1, log C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/build-20261108-072145.log",
+    "test GREEN 188 pass, 0 fail, 0 skip. The 14 V-41 tests are ok by name at lines 1163-1247. Log C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-072152.log",
+    "validate GREEN, log C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/validate-20261108-072844.log",
+    "guards GREEN 5/0, log C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261108-072847.log",
+    "browser not run: V-41 has no UI and no browser test"
+   ],
+   "territory": "actions-sos 87582bd4..HEAD: 2 files changed, both the lane's own (offline/src/actions.js and offline/tests/actions.test.mjs). There are 0 shared files, 0 files no lane owns, 0 errors and 0 warnings. actions.js belongs to this lane. offline/1-addic.html is changed in the worktree but not committed: the gates rebuild it, so it is a generated file. Nothing else is committed. Commit 6c77d1d carries both trailer lines.",
+   "not_checked": [
+    "The browser gate: the lane has no browser test for V-41.",
+    "The units merged before base 87582bd4 (U-09, U-10, U-11, FIX-R5 to FIX-R8, V-08a, V-SOS10) were not judged again from a diff, because they are outside this range. Earlier checks in actions-sos__check.md cover them, and their tests are green in this run.",
+    "Content V-42's real rewards against rewardOk: Content.objectives and Content.questLine are not in the tree yet. The tests seed fixtures for them."
+   ]
+  },
+  "review": [
+   {
+    "findings": [
+     {
+      "id": "RC1",
+      "severity": "MEDIUM",
+      "unit": "V-41",
+      "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js:918-919 (questLine.claim: `if (!ownEvent(tx, 'FeatureUnlocked', (p) => p.feature === feature)) tx.event('FeatureUnlocked', ...)` then `return { ok: true, events: tx.events.slice(), feature }`); tests C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:3325-3346",
+      "scenario": "Input: Content.questLine has two steps with the same reward, or an own FeatureUnlocked for the reward is already in the log (rewards can move between content versions). Wrong outcome: if the once-per-feature guard is deleted, a second FeatureUnlocked for that feature is written, and all 14 V-41 tests still pass. The result shape the guard produces today, {ok:true, events:[QuestLineStepDone], feature}, is in neither the contract nor any test.",
+      "evidence": "Every claim flow in the tests stops at the QuestLineStepDone early return (the double tap, :3343) or meets a sample FeatureUnlocked (:3400), which ownEvent skips either way. C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__V-41.mut.log (M1-M10) has no mutation that drops this guard. engine.js:1733-1751 (questProblems) checks only that step ids are unique, not rewards. The contract states 'Once-only: ... FeatureUnlocked by feature' (contracts/actions-sos.md:213) but lists only events:[QuestLineStepDone, FeatureUnlocked]|[] (:212) and says V-44 reads events[1].payload.feature, which is undefined in the one-event result. V-43 on trunk (ui-today.js rewardSheet) finds the event by type, so no merged caller breaks.",
+      "fix": "Add a test 'V-41 claim of a step whose reward is already open writes QuestLineStepDone only and returns feature': two steps sharing a reward, claim both; assert the second gives events.length 1 and r.feature, the log has one FeatureUnlocked for that feature, and Engine.unlocked is unchanged. Add the guard-removal mutation to actions-sos__V-41.mut.mjs. Ask the HUB, in the same edit as C3, to record the one-event shape."
+     },
+     {
+      "id": "RC2",
+      "severity": "LOW",
+      "unit": "V-41",
+      "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js:872-883 (objective.swap: objectiveFirst :874, `if (!item) fail('not-today', ...)` :879)",
+      "scenario": "Input: swap() with a pool id that was not drawn today, an unknown id, no Engine.dailyObjectives, or an Engine throw. Wrong outcome: none of the codes 'not-today', 'bad-objective' (unknown id), 'not-ready' or 'error' is asserted for swap. Deleting line 879 turns the not-today refusal into code 'error' (a TypeError on item.done) with the generic message, and no test fails.",
+      "evidence": "These codes are asserted only for done() (actions.test.mjs:3242-3261). Every swap call in the tests hits swap-used first (:3278-3279 and the 'nothing lowered' steps), or bad-objective for a done item, no-swap, ok, or LOCKED/no-store.",
+      "fix": "Run the done() refusal cases against swap too (a swap twin of the test at :3242): unknown ids give bad-objective, a pool id not drawn today gives not-today, no Content.objectives or no Engine.dailyObjectives gives not-ready, and an Engine throw gives error with the plain message. Assert the snapshot is unchanged."
+     },
+     {
+      "id": "RC3",
+      "severity": "LOW",
+      "unit": "V-41",
+      "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:263-276 ('export reset import is identical' seeds only older verbs through someData)",
+      "scenario": "Input: a notebook with ObjectiveDone, ObjectiveSwapped, QuestLineStepDone and FeatureUnlocked is exported, erased and imported. Wrong outcome: no test proves the four rows come back, or that Engine.dailyObjectives (swapped, done flags), Engine.questLine (done) and Engine.unlocked read the same afterwards. A later event-type check in import would drop them silently.",
+      "evidence": "Import ignores event types today: actions.js:979-1035 (backupErrors, importBackup) and engine.js:1246-1280 (validateBackup check only type and at). So the round trip holds now, but no test guards it, and the four types are new person data.",
+      "fix": "Add a V-41 round-trip test: done, swap, claim, then exportJson, eraseAll and importBackup. deepEqual the snapshot, and deepEqual dailyObjectives, questLine and [...unlocked] before and after."
+     },
+     {
+      "id": "RC4",
+      "severity": "LOW",
+      "unit": "V-41",
+      "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:3435-3464 ('V-41 nothing is removed or lowered')",
+      "scenario": "Input: a person does an objective and claims a step, then logs a slip. Wrong outcome: nothing proves the slip leaves claimed steps, unlocked features, growth, today's done flags and XP as they were. The rule is that a slip restarts only the opt-in run, and the step list has no Actions.logSlip.",
+      "evidence": "The steps array (:3439-3442) is logCraving, done, swap, claim and useSkill only. The lens asks for the slip rule to be proved wherever the lane touches the event log.",
+      "fix": "Add `() => Actions.logSlip({ date: today() })` (and one for the day before) to the steps. The measure already asserts that growth, unlocked, claimed and xp never drop and that every row is kept unchanged."
+     }
+    ],
+    "questions": [
+     "Q1 (two tabs, which the brief asks reviewers to check): Store.commit builds the draft from the tab's memory (store.js:428-435, with no re-read of the backend). So the already, swap-used and QuestLineStepDone checks (actions.js:866, :877, :911) see only this tab's events. A tap in each of two open tabs can write two ObjectiveDone for one (id, date), two ObjectiveSwapped for one date, or two QuestLineStepDone. The Engine counts each once (XP engine.js:224-230, claimed steps :1539-1545, first swap of the date :1649). Is this the accepted two-tab behaviour? A test that two ObjectiveDone for one (id, date) earn XP once would pin it.",
+     "Q2: R-C-50 (contracts/actions-sos.md:221) says 'no swappable item with that id' gives 'bad-objective'. The code gives 'no-swap' for a today's, not-done item with swappable false (a pool of three), and 'not-today' for an id not drawn (actions.js:879-883). V-43 shows only res.message, so no caller breaks. Is this reading confirmed?",
+     "Q3: the Engine's swapTo (engine.js:1679, ordered[3]) can be an objective already done today by its own event, and actions.js:882 checks only for an own ObjectiveDone of `to`. A swap can then bring in an already-done objective, a free done for the day. The brief's first form said 'not done'. Should this go to engine V-40?",
+     "Q4: the NEEDS, ONCE and EVENT_TYPES entries for the four types (actions.js:145, :149, :155-156) cannot be reached. recordEvent refuses the four at VERB_OWNED (:262) before EVENT_TYPES (:263), NEEDS (:266) and onceDone (:272), and import reads none of them. Are they kept as documentation only?",
+     "Q5 (HUB-owned contract, beyond C3): R-O-6 (contracts :210-212) lists 'error' for none of the three verbs and 'not-ready' for neither done nor swap. In the same edit, should it also add the one-event claim result (RC1), and say that Content.questLine = [] gives 'bad-step' and Content.objectives = [] gives 'bad-objective' rather than 'not-ready'?",
+     "Q6: R-H-44 (PLAN-V3.md:142) says the tools, the mini-games and the Explorer are never a reward, and that rewards come from Content.reveal m2 to m10. rewardOk (actions.js:890-898) refuses only ids missing from Content.features, the NEVER_REWARD ids, Content.reveal.always (content-core.js:182) and the sos, settings and learn tabs. So a V-42 step rewarding a tool, or 'status' (m1), would be claimed. Should Actions check this, or content V-42 and validateContent?",
+     "Q7: claim checks the reward (actions.js:909) before the done-step returns (:911, :914). A step already claimed whose reward later leaves Content.features (a newer content version, a restored backup) answers 'bad-reward', but R-C-50 (contracts :223) says a done step returns ok with no event. Is that order intended?"
+    ],
+    "read": [
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos.md (whole)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/V-41.md (whole)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/contracts/actions-sos.md:186-224 (V3, R-C-48, R-O-6, R-C-50) and its headings",
+     "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__units.md:905-919 (V-41)",
+     "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__V-41.mut.log",
+     "git diff 87582bd4...HEAD (6c77d1d) -- offline/src/actions.js (whole hunk set)",
+     "git diff 87582bd4...HEAD -- offline/tests/actions.test.mjs (the whole V-41 block, :3145-3492)",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js:1-170, 956-1044 (and grep of EVENT_TYPES/NEEDS/ONCE uses)",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:17-20, 37-114 (helpers), 263-276",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/engine.js:178-233, 1246-1285, 1486-1765",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/store.js:195-214, 250-271, 376-435",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/content-core.js:181-193",
+     "build/offline-v1:offline/src/ui-today.js:528-656 (V-43 caller, via git show from the lane worktree)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/PLAN-V3.md lines 132, 140, 142",
+     "C:/Users/ruchi/1-addic/docs/offline/BUILD-PLAN.md (grep: no V-41 names, no 3.13 browser test fed by V-41)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/coordination/baselines.md (grep: no actions-sos baseline open)",
+     "Gates re-run at 6c77d1d: test GREEN 188/188 log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/test-20261108-075400.log; build GREEN log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/build-20261108-080311.log; validate GREEN log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/validate-20261108-080316.log; guards GREEN 5/5 log=C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/guards-20261108-080318.log",
+     "Notes written to C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-contracts.md (section 'Round V-41')"
+    ],
+    "tip": "Behaviour and contract fit look right: no BLOCKER or HIGH. The verbs never throw. Check and write happen in one commit. Refusals write nothing. The territory is kept (only actions.js and actions.test.mjs). Test names match the brief. All four gates are GREEN at 6c77d1d. The remaining gaps are branches the happy path never reaches: FeatureUnlocked once per feature, and swap's own refusal codes. Each needs its own failing test and a matching mutation in actions-sos__V-41.mut.mjs. Run the mutation script before calling a rule 'proved'."
+   },
+   {
+    "findings": [
+     {
+      "id": "RS1",
+      "severity": "LOW",
+      "unit": "V-41",
+      "where": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/tests/actions.test.mjs:3381 (the reward list), against C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js:835 (NEVER_REWARD), :893, :895 (the reveal.always clause and the sos/settings/learn tab clause) and :897 (Engine.isProtectedFeature)",
+      "scenario": "If one edit empties NEVER_REWARD, or drops the reveal.always clause, the tab clause or the Engine.isProtectedFeature call (any single one of them), 'V-41 claim refuses a protected or unknown reward' still passes, so no test fails when one guard of the rule that SOS, help, lessons, Settings, export and data are never a reward is removed.",
+      "evidence": "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/content-core.js:153-179 has no key sos, urgent, help, lessons, settings, export, data or today, and no src part adds one (grep). So `!own(feats, f)` at actions.js:893 refuses each of these ids before NEVER_REWARD is read. Only 'glossary' (content-core.js:156, tab learn) gets as far as the tab clause, and engine.js:1504-1510 refuses it too. The builder's mutation M4 (C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__V-41.mut.mjs:16) replaced the whole of rewardOk with `return true`, and the unknown ids alone turn that red, so it does not test any single clause. No test tries the real SOS-tab features talkBack and feelingTools (content-core.js:168, :174) or the Settings-tab training (:169). The behaviour is right today because two layers each refuse. Notes: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md, section 'V-41 review'.",
+      "fix": "Test-only, in that test: (1) add 'talkBack', 'feelingTools' and 'training' to the reward list. (2) Seed one protected id as a real feature (C().features.help = {name:'x', gist:'y', tab:'today'}, restored in finally), so that NEVER_REWARD is what refuses it. (3) Run the list once more under withEngine({ isProtectedFeature: undefined }), so the Actions-side clauses are proven without the Engine's."
+     }
+    ],
+    "questions": [
+     "No points for claimed sober days: engine.js:1744 accepts any KNOWN_EVENTS as a quest-line condition, and engine.js:1633 (validDoneBy) accepts any as an objective's doneBy, MilestoneSeen (the total-days milestones) included. claim (actions.js:915-919) and done (actions.js:867) trust the Engine by design (R-C-50). If content V-42 ships a step or objective keyed on MilestoneSeen, a claim earns a reward and QuestLineStepDone XP for sober days. Which lane refuses that: engine's validateContent, content V-42, or should claim and done refuse it?",
+     "network and recoveryPlan (content-core.js:160, :175, tab 'workbook') hold the person's own people and plans (the Safety Nets), and they pass rewardOk (actions.js:890-898). Engine.unlocked only adds features (engine.js:1566-1574), so a claim cannot hide them today. Should they still be never-reward, so that content can never present the person's own people as a prize to be won?",
+     "done() on an objective whose doneBy is an event writes ObjectiveDone on a bare tap (actions.js:867; the units record says default yes). In the trunk, today-track shows the Done button on every objective not yet done (ui-today.js:561). ObjectiveDone counts as a shown-up day (engine.js:1499) and earns XP once per (id, date) (engine.js:224-226). Is a tap meant to stand in for the event, for example 'Log a craving' marked done with no log?",
+     "In the trunk, today-track shows the refusal message verbatim (ui-today.js:535, msg.textContent = str(res.message)). That makes actions.js's 'Unknown objective.', 'Unknown step.' and 'This step has no reward that can be opened.' copy that a person reads. Is that intended? If so, use plainer words. If not, Today could show its own TEXT.error for every code except swap-used and LOCKED."
+    ],
+    "read": [
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos.md (whole)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/V-41.md (whole)",
+     "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/contracts/actions-sos.md:206-224 (R-O-6, R-C-50)",
+     "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__units.md:907-918 (V-41)",
+     "git diff 87582bd4...HEAD (6c77d1d) -- offline/src/actions.js (whole hunk set)",
+     "git diff 87582bd4...HEAD -- offline/tests/actions.test.mjs (all 347 added lines, 3145-3492)",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/actions.js:100-139, 979-1042, plus greps of 44-70, 262-275, 835-920",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/engine.js:1246-1302, 1488-1582, plus greps of 161, 181-229, 1633-1682, 1744-1751",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/store.js:405-482, plus a cross-tab grep of 118-122, 396, 713-733",
+     "C:/Users/ruchi/1-addic-wt/actions-sos/offline/src/content-core.js:150-189",
+     "C:/Users/ruchi/1-addic/offline/src/ui-today.js (grep only: 327, 535, 560-607)",
+     "C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__V-41.mut.log, actions-sos__V-41.mut.mjs (grep)",
+     "C:/Users/ruchi/1-addic-wt/_logs/gates/actions-sos/gates-summary.log; build-20261108-072145.log, test-20261108-072152.log (GATE test GREEN pass=188), validate-20261108-072844.log, guards-20261108-072847.log (GREEN 5/5); the builder's run 07:12-07:13 also GREEN"
+    ],
+    "tip": "The lane is clean in this lens, with one LOW test gap and no BLOCKER, HIGH or MEDIUM. V-41 adds no UI and no copy beyond refusal messages, and does not touch SOS, the lock screen or onboarding. Each verb writes only its own event types inside one Store.commit and deletes nothing. They never throw and give plain messages with no person data (tests :3257, :3482). Sample rows never count, and the person's acts stay unmarked and survive eraseSample. The events are sealed under a PIN like every row, import accepts them and erase clears them. Engine.unlocked only adds and never adds a protected id, so no claim or refusal can hide SOS or urgent help. The diff has no URL, network or storage API, innerHTML or Math.random. I did not re-run the gates: I cite the checker's GREEN run at the same HEAD, 6c77d1d. Not reached: BUILD-PLAN 3.x (the contracts lens) and the content V-42 draft (another worktree). Notes are in C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/actions-sos__review-safety.md, section 'V-41 review' and its line corrections."
+   }
+  ]
+ }
+}
