@@ -785,3 +785,140 @@ test('today: FIX-EMBED stand-ins: a null ring shows nothing, a throw never break
     assert.equal(byTest(root, 'today-explorer').length, 0, 'a ring that throws shows nothing');
   });
 });
+
+/* ── V-43: today's objectives, the run line, the quest-line step ─────────────────────────────── */
+// Stub Engine/Actions for the names not merged yet (actions-sos V-41, content V-42); the real engine elsewhere.
+const stubE = (o) => Object.assign(Object.create(E), o || {});
+const OBJ = (id, o) => Object.assign({ id, title: 'Objective ' + id, line: 'One small thing.', doneBy: 'tap', grows: 'tree', done: false, swappable: true, swapTo: 'o-d' }, o || {});
+const daily = (o) => Object.assign({ date: TODAY, items: [OBJ('o-a'), OBJ('o-b', { done: true, swappable: false }), OBJ('o-c')], growth: 2, swapped: false }, o || {});
+function v43Actions(res) {
+  const A = stubActions();
+  const reply = (name) => async (id) => { A.calls.push([name, id]); if (res instanceof Error) throw res; return res || { ok: true }; };
+  A.objective = { done: reply('objective.done'), swap: reply('objective.swap') };
+  A.questLine = { claim: reply('questLine.claim') };
+  return A;
+}
+const STEP = (o) => Object.assign({ id: 'q1', title: 'First light', line: 'Log one craving.', reward: 'planner', opened: 'It opens the Planner.', state: 'current',
+  met: false, progress: { have: 0, need: 1 }, claimable: false }, o || {});
+const ql = (cur, o) => Object.assign({ steps: cur ? [cur, STEP({ id: 'q2', title: 'Second', state: 'locked' })] : [STEP({ state: 'done' }), STEP({ id: 'q2', state: 'done' })],
+  current: cur, done: 0, total: 2 }, o || {});
+const msgOf = (card) => card.all((n) => n.getAttribute && n.getAttribute('role') === 'status')[0];
+const withDoc = async (fn) => { globalThis.document = fakeDom(); try { return await fn(); } finally { delete globalThis.document; delete globalThis.GuidanceUI; } };
+const discreetRows = () => { const r = sampleRows(); r.settings = [settingsRow({ discreet: true })]; return r; };
+
+test('objectives: card absent when Engine.dailyObjectives is absent', () => withDoc(() => {
+  assert.equal(byTest(render(sampleRows(), { E: stubE({ dailyObjectives: undefined }), A: v43Actions() }).root, 'objectives-card').length, 0, 'absent: no card');
+  if (!Array.isArray(Content.objectives)) assert.equal(byTest(render(sampleRows()).root, 'objectives-card').length, 0, 'no Content.objectives yet: no card');
+  const { root } = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily() }) });
+  assert.equal(byTest(root, 'objectives-card').length, 1);
+  assert.equal(byTest(root, 'objectives-card')[0].getAttribute('data-tour'), 'objectives-card');
+  assert.equal(byTest(root, 'objective-done').length + byTest(root, 'objective-swap').length, 0, 'no Actions.objective: no dead button');
+  const keys = T.withObjectives(T.cardsFor({}), {});
+  assert.deepEqual(keys.slice(keys.indexOf('checkin'), keys.indexOf('checkin') + 3), ['checkin', 'objectives', 'questline']);
+  assert.deepEqual(T.withObjectives(T.cardsFor({ maintenance: true }), { maintenance: true }), ['checkin', 'objectives', 'plan', 'reasons', 'tip', 'backup']);
+  assert.ok(!T.withObjectives(T.cardsFor({ discreet: true }), { discreet: true }).includes('questline'), 'discreet: no quest-line');
+}));
+
+test('objectives: done button only on an undone item, swap hidden once swapped', () => withDoc(async () => {
+  const A = v43Actions();
+  const { root } = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily() }), A });
+  const rows = byTest(root, 'objective');
+  assert.deepEqual(rows.map((r) => [r.getAttribute('data-id'), r.getAttribute('data-done')]), [['o-a', 'false'], ['o-b', 'true'], ['o-c', 'false']]);
+  assert.equal(byTest(rows[1], 'objective-done').length + byTest(rows[1], 'objective-swap').length, 0, 'a done item has no button');
+  assert.match(rows[1].textContent, /Done/);
+  assert.equal(byTest(root, 'objective-done').length, 2);
+  assert.equal(byTest(root, 'objective-swap').length, 2);
+  byTest(rows[0], 'objective-done')[0].fire('click'); await tick();
+  byTest(rows[2], 'objective-swap')[0].fire('click'); await tick();
+  assert.deepEqual(A.calls.filter((x) => /^objective/.test(x[0])), [['objective.done', 'o-a'], ['objective.swap', 'o-c']]);
+  assert.match(byTest(root, 'objectives-card')[0].textContent, /2 things growing in your harbor\./);
+  const swapped = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily({ swapped: true }) }), A }).root;
+  assert.equal(byTest(swapped, 'objective-swap').length, 0, 'one swap a day');
+  assert.equal(byTest(swapped, 'objective-done').length, 2);
+  const one = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily({ growth: 0, items: [OBJ('o-a', { swapTo: null, swappable: false })] }) }), A }).root;
+  assert.equal(byTest(one, 'objective-swap').length, 0, 'nothing to swap to: no swap');
+  assert.match(byTest(one, 'objectives-card')[0].textContent, /The first one grows when you do one\./);
+}));
+
+test('objectives: a refusal shows its message and never throws', () => withDoc(async () => {
+  const no = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily() }), A: v43Actions({ ok: false, code: 'not-today', message: 'That one is not on today.' }) }).root;
+  byTest(no, 'objective-done')[0].fire('click'); await tick();
+  assert.equal(msgOf(byTest(no, 'objectives-card')[0]).textContent, 'That one is not on today.');
+  const boom = render(sampleRows(), { E: stubE({ dailyObjectives: () => daily() }), A: v43Actions(new Error('disk full')) }).root;
+  byTest(boom, 'objective-swap')[0].fire('click'); await tick();
+  assert.equal(msgOf(byTest(boom, 'objectives-card')[0]).textContent, 'disk full');
+  const thrown = render(sampleRows(), { E: stubE({ dailyObjectives: () => { throw new Error('x'); } }) }).root;
+  assert.equal(byTest(thrown, 'objectives-card').length, 0, 'an Engine throw: no card');
+  assert.equal(byTest(thrown, 'today-sos').length, 1, 'SOS stays');
+}));
+
+test('run: kept only when holding, back only when cameBack, no countdown words', () => withDoc(() => {
+  const runOf = (o) => () => Object.assign({ current: 3, best: 5, total: 9, kept: [], holding: null, cameBack: false, lastDay: TODAY }, o);
+  const line = (o, rows) => byTest(render(rows || sampleRows(), { E: stubE({ run: runOf(o) }) }).root, 'run-line')[0];
+  const held = line({ holding: '2026-11-06' });
+  assert.equal(held.getAttribute('data-tour'), 'run-line');
+  assert.deepEqual(['run-current', 'run-best', 'run-total'].map((k) => byTest(held, k)[0].textContent), ['Now 3', 'Best 5', 'In all 9']);
+  assert.equal(byTest(held, 'run-kept').length, 1);
+  assert.equal(byTest(held, 'run-back').length, 0);
+  const back = line({ current: 1, cameBack: true });
+  assert.equal(byTest(back, 'run-kept').length, 0);
+  assert.equal(byTest(back, 'run-back')[0].textContent, 'You came back.');
+  assert.deepEqual(['run-best', 'run-total'].map((k) => byTest(back, k)[0].textContent), ['Best 5', 'In all 9']);
+  for (const n of [held, back]) assert.doesNotMatch(n.textContent, /streak|lost|broken|reset|\bleft\b|hours?|countdown|until|missed|\bXP\b|points/i);
+  assert.equal(line({ current: 0, best: 0, total: 0 }), undefined, 'nothing shown up yet: no line');
+  assert.equal(byTest(render(sampleRows(), { E: stubE({ run: undefined }) }).root, 'run-line').length, 0, 'Engine.run absent: no line');
+  const maint = sampleRows(); maint.settings = [settingsRow({ maintenance: true })];
+  assert.equal(line({}, maint), undefined, 'maintenance: objectives only');
+  assert.match(line({}, discreetRows()).textContent, /^Days active: /, 'discreet: neutral words');
+  const had = Object.prototype.hasOwnProperty.call(Content, 'runWords'); const old = Content.runWords;
+  try {
+    Content.runWords = { header: 'Days you showed up', keptLine: '' };
+    const w = line({ holding: '2026-11-06' });
+    assert.match(w.textContent, /^Days you showed up: /);
+    assert.equal(byTest(w, 'run-kept')[0].textContent, 'Kept. One quiet day a week still counts.', 'a missing word falls back');
+  } finally { if (had) Content.runWords = old; else delete Content.runWords; }
+}));
+
+test('questline: claim only when claimable, card absent when questLine absent', () => withDoc(async () => {
+  const A = v43Actions();
+  const card = (q, extra) => byTest(render(sampleRows(), Object.assign({ E: stubE({ questLine: () => q }), A }, extra || {})).root, 'questline-card')[0];
+  const waiting = card(ql(STEP()));
+  assert.equal(waiting.getAttribute('data-tour'), 'questline-card');
+  assert.equal(byTest(waiting, 'questline-step')[0].getAttribute('data-state'), 'current');
+  assert.match(waiting.textContent, /First light/);
+  assert.match(waiting.textContent, /Progress: 0 of 1/);
+  assert.equal(byTest(waiting, 'questline-claim').length, 0, 'not met: no claim');
+  const ready = card(ql(STEP({ met: true, claimable: true, progress: { have: 1, need: 1 } })));
+  byTest(ready, 'questline-claim')[0].fire('click'); await tick();
+  assert.deepEqual(A.calls.filter((x) => x[0] === 'questLine.claim'), [['questLine.claim', 'q1']]);
+  assert.equal(byTest(card(ql(STEP({ claimable: true })), { A: stubActions() }), 'questline-claim').length, 0, 'no Actions.questLine: no dead button');
+  assert.equal(card(ql(STEP()), { E: stubE({ questLine: undefined }) }), undefined, 'Engine.questLine absent: no card');
+  assert.equal(card(ql(null, { steps: [], total: 0 })), undefined, 'no steps: no card');
+  assert.match(card(ql(null, { done: 2 })).textContent, /Every step is done\./);
+  assert.equal(byTest(render(discreetRows(), { E: stubE({ questLine: () => ql(STEP({ claimable: true })) }), A }).root, 'questline-card').length, 0, 'discreet: no card');
+}));
+
+test('questline: absent GuidanceUI.rewardSheet does not throw', () => withDoc(async () => {
+  const unlocked = { ok: true, events: [{ type: 'QuestLineStepDone', payload: { id: 'q1' } }, { type: 'FeatureUnlocked', payload: { feature: 'planner' } }] };
+  const claimBtn = () => byTest(render(sampleRows(), { E: stubE({ questLine: () => ql(STEP({ claimable: true })) }), A: v43Actions(unlocked) }).root, 'questline-claim')[0];
+  const b = claimBtn(); b.fire('click'); await tick();
+  assert.equal(msgOf(b.parentNode.parentNode).textContent, '', 'no sheet, no error');
+  const seen = [];
+  globalThis.GuidanceUI = { rewardSheet: (f, ctx) => { seen.push([f, !!(ctx && ctx.view)]); return null; } };
+  claimBtn().fire('click'); await tick();
+  assert.deepEqual(seen, [['planner', true]], 'the FeatureUnlocked reward, with the page ctx');
+  globalThis.GuidanceUI = { rewardSheet: () => { throw new Error('boom'); } };
+  const c = claimBtn(); c.fire('click'); await tick();
+  assert.equal(msgOf(c.parentNode.parentNode).textContent, '', 'a sheet that throws breaks nothing');
+}));
+
+test('today: the sober-day counters card is unchanged', () => withDoc(() => {
+  const full = stubE({ dailyObjectives: () => daily(), run: () => ({ current: 4, best: 6, total: 20, kept: [], holding: '2026-11-06', cameBack: false }),
+    questLine: () => ql(STEP({ claimable: true })) });
+  const plain = byTest(render(sampleRows(), { E: stubE({ dailyObjectives: undefined, run: undefined, questLine: undefined }) }).root, 'today-counters');
+  const withAll = byTest(render(sampleRows(), { E: full, A: v43Actions() }).root, 'today-counters');
+  assert.equal(plain.length, 1);
+  assert.equal(withAll.length, 1);
+  assert.equal(withAll[0].textContent, plain[0].textContent, 'the O6 counters show the same words and numbers');
+  assert.doesNotMatch(withAll[0].textContent, /shown up|In all|growing/);
+}));

@@ -65,6 +65,18 @@ const TodayUI = (() => {
     sample: 'Sample',
     harbor: 'Your Harbor',
     error: 'That did not save. Please try again.',
+    objectivesTitle: "Today's objectives",
+    objectiveDone: 'Done', objectiveDoneAria: (t) => `Mark done: ${t}`, objectiveIsDone: 'Done',
+    objectiveSwap: 'Swap', objectiveSwapAria: (t) => `Swap for another one: ${t}`,
+    growing: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+    growingNone: 'The first one grows when you do one.',
+    run: { header: 'Days shown up', neutral: 'Days active', current: 'Now', best: 'Best', total: 'In all',
+      keptLine: 'Kept. One quiet day a week still counts.', cameBackLine: 'You came back.' },
+    wayTitle: 'Your way',
+    unlocks: (name) => `Unlocks: ${name}`,
+    progress: (have, need) => `Progress: ${have} of ${need}`,
+    claim: 'Claim', claimAria: (t) => `Claim: ${t}`,
+    wayDone: 'Every step is done.',
   };
 
   /* ── small helpers ─────────────────────────────────────────────────────────────────────── */
@@ -285,6 +297,30 @@ const TodayUI = (() => {
     return all.filter((k) => !(o.calm && (k === 'momentum' || k === 'game' || k === 'explorer' || k === 'harbor')) && !(o.discreet && (k === 'harbor' || k === 'counters' || k === 'game')));
   }
 
+  /* V-43: the objectives and quest-line cards go right after the check-in (cardsFor itself is unchanged). Maintenance
+     keeps the objectives only; discreet hides the quest-line, whose reward names are not neutral. */
+  function withObjectives(keys, o) {
+    const x = o || {};
+    const add = x.maintenance || x.discreet ? ['objectives'] : ['objectives', 'questline'];
+    const k = arr(keys).filter((key) => !add.includes(key));
+    const i = k.indexOf('checkin');
+    k.splice(i < 0 ? 0 : i + 1, 0, ...add);
+    return k;
+  }
+  /* The run line from Engine.run: null with no day shown up yet. Content.runWords wins key by key, TEXT fills the gaps.
+     Never a countdown: 'kept' on a grace day (holding), 'you came back' after a break; best and total come as given. */
+  function runLine(r, words, discreet) {
+    if (!isObj(r) || !(Number(r.total) > 0)) return null;
+    const given = isObj(words) ? Object.fromEntries(Object.entries(words).filter(([, v]) => str(v))) : {};
+    const w = Object.assign({}, TEXT.run, given);
+    const n = (v) => Math.max(0, Math.floor(Number(v) || 0));
+    return {
+      header: discreet ? TEXT.run.neutral : w.header, current: n(r.current), best: n(r.best), total: n(r.total),
+      labels: { current: w.current, best: w.best, total: w.total },
+      kept: r.holding ? w.keptLine : null, back: r.cameBack === true ? w.cameBackLine : null,
+    };
+  }
+
   /* ── cards (DOM) ───────────────────────────────────────────────────────────────────────── */
   const sampleTag = (row) => (row && row.sample === true ? h('span', { class: 'td-tag td-sample', text: TEXT.sample }) : null);
   const run = (fn) => Promise.resolve().then(fn);
@@ -489,6 +525,99 @@ const TodayUI = (() => {
     return h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-hidden': 'true' }, art);
   }
 
+  /* ── V-43: today's objectives, the run line, the quest-line step ─────────────────────────────── */
+  /* An Actions verb, or null when absent (then its button is not drawn: O7). */
+  const verb = (A, group, fn) => (A && isObj(A[group]) && typeof A[group][fn] === 'function' ? (...a) => A[group][fn](...a) : null);
+  const statusLine = () => h('p', { class: 'muted td-msg', role: 'status', 'aria-live': 'polite' });
+  /* A refusal shows its message and nothing throws; an ok result re-renders through Store.subscribe (ui-core). */
+  function act(msg, fn, onOk) {
+    return run(fn).then((res) => {
+      if (res && res.ok === false) { msg.textContent = str(res.message) || TEXT.error; return; }
+      msg.textContent = '';
+      if (onOk) safe(() => onOk(res), null);
+    }, (e) => { msg.textContent = (e && e.message) || TEXT.error; });
+  }
+  const featureName = (id) => {
+    const C = ns('Content');
+    const f = C && isObj(C.features) && str(id) ? C.features[id] : null;
+    return isObj(f) ? str(f.name) : '';
+  };
+  function objectivesCard(c) {
+    const E = c.E;
+    const r = E && typeof E.dailyObjectives === 'function' ? safe(() => E.dailyObjectives(c.view, c.now), null) : null;
+    const items = isObj(r) ? arr(r.items).filter((o) => isObj(o) && str(o.id)) : [];
+    if (!items.length) return null;
+    const done = verb(c.A, 'objective', 'done');
+    const swap = r.swapped !== true ? verb(c.A, 'objective', 'swap') : null;
+    const msg = statusLine();
+    const rows = items.map((o) => {
+      const title = str(o.title) || o.id;
+      const isDone = o.done === true;
+      return h('li', { class: 'stack td-objective', 'data-test': 'objective', 'data-id': o.id, 'data-done': isDone ? 'true' : 'false' },
+        h('p', { class: 'td-objective-title', text: title }),
+        str(o.line) ? h('p', { class: 'muted', text: str(o.line) }) : null,
+        h('div', { class: 'row' },
+          isDone ? h('span', { class: 'td-tag', text: TEXT.objectiveIsDone }) : null,
+          !isDone && done ? h('button', { type: 'button', class: 'btn primary', 'data-test': 'objective-done', 'aria-label': TEXT.objectiveDoneAria(title),
+            text: TEXT.objectiveDone, onClick: () => act(msg, () => done(o.id)) }) : null,
+          !isDone && swap && o.swappable === true && str(o.swapTo) ? h('button', { type: 'button', class: 'btn ghost', 'data-test': 'objective-swap',
+            'aria-label': TEXT.objectiveSwapAria(title), text: TEXT.objectiveSwap, onClick: () => act(msg, () => swap(o.id)) }) : null));
+    });
+    const n = Math.max(0, Math.floor(Number(r.growth) || 0));
+    return h('section', { class: 'card stack td-card td-objectives', 'data-test': 'objectives-card', 'data-tour': 'objectives-card', 'aria-label': TEXT.objectivesTitle },
+      h('h2', { class: 'card-title', text: TEXT.objectivesTitle }),
+      h('ul', { class: 'td-objective-list' }, rows),
+      h('p', { class: 'muted td-growing', text: n > 0 ? TEXT.growing(n) : TEXT.growingNone }), msg);
+  }
+  /* Under the quick row: days shown up, now · best · in all (Engine.run). Not the opt-in sober-day counters. */
+  function runLineEl(c, discreet) {
+    const E = c.E;
+    const r = E && typeof E.run === 'function' ? safe(() => E.run(c.view, c.now), null) : null;
+    const C = ns('Content');
+    const d = runLine(r, C && C.runWords, discreet);
+    if (!d) return null;
+    const part = (k, test) => h('span', { class: 'td-run-part', 'data-test': test }, `${d.labels[k]} `, h('strong', { text: String(d[k]) }));
+    return h('div', { class: 'stack td-run', 'data-test': 'run-line', 'data-tour': 'run-line' },
+      h('p', { class: 'td-run-nums' }, h('span', { class: 'td-run-head', text: `${d.header}: ` }),
+        part('current', 'run-current'), ' · ', part('best', 'run-best'), ' · ', part('total', 'run-total')),
+      d.kept ? h('p', { class: 'muted', 'data-test': 'run-kept', text: d.kept }) : null,
+      d.back ? h('p', { class: 'td-run-back', 'data-test': 'run-back', text: d.back }) : null);
+  }
+  /* On a claim the reward sheet is game-tutorials' (V-44), behind typeof; without it the unlock shows on the next Today. */
+  function rewardSheet(c, res) {
+    const evs = arr(res && res.events).concat(res && isObj(res.event) ? [res.event] : []);
+    const ev = evs.find((e) => isObj(e) && e.type === 'FeatureUnlocked');
+    const feature = ev && isObj(ev.payload) ? str(ev.payload.feature) : '';
+    const G = embedFn('GuidanceUI', 'rewardSheet');
+    if (feature && G) safe(() => G.rewardSheet(feature, ctxOf(c)), null);
+  }
+  function questlineCard(c) {
+    const E = c.E;
+    const ql = E && typeof E.questLine === 'function' ? safe(() => E.questLine(c.view, c.now), null) : null;
+    if (!isObj(ql) || !(Number(ql.total) > 0)) return null;
+    const card = (...body) => h('section', { class: 'card stack td-card td-questline', 'data-test': 'questline-card', 'data-tour': 'questline-card', 'aria-label': TEXT.wayTitle },
+      h('h2', { class: 'card-title', text: TEXT.wayTitle }), ...body);
+    const s = isObj(ql.current) ? ql.current : null;
+    if (!s) return Number(ql.done) >= Number(ql.total) ? card(h('p', { class: 'muted', text: TEXT.wayDone })) : null;
+    const title = str(s.title) || str(s.id);
+    const name = featureName(s.reward);
+    const p = isObj(s.progress) ? s.progress : null;
+    const need = p ? Math.max(0, Math.floor(Number(p.need) || 0)) : 0;
+    const have = p ? Math.min(need, Math.max(0, Math.floor(Number(p.have) || 0))) : 0;
+    const claim = s.claimable === true ? verb(c.A, 'questLine', 'claim') : null;
+    const msg = statusLine();
+    return card(
+      h('div', { class: 'stack', 'data-test': 'questline-step', 'data-state': 'current', 'data-id': str(s.id) },
+        h('p', { class: 'td-step-title', text: title }),
+        str(s.line) ? h('p', { text: str(s.line) }) : null,
+        name ? h('p', { class: 'muted', text: TEXT.unlocks(name) }) : null,
+        str(s.opened) ? h('p', { class: 'muted', text: str(s.opened) }) : null,
+        need > 0 ? h('p', { class: 'muted', text: TEXT.progress(have, need) }) : null),
+      claim ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-test': 'questline-claim', 'aria-label': TEXT.claimAria(title),
+        text: TEXT.claim, onClick: () => act(msg, () => claim(s.id), (res) => rewardSheet(c, res)) })) : null,
+      msg);
+  }
+
   /* The way in to Your Harbor (#/status), beside Log a craving and SOS; the same word in Calm and discreet mode.
      The "New" dot only once Content.features.status exists (content V-10; the dot itself is GuidanceUI's). */
   function statusChip(c) {
@@ -518,22 +647,24 @@ const TodayUI = (() => {
       h('div', { class: 'row td-quick' },
         link('#/track/log/craving', TEXT.logCraving, 'btn primary', 'today-log-craving'),
         link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos'),
-        statusChip(c)));
+        statusChip(c)),
+      maintenance ? null : safe(() => runLineEl(c, discreet), null));
     const make = {
       milestone: () => milestoneCard(c, gs), checkin: () => checkinCard(c), plan: () => planCard(c, features),
       want: () => wantCard(c, features), learn: () => learnCard(c), quests: () => questsCard(c), reasons: () => reasonsCard(c),
       counters: () => countersCard(c, gs), momentum: () => momentumCard(c, gs), game: () => gameCard(c), explorer: () => explorerCard(c),
       tip: () => tipCard(c), more: () => moreCard(c), backup: () => backupCard(c), harbor: () => harborCard(c),
+      objectives: () => objectivesCard(c), questline: () => questlineCard(c),
     };
-    const cards = cardsFor({ maintenance, calm: c.calm, discreet }).map((k) => safe(make[k], null));
+    const cards = withObjectives(cardsFor({ maintenance, calm: c.calm, discreet }), { maintenance, discreet }).map((k) => safe(make[k], null));
     return h('section', { class: 'page stack td-page', 'data-test': 'today-page' }, head, cards);
   }
 
   const PURE = ['TEXT', 'localDate', 'greetingFor', 'checkinsDone', 'checkinKind', 'checkinWindows', 'planToday', 'wantToday', 'activeQuests',
-    'reasonOfDay', 'countersData', 'backupDue', 'milestoneDue', 'cardsFor'];
+    'reasonOfDay', 'countersData', 'backupDue', 'milestoneDue', 'cardsFor', 'withObjectives', 'runLine'];
   return {
     TEXT, localDate, greetingFor, checkinsDone, checkinKind, checkinWindows, planToday, wantToday, activeQuests, reasonOfDay, countersData,
-    backupDue, milestoneDue, cardsFor, page, PURE,
+    backupDue, milestoneDue, cardsFor, withObjectives, runLine, page, PURE,
     _resetTip() { tipState.day = ''; tipState.tip = null; tipState.marked = ''; tipState.dismissed = ''; },
   };
 })();
