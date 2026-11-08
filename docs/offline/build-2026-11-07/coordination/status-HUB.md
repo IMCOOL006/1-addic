@@ -67,7 +67,7 @@ MERGED: core READY-SLICE fbc663d (V-46 the chrome's feature set reads Engine.unl
 MERGED: tests-docs READY d964202 (V-01t the status layer's four browser flows, hooks, screens #/status, the guide lesson Your Harbor, the counts; the check's four fixes C1 HIGH to C4 LOW) -> merge 3fbd08f6, trunk 3fbd08f6, pushed 2026-11-08 08:55 IST with build/tests-docs (build GREEN 1184473 B; test GREEN; validate GREEN; guards GREEN all checks; docs GREEN by hand on _int; browser on the branch 25/0/0 per R-C-68; territory 0 errors; merge base 30cb12ff). DOCS-TRUE by name for V-45: CLAUDE.md's 'Tests as of 2026-11-08 (V-01t)' line says 581/582 with today-track's stand-ins check red on 30cb12ff; on the trunk that fix (670df19) is merged and the full Node suite was 614/614 at the engine merge: V-45 recounts on the trunk and writes the true line
 QUIET: done 2026-11-08 01:31-01:57 on _int (e8da3fb: build, test 536/536, validate, guards, docs GREEN, browser one red by name; f69bc68 after the fix: browser GREEN 16/0/3); TAG offline-v1.1 at f69bc68 pushed 01:59. Earlier: QUIET done 2026-11-07 10:57; TAG offline-v1.0 at 45473b2 pushed 11:40
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 (PLAN-V3.md section 7: tier 1 about 30 h; FREEZE about 13:30, QUIET to 14:15, TAG offline-v3.0 about 14:30 IST with three lanes from 03:30 on 7.0 GB rows, two hours later with two; re-cut on the board every two hours from the rows)
-UPDATED: 2026-11-08 09:22 IST
+UPDATED: 2026-11-08 09:30 IST
 
 
 
