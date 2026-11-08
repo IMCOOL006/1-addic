@@ -305,6 +305,9 @@ flow('status: a slip lowers no light', { routes: ['status', 'sos'], globals: ['S
   const places0 = await levelsOf(page, HOOKS.statusPlace, 'data-region');
   const scene0 = await levelsOf(page, `${HOOKS.statusScene} ${HOOKS.harborPlace}`, 'data-place');
   assert.ok(places0.length > 0, 'the status page lists its places');
+  // C3: a place must have light before the slip, or "never lowers" could not fail.
+  assert.ok(places0.some(([, lv]) => lv > 0), 'a status-place has light before the slip: ' + JSON.stringify(places0));
+  assert.ok(scene0.some(([, lv]) => lv > 0), 'a scene place has light before the slip: ' + JSON.stringify(scene0));
   const slip0 = await F.events(page, 'SlipLogged');
   await F.cravingSession(page, { used: true, loop: false });
   await F.waitFor(page, (n) => Store.view.list('events').filter((e) => e.type === 'SlipLogged').length >= n, slip0 + 1);
