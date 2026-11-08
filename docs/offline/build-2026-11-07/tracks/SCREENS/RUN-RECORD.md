@@ -238,6 +238,11 @@
   - Args: args/v3_gt_slice.json, from lane_args_v3.json lanes.game-tutorials, done = U-27, U-26, U-28, FIX-TOUR.
   - It builds on R-C-47/R-C-48 behind typeof. actions-sos V-08a is at b7b4db9 on its branch, not merged.
 
+## 2026-11-08 06:51 IST · builders done; checks running; V-42 args ready
+
+- V-43 builder: 4568551, 37f6892, c7145c9 (tip c7145c9). V-08b builder: 241e9bb. Both checkers are running.
+- HUB 11 merged actions-sos 3e3ffbc (BASE 87582bd4). The content worktree was fast-forwarded to 87582bd4. args/v3_content_v42.json is written. R-S-25 (the unlock set) is filed. Commit 0b62f437.
+
 ## Resume here
 
 - Chat b632a0d9 (SCREENS) is live.
@@ -246,7 +251,7 @@
   - game-tutorials V-08b slice: wf_522ed1be-f6b (06:12, slot 8, merge base 30cb12ff). When it returns: LANE: game-tutorials READY-SLICE <tip>. Then the relaunch with done + V-08b, priorNote from the journal, diffFrom the slice tip, and sliceRun false for V-28 (moot fix: content routes are '#/status' now) and V-44.
 - A fresh chat does not relaunch these runs if b632a0d9 is still listed by `claude agents --json`. If the session is gone, the runs died with it: relaunch from the branch's last commit with done and priorNote.
 - NEXT:
-  - (1) content V-42 on slot 4. Fast-forward build/content and its worktree from 4ae98eb to the trunk (30cb12ff contains 4ae98eb), then write args/v3_content_v42.json and launch.
+  - (1) content V-42 on slot 4: the worktree is at 87582bd4 (fast-forwarded, clean) and args/v3_content_v42.json is ready (restamp now). Launch lane.js with it on the next row at or above 7.0 GB (HUB 11). Expected red by name on its branch alone: guards tour-target questline-card, objectives-card and run-line until V-43 merges.
     - Its laneNote takes: R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone); R-S-20; the real validator (engine.js ~1709); data-tour objectives-card, questline-card, run-line; and C1 (m1.unlocks gets 'status', one line in content-lessons-a.js).
     - It starts on the next row at or above 7.0 GB unless HUB 11 says 4.0.
   - (2) Watch outbox-OWNER.md for I6 (V-10b).
