@@ -6,7 +6,15 @@ LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 07:50 IST
+UPDATED: 2026-11-08 08:16 IST
+
+# 2026-11-08 08:16 IST · R-C-67 (core V-46 READY-SLICE fbc663d): ctx.features from Engine.unlocked; V-42 at eb38166
+
+- CORE 13 (08:11): UI.ctx(r).features is Engine.unlocked(view) when it exists. That is revealed, plus claimed quest-line rewards, plus FeatureUnlocked features, never a protected id.
+  - Otherwise it falls back to Engine.revealed, then to Content.reveal.always. It is always a Set and a superset of revealed. No public name changed.
+  - game-tutorials V-44's laneNote takes this: the surfaces may read ctx.features, and their own typeof-guarded Engine.unlocked reads stay.
+- content V-42 is still in its builder (wf_cbf01cc8-1a7). Commits so far: 15600a9 and eb38166 (the run words fit what V-43 draws).
+- The rows went back above the floor: 07:55 8.4 GB, 08:06 7.7 GB. No pause happened.
 
 # 2026-11-08 07:34 IST · from the HUB · today-track 670df19 merged (trunk fb6061b5); a note for V-42's verdict
 
