@@ -74,7 +74,7 @@ elif lane == 'game-tutorials':
         " and browser --grep tour (the flows 'tour complete', 'tour skip', 'tour replay' stay green).")
 else:
     sys.exit('no tier 2 for ' + lane)
-a.update(base=base, diffFrom=base, session=SESSION, now=now, sliceRun=False, start='build', priorNote='')
+a.update(base=base, diffFrom=base, session=SESSION, now=now, sliceRun=(lane in ('content', 'workbook-settings')), start='build', priorNote='')
 for k in ('dryRun',):
     a.pop(k, None)
 p = D + f'tracks/SCREENS/args/v3_{lane}_t2.json'
