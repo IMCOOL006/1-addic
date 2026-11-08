@@ -1,0 +1,66 @@
+{
+ "lane": "engine",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The quest-line, the daily objectives, the growth and the run derivations (R-O-6); the spiral reply's own flag; the exported tutorialDone.",
+ "files": [
+  "offline/src/engine.js",
+  "offline/tests/logic.test.mjs",
+  "offline/tests/engine-roadmap.test.mjs",
+  "offline/tests/engine-insights.test.mjs",
+  "offline/tests/engine-data.test.mjs",
+  "offline/tests/engine-warning-item.test.mjs",
+  "offline/tests/engine-questline.test.mjs"
+ ],
+ "units": [
+  "V-40",
+  "V-40b",
+  "V-40c",
+  "V-19",
+  "V-30",
+  "FIX-RS27"
+ ],
+ "batches": [
+  [
+   "V-40",
+   "V-40b",
+   "V-40c",
+   "V-19",
+   "V-30"
+  ],
+  [
+   "FIX-RS27"
+  ]
+ ],
+ "unitTier": {
+  "V-40": 1,
+  "V-19": 2,
+  "V-30": 2,
+  "FIX-RS27": 1
+ },
+ "unitNotes": {
+  "FIX-RS27": "FIX-RS27 (R-S-27, R-H-45; test-only, one commit): offline/tests/engine-questline.test.mjs, the test 'XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only' (about line 458): its first assertion, outside withContent, expects total 0 from the real Content.xp; content V-42 adds ObjectiveDone 3 and QuestLineStepDone 10, so the merged tree reads 29 !== 0. Change only that assertion to compare against the real rows (const r = C.xp || {}; 3 * (r.ObjectiveDone || 0) + 2 * (r.QuestLineStepDone || 0)). Keep the test name; no engine.js change; no other file. Detail: tracks/CORE/briefs/engine/FIX-RS27.md."
+ },
+ "laneNote": "The engine's V3 units are merged (1541552b); this run is FIX-RS27 only (R-H-45). The contracts: PLAN-V3.md section 7; a change is asked of its owner by outbox. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words. CORE 14's word (2026-11-08 09:34 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/engine/<unit>.md. No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 4c79e5f7-5738-4953-9d45-e4317bb05409'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-05",
+  "U-06",
+  "U-07",
+  "U-08",
+  "FIX-RS4",
+  "FIX-RS9E",
+  "V-40",
+  "V-40b",
+  "V-40c",
+  "V-19",
+  "V-30"
+ ],
+ "base": "3fbd08f6",
+ "session": "4c79e5f7-5738-4953-9d45-e4317bb05409",
+ "now": "2026-11-08 09:34 IST",
+ "diffFrom": "3fbd08f6",
+ "slot": 2,
+ "sliceRun": false,
+ "priorNote": "FIRST: this run is FIX-RS27 only, a one-assertion test-only fix in offline/tests/engine-questline.test.mjs (the unit note). Prove it both ways before you commit: (1) npm test on this tree (engine-questline.test.mjs green, the full Node suite counted by name); (2) the merged case: copy V-42's file into a scratch copy only (git -C C:/Users/ruchi/1-addic-wt/content show eb38166:offline/src/content-quests.js into a git archive of HEAD under C:/Users/ruchi/1-addic-wt/_logs/reports/engine/rs27-scratch/, never into the worktree) and run node --test on the test there: red before the fix (29 !== 0), green after. Say both results with their log paths in your note.\n"
+}

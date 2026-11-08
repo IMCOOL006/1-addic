@@ -1,12 +1,22 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 09:33 IST: SCREENS 6508c21d. content READY eb38166 (V-42; check wf_76cc2221-3cb PASS). Nothing of SCREENS live; game-tutorials V-28 + V-44 (args/v3_gt_v28_v44.json, worktree at BASE 3fbd08f6) starts on the next row at or above 7.0 GB (CORE took the 09:24 row for V-45). RUN-RECORD.md 'Resume here'
+STATE: RUNNING   # 2026-11-08 09:40 IST: SCREENS 6508c21d. Live: game-tutorials V-28 + V-44 wf_e5593f15-752 (09:38, args/v3_gt_v28_v44.json). content READY eb38166 in the HUB's merge since 09:35. RUN-RECORD.md 'Resume here'
 LANE: content READY eb38166   # V-42 + C1 (15600a9, eb38166), merge base 87582bd4; check wf_76cc2221-3cb PASS: build, test 40/40, validate GREEN; guards RED by name on the branch alone only: tour-target objectives-card, questline-card, run-line (V-43's targets are on the trunk; the merged tree judges); C1 = R-S-27/R-H-45 engine FIX-RS27 by name; report lane-reports/content.md
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913. Next: V-28 + V-44, args/v3_gt_v28_v44.json; branch and worktree fast-forwarded 241e9bb..3fbd08f6 (09:2x, --ff-only, clean); merge base 3fbd08f6; on the next 7.0 GB row
+LANE: game-tutorials BUILDING 3fbd08f6   # V-28 then V-44: wf_e5593f15-752 since 09:38 IST (args/v3_gt_v28_v44.json; slot 8). Fast-forwarded 241e9bb..3fbd08f6 (--ff-only, clean); merge base 3fbd08f6. V-41 and V-42 behind typeof/data presence; V-21 tier 2 later
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 09:33 IST
+UPDATED: 2026-11-08 09:40 IST
+
+# 2026-11-08 09:40 IST · game-tutorials V-28 + V-44 running (wf_e5593f15-752)
+
+- Launched 09:38 IST on the 09:35 row (9.1 GB; 9.6 GB by hand at 09:37), slot 8. Args: args/v3_gt_v28_v44.json. Two batches, V-28 then V-44. V-21 (tier 2) is left out.
+- Merge base 3fbd08f6. The branch and worktree were fast-forwarded 241e9bb..3fbd08f6 with --ff-only and are clean.
+- Rulings in the laneNote:
+  - R-H-44: no new gate in ui-tools.js or ui-game.js. The guidance gates read the unlocked set, and V-46's ctx.features does too.
+  - rewardSheet: today-track's call site is ui-today.js:586-592.
+  - V-41 and V-42 are not merged yet, so the work is behind typeof guards and data presence. The tests stay green after both merge.
+- content READY eb38166: the HUB has been merging it since 09:35.
 
 # 2026-11-08 09:33 IST · content READY eb38166 (V-42 and C1), for the HUB
 
