@@ -1,0 +1,6 @@
+{
+ "V-45": {
+  "tier": 1,
+  "note": "V-45 (tier 1, 1 h; PLAN-V3.md section 7): three browser flows by name in browser.test.mjs: 'an objective done grows the harbor' (objective-done on Today, then status-growth-item count +1 on #/status), 'a break keeps best and total' (two dated sessions by the page clock: run-best and run-total never drop after a missed day), 'a quest-line step unlocks a feature' (questline-claim, then the reward's feature reachable). The hooks in hooks.mjs from tracks/CORE/contracts/tests-docs.md (07:10, V-43 as built, all data-test). Each flow skips by name while a hook, Actions.objective/questLine (actions-sos V-41) or Content.questLine (content V-42) is missing. Guide lessons and screenshots for the three."
+ }
+}
