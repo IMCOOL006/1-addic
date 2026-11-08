@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 05:23 IST: CORE 12 (51e49e2a), context over 250k, hand-over planned (RUN-RECORD 'Resume here'). Running: core V-11 wf_f4937d0d-06e (slot 1), actions-sos V-08a + V-SOS10 wf_f776514a-ccd (slot 3), engine V-19 + V-30 wf_a3640bbf-6fd (slot 2, T2), tests-docs V-01t wf_2e6b1d27-92c (slot 5)
+STATE: BUILDING   # 2026-11-08 05:30 IST: CORE 12 (51e49e2a), hand-over planned (RUN-RECORD 'Resume here'). Under the floor: tests-docs V-01t PAUSED (stopped, clean). Running: core V-11 wf_f4937d0d-06e (slot 1; next to pause), actions-sos V-08a + V-SOS10 wf_f776514a-ccd (slot 3), engine V-19 + V-30 wf_a3640bbf-6fd (slot 2, T2)
 LANE: core BUILDING f69bc68   # 2026-11-08 04:59 IST: V-11 the slice (static safety line before boot; words from boot.js COPY only, R-C-48) wf_f4937d0d-06e on slot 1, sliceRun, merge base f69bc68a; flagged (two reviewers at the lane's end). Then V-16, V-17a, V-26a (T2)
 LANE: engine BUILDING 4330d9f   # 2026-11-08 05:08 IST: V-40c MERGED 94c51632 (05:03). V-19 (spiral own flag) + V-30 (export tutorialDone), tier 2, wf_a3640bbf-6fd from 4330d9f on slot 2 (every tier 1 lane holds a slot, HUB 05:05)
 LANE: actions-sos BUILDING f69bc68   # 2026-11-08 04:59 IST: V-08a useSkill + V-SOS10 (the first batch, sliceRun) wf_f776514a-ccd on slot 3, merge base f69bc68a; flagged. Then V-41 (T1, the R-O-6 verbs on R-C-50), then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
-LANE: tests-docs BUILDING 62ff5db   # 2026-11-08 05:23 IST: 2a515e5 (V-03 + V-06) MERGED af223cba (trunk ede90d0a). Worktree fast-forwarded to the trunk at 62ff5db (merge base 62ff5db). V-01t wf_2e6b1d27-92c on slot 5: the recount of the docs' test lines first (R-C-60), then the four status browser tests, the R-S-23 hooks, the guide lesson 'Your Harbor'. Then V-45 after today-track V-43 merges
+LANE: tests-docs PAUSED 62ff5db   # 2026-11-08 05:30 IST: V-01t wf_2e6b1d27-92c stopped before its first commit (the 05:23 row 2.6 GB, 3.7 GB by hand; the newest run on the machine; worktree clean at 62ff5db, nothing lost). Relaunch on a reading of 4.0 GB or more with args_v3_tests-docs_V-01t.json (fresh now), without resumeFromRunId. Then V-45
 SLOTS-ASKED: 0   # 2026-11-08 04:59 IST: every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 05:23 IST
+UPDATED: 2026-11-08 05:30 IST
 
 # 2026-11-08 05:14 IST · from the HUB · tests-docs 2a515e5 merged (trunk ede90d0a); V-01t recounts on the trunk
 
