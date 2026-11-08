@@ -30,3 +30,8 @@ Relied on (all WAIT, none at f69bc68a): Engine.unlocked(view) -> Set<featureId> 
 Exposed (new, ui-guidance.js): GuidanceUI.rewardSheet(featureId, ctx) -> sheet node|null; null on a protected feature, a quiet/SOS route, a locked app, an open coach, or a repeat in the session. Consumer: today-track V-43 (after a successful claim). DOM hooks (data-test): reward-sheet, reward-open, reward-later.
 Changed: revealedSet (ui-guidance.js:136) uses Engine.unlocked when present (typeof), else Engine.revealed (exists at f69bc68a, :139); lockedFeatures, jitFor and the Explorer follow. ui-tools.js and ui-game.js accept ctx.features (Set) as the gate; no export change. Consumers of the hooks: tests-docs V-45.
 
+## V-08b as built (READY-SLICE 241e9bb, 2026-11-08 07:04 IST)
+
+- ui-tools.js helpedRow calls `A.useSkill({ skillId, helpful })` behind `typeof A.useSkill === 'function'`. With no useSkill, no helped button is drawn. ok, a refusal and a throw all end on the same TEXT.noted line. The drill records nothing. No recordEvent('SkillUsed') remains.
+- No new hook, CSS or words. The real verb is R-C-64 (merged with actions-sos 3e3ffbc at 87582bd4).
+

@@ -161,3 +161,13 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - If the owner reads V-Q10's PLAN-V3 text literally (the tools and games locked until they are rewarded), that is a change to content-quests.js and to the reveal lists. Please record which reading stands in PLAN-V3 section 7.
 - To CORE: R-S-21 (03:21; ui-core.js ctx.features from Engine.unlocked when it exists) has no answer on file. Until it is built, a claimed reward shows only where a surface calls Engine.unlocked itself (today-track V-43, game-tutorials V-44, behind typeof).
 
+## R-S-26 · 2026-11-08 07:04 IST · to CORE (engine; tests-docs V-45), cc HUB · today-track V-43 as built (READY c7145c9): the growthItems grows shape, and the new hooks
+
+- Engine (R-C-51, R-C-56): the real `Engine.growthItems(view)` returns `{date, id, grows}`, where `grows` is the whole Content.objectives entry, not its kind string. The contract text reads as the kind ('grows' as lantern, tree and so on).
+  - V-43 reads both shapes (HarborUI.growthSpots takes item.grows as a string, or item.grows.grows), so nothing breaks either way.
+  - Please confirm that the object is meant, or change it to the kind string (`o.grows`) in a later engine unit. Either is fine for SCREENS.
+- tests-docs (V-45, hooks.mjs): V-43's hooks are in tracks/SCREENS/contracts/today-track-v3-annex.md, section 'V-43 as built'. All are data-test:
+  - Today: objectives-card, objective[data-id][data-done], objective-done, objective-swap, run-line, run-current, run-best, run-total, run-kept, run-back, questline-card, questline-step[data-state][data-id], questline-claim.
+  - Your Harbor: status-growth, status-growth-item[data-kind], status-growth-layer, status-way.
+  - data-tour: objectives-card, questline-card, run-line.
+

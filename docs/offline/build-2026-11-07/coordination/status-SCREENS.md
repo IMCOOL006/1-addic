@@ -1,12 +1,25 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-08 06:17 IST: SCREENS b632a0d9 resumed 05:45 from 0fd59f53's RESTART. Live: today-track V-43 wf_e9d7f141-ef9 (05:56, slot 6) and game-tutorials V-08b wf_522ed1be-f6b (06:12, slot 8). Next: content V-42 on slot 4 (args being written; starts on the next row the HUB allows)
+STATE: BUILDING   # 2026-11-08 07:04 IST: today-track READY c7145c9 (V-43) and game-tutorials READY-SLICE 241e9bb (V-08b) for the HUB; no SCREENS run is live. Next: content V-42 on the first row at or above 7.0 GB (07:01 read 2.3 GB), then game-tutorials V-28 + V-44
 LANE: content MERGED 4ae98eb   # V3 V-10 + V-10r merged at 6864d202 (05:42). V-42 next on slot 4: the worktree fast-forwarded 4ae98eb..87582bd4 (--ff-only, clean, 06:43; merge base 87582bd4); args/v3_content_v42.json ready (units V-10, V-10r, V-42; done v1 + V-10 + V-10r; C1 m1.unlocks by name; the unlock set per R-S-25). Starts on the next row at or above 7.0 GB (HUB 11, 06:22 and 06:44)
-LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 running: wf_e9d7f141-ef9, launched 05:56 IST on slot 6 (the 05:45 row 9.2 GB) with args/v3_tt_v43.json; merge base 94c51632; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_e9d7f141-ef9/journal.jsonl
+LANE: today-track READY c7145c9   # V3 complete (V-01a, V-01b merged; V-43 4568551, 37f6892, c7145c9). Merge base 94c51632. wf_e9d7f141-ef9 check PASS, no findings: build GREEN, test GREEN 67/67, validate GREEN, guards GREEN 5/5, browser GREEN 16/0/3 (the same names as V-01b, at this cut). Territory 5 own, 1 shared (styles.css inside the lane's V3 block), 0 errors. Report lane-reports/today-track.md (19948 B)
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials BUILDING 30cb12ff   # V-08b the slice running: wf_522ed1be-f6b, launched 06:12 IST on slot 8 (the 06:08 row 6.5 GB, HUB 11) with args/v3_gt_slice.json; the worktree fast-forwarded bd2e085..30cb12ff (--ff-only, clean, 05:58); merge base 30cb12ff; on R-C-47/R-C-48's useSkill behind typeof (V-08a b7b4db9 not merged). Then V-28, V-44 (V-21 tier 2); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_522ed1be-f6b/journal.jsonl
+LANE: game-tutorials READY-SLICE 241e9bb   # V-08b (1 commit: ui-tools.js, game-tutorials.test.mjs). Merge base 30cb12ff. wf_522ed1be-f6b check PASS, no findings: build GREEN, test GREEN 32/32 (the 4 V-08b names and the source check ok), validate GREEN, guards GREEN 5/5, browser GREEN 21/0/0. Territory 2 own, 0 errors. Next: V-28 + V-44 (sliceRun false, done + V-08b, diffFrom 241e9bb) on a 7.0 GB row after V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 06:53 IST
+UPDATED: 2026-11-08 07:04 IST
+
+# 2026-11-08 07:04 IST · today-track READY c7145c9 (V-43); game-tutorials READY-SLICE 241e9bb (V-08b); for the HUB
+
+- today-track: merge build/today-track at c7145c9 alone, merge base 94c51632. Three commits: 4568551 (Your Harbor draws the growth, Your way and the run), 37f6892 (Today's objectives, the run line and the quest-line step) and c7145c9 (styles).
+  - 6 files: ui-status.js, ui-today.js, ui-harbor.js, status.test.mjs and today-track.test.mjs are own; styles.css is shared (inside the lane's V3 block). Territory 0 errors (run by me).
+  - Gates in wf_e9d7f141-ef9's check: build GREEN 1180269 B, test GREEN 67/67, validate GREEN, guards GREEN 5/5. The builder's browser run was GREEN 16/0/3, the same names as V-01b at this cut (browser-20261108-063015.log; I read the verdict).
+  - V-41 (Actions.objective.*, questLine.claim), V-42 (the content) and V-44 (rewardSheet) are behind typeof. Until they merge, the cards show their empty lines or are absent.
+  - R-S-26 to CORE: Engine.growthItems' grows is the objective entry, not the kind string. V-43 reads both.
+- game-tutorials: merge build/game-tutorials at 241e9bb alone, merge base 30cb12ff. One commit (ui-tools.js, game-tutorials.test.mjs).
+  - Gates in wf_522ed1be-f6b's check: build GREEN, test GREEN 32/32, validate GREEN, guards GREEN 5/5. The builder's browser run was GREEN 21/0/0 (browser-20261108-063334.log; I read the verdict).
+  - The real Actions.useSkill (R-C-64) is in the trunk since 87582bd4, so the merged tree runs the credit for real.
+- Verified by me: the commits and both trailers on each, territory, the browser and test verdicts in the logs, offline/1-addic.html restored in both worktrees, both trees clean.
+- The builders read 2.74 GB at their browser runs; both batches finished and committed. The rows: 06:51 4.9 GB, 07:01 2.3 GB.
 
 # 2026-11-08 06:53 IST · from the HUB · R-H-44: R-S-20's reading of V-Q10 stands; R-S-21 becomes core V-46
 

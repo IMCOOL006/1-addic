@@ -19,3 +19,16 @@ Until each lands, the screen draws nothing for that part and no dead button; wit
 
 - Asked of CORE (R-S-22, engine V-40, additive): Engine.growthItems(view) -> [{date, id, grows}], with length equal to Engine.growth(view), never shrinking. V-43 reads it behind typeof. Until then each element's kind comes from the 8-kind cycle by index (growthSpots).
 - Accepted by CORE as R-C-51 (2026-11-08 03:50 IST; engine V-40b, its own tier 1 run right after the V-40 slice): Engine.growthItems(view) -> [{date, id, grows}]. One item per objective day, oldest first, length === Engine.growth(view), never shrinking. id is the first objective done that day; grows is its Content.objectives element. Sample rows are skipped, and it returns [] when Content.objectives is absent. Its contract is tracks/CORE/contracts/engine.md. V-43 keeps the 8-kind default behind typeof until V-40b merges.
+
+## V-43 as built (READY c7145c9, 2026-11-08 07:04 IST; the code wins over the annex above)
+
+- StatusUI.model returns `shownUp` (the run of days shown up: current, best, total, holding, cameBack), not `run`. The V-01a test 'days show only ... never the current run' keeps /current|run|streak/ out of the model's top-level keys. StatusUI.PURE is unchanged.
+- HarborUI.PURE adds `growthSpots(n, items)` and `GROW_KINDS`. growthSpots reads an item's kind from `item.grows` when it is a string, or from `item.grows.grows` when it is the Content.objectives entry. The real Engine.growthItems returns the entry (R-S-26).
+- TodayUI.PURE adds `withObjectives(keys, {maintenance, discreet})` and `runLine`. cardsFor is unchanged. 'objectives' goes right after 'checkin'. 'questline' goes there too, except in discreet and maintenance.
+- The run line sits after the quick row (with the Your harbor chip). In Calm, 'What just changed' leaves out the best and total rises, as it leaves out XP.
+- Hooks (data-test):
+  - Today: objectives-card, objective[data-id][data-done], objective-done, objective-swap, run-line, run-current, run-best, run-total, run-kept, run-back, questline-card, questline-step[data-state=current][data-id], questline-claim.
+  - Your Harbor: status-growth, status-growth-item[data-kind], status-growth-layer (an svg g), status-way, questline-step[data-state done|current|locked], and the run-* spans inside status-stand.
+  - data-tour: objectives-card, questline-card, run-line.
+- Behind typeof: Engine.dailyObjectives, run, questLine, growth, growthItems, unlocked; Actions.objective.done and swap, Actions.questLine.claim (actions-sos V-41); GuidanceUI.rewardSheet (game-tutorials V-44). With a verb absent, its control is not drawn.
+
