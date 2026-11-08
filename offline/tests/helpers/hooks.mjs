@@ -172,6 +172,8 @@ export const HOOKS = {
   statusOpen: tour('status-open'), // ui-today.js:497
   trackRadar: dt('track-radar'), // ui-track.js:534 (#/track/radar)
   trackRadarLink: dt('track-radar-link'), // ui-track.js:527 (Track home, once the radar is revealed)
+  harborScene: dt('harbor-scene'), // ui-harbor.js:91 (the scene's svg; class hb-still or hb-moving)
+  harborStill: '.hb-still', // ui-harbor.js:91 (the scene drawn without motion)
   harborPlace: '[data-place]', // ui-harbor.js:78 (data-level on each place of the scene)
   harborGrew: '.hb-grew', // ui-status.js:357 (the one-off pulse of a place that grew; never when still)
   harborMoving: '.hb-moving', // ui-harbor.js (the drifting water and beam; never when still)

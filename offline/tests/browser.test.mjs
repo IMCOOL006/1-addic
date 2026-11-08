@@ -326,6 +326,10 @@ flow('status under reduced motion has no moving class', { routes: ['status'], gl
   await quickCraving(page); // a change, so a place could grow
   await openStatus(page);
   await page.waitForTimeout(400);
+  // C4: the scene must be drawn, and drawn still, or "no moving class" could pass with no scene at all.
+  const scene = `${HOOKS.statusScene} ${HOOKS.harborScene}`;
+  assert.ok(await present(page, scene, 4000), 'the status page draws the Harbor scene');
+  assert.equal(await page.locator(`${scene}${HOOKS.harborStill}`).count(), 1, 'the scene is drawn still (hb-still) under reduced motion');
   const moving = await page.locator(`${HOOKS.harborGrew}, ${HOOKS.harborMoving}, main#main [class*="pulse"]`).count();
   assert.equal(moving, 0, 'no hb-grew, hb-moving or pulse class under reduced motion');
   const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
