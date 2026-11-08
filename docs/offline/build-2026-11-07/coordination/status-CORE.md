@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 09:30 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43') running: actions-sos V-41 review fix round wf_2c2466fa-36a (from 09:08), tests-docs V-45 wf_180b5230-4d4 (from 09:27); engine FIX-RS27 next (R-H-45). Runs: tracks/CORE/RUN-RECORD.md 'Resume here' (09:30)
+STATE: BUILDING   # 2026-11-08 09:30 IST: CORE 14 (4c79e5f7-5738-4953-9d45-e4317bb05409, 'CORE 08:43') running: actions-sos V-41 review fix round wf_2c2466fa-36a (from 09:08), tests-docs V-45 wf_180b5230-4d4 (from 09:27); engine FIX-RS27 wf_67a818f3-083 (from 09:36). Runs: tracks/CORE/RUN-RECORD.md 'Resume here' (09:30)
 LANE: core MERGED fbc663d   # 2026-11-08 08:18 IST: V-46 merged 852d3852 (trunk 24baaf71). Next V-16, V-17a, V-26a (T2) only when no tier 1 lane waits: fast-forward build/core to the trunk first; flagged: the two reviewers at the lane end
-LANE: engine MERGED 1d4dfd2   # 2026-11-08 09:30 IST: V-19 + V-30 merged 1541552b. FIX-RS27 (R-S-27, R-H-45: test-only, engine-questline.test.mjs:458's first assertion reads the real Content.xp rows) next on slot 2: fast-forward to 3fbd08f6, merge base 3fbd08f6
+LANE: engine BUILDING 3fbd08f6   # 2026-11-08 09:36 IST: FIX-RS27 (R-S-27, R-H-45; test-only, engine-questline.test.mjs:458's first assertion reads the real Content.xp rows) wf_67a818f3-083 on slot 2; fast-forwarded 1d4dfd2..3fbd08f6; merge base 3fbd08f6
 LANE: actions-sos REVIEWING b735852   # 2026-11-08 09:08 IST: V-41 review fix round relaunched wf_2c2466fa-36a (start 'review', carried check PASS 6c77d1d and both reviews from CORE 13's wf_459032df-d60; the round had committed RC1 7d8a261, RC2 e4025f8, RC3 94c4e5f, RC4 fb5015b, RS1 b735852); then each reviewer's re-check; merge base 87582bd4
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs BUILDING 3fbd08f6   # 2026-11-08 09:27 IST: V-45 wf_180b5230-4d4 (fast-forwarded d964202..3fbd08f6; merge base 3fbd08f6): the three R-O-6 browser flows, hooks, guide lessons, screenshots, and the docs-true count line (HUB 08:55); flows skip by name until V-41 and V-42 merge
 SLOTS-ASKED: 0   # every CORE lane with tier 1 work holds a slot (engine 2, actions-sos 3, tests-docs 5; core 1 for tier 2)
-UPDATED: 2026-11-08 09:30 IST
+UPDATED: 2026-11-08 09:38 IST
 
 # 2026-11-08 09:30 IST · CORE 14 · resumed from CORE 13's RESTART (08:44); two runs live; FIX-RS27 next
 
