@@ -432,3 +432,48 @@ test('content: the sample loads through Actions.loadSample, shows as sample and 
     globalThis.Store = before;
   }
 });
+
+// V-10: the status feature (#/status, PLAN-V3 section 3), its JIT tutorial and its help entry.
+const STATUS_TARGETS = ['status-scene', 'status-change', 'status-watch'];
+const STATUS_Q = 'What is the status page?';
+const statusWords = () => {
+  const f = C.features.status || {};
+  const t = C.tutorials.find((x) => x.id === 'status') || { steps: [] };
+  const help = C.help.filter((x) => x.q === STATUS_Q);
+  return [f.name, f.gist, t.name].concat(t.steps.map((s) => s.text), help.flatMap((x) => [x.q, x.a]));
+};
+
+test('content: status feature, tutorial and help entry exist', () => {
+  const f = C.features.status;
+  assert.ok(isObj(f), 'features.status');
+  for (const k of ['name', 'gist', 'tab']) assert.ok(typeof f[k] === 'string' && f[k].trim(), `status.${k}`);
+  assert.equal(f.tab, 'today');
+  // '/status' (featureOfRoute strips '#') until the Engine's route table holds '#/status'; then '#/status', which routeOfFeature also reads.
+  assert.ok(['/status', '#/status'].includes(f.route), 'feature route');
+  const rv = C.reveal || {};
+  assert.ok((rv.m1 || []).includes('status') || (rv.always || []).includes('status'), 'revealed through reveal.m1 or always');
+  if ((rv.m1 || []).includes('status')) assert.ok(C.modules.some((m) => m.id === 'm1'), 'm1 is a module id');
+  const t = C.tutorials.find((x) => x.id === 'status');
+  assert.ok(t, 'tutorial status');
+  assert.equal(t.kind, 'jit');
+  assert.equal(t.feature, 'status');
+  assert.ok(typeof t.name === 'string' && t.name.trim(), 'tutorial name');
+  assert.deepEqual(t.steps.map((s) => s.target), STATUS_TARGETS, 'targets in the fixed set, in order');
+  for (const s of t.steps) assert.ok(typeof s.text === 'string' && s.text.trim() && !/[<>]/.test(s.text), `${s.target}: plain text`);
+  const help = C.help.filter((x) => x.q === STATUS_Q);
+  assert.equal(help.length, 1, 'one help entry for the status page');
+  // '#/status' once the Engine's route table holds it (validateContent must stay []); until then '#/today', where the Harbor opens.
+  assert.ok(['#/status', '#/today'].includes(help[0].route), 'help route');
+  assert.ok(E.knownRoute(help[0].route, C), 'help route is in the route table');
+  for (const k of ['q', 'a']) assert.ok(typeof help[0][k] === 'string' && help[0][k].trim() && !/[<>]/.test(help[0][k]), `help.${k}`);
+  assert.deepEqual(E.validateContent(C), []);
+});
+
+test('content: status words promise no outcome', () => {
+  const words = statusWords();
+  assert.ok(words.length >= 7 && words.every((s) => typeof s === 'string' && s.trim()), 'every status string present');
+  for (const s of words) {
+    assert.ok(!/guarantee|will (be|stay)|streak|lose|lost/i.test(s), `no outcome promise or streak wording: ${s}`);
+    assert.ok(!/\b(drops?|down|addicts?)\b/i.test(s), `no loss wording, person-first: ${s}`);
+  }
+});
