@@ -494,3 +494,70 @@ test('sosOutcome: passed, still and used; anything else reads as other; still ea
   assert.equal(E.badges(v, NOW).some((b) => b.id === 'first-wave'), false);
   assert.ok(E.xpFromEvents(v, NOW).total > 0, 'a session that did not pass still earns its XP');
 });
+
+/* ── V-19: spiralThoughts pairs carry own (ruled 2026-11-08 02:24) ─────────────────────── */
+
+const spiralView = (payload, extra = {}) => E.makeView({ responses: [Object.assign({ id: `r${String(++n).padStart(5, '0')}`, exerciseId: 'spiral', schemaVersion: 1, payload, at: NOW, mode: 'workbook', draft: false }, extra)] });
+const STOCK = C.catalogs.slipSelfTalk;
+
+test('V-19 spiralThoughts: a pair with the person\'s reply is own true, words unchanged', () => {
+  assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: ' I blew it. ', reply: ' One slip is one day. ' }] })),
+    [{ thought: 'I blew it.', reply: 'One slip is one day.', own: true }]);
+  assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: 'I am weak.', rebuttal: 'I am learning.' }] }))[0].own, true);
+});
+
+test('V-19 spiralThoughts: a pair given as a plain string takes a stock line, own false', () => {
+  const got = E.spiralThoughts(spiralView({ pairs: ['I always ruin it.'] }));
+  assert.deepEqual(got, [{ thought: 'I always ruin it.', reply: STOCK[0], own: false }]);
+});
+
+test('V-19 spiralThoughts: the replies[] fallback is own by index', () => {
+  const got = E.spiralThoughts(spiralView({ thoughts: ['I am hopeless.', 'Nobody cares.'], replies: ['I am still here.', '  '] }));
+  assert.deepEqual(got, [{ thought: 'I am hopeless.', reply: 'I am still here.', own: true }, { thought: 'Nobody cares.', reply: STOCK[1], own: false }]);
+});
+
+test('V-19 spiralThoughts: an empty or blank reply is filled from slipSelfTalk with own false', () => {
+  const got = E.spiralThoughts(spiralView({ pairs: [{ thought: 'A', reply: '' }, { thought: 'B', reply: '   ' }, { thought: 'C' }] }));
+  assert.deepEqual(got.map((x) => x.own), [false, false, false]);
+  assert.deepEqual(got.map((x) => x.reply), [STOCK[0], STOCK[1], STOCK[2]]);
+  for (const x of got) assert.equal(typeof x.own, 'boolean');
+});
+
+test('V-19 spiralThoughts: without the slipSelfTalk catalog an empty reply stays empty, own false', () => {
+  const saved = C.catalogs.slipSelfTalk;
+  try {
+    delete C.catalogs.slipSelfTalk;
+    assert.deepEqual(E.spiralThoughts(spiralView({ pairs: [{ thought: 'I failed.' }, { thought: 'Mine.', reply: 'My words.' }] })),
+      [{ thought: 'I failed.', reply: '', own: false }, { thought: 'Mine.', reply: 'My words.', own: true }]);
+  } finally {
+    C.catalogs.slipSelfTalk = saved;
+  }
+  assert.deepEqual(E.spiralThoughts(E.makeView({})), []);
+});
+
+/* ── V-30: Engine.tutorialDone is exported and is the rule the Explorer items use ──────── */
+
+test('V-30 tutorialDone: exported, agrees with the Explorer tour (allowSkipped false) and drill (true) items', () => {
+  assert.equal(typeof E.tutorialDone, 'function');
+  const item = (view, id) => E.explorer(view).find((x) => x.id === id);
+  assert.ok(item(E.makeView({}), 'tour') && item(E.makeView({}), 'drill'), 'the Explorer lists tour and drill');
+  const cases = {
+    row: (tid) => ({ tutorials: [{ id: tid, completedAt: NOW, skipped: false }] }),
+    skippedRow: (tid) => ({ tutorials: [{ id: tid, completedAt: NOW, skipped: true }] }),
+    event: (tid) => ({ events: [ev('TutorialCompleted', { id: tid, skipped: false })] }),
+    skippedEvent: (tid) => ({ events: [ev('TutorialCompleted', { id: tid, skipped: true })] }),
+    openRow: (tid) => ({ tutorials: [{ id: tid, completedAt: null }] }),
+    nothing: () => ({}),
+  };
+  const want = { row: [true, true], skippedRow: [false, true], event: [true, true], skippedEvent: [false, true], openRow: [false, false], nothing: [false, false] };
+  for (const [name, rows] of Object.entries(cases)) {
+    const tourView = E.makeView(rows('tour'));
+    const drillView = E.makeView(rows('drill'));
+    assert.equal(E.tutorialDone(tourView, 'tour', false), item(tourView, 'tour').done, `${name}: tour agrees`);
+    assert.equal(E.tutorialDone(drillView, 'drill', true), item(drillView, 'drill').done, `${name}: drill agrees`);
+    assert.deepEqual([E.tutorialDone(tourView, 'tour', false), E.tutorialDone(drillView, 'drill', true)], want[name], name);
+    assert.equal(E.tutorialDone(tourView, 'drill', true), false, `${name}: another tutorial id is not done`);
+  }
+  const sample = E.makeView({ events: [Object.assign(ev('TutorialCompleted', { id: 'tour' }), { sample: true })] });
+  assert.equal(E.tutorialDone(sample, 'tour', false), item(sample, 'tour').done, 'a sample event: tour agrees');
+});

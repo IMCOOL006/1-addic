@@ -296,11 +296,11 @@ test('distractionDeck: the person\'s own list, else the catalog', () => {
 
 test('spiralThoughts: [{thought, reply}] with the person\'s replies, a self-talk line when none', () => {
   const pairs = E.spiralThoughts(V({ responses: [resp('spiral', { pairs: [{ thought: 'I blew it.', reply: 'One slip is one day.' }, { thought: 'I have no willpower.' }] })] }));
-  assert.deepEqual(pairs[0], { thought: 'I blew it.', reply: 'One slip is one day.' });
+  assert.deepEqual(pairs[0], { thought: 'I blew it.', reply: 'One slip is one day.', own: true });
   assert.equal(pairs[1].thought, 'I have no willpower.');
   assert.ok(pairs[1].reply.length > 0);
   const listed = E.spiralThoughts(V({ responses: [resp('spiral', { thoughts: ['I am hopeless.'], replies: ['I am learning.'] })] }));
-  assert.deepEqual(listed, [{ thought: 'I am hopeless.', reply: 'I am learning.' }]);
+  assert.deepEqual(listed, [{ thought: 'I am hopeless.', reply: 'I am learning.', own: true }]);
   assert.deepEqual(E.spiralThoughts(V({})), []);
 });
 
