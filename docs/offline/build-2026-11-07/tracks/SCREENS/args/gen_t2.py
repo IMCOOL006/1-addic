@@ -38,7 +38,7 @@ if lane == 'content':
         " content.test.mjs, content-core.js (own). Gates: build, test, validate, guards through gates.py; no browser (no DOM change).")
 elif lane == 'workbook-settings':
     a.update(done=['U-19', 'U-20a', 'U-20b', 'U-21', 'FIX-SAMPLE', 'C1'],
-             brief=D + 'tracks/SCREENS/briefs/workbook-settings.md', contract=D + 'tracks/SCREENS/briefs/workbook-settings.md', slot=0)
+             brief=D + 'tracks/SCREENS/briefs/workbook-settings.md', contract=D + 'tracks/SCREENS/briefs/workbook-settings.md', slot=6)
     a['laneNote'] = ("V3 V-24 + V-22b (tier 2, one batch, one builder; PLAN-V3.md section 2; SCREENS 11:07, " + now + ")."
         " The v1 units U-19, U-20a, U-20b, U-21 and FIX-SAMPLE are done and merged (42d2467d); C1 was closed on e8da3fbd (R-S-18)." + COMMON +
         " No V3 brief or contract exists for this lane: this note and the unit notes are the spec; the v1 brief"
