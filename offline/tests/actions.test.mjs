@@ -3419,13 +3419,28 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
   t41('V-41 claim refuses a protected or unknown reward', async () => {
     await Actions.logCraving({ intensity: 3 });
     const snap = await snapshot();
-    // sos, help, settings, export, data: never a reward; glossary is on the learn tab; today is always on
-    for (const reward of ['sos', 'urgent', 'help', 'lessons', 'settings', 'export', 'data', 'glossary', 'today', 'no-such-feature', 42, undefined]) {
-      await withV41({ objectives: OBJECTIVES, questLine: [Object.assign({}, STEPS[0], { reward })] }, async () => {
-        assert.equal(line().current.claimable, true, 'the step itself is ready');
-        no(await claim('qs-log'), 'bad-reward', String(reward));
+    const refuse = (reward, what) => withV41({ objectives: OBJECTIVES, questLine: [Object.assign({}, STEPS[0], { reward })] }, async () => {
+      assert.equal(line().current.claimable, true, 'the step itself is ready');
+      no(await claim('qs-log'), 'bad-reward', `${String(reward)}: ${what}`);
+    });
+    // sos, help, settings, export, data: never a reward; glossary is on the learn tab, talkBack and feelingTools on the
+    // SOS tab, training on the Settings tab; today is always on
+    const REWARDS = ['sos', 'urgent', 'help', 'lessons', 'settings', 'export', 'data', 'glossary', 'talkBack', 'feelingTools', 'training', 'today', 'no-such-feature', 42, undefined];
+    for (const reward of REWARDS) await refuse(reward, 'with the Engine');
+    // RS1: each protection alone. help and quicklog as if they were features on the Today tab (fixtures, put back after):
+    // help is refused by NEVER_REWARD only, quicklog by Content.reveal.always only, the tab ones by the tab rule only,
+    // and a plain feature the Engine protects by the Engine's isProtectedFeature only
+    const feats = C().features;
+    const seeded = ['help', 'quicklog'].filter((k) => !ownKey(feats, k));
+    assert.deepEqual(seeded, ['help', 'quicklog'], 'neither is a feature in Content');
+    for (const k of seeded) feats[k] = { name: `F ${k}`, gist: `G ${k}`, tab: 'today' };
+    try {
+      await withEngine({ isProtectedFeature: undefined }, async () => {
+        for (const reward of REWARDS) await refuse(reward, 'without the Engine check');
+        await refuse('quicklog', 'always on, so never a reward');
       });
-    }
+      await withEngine({ isProtectedFeature: (f) => f === 'insights' }, () => refuse('insights', 'the Engine protects it'));
+    } finally { for (const k of seeded) delete feats[k]; }
     assert.deepEqual(await snapshot(), snap, 'nothing written');
     assert.equal(four().length, 0);
     assert.equal((await claim('qs-log')).ok, true, 'a plain reward: claimed');
