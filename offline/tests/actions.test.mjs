@@ -3498,12 +3498,15 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
   t41('V-41 nothing is removed or lowered', async () => {
     const view = () => S().view;
     const measure = async () => ({ snap: await snapshot(), growth: E().growth(view(), nowIso()), unlocked: [...E().unlocked(view())],
-      claimed: line().done, xp: E().xpFromEvents(events(), new Date()).total });
+      claimed: line().done, xp: E().xpFromEvents(events(), new Date()).total, doneToday: draw().items.filter((o) => o.done).map((o) => o.id) });
     let prev = await measure();
+    // RC4: a slip (the day before and today) after an objective and a claim restarts only the opt-in run
+    const slipOn = (date) => async () => { const r = await Actions.logSlip({ date }); assert.ok(r && r.log, `the slip of ${date} is saved`); };
     const steps = [
       () => Actions.logCraving({ intensity: 4 }), () => done(draw().items[0].id), () => done(draw().items[0].id),
       () => swap(draw().items[1].id), () => swap(draw().items[2].id), () => claim('qs-two'), () => claim('qs-log'), () => claim('qs-log'),
-      () => Actions.useSkill({ skillId: 'ride-wave', helpful: true }), () => claim('qs-skill'), () => done('no-such-objective'),
+      slipOn(daysAgo(1)), slipOn(today()),
+      () => Actions.useSkill({ skillId: 'ride-wave', helpful: true }), () => claim('qs-skill'), slipOn(today()), () => done('no-such-objective'),
     ];
     for (const [i, step] of steps.entries()) {
       await step();
@@ -3516,6 +3519,7 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
       assert.ok(now.growth >= prev.growth, `step ${i}: growth never decreases`);
       assert.ok(prev.unlocked.every((f) => now.unlocked.includes(f)), `step ${i}: nothing is locked again`);
       assert.ok(now.claimed >= prev.claimed, `step ${i}: claimed steps stay claimed`);
+      assert.ok(prev.doneToday.every((id) => now.doneToday.includes(id)), `step ${i}: today's done objectives stay done`);
       assert.ok(now.xp >= prev.xp, `step ${i}: XP never decreases`);
       prev = now;
     }
