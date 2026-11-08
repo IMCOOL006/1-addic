@@ -693,7 +693,7 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
   });
 
   // Boots a fresh ui-core at a hash with a Store whose load waits for opened(); on.<type> holds window listeners.
-  const bootPending = async (t, hash, box) => {
+  const bootPending = async (t, hash, box, before) => {
     setup();
     t.mock.timers.enable({ apis: ['setTimeout'] });
     const U = freshUi();
@@ -712,6 +712,7 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       load: () => loading,
     };
     at(hash);
+    if (before) before();
     const booting = U.boot();
     await new Promise((r) => setImmediate(r));
     return { U, on, booting, opened: () => opened() };
@@ -746,6 +747,53 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.getElementById('sos-btn').textContent.trim(), 'Help');
     b.opened();
     await b.booting; // loaded and open, the settings row decides from here (C5)
+  });
+
+  // V-11: the shell's static safety line, in boot.js COPY's words only (CORE 11 ruling), shown with no script.
+  const SHELL_URL = new URL('../src/shell.html', import.meta.url);
+  const bootLine = (html) => /<p class="boot-line">([\s\S]*?)<\/p>/.exec(html);
+  const plain = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+  test('shell: safety line static inside main before boot', () => {
+    const boot = fs.readFileSync(new URL('../src/boot.js', import.meta.url), 'utf8');
+    const copy = (k) => (new RegExp('\\n {4}' + k + ": '([^']*)',").exec(boot) || [])[1] || '';
+    const words = 'If you are in danger, call your local emergency number.';
+    assert.ok(copy('none').endsWith(' ' + words), 'the words are the tail of boot.js COPY.none');
+    assert.equal(copy('verify'), 'Please verify these numbers.');
+    const em = Content.resources.in.emergency.find((x) => x.number === '112');
+    assert.ok(em && em.verify === true, '112 is the built-in number and stays verify: true');
+    const built = new URL('../1-addic.html', import.meta.url);
+    for (const u of [SHELL_URL].concat(fs.existsSync(built) ? [built] : [])) {
+      const html = fs.readFileSync(u, 'utf8');
+      const open = html.indexOf('<main id="main" tabindex="-1">');
+      const close = html.indexOf('</main>', open);
+      const script = html.indexOf('<script data-part');
+      assert.ok(open >= 0 && close > open, 'main is there: ' + u.pathname);
+      if (script >= 0) assert.ok(close < script, 'the line comes before the first script part');
+      const inner = html.slice(open, close);
+      const m = bootLine(inner);
+      assert.ok(m, 'p.boot-line inside main: ' + u.pathname);
+      assert.equal(plain(m[1]), words + ' 112 ' + copy('verify'), 'only the COPY words and the number');
+      assert.match(m[1], /<a class="sos-target" href="tel:112">112<\/a>/, 'one tap to call');
+      assert.match(inner.slice(0, m.index), /<!--[\s\S]*clinicalReview: true[\s\S]*boot\.js[\s\S]*-->/, 'marked for the clinical review, in step with boot.js');
+      assert.doesNotMatch(inner, /<script|\son[a-z]+\s*=|https?:/i, 'no script, no inline handler, no web link');
+    }
+  });
+
+  test('shell: safety line gone after boot', async (t) => {
+    const m = bootLine(fs.readFileSync(SHELL_URL, 'utf8'));
+    assert.ok(m, 'the shell has the line');
+    const b = await bootPending(t, '#/today', null, () => {
+      const p = globalThis.document.createElement('p');
+      p.setAttribute('class', 'boot-line');
+      p.textContent = plain(m[1]);
+      main().appendChild(p);
+    });
+    b.opened();
+    await b.booting;
+    assert.ok(main().children.length > 0, 'a page is drawn');
+    assert.ok(!main().all().some((e) => e.getAttribute('class') === 'boot-line'), 'the first render replaced the line');
+    assert.ok(!main().textContent.includes('call your local emergency number'), 'and its words');
   });
 
   test('(a): locked, nothing waits in #print-root: render empties it, and so does a lock inside SOS', async (t) => {
