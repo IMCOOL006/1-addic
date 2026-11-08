@@ -3260,6 +3260,29 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
     assert.equal(four().length, 0);
   });
 
+  // RC2: the same refusals for swap; none of them uses up today's swap
+  t41('V-41 objective.swap refuses unknown and not-today ids without throwing and writes nothing', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    for (const id of [undefined, null, 7, '', 'Bad id!', ['obj-walk'], { id: 'obj-walk' }, 'no-such-objective']) no(await swap(id), 'bad-objective', JSON.stringify(id) || String(id));
+    const shown = draw().items.map((o) => o.id);
+    const other = OBJECTIVES.map((o) => o.id).find((x) => !shown.includes(x));
+    no(await swap(other), 'not-today', 'in the pool, not drawn today');
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    await withV41({ questLine: STEPS }, async () => no(await swap(shown[0]), 'not-ready', 'no Content.objectives'));
+    await withEngine({ dailyObjectives: undefined }, async () => no(await swap(shown[0]), 'not-ready', 'no Engine.dailyObjectives'));
+    await withEngine({ dailyObjectives: () => { throw new TypeError('boom'); } }, async () => {
+      const r = await swap(shown[0]);
+      no(r, 'error', 'an Engine throw');
+      assert.doesNotMatch(r.message, /boom|Asha/, 'the plain message, never the error or person data');
+    });
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+    assert.equal(four().length, 0);
+    assert.equal(draw().swapped, false, "today's swap is not used up");
+  });
+
   t41('V-41 objective.swap writes ObjectiveSwapped {from,to,date} once a day and the second is ok:false', async () => {
     const d = draw();
     assert.equal(d.swapped, false);
