@@ -271,22 +271,25 @@
 - 09:00 free memory by hand 4.6 GB (7.3 at 08:58): the check relaunched as wf_76cc2221-3cb (lane.js, start 'check', args/v3_content_v42_check.json restamped: session 6508c21d, now 09:00, the laneNote's trailer). The worktree was clean at eb38166.
 - R-S-27 to CORE (engine), cc HUB: engine-questline.test.mjs:458 'XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only' goes red on the merged tree with V-42 (29 !== 0: its first assertion outside withContent assumes no real Content.xp rows; content-quests.js adds them). A test-only fix in engine's file. The previous chat had the finding in the builder's note but had not sent it.
 
+## 2026-11-08 09:34 IST · content READY eb38166 (V-42 + C1); game-tutorials V-28 + V-44 prepared
+
+- 09:23 wf_76cc2221-3cb returned READY at eb38166 with check PASS (2 agents). C1 MEDIUM = R-S-27 (engine's test, ruled R-H-45 by HUB 12 at 09:25: FIX-RS27 by name, V-42 does not wait). C2 LOW = the contract's tool/game feature ids not built, per R-H-44.
+- Verified by me: tip eb38166, both trailers on 15600a9 and eb38166 (b632a0d9's session), territory 0 errors (87582bd4..eb38166, 4 own + build.mjs one parts line), log verdicts (build GREEN 1172899 B, test GREEN, validate GREEN, guards RED on tour-target objectives-card/questline-card/run-line only, browser 20/1 full then GREEN 1/1 for 'Settings PIN set and remove' alone), offline/1-addic.html restored, the worktree clean. LANE content READY eb38166 written; commit 014d34ac; HUB 12 told by message.
+- game-tutorials: build/game-tutorials and its worktree fast-forwarded 241e9bb..3fbd08f6 (--ff-only, clean). args/v3_gt_v28_v44.json written by a script (units V-08b, V-28, V-44; done U-27, U-26, U-28, FIX-TOUR, V-08b; base and diffFrom 3fbd08f6; slot 8; priorNote = the V-08b builder's result from wf_522ed1be-f6b's journal; the laneNote carries R-H-44 (no new gate in ui-tools.js or ui-game.js), R-C-67/V-46, V-43's rewardSheet call site ui-today.js:586-592, V-41 and V-42 not merged (behind typeof and data presence; tests stay green after they merge), the test names).
+- Rows: 09:02 5.8, 09:14 6.2, 09:24 8.8 GB. CORE 14 started tests-docs V-45 at 09:27 on the 09:24 row, so game-tutorials waits for the next row at or above 7.0 GB (one start per row).
+
 ## Resume here
 
-- Chat 6508c21d (SCREENS, started 08:45 IST). Session link https://claude.ai/code/session_6508c21d-8518-4957-b971-9bf8c93b96be.
-- RUNNING: content V-42's check, wf_76cc2221-3cb, launched 09:00 IST (start 'check'; tip eb38166; merge base 87582bd4). Journal: C:\Users\ruchi\.claude-pro\projects\C--Users-ruchi-1-addic\6508c21d-8518-4957-b971-9bf8c93b96be\subagents\workflows\wf_76cc2221-3cb\journal.jsonl. It is alive only while 6508c21d is listed by `claude agents --json`; if gone, relaunch with the same args file (restamp), never wait.
-  - On PASS: verify (trailers on any fix commit, territory, the log verdicts, restore offline/1-addic.html), then LANE: content READY <tip>, merge base 87582bd4, naming the three branch-only tour-target reds and the scratch proof, and R-S-27 (engine's XP test).
+- Chat 6508c21d (SCREENS 9, 'SCREENS 08:44', started 08:45 IST). Session link https://claude.ai/code/session_6508c21d-8518-4957-b971-9bf8c93b96be.
+- No SCREENS run is live (09:34). content READY eb38166 waits for the HUB's merge (merge base 87582bd4); the HUB records engine's FIX-RS27 name on the MERGED line if it is not in yet (R-H-45).
 - NEXT:
-  - (1) game-tutorials V-28 + V-44 on a row at or above 7.0 GB.
-    - Fast-forward build/game-tutorials and its worktree to BASE 3fbd08f6 (it contains 241e9bb; --ff-only); then merge base = 3fbd08f6.
-    - Write args/v3_gt_v28_v44.json from args/v3_gt_slice.json: units [V-08b, V-28, V-44], batches one each (V-21 is tier 2: leave it out), done = U-27, U-26, U-28, FIX-TOUR, V-08b, sliceRun false, base and diffFrom = the new tip, priorNote = the V-08b builder's note (the wf_522ed1be-f6b journal, its first result line).
-    - Its laneNote takes: the brief sections V-28 and V-44 (briefs/game-tutorials-v3.md lines 19-39); R-H-44 (nothing re-locks; the rewards are module-revealed features; the tools and games stay open); R-C-67 (core V-46 merged: UI.ctx(r).features is Engine.unlocked(view), a superset of revealed); R-C-50 (Actions.questLine.claim -> FeatureUnlocked payload.feature; actions-sos V-41 not merged: behind typeof); V-43's hooks (contracts/today-track-v3-annex.md 'V-43 as built'; today-track's claim button calls GuidanceUI.rewardSheet(feature, ctx) behind typeof); content V-42's tour steps (status-open, objectives-card, questline-card, right after nav-today) and its JITs for questLine, objectives and run (merged or not: guard by data presence).
-  - (2) content V-23 (tier 2) only when no tier 1 lane waits. V-10b waits for the owner's I6 (outbox-OWNER.md).
-  - (3) workbook-settings V-24 and V-22b, game-tutorials V-21 (tier 2), later.
+  - (1) game-tutorials V-28 + V-44 on the next row at or above 7.0 GB that no other chat has started on: Workflow lane.js with args/v3_gt_v28_v44.json as written (restamp 'now' if more than a few minutes old; session already 6508c21d). The worktree is at 3fbd08f6, clean. On return: verify (trailers, territory 3fbd08f6..HEAD, log verdicts, restore offline/1-addic.html), then LANE: game-tutorials READY <tip>, merge base 3fbd08f6.
+  - (2) After a red from the HUB: fix on the branch within the hour, before any new unit.
+  - (3) Tier 2 only when no tier 1 lane waits: content V-23 (V-10b waits for the owner's I6), workbook-settings V-24 and V-22b, game-tutorials V-21.
 - Facts:
   - setlane.py takes "PREFIX=full line" pairs plus an optional --section (no '-' placeholder); run it from a Python file written with the Write tool into the job tmp folder. rr.py takes <section-file> <resume-file>.
-  - hub_commit.py runs from the repo root with repo-relative paths.
-  - `claude agents --json` lists the chats. The memory rows are the table at the end of coordination/lane-widening.md; a by-hand reading: powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB".
-  - HUB 11 = "uds:\\.\pipe\LOCAL\cc-msg-fcf6b06d9d19a8f521ccbe67a8258a6f" ("HUB 05:50"), handing over; use the name `claude agents` lists. CORE 14 = "CORE 08:43" (4c79e5f7).
+  - hub_commit.py runs from the repo root with repo-relative paths. The HUB pushes.
+  - `claude agents --json` or ListAgents lists the chats: HUB 12 'HUB 09:02' (3e9a8ea0), CORE 14 'CORE 08:43' (4c79e5f7). The 1-addic chats are named 'HUB hh:mm', 'CORE hh:mm', 'SCREENS hh:mm'; 'HUB 08 Nov 05:26' is another project's.
+  - The memory rows are the table at the end of coordination/lane-widening.md; by hand: powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB".
   - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
   - A merged-tree scratch proof: git archive build/offline-v1 offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test.
