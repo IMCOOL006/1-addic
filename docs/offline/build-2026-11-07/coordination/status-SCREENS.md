@@ -1,12 +1,35 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 10:12 IST: SCREENS 6508c21d. Live: game-tutorials wf_e5593f15-752 (V-28 done 7214a52; the V-44 builder since 10:08). RUN-RECORD.md 'Resume here'
+STATE: RESTART   # 2026-11-08 11:07 IST: SCREENS 6508c21d hands over at about 260k context, at a clean point: NO SCREENS run is live. game-tutorials READY 3aefecb (V-28 + V-44, merge base 3fbd08f6) waits for the HUB's merge. Every SCREENS tier 1 V3 unit is READY or merged. Next: fixes by name if the HUB sends a red; then tier 2 (content V-23; workbook-settings V-24, V-22b; game-tutorials V-21) only when no tier 1 lane waits. RUN-RECORD.md 'Resume here'
 LANE: content MERGED eb38166   # V-42 + C1 merged 899f77e4 (09:52, HUB 12; trunk ab784c9a; every gate green by name on the merged tree, the three tour-target names green). Next: V-23 (tier 2) when no tier 1 lane waits; V-10b after the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials BUILDING 7214a52   # V-28 done 7214a52 (test-only; builder gates green: test 36/36, guards 5/5, browser 25/0/0); V-44 building in wf_e5593f15-752 since 10:08; merge base 3fbd08f6. If stopped: relaunch with done [U-27, U-26, U-28, FIX-TOUR, V-08b, V-28], priorNote = the V-28 builder note (journal), diffFrom 3fbd08f6 (V-28 not yet checked)
+LANE: game-tutorials READY 3aefecb   # V-28 7214a52 + V-44 3aefecb, merge base 3fbd08f6; check wf_e5593f15-752 PASS (build, test 43/43, validate, guards 5/5 GREEN; builder browser 25/0/0); merged-tree scratch 3235375c + lane files 150/150 in 4 test files; LOW C1 the renamed test (the laneNote's name); report lane-reports/game-tutorials.md
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 10:12 IST
+UPDATED: 2026-11-08 11:07 IST
+
+# 2026-11-08 11:07 IST · game-tutorials READY 3aefecb (V-28 + V-44), for the HUB; SCREENS 6508c21d hands over
+
+- Merge build/game-tutorials at 3aefecb alone, merge base 3fbd08f6. Two commits, each with both trailers:
+  - 7214a52, V-28: the status tour step, JIT and New dot. Test-only: the code already did all three parts.
+  - 3aefecb, V-44: unlocks and the reward sheet.
+- Two files, both own: ui-guidance.js and game-tutorials.test.mjs. Territory: 0 errors and 0 shared (run by me over 3fbd08f6..3aefecb). ui-tools.js and ui-game.js are unchanged, per R-H-44.
+- V-44 as built:
+  - revealedSet takes ctx.features, or Engine.unlocked joined with Engine.revealed, else revealed. It is a superset of revealed.
+  - GuidanceUI.rewardSheet(featureId, ctx) returns a node or null, on UI.sheet. The title is 'You unlocked <name>', and the body is the step's opened line or else the gist.
+  - 'Open it' goes to routeOfFeature(id): all ten V-42 rewards resolve to a screen. 'Later' dismisses.
+  - It returns null for a protected or unknown feature, on #/sos*, #/lock or #/onboarding, while locked, while the coach is open, or a second time in a session. It writes nothing.
+  - Hooks: data-test reward-sheet, reward-open, reward-later (for tests-docs V-45).
+- Check wf_e5593f15-752: PASS.
+  - Gates: build GREEN 1188362 B, test GREEN 43/43, validate GREEN, guards GREEN 5/5. Logs: _logs/gates/game-tutorials/*-20261108-1052*.
+  - The builder's browser run was GREEN 25/0/0 (browser-20261108-103946.log); I read the verdict.
+- LOW C1, test name: the brief named 'unlock: jitFor offers the quest-line JIT only when unlocked'. The test is 'unlock: jitFor offers an early-opened feature only when unlocked', the name the run's laneNote gave. The quest-line feature is in reveal.always (V-42) and never needs an unlock, so the test covers a reward feature opened early. The new name is the identity from here.
+- Merged-tree proof, by me: git archive of the trunk 3235375c (real V-41 and V-42) plus the lane's two files. game-tutorials, today-track, status and content tests: 150/150, exit 0. Log: C:/Users/ruchi/1-addic-wt/_logs/scratch/gt_v44_3235375.log.
+- The builder's question, default taken: the JITs for questLine, objectives and run have route '#/today', so route-based jitFor never offers them on Today. They are reachable from Settings > Help > training ('Show me'). There is no Today JIT bar for them (no nagging). A follow-up only if asked.
+- Not checked in a browser: the real UI.sheet focus return, Escape and backdrop, the z-index under #sos-btn, and the 44 px buttons. tests-docs V-45's flow 'a quest-line step unlocks a feature' covers them. Reduced motion holds by construction: no CSS or animation was added.
+- Verified by me: the tip and both trailers on both commits, territory, the four gate logs and the browser verdict, offline/1-addic.html restored, the worktree clean. Report: tracks/SCREENS/lane-reports/game-tutorials.md (19150 B).
+- The rows: 10:41 3.6 GB, 10:52 3.2 GB, the 11:03 row (see lane-widening.md). The run had finished its check before any pause was due.
+- Hand-over: context over 250k. Nothing of SCREENS is live. STATE RESTART: RUN-RECORD.md 'Resume here'.
 
 # 2026-11-08 10:12 IST · game-tutorials: V-28 done at 7214a52; V-44 building; no pause (the 10:08 row 4.3 GB)
 

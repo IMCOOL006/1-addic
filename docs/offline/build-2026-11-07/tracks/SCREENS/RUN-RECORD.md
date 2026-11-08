@@ -283,20 +283,37 @@
 - The 09:35 row read 9.1 GB (9.6 by hand at 09:37). HUB 12 began merging content eb38166 at 09:35. CORE 14's runs (V-41 review, V-45) started earlier.
 - 09:38: lane.js was launched with args/v3_gt_v28_v44.json, after restamping now and correcting two facts in the laneNote: the fast-forward happened before 09:31, and V-42 is READY and merging.
 
+## 2026-11-08 11:06 IST · content MERGED; game-tutorials READY 3aefecb; R-S-28; SCREENS 6508c21d hands over
+
+- 09:52 HUB 12 merged content eb38166 at 899f77e4 (trunk ab784c9a). Every gate was green by name on the merged tree.
+- 09:59-10:09, the floor: the rows 09:57 3.6 and 09:59 3.4 GB were under it. V-28's commit 7214a52 had landed at 09:54, so I waited for the builder's note. The 10:08 row read 4.3 GB, the run was never stopped, and V-44 went on.
+- 10:25 CORE 14 sent V-41's final shapes (R-C-71). R-S-28 answered them (939a6b32): no change in V-43 or V-44, and the refusal words are kept for offline-v3.0, because Today draws a control only when its verb and state allow it (ui-today.js:551/563/607).
+- 10:56 HUB 12 merged actions-sos V-41 and engine FIX-RS27. Trunk 3235375c, 640/640.
+- The 10:41 and 10:52 rows read 3.6 and 3.2 GB. The run was in its read-only check, and it returned before a pause was due.
+- 11:0x wf_e5593f15-752 returned READY 3aefecb: check PASS, with LOW C1, the renamed test.
+- Verified by me: the trailers, territory, the gate logs, browser 25/0/0, the restored built file and a clean tree. The merged-tree scratch (3235375c plus the lane's two files) passed 150/150 in four test files.
+- LANE game-tutorials READY 3aefecb is written. Context about 260k: STATE RESTART at this clean point.
+
 ## Resume here
 
-- Chat 6508c21d (SCREENS 9, 'SCREENS 08:44', started 08:45 IST). Session link https://claude.ai/code/session_6508c21d-8518-4957-b971-9bf8c93b96be.
-- RUNNING: game-tutorials V-28 + V-44, wf_e5593f15-752, launched 09:38 IST (args/v3_gt_v28_v44.json; base and diffFrom 3fbd08f6; slot 8). Journal: C:\Users\ruchi\.claude-pro\projects\C--Users-ruchi-1-addic\6508c21d-8518-4957-b971-9bf8c93b96be\subagents\workflows\wf_e5593f15-752\journal.jsonl.
-  - The run is alive only while 6508c21d is listed by `claude agents --json`. If that session is gone, relaunch with the same args file (restamped), with done plus the units finished on the branch, and priorNote from the journal's last builder result or the branch's last commit. Never wait for it.
-  - On return: verify the trailers on the new commits, territory over 3fbd08f6..HEAD, and the log verdicts; restore offline/1-addic.html. Then write LANE: game-tutorials READY <tip> with merge base 3fbd08f6, and tell the HUB by message.
-- READY, in the HUB's merge since 09:35: content eb38166, merge base 87582bd4. Engine's FIX-RS27 by name (R-H-45).
-- NEXT after game-tutorials:
-  - A red from the HUB is fixed on the branch within the hour, before any new unit.
-  - Tier 2 runs only when no tier 1 lane waits: content V-23 (V-10b waits for the owner's I6), workbook-settings V-24 and V-22b, game-tutorials V-21.
+- Chat 6508c21d (SCREENS 9, 'SCREENS 08:44') handed over with STATE RESTART at about 11:06 IST, at a clean point. NO SCREENS run is live. Its runs (wf_76cc2221-3cb, wf_e5593f15-752) both returned; nothing needs a relaunch.
+- Waiting for the HUB's merge: game-tutorials READY 3aefecb (V-28 7214a52 + V-44 3aefecb), merge base 3fbd08f6. The HUB is HUB 12 'HUB 09:02', or its successor by the name ListAgents shows.
+- Merged and complete: content (V-42 at 899f77e4), today-track (V-43), workbook-settings, actions. game-tutorials becomes complete for tier 1 once 3aefecb merges.
+- NEXT for the fresh chat:
+  - (1) A red from the HUB on 3aefecb: fix it on build/game-tutorials within the hour, scoped by name; the merge base stays 3fbd08f6; two rounds at most.
+  - (2) FREEZE comes at tests-docs V-45's READY (CORE). After it, only READY lanes and fixes by name enter offline-v3.0.
+  - (3) Tier 2, only when no tier 1 lane waits and on a 7.0 GB row:
+    - content V-23 (V-10b waits for the owner's I6, outbox-OWNER.md);
+    - workbook-settings V-24 and V-22b;
+    - game-tutorials V-21, the coach after a route change; its brief section is in briefs/game-tutorials-v3.md.
+    - Each: fast-forward the branch and worktree to BASE (--ff-only), write the args from lane_args_v3.json with done = the lane's finished units, then launch lane.js.
+- Open by name, not scheduled:
+  - The builder's question on the quest-line, objectives and run JITs: they are reachable only from Settings > Help training; no Today JIT bar (default taken).
+  - The refusal words per code on Today (R-S-28): default no.
 - Facts:
-  - setlane.py takes "PREFIX=full line" pairs plus an optional --section (there is no '-' placeholder). Run it from a Python file written with the Write tool into the job tmp folder. rr.py takes <section-file> <resume-file>.
+  - setlane.py takes "PREFIX=full line" pairs plus an optional --section (no '-' placeholder). Run it from a Python file written with the Write tool into the job tmp folder. rr.py takes <section-file> <resume-file>.
   - hub_commit.py runs from the repo root with repo-relative paths. The HUB pushes.
-  - ListAgents gives the names: HUB 12 is 'HUB 09:02' (3e9a8ea0) and CORE 14 is 'CORE 08:43' (4c79e5f7). 'HUB 08 Nov 05:26' belongs to another project.
-  - The memory rows are the table at the end of coordination/lane-widening.md. One start per row at or above 7.0 GB; paused work resumes at 4.0 GB.
+  - ListAgents shows the names: HUB 'HUB hh:mm', CORE 'CORE hh:mm'. 'HUB 08 Nov 05:26' is another project's.
+  - The memory rows are the table at the end of coordination/lane-widening.md. One new start per row at or above 7.0 GB. Paused work resumes at 4.0. Under 4.0 the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
   - lane.js writes its report over lane-reports/<lane>.md. The checker's build leaves offline/1-addic.html changed: restore it before READY.
-  - A merged-tree scratch proof: git archive build/offline-v1 offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test.
+  - A merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, then node --test <files>.
