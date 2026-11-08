@@ -724,4 +724,22 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 }
 [data-motion="reduce"] .hb-grew, [data-route="sos"] .hb-grew { animation: none !important; }
 @keyframes hb-grew { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+/* V-43 today's objectives, the run line, the quest-line step, the growth in the scene, Your way */
+.td-objective-list, .st-way-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.td-objective, .st-step { border-left: 3px solid hsl(var(--border)); padding-left: var(--space-2); }
+.td-objective[data-done="true"], .st-step[data-state="done"] { border-left-color: hsl(var(--gold)); }
+.st-step[data-state="current"] { border-left-color: hsl(var(--primary)); }
+.td-objective > p, .st-step > p, .td-run p, .st-run p { margin: 0; }
+.td-objective-title, .td-step-title, .st-step-title, .td-run-head { font-weight: 600; margin: 0; }
+.td-objectives .btn, .td-questline .btn, .st-way .btn { min-height: 44px; }
+.td-objectives .btn:focus-visible, .td-questline .btn:focus-visible, .st-way a:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.td-run-back, .st-run-back { color: hsl(var(--primary)); font-weight: 600; }
+.td-msg:empty { margin: 0; }
+.st-growth-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.st-growth-list > li { padding: 2px var(--space-2); border: 1px solid hsl(var(--border)); border-radius: var(--radius); }
+.hb-growth .hb-g { fill: hsl(var(--gold)); }
+.hb-growth .hb-g-tree, .hb-growth .hb-g-garden { fill: hsl(var(--primary)); }
+.hb-growth .hb-g-boat, .hb-growth .hb-g-bench, .hb-growth .hb-g-bell { fill: hsl(var(--muted)); }
+.hb-growth .hb-g-line { fill: none; stroke: hsl(var(--text)); stroke-width: 1.2; stroke-linecap: round; }
+.hb-growth .hb-g-glow { fill: hsl(var(--surface)); }
 /* -- end today-track -- */

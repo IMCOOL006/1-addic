@@ -735,6 +735,24 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 }
 [data-motion="reduce"] .hb-grew, [data-route="sos"] .hb-grew { animation: none !important; }
 @keyframes hb-grew { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+/* V-43 today's objectives, the run line, the quest-line step, the growth in the scene, Your way */
+.td-objective-list, .st-way-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.td-objective, .st-step { border-left: 3px solid hsl(var(--border)); padding-left: var(--space-2); }
+.td-objective[data-done="true"], .st-step[data-state="done"] { border-left-color: hsl(var(--gold)); }
+.st-step[data-state="current"] { border-left-color: hsl(var(--primary)); }
+.td-objective > p, .st-step > p, .td-run p, .st-run p { margin: 0; }
+.td-objective-title, .td-step-title, .st-step-title, .td-run-head { font-weight: 600; margin: 0; }
+.td-objectives .btn, .td-questline .btn, .st-way .btn { min-height: 44px; }
+.td-objectives .btn:focus-visible, .td-questline .btn:focus-visible, .st-way a:focus-visible { outline: 3px solid hsl(var(--focus)); outline-offset: 2px; }
+.td-run-back, .st-run-back { color: hsl(var(--primary)); font-weight: 600; }
+.td-msg:empty { margin: 0; }
+.st-growth-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.st-growth-list > li { padding: 2px var(--space-2); border: 1px solid hsl(var(--border)); border-radius: var(--radius); }
+.hb-growth .hb-g { fill: hsl(var(--gold)); }
+.hb-growth .hb-g-tree, .hb-growth .hb-g-garden { fill: hsl(var(--primary)); }
+.hb-growth .hb-g-boat, .hb-growth .hb-g-bench, .hb-growth .hb-g-bell { fill: hsl(var(--muted)); }
+.hb-growth .hb-g-line { fill: none; stroke: hsl(var(--text)); stroke-width: 1.2; stroke-linecap: round; }
+.hb-growth .hb-g-glow { fill: hsl(var(--surface)); }
 /* -- end today-track -- */
 </style>
 </head>
@@ -8181,6 +8199,18 @@ const TodayUI = (() => {
     sample: 'Sample',
     harbor: 'Your Harbor',
     error: 'That did not save. Please try again.',
+    objectivesTitle: "Today's objectives",
+    objectiveDone: 'Done', objectiveDoneAria: (t) => `Mark done: ${t}`, objectiveIsDone: 'Done',
+    objectiveSwap: 'Swap', objectiveSwapAria: (t) => `Swap for another one: ${t}`,
+    growing: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+    growingNone: 'The first one grows when you do one.',
+    run: { header: 'Days shown up', neutral: 'Days active', current: 'Now', best: 'Best', total: 'In all',
+      keptLine: 'Kept. One quiet day a week still counts.', cameBackLine: 'You came back.' },
+    wayTitle: 'Your way',
+    unlocks: (name) => `Unlocks: ${name}`,
+    progress: (have, need) => `Progress: ${have} of ${need}`,
+    claim: 'Claim', claimAria: (t) => `Claim: ${t}`,
+    wayDone: 'Every step is done.',
   };
 
   /* ── small helpers ─────────────────────────────────────────────────────────────────────── */
@@ -8401,6 +8431,30 @@ const TodayUI = (() => {
     return all.filter((k) => !(o.calm && (k === 'momentum' || k === 'game' || k === 'explorer' || k === 'harbor')) && !(o.discreet && (k === 'harbor' || k === 'counters' || k === 'game')));
   }
 
+  /* V-43: the objectives and quest-line cards go right after the check-in (cardsFor itself is unchanged). Maintenance
+     keeps the objectives only; discreet hides the quest-line, whose reward names are not neutral. */
+  function withObjectives(keys, o) {
+    const x = o || {};
+    const add = x.maintenance || x.discreet ? ['objectives'] : ['objectives', 'questline'];
+    const k = arr(keys).filter((key) => !add.includes(key));
+    const i = k.indexOf('checkin');
+    k.splice(i < 0 ? 0 : i + 1, 0, ...add);
+    return k;
+  }
+  /* The run line from Engine.run: null with no day shown up yet. Content.runWords wins key by key, TEXT fills the gaps.
+     Never a countdown: 'kept' on a grace day (holding), 'you came back' after a break; best and total come as given. */
+  function runLine(r, words, discreet) {
+    if (!isObj(r) || !(Number(r.total) > 0)) return null;
+    const given = isObj(words) ? Object.fromEntries(Object.entries(words).filter(([, v]) => str(v))) : {};
+    const w = Object.assign({}, TEXT.run, given);
+    const n = (v) => Math.max(0, Math.floor(Number(v) || 0));
+    return {
+      header: discreet ? TEXT.run.neutral : w.header, current: n(r.current), best: n(r.best), total: n(r.total),
+      labels: { current: w.current, best: w.best, total: w.total },
+      kept: r.holding ? w.keptLine : null, back: r.cameBack === true ? w.cameBackLine : null,
+    };
+  }
+
   /* ── cards (DOM) ───────────────────────────────────────────────────────────────────────── */
   const sampleTag = (row) => (row && row.sample === true ? h('span', { class: 'td-tag td-sample', text: TEXT.sample }) : null);
   const run = (fn) => Promise.resolve().then(fn);
@@ -8605,6 +8659,99 @@ const TodayUI = (() => {
     return h('section', { class: 'card td-harbor', 'data-test': 'today-harbor', 'aria-hidden': 'true' }, art);
   }
 
+  /* ── V-43: today's objectives, the run line, the quest-line step ─────────────────────────────── */
+  /* An Actions verb, or null when absent (then its button is not drawn: O7). */
+  const verb = (A, group, fn) => (A && isObj(A[group]) && typeof A[group][fn] === 'function' ? (...a) => A[group][fn](...a) : null);
+  const statusLine = () => h('p', { class: 'muted td-msg', role: 'status', 'aria-live': 'polite' });
+  /* A refusal shows its message and nothing throws; an ok result re-renders through Store.subscribe (ui-core). */
+  function act(msg, fn, onOk) {
+    return run(fn).then((res) => {
+      if (res && res.ok === false) { msg.textContent = str(res.message) || TEXT.error; return; }
+      msg.textContent = '';
+      if (onOk) safe(() => onOk(res), null);
+    }, (e) => { msg.textContent = (e && e.message) || TEXT.error; });
+  }
+  const featureName = (id) => {
+    const C = ns('Content');
+    const f = C && isObj(C.features) && str(id) ? C.features[id] : null;
+    return isObj(f) ? str(f.name) : '';
+  };
+  function objectivesCard(c) {
+    const E = c.E;
+    const r = E && typeof E.dailyObjectives === 'function' ? safe(() => E.dailyObjectives(c.view, c.now), null) : null;
+    const items = isObj(r) ? arr(r.items).filter((o) => isObj(o) && str(o.id)) : [];
+    if (!items.length) return null;
+    const done = verb(c.A, 'objective', 'done');
+    const swap = r.swapped !== true ? verb(c.A, 'objective', 'swap') : null;
+    const msg = statusLine();
+    const rows = items.map((o) => {
+      const title = str(o.title) || o.id;
+      const isDone = o.done === true;
+      return h('li', { class: 'stack td-objective', 'data-test': 'objective', 'data-id': o.id, 'data-done': isDone ? 'true' : 'false' },
+        h('p', { class: 'td-objective-title', text: title }),
+        str(o.line) ? h('p', { class: 'muted', text: str(o.line) }) : null,
+        h('div', { class: 'row' },
+          isDone ? h('span', { class: 'td-tag', text: TEXT.objectiveIsDone }) : null,
+          !isDone && done ? h('button', { type: 'button', class: 'btn primary', 'data-test': 'objective-done', 'aria-label': TEXT.objectiveDoneAria(title),
+            text: TEXT.objectiveDone, onClick: () => act(msg, () => done(o.id)) }) : null,
+          !isDone && swap && o.swappable === true && str(o.swapTo) ? h('button', { type: 'button', class: 'btn ghost', 'data-test': 'objective-swap',
+            'aria-label': TEXT.objectiveSwapAria(title), text: TEXT.objectiveSwap, onClick: () => act(msg, () => swap(o.id)) }) : null));
+    });
+    const n = Math.max(0, Math.floor(Number(r.growth) || 0));
+    return h('section', { class: 'card stack td-card td-objectives', 'data-test': 'objectives-card', 'data-tour': 'objectives-card', 'aria-label': TEXT.objectivesTitle },
+      h('h2', { class: 'card-title', text: TEXT.objectivesTitle }),
+      h('ul', { class: 'td-objective-list' }, rows),
+      h('p', { class: 'muted td-growing', text: n > 0 ? TEXT.growing(n) : TEXT.growingNone }), msg);
+  }
+  /* Under the quick row: days shown up, now · best · in all (Engine.run). Not the opt-in sober-day counters. */
+  function runLineEl(c, discreet) {
+    const E = c.E;
+    const r = E && typeof E.run === 'function' ? safe(() => E.run(c.view, c.now), null) : null;
+    const C = ns('Content');
+    const d = runLine(r, C && C.runWords, discreet);
+    if (!d) return null;
+    const part = (k, test) => h('span', { class: 'td-run-part', 'data-test': test }, `${d.labels[k]} `, h('strong', { text: String(d[k]) }));
+    return h('div', { class: 'stack td-run', 'data-test': 'run-line', 'data-tour': 'run-line' },
+      h('p', { class: 'td-run-nums' }, h('span', { class: 'td-run-head', text: `${d.header}: ` }),
+        part('current', 'run-current'), ' · ', part('best', 'run-best'), ' · ', part('total', 'run-total')),
+      d.kept ? h('p', { class: 'muted', 'data-test': 'run-kept', text: d.kept }) : null,
+      d.back ? h('p', { class: 'td-run-back', 'data-test': 'run-back', text: d.back }) : null);
+  }
+  /* On a claim the reward sheet is game-tutorials' (V-44), behind typeof; without it the unlock shows on the next Today. */
+  function rewardSheet(c, res) {
+    const evs = arr(res && res.events).concat(res && isObj(res.event) ? [res.event] : []);
+    const ev = evs.find((e) => isObj(e) && e.type === 'FeatureUnlocked');
+    const feature = ev && isObj(ev.payload) ? str(ev.payload.feature) : '';
+    const G = embedFn('GuidanceUI', 'rewardSheet');
+    if (feature && G) safe(() => G.rewardSheet(feature, ctxOf(c)), null);
+  }
+  function questlineCard(c) {
+    const E = c.E;
+    const ql = E && typeof E.questLine === 'function' ? safe(() => E.questLine(c.view, c.now), null) : null;
+    if (!isObj(ql) || !(Number(ql.total) > 0)) return null;
+    const card = (...body) => h('section', { class: 'card stack td-card td-questline', 'data-test': 'questline-card', 'data-tour': 'questline-card', 'aria-label': TEXT.wayTitle },
+      h('h2', { class: 'card-title', text: TEXT.wayTitle }), ...body);
+    const s = isObj(ql.current) ? ql.current : null;
+    if (!s) return Number(ql.done) >= Number(ql.total) ? card(h('p', { class: 'muted', text: TEXT.wayDone })) : null;
+    const title = str(s.title) || str(s.id);
+    const name = featureName(s.reward);
+    const p = isObj(s.progress) ? s.progress : null;
+    const need = p ? Math.max(0, Math.floor(Number(p.need) || 0)) : 0;
+    const have = p ? Math.min(need, Math.max(0, Math.floor(Number(p.have) || 0))) : 0;
+    const claim = s.claimable === true ? verb(c.A, 'questLine', 'claim') : null;
+    const msg = statusLine();
+    return card(
+      h('div', { class: 'stack', 'data-test': 'questline-step', 'data-state': 'current', 'data-id': str(s.id) },
+        h('p', { class: 'td-step-title', text: title }),
+        str(s.line) ? h('p', { text: str(s.line) }) : null,
+        name ? h('p', { class: 'muted', text: TEXT.unlocks(name) }) : null,
+        str(s.opened) ? h('p', { class: 'muted', text: str(s.opened) }) : null,
+        need > 0 ? h('p', { class: 'muted', text: TEXT.progress(have, need) }) : null),
+      claim ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn primary', 'data-test': 'questline-claim', 'aria-label': TEXT.claimAria(title),
+        text: TEXT.claim, onClick: () => act(msg, () => claim(s.id), (res) => rewardSheet(c, res)) })) : null,
+      msg);
+  }
+
   /* The way in to Your Harbor (#/status), beside Log a craving and SOS; the same word in Calm and discreet mode.
      The "New" dot only once Content.features.status exists (content V-10; the dot itself is GuidanceUI's). */
   function statusChip(c) {
@@ -8634,22 +8781,24 @@ const TodayUI = (() => {
       h('div', { class: 'row td-quick' },
         link('#/track/log/craving', TEXT.logCraving, 'btn primary', 'today-log-craving'),
         link('#/sos', discreet ? TEXT.help : TEXT.sos, 'btn', 'today-sos'),
-        statusChip(c)));
+        statusChip(c)),
+      maintenance ? null : safe(() => runLineEl(c, discreet), null));
     const make = {
       milestone: () => milestoneCard(c, gs), checkin: () => checkinCard(c), plan: () => planCard(c, features),
       want: () => wantCard(c, features), learn: () => learnCard(c), quests: () => questsCard(c), reasons: () => reasonsCard(c),
       counters: () => countersCard(c, gs), momentum: () => momentumCard(c, gs), game: () => gameCard(c), explorer: () => explorerCard(c),
       tip: () => tipCard(c), more: () => moreCard(c), backup: () => backupCard(c), harbor: () => harborCard(c),
+      objectives: () => objectivesCard(c), questline: () => questlineCard(c),
     };
-    const cards = cardsFor({ maintenance, calm: c.calm, discreet }).map((k) => safe(make[k], null));
+    const cards = withObjectives(cardsFor({ maintenance, calm: c.calm, discreet }), { maintenance, discreet }).map((k) => safe(make[k], null));
     return h('section', { class: 'page stack td-page', 'data-test': 'today-page' }, head, cards);
   }
 
   const PURE = ['TEXT', 'localDate', 'greetingFor', 'checkinsDone', 'checkinKind', 'checkinWindows', 'planToday', 'wantToday', 'activeQuests',
-    'reasonOfDay', 'countersData', 'backupDue', 'milestoneDue', 'cardsFor'];
+    'reasonOfDay', 'countersData', 'backupDue', 'milestoneDue', 'cardsFor', 'withObjectives', 'runLine'];
   return {
     TEXT, localDate, greetingFor, checkinsDone, checkinKind, checkinWindows, planToday, wantToday, activeQuests, reasonOfDay, countersData,
-    backupDue, milestoneDue, cardsFor, page, PURE,
+    backupDue, milestoneDue, cardsFor, withObjectives, runLine, page, PURE,
     _resetTip() { tipState.day = ''; tipState.tip = null; tipState.marked = ''; tipState.dismissed = ''; },
   };
 })();
@@ -16331,6 +16480,7 @@ const HarborUI = (() => {
     dark: (parts) => ` Waiting for light: ${parts}.`,
     level: (name, n) => `${name}, level ${n} of ${MAX}`,
     caption: 'Each place grows brighter as you use its skills. The light never goes out.',
+    growing: (n) => (n === 1 ? ' 1 thing growing.' : ` ${n} things growing.`),
     names: { lighthouse: 'The Lighthouse', cove: 'The Cove', garden: 'The Garden', pier: 'The Pier', compass: 'The Compass Rose', weather: 'The Weather Station' },
   };
 
@@ -16385,6 +16535,58 @@ const HarborUI = (() => {
       safe(() => document.documentElement.getAttribute('data-motion') === 'reduce', false) === true;
   }
 
+  /* ── V-43 growth: one element per Engine.growth unit (Today's objectives), never removed ──────────── */
+  const GROW_KINDS = ['lantern', 'tree', 'boat', 'bench', 'flag', 'gull', 'garden', 'bell'];
+  const GROW_MAX = 60;
+  /* A fixed table of 60 spots off the places' tap areas: the sky over the water edge, the sky over the hill, the far
+     water and the left shore, taken in turn so the harbor fills evenly. Spot k never moves. */
+  const SPOTS = (() => {
+    const grid = (xs, ys) => ys.flatMap((y) => xs.map((x) => [x, y]));
+    const zones = [
+      grid([70, 84, 98, 112, 126, 140, 154, 168, 182], [120, 104, 88]),
+      grid([204, 222, 240, 258, 276, 294, 312], [56, 40, 22]),
+      grid([186, 204, 222, 240, 258, 276], [186]).concat(grid([14, 26], [116, 96, 76])),
+    ];
+    const out = [];
+    for (let i = 0; out.length < GROW_MAX; i++) for (const z of zones) if (i < z.length && out.length < GROW_MAX) out.push(z[i]);
+    return out;
+  })();
+  /* The kind of unit i: its Engine.growthItems grows (a kind, or the objective that holds one), else the cycle. */
+  function kindAt(items, i) {
+    const it = Array.isArray(items) ? items[i] : null;
+    const g = isObj(it) ? (typeof it.grows === 'string' ? it.grows : isObj(it.grows) ? it.grows.grows : null) : null;
+    return GROW_KINDS.includes(g) ? g : GROW_KINDS[i % GROW_KINDS.length];
+  }
+  /* growthSpots(n, items?) -> [{x, y, kind}], at most 60. growthSpots(n + 1) begins with growthSpots(n). */
+  function growthSpots(n, items) {
+    const k = Math.max(0, Math.min(GROW_MAX, Math.floor(Number(n) || 0)));
+    return SPOTS.slice(0, k).map((p, i) => ({ x: p[0], y: p[1], kind: kindAt(items, i) }));
+  }
+  const GLYPH = {
+    lantern: (s) => [s('rect', { x: '-2', y: '-4', width: '4', height: '6', rx: '1' }), s('circle', { class: 'hb-g-glow', cx: '0', cy: '-1', r: '1.2' })],
+    tree: (s) => [s('path', { d: 'M0 -5 L4 2 H-4 Z' }), s('rect', { x: '-0.8', y: '2', width: '1.6', height: '3' })],
+    boat: (s) => [s('path', { d: 'M-5 1 H5 L3 4 H-3 Z' }), s('path', { class: 'hb-g-line', d: 'M0 1 V-5 L3 -1 H0' })],
+    bench: (s) => [s('rect', { x: '-4', y: '-1', width: '8', height: '1.6' }), s('path', { class: 'hb-g-line', d: 'M-3 0.6 V4 M3 0.6 V4 M-4 -3 H4' })],
+    flag: (s) => [s('path', { class: 'hb-g-line', d: 'M-2 5 V-5' }), s('path', { d: 'M-2 -5 L4 -3 L-2 -1 Z' })],
+    gull: (s) => [s('path', { class: 'hb-g-line', d: 'M-5 0 Q-2.5 -3 0 0 Q2.5 -3 5 0' })],
+    garden: (s) => [s('circle', { cx: '-3', cy: '1', r: '1.5' }), s('circle', { cx: '0', cy: '-1', r: '1.5' }), s('circle', { cx: '3', cy: '1', r: '1.5' })],
+    bell: (s) => [s('path', { d: 'M-3 2 Q-3 -4 0 -4 Q3 -4 3 2 Z' }), s('circle', { cx: '0', cy: '3', r: '1' })],
+  };
+  /* Engine.growth and Engine.growthItems behind typeof (count 0 when absent). */
+  function growthOf(c) {
+    const E = c.E === undefined ? ns('Engine') : c.E;
+    const call = (fn) => (E && typeof E[fn] === 'function' ? safe(() => E[fn](c.view, c.now), null) : null);
+    const items = call('growthItems');
+    const n = Math.floor(Number(call('growth')) || 0);
+    return { count: n > 0 ? n : (Array.isArray(items) ? items.length : 0), items: Array.isArray(items) ? items : [] };
+  }
+  /* The growth layer: no data-place and no pointer events, so the place taps under it keep working. */
+  function growthLayer(s, spots) {
+    if (!spots.length) return null;
+    return s('g', { class: 'hb-growth', 'data-test': 'status-growth-layer', 'pointer-events': 'none' },
+      spots.map((p) => s('g', { class: `hb-g hb-g-${p.kind}`, 'data-kind': p.kind, transform: `translate(${p.x} ${p.y})` }, GLYPH[p.kind](s))));
+  }
+
   /* ── the scene ─────────────────────────────────────────────────────────────────────────── */
   function lights(s, n, spots, cls) {
     return spots.map((p, i) => s('g', { class: i < n ? 'hb-lantern hb-lit' : 'hb-lantern' },
@@ -16405,7 +16607,9 @@ const HarborUI = (() => {
     if (!U || typeof U.svg !== 'function' || typeof document === 'undefined') return null;
     const s = U.svg;
     const L = lightLevels(c.view, c.now, c.E === undefined ? undefined : c.E);
-    const svgEl = s('svg', { viewBox: '0 0 360 200', class: 'hb-scene ' + (still(c) ? 'hb-still' : 'hb-moving'), role: 'img', 'aria-label': ariaLabel(L),
+    const G = growthOf(c);
+    const spots = growthSpots(G.count, G.items);
+    const svgEl = s('svg', { viewBox: '0 0 360 200', class: 'hb-scene ' + (still(c) ? 'hb-still' : 'hb-moving'), role: 'img', 'aria-label': ariaLabel(L) + (G.count ? TEXT.growing(G.count) : ''),
       'data-test': 'harbor-scene', focusable: 'false', preserveAspectRatio: 'xMidYMid slice' },
       s('rect', { class: 'hb-sky', x: '0', y: '0', width: '360', height: '200' }),
       place(s, 'garden', L.garden,
@@ -16440,7 +16644,8 @@ const HarborUI = (() => {
         lights(s, L.pier, [[187, 138], [209, 138], [231, 138], [253, 138], [275, 138]], 'hb-bulb')),
       place(s, 'compass', L.compass,
         glow(s, L.compass, { cx: '322', cy: '176', rx: '20', ry: '16' }),
-        s('path', { class: L.compass ? 'hb-rose hb-on' : 'hb-rose', d: 'M322 162 L326 172 L336 176 L326 180 L322 190 L318 180 L308 176 L318 172 Z' })));
+        s('path', { class: L.compass ? 'hb-rose hb-on' : 'hb-rose', d: 'M322 162 L326 172 L336 176 L326 180 L322 190 L318 180 L308 176 L318 172 Z' })),
+      growthLayer(s, spots));
     const wrap = document.createElement('div');
     wrap.setAttribute('class', 'hb-wrap');
     wrap.appendChild(svgEl);
@@ -16451,8 +16656,8 @@ const HarborUI = (() => {
     return wrap;
   }
 
-  const PURE = ['TEXT', 'PLACES', 'lightLevels', 'lightOpacity', 'ariaLabel', 'hidden', 'still'];
-  return { TEXT, PLACES, lightLevels, lightOpacity, ariaLabel, hidden, still, scene, PURE };
+  const PURE = ['TEXT', 'PLACES', 'lightLevels', 'lightOpacity', 'ariaLabel', 'hidden', 'still', 'GROW_KINDS', 'growthSpots'];
+  return { TEXT, PLACES, lightLevels, lightOpacity, ariaLabel, hidden, still, GROW_KINDS, growthSpots, scene, PURE };
 })();
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -16468,10 +16673,13 @@ if (typeof module !== 'undefined' && module.exports) {
    no level. Calm mode: no scene, XP or badges; the places as a plain list. Discreet mode: no scene, no days.
    The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML.
    V-01b: what just changed since the last draw this session (memory only), a 14-day strip of dated dots (no count),
-   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js). */
+   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js).
+   V-43: the growth from Today's objectives (one element per Engine.growth unit, never removed), the spine "Your way"
+   (Engine.questLine) and the run of days shown up (Engine.run) in "Where you stand"; the opt-in sober-day run stays out. */
 const StatusUI = (() => {
   const MAX = 5;
   const PLACES = ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather'];
+  const GROW_KINDS = ['lantern', 'tree', 'boat', 'bench', 'flag', 'gull', 'garden', 'bell']; // HarborUI's cycle, when it is absent
   const TEXT = {
     title: 'Your Harbor',
     lead: 'Each place grows brighter as you use its skills. Tap a place to see its skills.',
@@ -16505,6 +16713,9 @@ const StatusUI = (() => {
       explorer: (n) => `${n} first steps tried.`,
       quest: (n) => `${n} quest steps done.`,
       day: (n) => `Days in all: ${n}.`,
+      growth: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+      best: (n) => `Best: ${n} days shown up.`,
+      total: (n) => `Days shown up in all: ${n}.`,
     },
     changeTitle: 'What just changed',
     first: 'Here is where you stand.',
@@ -16517,6 +16728,18 @@ const StatusUI = (() => {
     watchLead: 'A few patterns in your own logs that may be worth a look. Each one comes with a plan.',
     watchNone: 'Nothing to watch right now.',
     plan: (p) => `Your plan: ${p}`,
+    growthTitle: 'Growing in your harbor',
+    growing: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+    growingNone: 'Nothing growing yet. An objective done on Today starts it.',
+    growMore: (n) => `and ${n} more`,
+    kinds: { lantern: 'Lantern', tree: 'Tree', boat: 'Boat', bench: 'Bench', flag: 'Flag', gull: 'Gull', garden: 'Flower bed', bell: 'Bell' },
+    way: 'Your way',
+    wayState: { done: 'Done', current: 'Now', locked: 'Later' },
+    wayUnlocks: (name) => `Unlocks: ${name}`,
+    wayProgress: (have, need) => `Progress: ${have} of ${need}`,
+    wayClaim: 'Claim it on Today',
+    runWords: { header: 'Days shown up', neutral: 'Days active', current: 'Now', best: 'Best', total: 'In all',
+      keptLine: 'Kept. One quiet day a week still counts.', cameBackLine: 'You came back.' },
   };
   const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -16631,7 +16854,29 @@ const StatusUI = (() => {
       days: { show: x.counters !== false && x.discreet !== true && ct.tracking !== false, total: num(ct.total) },
       next: nextStep(x),
       ticks: { explorer: ex, quests: qd },
+      growth: isObj(x.growth) ? { count: num(x.growth.count), kinds: arr(x.growth.kinds).filter((k) => typeof k === 'string').slice(0, 60) } : null,
+      shownUp: isObj(x.run) && num(x.run.total) > 0 ? { current: num(x.run.current), best: num(x.run.best), total: num(x.run.total),
+        kept: !!x.run.holding, back: x.run.cameBack === true } : null,
+      way: wayOf(x.way, x.discreet === true),
     };
+  }
+
+  /* V-43: "Your way" from Engine.questLine. A locked step keeps its title only; discreet names no reward. */
+  function wayOf(q, discreet) {
+    if (!isObj(q) || !arr(q.steps).length) return null;
+    const C = content();
+    const steps = arr(q.steps).filter((s) => isObj(s) && str(s.id)).map((s) => {
+      const state = s.state === 'done' || s.state === 'current' ? s.state : 'locked';
+      const out = { id: s.id, title: str(s.title) || s.id, state };
+      if (state === 'done') out.opened = str(s.opened);
+      if (state === 'current') {
+        const f = !discreet && isObj(C.features) && isObj(C.features[s.reward]) ? str(C.features[s.reward].name) : '';
+        const p = isObj(s.progress) ? s.progress : {};
+        Object.assign(out, { line: str(s.line), reward: f, progress: { have: Math.min(num(p.have), num(p.need)), need: num(p.need) }, claimable: s.claimable === true });
+      }
+      return out;
+    });
+    return steps.length ? { steps, done: num(q.done), total: num(q.total) || steps.length } : null;
   }
 
   /* diff(before, after) -> the rises between two models, and only the rises. Equal or lower: nothing. */
@@ -16655,6 +16900,11 @@ const StatusUI = (() => {
     if (ra && ra !== rb && ranks.indexOf(ra) > ranks.indexOf(rb)) items.push({ kind: 'rank', id: ra, text: R.rank(str(after.rank.name) || ra), from: rb, to: ra });
     up('explorer', 'explorer', n(before, 'ticks', 'explorer'), n(after, 'ticks', 'explorer'), R.explorer(n(after, 'ticks', 'explorer')));
     up('quest', 'quests', n(before, 'ticks', 'quests'), n(after, 'ticks', 'quests'), R.quest(n(after, 'ticks', 'quests')));
+    if (before.growth && after.growth) up('growth', 'growth', n(before, 'growth', 'count'), n(after, 'growth', 'count'), R.growth(n(after, 'growth', 'count')));
+    if (after.shownUp) {
+      up('best', 'best', n(before, 'shownUp', 'best'), n(after, 'shownUp', 'best'), R.best(n(after, 'shownUp', 'best')));
+      up('total', 'total', n(before, 'shownUp', 'total'), n(after, 'shownUp', 'total'), R.total(n(after, 'shownUp', 'total')));
+    }
     if (after.days && after.days.show === true && before.days && before.days.show === true) {
       up('day', 'days', n(before, 'days', 'total'), n(after, 'days', 'total'), R.day(n(after, 'days', 'total')));
     }
@@ -16718,10 +16968,17 @@ const StatusUI = (() => {
     const E = c.E;
     const call = (name, ...a) => (E && typeof E[name] === 'function' ? safe(() => E[name](...a), null) : null);
     const rm = call('roadmap', c.profile, new Set(arr(gs.modulesDone)), c.now, new Set(arr(gs.lessonsDone)));
+    // V-43: growth only once Content.objectives exists (content V-42); the kinds as HarborUI draws them
+    const g = arr(content().objectives).length && E && typeof E.growth === 'function' ? num(call('growth', c.view, c.now)) : null;
+    const gi = g === null ? [] : arr(call('growthItems', c.view, c.now));
+    const Hb = ns('HarborUI');
+    const kinds = g === null ? [] : Hb && typeof Hb.growthSpots === 'function' ? arr(safe(() => Hb.growthSpots(g, gi), [])).map((p) => p && p.kind)
+      : Array.from({ length: Math.min(g, 60) }, (_, i) => GROW_KINDS[i % GROW_KINDS.length]);
     return {
       explorer: arr(call('explorer', c.view)), explorerDone: call('explorerDone', c.view) === true, quests: call('quests', c.view) || {},
       nextLesson: call('nextLesson', c.view), focus: rm && isObj(rm.focus) ? rm.focus : null,
       counters: mode.counters, discreet: mode.discreet, calm: mode.calm, now: c.now,
+      growth: g === null ? null : { count: g, kinds }, run: call('run', c.view, c.now), way: call('questLine', c.view, c.now),
     };
   }
 
@@ -16747,7 +17004,7 @@ const StatusUI = (() => {
   }
   /* The rises since the last draw; the first draw says where the person stands. Calm shows no XP, badge or rank. */
   function changeCard(d, calm) {
-    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank'))) : [];
+    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank' || i.kind === 'best' || i.kind === 'total'))) : [];
     return h('section', { class: 'card stack st-change', 'data-test': 'status-change', 'data-tour': 'status-change', 'aria-label': TEXT.changeTitle },
       h('h2', { class: 'card-title', text: TEXT.changeTitle }),
       !d ? h('p', { class: 'muted', text: TEXT.first })
@@ -16778,6 +17035,38 @@ const StatusUI = (() => {
           str(s.evidence) ? h('p', { class: 'muted', text: s.evidence }) : null,
           str(s.plan) ? h('p', { class: 'st-plan', text: TEXT.plan(s.plan) }) : null)))]
         : h('p', { class: 'muted', text: TEXT.watchNone }));
+  }
+
+  /* V-43 (HUB ruling 1451806): the run of days shown up in "Where you stand"; Content.runWords wins key by key. */
+  function runEl(r, discreet) {
+    const C = content();
+    const given = isObj(C.runWords) ? Object.fromEntries(Object.entries(C.runWords).filter(([, v]) => typeof v === 'string' && v.trim())) : {};
+    const w = Object.assign({}, TEXT.runWords, given);
+    const part = (k, test) => h('span', { 'data-test': test }, `${w[k]} `, h('strong', { text: String(r[k]) }));
+    return h('div', { class: 'stack st-run' },
+      h('p', null, `${discreet ? TEXT.runWords.neutral : w.header}: `, part('current', 'run-current'), ' · ', part('best', 'run-best'), ' · ', part('total', 'run-total')),
+      r.kept ? h('p', { class: 'muted', 'data-test': 'run-kept', text: w.keptLine }) : null,
+      r.back ? h('p', { class: 'st-run-back', 'data-test': 'run-back', text: w.cameBackLine }) : null);
+  }
+  function growthCard(g, calm) {
+    const items = calm ? [] : g.kinds;
+    return h('section', { class: 'card stack st-growth', 'data-test': 'status-growth', 'aria-label': TEXT.growthTitle },
+      h('h2', { class: 'card-title', text: TEXT.growthTitle }),
+      h('p', { class: g.count ? null : 'muted', text: g.count ? TEXT.growing(g.count) : TEXT.growingNone }),
+      items.length ? h('ul', { class: 'st-growth-list' }, items.map((k) => h('li', { 'data-test': 'status-growth-item', 'data-kind': k, text: TEXT.kinds[k] || k })),
+        g.count > items.length ? h('li', { class: 'muted', text: TEXT.growMore(g.count - items.length) }) : null) : null);
+  }
+  function wayCard(w) {
+    const cur = (s) => s.state === 'current';
+    return h('section', { class: 'card stack st-way', 'data-test': 'status-way', 'aria-label': TEXT.way },
+      h('h2', { class: 'card-title', text: TEXT.way }),
+      h('ol', { class: 'st-way-list' }, w.steps.map((s) => h('li', { class: 'st-step', 'data-test': 'questline-step', 'data-state': s.state, 'data-id': s.id },
+        h('p', { class: 'st-step-title', text: `${TEXT.wayState[s.state]}: ${s.title}` }),
+        s.state === 'done' && s.opened ? h('p', { class: 'muted', text: s.opened }) : null,
+        cur(s) && s.line ? h('p', { text: s.line }) : null,
+        cur(s) && s.reward ? h('p', { class: 'muted', text: TEXT.wayUnlocks(s.reward) }) : null,
+        cur(s) && s.progress.need > 0 ? h('p', { class: 'muted', text: TEXT.wayProgress(s.progress.have, s.progress.need) }) : null,
+        cur(s) && s.claimable ? h('a', { href: '#/today', class: 'btn primary', text: TEXT.wayClaim }) : null))));
   }
 
   function page(ctxIn) {
@@ -16836,6 +17125,7 @@ const StatusUI = (() => {
       !mode.calm && gctx && typeof G.xpBar === 'function' ? safe(() => G.xpBar(gctx), null) : null,
       !mode.calm ? h('p', { class: 'st-badges', text: TEXT.badges(m.badges.earned, m.badges.total) }) : null,
       m.days.show ? h('p', { class: 'st-days', 'data-test': 'status-days', text: TEXT.days(m.days.total) }) : null,
+      m.shownUp ? runEl(m.shownUp, mode.discreet) : null,
       mode.calm && !m.days.show ? h('p', { class: 'muted', text: TEXT.standCalm }) : null);
     const next = h('section', { class: 'card stack st-next', 'data-test': 'status-next', 'aria-label': TEXT.next },
       h('h2', { class: 'card-title', text: TEXT.next }),
@@ -16843,7 +17133,8 @@ const StatusUI = (() => {
         : h('p', { class: 'muted', text: TEXT.nextNone }));
 
     const root = h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
-      head, changeCard(changed, mode.calm), scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next,
+      head, changeCard(changed, mode.calm), scene, m.growth && !mode.discreet ? growthCard(m.growth, mode.calm) : null,
+      h('p', { class: 'muted', text: TEXT.lead }), places, stand, m.way ? wayCard(m.way) : null, next,
       stripCard(gs, c.now), watchCard(c));
     memo.root = root;
     return root;

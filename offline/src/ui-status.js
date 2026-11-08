@@ -5,10 +5,13 @@
    no level. Calm mode: no scene, XP or badges; the places as a plain list. Discreet mode: no scene, no days.
    The chrome's SOS button stays; the page adds its own SOS link. Text goes in as text, never as HTML.
    V-01b: what just changed since the last draw this session (memory only), a 14-day strip of dated dots (no count),
-   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js). */
+   and what to watch from Engine.warningSigns (also drawn at #/track/radar by ui-track.js).
+   V-43: the growth from Today's objectives (one element per Engine.growth unit, never removed), the spine "Your way"
+   (Engine.questLine) and the run of days shown up (Engine.run) in "Where you stand"; the opt-in sober-day run stays out. */
 const StatusUI = (() => {
   const MAX = 5;
   const PLACES = ['lighthouse', 'cove', 'garden', 'pier', 'compass', 'weather'];
+  const GROW_KINDS = ['lantern', 'tree', 'boat', 'bench', 'flag', 'gull', 'garden', 'bell']; // HarborUI's cycle, when it is absent
   const TEXT = {
     title: 'Your Harbor',
     lead: 'Each place grows brighter as you use its skills. Tap a place to see its skills.',
@@ -42,6 +45,9 @@ const StatusUI = (() => {
       explorer: (n) => `${n} first steps tried.`,
       quest: (n) => `${n} quest steps done.`,
       day: (n) => `Days in all: ${n}.`,
+      growth: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+      best: (n) => `Best: ${n} days shown up.`,
+      total: (n) => `Days shown up in all: ${n}.`,
     },
     changeTitle: 'What just changed',
     first: 'Here is where you stand.',
@@ -54,6 +60,18 @@ const StatusUI = (() => {
     watchLead: 'A few patterns in your own logs that may be worth a look. Each one comes with a plan.',
     watchNone: 'Nothing to watch right now.',
     plan: (p) => `Your plan: ${p}`,
+    growthTitle: 'Growing in your harbor',
+    growing: (n) => (n === 1 ? '1 thing growing in your harbor.' : `${n} things growing in your harbor.`),
+    growingNone: 'Nothing growing yet. An objective done on Today starts it.',
+    growMore: (n) => `and ${n} more`,
+    kinds: { lantern: 'Lantern', tree: 'Tree', boat: 'Boat', bench: 'Bench', flag: 'Flag', gull: 'Gull', garden: 'Flower bed', bell: 'Bell' },
+    way: 'Your way',
+    wayState: { done: 'Done', current: 'Now', locked: 'Later' },
+    wayUnlocks: (name) => `Unlocks: ${name}`,
+    wayProgress: (have, need) => `Progress: ${have} of ${need}`,
+    wayClaim: 'Claim it on Today',
+    runWords: { header: 'Days shown up', neutral: 'Days active', current: 'Now', best: 'Best', total: 'In all',
+      keptLine: 'Kept. One quiet day a week still counts.', cameBackLine: 'You came back.' },
   };
   const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -168,7 +186,29 @@ const StatusUI = (() => {
       days: { show: x.counters !== false && x.discreet !== true && ct.tracking !== false, total: num(ct.total) },
       next: nextStep(x),
       ticks: { explorer: ex, quests: qd },
+      growth: isObj(x.growth) ? { count: num(x.growth.count), kinds: arr(x.growth.kinds).filter((k) => typeof k === 'string').slice(0, 60) } : null,
+      shownUp: isObj(x.run) && num(x.run.total) > 0 ? { current: num(x.run.current), best: num(x.run.best), total: num(x.run.total),
+        kept: !!x.run.holding, back: x.run.cameBack === true } : null,
+      way: wayOf(x.way, x.discreet === true),
     };
+  }
+
+  /* V-43: "Your way" from Engine.questLine. A locked step keeps its title only; discreet names no reward. */
+  function wayOf(q, discreet) {
+    if (!isObj(q) || !arr(q.steps).length) return null;
+    const C = content();
+    const steps = arr(q.steps).filter((s) => isObj(s) && str(s.id)).map((s) => {
+      const state = s.state === 'done' || s.state === 'current' ? s.state : 'locked';
+      const out = { id: s.id, title: str(s.title) || s.id, state };
+      if (state === 'done') out.opened = str(s.opened);
+      if (state === 'current') {
+        const f = !discreet && isObj(C.features) && isObj(C.features[s.reward]) ? str(C.features[s.reward].name) : '';
+        const p = isObj(s.progress) ? s.progress : {};
+        Object.assign(out, { line: str(s.line), reward: f, progress: { have: Math.min(num(p.have), num(p.need)), need: num(p.need) }, claimable: s.claimable === true });
+      }
+      return out;
+    });
+    return steps.length ? { steps, done: num(q.done), total: num(q.total) || steps.length } : null;
   }
 
   /* diff(before, after) -> the rises between two models, and only the rises. Equal or lower: nothing. */
@@ -192,6 +232,11 @@ const StatusUI = (() => {
     if (ra && ra !== rb && ranks.indexOf(ra) > ranks.indexOf(rb)) items.push({ kind: 'rank', id: ra, text: R.rank(str(after.rank.name) || ra), from: rb, to: ra });
     up('explorer', 'explorer', n(before, 'ticks', 'explorer'), n(after, 'ticks', 'explorer'), R.explorer(n(after, 'ticks', 'explorer')));
     up('quest', 'quests', n(before, 'ticks', 'quests'), n(after, 'ticks', 'quests'), R.quest(n(after, 'ticks', 'quests')));
+    if (before.growth && after.growth) up('growth', 'growth', n(before, 'growth', 'count'), n(after, 'growth', 'count'), R.growth(n(after, 'growth', 'count')));
+    if (after.shownUp) {
+      up('best', 'best', n(before, 'shownUp', 'best'), n(after, 'shownUp', 'best'), R.best(n(after, 'shownUp', 'best')));
+      up('total', 'total', n(before, 'shownUp', 'total'), n(after, 'shownUp', 'total'), R.total(n(after, 'shownUp', 'total')));
+    }
     if (after.days && after.days.show === true && before.days && before.days.show === true) {
       up('day', 'days', n(before, 'days', 'total'), n(after, 'days', 'total'), R.day(n(after, 'days', 'total')));
     }
@@ -255,10 +300,17 @@ const StatusUI = (() => {
     const E = c.E;
     const call = (name, ...a) => (E && typeof E[name] === 'function' ? safe(() => E[name](...a), null) : null);
     const rm = call('roadmap', c.profile, new Set(arr(gs.modulesDone)), c.now, new Set(arr(gs.lessonsDone)));
+    // V-43: growth only once Content.objectives exists (content V-42); the kinds as HarborUI draws them
+    const g = arr(content().objectives).length && E && typeof E.growth === 'function' ? num(call('growth', c.view, c.now)) : null;
+    const gi = g === null ? [] : arr(call('growthItems', c.view, c.now));
+    const Hb = ns('HarborUI');
+    const kinds = g === null ? [] : Hb && typeof Hb.growthSpots === 'function' ? arr(safe(() => Hb.growthSpots(g, gi), [])).map((p) => p && p.kind)
+      : Array.from({ length: Math.min(g, 60) }, (_, i) => GROW_KINDS[i % GROW_KINDS.length]);
     return {
       explorer: arr(call('explorer', c.view)), explorerDone: call('explorerDone', c.view) === true, quests: call('quests', c.view) || {},
       nextLesson: call('nextLesson', c.view), focus: rm && isObj(rm.focus) ? rm.focus : null,
       counters: mode.counters, discreet: mode.discreet, calm: mode.calm, now: c.now,
+      growth: g === null ? null : { count: g, kinds }, run: call('run', c.view, c.now), way: call('questLine', c.view, c.now),
     };
   }
 
@@ -284,7 +336,7 @@ const StatusUI = (() => {
   }
   /* The rises since the last draw; the first draw says where the person stands. Calm shows no XP, badge or rank. */
   function changeCard(d, calm) {
-    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank'))) : [];
+    const items = d ? d.items.filter((i) => !(calm && (i.kind === 'xp' || i.kind === 'badge' || i.kind === 'rank' || i.kind === 'best' || i.kind === 'total'))) : [];
     return h('section', { class: 'card stack st-change', 'data-test': 'status-change', 'data-tour': 'status-change', 'aria-label': TEXT.changeTitle },
       h('h2', { class: 'card-title', text: TEXT.changeTitle }),
       !d ? h('p', { class: 'muted', text: TEXT.first })
@@ -315,6 +367,38 @@ const StatusUI = (() => {
           str(s.evidence) ? h('p', { class: 'muted', text: s.evidence }) : null,
           str(s.plan) ? h('p', { class: 'st-plan', text: TEXT.plan(s.plan) }) : null)))]
         : h('p', { class: 'muted', text: TEXT.watchNone }));
+  }
+
+  /* V-43 (HUB ruling 1451806): the run of days shown up in "Where you stand"; Content.runWords wins key by key. */
+  function runEl(r, discreet) {
+    const C = content();
+    const given = isObj(C.runWords) ? Object.fromEntries(Object.entries(C.runWords).filter(([, v]) => typeof v === 'string' && v.trim())) : {};
+    const w = Object.assign({}, TEXT.runWords, given);
+    const part = (k, test) => h('span', { 'data-test': test }, `${w[k]} `, h('strong', { text: String(r[k]) }));
+    return h('div', { class: 'stack st-run' },
+      h('p', null, `${discreet ? TEXT.runWords.neutral : w.header}: `, part('current', 'run-current'), ' · ', part('best', 'run-best'), ' · ', part('total', 'run-total')),
+      r.kept ? h('p', { class: 'muted', 'data-test': 'run-kept', text: w.keptLine }) : null,
+      r.back ? h('p', { class: 'st-run-back', 'data-test': 'run-back', text: w.cameBackLine }) : null);
+  }
+  function growthCard(g, calm) {
+    const items = calm ? [] : g.kinds;
+    return h('section', { class: 'card stack st-growth', 'data-test': 'status-growth', 'aria-label': TEXT.growthTitle },
+      h('h2', { class: 'card-title', text: TEXT.growthTitle }),
+      h('p', { class: g.count ? null : 'muted', text: g.count ? TEXT.growing(g.count) : TEXT.growingNone }),
+      items.length ? h('ul', { class: 'st-growth-list' }, items.map((k) => h('li', { 'data-test': 'status-growth-item', 'data-kind': k, text: TEXT.kinds[k] || k })),
+        g.count > items.length ? h('li', { class: 'muted', text: TEXT.growMore(g.count - items.length) }) : null) : null);
+  }
+  function wayCard(w) {
+    const cur = (s) => s.state === 'current';
+    return h('section', { class: 'card stack st-way', 'data-test': 'status-way', 'aria-label': TEXT.way },
+      h('h2', { class: 'card-title', text: TEXT.way }),
+      h('ol', { class: 'st-way-list' }, w.steps.map((s) => h('li', { class: 'st-step', 'data-test': 'questline-step', 'data-state': s.state, 'data-id': s.id },
+        h('p', { class: 'st-step-title', text: `${TEXT.wayState[s.state]}: ${s.title}` }),
+        s.state === 'done' && s.opened ? h('p', { class: 'muted', text: s.opened }) : null,
+        cur(s) && s.line ? h('p', { text: s.line }) : null,
+        cur(s) && s.reward ? h('p', { class: 'muted', text: TEXT.wayUnlocks(s.reward) }) : null,
+        cur(s) && s.progress.need > 0 ? h('p', { class: 'muted', text: TEXT.wayProgress(s.progress.have, s.progress.need) }) : null,
+        cur(s) && s.claimable ? h('a', { href: '#/today', class: 'btn primary', text: TEXT.wayClaim }) : null))));
   }
 
   function page(ctxIn) {
@@ -373,6 +457,7 @@ const StatusUI = (() => {
       !mode.calm && gctx && typeof G.xpBar === 'function' ? safe(() => G.xpBar(gctx), null) : null,
       !mode.calm ? h('p', { class: 'st-badges', text: TEXT.badges(m.badges.earned, m.badges.total) }) : null,
       m.days.show ? h('p', { class: 'st-days', 'data-test': 'status-days', text: TEXT.days(m.days.total) }) : null,
+      m.shownUp ? runEl(m.shownUp, mode.discreet) : null,
       mode.calm && !m.days.show ? h('p', { class: 'muted', text: TEXT.standCalm }) : null);
     const next = h('section', { class: 'card stack st-next', 'data-test': 'status-next', 'aria-label': TEXT.next },
       h('h2', { class: 'card-title', text: TEXT.next }),
@@ -380,7 +465,8 @@ const StatusUI = (() => {
         : h('p', { class: 'muted', text: TEXT.nextNone }));
 
     const root = h('section', { class: 'page stack st-page', 'data-test': 'status-page' },
-      head, changeCard(changed, mode.calm), scene, h('p', { class: 'muted', text: TEXT.lead }), places, stand, next,
+      head, changeCard(changed, mode.calm), scene, m.growth && !mode.discreet ? growthCard(m.growth, mode.calm) : null,
+      h('p', { class: 'muted', text: TEXT.lead }), places, stand, m.way ? wayCard(m.way) : null, next,
       stripCard(gs, c.now), watchCard(c));
     memo.root = root;
     return root;
