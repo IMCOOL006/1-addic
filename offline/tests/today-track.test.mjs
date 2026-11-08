@@ -775,7 +775,7 @@ test('today: FIX-EMBED stand-ins: a null ring shows nothing, a throw never break
       const n = countOf(root);
       assert.deepEqual([n['explorer-ring'], n['today-explorer'], n['game-panel'], n['more-tools']], [0, 0, 0, 0], 'null ring: no fallback to the own card');
       assert.equal(n['new-dot'], 1, 'one New dot, beside the Planner link');
-      assert.ok(seen.every((id) => id === 'planner' || id === 'quests'), 'dots only for one-to-one feature ids');
+      assert.ok(seen.every((id) => id === 'planner' || id === 'quests' || id === 'status'), 'dots only for one-to-one feature ids'); // status: the Your harbor chip's own dot, once content V-10's feature exists
       for (const k of ['today-plan', 'today-reasons', 'today-momentum', 'today-sos']) assert.equal(byTest(root, k).length, 1, k);
     });
   withEmbeds({ explorerRing: () => { throw new Error('boom'); }, moreTools: () => { throw new Error('boom'); }, dot: () => { throw new Error('boom'); } }, null, () => {
