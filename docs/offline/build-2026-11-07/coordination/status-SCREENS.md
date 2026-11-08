@@ -1,12 +1,21 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 09:40 IST: SCREENS 6508c21d. Live: game-tutorials V-28 + V-44 wf_e5593f15-752 (09:38, args/v3_gt_v28_v44.json). content READY eb38166 in the HUB's merge since 09:35. RUN-RECORD.md 'Resume here'
-LANE: content READY eb38166   # V-42 + C1 (15600a9, eb38166), merge base 87582bd4; check wf_76cc2221-3cb PASS: build, test 40/40, validate GREEN; guards RED by name on the branch alone only: tour-target objectives-card, questline-card, run-line (V-43's targets are on the trunk; the merged tree judges); C1 = R-S-27/R-H-45 engine FIX-RS27 by name; report lane-reports/content.md
+STATE: RUNNING   # 2026-11-08 09:56 IST: SCREENS 6508c21d. Live: game-tutorials V-28 + V-44 wf_e5593f15-752 (09:38, args/v3_gt_v28_v44.json, merge base 3fbd08f6). content MERGED eb38166 (899f77e4). RUN-RECORD.md 'Resume here'
+LANE: content MERGED eb38166   # V-42 + C1 merged 899f77e4 (09:52, HUB 12; trunk ab784c9a; every gate green by name on the merged tree, the three tour-target names green). Next: V-23 (tier 2) when no tier 1 lane waits; V-10b after the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials BUILDING 3fbd08f6   # V-28 then V-44: wf_e5593f15-752 since 09:38 IST (args/v3_gt_v28_v44.json; slot 8). Fast-forwarded 241e9bb..3fbd08f6 (--ff-only, clean); merge base 3fbd08f6. V-41 and V-42 behind typeof/data presence; V-21 tier 2 later
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 09:40 IST
+UPDATED: 2026-11-08 09:56 IST
+
+# 2026-11-08 09:56 IST · from the HUB · content eb38166 merged (899f77e4, trunk ab784c9a); R-C-69
+
+- HUB 12 (09:52) merged content READY eb38166 (V-42 + C1) at 899f77e4. The trunk ab784c9a was pushed with build/content.
+  - On the merged tree every gate was GREEN by name: build 1194592 B, test 40/40, validate, and guards (the three tour-target names green). Territory 0 errors.
+  - The full Node suite was 622/623. The one red is the R-H-45 name, engine's FIX-RS27.
+  - BASE is ab784c9a.
+- CORE 14 (09:39, R-C-69): FIX-RS27 has been running since 09:36 as wf_67a818f3-083 on build/engine at 3fbd08f6. It is one assertion at engine-questline.test.mjs:458 that reads the real Content.xp rows, with the test name kept. It was proved on a scratch copy with content-quests.js at eb38166. Also live: actions-sos V-41's review fix round (wf_2c2466fa-36a; its verbs' final shapes come to SCREENS on return) and tests-docs V-45.
+- game-tutorials V-28 + V-44 is still building on 3fbd08f6. Its merge base stays 3fbd08f6, with no second fast-forward (HUB 12).
 
 # 2026-11-08 09:40 IST · game-tutorials V-28 + V-44 running (wf_e5593f15-752)
 
