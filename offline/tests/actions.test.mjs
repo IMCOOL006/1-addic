@@ -3465,6 +3465,27 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
     assert.deepEqual(four().map((e) => e.id).sort(), mine.sort(), "eraseSample keeps the person's own and takes the sample's");
   });
 
+  // RC3: a backup carries the four events, and the Engine reads the same from them after an import
+  t41('V-41 export reset import keeps the four events and what the Engine reads from them', async () => {
+    await Actions.logCraving({ intensity: 3 });
+    const [a, b] = draw().items.map((o) => o.id);
+    assert.equal((await done(a)).ok, true);
+    assert.equal((await swap(b)).ok, true);
+    assert.equal((await claim('qs-log')).ok, true);
+    const reads = () => ({ objectives: draw(), steps: line().steps.map((s) => [s.id, s.state]), claimed: line().done, unlocked: [...E().unlocked(S().view)].sort() });
+    const before = { snap: await snapshot(), reads: reads() };
+    assert.deepEqual([...new Set(four().map((e) => e.type))].sort(), [...FOUR].sort(), 'the four types are in the notebook');
+    assert.ok(before.reads.objectives.swapped && before.reads.objectives.items.some((o) => o.done) && before.reads.unlocked.includes('insights'));
+    const exported = JSON.parse(JSON.stringify(await S().exportJson()));
+    await Actions.eraseAll();
+    assert.equal(four().length, 0, 'erased');
+    assert.ok(!E().unlocked(S().view).has('insights'), 'the reward is not open in an empty notebook');
+    const r = await Actions.importBackup(exported);
+    assert.equal(r.imported, true);
+    assert.deepEqual(await snapshot(), before.snap, 'the same rows, the four events among them');
+    assert.deepEqual(reads(), before.reads, 'the same draw, swap and done flags, claimed steps and open features');
+  });
+
   t41('V-41 recordEvent refuses the four types with USE_VERB', async () => {
     const snap = await snapshot();
     const id = draw().items[0].id;
