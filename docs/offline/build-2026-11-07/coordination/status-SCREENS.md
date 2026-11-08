@@ -1,12 +1,21 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-08 12:04 IST: SCREENS 11:07 (c26b6cc6). The tag offline-v3.0 is at 60dffe33 (HUB 12, 11:57) and QUIET is over. Tier 2 runs one start per 7.0 GB row across both tracks, alternating: CORE takes the first qualifying row, SCREENS the next. content, workbook-settings and game-tutorials are fast-forwarded to 60dffe33 and clean; the args are written with base 60dffe33. The 11:58 row was 4.3 GB: no start. First: content V-23
-LANE: content MERGED eb38166   # fast-forwarded to the tag 60dffe33 (12:00, clean). Next: V-23 (tier 2, slot 4) on SCREENS' first 7.0 GB row; args/v3_content_t2.json. V-10b waits for the owner's I6
+STATE: RUNNING   # 2026-11-08 12:27 IST: SCREENS 11:07 (c26b6cc6). content V-23 is BUILDING as wf_d31c33a1-c99 (12:25, slot 4, the 12:21 row 7.1 GB, 7.09 by hand at 12:23; sliceRun). CORE took the first row after the tag (core V-16 + V-17a + V-26a, 12:19). The next qualifying row is CORE's (actions-sos V-25 + V-18), then SCREENS (workbook-settings V-24)
+LANE: content BUILDING   # V-23 (tier 2) wf_d31c33a1-c99 since 12:25; worktree fast-forwarded eb38166..22db886d (the trunk tip after the tag, docs-only commits); base and merge base 22db886d; args/v3_content_t2.json; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7/subagents/workflows/wf_d31c33a1-c99/journal.jsonl
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # fast-forwarded to 60dffe33 (12:00, clean). Next: V-24 then V-22b (tier 2, slot 6), two one-unit batches; args/v3_workbook-settings_t2.json
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-08 12:04 IST
+UPDATED: 2026-11-08 12:27 IST
+
+# 2026-11-08 12:27 IST · content V-23 launched (wf_d31c33a1-c99) on SCREENS' first row after the tag
+
+- CORE 15 took the first qualifying row: it read 7.74 GB by hand at 12:17, and core V-16 + V-17a + V-26a started at 12:19 (wf_ebf2f562-296, slot 1).
+- HUB 13 ('HUB 12:09', up 12:18): nothing changes for SCREENS. The trunk was 5fc162a0 at 12:18. Each lane fast-forwards to the trunk tip at its launch, and that tip is the merge base.
+- The 12:21 row read 7.1 GB, and 7.09 GB by hand at 12:23. That is SCREENS' row.
+- content: `git merge --ff-only build/offline-v1` took the lane from eb38166 to 22db886d, the trunk tip (the tag 60dffe33 plus docs commits). The worktree is clean.
+- lane.js launched at 12:25 with args/v3_content_t2.json (V-23 only, sliceRun, slot 4, base and diffFrom 22db886d).
+- The next qualifying row is CORE's (actions-sos V-25 + V-18). Then SCREENS: workbook-settings V-24.
 
 # 2026-11-08 12:04 IST · from the HUB · offline-v3.0 tagged at 60dffe33; QUIET over; tier 2 by row; three lanes fast-forwarded
 

@@ -318,7 +318,8 @@
 
 ## Resume here
 
-- Chat c26b6cc6 (SCREENS 11:07), live, WAITING for its 7.0 GB row. NO SCREENS run is live.
+- Chat c26b6cc6 (SCREENS 11:07), live. RUNNING: content V-23, wf_d31c33a1-c99 (lane.js, start 'build', sliceRun, since 2026-11-08 12:27 IST), journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7/subagents/workflows/wf_d31c33a1-c99/journal.jsonl. It is alive only while session c26b6cc6 is listed by ListAgents; if that session is gone, relaunch with done and priorNote from build/content's last commit after 22db886d.
+- Row turns: CORE took 12:19 (core V-16 + V-17a + V-26a); SCREENS took the 12:21 row (content V-23); the next qualifying row is CORE's (actions-sos V-25 + V-18), then SCREENS (workbook-settings V-24).
 - The tag offline-v3.0 is at 60dffe33 (11:57). Tier 2 goes toward offline-v3.1. The HUB merges each READY as it lands.
 - The start rule: one start per 7.0 GB row (the table at the end of coordination/lane-widening.md) across both tracks, alternating. CORE takes the first qualifying row after the tag, SCREENS the next, and so on. A track with nothing ready sends a line and the other takes the row.
 - SCREENS' order:

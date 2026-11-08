@@ -11,7 +11,7 @@ L = json.load(open(D + 'tracks/HUB/workflows/lane_args_v3.json', encoding='utf-8
 a = dict(L)
 WT = 'C:/Users/ruchi/1-addic-wt/' + lane
 COMMON = (f" The worktree {WT} was fast-forwarded with merge --ff-only (no merge commit) to BASE {base}, the commit of the tag"
-          " offline-v3.0 (pushed 11:57 IST): base and diffFrom are " + base + ". Tier 2: this goes toward offline-v3.1; the HUB merges it as it lands."
+          " offline-v3.0 at 60dffe33 or the trunk tip after it (docs-only commits): base and diffFrom are " + base + ". Tier 2: this goes toward offline-v3.1; the HUB merges it as it lands."
           " Under 4.0 GB free memory (PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory) before a heavy gate:"
           " commit what is clean and return the note (the chat pauses the newest run). Test names are failure identities: add new"
           " names, never rename or delete one. Restore offline/1-addic.html (git checkout -- offline/1-addic.html) after any build"
