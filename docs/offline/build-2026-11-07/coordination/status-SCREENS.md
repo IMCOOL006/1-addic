@@ -1,12 +1,23 @@
 TRACK: SCREENS
-STATE: RESTART   # 2026-11-08 05:39 IST: SCREENS 0fd59f53 hands over at ~295k context, at a clean point: NO SCREENS run is live. content READY-SLICE 4ae98eb for the HUB. The fresh chat launches, on the first memory row at or above 4.0 GB (HUB 05:24), V-43 first (args/v3_tt_v43.json), then game-tutorials V-08b (slot 8; fast-forward to BASE, write its args). RUN-RECORD.md 'Resume here'
-LANE: content READY-SLICE 4ae98eb   # V3 V-10 5bdf5ab + V-10r 4ae98eb on 3bd5bf5d (wf_93856f0c-7c2; check PASS, LOW C1 m1.unlocks [] no product effect). On the branch alone, red BY NAME FROM THE CUT (engine V-40c's '#/status' is not in it): validate 'route #/status is not in the route table' x2; tests 8 validateContent zero errors, 27 restraint rules, 32 status feature; guards status-change, status-watch. Merged-tree scratch proof 60/60 + validateContent 0 (C:/Users/ruchi/1-addic-wt/_logs/reports/content/content__v10r_scratch.log). browser GREEN 16/0/3; territory 2 own, 0 errors; merge base 3bd5bf5d
-LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 ready to launch: build/today-track and its worktree fast-forwarded 486288f1..94c51632 (--ff-only, clean, 05:07; merge base 94c51632); args/v3_tt_v43.json filled (base, diffFrom 94c51632, slot 6); memory 7.5 GB at 05:07
+STATE: BUILDING   # 2026-11-08 06:17 IST: SCREENS b632a0d9 resumed 05:45 from 0fd59f53's RESTART. Live: today-track V-43 wf_e9d7f141-ef9 (05:56, slot 6) and game-tutorials V-08b wf_522ed1be-f6b (06:12, slot 8). Next: content V-42 on slot 4 (args being written; starts on the next row the HUB allows)
+LANE: content MERGED 4ae98eb   # V3 V-10 + V-10r merged at 6864d202 (05:42, HUB 10; every gate green by name on the merged tree). LOW C1 (m1.unlocks []) is owed by name to V-42. Next: V-42 (content-quests.js) on slot 4, the worktree fast-forwarded to the trunk first
+LANE: today-track BUILDING 94c51632   # V-01a, V-01b MERGED. V-43 running: wf_e9d7f141-ef9, launched 05:56 IST on slot 6 (the 05:45 row 9.2 GB) with args/v3_tt_v43.json; merge base 94c51632; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_e9d7f141-ef9/journal.jsonl
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials SCOUTED bd2e085   # V3 slot 8 GRANTED 05:02 (the 8.0 GB row, R-O-7; HUB b784e4ec): fast-forward build/game-tutorials and its worktree to BASE 94c51632, then V-08b the slice (actions-sos's published useSkill shape, the real code when V-08a merges), V-28 (with routeOfFeature accepting a route without '#'), V-44 (Engine.questLine and unlocked real in the trunk; R-C-50, R-S-20, R-S-21); brief briefs/game-tutorials-v3.md; args still to write (from lane_args_v3.json lanes.game-tutorials, like v3_content_slice.json)
+LANE: game-tutorials BUILDING 30cb12ff   # V-08b the slice running: wf_522ed1be-f6b, launched 06:12 IST on slot 8 (the 06:08 row 6.5 GB, HUB 11) with args/v3_gt_slice.json; the worktree fast-forwarded bd2e085..30cb12ff (--ff-only, clean, 05:58); merge base 30cb12ff; on R-C-47/R-C-48's useSkill behind typeof (V-08a b7b4db9 not merged). Then V-28, V-44 (V-21 tier 2); journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_522ed1be-f6b/journal.jsonl
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 05:39 IST
+UPDATED: 2026-11-08 06:17 IST
+
+# 2026-11-08 06:17 IST · SCREENS b632a0d9 resumes; V-43 and V-08b running
+
+- Started 05:45 from 0fd59f53's RESTART (05:39). Nothing of 0fd59f53 was live at its hand-over (HUB 10, 05:52), so nothing was relaunched.
+- HUB 10 (05:52) merged content 4ae98eb at 6864d202, then core e79e1b0. The trunk tip is 30cb12ff, pushed.
+- today-track V-43: wf_e9d7f141-ef9, launched 05:56 IST on slot 6 (the 05:45 row 9.2 GB). Args: args/v3_tt_v43.json, restamped with this session. Merge base 94c51632. The worktree was clean at 94c51632.
+- game-tutorials V-08b (the slice): wf_522ed1be-f6b, launched 06:12 IST on slot 8. HUB 11 allowed it on the next row at or above 4.0 GB, and the 06:08 row read 6.5 GB.
+  - build/game-tutorials and its worktree were fast-forwarded bd2e085..30cb12ff (--ff-only, clean, 05:58). Merge base 30cb12ff.
+  - Args: args/v3_gt_slice.json, written from lane_args_v3.json lanes.game-tutorials.
+  - It builds on R-C-47/R-C-48's useSkill behind typeof. actions-sos V-08a is at b7b4db9 on its branch and not merged.
+- content V-42 is next on slot 4. Default: it starts on the next row at or above 7.0 GB, the one-start-per-7.0-GB-row rule, unless the HUB says 4.0 (asked of HUB 11).
 
 # 2026-11-08 05:50 IST · from the HUB · content 4ae98eb merged (trunk 30cb12ff); V-43 and V-08b launch now (the 05:45 row 9.2 GB)
 

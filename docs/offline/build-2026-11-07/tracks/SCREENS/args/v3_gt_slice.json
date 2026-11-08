@@ -1,0 +1,60 @@
+{
+  "lane": "game-tutorials",
+  "chat": "SCREENS",
+  "tier": 1,
+  "flagged": false,
+  "area": "The skill credit in tools, the status tour step and dot, the guidance LOWs.",
+  "files": [
+    "offline/src/ui-game.js",
+    "offline/src/ui-guidance.js",
+    "offline/src/ui-tools.js",
+    "offline/tests/game-tutorials.test.mjs"
+  ],
+  "units": [
+    "V-08b",
+    "V-28",
+    "V-44",
+    "V-21"
+  ],
+  "batches": [
+    [
+      "V-08b"
+    ],
+    [
+      "V-28"
+    ],
+    [
+      "V-44"
+    ],
+    [
+      "V-21"
+    ]
+  ],
+  "unitTier": {
+    "V-08b": 1,
+    "V-28": 1,
+    "V-21": 2,
+    "V-44": 1
+  },
+  "unitNotes": {
+    "V-08b": "ui-tools.js credits a used skill through Actions.useSkill({skillId, helpful}) (0.5 h, V3-08; after actions-sos V-08a merges; on the contract before: typeof-guarded, the old refused call removed); a test that the call is made with the right fields and that a refusal shows nothing wrong to the person.",
+    "V-28": "The status layer's tour step and dot (0.4 h, V3-28): a tour step on data-tour status-open (the Today chip; text from Content.tutorials), the JIT tutorial wiring for Content.features.status on the first open of #/status, GuidanceUI.dot on the chip while unseen; the data-tour target check stays green (the chip exists once today-track V-01b is merged: build on the contract, guard by typeof).",
+    "V-21": "C1 and the coach after a route change (1 h, V3-21): the tour ends as aborted when the route leaves Today (no centred card over another screen's button, the board's 01:39 finding); the narrow/flip branch (ui-guidance.js:329-335) gets a Node case for both branches.",
+    "V-44": "Unlocks and rewards (1 h, tier 1, R-O-6; after engine V-40 merges): the reward sheet on a claim ('You unlocked ...' with the feature's opened line, through GuidanceUI; reduced-motion rules; never over an SOS route; one tap to dismiss, one to open the feature); ui-tools.js and ui-game.js honour Engine.unlocked(view) in place of module reveal alone (typeof-guarded: when the function is absent the old reveal applies); the JIT tutorials for the quest-line, the objectives and the run (texts from content V-42); the tour steps on questline-card and objectives-card. Tests by rule in game-tutorials.test.mjs (a protected feature never appears as a reward; unlocked ⊇ revealed in the surfaces)."
+  },
+  "base": "30cb12ff",
+  "diffFrom": "30cb12ff",
+  "slot": 8,
+  "session": "https://claude.ai/code/session_b632a0d9-020a-4112-96cf-8a39620d24b6",
+  "now": "2026-11-08 06:12 IST",
+  "sliceRun": true,
+  "done": [
+    "U-27",
+    "U-26",
+    "U-28",
+    "FIX-TOUR"
+  ],
+  "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/game-tutorials-v3.md",
+  "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/game-tutorials-v3.md",
+  "laneNote": "V3 V-08b (PLAN-V3.md section 2; SCREENS b632a0d9). THIS RUN IS THE SLICE: V-08b only. The worktree C:/Users/ruchi/1-addic-wt/game-tutorials was fast-forwarded with merge --ff-only (no merge commit) from bd2e085 (v1 FIX-TOUR, merged) to BASE 30cb12ff (2026-11-08 05:58 IST): base and diffFrom are 30cb12ff; the v1 units U-27, U-26, U-28 and FIX-TOUR are done and merged; today-track V-01a/V-01b, content V-10/V-10r, engine V-40/V-40b/V-40c and core V-11 are in the worktree. SPEC: the brief tracks/SCREENS/briefs/game-tutorials-v3.md, section 'V-08b' (written at f69bc68a: re-read the cited lines in the worktree, the code wins; the sections V-28, V-21 and V-44 are later batches: do not build them), and contracts/game-tutorials-v3.md. BINDING CONTRACT (R-C-47 as corrected by R-C-48 in coordination/outbox-CORE.md; tracks/CORE/contracts/actions-sos.md): `await Actions.useSkill({ skillId, helpful })` resolves {ok: true, event} (event.type 'SkillUsed', event.payload {skillId, helpful}) or {ok: false, code, message}; by contract it never throws. Its only refusals: the argument not an object; skillId not an id or not in Content.skills; helpful not a boolean; the store's own refusal (locked, no store). A loaded sample is NOT a refusal: the credit is the person's own. Rely on ok and event.type / event.payload only. NOT YET MERGED: actions-sos V-08a is committed on build/actions-sos (b7b4db9; actions.js useSkill near line 278) and is in its check; it is NOT in this worktree. To match the real shape you may read it with `git -C C:/Users/ruchi/1-addic-wt/game-tutorials show b7b4db9:offline/src/actions.js` (the worktrees share one repository); never edit, check out or copy actions.js. BUILD (ui-tools.js helpedRow, near lines 306-320, plus game-tutorials.test.mjs): replace the `A.recordEvent('SkillUsed', { skillId: skill, helpful })` call with `A.useSkill({ skillId: skill, helpful })` behind `typeof A.useSkill === 'function'`, and replace the `typeof A.recordEvent` check with that one. With no useSkill: the empty box as today (no button is drawn, so no dead button, decision O7); never fall back to recordEvent. Keep the try/catch and the sent flag (a double tap sends once). On {ok: true}: the existing TEXT.noted line (role=status). On {ok: false} or a throw: the same neutral line, with no error text, no red, no retry and no second path (a refused credit loses nothing, and the person is never told 'failed'). The drill (isDrill(ctx)) records nothing, as today. The comment above helpedRow names useSkill. No recordEvent('SkillUsed') remains in ui-tools.js. No new hook, no new CSS, no new words beyond what exists (TEXT.noted, TEXT.helped, TEXT.notNow). TESTS (game-tutorials.test.mjs, Node, by these names, with a stub Actions object; the real engine where needed): 'tools: a used skill is credited through Actions.useSkill with skillId and helpful' (helped sends once with {skillId, helpful: true}, not now with helpful: false; a second tap sends nothing); 'tools: a refused useSkill shows nothing wrong' (both {ok: false} and a throw end on the TEXT.noted line, with no error word in the box); 'tools: no useSkill, no row, no throw'; 'tools: drill records nothing'; and a source check that ui-tools.js holds no recordEvent('SkillUsed'). Existing test names stay unchanged (they are failure identities). Tests run green now (stub) and stay green after V-08a merges. TERRITORY (coordination/territory.json): you own ui-game.js, ui-guidance.js, ui-tools.js and game-tutorials.test.mjs. This unit edits ui-tools.js and game-tutorials.test.mjs only. engine.js, actions.js, content-*.js, ui-today.js, ui-status.js, ui-core.js, build.mjs, styles.css, helpers/hooks.mjs and browser.test.mjs belong to other lanes: read them, never edit them; anything you need from them goes in for_the_chat. RULES: SOS never gated or interrupted; nothing decreases; no random reward; text as text (no innerHTML with data); no network; 44 px targets; keyboard and focus as in v1. Unsure: the shorter version. GATES: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/game-tutorials --lane game-tutorials build test validate guards, and browser once at the end of the batch; then git -C C:/Users/ruchi/1-addic-wt/game-tutorials checkout -- offline/1-addic.html if the build left it changed (never commit the built file). At 30cb12ff no failure is baselined for this lane: every gate must be green by name. Territory: python C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tools/check_territory.py game-tutorials 30cb12ff..HEAD --wt C:/Users/ruchi/1-addic-wt/game-tutorials. No other lane's file changes, so no other lane's test can turn red from your diff; say so in the note if one does. MEMORY: before each gate run read free memory once (powershell -NoProfile -Command \"(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB\"); under 4.0 GB stop at your next commit and say PAUSED in the note. COMMITS: message from a file, the unit in the message, ending with the two trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_b632a0d9-020a-4112-96cf-8a39620d24b6), by explicit path, never git add -A, never push. THE LANE ARGS NOTE: Starts after today-track's slice (V-01a) is merged, or on a free slot with typeof guards. V-44 (R-O-6) after V-28. The contracts are PLAN-V3.md section 7 (Content.questLine, Content.objectives, the events ObjectiveDone / QuestLineStepDone / FeatureUnlocked, Engine.questLine / unlocked / dailyObjectives / growth / run, Actions.objective.done / swap, Actions.questLine.claim); a change to a contract is asked of its owner by outbox and recorded by the HUB. Defaults V-Q9 to V-Q13 apply at 04:00 IST unless outbox-OWNER.md says otherwise. House rules: nothing derived decreases; no random reward; no points for claimed sober days; SOS, help, lessons, Settings, export and the person's data never gated; original words."
+}

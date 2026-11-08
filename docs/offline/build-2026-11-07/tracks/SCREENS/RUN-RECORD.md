@@ -228,27 +228,33 @@
 - wf_93856f0c-7c2 built V-10r 4ae98eb, check PASS (LOW C1). The merged-tree proof is green; the branch-only reds are by name from the cut, as the HUB's 04:41 ruling allows. READY-SLICE 4ae98eb on the board.
 - Memory: the HUB's 05:23 row read 2.6 GB. V-43 and V-08b were not launched.
 
+## 2026-11-08 06:17 IST · b632a0d9 up; V-43 and V-08b running
+
+- b632a0d9 started at 05:45 from 0fd59f53's RESTART (05:39). No SCREENS run was live, so there was nothing to relaunch (HUB 10, 05:52).
+- HUB 10 merged content 4ae98eb at 6864d202, then core e79e1b0 (the trunk tip 30cb12ff, pushed). HUB 10 handed over; HUB 11 (24de56ed, "HUB 05:50") is up since 06:02.
+- V-43: wf_e9d7f141-ef9, launched 05:56 IST on slot 6 with args/v3_tt_v43.json (restamped: session b632a0d9, now). Merge base 94c51632.
+- V-08b (the slice): wf_522ed1be-f6b, launched 06:12 IST on slot 8, on the 06:08 row of 6.5 GB, as HUB 11 allowed (the next row at or above 4.0 GB).
+  - build/game-tutorials and its worktree were fast-forwarded bd2e085..30cb12ff (--ff-only, clean).
+  - Args: args/v3_gt_slice.json, from lane_args_v3.json lanes.game-tutorials, done = U-27, U-26, U-28, FIX-TOUR.
+  - It builds on R-C-47/R-C-48 behind typeof. actions-sos V-08a is at b7b4db9 on its branch, not merged.
+
 ## Resume here
 
-- Chat 0fd59f53 (SCREENS) handed over with STATE RESTART at a clean point. NO SCREENS run is live.
-- Board:
-  - content READY-SLICE 4ae98eb (the HUB merges it alone; merge base 3bd5bf5d).
-  - today-track BUILDING 94c51632 (V-01a and V-01b MERGED; V-43 not launched).
-  - game-tutorials SCOUTED (slot 8 granted 05:02).
-  - workbook-settings and actions are tier 2 (later).
-- NEXT, in order:
-  - (1) Wait for a memory row at or above 4.0 GB (HUB 05:24; the HUB messages, or read powershell -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB" once).
-  - (2) V-43 first. The worktree C:/Users/ruchi/1-addic-wt/today-track is clean at 94c51632 (fast-forwarded 05:07); if the HUB moved BASE and asks, fast-forward with --ff-only. Launch Workflow lane.js with the args of args/v3_tt_v43.json, setting now from date and session to your own link (also in its laneNote's COMMITS trailer). It holds units [V-01a, V-01b, V-43], done = v1 + V-01a + V-01b, base and diffFrom 94c51632, slot 6, the annex brief and contract, and priorNote (V-01b's note). When it returns READY: LANE: today-track READY <tip>.
-  - (3) game-tutorials V-08b, the slice. git -C C:/Users/ruchi/1-addic-wt/game-tutorials merge --ff-only <BASE> (it is at bd2e085, an ancestor). Write args/v3_gt_slice.json from lane_args_v3.json lanes.game-tutorials, shaped like args/v3_content_slice.json: sliceRun true; done = the v1 units U-27, U-26, U-28, FIX-TOUR; base and diffFrom = BASE; slot 8; brief and contract briefs/contracts game-tutorials-v3.md; a laneNote with actions-sos's published useSkill shape (R-C-48 in outbox-CORE.md; the real code once V-08a merges), data-test hooks, the gates, the memory rule and the trailers. Then V-28 (with routeOfFeature in ui-guidance.js:108 also accepting a route without '#', or confirm it is moot now that content uses '#/status'), then V-44 (Engine.questLine and Engine.unlocked are real in the trunk; R-C-50, R-S-20, R-S-21).
-  - (4) After content's slice merges: V-42 (content-quests.js) with done [v1, V-10, V-10r], diffFrom 4ae98eb, priorNote from wf_93856f0c-7c2's journal. Fast-forward first if the HUB's merge makes it possible (the trunk will contain 4ae98eb). The laneNote takes R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone), R-S-20, the real validator (engine.js:1709), data-tour objectives-card, questline-card, run-line; and C1 (m1.unlocks gets 'status', one line in content-lessons-a.js).
-  - (5) Watch outbox-OWNER.md for I6 (V-10b).
+- Chat b632a0d9 (SCREENS) is live.
+- Running runs (journals under C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/<run>/journal.jsonl):
+  - today-track V-43: wf_e9d7f141-ef9 (05:56, slot 6, merge base 94c51632). When it returns READY: LANE: today-track READY <tip>, with the merge base.
+  - game-tutorials V-08b slice: wf_522ed1be-f6b (06:12, slot 8, merge base 30cb12ff). When it returns: LANE: game-tutorials READY-SLICE <tip>. Then the relaunch with done + V-08b, priorNote from the journal, diffFrom the slice tip, and sliceRun false for V-28 (moot fix: content routes are '#/status' now) and V-44.
+- A fresh chat does not relaunch these runs if b632a0d9 is still listed by `claude agents --json`. If the session is gone, the runs died with it: relaunch from the branch's last commit with done and priorNote.
+- NEXT:
+  - (1) content V-42 on slot 4. Fast-forward build/content and its worktree from 4ae98eb to the trunk (30cb12ff contains 4ae98eb), then write args/v3_content_v42.json and launch.
+    - Its laneNote takes: R-C-50 (where in conditions; 8 to 12 steps; at least 6 objectives, about 20; rewards in Content.features, never protected; doneBy 'tap' or {event}; feature entries for the unlockable set; Content.xp rows for ObjectiveDone and QuestLineStepDone); R-S-20; the real validator (engine.js ~1709); data-tour objectives-card, questline-card, run-line; and C1 (m1.unlocks gets 'status', one line in content-lessons-a.js).
+    - It starts on the next row at or above 7.0 GB unless HUB 11 says 4.0.
+  - (2) Watch outbox-OWNER.md for I6 (V-10b).
 - Facts:
-  - setlane.py takes "PREFIX=full line" pairs plus an optional --section; never pass "-". rr.py takes <section> <resume>.
+  - setlane.py takes "PREFIX=full line" pairs plus an optional --section; run it from a Python file in the job tmp folder (subprocess) to dodge shell quoting. rr.py takes <section-file> <resume-file>.
   - hub_commit.py runs from the repo root with repo-relative paths.
   - claude agents needs --json.
-  - lane.js start 'check' judges done plus the units without a builder. With sliceRun false and done covering batch 1, it builds the next batch and checks diffFrom..HEAD.
+  - The launcher's memory rows are in coordination/lane-widening.md (the table at the end).
+  - HUB 11 = SendMessage to "uds:\.\pipe\LOCAL\cc-msg-fcf6b06d9d19a8f521ccbe67a8258a6f" (name "HUB 05:50").
+  - Claude Code kills background memory watchers when memory is critically low: rely on the HUB's rows. Do not run a wait loop.
   - lane.js writes its report over lane-reports/<lane>.md.
-  - HUB 10 = SendMessage to "uds:\.\pipe\LOCAL\cc-msg-61fc232d7d4c0109accb2e284a2456fd" (HUB 03:17); CORE 12 = "CORE 03:56".
-  - Complex quoting in a bash heredoc broke once: write the Python to the job tmp folder and run it.
-  - Claude Code kills background memory watchers when memory is critically low: rely on the HUB's rows.
-  - Do not run a wait loop.
