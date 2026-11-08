@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 05:30 IST: CORE 12 (51e49e2a), hand-over planned (RUN-RECORD 'Resume here'). Under the floor: tests-docs V-01t PAUSED (stopped, clean). Running: core V-11 wf_f4937d0d-06e (slot 1; next to pause), actions-sos V-08a + V-SOS10 wf_f776514a-ccd (slot 3), engine V-19 + V-30 wf_a3640bbf-6fd (slot 2, T2)
-LANE: core BUILDING f69bc68   # 2026-11-08 04:59 IST: V-11 the slice (static safety line before boot; words from boot.js COPY only, R-C-48) wf_f4937d0d-06e on slot 1, sliceRun, merge base f69bc68a; flagged (two reviewers at the lane's end). Then V-16, V-17a, V-26a (T2)
-LANE: engine BUILDING 4330d9f   # 2026-11-08 05:08 IST: V-40c MERGED 94c51632 (05:03). V-19 (spiral own flag) + V-30 (export tutorialDone), tier 2, wf_a3640bbf-6fd from 4330d9f on slot 2 (every tier 1 lane holds a slot, HUB 05:05)
+STATE: RESTART   # 2026-11-08 05:40 IST: CORE 12 (51e49e2a) hands over (context near 300k). ONE run still alive in 51e49e2a: actions-sos V-08a + V-SOS10 wf_f776514a-ccd (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/51e49e2a-962c-4bf0-9f84-ba33dc9dc6bb/subagents/workflows/wf_f776514a-ccd/journal.jsonl). CORE 13: tracks/CORE/RUN-RECORD.md 'Resume here' (2026-11-08 05:40 IST)
+LANE: core READY-SLICE e79e1b0   # 2026-11-08 05:40 IST: V-11 the static safety line before boot (shell.html, a .boot-line rule in core's styles.css, two store.test.mjs tests), one commit over f69bc68a; wf_f4937d0d-06e check PASS, no findings: build GREEN 1114310 B, test GREEN 89/89, validate GREEN, guards GREEN (logs by name in R-C-62); territory 0 errors; red-before and mutation proofs in _logs/reports/core/. Merge base f69bc68a. Flagged: the two reviewers run at the lane's end. Next: V-16, V-17a, V-26a (T2) when no tier 1 lane waits
+LANE: engine PAUSED 1d4dfd2   # 2026-11-08 05:40 IST: V-19 (64136cd, spiral pairs carry own) + V-30 (1d4dfd2, export tutorialDone) built; the run wf_a3640bbf-6fd stopped in its check under the floor (the HUB 05:35; rows 05:23 2.6 and 05:34 3.3 GB). Relaunch only the check, tier 2, when no tier 1 lane waits: args_v3_engine_V-19.json + start 'check' + priorNote from tracks/CORE/args/engine_v19_buildnote.json
 LANE: actions-sos BUILDING f69bc68   # 2026-11-08 04:59 IST: V-08a useSkill + V-SOS10 (the first batch, sliceRun) wf_f776514a-ccd on slot 3, merge base f69bc68a; flagged. Then V-41 (T1, the R-O-6 verbs on R-C-50), then V-25, V-18, V-17b (T2)
 LANE: learn MERGED 75eb8e5   # v1 complete (ce691c21). V3: V-20 (T2), only when no tier 1 lane waits
 LANE: tests-docs PAUSED 62ff5db   # 2026-11-08 05:30 IST: V-01t wf_2e6b1d27-92c stopped before its first commit (the 05:23 row 2.6 GB, 3.7 GB by hand; the newest run on the machine; worktree clean at 62ff5db, nothing lost). Relaunch on a reading of 4.0 GB or more with args_v3_tests-docs_V-01t.json (fresh now), without resumeFromRunId. Then V-45
 SLOTS-ASKED: 0   # 2026-11-08 04:59 IST: every CORE lane with tier 1 work holds a slot (core 1, engine 2, actions-sos 3, tests-docs 5)
-UPDATED: 2026-11-08 05:30 IST
+UPDATED: 2026-11-08 05:40 IST
 
 # 2026-11-08 05:14 IST · from the HUB · tests-docs 2a515e5 merged (trunk ede90d0a); V-01t recounts on the trunk
 
