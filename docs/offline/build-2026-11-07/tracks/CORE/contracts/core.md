@@ -130,3 +130,7 @@ Adds or relies on (all at base f69bc68a unless marked):
 ## 2026-11-08 03:01 IST · V-11 ruling (CORE 11)
 
 - The static line in shell.html `<main>` takes its words from boot.js COPY only: the tail of COPY.none ('If you are in danger, call your local emergency number.'), 112 as a `tel:` link, then COPY.verify ('Please verify these numbers.'), because 112 is verify: true (content-core.js:421). There is no new copy. An HTML comment marks it clinicalReview and keeps it in step with boot.js. The first render replaces it (ui-core.js:844). Consumers: none; tests-docs may add a no-JS browser check (optional, by name).
+
+## 2026-11-08 06:58 IST · V-46 (R-H-44 on R-S-21): ctx.features reads Engine.unlocked
+
+- `UI.ctx(r).features` (a Set) = `Engine.unlocked(view)` when it is a function, else `Engine.revealed(view)`, else `new Set(Content.reveal.always)`; each step inside safe(), a throw falls through to the next. It is always a superset of Engine.revealed(view). No new public name. Consumers: the chrome, ui-guidance.js:137, ui-today.js:139, ui-track.js:525; today-track V-43 and game-tutorials V-44 keep their own typeof-guarded reads.

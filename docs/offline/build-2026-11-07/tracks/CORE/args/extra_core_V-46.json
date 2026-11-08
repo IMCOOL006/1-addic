@@ -1,0 +1,6 @@
+{
+ "V-46": {
+  "tier": 1,
+  "note": "V-46 (tier 1, 0.3 h; R-H-44 on R-S-21): in offline/src/ui-core.js ctx() (:594) build features from Engine.unlocked(view) when typeof E.unlocked === 'function' (engine.js:1566: revealed plus claimed quest-line rewards and FeatureUnlocked features, never a protected id), else Engine.revealed(view), else the Content.reveal.always set; still a Set, still inside safe(). Tests in store.test.mjs (core's): through UI.ctx(), ctx.features is a superset of Engine.revealed(view); a FeatureUnlocked feature shows in it; with Engine.unlocked absent the revealed path holds. Red before, one mutation proof. No new copy, no new public name."
+ }
+}

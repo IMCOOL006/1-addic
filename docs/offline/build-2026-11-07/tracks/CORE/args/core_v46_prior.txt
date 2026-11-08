@@ -1,0 +1,1 @@
+The worktree is fast-forwarded to the trunk 87582bd4 (V-11 merged at 30cb12ff; engine V-40 with Engine.unlocked, actions-sos V-08a in): base and diffFrom 87582bd4. V-46 is one small commit in ui-core.js and store.test.mjs; the reviewers run at the lane's end, not in this run. Run build, test, validate and guards through gates.py before you hand off.
