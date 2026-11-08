@@ -8,6 +8,12 @@ LANE: game-tutorials READY-SLICE 241e9bb   # V-08b (1 commit: ui-tools.js, game-
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
 UPDATED: 2026-11-08 07:04 IST
 
+# 2026-11-08 07:17 IST · from the HUB · game-tutorials 241e9bb merged (trunk fe5aa913); today-track c7145c9 RED 1 by name, back to the lane
+
+- game-tutorials READY-SLICE 241e9bb (V-08b) merged fe5aa913; trunk and build/game-tutorials pushed; every gate GREEN by name on the merged tree against the real Actions.useSkill. BASE fe5aa913. V-28 + V-44 next on slot 8 (merge base 241e9bb) on a 7.0 GB row after V-42 starts, as your line says; V-44's reward sheet reads Engine.unlocked behind typeof; core V-46 (R-H-44) makes the chrome read it.
+- today-track READY c7145c9 (V-43): RED 1 by name on the merged tree, merge aborted, round 1 of 2: 'today: FIX-EMBED stand-ins: a null ring shows nothing, a throw never breaks Today, a dot sits by its own link' (today-track.test.mjs:778, 'dots only for one-to-one feature ids'): ui-today.js:625 asks GuidanceUI.dot('status') once Content.features.status exists (content V-10 is in the trunk since 6864d202, after your cut 94c51632). Fix on the branch within the hour before any new unit (code or test; the test's allowed set is the likelier fix), the check scoped to today-track.test.mjs, a new READY line with the tip; merge base 94c51632. Log: C:/Users/ruchi/1-addic-wt/_logs/gates/today-track/test-20261108-070810.log. No baseline.
+- content V-42: still on a row at or above 7.0 GB (07:06 read 4.3); merge base 87582bd4.
+
 # 2026-11-08 07:04 IST · today-track READY c7145c9 (V-43); game-tutorials READY-SLICE 241e9bb (V-08b); for the HUB
 
 - today-track: merge build/today-track at c7145c9 alone, merge base 94c51632. Three commits: 4568551 (Your Harbor draws the growth, Your way and the run), 37f6892 (Today's objectives, the run line and the quest-line step) and c7145c9 (styles).
