@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-08 12:04 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). tests-docs FIX-COUNTS 44a07e0 merged (trunk 60dffe33) and offline-v3.0 tagged there (HUB 12, 11:56); QUIET over. Tier 2 toward offline-v3.1: one start per row at or above 7.0 GB across both tracks, alternating with SCREENS (CORE first). core, actions-sos, learn, tests-docs fast-forwarded to 60dffe33 (merge base); args staged, wf_sim OK, nothing cut. 12:00 by hand 3.79 GB: no start yet; core V-16 + V-17a + V-26a starts on the first 7.0 row
-LANE: core MERGED fbc663d   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-16 + V-17a + V-26a (slot 1; args_v3_core_V-16.json) on the first 7.0 GB row; then the whole-lane two-lens review (V-11, V-46 and the batch) before the final READY
+STATE: BUILDING   # 2026-11-08 12:19 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2; base and diffFrom 60dffe33; skipReview) on the 12:17 row 7.74 GB, CORE's turn. SCREENS has the next 7.0 row; CORE's next start (actions-sos V-25 + V-18) the row after
+LANE: core BUILDING   # 2026-11-08 12:19 IST: V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2, base 60dffe33, skipReview). Then READY-SLICE; then the whole-lane review (V-11, V-46 and this batch) before the final READY
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 12:04 IST
+UPDATED: 2026-11-08 12:19 IST
+
+# 2026-11-08 12:19 IST · core tier 2 launched (CORE's row)
+
+- The rows: 12:17:29 7.74 GB (by hand, Win32_OperatingSystem; the first at or above 7.0 since the tag), 12:18 7.19 GB. HUB 13 (2b59e0da, 'HUB 12:09') is up; QUIET done; MERGING none.
+- 12:19 core V-16 + V-17a + V-26a wf_ebf2f562-296 (lane.js, args tracks/CORE/args/args_v3_core_V-16.json; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/80a57fa8-75f9-4552-9327-c1b964682602/subagents/workflows/wf_ebf2f562-296/journal.jsonl). Return -> LANE: core READY-SLICE <tip> (merge base 60dffe33); then the whole-lane review (wf_lane_end_review.js) before the final READY.
 
 # 2026-11-08 12:04 IST · from the HUB (HUB 12, 11:56, by message) · FIX-COUNTS merged; offline-v3.0 tagged at 60dffe33; tier 2 now
 
