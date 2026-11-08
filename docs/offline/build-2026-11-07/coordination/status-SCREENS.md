@@ -1,12 +1,12 @@
 TRACK: SCREENS
 STATE: BUILDING   # 2026-11-08 07:24 IST: content V-42 running (wf_cbf01cc8-1a7, 07:23, slot 4, merge base 87582bd4); today-track READY 670df19 (fix round 1) for the HUB. Context ~270k: this chat hands over (STATE RESTART) once V-42 returns; if this session is gone first, the run died with it: relaunch V-42 from args/v3_content_v42.json with done + the branch's committed units
-LANE: content BUILDING 87582bd4   # V-42 running: wf_cbf01cc8-1a7, launched 07:23 IST on slot 4 (the rows 07:12 9.2 and 07:21 8.2 GB, HUB 11) with args/v3_content_v42.json; merge base 87582bd4; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl
+LANE: content BUILDING 15600a9   # V-42 running: wf_cbf01cc8-1a7 (07:23, slot 4, merge base 87582bd4); the builder committed 15600a9 and is in its gates (07:49). MEMORY (HUB 11, 07:47): rows 07:44 3.5 and 07:46 3.1 GB. If the 07:55 row is under 4.0, V-42 (the newest tier 1 run) pauses at its next commit; its builder reads memory before each gate and stops PAUSED. It resumes on a row at or above 4.0: relaunch lane.js with args/v3_content_v42.json, the priorNote from the builder's note in the journal (or 15600a9's message), start 'check' if the builder finished V-42, no resumeFromRunId. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/b632a0d9-020a-4112-96cf-8a39620d24b6/subagents/workflows/wf_cbf01cc8-1a7/journal.jsonl
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # FIX-SAMPLE merged 18:13 (42d2467d); complete; C1 CLOSED e8da3fbd (2026-11-08 01:35 IST: 25/25 on the trunk tip, the eraseSample round trip ran, R-S-18); C1b (assert, test-only) for offline-v1.1 by name
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 241e9bb   # V-08b merged at fe5aa913 (07:19, HUB 11; every gate green by name against the real Actions.useSkill). Next: V-28 + V-44 (merge base 241e9bb, or the trunk after a fast-forward), on a 7.0 GB row after content V-42
 SLOTS-ASKED: 3   # V3, in this order: today-track (slot 6 granted 02:34), content V-10, game-tutorials V-08b/V-28 (tier 1, on the next 7.0 GB rows, after today-track's slice); workbook-settings V-24/V-22b and actions V-03h later (tier 2, or when tests-docs asks)
-UPDATED: 2026-11-08 07:34 IST
+UPDATED: 2026-11-08 07:50 IST
 
 # 2026-11-08 07:34 IST · from the HUB · today-track 670df19 merged (trunk fb6061b5); a note for V-42's verdict
 
