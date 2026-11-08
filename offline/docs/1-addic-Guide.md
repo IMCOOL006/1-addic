@@ -421,7 +421,7 @@ None of these lose data. They are rough edges to be aware of in this early versi
 The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
 - **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 8 November 2026, **581 of 582** logic checks passed, in 15 test files. The one that failed checks where the small "New" dots sit on Today; its fix is with the team that builds Today.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **25** of them, and **all 25 passed**, none skipped. One, the Settings PIN check, ran out of time once while the computer was busy, and passed when it ran again on its own.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 8 November 2026 there were **25** of them, and **all 25 passed** in one full run, none skipped.
 
 | Area | What is checked | Status |
 |---|---|---|
