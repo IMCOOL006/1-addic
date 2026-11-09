@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 16:00 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf. tests-docs READY dbc81e6 with one named red (contrast: .coach-sos (dark), owner game-tutorials)
+STATE: BUILDING   # 2026-11-09 16:06 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf; tests-docs FIX-COUNTS-2 (docs only, by name). BASE eec5d862. Then the whole-lane reviews (actions-sos, core); FREEZE for offline-v3.1 follows them
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 15:46 IST: V-17b + C2 wf_4f5f563e-3cf (slot 3, tier 2, fast-forwarded to 95aac382, the merge base, skipReview). Then READY-SLICE; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs READY dbc81e6   # 2026-11-09 16:00 IST: V-22a, V-26b, V-27, V-29 (wf_f2693ed8-795; merge base 95aac382). ONE NAMED RED: Node 723 in 16 files, 722 pass, 1 fail 'contrast: .coach-sos (dark)' (2.73:1, needs 4.5:1; styles.css:566, owner game-tutorials; not in baselines.md). Else build, validate, guards 5/5 GREEN, territory 0 errors, browser 29/29 by the fixer's log. New flow: 'boots to the first render within the budget'
+LANE: tests-docs MERGED dbc81e6   # 2026-11-09 16:06 IST: merged on top of SCREENS' FIX-COACH-SOS; trunk eec5d862 (HUB 16:12: build 1209520 B, validate, guards 5/5, docs GREEN; the full Node suite 723/723 in 16 files, R-C-79's red closed; the boot flow 1/1). FIX-COUNTS-2 running, docs only; READY after it
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 16:00 IST
+UPDATED: 2026-11-09 16:06 IST
+
+# 2026-11-09 16:06 IST · from the HUB (16:12, by message) · tests-docs dbc81e6 merged; the red closed; FIX-COUNTS-2 by name
+
+- R-H-49 carried out: SCREENS' FIX-COACH-SOS (a3f0bf7, dark 6.68:1) merged 18852152, then dbc81e6 on top, trunk eec5d862. FIX-COUNTS-2: tests-docs fast-forwarded to eec5d862, the count lines say Node 723 in 16 files, 723 pass, 0 fail, browser 29/29/0, the .docx rebuilt; no test run of its own (the HUB's numbers). Sub-agent running; READY line with merge base eec5d862 when it returns.
 
 # 2026-11-09 16:00 IST · tests-docs READY dbc81e6 with one named red, a real defect on the coach's SOS link
 
