@@ -115,7 +115,7 @@ const Store = (function () {
     return false;
   }
   // Two tabs of the file share the storage. Each write carries the lock row its tab knows, and the backend refuses
-  // it when the stored one differs (another tab set, changed or removed the PIN): no tab then writes plain rows beside
+  // it when the stored one differs (another tab set, changed or removed the PIN, or imported a backup with a PIN set): no tab then writes plain rows beside
   // a lock, seals a row under an old key or drops the lock row (RC2, RS3).
   const lockOf = (all) => ((all && Array.isArray(all.meta) ? all.meta : []).find((r) => r && r.key === 'lock' && r.salt && r.check) || null);
   const lockId = (L) => (L && L.salt && L.check ? String(L.salt) + '|' + JSON.stringify(L.check) : '');
