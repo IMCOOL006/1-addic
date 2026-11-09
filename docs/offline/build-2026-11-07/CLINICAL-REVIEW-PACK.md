@@ -270,9 +270,9 @@ rf4 neighbour offers a smoke. Best: "I've quit. Please don't offer any more. I'm
 
 ## 8. content-core.js and shell.html (crisis numbers and safety lines)
 
-Note on markers: at 903016cc only P-31 carries a clinicalReview marker in content-core.js. P-28, P-29, P-30 and P-32 have none (the same was true at v1.1). They are kept below so the reviewer can still confirm the India numbers and the overdose and withdrawal wording; each is tagged NO MARKER and is not counted in the marked total.
+Note on markers: since FIX-MARKERS (content cd17758, merged into the trunk 3a0b2100 on 2026-11-09 19:16 IST) P-28, P-29, P-30 and P-32 carry a clinicalReview marker in content-core.js too; none of their words, numbers or links changed. Every item in this pack now has a marker in the source.
 
-### P-28 · content-core.js:430-452 · crisis numbers (every entry has verify: true) · NO MARKER
+### P-28 · content-core.js:430-452 · crisis numbers (every entry has verify: true)
 Note shown with the India list: "These numbers were collected from public sources in October 2026 and have not yet been verified by the owner. Check each one before you rely on it."
 
 | Region | Service | Number (alt) | Hours / note | Verify |
@@ -289,12 +289,12 @@ Note shown with the India list: "These numbers were collected from public source
 
 Also verify-flagged but not crisis numbers: AA India (aagsoindia.org), NA India (naindia.in), SMART Recovery (smartrecovery.org), government de-addiction centres directory (nmba.dosje.gov.in), Hospital for Mental Health Ahmedabad, district and civil hospitals.
 
-### P-29 · content-core.js:454 · India context note · NO MARKER
+### P-29 · content-core.js:454 · India context note
 ```
 Gujarat has alcohol prohibition, so drinking is illegal there and people often hide it. That is one more reason this app keeps everything on your device. The helplines are confidential. If you are worried about the law, say so to a counsellor; they have heard it before.
 ```
 
-### P-30 · content-core.js:464 · overdose card (shown in SOS Urgent help) · NO MARKER
+### P-30 · content-core.js:464 · overdose card (shown in SOS Urgent help)
 ```
 Call the emergency number first. Say "overdose", the substance if you know it, and the address.
 If the person is not breathing or is unresponsive, follow the operator's instructions. If you have naloxone and opioids are involved, use it.
@@ -308,7 +308,7 @@ After a break from opioids, tolerance drops. The same old amount can kill. Never
 After a break, your body loses tolerance, so an old amount can be deadly. Never use alone. If someone will not wake up or is breathing slowly, call 112 at once.
 ```
 
-### P-32 · content-core.js:471 · withdrawal lines (onboarding safety step and SOS) · NO MARKER
+### P-32 · content-core.js:471 · withdrawal lines (onboarding safety step and SOS)
 ```
 Stopping heavy daily drinking suddenly can cause seizures or delirium. Stopping sleeping pills or benzodiazepines suddenly can too.
 If you drink heavily every day, or take sedatives every day, talk to a doctor about stopping safely. Many hospitals have a detox unit.
@@ -325,7 +325,7 @@ Please verify these numbers.
 
 ## Summary
 Marked in the source at 903016cc: 38 clinicalReview markers in offline/src/*.js (ui-sos.js 7, boot.js 1, ui-core.js 1, ui-exercise.js 1, ui-settings.js 1, ui-onboarding.js 3, engine.js 2, content-lessons-a/b/c.js 12, content-exercises.js 4, content-practices.js 5, content-core.js 1; a few sit in code comments beside a block or line) plus 1 in shell.html. They are grouped into 29 marked passages: P-01 to P-27, P-31 and P-33. Four more (P-28, P-29, P-30, P-32) are kept from v1.1 with no marker, so 33 numbered items in all.
-Against the v1.1 pack: 26 unchanged (P-01 to P-08, P-10, P-11, P-13 to P-27, P-31); 2 CHANGED (P-09: when it shows; P-12: the early-access line); 1 new (P-33, shell.html); 4 kept without a marker (P-28, P-29, P-30, P-32). No passage quotes a book.
+Against the v1.1 pack: 26 unchanged (P-01 to P-08, P-10, P-11, P-13 to P-27, P-31); 2 CHANGED (P-09: when it shows; P-12: the early-access line); 1 new (P-33, shell.html); 4 that had no marker at the tag (P-28, P-29, P-30, P-32; marked since 3a0b2100, words unchanged). No passage quotes a book.
 
 Questions for the reviewer:
 1. Are the India numbers in P-28 right, current and free as shown (Tele-MANAS 14416, KIRAN 1800-599-0019, Nasha Mukti 14446, Vandrevala, the AIIMS poison line, 112 and 108)? Which should be removed or added?
