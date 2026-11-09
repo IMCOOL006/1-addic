@@ -464,9 +464,11 @@
   let flushing = false;
   let listening = false;
   // RS26: the notebook a save was made in: the C2 signals seen so far, whether a lock row is stored, and that row's own
-  // mark (V-17b). Another tab's erase, Forgot PIN or import takes the lock row away (this tab's store resyncs and reads
-  // open); an erase and a new PIN leaves a lock row all the same, and only its mark shows it is another; this tab's
-  // reset or import is the C2 signal. A save is never written into another notebook: a changed mark drops it.
+  // mark (V-17b). Another tab's erase or Forgot PIN takes the lock row away (this tab's store resyncs and reads open);
+  // an erase and a new PIN leaves a lock row all the same, and only its mark shows it is another; this tab's reset or
+  // import is the C2 signal. A changed mark drops the save. The one case nothing here can see (ES3): another tab's import
+  // while a PIN is set keeps the same lock row (store.js replaceAll) and the era counts only this tab's signals, so a
+  // kept save is written into the notebook that tab imported. The mark is core's; it would have to change on an import.
   let era = 0;
   // '' for a store without the mark (or a mark that is not a string): the era and hasLock still decide there.
   const lockIdNow = () => safe(() => { const id = Store.status().lockId; return typeof id === 'string' ? id : ''; }, '');
@@ -479,7 +481,7 @@
     try {
       while (waiting.length && !isLockedNow()) {
         const fn = waiting[0];
-        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook changed is dropped, never written into this one
+        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook this tab can see has changed is dropped, not written into this one (the one case it cannot see: ES3, above)
           try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; lost = true; }
         } else lost = true;
         waiting.shift();

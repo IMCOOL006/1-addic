@@ -9549,9 +9549,11 @@ if (typeof module !== 'undefined' && module.exports) {
   let flushing = false;
   let listening = false;
   // RS26: the notebook a save was made in: the C2 signals seen so far, whether a lock row is stored, and that row's own
-  // mark (V-17b). Another tab's erase, Forgot PIN or import takes the lock row away (this tab's store resyncs and reads
-  // open); an erase and a new PIN leaves a lock row all the same, and only its mark shows it is another; this tab's
-  // reset or import is the C2 signal. A save is never written into another notebook: a changed mark drops it.
+  // mark (V-17b). Another tab's erase or Forgot PIN takes the lock row away (this tab's store resyncs and reads open);
+  // an erase and a new PIN leaves a lock row all the same, and only its mark shows it is another; this tab's reset or
+  // import is the C2 signal. A changed mark drops the save. The one case nothing here can see (ES3): another tab's import
+  // while a PIN is set keeps the same lock row (store.js replaceAll) and the era counts only this tab's signals, so a
+  // kept save is written into the notebook that tab imported. The mark is core's; it would have to change on an import.
   let era = 0;
   // '' for a store without the mark (or a mark that is not a string): the era and hasLock still decide there.
   const lockIdNow = () => safe(() => { const id = Store.status().lockId; return typeof id === 'string' ? id : ''; }, '');
@@ -9564,7 +9566,7 @@ if (typeof module !== 'undefined' && module.exports) {
     try {
       while (waiting.length && !isLockedNow()) {
         const fn = waiting[0];
-        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook changed is dropped, never written into this one
+        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook this tab can see has changed is dropped, not written into this one (the one case it cannot see: ES3, above)
           try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; lost = true; }
         } else lost = true;
         waiting.shift();
@@ -16500,6 +16502,17 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ToolsUI;
     const opening = h('p', { id: 'lock-opening', class: 'muted', role: 'status', 'aria-live': 'polite', dataset: tid('lock-opening') });
     const unlock = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock', dataset: tid('lock-unlock') });
     const panel = h('div', { class: 'stack', hidden: true });
+    // ES1: urgent help stays open while the key is made, so a right PIN moves on, and a wrong one takes the focus, only from the lock page.
+    const onLock = () => panel.hidden && safe(() => UI.route().parts[0] === 'lock', true);
+    // EC1: the practice is SOS too. ui-core draws #/lock again when the notebook opens (ui-core.js:889) and never an SOS route, so the route is the practice's own SOS route
+    // (L.sober.href) while it is open: the key arriving leaves it where it is and a reload lands in the same flow. ESR1: never #/sos, the header SOS button's target: a link to
+    // the hash already in the address fires no hashchange, and the tap would do nothing. Done goes on to Today if the notebook opened meanwhile, else back to #/lock (not drawn again: a PIN being checked goes on).
+    const setRoute = (to) => safe(() => history.replaceState(history.state, '', to), null);
+    const closePractice = () => {
+      panel.hidden = true; panel.replaceChildren();
+      if (safe(() => S.status().locked === false, false)) UI.go('#/today', { replace: true });
+      else { setRoute('#/lock'); safe(() => UI.applyDiscreet(isDiscreet()), null); } // ESR2: the chrome only (the key may have painted it as SOS, no button); the page is not drawn again
+    };
     const form = h('form', { class: 'form stack', novalidate: true, onSubmit: async (ev) => {
       ev.preventDefault();
       const tried = pin.value;
@@ -16510,14 +16523,15 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ToolsUI;
       const r = await attemptUnlock(S, tried);
       opening.textContent = '';
       unlock.disabled = false; pin.disabled = false;
-      if (r.ok) { UI.go('#/today', { replace: true }); return; }
+      if (r.ok) { if (onLock()) UI.go('#/today', { replace: true }); return; }
       msg.textContent = r.message; msg.hidden = false;
-      pin.focus();
+      if (onLock()) pin.focus();
     } }, field('PIN', pin), msg, unlock, opening);
     const sober = typeof UI.sosSoberView === 'function'
       ? btn(L.sober.label, () => {
-        panel.replaceChildren(UI.sosSoberView(() => { panel.hidden = true; panel.replaceChildren(); }, 'Done', L.sober.title));
+        panel.replaceChildren(UI.sosSoberView(closePractice, 'Done', L.sober.title));
         panel.hidden = false;
+        setRoute(L.sober.href);
         const t = panel.querySelector('h1'); if (t && t.focus) t.focus();
       }, { testid: 'lock-sober' })
       : h('a', { class: 'btn', href: L.sober.href, text: L.sober.label, dataset: tid('lock-sober') });

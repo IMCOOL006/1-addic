@@ -3096,6 +3096,30 @@ describe('V3 actions-sos (V-08a, V-SOS10)', () => {
     assert.equal((await useSkill({ skillId: 'ride-wave', helpful: true })).ok, true, 'unlocked: written');
   });
 
+  test('V-08a useSkill: an uncoded failure inside the commit comes back as {ok: false, code: error} with the generic message, never thrown, nothing written', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    const real = globalThis.Store;
+    const uncoded = [
+      ['a TypeError', new TypeError('secret detail')],
+      ['a DOMException, its code a number', new DOMException('secret detail', 'QuotaExceededError')],
+      ['an empty code', Object.assign(new Error('secret detail'), { code: '' })],
+      ['not an error at all', null],
+    ];
+    try {
+      for (const [name, err] of uncoded) {
+        globalThis.Store = Object.assign(Object.create(real), { commit: () => { throw err; } });
+        const r = await useSkill({ skillId: 'ride-wave', helpful: true }); // a throw here fails the test: the verb never throws
+        assert.deepEqual([r.ok, r.code, r.message], [false, 'error', 'The skill could not be saved.'], name);
+        assert.equal(r.event, undefined, name);
+      }
+    } finally { globalThis.Store = real; }
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+  });
+
   test("V-08a useSkill with a sample loaded writes one unmarked SkillUsed, the person's own, and changes no sample row", async () => {
     await withSample(TRUNK_SAMPLE, () => Actions.loadSample());
     const sampleRows = async () => Object.fromEntries(Object.entries(await snapshot()).map(([k, rows]) => [k, rows.filter((x) => x && x.sample === true)]));
@@ -3690,6 +3714,208 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(f.page.querySelectorAll('h1').length, heads + 1, 'the SOBER practice opens while the key is made');
     g.release(true);
     await done;
+    assert.deepEqual(f.d.replaced, [], 'EC1: the practice stays open, the key ready or not');
+  });
+
+  // ES1, EC1: the real router. ui-core.js (boot, render, go, schedule) and the real lock page in a context of their own, over a stand-in DOM. The Store's unlock
+  // waits on the test and, as store.js does, notifies before it answers. Only the page bodies and the SOBER view are stand-ins.
+  const routerDom = () => {
+    const ids = {};
+    class T { constructor(t) { this.data = String(t); this.parentNode = null; } get nodeType() { return 3; } get textContent() { return this.data; } }
+    class E {
+      constructor(tag) {
+        this.tagName = String(tag).toUpperCase(); this.attrs = {}; this.kids = []; this.dataset = {}; this.parentNode = null; this.style = { setProperty() {} };
+        this.hidden = false; this.own = ''; this.on = {}; this.value = ''; this.disabled = false;
+        const cls = new Set();
+        this.classList = { toggle: (c, f) => { if (f === undefined ? !cls.has(c) : f) cls.add(c); else cls.delete(c); }, contains: (c) => cls.has(c), add: (c) => cls.add(c), remove: (c) => cls.delete(c) };
+      }
+      get nodeType() { return 1; }
+      setAttribute(k, v) { this.attrs[k] = String(v); if (k === 'hidden') this.hidden = true; if (k === 'id') this.id = String(v); }
+      getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
+      removeAttribute(k) { delete this.attrs[k]; }
+      appendChild(c) { c.parentNode = this; this.kids.push(c); return c; }
+      removeChild(c) { this.kids = this.kids.filter((x) => x !== c); return c; }
+      insertBefore(c) { c.parentNode = this; this.kids.unshift(c); return c; }
+      replaceChildren(...cs) { this.kids = []; this.own = ''; for (const c of cs) this.appendChild(typeof c === 'string' ? new T(c) : c); }
+      get children() { return this.kids.filter((k) => k.nodeType === 1); }
+      get firstChild() { return this.kids[0] || null; }
+      get textContent() { return [this.own].concat(this.kids.map((k) => k.textContent)).join(' '); }
+      set textContent(v) { this.own = String(v); this.kids = []; }
+      addEventListener(t, f) { (this.on[t] = this.on[t] || []).push(f); }
+      removeEventListener() {}
+      querySelectorAll() { return []; }
+      querySelector() { return null; }
+      focus() { doc.activeElement = this; }
+      contains(x) { for (let n = x; n; n = n.parentNode) if (n === this) return true; return false; }
+      matches() { return false; }
+      all() { return [this].concat(...this.children.map((k) => k.all())); }
+    }
+    const doc = { title: '', activeElement: null, documentElement: new E('html'), body: new E('body'), createElement: (t) => new E(t), createElementNS: (n, t) => new E(t),
+      createTextNode: (t) => new T(t), getElementById: (id) => ids[id] || null, dispatchEvent: () => true, contains: () => true, addEventListener() {} };
+    for (const [id, tag] of [['main', 'main'], ['sos-btn', 'a'], ['nav', 'nav'], ['saved-label', 'span'], ['app-name', 'span'], ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div']]) {
+      const e = new E(tag); e.id = id; ids[id] = e;
+    }
+    return doc;
+  };
+  const settle = () => new Promise((r) => setTimeout(r, 60)); // past ui-core's 16 ms frame (Node has no requestAnimationFrame)
+  const routerApp = async () => {
+    const vm = require('node:vm');
+    const doc = routerDom();
+    const on = {};
+    const location = { hash: '#/lock' };
+    const replaced = [];
+    const history = { state: null, replaceState(s, t, url) { location.hash = url; replaced.push(url); } };
+    const subs = new Set();
+    const store = {
+      locked: true, release: null, view: { get: () => null, list: () => [], count: () => 0 },
+      status: () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: store.locked }),
+      load: async () => {}, subscribe: (f) => { subs.add(f); return () => subs.delete(f); },
+      lock: { onLock: () => () => {}, hold() {}, touch() {},
+        unlock: () => new Promise((res) => { store.release = (ok) => { if (ok) { store.locked = false; for (const f of subs) f({ label: 'unlock' }); } res(ok); }; }) },
+    };
+    const ctx = vm.createContext({ document: doc, window: { addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); } }, location, history, Store: store, Content: C(),
+      localStorage: { getItem: () => null, setItem() {}, removeItem() {} }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
+    vm.runInContext(readFileSync(src('ui-core.js'), 'utf8'), ctx, { filename: 'ui-core.js' });
+    const UI = vm.runInContext('UI', ctx);
+    const body = (text) => () => { const p = doc.createElement('div'); p.textContent = text; return p; };
+    UI.pages.sos = body('URGENT NUMBERS');
+    UI.pages.today = body('TODAY');
+    const a = { doc, store, location, replaced, UI, done: null, soberDone: null };
+    UI.sosSoberView = (onDone) => { a.soberDone = onDone; return body('SOBER PRACTICE')(); };
+    vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
+    await UI.boot();
+    await settle();
+    const main = () => doc.getElementById('main');
+    a.text = () => main().textContent;
+    a.hook = (id) => main().all().find((e) => e.dataset && e.dataset.testid === id);
+    a.submit = (pin) => {
+      a.hook('lock-pin').value = pin;
+      a.done = main().all().find((e) => e.tagName === 'FORM').on.submit[0]({ preventDefault() {} });
+      assert.ok(store.release, 'the key is being made');
+    };
+    a.tap = async (href) => { location.hash = href; for (const f of on.hashchange) f(); await settle(); };
+    // ESR1: a link followed as a browser does: one to the hash already in the address fires no hashchange (a.tap fires it always).
+    a.follow = async (href) => { const moved = location.hash !== href; location.hash = href; if (moved) for (const f of on.hashchange) f(); await settle(); };
+    a.keyReady = async (ok) => { store.release(ok); await a.done; await settle(); };
+    return a;
+  };
+
+  test('ES1: a right PIN goes on to Today only from the lock page: urgent help or the SOS page opened while the key is made stays, its history entry too (the real router)', async () => {
+    for (const href of ['#/sos/urgent', '#/sos']) {
+      const a = await routerApp();
+      a.submit('2468');
+      await a.tap(href);
+      assert.match(a.text(), /URGENT NUMBERS/, `${href} is open`);
+      await a.keyReady(true);
+      assert.equal(a.location.hash, href, `${href}: still there`);
+      assert.match(a.text(), /URGENT NUMBERS/, `${href}: the numbers stay`);
+      assert.doesNotMatch(a.text(), /TODAY/, `${href}: Today is not drawn over them`);
+      assert.deepEqual(a.replaced, [], `${href}: the history entry stays`);
+    }
+    const stay = await routerApp();
+    stay.submit('2468');
+    await stay.keyReady(true);
+    assert.equal(stay.location.hash, '#/today', 'nothing else tapped: on to Today');
+    assert.match(stay.text(), /TODAY/);
+  });
+
+  test('ES1: a wrong PIN while urgent help is open does not pull the focus out of it (the real router)', async () => {
+    const a = await routerApp();
+    const pin = a.hook('lock-pin');
+    a.submit('1111');
+    await a.tap('#/sos/urgent');
+    const before = a.doc.activeElement;
+    await a.keyReady(false);
+    assert.equal(a.location.hash, '#/sos/urgent', 'still there');
+    assert.notEqual(a.doc.activeElement, pin, 'the focus is not pulled back to the lock form');
+    assert.equal(a.doc.activeElement, before, 'it stays where it was');
+  });
+
+  test('EC1: the SOBER practice opened while the key is made stays open when the key is ready, and its Done goes on to Today (the real router)', async () => {
+    const a = await routerApp();
+    a.submit('2468');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    await a.keyReady(true);
+    assert.equal(a.store.locked, false, 'the notebook is open');
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.doesNotMatch(a.text(), /TODAY/, 'Today is not drawn over it');
+    assert.notEqual(a.location.hash, '#/today', 'the route has not moved on');
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/today', 'Done goes on to Today, the notebook being open');
+    assert.match(a.text(), /TODAY/);
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/);
+  });
+
+  test('EC1: the SOBER practice closed while the key is still made: back on the lock route, the form goes on, and the key then goes on to Today (the real router)', async () => {
+    const a = await routerApp();
+    a.submit('2468');
+    a.hook('lock-sober').on.click[0]({});
+    a.soberDone();
+    assert.equal(a.location.hash, '#/lock', 'still locked: back on the lock route');
+    assert.ok(a.hook('lock-pin'), 'the same lock form, not drawn again');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/);
+    await a.keyReady(true);
+    assert.equal(a.location.hash, '#/today', 'nothing open: on to Today');
+    assert.match(a.text(), /TODAY/);
+  });
+
+  test('EC1: a wrong PIN with the SOBER practice open: the practice stays, the message shows, the focus is not pulled out of it; Done goes back to the lock route (the real router)', async () => {
+    const a = await routerApp();
+    const pin = a.hook('lock-pin');
+    a.hook('lock-sober').on.click[0]({});
+    a.submit('1111');
+    await a.keyReady(false);
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.ok(a.text().includes(require(src('ui-onboarding.js')).COPY.wrong), 'the wrong-PIN message shows');
+    assert.notEqual(a.doc.activeElement, pin, 'the focus is not pulled to the PIN');
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'still locked: the lock route');
+    assert.ok(a.hook('lock-pin'), 'the lock form');
+    assert.equal(a.store.locked, true);
+  });
+
+  test('ESR1: the header SOS button opens the SOS page from the practice on the lock page (the real router)', async () => {
+    const a = await routerApp();
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const href = /id="sos-btn"[^>]*href="([^"]+)"/.exec(readFileSync(src('shell.html'), 'utf8'))[1]; // the real button's link
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice is open');
+    assert.equal(sosBtn.hidden, false, 'the SOS button is on screen');
+    const during = a.location.hash;
+    await a.follow(href);
+    assert.equal(a.location.hash, href, 'the route is the button\'s');
+    assert.match(a.text(), /URGENT NUMBERS/, 'the tap opens the SOS page');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way to it');
+    assert.equal(a.hook('lock-page'), undefined, 'the lock page is gone');
+    assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
+    assert.equal(during, '#/sos/craving', 'while the practice was open: a reload lands in the same flow');
+  });
+
+  test('ESR2: Done back on the lock page shows the SOS button again (the real router)', async () => {
+    const a = await routerApp();
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const root = a.doc.documentElement;
+    const form = a.hook('lock-pin');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    a.submit('2468');
+    await a.keyReady(true);
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.deepEqual([sosBtn.hidden, root.getAttribute('data-route')], [true, 'sos'], 'the key arrived: ui-core paints the chrome as SOS');
+    a.store.locked = true; // the idle lock, or another tab: the route is an SOS route, so ui-core draws nothing
+    a.submit('2468'); // a PIN being checked must go on through Done
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'back on the lock route');
+    assert.deepEqual([sosBtn.hidden, root.getAttribute('data-route')], [false, 'lock'], 'the lock page has its SOS button, and the chrome says lock');
+    assert.equal(a.hook('lock-pin'), form, 'the same form: the page is not drawn again');
+    await a.keyReady(true);
+    assert.equal(a.location.hash, '#/today', 'the PIN being checked went on, then on to Today');
+    assert.match(a.text(), /TODAY/);
   });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
