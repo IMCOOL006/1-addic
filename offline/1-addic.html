@@ -10626,11 +10626,12 @@ const LearnUI = (function () {
       }
       go(dest);
     }, { class: 'btn primary', 'data-test': 'lesson-finish' });
+    const whyBtn = btn(TEXT.why, () => whySheet(c, lesson, whyBtn), { class: 'btn ghost', 'data-test': 'lesson-why' });
     return [
       h('div', { class: 'stack', 'data-tour': 'lesson-wrap' }, h('h2', { text: TEXT.wrap }),
         h('dl', { class: 'ln-wrap' }, pair(TEXT.built, w.built), pair(TEXT.lives, w.lives), pair(TEXT.action, w.action))),
       todoBtn,
-      btn(TEXT.why, () => whySheet(c, lesson), { class: 'btn ghost', 'data-test': 'lesson-why' }),
+      whyBtn,
       done ? h('p', { class: 'muted', text: TEXT.already }) : null,
       found.last ? h('p', { text: TEXT.lastNote }) : null,
       finish,
@@ -10638,8 +10639,9 @@ const LearnUI = (function () {
     ];
   }
 
-  // "Why this works": the lesson's evidence cards from Content.references, in a sheet (an inline block without UI.sheet).
-  function whySheet(c, lesson) {
+  // "Why this works": the lesson's evidence cards from Content.references, in a sheet; without UI.sheet they show once
+  // in the page straight after the button, so the button never does nothing.
+  function whySheet(c, lesson, anchor) {
     const refs = arr(lesson.refs).map((id) => arr(c.C.references).find((r) => r && r.id === id)).filter(Boolean);
     const body = h('div', { class: 'stack ln-refs', 'data-test': 'lesson-refs' }, refs.length ? h('ul', { class: 'stack' }, refs.map((r) => h('li', { class: 'card stack' },
       h('p', { text: str(r.claim) }),
@@ -10649,6 +10651,11 @@ const LearnUI = (function () {
         ? h('a', { href: r.url, rel: 'noopener noreferrer', target: '_blank', text: `${TEXT.openSource} ${TEXT.needsNet}` }) : null))) : h('p', { text: TEXT.noRefs }));
     const U = ns('UI');
     if (U && typeof U.sheet === 'function') { U.sheet(TEXT.why, body); return body; }
+    const parent = anchor && anchor.parentNode;
+    if (!parent) return body;
+    const after = anchor.nextSibling;
+    if (after && after.getAttribute && after.getAttribute('data-test') === 'lesson-refs') return after;
+    parent.insertBefore(body, after);
     return body;
   }
 
@@ -10686,9 +10693,11 @@ const LearnUI = (function () {
       const A = c.A;
       if (!A || typeof A.checkpoint !== 'function') { msg.textContent = TEXT.cantSave; return; }
       finish.disabled = true;
+      // CheckpointCompleted earns once per module: read the log before this finish writes to it.
+      const firstTime = !hasEvent(c.view, 'CheckpointCompleted', 'moduleId', m.id);
       try {
         await A.checkpoint(m.id, checkpointAnswers(qs, picks));
-        toast(c.calm ? TEXT.cpDone : TEXT.cpDone + TEXT.xp, 'ok');
+        toast(c.calm || !firstTime ? TEXT.cpDone : TEXT.cpDone + TEXT.xp, 'ok');
         go('#/learn/' + enc(m.id));
       } catch (e) { finish.disabled = false; msg.textContent = (e && e.message) || TEXT.cantSave; }
     }, { class: 'btn primary', 'data-test': 'checkpoint-finish' });

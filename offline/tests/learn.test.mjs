@@ -221,6 +221,8 @@ function fakeDom() {
     constructor(tag) { this.tagName = tag; this.nodeType = tag === '#text' ? 3 : 1; this.children = []; this.attrs = {}; this.on = {}; this.style = {}; this.hidden = false; this._text = ''; this.parentNode = null;
       this.classList = { toggle: () => {}, add: () => {}, remove: () => {} }; }
     appendChild(c) { this.children.push(c); c.parentNode = this; return c; }
+    insertBefore(c, ref) { const i = ref ? this.children.indexOf(ref) : this.children.length; this.children.splice(i, 0, c); c.parentNode = this; return c; }
+    get nextSibling() { const p = this.parentNode; return p ? p.children[p.children.indexOf(this) + 1] || null : null; }
     setAttribute(k, v) { this.attrs[k] = String(v); if (k === 'hidden') this.hidden = true; }
     getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
     addEventListener(t, fn) { (this.on[t] = this.on[t] || []).push(fn); }
@@ -545,6 +547,59 @@ test('learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted
       const coming = LD.learnPage({ route: { parts: ['learn', 'm7'], query: {} }, view, A, E: null });
       assert.match(coming.textContent, /coming in a future update/i);
     } finally { globalThis.Content = full; }
+  } finally { delete globalThis.document; delete globalThis.UI; }
+});
+
+test("learn: the checkpoint toast says +10 XP only the first time a module's checkpoint is finished (V-20 C3)", async () => {
+  globalThis.document = fakeDom();
+  const toasts = [];
+  globalThis.UI = { go() {}, toast: (m) => toasts.push(m) };
+  const tick = () => new Promise((r) => setTimeout(r, 0));
+  try {
+    const events = [];
+    const profile = { pace: 'steady', onboardedAt: '2026-11-01T10:00:00.000Z' };
+    const view = viewOf(events, profile);
+    const A = stubActions(events, profile);
+    const finish = async (mid, calm) => {
+      const cp = LD.learnPage({ route: { parts: ['learn', mid], query: { checkpoint: '1' } }, view, A, E: null, calm });
+      cp.all((n) => n.getAttribute && n.getAttribute('data-test') === 'checkpoint-finish')[0].fire('click');
+      await tick();
+      return toasts[toasts.length - 1];
+    };
+    assert.equal(await finish(M[0].id), LX.TEXT.cpDone + LX.TEXT.xp, 'the first finish earns and says so');
+    assert.equal(await finish(M[0].id), LX.TEXT.cpDone, 'a second finish of the same checkpoint earns nothing and does not say so');
+    assert.equal(events.filter((e) => e.type === 'CheckpointCompleted').length, 1, 'one event for the module');
+    assert.equal(await finish(M[1].id), LX.TEXT.cpDone + LX.TEXT.xp, 'each module earns once, on its own first finish');
+    assert.equal(await finish(M[2].id, true), LX.TEXT.cpDone, 'calm mode never names XP, first time included');
+  } finally { delete globalThis.document; delete globalThis.UI; }
+});
+
+test('learn: "Why this works" shows its sources in the page when there is no UI.sheet, once (V-20 C4)', () => {
+  globalThis.document = fakeDom();
+  const byTest = (root, v) => root.all((n) => n.getAttribute && n.getAttribute('data-test') === v);
+  const lesson = M[0].lessons[0];
+  const wrapAt = String(LD.lessonSteps(lesson).length - 1);
+  const open = () => LD.lessonPage({ route: { parts: ['lesson', lesson.id], query: { step: wrapAt } }, view: viewOf([], {}), A: null, E: null });
+  try {
+    globalThis.UI = { go() {}, toast() {} };
+    const page = open();
+    const why = byTest(page, 'lesson-why')[0];
+    assert.equal(byTest(page, 'lesson-refs').length, 0, 'nothing shown before the tap');
+    why.fire('click');
+    assert.equal(byTest(page, 'lesson-refs').length, 1, 'the tap shows the sources in the page');
+    assert.equal(why.nextSibling.getAttribute('data-test'), 'lesson-refs', 'straight after the button');
+    assert.ok(why.nextSibling.textContent.length > 0, 'the block has words in it');
+    why.fire('click');
+    assert.equal(byTest(page, 'lesson-refs').length, 1, 'a second tap does not stack a copy');
+
+    const sheets = [];
+    globalThis.UI = { go() {}, toast() {}, sheet: (title, body) => sheets.push([title, body]) };
+    const withSheet = open();
+    byTest(withSheet, 'lesson-why')[0].fire('click');
+    assert.equal(sheets.length, 1, 'with UI.sheet the sources open there');
+    assert.equal(sheets[0][0], LX.TEXT.why);
+    assert.equal(sheets[0][1].getAttribute('data-test'), 'lesson-refs');
+    assert.equal(byTest(withSheet, 'lesson-refs').length, 0, 'and not in the page as well');
   } finally { delete globalThis.document; delete globalThis.UI; }
 });
 
