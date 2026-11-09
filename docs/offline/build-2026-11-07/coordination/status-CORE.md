@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 20:19 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). tests-docs READY 1686bb8 is with the HUB (R-C-87). Live: actions-sos FIX-AS-V32 wf_1433b81c-993
+STATE: BUILDING   # 2026-11-09 20:22 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). tests-docs MERGED 0c03fc0c. Live: actions-sos FIX-AS-V32 wf_1433b81c-993. Then FIX-COUNTS-4
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES3T the V-17b test, EC3, ES2, EF1, SF1), wf_1433b81c-993, base and merge base 82c5eddf, flagged, two reviewers
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs MERGED 1686bb8   # 2026-11-09 20:22 IST from the HUB: FIX-TD-V32 merged 0c03fc0c (HUB: build 1212699 B, test, validate, guards GREEN, territory 0; the three new flows 3/3 by name; docs GREEN); the trunk and build/tests-docs pushed. Next: FIX-COUNTS-4 after actions-sos FIX-AS-V32 merges (Node 758 in 16 files; browser 32 flows, the names in offline/README.md)
+LANE: tests-docs MERGED 1686bb8   # 2026-11-09 20:21 IST: FIX-TD-V32 merged 0c03fc0c, pushed (the HUB: build, test, validate, guards GREEN, territory 0; the three new flows 3/3 by name on the merged tree; docs GREEN). FIX-COUNTS-4 follows the actions-sos merge
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 20:19 IST
+UPDATED: 2026-11-09 20:22 IST
+
+# 2026-11-09 20:22 IST · from the HUB (20:21, by message) · tests-docs 1686bb8 merged 0c03fc0c; BASE 0c03fc0c; FIX-COUNTS-4 after actions-sos
+
+- actions-sos FIX-AS-V32 keeps its merge base 82c5eddf and merges alone when READY. After it, FIX-COUNTS-4 from the merged tree: the HUB's Node number was 758 checks in 16 files at 0c03fc0c, before actions-sos's new tests, so the count written must be the one read on the tree after that merge; browser 32 flows with the three new names in offline/README.md (the HUB confirms 32 from the full run at the v3.2 freeze).
 
 # 2026-11-09 20:19 IST · tests-docs READY 1686bb8 (FIX-TD-V32); merge base 82c5eddf
 
