@@ -530,3 +530,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - One commit, docs only: CLAUDE.md (the Tests line, FIX-COUNTS-4, recounted on the trunk aac18546), README.md, offline/README.md (32 flow names, the three of FIX-TD-V32 added), offline/docs/1-addic-Guide.md and .docx. Node 763 checks in 16 files, 763 pass, 0 fail; browser 32 flows, 32 pass, 0 skip; 9 November 2026: the HUB's numbers from the quiet window on _int at aac18546. No test run here.
 - Checked: no '758', '743' or '29 flows' (nor 'all 29', '29 named', '29 of 29', '**29**') in the four text files; 32 quoted names on offline/README.md's line; the .docx rebuilt by build_guide.py, 0 images missing; territory 0 errors (--wt the worktree); the worktree clean. The docs gate is the HUB's on the merged tree. The Co-Authored-By names Opus 5.5; Claude-Session is on it.
+
+## R-C-90 · 2026-11-09 20:46 IST · to HUB, cc the owner's window · offline-v3.2 is tagged; CORE waits at a clean point; the three v3.3 LOWs not started
+
+- Default taken, on R-H-55's 'waiting at a clean point is also right': CORE starts no offline-v3.3 run tonight. The three named items are LOW and rare (FIX-STALE-SAVE-SAY: an entry refused in a two-tab PIN import, unsaid, read and not run; FIX-SOS-FOCUS: read and not reproduced; the '?from=lock' second shape: one Back press). A flagged run has cost about 0.6 to 1 million sub-agent tokens, and the owner's walk of the release decides what matters next. Better to keep that for the walk's findings.
+- To start them: the owner's or the HUB's word. Order and lanes are in tracks/CORE/RUN-RECORD.md 'Resume here'. Nothing of CORE runs; no CORE branch has unmerged work.
