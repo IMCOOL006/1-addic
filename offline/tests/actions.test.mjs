@@ -3096,6 +3096,30 @@ describe('V3 actions-sos (V-08a, V-SOS10)', () => {
     assert.equal((await useSkill({ skillId: 'ride-wave', helpful: true })).ok, true, 'unlocked: written');
   });
 
+  test('V-08a useSkill: an uncoded failure inside the commit comes back as {ok: false, code: error} with the generic message, never thrown, nothing written', async () => {
+    await Actions.onboard({ name: 'Asha', startDate: daysAgo(5) });
+    const snap = await snapshot();
+    const w = watch();
+    const real = globalThis.Store;
+    const uncoded = [
+      ['a TypeError', new TypeError('secret detail')],
+      ['a DOMException, its code a number', new DOMException('secret detail', 'QuotaExceededError')],
+      ['an empty code', Object.assign(new Error('secret detail'), { code: '' })],
+      ['not an error at all', null],
+    ];
+    try {
+      for (const [name, err] of uncoded) {
+        globalThis.Store = Object.assign(Object.create(real), { commit: () => { throw err; } });
+        const r = await useSkill({ skillId: 'ride-wave', helpful: true }); // a throw here fails the test: the verb never throws
+        assert.deepEqual([r.ok, r.code, r.message], [false, 'error', 'The skill could not be saved.'], name);
+        assert.equal(r.event, undefined, name);
+      }
+    } finally { globalThis.Store = real; }
+    assert.equal(w.count, 0, 'no commit');
+    w.off();
+    assert.deepEqual(await snapshot(), snap, 'nothing written');
+  });
+
   test("V-08a useSkill with a sample loaded writes one unmarked SkillUsed, the person's own, and changes no sample row", async () => {
     await withSample(TRUNK_SAMPLE, () => Actions.loadSample());
     const sampleRows = async () => Object.fromEntries(Object.entries(await snapshot()).map(([k, rows]) => [k, rows.filter((x) => x && x.sample === true)]));
