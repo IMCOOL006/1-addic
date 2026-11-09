@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 18:48 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): offline-v3.2 fixes by the HUB's grant under R-O-7. core FIX-IMPORT-MARK wf_78aca99f-7e4 running since 18:48. Stops at the owner's 'park' (R-O-9) or a row under 4.0 GB
-LANE: core BUILDING 0dd5019   # 2026-11-09 18:48 IST: FIX-IMPORT-MARK (offline-v3.2, flagged, two reviewers); merge base 0dd50197; bf9b83c stays MERGED in offline-v3.1
+STATE: RESTART   # 2026-11-09 19:50 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) hands over at 306k. Nothing of CORE runs. core READY 49c788f is with the HUB. Next: actions-sos's offline-v3.2 batch after that merge (RUN-RECORD 'Resume here')
+LANE: core READY 49c788f   # 2026-11-09 19:50 IST: FIX-IMPORT-MARK; merge base 0dd50197. BOTH REVIEWERS' WORD: no finding above LOW; RC1, RC2, RS2 FIXED and re-checked; RC3 closed by CORE; RS1 LOW open, named FIX-STALE-SAVE-SAY (lane.js said RED only for RC3 and RS1, which reached the fixer cut off). This chat at the tip: build GREEN 1212494 B, test GREEN 111/111, validate GREEN, guards GREEN 5/5, npm test 756/756, browser lock 4/4 and SOS 4/4, territory 0. R-C-86
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED a397a8d   # 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 18:48 IST
+UPDATED: 2026-11-09 19:50 IST
+
+# 2026-11-09 19:50 IST · CORE 17 hands over; core READY 49c788f (FIX-IMPORT-MARK); merge base 0dd50197
+
+- wf_78aca99f-7e4 returned RED at 4381f1d on two LOWs the fixer never received. RC3 closed here (49c788f, the contracts). RS1 stays open by name. The full gates and evidence are on R-C-86. HUB 19:18 (d9d055f4) is the live HUB.
 
 # 2026-11-09 18:48 IST · offline-v3.2 by the HUB's grant; core FIX-IMPORT-MARK launched on the 18:45 row (9.9 GB)
 
