@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 17:33 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): core READY bf9b83c. actions-sos's review came back RED at 4376554 on a defect its first fix round brought in: second fix round wf_6da935fd-7ff running since 17:32
-LANE: core READY bf9b83c   # 2026-11-09 17:33 IST: whole-lane review wf_3b34e2e2-37e: BOTH REVIEWERS CLEAN (contracts: EC1 FIXED 1a93a6a; safety: ES1 FIXED bf9b83c; 0 open, LOWs recorded). Merge base 84ba534b (the fast-forward from 561cab2). Checker: build GREEN 1210120 B, test GREEN 99/99, validate GREEN, guards GREEN 5/5, browser --grep SOS GREEN 4/4, territory 0. This chat: full Node 735/735. R-C-83
+STATE: BUILDING   # 2026-11-09 17:38 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): core MERGED bf9b83c. actions-sos second fix round wf_6da935fd-7ff running since 17:32; its READY merge is FREEZE for offline-v3.1
+LANE: core MERGED bf9b83c   # 2026-11-09 17:38 IST: the whole-lane review's READY merged 7dea9bc7 (HUB: build, store.test 99/99, validate, guards GREEN, full Node 735/735, nine browser flows 9/9). The lane's V3 units complete. ES1 is recorded as the owner's default (R-H-51); nothing more unless the owner says 'reverse ES1'
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos RED 1   # 2026-11-09 17:33 IST: MERGED-SLICE f5f7b9d stands. Whole-lane review wf_4d2ab8ba-606 RED at 4376554: EC1, EC2, ES1 FIXED; the EC1 fix made the header SOS button dead while the practice is open on the lock page (real Chrome). Second fix round wf_6da935fd-7ff running; ES3 ruled accepted for offline-v3.1
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 17:33 IST
+UPDATED: 2026-11-09 17:38 IST
+
+# 2026-11-09 17:38 IST · from the HUB (by message) · core bf9b83c merged 7dea9bc7; BASE 7dea9bc7
+
+- core READY bf9b83c merged 7dea9bc7, pushed; build, 99/99, validate, guards GREEN; full Node 735/735; nine browser flows 9/9. ES1 recorded as the owner's default (R-H-51). When actions-sos's second round returns clean on both lenses: name the tip and the merge base on the status line (84ba534b after the fast-forward; if fast-forwarded again, to 7dea9bc7, say so). That merge is FREEZE for offline-v3.1. A further red goes back once more at most (two rounds), then the name is held and the tag's list says so.
 
 # 2026-11-09 17:33 IST · core READY bf9b83c, both reviewers clean; actions-sos RED after its first review round; second fix round running
 
