@@ -48,6 +48,4 @@ Waits for today-track V-01b: #/status (UI.pages.status), data-test status-*, tod
 
 - 2026-11-09 17:32 IST, the whole-lane review: V-26b does not read these lines and no code does at the tip (lane-reports/tests-docs.md:44); they are output for people.
 
-- 2026-11-09 17:32 IST, the whole-lane review: V-26b does not read these lines and no code does at the tip (lane-reports/tests-docs.md:44); they are output for people.
-
 - The format is in contracts/core.md (last section). Each part: `part <name> <bytes> B (<x.x> kB)` (regex `^part (\S+) (\d+) B \((\d+\.\d) kB\)$`); 29 parts, then shell.html, then styles.css (31 lines at 561cab2); the total line `built offline/1-addic.html <N> B (<x.x> kB), <P> parts, skipped (absent): ...` unchanged.
