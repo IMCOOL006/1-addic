@@ -377,8 +377,20 @@ const GuidanceUI = (function () {
     a.resolve(outcome);
   }
 
+  /* V-21: whether a running tutorial still belongs on a path. A tour belongs on Today and a JIT on its feature; either
+     also stays on the screen it was opened from (Settings' "Replay the tour" runs where it was pressed), so leaving is
+     what ends it, never where it began. Nothing else is tied to a route. */
+  function staysOn(a, path) {
+    if (path === a.openedOn) return true;
+    if (a.kind === 'tour') return isTodayPath(path);
+    if (a.kind === 'jit') return featureOfRoute(path) === a.feature;
+    return true;
+  }
+  const strayed = () => !!active && !staysOn(active, pathOf(curHash()));
+
   /* coach(id, {replay}) -> Promise<'done'|'skipped'|'aborted'>. Finish marks the tutorial done, Skip (or Escape, or a
-     tap outside the popover) marks it skipped; a route to #/sos*, #/lock or #/onboarding closes it and marks nothing.
+     tap outside the popover) marks it skipped; a route to #/sos*, #/lock or #/onboarding, or a route away from its
+     screen (a tour leaving Today, a JIT leaving its feature), closes it and marks nothing, so it is offered again later.
      The drill has no steps: it opens the SOS practice drill (ui-sos.js) and resolves 'aborted' here. */
   function coach(tutorialId, opts) {
     const o = opts || {};
@@ -409,7 +421,7 @@ const GuidanceUI = (function () {
       const overlay = el('div', { class: 'coach-overlay', 'data-test': 'coach-overlay' });
       const root = el('div', { class: 'coach-layer', 'data-tutorial': t.id }, overlay, ring, pop, live);
       const onKey = (ev) => { if (ev && ev.key === 'Escape') { if (typeof ev.preventDefault === 'function') ev.preventDefault(); close('skipped'); } };
-      const onRoute = () => { if (isQuietPath(pathOf(curHash())) || locked()) close('aborted'); else place(); };
+      const onRoute = () => { if (isQuietPath(pathOf(curHash())) || locked() || strayed()) close('aborted'); else place(); };
       const onResize = () => place();
       // The dim layer lets taps through (core's .coach-overlay is made pointer-events: none in this lane's styles), so
       // the page is never gated: a tap anywhere outside the popover closes the tour as skipped and still does what it
@@ -430,7 +442,7 @@ const GuidanceUI = (function () {
           window.removeEventListener('resize', onResize);
         }
       };
-      active = { id: t.id, steps, i: 0, root, ring, pop, overlay, live, count, text, next, resolve, off, back: document.activeElement || null };
+      active = { id: t.id, kind: t.kind, feature: t.feature, openedOn: pathOf(curHash()), steps, i: 0, root, ring, pop, overlay, live, count, text, next, resolve, off, back: document.activeElement || null };
       next.addEventListener('click', () => { if (!active) return; if (active.i >= active.steps.length - 1) close('done'); else { active.i += 1; showStep(); } });
       skip.addEventListener('click', () => close('skipped'));
       overlay.addEventListener('click', () => close('skipped'));
@@ -656,6 +668,7 @@ const GuidanceUI = (function () {
     const r = c.route && typeof c.route === 'object' ? c.route : null;
     const path = pathOf(r || curHash());
     if (isQuietPath(path)) { clearBar(); if (active) close('aborted'); return; }
+    if (strayed()) close('aborted'); // before the checks below, so the new route's own bar can show on this render
     const view = viewOf(c);
     const E = ns('Engine'); const A = ns('Actions');
     // first visit of a newly revealed feature clears its "New" dot
