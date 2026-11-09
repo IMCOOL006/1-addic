@@ -38,6 +38,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 **What the tag is, honestly:** a file that opens offline, builds, passes its Node and guard gates, has the UI shell, router, components, engine logic, Actions layer, exercise engine, browser harness and the guide skeleton. It is not yet a file a person can set up with a PIN, use in a craving or log in: those screens are the first merges after the tag.
 
 ## Merges
+- 2026-11-09 16:08 IST: tests-docs FIX-COUNTS-2 (f211a11, docs only: the test counts true on the trunk, 723 checks in 16 files, 29 browser flows) merged a7fd8d66; docs gate GREEN; pushed. Ten merges today.
 - 2026-11-09 16:05 IST: game-tutorials FIX-COACH-SOS (a3f0bf7; the coach's SOS link readable in dark mode, 6.68:1) merged 18852152, then tests-docs V-22a + V-26b + V-27 + V-29 (dbc81e6) merged eec5d862: the full Node suite 723/723 in 16 files, the new boot-budget flow, the docs gate all GREEN; pushed. Nine merges today.
 - 2026-11-09 15:35 IST: learn V-20 (a494fa7) merged 95aac382; build, learn tests 30/30, validate, guards GREEN, the lesson flow by name on the merged tree; pushed. The learn lane's V3 units are complete; seven tier 2 merges today.
 - 2026-11-09 15:32 IST: game-tutorials V-21 (4df19dc) merged 4cdda60a (tour flows 3/3 on the merged tree) and actions-sos V-25 + V-18 (638c94a) merged 1380ef4c (full Node suite 676/676; SOS, lock, PIN and onboarding flows 10/10); both pushed. SCREENS' tier 2 is complete.
