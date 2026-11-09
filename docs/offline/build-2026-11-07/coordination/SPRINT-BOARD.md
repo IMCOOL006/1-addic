@@ -1,12 +1,12 @@
-STATE: TAGGED offline-v3.1, v3.2 FIXES RUNNING (2026-11-09 20:22 IST, HUB 19:18): the tag offline-v3.1 is on origin at 903016cc (18:15 IST). Since the tag, five small fixes merged toward offline-v3.2: Replay the tour runs on Today; one Replay control; the four safety blocks marked for review; the encrypted-Store fix (an import with a PIN set is told apart from the old notebook); and three new browser checks (the discreet start shows no emergency line while loading; a finished lesson and checkpoint say +10 XP once; the lock page's SOBER practice stays open with SOS still working) with the SOS screenshot retaken. The trunk 0c03fc0c pushed. Running: the SOS lane's four small fixes (CORE). Then the counts in the docs are made true and v3.2 can be tagged. Nothing is owed tonight; one line ('park' or 'day closed') rests the machine.
+STATE: FREEZE offline-v3.2 at aac18546, QUIET GATES RUNNING (2026-11-09 20:39 IST, HUB 19:18): the tag offline-v3.1 stands at 903016cc (18:15 IST). Six small fixes merged since, the last at 20:37: the SOS lane's batch (a save kept in one tab is dropped and the person told once if another tab imported a notebook; the retry message after a wrong PIN clears while the new try runs; the lock page's calming practice is held on its own address so one Back press works; two wording fixes). Every fix named for v3.2 is in, so the trunk aac18546 is the v3.2 freeze; the full gates run on it now (about 15 minutes). Then the counts in the docs are made true and offline-v3.2 is tagged. Nothing is owed tonight; one line ('park' or 'day closed') rests the machine.
 NEEDS YOU (one line each, to your window): (1) ES1, a default taken today you may reverse: in discreet mode the emergency line under the 'Notebook' title no longer shows while the app loads (it gave the app away for up to 4 s on every start); outside discreet mode nothing changes; say 'reverse ES1' to put it back. (2) your /usage reading and its reset time (your R-O-9 rule: at 98% say 'park'); (3) the walk of offline-v3.0 or of v3.1 when it lands, the findings in one message; (4) I6, the India crisis numbers, for content V-10b; (5) who reads the clinical-review pack and when (V-Q8); (6) O-Q1.
-NEXT (the HUB): merge the SOS lane's small-fix batch when it lands (cut from 82c5eddf); then FIX-COUNTS-4 (Node 758 checks in 16 files, 32 browser flows) and the v3.2 freeze, quiet window and tag; walk offline-v3.1 with you when you write; file your answers; the board at every merge and every two hours.
+NEXT (the HUB): read the quiet gates by name; FIX-COUNTS-4 (CORE, docs only) merged; TAG offline-v3.2 on the trunk, pushed with every lane branch; the hand-off note; the board. Named for offline-v3.3: FIX-STALE-SAVE-SAY, FIX-SOS-FOCUS, the C1 Back path, content V-10b after your I6. Walk offline-v3.1 or v3.2 with you when you write; file your answers.
 
 # 1-addic offline edition · the board
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-09 20:22 IST by `board.py`.
+Rewritten 2026-11-09 20:39 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -29,19 +29,19 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 ## The HUB
 
 - STATE: RUNNING — 2026-11-09 19:21 IST: HUB 19:18 (d9d055f4, session 32) started by the launcher 19:18 on HUB 16:12's RESTART line. Read PLAN.md, status-HUB.md, the run record's Resume here (19:17), status-CORE.md and…
-- BASE: 0c03fc0c (the trunk tip after the tests-docs FIX-TD-V32 merge, 2026-11-09 20:22 IST; fixes cut from the trunk tip at their start, merge base that tip; the tag offline-v3.1 is 903016cc; lanes: tests-docs 1686bb8, core 49c788f, content cd17758 (V-10b after the owner's I6), workbook-settings b76d4f3, actions-sos a397a8d (FIX-AS-V32 running from 82c5eddf, merge base 82c5eddf), learn a494fa7, game-tutorials a3f0bf7, engine 97ac73a, today-track 670df19; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- BASE: aac18546 (the trunk tip after the actions-sos FIX-AS-V32 merge = the offline-v3.2 FREEZE, 2026-11-09 20:37 IST; fixes cut from the trunk tip at their start, merge base that tip; the tag offline-v3.1 is 903016cc; lanes: actions-sos fb3966b, tests-docs 1686bb8 (FIX-COUNTS-4 next, docs only), core 49c788f, content cd17758 (V-10b after the owner's I6), workbook-settings b76d4f3, learn a494fa7, game-tutorials a3f0bf7, engine 97ac73a, today-track 670df19; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
-- QUIET: done   # 18:10-18:13 IST on _int at dcabd906, exit 0, every name read: build GREEN 1211715 B; test GREEN 743 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN all checks; browser GREEN 29 flows 29 pass 0 fail 0 skip in one full run; docs GREEN exit 0; logs _logs/gates/hub/{build-20261109-181038,test-20261109-181038,validate-20261109-181128,guards-20261109-181128,browser-20261109-181128,docs-20261109-181248}.log; no name to classify. FIX-COUNTS-3 (docs only) merges after it, then the tag. Earlier: done 2026-11-08 11:33-11:43 IST on _int at 5ee84d5a (offline-v3.0)
+- QUIET: running   # offline-v3.2: from 20:39 IST on _int at aac18546, gates.py --lane hub --full build test validate guards browser docs (the HUB job's tmp quiet-v32.log; the gate logs under _logs/gates/hub/); no lane runs anything heavy meanwhile. Earlier: done 18:10-18:13 for offline-v3.1 at dcabd906 (build 1211715 B; Node 743/743 in 16 files; validate; guards; browser 29/29; docs)
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up
-- UPDATED: 2026-11-09 20:22 IST
+- UPDATED: 2026-11-09 20:39 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | d9d055f4 (launcher-started 2026-11-09 19:18) | RUNNING — 2026-11-09 19:21 IST: HUB 19:18 (d9d055f4, session 32) started by the launcher 19:18 on HUB 16:12's RESTART line. Read… | 134k | 2026-11-09 20:22 IST |
-| CORE | 987cb3b4 (launcher-started 2026-11-09 19:51) | BUILDING — 2026-11-09 20:19 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). tests-docs READY 1686bb8 is with the HUB… | 232k | 2026-11-09 20:19 IST |
+| HUB | d9d055f4 (launcher-started 2026-11-09 19:18) | RUNNING — 2026-11-09 19:21 IST: HUB 19:18 (d9d055f4, session 32) started by the launcher 19:18 on HUB 16:12's RESTART line. Read… | 159k | 2026-11-09 20:39 IST |
+| CORE | 987cb3b4 (launcher-started 2026-11-09 19:51) | WAITING — 2026-11-09 20:33 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. actions-sos READY fb3966b… | 259k | 2026-11-09 20:33 IST |
 | SCREENS | 6f1291e1 (launcher-started 2026-11-09 16:08) | WAITING-OWNER — 2026-11-09 19:18 IST: SCREENS 16:08 (6f1291e1): both R-H-53 fixes are merged (R-S-32 526663bb, FIX-MARKERS 3a0b2100).… | 258k | 2026-11-09 19:18 IST |
 
 ## Lanes (10)
@@ -50,7 +50,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 |---|---|---|---|---|---|---|
 | `core` | CORE | 1 | yes | slot 1 | MERGED | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-11 the slice (the safety line before boot, words from boot.js COPY only… |
 | `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
-| `actions-sos` | CORE | 1 | yes | slot 3 | BUILDING | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
+| `actions-sos` | CORE | 1 | yes | slot 3 | MERGED | GRANTED 2026-11-08 04:52 IST for V3 tier 1 (the row 04:51 9.2 GB; R-O-7; PLAN-V3.md: V-08a + V-SOS10 the first batch (useSkill as R-C-47; a loaded sample no… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30… |
 | `tests-docs` | CORE | 1 |  | slot 5 | MERGED | GRANTED 2026-11-08 02:01 IST for tier 2 (R-O-3): U-35 screenshots first (npm run screens; the guide images), then U-36b guide Part 3, then the hooks round… |
 | `today-track` | SCREENS | 1 |  | slot 6 | MERGED | GRANTED 2026-11-08 02:34 IST for V3 tier 1 (the row 02:33 8.8 GB with nothing heavy running; PLAN-V3.md: V-01a the status page, the slice, then V-01b… |
@@ -63,8 +63,9 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Merges
 
-- the merge queue: none; expected: actions-sos FIX-AS-V32 (CORE 18, running from 82c5eddf), then FIX-COUNTS-4 (Node 758 in 16 files, browser 32 flows and their names in offline/README.md, from the merged tree) before any v3.2 tag; content V-10b after I6
+- the merge queue: none; expected: tests-docs FIX-COUNTS-4 (CORE 18; docs only; the HUB's numbers from the quiet run on aac18546, Node and browser by count and name) then TAG offline-v3.2; content V-10b after I6 (offline-v3.3)
 
+- 2026-11-09 20:37 IST: actions-sos FIX-AS-V32 (fb3966b; a kept save is dropped and told once on another tab's import; the USE_VERB message names useSkill; a retry clears the old PIN message; the discreet flag held through Done; the lock page's practice held on its own hash so the first Back works) merged aac18546; build, actions tests 226/226, validate, guards GREEN; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9; pushed with build/actions-sos. Both reviewers: no findings. = FREEZE offline-v3.2.
 - 2026-11-09 20:22 IST: tests-docs FIX-TD-V32 (1686bb8; three browser flows by name: the discreet start paints no emergency line, a lesson and a checkpoint say +10 XP once, the lock page SOBER practice stays open with SOS working; the lock-opening hook; the sos-craving screenshots retaken; 32 flows) merged 0c03fc0c; build, tests, validate, guards GREEN; the three new flows 3/3; docs GREEN; pushed with build/tests-docs.
 - 2026-11-09 19:56 IST: core FIX-IMPORT-MARK (49c788f; an import with a PIN set moves the lock row's mark; a locked tab hears no onLock on resync; export then import under a PIN proven row for row) merged 82c5eddf; build, store tests 111/111, validate, guards GREEN; full Node suite 758/758; the SOS, lock and PIN flows 8/8; pushed with build/core. Both reviewers: five LOWs; RS1 open by name FIX-STALE-SAVE-SAY (v3.2).
 - 2026-11-09 19:17 IST: content FIX-MARKERS (cd17758; the four safety blocks of content-core.js gain their review markers, no word changed) merged 3a0b2100; build, tests 41/41, validate, guards GREEN; pushed. Seventeen merges today, three after the tag. Running: core FIX-IMPORT-MARK (two reviewers). The HUB hands over to a fresh chat at a safe point (context).
@@ -169,7 +170,7 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Machine
 
-- Free memory 9.5 GB of 31.8 GB at 2026-11-09 20:17 IST; claude 32, node 9 processes; 7 slots by the rule (lane-widening.md).
+- Free memory 9.2 GB of 31.8 GB at 2026-11-09 20:37 IST; claude 33, node 9 processes; 7 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 39876); its last launch: CORE 987cb3b4 at 2026-11-09 19:51.
 
 ## Files of the build
