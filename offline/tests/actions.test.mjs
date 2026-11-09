@@ -3894,6 +3894,29 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
     assert.equal(during, '#/sos/craving', 'while the practice was open: a reload lands in the same flow');
   });
+
+  test('ESR2: Done back on the lock page shows the SOS button again (the real router)', async () => {
+    const a = await routerApp();
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const root = a.doc.documentElement;
+    const form = a.hook('lock-pin');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    a.submit('2468');
+    await a.keyReady(true);
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.deepEqual([sosBtn.hidden, root.getAttribute('data-route')], [true, 'sos'], 'the key arrived: ui-core paints the chrome as SOS');
+    a.store.locked = true; // the idle lock, or another tab: the route is an SOS route, so ui-core draws nothing
+    a.submit('2468'); // a PIN being checked must go on through Done
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'back on the lock route');
+    assert.deepEqual([sosBtn.hidden, root.getAttribute('data-route')], [false, 'lock'], 'the lock page has its SOS button, and the chrome says lock');
+    assert.equal(a.hook('lock-pin'), form, 'the same form: the page is not drawn again');
+    await a.keyReady(true);
+    assert.equal(a.location.hash, '#/today', 'the PIN being checked went on, then on to Today');
+    assert.match(a.text(), /TODAY/);
+  });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
 describe('V3 actions-sos V-18 (RC22, RC23, R8-RC1)', () => {

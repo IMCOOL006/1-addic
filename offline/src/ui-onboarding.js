@@ -250,7 +250,7 @@
     const closePractice = () => {
       panel.hidden = true; panel.replaceChildren();
       if (safe(() => S.status().locked === false, false)) UI.go('#/today', { replace: true });
-      else setRoute('#/lock');
+      else { setRoute('#/lock'); safe(() => UI.applyDiscreet(isDiscreet()), null); } // ESR2: the chrome only (the key may have painted it as SOS, no button); the page is not drawn again
     };
     const form = h('form', { class: 'form stack', novalidate: true, onSubmit: async (ev) => {
       ev.preventDefault();
