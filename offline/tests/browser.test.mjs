@@ -722,3 +722,54 @@ flow('finishing a lesson and a checkpoint says +10 XP once', { routes: ['lesson'
   const said = await toastsNow(page);
   assert.ok(!said.some((t) => t.includes('+10 XP')), `a second checkpoint says no XP (shown: ${said.join(' | ')})`);
 });
+
+// T3: the SOBER practice opened from the lock page (ui-onboarding.js:270-275, EC1, ESR1). It holds the craving route while it is open
+// (matched by path: the route may carry a query), SOS is one tap from it, and Done comes back to the lock page or on to Today.
+const onCravingPath = (page) => page.evaluate(() => location.hash.startsWith('#/sos/craving'));
+async function toLock(page) {
+  await page.evaluate(() => (Store.status().locked ? null : Store.lock.lockNow()));
+  await F.go(page, '#/lock');
+  await F.waitRoute(page, 'lock');
+  await F.need(page, HOOKS.lockPage, 4000);
+}
+async function openSober(page, where) {
+  await toLock(page);
+  await F.click(page, HOOKS.lockSober);
+  assert.ok(await F.visible(page, HOOKS.sosTitle), `the practice's heading shows (${where})`);
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), `the SOS button is visible over the practice (${where})`);
+  assert.ok(await onCravingPath(page), `the practice holds the craving route (${where})`);
+}
+async function tapSoberDone(page) {
+  for (let i = 0; i < 20 && !(await F.visible(page, HOOKS.sosStepDone)); i += 1) await F.click(page, HOOKS.sosStepNext);
+  await F.click(page, HOOKS.sosStepDone);
+}
+flow('lock page SOBER practice stays open, SOS still works, Done comes back', { routes: ['sos'], globals: ['Store.lock', 'UI.sosSoberView'], timeout: 180000 }, async ({ page }) => {
+  await lockSet(page);
+
+  // SOS from the practice opens at once; the practice gives way.
+  await openSober(page, 'first open');
+  await page.locator(HOOKS.sosBtn).click();
+  await F.waitRoute(page, 'sos', 4000);
+  await F.need(page, HOOKS.sosUrgentBtn, 2500);
+  await page.locator(HOOKS.lockPage).first().waitFor({ state: 'detached', timeout: 4000 });
+
+  // Done comes back to a working lock page.
+  await openSober(page, 'done to lock');
+  await tapSoberDone(page);
+  await F.waitFor(page, () => location.hash === '#/lock');
+  const pin = await F.need(page, HOOKS.lockPin, 4000);
+  assert.ok((await pin.isVisible()) && (await pin.isEnabled()), 'the PIN field is usable after Done');
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), 'the SOS button is visible after Done');
+  await F.unlockWith(page, F.TEST_PIN);
+  await F.waitRoute(page, 'today', 20000);
+
+  // The right PIN from the form while the practice is open: the practice stays, Done then goes to Today.
+  await openSober(page, 'unlock while open');
+  await F.unlockWith(page, F.TEST_PIN);
+  await F.waitFor(page, () => Store.status().locked === false, undefined, 20000);
+  assert.ok(await onCravingPath(page), 'the practice keeps the craving route after the right PIN');
+  assert.ok(await F.visible(page, HOOKS.sosTitle), 'the practice stays open after the right PIN');
+  await tapSoberDone(page);
+  await F.waitRoute(page, 'today', 8000);
+  assert.equal(await page.evaluate(() => Store.status().locked), false, 'unlocked on Today');
+});

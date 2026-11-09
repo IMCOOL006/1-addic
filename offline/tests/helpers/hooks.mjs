@@ -205,6 +205,9 @@ export const HOOKS = {
   checkpointQ: (n) => dt(`checkpoint-q-${n}`), // ui-learn.js:626 (n from 1)
   checkpointOpt: (n, k) => dt(`cp-opt-${n}-${k}`), // ui-learn.js:627 (n from 1, k from 0)
   checkpointFinish: dt('checkpoint-finish'), // ui-learn.js:622
+  lockPage: tid('lock-page'), // ui-onboarding.js:286
+  lockSober: tid('lock-sober'), // ui-onboarding.js:275 (the SOBER practice, shown on the lock page)
+  sosTitle: '.sos-title', // ui-sos.js:434 a class on the heading of each SOS screen (no hook attribute)
 };
 
 // Stable skip reasons (the contract's strings; the chat reads them by name).
