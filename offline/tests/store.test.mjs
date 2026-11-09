@@ -2437,6 +2437,50 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(openTab.status().locked, true);
   });
 
+  /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
+     kind of field; read back at once, from what was written, and from a fresh store. Meta rows stay plain by design. */
+  const sampleRow = (store, idKey, tag) => ({ [idKey]: tag, text: store === 'meta' ? 'plain by design' : store + ' ' + tag + ' ' + MARK,
+    count: 7, flag: false, none: null, list: [1, 'two', { three: 3 }], nested: { deep: { deeper: ['end'] } }, uni: 'निशान 🌱 ü', at: '2026-11-09T12:00:00.000Z' });
+  for (const [mode, prepare] of [
+    ['indexeddb', () => { globalThis.indexedDB = fakeIndexedDB(); }],
+    ['localstorage', () => { globalThis.indexedDB = fakeIndexedDB(); globalThis.indexedDB.failOpen = true; globalThis.localStorage = fakeLocalStorage(); }],
+    ['memory', () => { delete globalThis.indexedDB; delete globalThis.localStorage; }],
+  ]) {
+    test('FIX-IMPORT-MARK RC2 (' + mode + '): export then import under a PIN gives every row of every store back identical', async () => {
+      prepare();
+      const S = freshStore();
+      await S.load();
+      assert.equal(S.status().persistence, mode, 'control: the backend under test');
+      await S.commit('full', (d) => {
+        for (const [store, idKey] of Object.entries(S.STORES)) for (const tag of ['r1', 'r2']) d.put(store, sampleRow(store, idKey, tag));
+      });
+      await S.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+      const mark = S.status().lockId;
+      const file = JSON.stringify(S.exportJson()); // the backup as it is saved on the device
+      const before = JSON.parse(file).stores;
+      for (const store of Object.keys(S.STORES)) assert.equal(before[store].length, 2, 'control: the backup holds both rows of ' + store);
+      await S.replaceAll(JSON.parse(file));
+      assert.notEqual(S.status().lockId, mark, 'control: the import took the path that seals the check again');
+      assert.deepEqual(S.exportJson().stores, before, 'identical at once');
+      S.lock.lockNow();
+      assert.equal(await S.lock.unlock('1357'), false, 'a wrong PIN is refused');
+      assert.throws(() => S.exportJson(), (e) => e.code === 'LOCKED', 'and nothing can be read out while locked');
+      assert.equal(await S.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+      assert.equal(S.status().unreadable, 0, 'every row opens under the key');
+      assert.deepEqual(S.exportJson().stores, before, 'identical once read back from what was written');
+      if (mode === 'memory') return; // nothing outlives this store
+      const R = freshStore();
+      await R.load();
+      assert.equal(R.status().locked, true, 'a fresh store opens locked');
+      assert.equal(await R.lock.unlock('1357'), false, 'a wrong PIN is refused there too');
+      assert.equal(await R.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+      assert.equal(R.status().unreadable, 0, 'every row opens under the key there too');
+      assert.deepEqual(R.exportJson().stores, before, 'identical from a fresh store');
+      const onDisk = mode === 'indexeddb' ? globalThis.indexedDB.dump() : JSON.stringify([...globalThis.localStorage.m.values()]);
+      assert.equal(onDisk.includes(MARK), false, 'no row of the backup was written plain');
+    });
+  }
+
   test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {
     const S = freshStore();
     await S.load();
