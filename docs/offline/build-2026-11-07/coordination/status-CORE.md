@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 16:07 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf. tests-docs READY f211a11 (FIX-COUNTS-2) with the HUB. Then the whole-lane reviews (actions-sos, core); FREEZE for offline-v3.1 follows them
+STATE: BUILDING   # 2026-11-09 16:09 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf. BASE a7fd8d66. Left before FREEZE for offline-v3.1: V-17b + C2, the actions-sos whole-lane review from f69bc68a, core's whole-lane review
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 15:46 IST: V-17b + C2 wf_4f5f563e-3cf (slot 3, tier 2, fast-forwarded to 95aac382, the merge base, skipReview). Then READY-SLICE; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs READY f211a11   # 2026-11-09 16:07 IST: FIX-COUNTS-2 (docs only; merge base eec5d862): CLAUDE.md, README.md, offline/README.md, the guide and its .docx say Node 723 in 16 files, 723 pass, 0 fail, browser 29/29/0, the HUB's numbers on the trunk; no test run of its own; territory 0 errors
+LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 16:07 IST
+UPDATED: 2026-11-09 16:09 IST
+
+# 2026-11-09 16:09 IST · from the HUB (16:20, by message) · tests-docs f211a11 merged; BASE a7fd8d66
+
+- Ten merges today. Left before FREEZE for offline-v3.1: actions-sos V-17b + C2 (running), its whole-lane review from f69bc68a, core's whole-lane two-lens review before its final READY. Every READY line names its merge base. The HUB is near its own hand-over: a fresh HUB may answer under a new name.
 
 # 2026-11-09 16:07 IST · tests-docs READY f211a11 (FIX-COUNTS-2); merge base eec5d862
 
