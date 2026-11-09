@@ -245,7 +245,7 @@
     const onLock = () => panel.hidden && safe(() => UI.route().parts[0] === 'lock', true);
     // EC1: the practice is SOS too. ui-core draws #/lock again when the notebook opens (ui-core.js:889) and never an SOS route, so the route is the practice's own SOS route
     // (L.sober.href) while it is open: the key arriving leaves it where it is and a reload lands in the same flow. ESR1: never #/sos, the header SOS button's target: a link to
-    // the hash already in the address fires no hashchange, and the tap would do nothing. SF1: held on L.sober.href + '?from=lock' (parseSos ignores the query, so a reload is the same craving flow): a finished craving flow can
+    // the hash already in the address fires no hashchange, and the tap would do nothing. SF1: held on L.sober.href + '?from=lock' (parseSos reads only drill, preview, logged and kept, so 'from' changes nothing and a reload is the same craving flow): a finished craving flow can
     // leave a real #/sos/craving right behind the lock page, and Back between two entries with one hash fires no hashchange either. Done goes on to Today if the notebook opened meanwhile, else back to #/lock (not drawn again: a PIN being checked goes on).
     const setRoute = (to) => safe(() => history.replaceState(history.state, '', to), null);
     const closePractice = () => {
