@@ -57,10 +57,10 @@
   "V-25",
   "V-18"
  ],
- "base": "1380ef4c",
+ "base": "95aac382",
  "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
- "now": "2026-11-09 15:34 IST",
- "diffFrom": "1380ef4c",
+ "now": "2026-11-09 15:46 IST",
+ "diffFrom": "95aac382",
  "slot": 3,
  "sliceRun": false,
  "priorNote": "CORE 16, 2026-11-09: V-25 + V-18 (638c94a) merged 1380ef4c; the worktree is fast-forwarded to the trunk, where Store.status().lockId is real (contracts/core.md, last section; contracts/actions-sos.md, last section: '' with no lock, else 8 hex characters, unchanged by lock, unlock or reload). Build V-17b on the real store: record lockId at queue time, compare at flush, drop the save when it changed (RS26's remainder; RS22: any lock-row change drops the save, removal included), with a typeof guard for a store that lacks it. Test by name with a stub whose lockId changes; wait by condition. C2 (the carried V-08a LOW, actions.test.mjs): assert the lock API and test the error code; if V-41's locked test already does it, say so and write no code. skipReview: CORE's whole-lane two-lens review from f69bc68a follows.\n",

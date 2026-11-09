@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:36 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over planned for after the two runs return. tests-docs V-22a + V-26b + V-27 + V-29 wf_f2693ed8-795 (slot 5). Next row: actions-sos V-17b + C2 (slot 3; two lanes at once allowed, HUB 15:45). Then for CORE 17: the whole-lane reviews (core, actions-sos)
+STATE: BUILDING   # 2026-11-09 15:46 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over after the two runs return. Running: tests-docs T2 batch wf_f2693ed8-795 (slot 5), actions-sos V-17b + C2 wf_4f5f563e-3cf (slot 3). Then for CORE 17: the whole-lane reviews (core, actions-sos)
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED-SLICE 638c94a   # 2026-11-09 15:34 IST: V-25 + V-18 merged 1380ef4c (HUB 15:37: build 1208938 B, actions.test 202/202, validate, guards 5/5, full Node suite 676/676, the onboarding, SOS, lock, PIN and quest-line flows 10/10). Fast-forwarded to 1380ef4c; V-17b + C2 next, then the whole-lane review from f69bc68a before the final READY
+LANE: actions-sos BUILDING   # 2026-11-09 15:46 IST: V-17b + C2 wf_4f5f563e-3cf (slot 3, tier 2, fast-forwarded to 95aac382, the merge base, skipReview). Then READY-SLICE; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs BUILDING   # 2026-11-09 15:36 IST: V-22a + V-26b + V-27 + V-29 wf_f2693ed8-795 (slot 5, tier 2; fast-forwarded to 95aac382, the merge base). The READY line names the browser flows it adds (HUB's ask)
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 15:36 IST
+UPDATED: 2026-11-09 15:46 IST
+
+# 2026-11-09 15:46 IST · actions-sos V-17b + C2 launched on the 15:45 row (10.1 GB)
+
+- wf_4f5f563e-3cf (lane.js, args tracks/CORE/args/args_v3_actions-sos_V-17b.json, base and diffFrom 95aac382; wf_sim OK, nothing cut). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/215e6cdd-fe29-4f0b-a91c-05f0cf744b73/subagents/workflows/wf_4f5f563e-3cf/journal.jsonl. Return -> LANE: actions-sos READY-SLICE <tip> (merge base 95aac382).
 
 # 2026-11-09 15:36 IST · tests-docs launched on the 15:35 row (10.0 GB); learn merged; context over 250k
 
