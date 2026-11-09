@@ -2,7 +2,7 @@
 // mode. The real offline/src/store.js and engine.js are loaded by path when they exist (the merged trunk); while one is
 // absent, the stand-in at the bottom of this file takes its place: the Store of contract E (tracks/CORE/contracts/core.md)
 // in memory, and only the Engine names U-09 calls, with the shapes of tracks/CORE/contracts/engine.md.
-import { describe, test, before, beforeEach } from 'node:test';
+import { describe, test, before, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -1788,6 +1788,7 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
   });
   test('USEVERB: recordEvent refuses the types each verb owns, with USE_VERB, and writes nothing', async () => {
     for (const type of ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged']) await refused(Actions.recordEvent(type, {}), 'USE_VERB');
+    await assert.rejects(Actions.recordEvent('SkillUsed', {}), (err) => /\buseSkill\b/.test(err.message), 'EC3: the message names useSkill, the only verb for a skill used with no log');
     assert.equal(events().length, 0, 'nothing written');
     await Actions.recordEvent('MindfulMinute');
     assert.equal(events('MindfulMinute').length, 1, 'other types still work');
@@ -3662,6 +3663,28 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(f.d.doc.activeElement, f.pin, 'the focus is on the PIN');
   });
 
+  test('ES2: a retry takes the old PIN message away while the new try runs', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '1111';
+    let done = submit(f);
+    g.release(false);
+    await done;
+    assert.equal(said(f.msg), O.COPY.wrong, 'the first wrong PIN: the message');
+    assert.equal(f.msg.hidden, false);
+    f.pin.value = '2222';
+    done = submit(f);
+    assert.equal(g.calls, 2, 'the second try is running');
+    assert.equal(f.msg.hidden, true, 'the old message is hidden while the new try runs');
+    assert.equal(said(f.msg), '', 'and empty: the PIN field is described by it');
+    assert.equal(said(f.line), O.COPY.opening, 'the line says Opening your notebook');
+    g.release(false);
+    await done;
+    assert.equal(said(f.msg), O.COPY.wrong, 'a second wrong PIN: the message again');
+    assert.equal(f.msg.hidden, false);
+    assert.equal(said(f.line), '', 'the line is empty after');
+  });
+
   test('V-25: an unlock that throws (a PIN is not available here): the line is empty after, the message says so, the controls come back', async () => {
     const g = unlockGate();
     const f = lockForm(g);
@@ -3758,11 +3781,13 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     return doc;
   };
   const settle = () => new Promise((r) => setTimeout(r, 60)); // past ui-core's 16 ms frame (Node has no requestAnimationFrame)
-  const routerApp = async () => {
+  // opts.discreet: the device flag is on (EF1). opts.at: the address the page loads at (SF1: a reload).
+  const routerApp = async (opts = {}) => {
     const vm = require('node:vm');
     const doc = routerDom();
     const on = {};
-    const location = { hash: '#/lock' };
+    const location = { hash: opts.at || '#/lock' };
+    const flag = { set: [], removed: [] };
     const replaced = [];
     const history = { state: null, replaceState(s, t, url) { location.hash = url; replaced.push(url); } };
     const subs = new Set();
@@ -3774,13 +3799,13 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
         unlock: () => new Promise((res) => { store.release = (ok) => { if (ok) { store.locked = false; for (const f of subs) f({ label: 'unlock' }); } res(ok); }; }) },
     };
     const ctx = vm.createContext({ document: doc, window: { addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); } }, location, history, Store: store, Content: C(),
-      localStorage: { getItem: () => null, setItem() {}, removeItem() {} }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
+      localStorage: { getItem: (k) => (opts.discreet && k === '1-addic:discreet' ? '1' : null), setItem: (k, v) => { flag.set.push([k, v]); }, removeItem: (k) => { flag.removed.push(k); } }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
     vm.runInContext(readFileSync(src('ui-core.js'), 'utf8'), ctx, { filename: 'ui-core.js' });
     const UI = vm.runInContext('UI', ctx);
     const body = (text) => () => { const p = doc.createElement('div'); p.textContent = text; return p; };
     UI.pages.sos = body('URGENT NUMBERS');
     UI.pages.today = body('TODAY');
-    const a = { doc, store, location, replaced, UI, done: null, soberDone: null };
+    const a = { doc, store, location, replaced, UI, flag, done: null, soberDone: null };
     UI.sosSoberView = (onDone) => { a.soberDone = onDone; return body('SOBER PRACTICE')(); };
     vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
     await UI.boot();
@@ -3892,7 +3917,32 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way to it');
     assert.equal(a.hook('lock-page'), undefined, 'the lock page is gone');
     assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
-    assert.equal(during, '#/sos/craving', 'while the practice was open: a reload lands in the same flow');
+    assert.equal(during, '#/sos/craving?from=lock', 'while the practice was open: a reload lands in the same flow (SF1)');
+  });
+
+  test('SF1: the practice on the lock page is held on a hash no other history entry has, so the first Back works (the real router)', async () => {
+    const { parseSos } = require(src('ui-sos.js'));
+    const a = await routerApp();
+    const behind = '#/sos/craving'; // the entry a finished craving flow leaves right behind the lock page
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice is open');
+    const held = a.location.hash;
+    assert.notEqual(held, behind, 'never the hash of the entry behind it');
+    assert.notEqual(held, '#/sos', 'ESR1: nor the header SOS button\'s target');
+    assert.equal(a.UI.route().parts[0], 'sos', 'an SOS route: the key arriving draws nothing over it');
+    await a.follow(behind); // Back, as a browser does it: between two entries with one hash it fires no hashchange
+    assert.equal(a.location.hash, behind);
+    assert.match(a.text(), /URGENT NUMBERS/, 'the first Back moves: that entry\'s SOS page is drawn');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way');
+    // a reload on the held hash: the same craving flow, no PIN asked
+    const reload = await routerApp({ at: held });
+    assert.match(reload.text(), /URGENT NUMBERS/, 'the SOS page, as for any SOS route');
+    assert.equal(reload.hook('lock-page'), undefined, 'not the lock page');
+    assert.deepEqual([parseSos(reload.UI.route()).flow, parseSos(reload.UI.route()).drill], ['craving', false], 'the craving flow, not a drill');
+    const d = sosDom();
+    const root = d.open(['sos', 'craving'], reload.UI.route().query);
+    assert.ok(d.byId(root, 'sos-rate-skip'), 'the real page starts the craving flow under that query');
   });
 
   test('ESR2: Done back on the lock page shows the SOS button again (the real router)', async () => {
@@ -3916,6 +3966,24 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     await a.keyReady(true);
     assert.equal(a.location.hash, '#/today', 'the PIN being checked went on, then on to Today');
     assert.match(a.text(), /TODAY/);
+  });
+
+  test('ESR2: Done on a discreet lock page keeps the discreet chrome and the device flag (the real router)', async () => {
+    const a = await routerApp({ discreet: true });
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const name = a.doc.getElementById('app-name');
+    assert.deepEqual([name.textContent, sosBtn.textContent], ['Notebook', 'Help'], 'discreet from the start');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    a.submit('2468');
+    await a.keyReady(true); // the key arrives: ui-core paints the chrome as SOS, no button
+    a.store.locked = true; // the idle lock, or another tab
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'back on the lock route');
+    assert.deepEqual([name.textContent, sosBtn.textContent], ['Notebook', 'Help'], 'the name and the button stay discreet through Done');
+    assert.equal(sosBtn.hidden, false, 'the button is back');
+    assert.deepEqual(a.flag.removed, [], 'the device flag was not taken away');
   });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
@@ -4201,6 +4269,124 @@ describe('V3 actions-sos V-17b (waiting saves marked with lockId)', () => {
     assert.equal(calls, 1, 'never retried');
     assert.equal(events('SosCompleted').length, 0, 'nothing written');
     assert.equal(count(d, H.COPY.notSaved), 1, 'told it was not saved');
+  });
+
+  // ES3T: two real Stores over one fake IndexedDB, as two tabs are. Another tab's import with a PIN set seals the lock row's check again (core's FIX-IMPORT-MARK), so the mark a kept save carries moves.
+  describe('V-17b on two real stores (ES3T)', () => {
+    const STORE_PATH = require.resolve('../src/store.js');
+    const freshStore = () => { delete require.cache[STORE_PATH]; return require(STORE_PATH); };
+    const hadIDB = 'indexedDB' in globalThis;
+    const savedIDB = globalThis.indexedDB;
+    const savedStore = require.cache[STORE_PATH];
+    after(() => { // the rest of the file keeps its own Store and no IndexedDB
+      if (savedStore) require.cache[STORE_PATH] = savedStore; else delete require.cache[STORE_PATH];
+      if (hadIDB) globalThis.indexedDB = savedIDB; else delete globalThis.indexedDB;
+    });
+    function fakeIndexedDB() {
+      const dbs = new Map();
+      const cp = (v) => JSON.parse(JSON.stringify(v));
+      function makeDb(rec) {
+        return {
+          objectStoreNames: { contains: (n) => rec.stores.has(n) },
+          createObjectStore(n, o) { rec.stores.set(n, { keyPath: o.keyPath, rows: new Map() }); },
+          close() {},
+          transaction(names) {
+            for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
+            const t = { error: null, aborted: false, abort() { t.aborted = true; } };
+            const ops = [];
+            const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
+            t.objectStore = (n) => {
+              const st = rec.stores.get(n);
+              return {
+                getAll: () => request(() => Array.from(st.rows.values()).map(cp)),
+                get: (id) => request(() => (st.rows.has(id) ? cp(st.rows.get(id)) : undefined)),
+                put: (row) => request(() => { st.rows.set(row[st.keyPath], cp(row)); }),
+                delete: (id) => request(() => { st.rows.delete(id); }),
+                clear: () => request(() => { st.rows.clear(); }),
+              };
+            };
+            setTimeout(() => {
+              for (const op of ops) { if (t.aborted) break; op(); }
+              if (t.aborted) { if (t.onabort) t.onabort(); return; }
+              if (t.oncomplete) t.oncomplete();
+            }, 0);
+            return t;
+          },
+        };
+      }
+      return {
+        open(name, version) {
+          const r = {};
+          setTimeout(() => {
+            let rec = dbs.get(name);
+            if (!rec) { rec = { version: 0, stores: new Map() }; dbs.set(name, rec); }
+            r.result = makeDb(rec);
+            if (rec.version < version) { rec.version = version; if (r.onupgradeneeded) r.onupgradeneeded(); }
+            if (r.onsuccess) r.onsuccess();
+          }, 0);
+          return r;
+        },
+        deleteDatabase(name) {
+          const r = {};
+          setTimeout(() => { dbs.delete(name); if (r.onsuccess) r.onsuccess(); }, 0);
+          return r;
+        },
+      };
+    }
+    const twoTabs = async () => {
+      globalThis.indexedDB = fakeIndexedDB();
+      const T1 = freshStore(); await T1.load(); await T1.lock.set('2468', { autoLockMin: 'never' });
+      const T2 = freshStore(); await T2.load(); assert.equal(await T2.lock.unlock('2468'), true);
+      return { T1, T2 };
+    };
+    const actionsOn = (T1) => {
+      const written = [];
+      const A = Object.assign({}, Actions, { sosSession: async (p) => {
+        await T1.commit('tab save', (draft) => { draft.put('events', { id: 'tab-' + written.length, type: 'SosCompleted', at: '2026-03-11T12:00:00.000Z', payload: {} }); });
+        written.push(p);
+        return { ok: true };
+      } });
+      return { A, written };
+    };
+    const keep = async (T1, A) => {
+      T1.lock.lockNow();
+      assert.equal(T1.status().locked, true);
+      const d = sosDom({ store: T1 });
+      craving(d, A);
+      await until(() => count(d, H.COPY.lockedKept) === 1, 'kept for the unlock');
+      return d;
+    };
+
+    test('V-17b: a kept save is dropped, and told once, when another tab imports a backup with the PIN kept (two real stores)', async () => {
+      const { T1, T2 } = await twoTabs();
+      const { A, written } = actionsOn(T1);
+      const d = await keep(T1, A);
+      const first = T1.status().lockId;
+      await T2.replaceAll({ app: '1-addic', stores: {} });
+      assert.notEqual(T2.status().lockId, first, 'the import seals the lock row again: the mark moves');
+      assert.equal(T2.status().hasLock, true, 'the PIN is kept');
+      assert.equal(await T1.lock.unlock('2468'), true, 'the same PIN opens the imported notebook');
+      assert.notEqual(T1.status().lockId, first, 'this tab read the new mark when it resynced');
+      await until(() => written.length > 0 || count(d, H.COPY.keptLost) > 0, 'the kept save is decided');
+      await d.settle();
+      assert.deepEqual(written, [], 'C2: a kept save is never written into a notebook another tab imported');
+      assert.equal(T1.view.list('events').length, 0, 'nothing in the imported notebook');
+      assert.equal(count(d, H.COPY.keptLost), 1, 'told once that it was not saved');
+    });
+
+    test('V-17b: a kept save is written once after the unlock when no other tab changed the notebook (two real stores)', async () => {
+      const { T1 } = await twoTabs();
+      const { A, written } = actionsOn(T1);
+      const d = await keep(T1, A);
+      const first = T1.status().lockId;
+      assert.equal(await T1.lock.unlock('2468'), true);
+      await until(() => written.length > 0 || count(d, H.COPY.keptLost) > 0, 'the kept save is decided');
+      await d.settle();
+      assert.equal(T1.status().lockId, first, 'a lock and an unlock leave the mark where it was');
+      assert.equal(written.length, 1, 'written once');
+      assert.equal(T1.view.list('events').length, 1, 'one row in the notebook');
+      assert.equal(count(d, H.COPY.keptLost), 0, 'nothing says it was lost');
+    });
   });
 });
 // -- V3 actions-sos tests end --

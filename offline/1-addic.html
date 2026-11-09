@@ -6510,7 +6510,7 @@ const Actions = (() => {
   const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted',
     'ObjectiveDone', 'ObjectiveSwapped', 'QuestLineStepDone', 'FeatureUnlocked'];
   async function recordEvent(type, payload) {
-    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson, checkpoint, objective.done, objective.swap or questLine.claim).`);
+    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, useSkill, recoveryPlan.save, onboard, completeLesson, checkpoint, objective.done, objective.swap or questLine.claim).`);
     if (!EVENT_TYPES.includes(type)) fail('bad-event', `Unknown event type "${type}".`);
     const pl = payload === undefined ? {} : payload;
     if (!isObj(pl) || jsonSize(pl) > 5000) fail('bad-event', 'An event payload must be a small object.');
@@ -6527,7 +6527,7 @@ const Actions = (() => {
 
   /* ── useSkill (V-08a) ────────────────────────────────────────────────────────────────────── */
   // A skill used in a game or a tool, credited with one SkillUsed {skillId, helpful} and no log; XP and mastery are the
-  // Engine's. Unlike every other verb it never throws: a refusal comes back as {ok: false, code, message} and writes
+  // Engine's. Like V-41's verbs (and unlike the rest) it never throws: a refusal comes back as {ok: false, code, message} and writes
   // nothing. It refuses a non-object, a skillId not an id or not in Content.skills, a non-boolean helpful, and the
   // store's own refusal (no store, locked), passed through. A loaded sample is not a refusal (R-C-48): the event is the
   // person's own, unmarked. The drill records nothing: its caller does not call (ui-tools.js isDrill).
@@ -9559,9 +9559,9 @@ if (typeof module !== 'undefined' && module.exports) {
   // RS26: the notebook a save was made in: the C2 signals seen so far, whether a lock row is stored, and that row's own
   // mark (V-17b). Another tab's erase or Forgot PIN takes the lock row away (this tab's store resyncs and reads open);
   // an erase and a new PIN leaves a lock row all the same, and only its mark shows it is another; this tab's reset or
-  // import is the C2 signal. A changed mark drops the save. The one case nothing here can see (ES3): another tab's import
-  // while a PIN is set keeps the same lock row (store.js replaceAll) and the era counts only this tab's signals, so a
-  // kept save is written into the notebook that tab imported. The mark is core's; it would have to change on an import.
+  // import is the C2 signal. A changed mark drops the save. Another tab's import while a PIN is set (ES3) needs no signal
+  // here: store.js replaceAll seals the lock row's check again, so the mark moves, this tab reads it when it resyncs at
+  // the unlock (the era counts only this tab's signals), and the save is dropped like any other changed notebook.
   let era = 0;
   // '' for a store without the mark (or a mark that is not a string): the era and hasLock still decide there.
   const lockIdNow = () => safe(() => { const id = Store.status().lockId; return typeof id === 'string' ? id : ''; }, '');
@@ -9574,7 +9574,7 @@ if (typeof module !== 'undefined' && module.exports) {
     try {
       while (waiting.length && !isLockedNow()) {
         const fn = waiting[0];
-        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook this tab can see has changed is dropped, not written into this one (the one case it cannot see: ES3, above)
+        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook has changed is dropped, not written into this one (another tab's import moves the mark too: ES3, above)
           try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; lost = true; }
         } else lost = true;
         waiting.shift();
@@ -16513,7 +16513,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ToolsUI;
     const onLock = () => panel.hidden && safe(() => UI.route().parts[0] === 'lock', true);
     // EC1: the practice is SOS too. ui-core draws #/lock again when the notebook opens (ui-core.js:889) and never an SOS route, so the route is the practice's own SOS route
     // (L.sober.href) while it is open: the key arriving leaves it where it is and a reload lands in the same flow. ESR1: never #/sos, the header SOS button's target: a link to
-    // the hash already in the address fires no hashchange, and the tap would do nothing. Done goes on to Today if the notebook opened meanwhile, else back to #/lock (not drawn again: a PIN being checked goes on).
+    // the hash already in the address fires no hashchange, and the tap would do nothing. SF1: held on L.sober.href + '?from=lock' (parseSos reads only drill, preview, logged and kept, so 'from' changes nothing and a reload is the same craving flow): a finished craving flow can
+    // leave a real #/sos/craving right behind the lock page, and Back between two entries with one hash fires no hashchange either. Done goes on to Today if the notebook opened meanwhile, else back to #/lock (not drawn again: a PIN being checked goes on).
     const setRoute = (to) => safe(() => history.replaceState(history.state, '', to), null);
     const closePractice = () => {
       panel.hidden = true; panel.replaceChildren();
@@ -16526,6 +16527,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ToolsUI;
       pin.value = '';
       if (!tried) return;
       unlock.disabled = true; pin.disabled = true;
+      msg.hidden = true; msg.textContent = ''; // ES2: the last try's message goes while this one runs; emptied too, as the PIN field is described by it
       opening.textContent = COPY.opening;
       const r = await attemptUnlock(S, tried);
       opening.textContent = '';
@@ -16538,7 +16540,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ToolsUI;
       ? btn(L.sober.label, () => {
         panel.replaceChildren(UI.sosSoberView(closePractice, 'Done', L.sober.title));
         panel.hidden = false;
-        setRoute(L.sober.href);
+        setRoute(L.sober.href + '?from=lock');
         const t = panel.querySelector('h1'); if (t && t.focus) t.focus();
       }, { testid: 'lock-sober' })
       : h('a', { class: 'btn', href: L.sober.href, text: L.sober.label, dataset: tid('lock-sober') });
