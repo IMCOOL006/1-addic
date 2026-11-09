@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-09 19:50 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) hands over at 306k. Nothing of CORE runs. core READY 49c788f is with the HUB. Next: actions-sos's offline-v3.2 batch after that merge (RUN-RECORD 'Resume here')
-LANE: core READY 49c788f   # 2026-11-09 19:50 IST: FIX-IMPORT-MARK; merge base 0dd50197. BOTH REVIEWERS' WORD: no finding above LOW; RC1, RC2, RS2 FIXED and re-checked; RC3 closed by CORE; RS1 LOW open, named FIX-STALE-SAVE-SAY (lane.js said RED only for RC3 and RS1, which reached the fixer cut off). This chat at the tip: build GREEN 1212494 B, test GREEN 111/111, validate GREEN, guards GREEN 5/5, npm test 756/756, browser lock 4/4 and SOS 4/4, territory 0. R-C-86
+STATE: WAITING   # 2026-11-09 19:53 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52) resumes CORE 17's RESTART. Nothing of CORE runs. core READY 49c788f is merging (the HUB's line, 19:51). Next, on its merge: the actions-sos offline-v3.2 batch (EC3, ES2, EF1, SF1, the V-17b test); its launch file is being staged
+LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST from the HUB: FIX-IMPORT-MARK merged 82c5eddf (HUB: build 1212699 B, store.test 111/111, validate, guards GREEN, territory 0, full Node 758/758, browser SOS|lock|PIN 8/8); the trunk and build/core pushed. RS1 LOW open by name FIX-STALE-SAVE-SAY (offline-v3.2). Next for CORE: the actions-sos batch EC3/ES2/EF1/SF1 + the V-17b test, cut from 82c5eddf
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED a397a8d   # 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 19:50 IST
+UPDATED: 2026-11-09 19:53 IST
+
+# 2026-11-09 19:53 IST · CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52) resumes
+
+- Read: this file (CORE 17's RESTART 19:50), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (MERGING core 49c788f since 19:51), R-C-84, R-C-86, R-H-53. `claude agents --json` 19:52: 7ccd92d4 idle; CORE 17's last run wf_78aca99f-7e4 returned, so nothing of CORE is live. Free memory 9.1 GB by hand 19:52; the row 19:46 9.6 GB.
 
 # 2026-11-09 19:50 IST · CORE 17 hands over; core READY 49c788f (FIX-IMPORT-MARK); merge base 0dd50197
 
