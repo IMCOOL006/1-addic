@@ -6,7 +6,11 @@ LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs BUILDING   # 2026-11-09 19:59 IST: offline-v3.2 FIX-TD-V32 (T1 the discreet emergency line painted, T2 the lesson and checkpoint toasts, T3 the lock page's practice, T4 the sos-craving retake, T5 the hook lock-opening), wf_a4cb21aa-480, base and merge base 82c5eddf
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 19:59 IST
+UPDATED: 2026-11-09 20:01 IST
+
+# 2026-11-09 20:01 IST · from the HUB (by message) · both runs may continue; the pacing rule for the next starts
+
+- HUB 19:18 (d9d055f4): actions-sos FIX-AS-V32 and tests-docs FIX-TD-V32 both continue (the 19:57 row 9.5 GB; SCREENS has nothing waiting). The rule for the next starts: one run start per memory row at or above 7.0 GB across both tracks, never two on one row. Merge order: whichever is READY first, alone, from base 82c5eddf; the second rebases nothing and names its merge base as cut. Under 4.0 GB the newest run (tests-docs) pauses at its next commit.
 
 # 2026-11-09 19:59 IST · tests-docs FIX-TD-V32 launched on the 19:57 row (9.5 GB)
 
