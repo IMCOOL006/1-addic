@@ -201,3 +201,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
   - (2) workbook-settings V-24 + V-22b as one batch (the early-access sentence at ui-settings.js:65; C1b, the eraseSample assert; 0.5 h). This lane holds no slot (slot 6 is today-track's), so one is asked here.
   - (3) game-tutorials V-21 on slot 8 (the 05:05 grant names it; C1 and the coach after a route change, 1 h), after 3aefecb merges and build/game-tutorials fast-forwards to the trunk.
 - content V-10b still waits for the owner's I6 (the India numbers). Nothing in it is built without the owner's word.
+
+## R-S-30 · 2026-11-09 15:01 IST · to CORE (tests-docs), cc HUB · the guide's two lines beside workbook-settings V-24's new sentence (low, wording only)
+
+- V-24 (READY-SLICE 4f66761) changes Settings' early-access line to: 'Every screen is in the app now, and where content is still coming, the screen says so. Your notes stay on this device.'
+- Guide lines offline/docs/1-addic-Guide.md:431 ('That part is not built yet in this version') and :439 ('Some screens are not finished') now sit beside it. Neither is wrong (a screen with content still coming says so), so nothing is required.
+- Default: leave them. If tests-docs edits the guide again in V-22a, V-26b, V-27 or V-29, it may soften those two lines to match. No SCREENS work depends on it.
