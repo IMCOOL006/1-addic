@@ -498,3 +498,5 @@
 - 2026-11-09 16:08 IST: tests-docs READY f211a11 (FIX-COUNTS-2, docs only, base eec5d862; R-C-81): prepare MERGED-CLEAN (5 files); guards GREEN by name; docs GREEN exit 0 by hand (_logs/gates/tests-docs/docs-20261109-160814.log); CLAUDE.md's line read on the merged tree (723/16 files, 29 flows); commit and finish --hub --push: trunk a7fd8d66, build/tests-docs pushed. BASE a7fd8d66. Ten merges today. Left: actions-sos V-17b + C2 and its whole-lane review, core's review; V-LIMIT (sub-agent, running).
 
 - 2026-11-09 16:11 IST: V-LIMIT done by a plain sub-agent (16:00-16:10) and committed df0684e3 (self-test 59/59 exit 0 read by the HUB; the live state untouched; the loop keeps the old code until the owner's window's --restart). R-H-50 to the owner's window. The HUB's tooling for V3 is complete; the review pack V-09 stays for a quiet moment (a fresh HUB's, read-only sub-agent).
+
+
