@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 15:26 IST: SCREENS 14:38 (9c7e67fd). game-tutorials READY 4df19dc (V-21) for the HUB. That is SCREENS' last unit that can run without the owner: content V-10b waits for the owner's I6
-LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
+STATE: WAITING-OWNER   # 2026-11-09 15:33 IST: SCREENS 14:38 (9c7e67fd). Every SCREENS unit that can run without the owner is merged (the last, game-tutorials V-21, at 4cdda60a). content V-10b waits for the owner's I6 (the India numbers). HUB 14:40: SCREENS starts nothing more unless I6 arrives or a fix by name comes back. This state stops the launcher opening fresh chats; nothing of SCREENS is running
+LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 419718c   # V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials READY 4df19dc   # V-21: for the HUB, merge at 4df19dc alone, merge base ff9fbd99. One commit, 2 own files. Check PASS wf_97732225-045: build 1208111 B, test 50/50, validate, guards 5/5, browser --grep tour 3/0/0 GREEN; territory 0 errors. The lane's V3 units are complete
+LANE: game-tutorials MERGED 4df19dc   # V-21 merged 4cdda60a (HUB 14:40; build 1208111 B, 50/50, validate, guards 5/5, the tour flows 3/3 GREEN on the merged tree). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 15:26 IST
+UPDATED: 2026-11-09 15:33 IST
+
+# 2026-11-09 15:33 IST · from the HUB · game-tutorials 4df19dc merged (4cdda60a); SCREENS' tier 2 complete; WAITING-OWNER
+
+- HUB 14:40 (15:38 by its message) merged game-tutorials READY 4df19dc (V-21) at 4cdda60a and pushed with build/game-tutorials. On the merged tree: build 1208111 B, game-tutorials.test.mjs 50/50, validate, guards 5/5, the tour flows 3/3 GREEN, territory 0. BASE 1380ef4c.
+- Merged today, in order: content V-23 (7a1d6b82), workbook-settings V-24 (2cf7c40e) and V-22b (6fad2554), game-tutorials V-21 (4cdda60a).
+- Left: content V-10b only, after the owner's I6. No number, url or verify flag changes without it.
+- Every memory row is CORE's from now.
+- STATE is WAITING-OWNER, a word the launcher treats as a stop, so it opens no fresh SCREENS chats. If a fix by name comes back or I6 arrives while no SCREENS chat is alive, the HUB or the owner reopens the track (a fresh chat reads RUN-RECORD.md 'Resume here').
 
 # 2026-11-09 15:26 IST · game-tutorials READY 4df19dc (V-21), for the HUB
 
