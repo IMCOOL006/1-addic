@@ -39,6 +39,7 @@
     pinDigits: 'Use 4 to 12 digits.',
     pinIsSet: 'A PIN is set. You can change it in Settings.', // RS17
     pinSetting: 'Setting your PIN. One moment.', // RS20
+    opening: 'Opening your notebook', // V-25: while the PIN is checked (the key takes about a second)
     sample: 'Look around with sample data',
     sampleLoaded: 'Sample data loaded. Erase it any time in Settings.',
     sampleFailed: 'The sample data could not load.',
@@ -236,6 +237,8 @@
     const pin = h('input', { id: 'lock-pin', type: PIN_ATTRS.type, inputmode: PIN_ATTRS.inputmode, pattern: PIN_ATTRS.pattern, autocomplete: PIN_ATTRS.autocomplete,
       'aria-describedby': 'lock-msg', dataset: tid('lock-pin') });
     const msg = h('p', { id: 'lock-msg', class: 'field-error', role: 'alert', hidden: true });
+    // V-25: a polite status line, in the page from the start so a screen reader hears the words when they come
+    const opening = h('p', { id: 'lock-opening', class: 'muted', role: 'status', 'aria-live': 'polite', dataset: tid('lock-opening') });
     const unlock = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock', dataset: tid('lock-unlock') });
     const panel = h('div', { class: 'stack', hidden: true });
     const form = h('form', { class: 'form stack', novalidate: true, onSubmit: async (ev) => {
@@ -244,12 +247,14 @@
       pin.value = '';
       if (!tried) return;
       unlock.disabled = true; pin.disabled = true;
+      opening.textContent = COPY.opening;
       const r = await attemptUnlock(S, tried);
+      opening.textContent = '';
       unlock.disabled = false; pin.disabled = false;
       if (r.ok) { UI.go('#/today', { replace: true }); return; }
       msg.textContent = r.message; msg.hidden = false;
       pin.focus();
-    } }, field('PIN', pin), msg, unlock);
+    } }, field('PIN', pin), msg, unlock, opening);
     const sober = typeof UI.sosSoberView === 'function'
       ? btn(L.sober.label, () => {
         panel.replaceChildren(UI.sosSoberView(() => { panel.hidden = true; panel.replaceChildren(); }, 'Done', L.sober.title));

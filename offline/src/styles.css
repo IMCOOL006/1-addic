@@ -743,3 +743,7 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 .hb-growth .hb-g-line { fill: none; stroke: hsl(var(--text)); stroke-width: 1.2; stroke-linecap: round; }
 .hb-growth .hb-g-glow { fill: hsl(var(--surface)); }
 /* -- end today-track -- */
+/* -- actions-sos -- */
+/* V-25: the lock form's status line stays in the page while empty, so a screen reader hears it; empty, it takes no room and no gap */
+#lock-opening:empty { position: absolute; }
+/* -- end actions-sos -- */

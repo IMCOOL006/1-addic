@@ -3571,4 +3571,246 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
     assert.equal((await done(a)).ok, true, 'unlocked: written');
   });
 });
+// ── V-25 (V3-25): unlock gives a sign of life. The Store's unlock waits on the test, so the line can be read while the key is made ──
+describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const unlockGate = () => {
+    const real = S();
+    const g = { calls: 0, release: null, fail: null };
+    g.store = Object.create(real);
+    g.store.lock = Object.assign(Object.create(real.lock), { unlock: () => { g.calls += 1; return new Promise((res, rej) => { g.release = res; g.fail = rej; }); } });
+    return g;
+  };
+  const lockForm = (g) => {
+    const d = sosDom({ onboarding: true, store: g.store });
+    const page = d.UI.pages.lock({});
+    const form = page.querySelector('form');
+    const msg = page.querySelectorAll('p').find((p) => p.attrs.id === 'lock-msg');
+    return { d, page, form, msg, pin: d.byId(page, 'lock-pin'), btn: d.byId(page, 'lock-unlock'), line: d.byId(page, 'lock-opening') };
+  };
+  const submit = (f) => f.form.on.submit[0]({ preventDefault() {} });
+  const said = (n) => n.textContent.trim();
+  const controls = (f) => [f.pin.disabled, f.btn.disabled];
+
+  test('V-25: while the PIN is checked the lock form says Opening your notebook in a polite status line, the controls disabled; a right PIN empties it and goes to Today', async () => {
+    assert.equal(O.COPY.opening, 'Opening your notebook');
+    const g = unlockGate();
+    const f = lockForm(g);
+    assert.equal(f.line.tag, 'p');
+    assert.deepEqual([f.line.attrs.id, f.line.attrs.role, f.line.attrs['aria-live']], ['lock-opening', 'status', 'polite'], 'a polite status line');
+    assert.ok(!f.line.hidden, 'in the page from the start, so a screen reader hears the words when they come');
+    assert.equal(f.form.querySelector('[data-testid="lock-opening"]'), f.line, 'in the lock form');
+    assert.equal(said(f.line), '', 'empty before a try');
+    assert.match(readFileSync(src('styles.css'), 'utf8'), /#lock-opening:empty \{ position: absolute; \}/, 'empty, it takes no room and no gap');
+    f.pin.value = '2468';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening, 'shown at once, before the key is made');
+    assert.deepEqual(controls(f), [true, true], 'the controls stay disabled meanwhile');
+    assert.equal(g.calls, 1);
+    await tick();
+    assert.equal(said(f.line), O.COPY.opening, 'still shown while the key is made');
+    g.release(true);
+    await done;
+    assert.equal(said(f.line), '', 'cleared on success');
+    assert.deepEqual(f.d.replaced, ['#/today'], 'on to Today');
+    assert.equal(f.msg.hidden, true, 'no message');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+  });
+
+  test('V-25: a wrong PIN: the line stays through the pause, is empty after, the message shows, the controls come back and the focus is on the PIN', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '1111';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening);
+    g.release(false);
+    await tick();
+    assert.equal(said(f.line), O.COPY.opening, 'through the pause after a wrong PIN');
+    assert.deepEqual(controls(f), [true, true], 'still disabled through the pause');
+    await done;
+    assert.equal(said(f.line), '', 'cleared on a wrong PIN');
+    assert.equal(said(f.msg), O.COPY.wrong, 'the wrong-PIN message');
+    assert.equal(f.msg.hidden, false);
+    assert.deepEqual(f.d.go, [], 'still locked: no way on');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+    assert.equal(f.d.doc.activeElement, f.pin, 'the focus is on the PIN');
+  });
+
+  test('V-25: an unlock that throws (a PIN is not available here): the line is empty after, the message says so, the controls come back', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '2468';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening);
+    const err = Object.assign(new Error('x'), { code: 'NO_CRYPTO' });
+    g.fail(err);
+    await done;
+    assert.equal(said(f.line), '', 'cleared on a thrown unlock');
+    assert.equal(said(f.msg), O.lockError(err));
+    assert.equal(f.msg.hidden, false);
+    assert.deepEqual(f.d.go, [], 'still locked: no way on');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+  });
+
+  test('V-25: an empty PIN makes no line and no try; a second submit while the key is made neither clears the line nor tries again', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '';
+    await submit(f);
+    assert.equal(said(f.line), '', 'nothing tried, nothing said');
+    assert.equal(g.calls, 0, 'nothing tried');
+    assert.deepEqual(controls(f), [false, false], 'nothing disabled');
+    f.pin.value = '2468';
+    const done = submit(f);
+    await submit(f); // the first submit emptied the field; Enter again
+    assert.equal(said(f.line), O.COPY.opening, 'a second submit leaves the line');
+    assert.equal(g.calls, 1, 'one try');
+    assert.deepEqual(controls(f), [true, true], 'still disabled');
+    g.release(true);
+    await done;
+    assert.equal(said(f.line), '');
+  });
+
+  test('V-25: while the PIN is checked, urgent help and the SOBER practice stay open: both outside the form, neither disabled', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '2468';
+    const done = submit(f);
+    const urgent = f.d.byId(f.page, 'lock-urgent');
+    const sober = f.d.byId(f.page, 'lock-sober');
+    assert.equal(said(f.line), O.COPY.opening);
+    assert.equal(f.form.querySelector('[data-testid="lock-urgent"]'), null, 'urgent help is outside the lock form');
+    assert.equal(f.form.querySelector('[data-testid="lock-sober"]'), null, 'so is the SOBER practice');
+    assert.deepEqual([!!urgent.disabled, !!sober.disabled], [false, false], 'neither waits for the PIN');
+    assert.ok(urgent.attrs.href, 'urgent help is a link, live');
+    const heads = f.page.querySelectorAll('h1').length;
+    sober.click();
+    assert.equal(f.page.querySelectorAll('h1').length, heads + 1, 'the SOBER practice opens while the key is made');
+    g.release(true);
+    await done;
+  });
+});
+// ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
+describe('V3 actions-sos V-18 (RC22, RC23, R8-RC1)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const BP = { situation: 'Office farewell dinner', plan: 'Order a lime soda first.', backups: ['Step outside and call Asha.'], exit: 'Leave after the speeches.' };
+  const smpPlans = () => ({ plans: [
+    { id: 'smp-plan-1', date: daysAgo(-3), start: '19:00', end: '22:00', status: 'planned', sample: true, title: 'Office farewell dinner', kind: 'risky', risky: true, battlePlan: BP },
+    { id: 'smp-plan-2', date: daysAgo(-1), start: '18:30', end: '19:15', status: 'planned', sample: true, title: 'Evening walk', kind: 'want', risky: false },
+  ] });
+  const loadPlans = () => withSample({ generate: () => ({ stores: smpPlans() }) }, () => Actions.loadSample());
+  const plan = (id) => S().view.get('plans', id);
+  const battle = () => events('BattlePlanCreated').filter((e) => e.sample !== true);
+
+  test('RC23: a status change over a sample plan keeps the mark and writes no BattlePlanCreated; eraseSample takes the row', async () => {
+    await loadPlans();
+    for (const status of ['done', 'skipped', 'planned']) {
+      for (const id of ['smp-plan-1', 'smp-plan-2']) {
+        await Actions.plans.update(id, { status });
+        assert.deepEqual([plan(id).status, plan(id).sample], [status, true], `${id} ${status}: written, still the sample's`);
+      }
+    }
+    assert.deepEqual(battle(), [], "no BattlePlanCreated for a row that is not the person's");
+    await Actions.plans.update('smp-plan-1', { status: 'done', risky: false });
+    assert.deepEqual([plan('smp-plan-1').risky, plan('smp-plan-1').sample], [false, true], 'a status and a flag: still the sample');
+    assert.deepEqual(battle(), []);
+    await Actions.eraseSample();
+    assert.deepEqual([plan('smp-plan-1'), plan('smp-plan-2')], [null, null], 'eraseSample takes them');
+    assert.deepEqual(battle(), []);
+  });
+
+  test("RC23: the person's words over a sample battle plan make it theirs and write BattlePlanCreated once; a status change after adds no second; eraseSample keeps it", async () => {
+    await loadPlans();
+    await Actions.plans.update('smp-plan-1', { status: 'done', title: 'My farewell dinner' });
+    assert.equal(plan('smp-plan-1').sample, undefined, "a status with the person's words: theirs");
+    assert.deepEqual([plan('smp-plan-1').title, plan('smp-plan-1').status], ['My farewell dinner', 'done']);
+    assert.deepEqual(battle().map((e) => e.payload.planId), ['smp-plan-1'], "the event for the person's row");
+    await Actions.plans.update('smp-plan-1', { status: 'planned' });
+    assert.equal(battle().length, 1, 'once');
+    await Actions.eraseSample();
+    assert.equal(plan('smp-plan-1').title, 'My farewell dinner', 'eraseSample keeps their row');
+    assert.equal(battle().length, 1, 'and its event');
+  });
+
+  test("RC23: the person's own plan keeps its one BattlePlanCreated across a status change; a battle plan added over their own plan writes it", async () => {
+    const made = await Actions.plans.add({ date: daysAgo(-2), start: '19:00', end: '21:00', title: 'Dinner', kind: 'risky', battlePlan: BP });
+    assert.equal(battle().length, 1);
+    await Actions.plans.update(made.plan.id, { status: 'done' });
+    assert.equal(plan(made.plan.id).status, 'done');
+    assert.equal(battle().length, 1, 'a status change adds no second');
+    const walk = await Actions.plans.add({ date: daysAgo(-2), start: '07:00', end: '08:00', title: 'Walk', kind: 'want' });
+    await Actions.plans.update(walk.plan.id, { battlePlan: BP });
+    assert.deepEqual(battle().map((e) => e.payload.planId).sort(), [made.plan.id, walk.plan.id].sort(), "a battle plan added over the person's own row writes it");
+  });
+
+  test('RC23: an unknown status over a sample plan is refused and writes nothing', async () => {
+    await loadPlans();
+    const before = await snapshot();
+    await refused(Actions.plans.update('smp-plan-1', { status: 'lost' }), 'bad-plan');
+    assert.deepEqual(await snapshot(), before, 'nothing written');
+    assert.equal(plan('smp-plan-1').sample, true);
+  });
+
+  test('RC22: a session kept for the unlock keeps the day of the tap on the feeling flow and the leave path, though the unlock comes after midnight', async () => {
+    const paths = [
+      ['the feeling flow', (d) => {
+        const root = d.open(['sos', 'feeling']);
+        d.tapId(root, 'sos-feeling-' + d.calm());
+        d.toRating(root);
+        return () => d.rate(root, 3);
+      }],
+      ['the leave path', (d) => {
+        const root = d.open(['sos', 'craving']);
+        d.tap(root, 'Skip');
+        d.tapId(root, 'sos-tool-why');
+        d.tap(root, 'Done');
+        d.tap(root, 'It helped');
+        return () => { root.querySelectorAll('a').find((x) => x.textContent.trim() === 'Back to SOS').click(); d.fire('ui:rendered', {}); };
+      }],
+    ];
+    for (const [name, walk] of paths) {
+      await S().resetAll();
+      await S().lock.set('2468');
+      const d = sosDom();
+      const last = walk(d);
+      const day = E().todayStr(new Date());
+      S().lock.lockNow(); // the lock comes as the session ends: the save is kept for the unlock
+      last();
+      await until(() => d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), name + ': kept for the unlock');
+      shiftClock(14 * 3600 * 1000);
+      try {
+        assert.notEqual(E().todayStr(new Date()), day, name + ': the unlock comes on the next day');
+        assert.equal(await S().lock.unlock('2468'), true);
+        await until(() => list('logs').length >= 1, name + ': saved at the unlock');
+        await d.settle();
+        assert.deepEqual(list('logs').map((l) => l.date), [day], name + ': the day of the tap');
+        assert.equal(events('SosCompleted').length, 1, name + ': saved once');
+      } finally { shiftClock(-14 * 3600 * 1000); }
+    }
+  });
+
+  test('R8-RC1: a save refused LOCKED by a lock and unlock in this tab is tried once more at once: one settle after the refusal it has run', async () => {
+    await S().lock.set('2468');
+    const s = { calls: 0, refused: 0 };
+    const A = Object.assign({}, Actions, { sosSession: async (p) => {
+      s.calls += 1;
+      if (s.calls > 1) return Actions.sosSession(p);
+      S().lock.lockNow();
+      assert.equal(await S().lock.unlock('2468'), true, 'unlocked again, the same PIN');
+      s.refused += 1;
+      throw Object.assign(new Error('This tab locked while the save ran.'), { code: 'LOCKED' });
+    } });
+    const d = sosDom();
+    const root = d.open(['sos', 'craving'], null, A);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) d.tapId(root, id);
+    await until(() => s.refused === 1, 'the stub refused once');
+    await d.settle();
+    assert.equal(s.calls, 2, 'at once: tried once more within a settle of the refusal');
+    await until(() => d.go.length > 0, 'and the save ends');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, once');
+  });
+});
 // -- V3 actions-sos tests end --
