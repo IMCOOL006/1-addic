@@ -1,14 +1,15 @@
-# Clinical review pack · 1-addic offline edition v1.1 (f69bc68) · written 2026-11-08
+# Clinical review pack · 1-addic offline edition v3.1 (903016cc) · written 2026-11-09 (refreshed from the v1.1 pack of 2026-11-08)
 
 1-addic is a private, offline, phone-first notebook of recovery skills. Every word is the app's own (original); it is not treatment or a diagnosis, and SOS is never behind a PIN.
 For each item below please answer: KEEP / CHANGE TO "..." / DROP. Also tell us any warning that is missing, and confirm or correct the India crisis numbers (P-28).
 Sources are file:line in offline/src/ (the line where the block starts). Code syntax is stripped; lines shown are the words a person reads. [note] says where the person sees it.
 Wording is shown as it is now; nothing has been changed. Send all answers to the owner in one message, quoting the P-numbers.
-(The lines were read from the working tree at HEAD 15c669a.)
+P-numbers of the v1.1 pack are kept where the passage still exists; a passage whose words changed is marked CHANGED since v1.1 with the old words in one line; new passages are P-33 onward.
+(The lines were read from the integration tree at 903016cc, tag offline-v3.1, 2026-11-09.)
 
 ## 1. ui-sos.js (the SOS screens)
 
-### P-01 · ui-sos.js:18 · COPY, craving screens
+### P-01 · ui-sos.js:17 · COPY, craving screens
 [note] Title and line on each SOS step during a craving.
 ```
 SOS: You opened this. That is a strong move.
@@ -24,7 +25,7 @@ Give it a beat: Step away if you can. Count to ten with me.
 You stayed with it. That takes skill. It gets easier.
 ```
 
-### P-02 · ui-sos.js:49 · COPY, slip screens
+### P-02 · ui-sos.js:43 · COPY, slip screens
 [note] The "I slipped" path: first screen, safety question, reach out, next day.
 ```
 A slip is not a failure. Everything you earned stays. You opened this, and that counts.
@@ -37,7 +38,7 @@ Within a day: Look back at what happened, kindly. It helps next time.
 You took the next step. Come back here any time.
 ```
 
-### P-03 · ui-sos.js:51 · COPY, urgent and crisis titles
+### P-03 · ui-sos.js:48 · COPY, urgent and crisis titles
 [note] The Urgent help view, and the crisis view (opened by crisis words or the hopeless chip).
 ```
 Urgent help: If you or someone else is in danger, call now.
@@ -52,7 +53,7 @@ please verify / Please check these numbers. / Please check this number.   (besid
 Heavy daily drinking or sedatives: stop with a doctor.
 ```
 
-### P-05 · ui-sos.js:68 · FALLBACK (used only if the content file is missing)
+### P-05 · ui-sos.js:67 · FALLBACK (used only if the content file is missing)
 [note] Stand-in SOBER steps, talk-back lines and spiral reply.
 ```
 Stop. Pause where you are.
@@ -68,7 +69,7 @@ I can wait 15 minutes and let this wave pass.
 I can stop now. This does not erase my progress.
 ```
 
-### P-06 · ui-sos.js:87 · CRISIS (typed-text phrases on SOS)
+### P-06 · ui-sos.js:86 · CRISIS (typed-text phrases on SOS)
 [note] If someone types any of these on "Something else", the numbers come first, above the steps. A false alarm is allowed, a miss is not. Inflections and a missing apostrophe also match.
 ```
 suicide (any form); kill myself / kill me / kms; self-harm; hurt / harm / cut / hang myself;
@@ -83,7 +84,7 @@ better off if I'm gone / dead / not here; wish it would all just stop; can't do 
 no one / nobody would miss me; better off gone; want to sleep forever
 ```
 
-### P-07 · ui-sos.js:116 · OVERDOSE (typed-text phrases)
+### P-07 · ui-sos.js:115 · OVERDOSE (typed-text phrases)
 [note] Typed words that open the full urgent view with the overdose card.
 ```
 overdose; OD (as a word only); took / taken too much; took too many (up to 3 words) pills / tablets / meds /
@@ -97,15 +98,17 @@ a whole bottle / packet / pack / strip / box of (pills etc.); swallowed all my /
 If you are not safe, call now.
 ```
 
-## 2. boot.js
+## 2. boot.js and shell.html
 
-### P-09 · boot.js:26 · COPY (start-failure safety line)
-[note] If the app fails to start, one of these lines shows with the saved emergency and crisis numbers.
+### P-09 · boot.js:26 · COPY (the shell's safety line)  ·  CHANGED since v1.1 (when it shows)
+[note] The words in boot.js are unchanged. CHANGED since v1.1: it said the lines show "if the app fails to start". Since V-11 a safety line shows on every start outside discreet mode (the shell line, P-33, with a fixed 112 link) until the first render replaces it; boot.js still carries the failed-start lines, with the saved emergency and crisis numbers.
+Since fix ES1 (bf9b83c) the line is not shown while the app loads in discreet mode, so a discreet screen stays discreet. The owner may reverse ES1; the reviewer's view is welcome.
 ```
 (numbers not readable) The app did not start. If you are in danger, call your local emergency number.
 (numbers readable)     The app did not start. For urgent help, call:
 Please verify these numbers.
 ```
+The clinician's two open points (core brief): (1) "these numbers" is plural but sits beside one number (112); (2) the sentence before the number: is "If you are in danger, call your local emergency number." the right sentence to come before a fixed 112?
 
 ## 3. ui-core.js, ui-exercise.js, ui-settings.js, ui-onboarding.js
 
@@ -123,15 +126,16 @@ India numbers: please verify. Elsewhere: your local emergency number (usually 11
 If you might be in danger, urgent help is one tap away.   [link: Urgent help -> SOS urgent view]
 ```
 
-### P-12 · ui-settings.js:58 · ABOUT (Settings)
+### P-12 · ui-settings.js:58 · ABOUT (Settings)  ·  CHANGED since v1.1
 ```
 This app has not been clinically tested and it is not medical advice. It does not replace a doctor, counsellor or support group.
 If you are in danger or might hurt yourself, open SOS and tap Urgent help.
 It works offline. Nothing leaves this device unless you save a backup file yourself.
-This is an early-access version. Some screens are still being built and say so. Your notes stay on this device while it grows.
+Every screen is in the app now, and where content is still coming, the screen says so. Your notes stay on this device.
+CHANGED since v1.1: "This is an early-access version. Some screens are still being built and say so. Your notes stay on this device while it grows."
 ```
 
-### P-13 · ui-onboarding.js:17 · COPY, first-run safety step
+### P-13 · ui-onboarding.js:16 · COPY, first-run safety step
 [note] First-run steps. The safety step cannot be skipped (button "I understand").
 ```
 Welcome: A private skills coach for recovery. It is not treatment or a diagnosis.
@@ -143,7 +147,7 @@ A quick safety check: Not a diagnosis. Tick any that fit you.
 Early access: this is a test version. Export a backup now and then.
 ```
 
-### P-14 · ui-onboarding.js:19 · COPY, lock texts
+### P-14 · ui-onboarding.js:18 · COPY, lock texts
 [note] Lock screen (its help line), forgot-PIN and erase prompts.
 ```
 Locked: Enter your PIN. Help works without it.
@@ -151,10 +155,9 @@ That PIN did not match.
 Forgot your PIN? Without the PIN, the only way in is to erase this notebook on this device, then restore a backup if you have one.
 Erase everything on this device? Your notes here will be gone. A backup file can bring them back.   [button: Erase]
 ```
-
 ## 4. engine.js
 
-### P-15 · engine.js:1171 · CRISIS_PATTERNS (exported as Engine.CRISIS)
+### P-15 · engine.js:1176 · CRISIS_PATTERNS (exported as Engine.CRISIS)
 [note] The keyword list that decides whether P-11 shows. Inflections and a missing apostrophe match; a false alarm is allowed.
 ```
 suicide (any form); kill myself / kill me / kms; self-harm (any form);
@@ -166,7 +169,6 @@ no reason / no point to live / go on; not worth living; never wake up;
 think / thought of or about death / dying / suicide / killing myself / ending it / ending my life
 ```
 The words shown on a match are P-11.
-
 ## 5. Lessons (content-lessons-a/b/c.js; the whole lesson is marked)
 
 ### P-16 · content-lessons-a.js:160 · m2-l4 Treatment, medicines and healing
@@ -246,7 +248,6 @@ Where were you, and who was there? / What came first: a thought, a feeling or a 
 Hints: One thing you can change is enough. / If you feel unsafe, use SOS, Urgent help.
 Saved: Saved. Every day you built still counts.
 ```
-
 ## 7. content-practices.js (five marked practices)
 
 ### P-26 · content-practices.js:181 · bigGame "Arjun's Saturday"
@@ -267,9 +268,11 @@ rf3 coworker offers a pill before a deadline ("It helps you focus. Everyone take
 rf4 neighbour offers a smoke. Best: "I've quit. Please don't offer any more. I'm happy to chat, though."  Weak: Take it so they do not feel bad (Your recovery matters more than a moment of awkwardness.)
 ```
 
-## 8. content-core.js (crisis numbers and safety lines)
+## 8. content-core.js and shell.html (crisis numbers and safety lines)
 
-### P-28 · content-core.js:417-440 · crisis numbers (every entry has verify: true)
+Note on markers: at 903016cc only P-31 carries a clinicalReview marker in content-core.js. P-28, P-29, P-30 and P-32 have none (the same was true at v1.1). They are kept below so the reviewer can still confirm the India numbers and the overdose and withdrawal wording; each is tagged NO MARKER and is not counted in the marked total.
+
+### P-28 · content-core.js:430-452 · crisis numbers (every entry has verify: true) · NO MARKER
 Note shown with the India list: "These numbers were collected from public sources in October 2026 and have not yet been verified by the owner. Check each one before you rely on it."
 
 | Region | Service | Number (alt) | Hours / note | Verify |
@@ -286,12 +289,12 @@ Note shown with the India list: "These numbers were collected from public source
 
 Also verify-flagged but not crisis numbers: AA India (aagsoindia.org), NA India (naindia.in), SMART Recovery (smartrecovery.org), government de-addiction centres directory (nmba.dosje.gov.in), Hospital for Mental Health Ahmedabad, district and civil hospitals.
 
-### P-29 · content-core.js:441 · India context note
+### P-29 · content-core.js:454 · India context note · NO MARKER
 ```
 Gujarat has alcohol prohibition, so drinking is illegal there and people often hide it. That is one more reason this app keeps everything on your device. The helplines are confidential. If you are worried about the law, say so to a counsellor; they have heard it before.
 ```
 
-### P-30 · content-core.js:451 · overdose card (shown in SOS Urgent help)
+### P-30 · content-core.js:464 · overdose card (shown in SOS Urgent help) · NO MARKER
 ```
 Call the emergency number first. Say "overdose", the substance if you know it, and the address.
 If the person is not breathing or is unresponsive, follow the operator's instructions. If you have naloxone and opioids are involved, use it.
@@ -300,12 +303,12 @@ Stay with them. Do not let them "sleep it off" alone.
 After a break from opioids, tolerance drops. The same old amount can kill. Never use alone, and never use an unknown source.
 ```
 
-### P-31 · content-core.js:521 · opioidSafety (verify and clinicalReview)
+### P-31 · content-core.js:533 · opioidSafety (verify and clinicalReview)
 ```
 After a break, your body loses tolerance, so an old amount can be deadly. Never use alone. If someone will not wake up or is breathing slowly, call 112 at once.
 ```
 
-### P-32 · content-core.js:458 · withdrawal lines (onboarding safety step and SOS)
+### P-32 · content-core.js:471 · withdrawal lines (onboarding safety step and SOS) · NO MARKER
 ```
 Stopping heavy daily drinking suddenly can cause seizures or delirium. Stopping sleeping pills or benzodiazepines suddenly can too.
 If you drink heavily every day, or take sedatives every day, talk to a doctor about stopping safely. Many hospitals have a detox unit.
@@ -313,10 +316,19 @@ Shaking, sweating, confusion, hallucinations or a seizure after stopping are eme
 ```
 Glossary "Withdrawal": The rough physical and emotional effects as a substance leaves the body. For alcohol and sedatives it can be dangerous: see a doctor.
 
+### P-33 · shell.html:23 · the shell's first line (NEW since v1.1)
+[note] Shown in the page before any script runs, on every start outside discreet mode (V-11), until the first render replaces it. Its words are the tail of the boot.js line (P-09) plus a fixed link to 112 (the built-in number, flagged verify). See P-09 for the ES1 note and the two open points.
+```
+If you are in danger, call your local emergency number.   [link: 112]
+Please verify these numbers.
+```
+
 ## Summary
-Items per file: ui-sos.js 8 (P-01 to P-08); boot.js 1 (P-09); ui-core.js 1 (P-10); ui-exercise.js 1 (P-11); ui-settings.js 1 (P-12); ui-onboarding.js 2 (P-13, P-14); engine.js 1 (P-15); content-lessons-a/b/c.js 6 items (P-16 to P-21, 12 marked lessons); content-exercises.js 4 (P-22 to P-25); content-practices.js 2 (P-26, P-27: one game and four scenes); content-core.js 5 (P-28 to P-32). Total 32 items. shell.html has no marked passage. No passage quotes a book.
+Marked in the source at 903016cc: 38 clinicalReview markers in offline/src/*.js (ui-sos.js 7, boot.js 1, ui-core.js 1, ui-exercise.js 1, ui-settings.js 1, ui-onboarding.js 3, engine.js 2, content-lessons-a/b/c.js 12, content-exercises.js 4, content-practices.js 5, content-core.js 1; a few sit in code comments beside a block or line) plus 1 in shell.html. They are grouped into 29 marked passages: P-01 to P-27, P-31 and P-33. Four more (P-28, P-29, P-30, P-32) are kept from v1.1 with no marker, so 33 numbered items in all.
+Against the v1.1 pack: 26 unchanged (P-01 to P-08, P-10, P-11, P-13 to P-27, P-31); 2 CHANGED (P-09: when it shows; P-12: the early-access line); 1 new (P-33, shell.html); 4 kept without a marker (P-28, P-29, P-30, P-32). No passage quotes a book.
 
 Questions for the reviewer:
 1. Are the India numbers in P-28 right, current and free as shown (Tele-MANAS 14416, KIRAN 1800-599-0019, Nasha Mukti 14446, Vandrevala, the AIIMS poison line, 112 and 108)? Which should be removed or added?
 2. Is the overdose and opioid wording right (P-30, P-31, the P-13 fallback, P-32): call first, naloxone only if available, side position, tolerance warning, "never use alone", and the advice to stop with a doctor?
 3. Does any passage over-promise (for example "Everything you earned stays", "It gets easier", "Most cravings pass") or under-warn (for example the crisis phrase lists P-06 and P-15, or the lessons with no crisis line, P-19 and P-20)? What warning is missing?
+4. The start-up safety line (P-09, P-33): is it right to show it on every start, with one number beside "these numbers", and should it stay hidden in discreet mode (ES1) or show there too?
