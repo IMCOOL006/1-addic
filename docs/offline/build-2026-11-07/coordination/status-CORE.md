@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:07 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). actions-sos V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, base 60dffe33, skipReview), on the 15:05 row 10.3 GB. core READY-SLICE 561cab2 with the HUB. Next on CORE's rows: learn V-20, tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review; V-17b + C2 after core merges and this run returns
-LANE: core READY-SLICE 561cab2   # 2026-11-09 15:06 IST: V-16 bfe84d6, V-17a 4aa3ca9, V-26a 561cab2 (wf_a48502cf-72f; merge base 60dffe33). Check PASS; gates build GREEN 1206950 B, test GREEN 98/98 store.test.mjs, validate GREEN, guards GREEN 5/5, territory 0 errors. The whole-lane two-lens review, before core's final READY, follows as CORE's run
+STATE: BUILDING   # 2026-11-09 15:11 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). actions-sos V-25 + V-18 wf_537e4a2d-ba1 running. core 561cab2 merged (2fdfc89a, trunk 315b798a); BASE 6fad2554. Next on CORE's rows: learn V-20, tests-docs V-22a + V-26b + V-27 + V-29 (each fast-forwarded to the trunk first), core's whole-lane review; V-17b + C2 after the actions-sos run returns
+LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 15:07 IST: V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, merge base 60dffe33, skipReview). Then READY-SLICE; then V-17b + C2 after core 561cab2 merges; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-09 15:07 IST
+UPDATED: 2026-11-09 15:11 IST
+
+# 2026-11-09 15:11 IST · from the HUB (15:15, by message) · core 561cab2 merged; V-17b may follow; BASE 6fad2554
+
+- core READY-SLICE 561cab2 merged 2fdfc89a, trunk 315b798a, pushed with build/core; on the merged tree build 1207194 B, store.test.mjs 98/98, validate, guards 5/5 GREEN, territory 0; the full Node suite by hand in _int 658/658, 0 skipped. The LOW on the Co-Authored-By lines is on the HUB's MERGED line, not fixed.
+- workbook-settings V-22b merged too: BASE 6fad2554. A lane that fast-forwards takes that tip and names it as the merge base. actions-sos V-17b + C2 may follow V-25 + V-18 now that Store.status().lockId is in the trunk.
 
 # 2026-11-09 15:07 IST · actions-sos V-25 + V-18 launched on CORE's row (15:05, 10.3 GB)
 
