@@ -1,6 +1,6 @@
 ## workbook-settings (SCREENS, 1-addic offline build): the slice report
 
-State: READY-SLICE (run 4, 2026-11-09 14:55 IST, V-24 built, check PASS, tip 4f66761, base cbe76a57; V-22b not built, next batch). Before: READY (run 3, 2026-11-07 17:58 IST, FIX-SAMPLE built, check PASS). Branch build/workbook-settings. Base 1ef2482e. Tip 0e76065 (was 9cbf630 after run 2, cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
+State: READY (run 5, 2026-11-09 15:01 IST, V-22b built, check PASS, tip 419718c, base cbe76a57, diffFrom 4f66761). Before: READY-SLICE (run 4, 2026-11-09 14:55 IST, V-24 built, check PASS, tip 4f66761, base cbe76a57; V-22b not built, next batch). Before: READY (run 3, 2026-11-07 17:58 IST, FIX-SAMPLE built, check PASS). Branch build/workbook-settings. Base 1ef2482e. Tip 0e76065 (was 9cbf630 after run 2, cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
 Commits:
 - 83aa85b feat U-19 Settings page, seven tabs
 - e0af4fd test U-19 helpers, tab renders, memory round trips
@@ -14,6 +14,8 @@ Run 2 (2026-11-07 16:31 IST), after cc1f1ea:
 - 9d96690 feat U-21 My Recovery Plan
 - 5e80f01 fix U-21 C5 erase/import drop an unsaved plan draft
 - 9cbf630 test U-20b C6 practise link checked both ways
+Run 5 (2026-11-09 15:01 IST), after 4f66761 (tip 419718c):
+- 419718c test(settings, V-22b) the sample card test asserts the eraseSample round trip (C1b)
 Run 4 (2026-11-09 14:55 IST), after cbe76a57 (tip 4f66761):
 - 4f66761 fix(settings, V-24) the early-access sentence says what is true now
 Run 3 (2026-11-07 17:58 IST), after 9cbf630:
@@ -21,13 +23,16 @@ Run 3 (2026-11-07 17:58 IST), after 9cbf630:
 - 0e76065 test FIX-SAMPLE own profile, no profile and sample profile, by name
 
 ### Turn caps
+Run 5 (2026-11-09 15:01 IST): builder V-22b steps_used 8. capHits 0.
 Builder (U-19): steps_used 36, returned a note. capHits 0.
 Run 2 (2026-11-07): builder U-20a steps_used 33; builder U-20b+U-21 steps_used 44; check-fix builder (C5, C6) returned a note. capHits 0.
 Run 3 (2026-11-07 17:58 IST): builder FIX-SAMPLE steps_used 14. capHits 0.
 Run 4 (2026-11-09 14:55 IST): builder V-24 steps_used 8. capHits 0.
 
 ### Units
-- U-19 Settings (83aa85b, e0af4fd, cc1f1ea). #/settings and #/settings/<tab> (privacy, look, rhythm, names, help, about, data; unknown goes to privacy). A person can: set, change, remove a PIN and the auto-lock (PIN asked first); toggle discreet mode; choose theme, text size, calm, high contrast, reduce motion, counters, current run; set check-in times, review day, pace; edit names; replay tour/drills (feature-detected, honest line if absent); read How do I; see About, credits, evidence; save and restore a backup (PIN asked for export; confirm on import; first three errors shown); print logs; load/erase sample (feature-detected, disabled with a plain line); erase everything (ERASE_PARTIAL text). Closes the chat's 16:15 questions: eraseSample/tutorial hooks feature-detected, auto-lock asks PIN, imports via Actions.importBackup, ERASE_PARTIAL said plainly, PIN help line, PIN field attributes.
+Run 5 (2026-11-09 15:01 IST):
+- V-22b (419718c, tier 2, test only). Nothing changes for a person using the file. The sample card test (workbook-settings.test.mjs:274-294) keeps its name and runs the real Content.sample and Actions with no if: asserts both exist, Load enabled, Erase disabled with "No sample data is loaded." before a load, a sample log and an own log exist, then erase leaves own rows. Questions closed: C1 (the round trip can now fail). Held: none. Spec was the chat's note (v1 brief has no V-22b).
+- U-19 Settings (83aa85b, e0af4fd, cc1f1ea). #/settings and #/settings/<tab> (privacy, look, rhythm, names, help, about, data; unknown goes to privacy). A person can: set, change, remove a PIN and the ... (full text: workbook-settings-report-annex.md)
 - Held/blocked: none.
 Run 4 (2026-11-09 14:55 IST):
 - V-24 (4f66761, tier 2). ABOUT.early (ui-settings.js:65) now reads: "Every screen is in the app now, and where content is still coming, the screen says so. Your notes stay on this device." A person no longer reads that screens are unfinished. True at the tip: every known route has a page, all six Actions hub cards are ready, all 19 workbook exercises are in Content.exercises. The 'Early access' card title and ui-onboarding COPY.early left as they are. Built file: new words 1 hit, old 0.
@@ -43,17 +48,19 @@ Run 3 (2026-11-07 17:58 IST):
 - To build (earlier run): U-20a (ui-workbook.js: UI.pages.workbook, #/workbook/reasons, ?big=1, #/workbook/network; read engine.js:684-698 and actions.js:509-540), U-20b (artifact browser, ARTIFACTS/GROUPS, data-tour workbook-groups and workbook-card), U-21 (ui-plan.js: PlanUI.view/merge/SECTIONS, data-tour plan-sections and plan-print; Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save ~actions.js:870).
 
 ### Contract changes
+Run 5: none.
 - (run 4) none; ABOUT.early text changed only.
 - (run 3) SettingsUI.hasOwnProfile(view) (pure, exported); SettingsUI.TEXT.sampleOwnProfile; doLoadSample returns false (refused) or true. New hook data-test="load-sample-note" (only with an own profile); tests-docs to add to helpers/hooks.mjs.
 - (run 2) UI.pages.workbook (#/workbook/reasons, reasons?big=1, network, plan, browser); WorkbookUI (ARTIFACTS, GROUPS, reasonsSections, exerciseKnown); PlanUI (view, merge, SECTIONS, reset); data-tour workbook-groups, workbook-card, plan-sections, plan-print. html[data-contrast] now applied by the lane (1097dad).
 - UI.pages.settings in ui-settings.js. Consumers: ui-core router, today (link), onboarding (PIN link).
 - SettingsUI global: page, doExport, doImport, doErase, doLoadSample, doEraseSample, printLogs; pure on module.exports: TABS, TEXT, ABOUT, ERASE_PARTIAL_TEXT, normalTab, pinOk, pinError, backupName, logRows, errorText, importErrorText, importedText. Consumer: tests.
 - Routes: #/settings, #/settings/privacy|look|rhythm|names|help|about|data.
-- data-test hooks: settings-page, settings-tab-<tab>, settings-message, store-status, set-pin, pin-current, pin-input, pin-input2, pin-save, remove-pin, lock-now, auto-lock, no-crypto, discreet-toggle, theme-system|light|dark, text-size-normal|large|larger, calm-toggle, contrast-toggle, motion-toggle, counters-toggle, run-toggle, checkin-morning, checkin-evening-time, review-day, pace, custom-per-week, rhythm-save, name-input, companion-input, term-select, names-save, tour-replay, tour-later, drills-later, tips-toggle, show-all-toggle, early-notice, early-notice-ok, version, last-backup, export-btn, import-file, erase-all, print-logs, backup-reminder, sample-card, sample-loaded, load-sample, erase-sample, erase-sample-note. Also data-testid settings-export, settings-import, settings-erase (the names helpers/hooks.mjs uses). Consumer: tests-docs browser suite.
+- data-test hooks: settings-page, settings-tab-<tab>, settings-message, store-status, set-pin, pin-current, pin-input, pin-input2, pin-save, remove-pi ... (full list: workbook-settings-report-annex.md)
 - html[data-contrast="high"] set by Settings; consumer none yet (core should apply on every render).
 - Events, content keys, data-tour targets: none.
 
 ### Gates
+Run 5 (2026-11-09 15:01 IST), VERIFIED by the check: build GREEN 1205504 B (build-20261109-150402.log), test 25/25 (test-20261109-150403.log), validate GREEN (validate-20261109-150407.log), guards 5/5 (guards-20261109-150407.log), all under C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/. Mutations of eraseSample and Content.sample each fail the test. ASSUMED: browser gate not run (test only). Territory: cbe76a57..HEAD 2 files, both own, 0 shared, 0 warnings. Side effect: tracked offline/1-addic.html modified by the build gate; never commit it.
 Run 4 (2026-11-09 14:55 IST), VERIFIED by the check at 4f66761, logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
 - build GREEN 1205504B: build-20261109-145810.log
 - test GREEN 25/0 (lane file): test-20261109-145811.log
@@ -109,12 +116,16 @@ Run 3 (2026-11-07 17:58 IST): verdict PASS at 0e76065 over 9cbf630...HEAD; FIX-S
 
 Run 4 (2026-11-09 14:55 IST): verdict PASS at 4f66761 over cbe76a57..HEAD. Findings: none new (id/severity/fix/re-check: none). V-24 meets its note; earlier units present by search, not re-reviewed. C1 round trip still behind an if at test:286, V-22b covers it. Not checked: browser gate, full Node suite, Guide.md:431/:439 (tests-docs), clinical wording (no crisis content). Side effect: build gate left offline/1-addic.html modified, uncommitted; run git checkout -- offline/1-addic.html before V-22b.
 
+Run 5 (2026-11-09 15:01 IST): verdict PASS at 419718c over 4f66761..HEAD. Earlier units not re-judged. Finding C1 (check id, LOW, V-22b leftover): comment at test:296-297 says "This tree has no Content.sample", which line 278 contradicts; fix SHA none; finder's re-check: open. Not checked: browser gate; product rules on source (nothing changed).
+
 ### Review
+Run 5: none (not flagged).
 Not a flagged lane: no reviewers run.
 Run 3: no review findings (not flagged).
 Run 4: none (not flagged).
 
 ### Safety and content marks
+Run 5: none (test only; no words, no network, SOS untouched).
 - (run 3) FIX-SAMPLE: no crisis or medical line, no numbers; clinicalReview and verify none. Sample never overwrites an own profile.
 - (run 2) Reasons big view is ungated and calm; no new numbers or clinical claims; risks behind Show sensitive items; tel: links only.
 - (run 4) V-24: two short original sentences, no number, no crisis or medical content; no promise of outcomes.
@@ -122,6 +133,7 @@ Run 4: none (not flagged).
 - verify: true: none (no numbers; Urgent help is a link to #/sos/urgent).
 
 ### Requests for other lanes
+- (run 5) tests-docs: fix the comment above withSampleStandIns (test:296-297). P.TEXT.eraseSampleLater and the !canErase branch in ui-settings.js are reachable only if Actions.eraseSample is missing; another test pins that wording; removing it needs its own unit.
 - (run 4) tests-docs: offline/docs/1-addic-Guide.md:431 ('not built yet in this version') and :439 ('Some screens are not finished') now sit beside the new sentence; update if wanted. Default: left as is.
 - (run 3) tests-docs: add data-test="load-sample-note" to helpers/hooks.mjs. HUB/CORE: R-H-28 Settings stop-gap at 0e76065; keep as second check after actions-sos RS-SAMPLE.
 - (run 2) content U-31b: Content.exercises, then re-run node --test offline/tests/workbook-settings.test.mjs. HUB: lift baselines workbook-groups, workbook-card, plan-sections, plan-print. The core request for high contrast is moot: 1097dad applies it in-lane.
@@ -131,14 +143,11 @@ Run 4: none (not flagged).
 - offline/tests/helpers/hooks.mjs (tests-docs): contract names use data-test; BASE hooks use data-testid; both are on the controls.
 
 ### Docs owed
-- (run 4) Guide.md:431 and :439 (see Requests); none else.
-- (run 3) none for FIX-SAMPLE.
-- (run 2) Guide: Reasons Card, Support Network, Workbook browser, My Recovery Plan. README: print of card and plan.
-- Guide (tests-docs): a Settings chapter covering the seven tabs.
-- offline/README.md: lines on backup (save and bring back), PIN (optional, forgot-PIN means erase then restore), and erase everything.
-- CLAUDE.md: none.
+- (run 5) none.
+- Older docs owed (runs 1 to 4): see C:/Users/ruchi/1-addic-wt/_logs/reports/workbook-settings-report-annex.md
 
 ### Open questions
+8. (run 5) Remove the dead eraseSampleLater branch? Default: left, own unit later.
 7. (run 4) Guide lines 431/439 contradict the new sentence; default: left, tests-docs file.
 6. (run 3) Keep the Settings own-profile guard after RS-SAMPLE merges? Default: keep. C1 open by name.
 4. (run 2) Brief says Engine does not export reasonsCardSections; it does (engine.js:1500); code used.
@@ -148,6 +157,7 @@ Run 4: none (not flagged).
 3. High contrast not applied by core on every render; asked of core.
 
 ### For the HUB at the merge
+- (run 5) Merge 419718c over cbe76a57 (V-24 already merged as 2cf7c40e): V-22b adds only the test file, no shared file. Never commit offline/1-addic.html.
 - (run 4) Merge 4f66761 over cbe76a57: one file (ui-settings.js), no shared file. Never commit offline/1-addic.html (the gate leaves it modified).
 - (run 3) Merge 0e76065 over be0f806d: two files (ui-settings.js, workbook-settings.test.mjs), no shared file. Never commit offline/1-addic.html.
 - (run 2) styles.css lane section now lines 382-470; ui-plan.js already in build.mjs parts (line 38); never commit offline/1-addic.html. This lane's four tour names pass guards.
