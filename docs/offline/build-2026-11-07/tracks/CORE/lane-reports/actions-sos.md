@@ -135,3 +135,7 @@ Earlier open questions (2026-11-07 and 15:46 lists): see annex.
 - Conflicts to expect: none; two new files only.
 - Territory warnings: none.
 - Browser tests for the quiet window: none in this slice.
+
+### Whole-lane review (2026-11-09 18:07 IST)
+
+Two rounds, both lenses clean at a397a8d. Round 1 (wf_4d2ab8ba-606): ES1 f6ece46, EC1 2898cd8, EC2 5fd0904 FIXED; ES3 4376554 comment only, accepted. Round 2 (wf_6da935fd-7ff): F1 31e6631, F2 7bbecf0, F3 a397a8d FIXED. LOWs for offline-v3.2: EC3, ES2, EF1, SF1, FIX-IMPORT-MARK. Results: C:/Users/ruchi/1-addic-wt/_logs/reports/actions-sos/end-review/.
