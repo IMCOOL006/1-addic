@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 18:19 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): offline-v3.1 tagged at 903016cc; every CORE lane's V3 units are merged; nothing of CORE runs and nothing is owed. offline-v3.2 starts only on the owner's or the HUB's word
-LANE: core MERGED bf9b83c   # 2026-11-09 17:38 IST: the whole-lane review's READY merged 7dea9bc7 (HUB: build, store.test 99/99, validate, guards GREEN, full Node 735/735, nine browser flows 9/9). The lane's V3 units complete. ES1 is recorded as the owner's default (R-H-51); nothing more unless the owner says 'reverse ES1'
+STATE: BUILDING   # 2026-11-09 18:48 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): offline-v3.2 fixes by the HUB's grant under R-O-7. core FIX-IMPORT-MARK wf_78aca99f-7e4 running since 18:48. Stops at the owner's 'park' (R-O-9) or a row under 4.0 GB
+LANE: core BUILDING 0dd5019   # 2026-11-09 18:48 IST: FIX-IMPORT-MARK (offline-v3.2, flagged, two reviewers); merge base 0dd50197; bf9b83c stays MERGED in offline-v3.1
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED a397a8d   # 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 18:19 IST
+UPDATED: 2026-11-09 18:48 IST
+
+# 2026-11-09 18:48 IST · offline-v3.2 by the HUB's grant; core FIX-IMPORT-MARK launched on the 18:45 row (9.9 GB)
+
+- From the HUB (by message, 18:45): the offline-v3.2 fixes by name may start under R-O-7, the same gates, one start per row at or above 7.0 GB. Order: (1) core FIX-IMPORT-MARK, cut from 0dd50197, merge base 0dd50197, flagged, two reviewers, then the V-17b test that proves it; (2) actions-sos EC3, ES2, EF1, SF1 as one batch, cut from the trunk tip at its start; (3) tests-docs: the discreet emergency-line check, the checkpoint flow, a lock-sober flow, the sos-craving-phone.png retake. READY per unit with the tip and the merge base. Stop at the owner's 'park' or a row under 4.0 GB.
+- build/core fast-forwarded to 0dd50197 (--ff-only, clean). wf_78aca99f-7e4 (lane.js, args tracks/CORE/args/args_v3_core_FIX-IMPORT-MARK.json, unit note tracks/CORE/briefs/core/FIX-IMPORT-MARK.md; base and diffFrom 0dd50197; wf_sim OK). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/7ccd92d4-c859-4fdd-961c-7773e2657272/subagents/workflows/wf_78aca99f-7e4/journal.jsonl. Return -> LANE: core READY <tip>, merge base 0dd50197, naming both reviewers. The V-17b test (the kept save is dropped) goes in actions-sos's batch after this merges: the safety reviewer's probe is _logs/reports/actions-sos/end-review/tree-safety/offline/tests/actions.test.mjs.
 
 # 2026-11-09 18:19 IST · from the HUB (by message) · FIX-COUNTS-3 merged 903016cc; TAG offline-v3.1; BASE 903016cc
 

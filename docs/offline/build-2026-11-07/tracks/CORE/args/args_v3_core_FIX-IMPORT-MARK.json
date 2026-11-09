@@ -1,0 +1,66 @@
+{
+ "lane": "core",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The shell's static safety line, the core LOWs, Store.status().lockId, build.mjs per-part sizes.",
+ "files": [
+  "offline/build.mjs",
+  "offline/src/shell.html",
+  "offline/src/styles.css",
+  "offline/src/ui-core.js",
+  "offline/src/store.js",
+  "offline/src/boot.js",
+  "offline/tests/store.test.mjs",
+  "package.json",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK"
+ ],
+ "batches": [
+  [
+   "V-11",
+   "V-46",
+   "V-16",
+   "V-17a",
+   "V-26a"
+  ],
+  [
+   "FIX-IMPORT-MARK"
+  ]
+ ],
+ "unitTier": {
+  "V-11": 1,
+  "V-16": 2,
+  "V-17a": 2,
+  "V-26a": 2,
+  "FIX-IMPORT-MARK": 1
+ },
+ "unitNotes": {
+  "FIX-IMPORT-MARK": "FIX-IMPORT-MARK (core, flagged; offline-v3.2; merge base 0dd50197; the review's ES3). Today: Store.replaceAll (offline/src/store.js:540-566), with a PIN set, writes clone(state.lock) back, so the lock row and Store.status().lockId stay the same. A locked tab holding a kept SOS save cannot tell another tab imported a backup, and the save is written into the imported notebook. [The rest of this note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-IMPORT-MARK.md: read it before you build.]"
+ },
+ "laneNote": "CORE 17's word (2026-11-09), offline-v3.2 by the HUB's grant, under R-O-7. Flagged lane: encryption and the person's data; two reviewers before READY. One unit: name it by its batch id in done. 'Claude-Session: 7ccd92d4-c859-4fdd-961c-7773e2657272' goes on every commit, whatever the Co-Authored-By line says. offline/1-addic.html is generated: never commit its rebuild. No clinical copy, no new public name, no new event.",
+ "done": [
+  "U-01",
+  "U-03",
+  "U-02",
+  "U-04",
+  "FIX-V11",
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a"
+ ],
+ "base": "0dd50197",
+ "session": "7ccd92d4-c859-4fdd-961c-7773e2657272",
+ "now": "2026-11-09 18:47 IST",
+ "diffFrom": "0dd50197",
+ "slot": 1
+}
