@@ -30,7 +30,11 @@ Each check:
      session in tools/token_roles.json ("(launcher)") and in its state; at most one launch per track per 45 minutes;
   5. a launched chat with no step after 15 minutes is noted (the usage limit, most likely); after 45 minutes it is
      stopped and removed and the launch is tried again; once a fresh chat has stepped, the launcher's own previous
-     session of that track is stopped. The owner's interactive windows are never stopped.
+     session of that track is stopped. The owner's interactive windows are never stopped. A launched chat whose last
+     assistant text is the weekly-limit refusal ("You've hit your weekly limit · resets 2:30pm (Asia/Kolkata)") has
+     not stepped: the reset time is written to state.json as `limit_until` (unparseable: now + 2 h), one line
+     "WEEKLY LIMIT: <text>; no launch until <stamp>" is logged, and no track is launched until that stamp passes
+     (the loop keeps sampling memory; --status prints the pause and its end; --resume and --launch-missing clear it).
   Every 10 minutes the loop appends a memory row to coordination/lane-widening.md:
      | <stamp IST> | <free GB> | <total GB> | <claude procs> | <node procs> | <slots by rule> |
      slots = max(0, floor((free - 4.0) / 0.7)).
@@ -38,13 +42,14 @@ Each check:
   python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --status [--json]   pause, loop, last check, per track
   ... --once [--dry-run]       one check by hand (--dry-run decides and logs, launches and stops nothing)
   ... --pause "<reason>"       no launches until --resume (the HUB at the close; the owner)
-  ... --resume
+  ... --resume                 (also clears the weekly-limit pause)
   ... --pause-track CORE | --resume-track CORE     one track's pause (the global pause aside)
   ... --start | --stop         the loop now (--stop ends the loop; launched chats live on)
   ... --restart [--resume]     stop the loop and start it again, so an edited script is loaded; with --resume the
                                global pause is lifted in between
   ... --launch-missing         one check with the 30-minute quiet rule off: every track without a live chat (and not
-                               paused, gated or at a stop) is launched now (after a machine restart)
+                               paused, gated or at a stop) is launched now (after a machine restart); clears the
+                               weekly-limit pause first
   ... --mem                    sample the memory once and print the lane-widening row (writes nothing)
   ... --test-launch            a cheap haiku background chat through the same path, then removed
   ... --self-test
@@ -52,8 +57,9 @@ Each check:
 
 State and log: %LOCALAPPDATA%\\1-addic-hub\\launcher\\ (state.json, launcher.log, loop.pid, once.lock while a check
 runs, launching-<TRACK>.json for 3 minutes after a launch; ADDIC_HUB_HOME overrides the base). A listed session whose
-pid is gone or whose transcript was last written 30 minutes ago is not live. `claude agents` lists the launched chats;
-`claude attach <id>` opens one in a terminal.
+pid is gone or whose transcript was last written 30 minutes ago is not live; the dropped ids are kept in state.json
+(`dropped_ids`) so the drop is logged once, and again only for ids new to the set. `claude agents` lists the launched
+chats; `claude attach <id>` opens one in a terminal.
 """
 from __future__ import annotations
 
@@ -115,9 +121,14 @@ MEM_EVERY = 600            # the loop's memory sample, seconds
 STILL_MIN = 30             # a listed session whose transcript was last written this long ago is dead (V3-14)
 LOCK_STALE_MIN = 10        # once.lock older than this, or with its pid gone, is broken (V3-13)
 LEASE_MIN = 3              # a track's launching lease holds this long (V3-13)
+LIMIT_FALLBACK_H = 2       # the weekly-limit pause when the reset time in the refusal text cannot be parsed (V-LIMIT)
+LIMIT_RE = re.compile(r"hit your weekly limit", re.I)
+# 'resets 2:30pm (Asia/Kolkata)' or 'resets Nov 9, 2:30pm (Asia/Kolkata)': (month, day, hour, minute, a/p)
+LIMIT_RESET_RE = re.compile(r"resets\s+(?:([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\b", re.I)
+MONTHS = ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
 # The keys once() owns in state.json; the others (paused, paused_tracks) are written by --pause and --pause-track and
 # must survive a check that ran meanwhile (V3-12).
-ONCE_KEYS = ("last_run", "last_memory", "last_decisions", "last_dry_run", "heads", "launches", "failures")
+ONCE_KEYS = ("last_run", "last_memory", "last_decisions", "last_dry_run", "heads", "launches", "failures", "limit_until")
 IST = cn.IST
 
 
@@ -289,16 +300,30 @@ def dead_reason(a, root=None, now=None):
     return "transcript %.0f min still" % age if age >= STILL_MIN else None
 
 
+def dropped_remember(ids):
+    """Keeps the dropped ids in state.json (dropped_ids) -> the ids new since the last call. The set becomes `ids`:
+    an id no longer listed by `claude agents` is forgotten silently (V-LIMIT)."""
+    st = load_state()
+    before = set(st.get("dropped_ids") or [])
+    new = [i for i in ids if i not in before]
+    if set(ids) != before:
+        st["dropped_ids"] = sorted(set(ids))
+        save_state(st)
+    return new
+
+
 def drop_dead(rows, root=None, now=None):
-    """The rows minus the dead ones (dead_reason), the dropped ones logged in one line."""
-    if not rows:
-        return rows
+    """The rows minus the dead ones (dead_reason); the dropped ones logged in one line, once: the ids are remembered
+    (dropped_remember) and the line names only the ids new to the set (V-LIMIT)."""
+    if rows is None:
+        return None
     keep, dead = [], []
     for a in rows:
         why = dead_reason(a, root, now)
-        (dead if why else keep).append("%s (%s)" % (a["sid"][:8], why) if why else a)
-    if dead:
-        log("dropped %d listed session(s) as dead: %s" % (len(dead), "; ".join(dead)))
+        (dead if why else keep).append((a["sid"][:8], why) if why else a)
+    new = set(dropped_remember([s for s, _ in dead]))
+    if new:
+        log("dropped %d listed session(s) as dead: %s" % (len(new), "; ".join("%s (%s)" % (s, w) for s, w in dead if s in new)))
     return keep
 
 
@@ -323,6 +348,75 @@ def when(iso):
         return datetime.datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(IST)
     except Exception:
         return None
+
+
+def limit_text(path):
+    """The weekly-limit refusal when it is the transcript's last assistant text ("You've hit your weekly limit · resets
+    2:30pm (Asia/Kolkata)"; the separator a middle dot or a dash), else None. Only the tail is read (V-LIMIT)."""
+    try:
+        size = path.stat().st_size
+        with io.open(path, "rb") as fh:
+            fh.seek(max(0, size - cn.TAIL_BYTES))
+            chunk = fh.read().decode("utf-8", errors="replace")
+    except OSError:
+        return None
+    for ln in reversed(chunk.splitlines()):
+        if '"assistant"' not in ln:
+            continue
+        try:
+            e = json.loads(ln)
+        except Exception:
+            continue
+        if e.get("type") != "assistant":
+            continue
+        c = (e.get("message") or {}).get("content")
+        text = " ".join(b.get("text") or "" for b in c if isinstance(b, dict)) if isinstance(c, list) else str(c or "")
+        text = " ".join(text.split())
+        return text[:160] if LIMIT_RE.search(text) else None
+    return None
+
+
+def limit_reset_time(text, now=None):
+    """The reset time in the refusal text as an IST datetime: 'resets 2:30pm (Asia/Kolkata)' is today at 2:30pm
+    (tomorrow once that has passed); 'resets Nov 9, 2:30pm' the named date (the next year when that date lies months
+    behind); unparseable -> now + LIMIT_FALLBACK_H hours (V-LIMIT)."""
+    now = now or now_ist()
+    fallback = now + datetime.timedelta(hours=LIMIT_FALLBACK_H)
+    m = LIMIT_RESET_RE.search(text or "")
+    if not m:
+        return fallback
+    mon, day, hh, mm, ap = m.groups()
+    h = int(hh) % 12 + (12 if ap.lower() == "p" else 0)
+    try:
+        if mon:
+            d = datetime.datetime(now.year, MONTHS.index(mon[:3].lower()) + 1, int(day), h, int(mm or 0), tzinfo=IST)
+            if d < now - datetime.timedelta(days=180):
+                d = d.replace(year=now.year + 1)
+        else:
+            d = now.replace(hour=h, minute=int(mm or 0), second=0, microsecond=0)
+            if d <= now:
+                d += datetime.timedelta(days=1)
+        return d
+    except ValueError:
+        return fallback
+
+
+def limit_active(st, now=None):
+    """The end of the weekly-limit pause (state limit_until) as a datetime while it lies ahead, else None (V-LIMIT)."""
+    try:
+        until = datetime.datetime.fromisoformat(st.get("limit_until") or "")
+    except (TypeError, ValueError):
+        return None
+    return until if until > (now or now_ist()) else None
+
+
+def limit_clear(why):
+    """Lifts the weekly-limit pause: the owner's --resume and --launch-missing (V-LIMIT)."""
+    st = load_state()
+    if st.get("limit_until"):
+        log("WEEKLY LIMIT cleared (%s); the pause until %s is lifted" % (why, st["limit_until"][:16]))
+        st["limit_until"] = None
+        save_state(st)
 
 
 def header(track, co=None):
@@ -391,7 +485,7 @@ def kickoff_prompt(track, path=None):
 
 
 def scan(roles, heads, hours=HOURS, root=None):
-    """Every main-chat transcript of the last `hours`: sid8 -> {track, start, last, ctx, steps}."""
+    """Every main-chat transcript of the last `hours`: sid8 -> {track, start, last, ctx, steps, limit}."""
     root = Path(root or cn.ROOT)
     now = time.time()
     found = {}
@@ -409,8 +503,9 @@ def scan(roles, heads, hours=HOURS, root=None):
             if track not in TRACKS:
                 track = heads[sid][0]
             u = cn.last_usage(p)
+            lim = limit_text(p)      # the weekly-limit refusal is an assistant entry with zero usage: not a step (V-LIMIT)
             found[sid] = {"track": track, "start": when(heads[sid][1]), "last": when(u[1]) if u else None,
-                          "ctx": u[0] if u else 0, "steps": bool(u)}
+                          "ctx": u[0] if u else 0, "steps": bool(u) and not lim, "limit": lim}
         except Exception:
             continue
     return found
@@ -547,7 +642,8 @@ def launch(track, prev_sid, reason, st, dry):
 
 def care(track, st, found, live, now, dry):
     """The launcher's own sessions of a track: a stepless one is retried after 45 min; the previous one is stopped
-    once the fresh one has stepped."""
+    once the fresh one has stepped. A launched chat refused by the weekly limit (limit_text in its transcript) sets
+    the pause (state limit_until) once and is logged once (V-LIMIT)."""
     launches = (st.get("launches") or {}).get(track) or []
     if not launches:
         return
@@ -555,6 +651,12 @@ def care(track, st, found, live, now, dry):
     sid8 = (last.get("sid") or "")[:8]
     info = found.get(sid8) or {}
     age = (now - datetime.datetime.fromisoformat(last["when"])).total_seconds() / 60 if last.get("when") else 0
+    lim = info.get("limit")
+    if lim and not last.get("limited"):
+        last["limited"] = True
+        until = limit_reset_time(lim, now)
+        st["limit_until"] = until.isoformat()
+        log("WEEKLY LIMIT: %s; no launch until %s" % (lim, st["limit_until"]))
     if info.get("steps") and not last.get("stepped"):
         last["stepped"] = True
         log("%s: the fresh chat %s has stepped (context %dk)" % (track, sid8, info.get("ctx", 0) // 1000))
@@ -564,10 +666,10 @@ def care(track, st, found, live, now, dry):
             if prev_live and not dry:
                 out, code = run_claude(["stop", prev], timeout=60)
                 log("%s: stopped the previous launched session %s (exit %s)" % (track, prev, code))
-    elif not info.get("steps") and age >= NO_STEP_NOTE_MIN and not last.get("noted"):
+    elif not info.get("steps") and age >= NO_STEP_NOTE_MIN and not last.get("noted") and not last.get("stepped"):
         last["noted"] = True
         log("%s: %s has no step after %.0f min (the usage limit, most likely); retried after %d min" % (track, sid8, age, RELAUNCH_MIN))
-    if not info.get("steps") and age >= RELAUNCH_MIN and not last.get("removed"):
+    if not info.get("steps") and age >= RELAUNCH_MIN and not last.get("removed") and not last.get("stepped"):
         last["removed"] = True
         if not dry:
             run_claude(["stop", sid8], timeout=60)
@@ -716,6 +818,7 @@ def check(dry=False, live=None, found=None, mem=None):
     fresh = load_state()           # the pause flags as they are now, not as they were when this check began
     paused = fresh.get("paused")
     paused_tracks = paused_tracks_of(fresh)
+    st["limit_until"] = work["limit_until"] = fresh.get("limit_until")    # a --resume meanwhile is honoured (V-LIMIT)
     decisions = {}
     for track in TRACKS:
         try:
@@ -724,6 +827,12 @@ def check(dry=False, live=None, found=None, mem=None):
             reason, note = decide(track, h, found, live, work, now, gates)
             if reason and track in paused_tracks:
                 decisions[track] = {"reason": None, "note": note + "; the track is paused (--resume-track %s lifts it)" % track, "held": reason}
+                continue
+            until = limit_active(work, now)        # set by care() this check or an earlier one (V-LIMIT)
+            if reason and until:
+                decisions[track] = {"reason": None, "note": note + "; weekly limit, no launch until %s" % until.strftime("%Y-%m-%d %H:%M"), "held": reason}
+                log("%s%s needs a fresh chat (%s) but the weekly limit holds until %s: not launched" % (
+                    "DRY RUN " if dry else "", track, reason, until.strftime("%Y-%m-%d %H:%M")))
                 continue
             if reason and free is not None and free < MIN_FREE_GB:
                 decisions[track] = {"reason": None, "note": note + "; free memory %.1f GB, under %.1f" % (free, MIN_FREE_GB), "held": reason}
@@ -825,6 +934,7 @@ def launch_missing():
     quiet per track before the NO CHAT rule fires."""
     global QUIET_MIN
     QUIET_MIN = 0
+    limit_clear("--launch-missing")
     log("LAUNCH-MISSING: one check with the quiet rule off (the owner's line after a restart)")
     return once()
 
@@ -837,6 +947,7 @@ def restart_loop(resume=False):
         if stop_loop() != 0:
             return 1
     if resume:
+        limit_clear("--restart --resume")
         st = load_state()
         st["paused"] = None
         save_state(st)
@@ -885,6 +996,7 @@ def status(as_json=False):
     st = load_state()
     if as_json:
         print(json.dumps({"paused": st.get("paused"), "paused_tracks": sorted(paused_tracks_of(st)), "loop_pid": loop_pid(),
+                          "limit_until": st.get("limit_until"), "dropped_ids": st.get("dropped_ids"),
                           "last_run": st.get("last_run"), "last_dry_run": st.get("last_dry_run"), "memory": st.get("last_memory"),
                           "decisions": st.get("last_decisions"), "launches": st.get("launches"),
                           "failures": (st.get("failures") or [])[-3:]}, indent=1))
@@ -893,6 +1005,9 @@ def status(as_json=False):
         ("PAUSED since %s: %s" % (st["paused"].get("since", "?")[:16], st["paused"].get("reason", "")) if st.get("paused") else "active"),
         ("running (pid %d)" % loop_pid()) if loop_pid() else "NOT RUNNING (python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --start)"))
     print("paused tracks: %s" % (", ".join(sorted(paused_tracks_of(st))) or "none"))
+    until = limit_active(st)
+    if until:
+        print("WEEKLY LIMIT: no launch for any track until %s (--resume or --launch-missing lifts it)" % until.strftime("%Y-%m-%d %H:%M"))
     m = st.get("last_memory") or {}
     print("last check: %s%s; free memory then %s GB" % ((st.get("last_run") or "never")[:19], " (a dry run)" if st.get("last_dry_run") else "",
                                                        m.get("free_gb", "?")))
@@ -1201,6 +1316,138 @@ def self_test():
                    [a["sid"][:8] for a in kept] == ["live1111", "fresh29x", "nopidnot"] and "deadpid0 (pid 4000000 gone)" in logtxt
                    and "still222 (transcript 31 min still)" in logtxt and drop_dead(None) is None
                    and transcript_path("abc") == Path(cn.ROOT) / "abc.jsonl"))
+    # V-LIMIT item 2: the dropped set is remembered (state dropped_ids): the same ids again -> silent; a new id -> one
+    # line naming only it; an id gone from the listing -> forgotten silently.
+    drops = lambda: [ln for ln in io.open(home() / "launcher.log", encoding="utf-8").read().splitlines() if "listed session(s) as dead" in ln]  # noqa: E731
+    n0 = len(drops())
+    drop_dead(rows, root=troot)
+    same_silent = len(drops()) == n0 and sorted(load_state().get("dropped_ids") or []) == ["deadpid0", "still222"]
+    rows2 = rows + [{"sid": "deadpid2-x", "kind": "interactive", "pid": 4000001, "name": "HUB"}]
+    drop_dead(rows2, root=troot)
+    new_once = len(drops()) == n0 + 1 and drops()[-1].endswith("dropped 1 listed session(s) as dead: deadpid2 (pid 4000001 gone)")
+    drop_dead([r_ for r_ in rows2 if r_["sid"] != "deadpid0-x"], root=troot)
+    checks.append(("V-LIMIT: the drop is logged once; the same dead ids again are silent; a new id is logged alone; a vanished id is forgotten silently",
+                   same_silent and new_once and len(drops()) == n0 + 1
+                   and sorted(load_state().get("dropped_ids") or []) == ["deadpid2", "still222"]))
+    # V-LIMIT item 1: the weekly-limit refusal. The two text variants parse to the reset time (today, or the named date).
+    nowp = datetime.datetime(2026, 11, 9, 3, 40, tzinfo=IST)
+    v1 = "You've hit your weekly limit \u00b7 resets 2:30pm (Asia/Kolkata)"
+    v2 = "You've hit your weekly limit - resets Nov 9, 2:30pm (Asia/Kolkata)"
+    checks.append(("V-LIMIT: 'resets 2:30pm' -> today 14:30 IST (tomorrow once passed); 'resets Nov 9, 2:30pm' -> that date; "
+                   "a January date seen in December -> next year; '<time>' -> now + 2 h",
+                   limit_reset_time(v1, nowp) == datetime.datetime(2026, 11, 9, 14, 30, tzinfo=IST)
+                   and limit_reset_time(v2, nowp) == datetime.datetime(2026, 11, 9, 14, 30, tzinfo=IST)
+                   and limit_reset_time(v1, datetime.datetime(2026, 11, 9, 15, 0, tzinfo=IST)) == datetime.datetime(2026, 11, 10, 14, 30, tzinfo=IST)
+                   and limit_reset_time("You've hit your weekly limit \u00b7 resets Jan 2, 12:05am (Asia/Kolkata)", datetime.datetime(2026, 12, 30, 9, 0, tzinfo=IST))
+                   == datetime.datetime(2027, 1, 2, 0, 5, tzinfo=IST)
+                   and limit_reset_time("You've hit your weekly limit \u00b7 resets <time> (Asia/Kolkata)", nowp) == nowp + datetime.timedelta(hours=2)
+                   and limit_reset_time("", nowp) == nowp + datetime.timedelta(hours=2)))
+    # The transcript: the refusal is an assistant entry with zero usage and model <synthetic>; scan() reads it as
+    # limit set, steps False. A later real step clears it; a chat whose last assistant text is ordinary has none.
+    def jl(*entries):
+        return "".join(json.dumps(e, separators=(",", ":")) + "\n" for e in entries)
+    usage0 = {"input_tokens": 0, "output_tokens": 0, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}
+    usage1 = {"input_tokens": 1000, "output_tokens": 5, "cache_creation_input_tokens": 50000, "cache_read_input_tokens": 0}
+    user = {"type": "user", "timestamp": "2026-11-08T22:09:40.000Z", "message": {"role": "user", "content": "ultracode. You are the CORE chat of the build."}}
+    refusal = {"type": "assistant", "timestamp": "2026-11-08T22:09:49.367Z", "error": "rate_limit", "isApiErrorMessage": True,
+               "message": {"model": "<synthetic>", "role": "assistant", "usage": usage0, "content": [{"type": "text", "text": v1}]}}
+    step = {"type": "assistant", "timestamp": "2026-11-08T22:20:00.000Z",
+            "message": {"model": "claude-opus-5-5", "role": "assistant", "usage": usage1, "content": [{"type": "text", "text": "Reading the status file."}]}}
+    turn = {"type": "system", "subtype": "turn_duration", "durationMs": 7350, "timestamp": "2026-11-08T22:09:49.810Z"}
+    lroot = tmp / "limit-transcripts"
+    lroot.mkdir()
+    io.open(lroot / "limited1-0000.jsonl", "w", encoding="utf-8").write(jl(user, refusal, turn))
+    io.open(lroot / "stepped1-0000.jsonl", "w", encoding="utf-8").write(jl(user, refusal, turn, user, step, turn))
+    io.open(lroot / "plain111-0000.jsonl", "w", encoding="utf-8").write(jl(user, step, turn))
+    sc = scan({}, {}, root=lroot)
+    checks.append(("V-LIMIT: limit_text reads the refusal from the transcript's last assistant text (not from an earlier one); "
+                   "scan() marks the refused chat limit set, steps False, ctx 0; a stepped chat is unchanged",
+                   limit_text(lroot / "limited1-0000.jsonl") == v1 and limit_text(lroot / "stepped1-0000.jsonl") is None
+                   and limit_text(lroot / "plain111-0000.jsonl") is None and limit_text(lroot / "missing0-0000.jsonl") is None
+                   and sc["limited1"]["limit"] == v1 and sc["limited1"]["steps"] is False and sc["limited1"]["ctx"] == 0
+                   and sc["limited1"]["track"] == "CORE"
+                   and sc["stepped1"]["steps"] is True and sc["stepped1"]["limit"] is None and sc["stepped1"]["ctx"] == 51000))
+    # care(): the launched chat refused -> limit_until written (18:30 today for 'resets 6:30pm' at 15:00), one log line,
+    # not again; the launch is not marked stepped; a stepped launch later refused is never removed as stepless.
+    v3 = "You've hit your weekly limit \u00b7 resets 6:30pm (Asia/Kolkata)"
+    st_c = {"launches": {"CORE": [{"when": t(14, 55).isoformat(), "sid": "limited1-0000", "prev": "aaaaaaaa-1"}]}}
+    fnd = {"limited1": {"track": "CORE", "start": t(14, 55), "last": t(14, 56), "ctx": 0, "steps": False, "limit": v3}}
+    wl = lambda: [ln for ln in io.open(home() / "launcher.log", encoding="utf-8").read().splitlines() if "WEEKLY LIMIT:" in ln]  # noqa: E731
+    care("CORE", st_c, fnd, [], now, dry=False)
+    care("CORE", st_c, fnd, [], now, dry=False)
+    Lc = st_c["launches"]["CORE"][-1]
+    one_line = len(wl()) == 1 and wl()[-1].endswith("WEEKLY LIMIT: %s; no launch until 2026-11-07T18:30:00+05:30" % v3)
+    st_s = {"launches": {"HUB": [{"when": t(13, 0).isoformat(), "sid": "stepped1-0000", "prev": None, "stepped": True}]}}
+    care("HUB", st_s, {"stepped1": {"track": "HUB", "start": t(13, 0), "last": t(14, 0), "ctx": 0, "steps": False, "limit": v3}}, [], now, dry=True)
+    checks.append(("V-LIMIT: care() on a refused launch writes limit_until (18:30 IST) and logs 'WEEKLY LIMIT: ...; no launch until ...' once; "
+                   "the launch is not stepped; a stepped launch refused later is not removed or noted as stepless",
+                   st_c.get("limit_until") == "2026-11-07T18:30:00+05:30" and Lc.get("limited") is True and not Lc.get("stepped")
+                   and one_line and len(wl()) == 2 and st_s.get("limit_until") == "2026-11-07T18:30:00+05:30"
+                   and not st_s["launches"]["HUB"][-1].get("removed") and not st_s["launches"]["HUB"][-1].get("noted")))
+    # A whole check, not dry (bg_launch, full_sid, roles_add faked): the launched CORE chat refused -> limit_until saved,
+    # SCREENS (open gate, no chat) is held with the reason kept, nothing launched; --status says so. Then the stamp
+    # passed -> SCREENS launches. Then --resume clears a pending stamp.
+    io.open(kf, "w", encoding="utf-8").write("".join(
+        "# Prompt %d \u00b7 %s\n\ntext\n\n```\nultracode. You are the %s chat of the 1-addic offline build.\n%s\n```\n\n" % (i, tr, tr, "x " * 600)
+        for i, tr in enumerate(TRACKS)))
+    io.open(co / "status-HUB.md", "w", encoding="utf-8").write(
+        "TRACK: HUB\nSTATE: INTEGRATING   # merging\nBASE: abc1234\nBASE-READY: 2026-11-07 09:00 abc1234\nTRACKS-ALLOWED: CORE, SCREENS\nUPDATED: 2026-11-07 09:00 IST\n")
+    st_file("CORE", "BUILDING   # lanes running", "2026-11-07 14:00")
+    st_file("SCREENS", "NEW   # opened by the HUB", "2026-11-07 07:00")
+    launched = []
+    real = (bg_launch, full_sid, roles_add)
+    globals()["bg_launch"] = lambda name, prompt, model=MODEL, extra=(): (launched.append(name) or "feedf00d", "backgrounded feedf00d")
+    globals()["full_sid"] = lambda sid8, tries=15: sid8 + "-full"
+    globals()["roles_add"] = lambda sid8, track, when_str, path=None: True
+    st0 = load_state()
+    st0["launches"] = {"CORE": [{"when": (now_ist() - datetime.timedelta(minutes=5)).isoformat(), "sid": "limited1-0000", "prev": None}]}
+    st0["limit_until"] = None
+    save_state(st0)
+    v4 = "You've hit your weekly limit \u00b7 resets %s (Asia/Kolkata)" % (now_ist() + datetime.timedelta(hours=3)).strftime("%b %d, %I:%M%p").replace(" 0", " ").lower().replace("nov", "Nov").replace("dec", "Dec")
+    fnd = {"26196777": sess("HUB", now_ist() - datetime.timedelta(hours=3), now_ist() - datetime.timedelta(minutes=2)),
+           "limited1": {"track": "CORE", "start": now_ist() - datetime.timedelta(minutes=5), "last": now_ist() - datetime.timedelta(minutes=4),
+                        "ctx": 0, "steps": False, "limit": v4}}
+    live_l = hubwin + [{"sid": "limited1-0000", "kind": "background", "status": "idle", "name": "CORE 14:55"}]
+    rc = once(dry=False, live=live_l, found=fnd, mem=(8.0, 16.0))
+    st1 = load_state()
+    d1 = st1.get("last_decisions") or {}
+    logtxt = io.open(home() / "launcher.log", encoding="utf-8").read()
+    buf, sys.stdout = sys.stdout, io.StringIO()
+    try:
+        status()
+        status_txt = sys.stdout.getvalue()
+    finally:
+        sys.stdout = buf
+    held_by_limit = (rc == 0 and not launched and limit_active(st1) is not None and (d1.get("SCREENS") or {}).get("reason") is None
+                     and ((d1.get("SCREENS") or {}).get("held") or "").startswith("NO CHAT") and "weekly limit, no launch until" in (d1.get("SCREENS") or {}).get("note", "")
+                     and "SCREENS needs a fresh chat (NO CHAT" in logtxt and "but the weekly limit holds until" in logtxt
+                     and "WEEKLY LIMIT: no launch for any track until" in status_txt
+                     and (st1["launches"]["CORE"][-1].get("limited") is True))
+    st1["limit_until"] = (now_ist() - datetime.timedelta(minutes=1)).isoformat()
+    st1["launches"]["CORE"][-1]["limited"] = False       # the refusal would be re-read: give the chat no limit now
+    save_state(st1)
+    fnd["limited1"]["limit"] = None
+    rc2 = once(dry=False, live=live_l, found=fnd, mem=(8.0, 16.0))
+    st2 = load_state()
+    launched_after = rc2 == 0 and len(launched) == 1 and launched[0].startswith("SCREENS ") \
+        and ((st2.get("launches") or {}).get("SCREENS") or [{}])[-1].get("sid") == "feedf00d-full" \
+        and ((st2.get("last_decisions") or {}).get("SCREENS") or {}).get("reason", "").startswith("NO CHAT")
+    globals()["bg_launch"], globals()["full_sid"], globals()["roles_add"] = real
+    checks.append(("V-LIMIT: a check with the launched chat refused saves limit_until, holds every track's launch (SCREENS: HELD, logged), "
+                   "--status prints the pause and its end; once the stamp has passed the launch goes through",
+                   held_by_limit and launched_after))
+    st2["limit_until"] = (now_ist() + datetime.timedelta(hours=2)).isoformat()
+    save_state(st2)
+    main(["--resume"])
+    cleared_resume = load_state().get("limit_until") is None and "WEEKLY LIMIT cleared (--resume)" in io.open(home() / "launcher.log", encoding="utf-8").read()
+    st3 = load_state()
+    st3["limit_until"] = (now_ist() + datetime.timedelta(hours=2)).isoformat()
+    save_state(st3)
+    limit_clear("--launch-missing")
+    checks.append(("V-LIMIT: --resume and --launch-missing clear limit_until and log it; --pause/--pause-track untouched (not in ONCE_KEYS)",
+                   cleared_resume and load_state().get("limit_until") is None
+                   and "WEEKLY LIMIT cleared (--launch-missing)" in io.open(home() / "launcher.log", encoding="utf-8").read()
+                   and "limit_until" in ONCE_KEYS and "paused" not in ONCE_KEYS and "paused_tracks" not in ONCE_KEYS and "dropped_ids" not in ONCE_KEYS))
     CO, KICKOFF_FILE = saved
     checks.append(("pid_alive: this process yes, pid 4000000 no", pid_alive(os.getpid()) and not pid_alive(4000000)))
     checks.append(("the state lives under ADDIC_HUB_HOME (the real %LOCALAPPDATA%\\1-addic-hub untouched by the test)",
@@ -1281,6 +1528,7 @@ def main(argv=None):
         log("PAUSED: %s" % a.pause)
         return 0
     if a.resume:
+        limit_clear("--resume")
         st = load_state()
         st["paused"] = None
         save_state(st)
