@@ -605,9 +605,11 @@ const LearnUI = (function () {
       const A = c.A;
       if (!A || typeof A.checkpoint !== 'function') { msg.textContent = TEXT.cantSave; return; }
       finish.disabled = true;
+      // CheckpointCompleted earns once per module: read the log before this finish writes to it.
+      const firstTime = !hasEvent(c.view, 'CheckpointCompleted', 'moduleId', m.id);
       try {
         await A.checkpoint(m.id, checkpointAnswers(qs, picks));
-        toast(c.calm ? TEXT.cpDone : TEXT.cpDone + TEXT.xp, 'ok');
+        toast(c.calm || !firstTime ? TEXT.cpDone : TEXT.cpDone + TEXT.xp, 'ok');
         go('#/learn/' + enc(m.id));
       } catch (e) { finish.disabled = false; msg.textContent = (e && e.message) || TEXT.cantSave; }
     }, { class: 'btn primary', 'data-test': 'checkpoint-finish' });

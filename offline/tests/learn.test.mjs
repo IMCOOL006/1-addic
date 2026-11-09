@@ -548,6 +548,30 @@ test('learn: M0 plays end to end and writes LessonCompleted, CheckpointCompleted
   } finally { delete globalThis.document; delete globalThis.UI; }
 });
 
+test("learn: the checkpoint toast says +10 XP only the first time a module's checkpoint is finished (V-20 C3)", async () => {
+  globalThis.document = fakeDom();
+  const toasts = [];
+  globalThis.UI = { go() {}, toast: (m) => toasts.push(m) };
+  const tick = () => new Promise((r) => setTimeout(r, 0));
+  try {
+    const events = [];
+    const profile = { pace: 'steady', onboardedAt: '2026-11-01T10:00:00.000Z' };
+    const view = viewOf(events, profile);
+    const A = stubActions(events, profile);
+    const finish = async (mid, calm) => {
+      const cp = LD.learnPage({ route: { parts: ['learn', mid], query: { checkpoint: '1' } }, view, A, E: null, calm });
+      cp.all((n) => n.getAttribute && n.getAttribute('data-test') === 'checkpoint-finish')[0].fire('click');
+      await tick();
+      return toasts[toasts.length - 1];
+    };
+    assert.equal(await finish(M[0].id), LX.TEXT.cpDone + LX.TEXT.xp, 'the first finish earns and says so');
+    assert.equal(await finish(M[0].id), LX.TEXT.cpDone, 'a second finish of the same checkpoint earns nothing and does not say so');
+    assert.equal(events.filter((e) => e.type === 'CheckpointCompleted').length, 1, 'one event for the module');
+    assert.equal(await finish(M[1].id), LX.TEXT.cpDone + LX.TEXT.xp, 'each module earns once, on its own first finish');
+    assert.equal(await finish(M[2].id, true), LX.TEXT.cpDone, 'calm mode never names XP, first time included');
+  } finally { delete globalThis.document; delete globalThis.UI; }
+});
+
 test('learn: map, plan, glossary and the focus card render with their hooks (stand-in DOM)', async () => {
   globalThis.document = fakeDom();
   try {
