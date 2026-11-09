@@ -350,8 +350,14 @@
 - Written STATE: WAITING-OWNER. The background watch runs on outbox-OWNER.md at size 15296.
 - No workflow was launched: no unit is open without the owner.
 
+## 2026-11-09 18:22 IST · workbook-settings FIX-TOUR-REPLAY + FIX-WS-LOWS launched
+
+- The tag offline-v3.1 is at 903016cc (HUB, 18:15). The HUB's message offered one fix by name on a 7.0 GB row, plus the lane's two LOWs if small. Taken. Run wf_c2a38eca-9bd at 18:2x, args tracks/SCREENS/args/v3_ws_fixtour.json, slot 6, base and diffFrom 903016cc (sliceRun false, not flagged). The worktree was fast-forwarded --ff-only to 903016cc.
+- wf_sim needed two trims: the word 'undefined' in a prompt fails it, and the builder prompt limit is 12,288 bytes.
+
 ## Resume here
 
+- RUNNING: wf_c2a38eca-9bd (lane.js) in session 6f1291e1: workbook-settings FIX-TOUR-REPLAY + FIX-WS-LOWS, base 903016cc, args tracks/SCREENS/args/v3_ws_fixtour.json, journal under C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/6f1291e1-0216-436a-a494-2f0b2049e32d/subagents/workflows/wf_c2a38eca-9bd/journal.jsonl. Alive only while session 6f1291e1 is listed by claude agents; otherwise relaunch with done and priorNote from build/workbook-settings' last commit. On its return: verify (tip, trailers, territory over 903016cc..tip, gate verdict lines, a clean tree), write LANE: workbook-settings READY <tip> with merge base 903016cc, then STATE: WAITING-OWNER again.
 - SCREENS 16:08 (6f1291e1) holds STATE: WAITING-OWNER with a background watch on outbox-OWNER.md (a loop that exits when the file's size leaves 15296 bytes). Nothing of SCREENS is running and there is nothing to build until the owner's I6 arrives or a fix by name comes back. HUB messages arrive by themselves. Do not relaunch anything. If this chat has gone, a chat reopened by the HUB or the owner keeps STATE: WAITING-OWNER and starts one background Bash loop on outbox-OWNER.md (until [ "$(stat -c %s FILE)" != "$S0" ]; do sleep 120; done).
 - The one unit left: content V-10b, after the owner's I6 (the India numbers). Recipe: read the owner's answer in outbox-OWNER.md; fast-forward build/content and its worktree to the trunk tip (git -C C:/Users/ruchi/1-addic-wt/content merge --ff-only build/offline-v1); lane.js with lane_args_v3.json lanes.content, units ['V-10b'], base and diffFrom that tip, done adding V-10, V-10r, V-42, C1, V-23, slot 4; one start on a 7.0 GB row (ask the HUB, the rows are CORE's). The builder removes verify:true only on the entries the owner confirmed (content-core.js:421-432, +1 line after V-23's comment at :133) and quotes the answer in the commit body. LOW C1 (content.test.mjs:381, a redundant assert) may go with it.
 - If a fix by name comes back (a 'from the HUB' note and an R-H line): fix on the lane's branch within the hour, two rounds at most; READY <tip> with the merge base.
