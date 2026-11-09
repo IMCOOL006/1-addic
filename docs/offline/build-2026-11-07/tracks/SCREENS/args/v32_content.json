@@ -1,0 +1,49 @@
+{
+  "lane": "content",
+  "chat": "SCREENS",
+  "tier": 2,
+  "flagged": false,
+  "area": "clinicalReview markers on the four unmarked safety blocks of content-core.js.",
+  "files": [
+    "offline/src/content-core.js",
+    "offline/tests/content.test.mjs"
+  ],
+  "units": [
+    "FIX-MARKERS"
+  ],
+  "batches": [
+    [
+      "FIX-MARKERS"
+    ]
+  ],
+  "unitTier": {
+    "FIX-MARKERS": 2
+  },
+  "unitNotes": {
+    "FIX-MARKERS": "The clinical pack's P-28, P-29, P-30 and P-32 (CLINICAL-REVIEW-PACK.md:273-317) are safety passages in offline/src/content-core.js with no clinicalReview marker. Add one per block as a trailing line comment on a line that already exists, so no line number moves (the pack and V-10b cite these lines) and no shape changes (overdose and withdrawal are arrays of strings read by texts() in ui-sos.js and lineList() in ui-onboarding.js; context is a string; a data flag would change them). The precedents are ui-sos.js:53 and ui-onboarding.js:23. The four: :431 'in: { // clinicalReview (pack P-28: the crisis numbers; each entry keeps verify)'; :454 at the end of the context line '// clinicalReview (pack P-29)'; :464 'overdose: [ // clinicalReview (pack P-30)'; :471 'withdrawal: [ // clinicalReview (pack P-32)'. Not one shown word, number, url or verify flag changes: V-10b does those after the owner's I6. New test, exactly this name: 'content FIX-MARKERS: the four safety blocks are marked and keep their shape'. It reads content-core.js's text and asserts each of those four lines carries clinicalReview, and that C.resources.overdose and C.resources.withdrawal are still arrays of strings and C.resources.in.context a string. Read how content.test.mjs loads files; do not add harness code."
+  },
+  "laneNote": "FIX-MARKERS: a fix by name from the HUB (R-H-53; toward offline-v3.2; SCREENS 16:08, 2026-11-09 18:49 IST). Safety passages, comments only. One batch, one builder, one commit, the unit id in the message, both trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_6f1291e1-0216-436a-a494-2f0b2049e32d). The worktree was fast-forwarded --ff-only to the trunk tip 17d6b503: base and diffFrom are that tip. The unit note is the spec. Test names are failure identities: add the one new name, never rename or delete one. Under 4.0 GB free memory before a heavy gate: commit what is clean and return the note. Restore offline/1-addic.html after any build. V-10b is NOT built. LOW C1 (content.test.mjs:381) stays. Only offline/src/content-core.js and offline/tests/content.test.mjs change; the diff of content-core.js is four changed lines, each only gaining a trailing comment. Gates through gates.py: build, test, validate, guards; no browser (no DOM change). Say in for_the_chat: which lines of CLINICAL-REVIEW-PACK.md go stale (its NO MARKER tags and its marker count); change none of them.",
+  "done": [
+    "U-31a",
+    "U-31b",
+    "U-29",
+    "U-30",
+    "U-32",
+    "U-33",
+    "V-10",
+    "V-10r",
+    "V-42",
+    "C1",
+    "V-23"
+  ],
+  "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/content-v3.md",
+  "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/content-v3.md",
+  "slot": 4,
+  "base": "17d6b503",
+  "diffFrom": "17d6b503",
+  "session": "https://claude.ai/code/session_6f1291e1-0216-436a-a494-2f0b2049e32d",
+  "now": "2026-11-09 18:49 IST",
+  "sliceRun": false,
+  "start": "build",
+  "priorNote": ""
+}
