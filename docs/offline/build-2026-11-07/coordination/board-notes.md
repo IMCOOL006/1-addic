@@ -38,6 +38,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 **What the tag is, honestly:** a file that opens offline, builds, passes its Node and guard gates, has the UI shell, router, components, engine logic, Actions layer, exercise engine, browser harness and the guide skeleton. It is not yet a file a person can set up with a PIN, use in a craving or log in: those screens are the first merges after the tag.
 
 ## Merges
+- 2026-11-09 15:09 IST: core V-16 + V-17a + V-26a (561cab2) merged 2fdfc89a, trunk 315b798a; build, store tests 98/98, validate, guards GREEN; the full Node suite 658/658 on the merged tree; pushed. Core's two-reviewer whole-lane review comes before its final READY.
 - 2026-11-09 15:03 IST: workbook-settings V-24 (4f66761) merged 2cf7c40e, trunk d9fc835f; build, test 25/25, validate, guards GREEN on the merged tree; pushed.
 - 2026-11-09 14:50 IST: content V-23 (96dd899) merged 7a1d6b82, the first tier 2 merge toward offline-v3.1; build, test 40/40, validate, guards GREEN on the merged tree; pushed.
 
