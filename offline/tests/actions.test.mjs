@@ -3794,6 +3794,8 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
       assert.ok(store.release, 'the key is being made');
     };
     a.tap = async (href) => { location.hash = href; for (const f of on.hashchange) f(); await settle(); };
+    // ESR1: a link followed as a browser does: one to the hash already in the address fires no hashchange (a.tap fires it always).
+    a.follow = async (href) => { const moved = location.hash !== href; location.hash = href; if (moved) for (const f of on.hashchange) f(); await settle(); };
     a.keyReady = async (ok) => { store.release(ok); await a.done; await settle(); };
     return a;
   };
@@ -3873,6 +3875,24 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(a.location.hash, '#/lock', 'still locked: the lock route');
     assert.ok(a.hook('lock-pin'), 'the lock form');
     assert.equal(a.store.locked, true);
+  });
+
+  test('ESR1: the header SOS button opens the SOS page from the practice on the lock page (the real router)', async () => {
+    const a = await routerApp();
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const href = /id="sos-btn"[^>]*href="([^"]+)"/.exec(readFileSync(src('shell.html'), 'utf8'))[1]; // the real button's link
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice is open');
+    assert.equal(sosBtn.hidden, false, 'the SOS button is on screen');
+    const during = a.location.hash;
+    await a.follow(href);
+    assert.equal(a.location.hash, href, 'the route is the button\'s');
+    assert.match(a.text(), /URGENT NUMBERS/, 'the tap opens the SOS page');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way to it');
+    assert.equal(a.hook('lock-page'), undefined, 'the lock page is gone');
+    assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
+    assert.equal(during, '#/sos/craving', 'while the practice was open: a reload lands in the same flow');
   });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
