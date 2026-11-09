@@ -31,10 +31,10 @@
   "FIX-RS4",
   "FIX-RS9"
  ],
- "base": "60dffe33",
+ "base": "6fad2554",
  "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
- "now": "2026-11-09 14:52 IST",
- "diffFrom": "60dffe33",
+ "now": "2026-11-09 15:26 IST",
+ "diffFrom": "6fad2554",
  "slot": 9,
  "sliceRun": true,
  "priorNote": "CORE 15: the learn lane's v1 units and FIX-RS4, FIX-RS9 are merged (75eb8e5); offline-v3.0 is tagged at 60dffe33. The worktree was fast-forwarded to the trunk tip (diffFrom). V-20 is the lane's one V3 unit: the '+10 XP' words at ui-learn.js show only the first time a module's checkpoint is finished (read engine.js for CheckpointCompleted earning once per module, and the XP rows in Content.xp; find the current line numbers, they may have moved), plus C4 as the lane report tracks/CORE/lane-reports/learn.md names it (read its '### Check findings'). C5 is provenance only: no code. Tests by name in offline/tests/learn.test.mjs: one that fails without the change (a second finish of the same checkpoint shows no '+10 XP').\n"

@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:11 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). actions-sos V-25 + V-18 wf_537e4a2d-ba1 running. core 561cab2 merged (2fdfc89a, trunk 315b798a); BASE 6fad2554. Next on CORE's rows: learn V-20, tests-docs V-22a + V-26b + V-27 + V-29 (each fast-forwarded to the trunk first), core's whole-lane review; V-17b + C2 after the actions-sos run returns
+STATE: BUILDING   # 2026-11-09 15:26 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). Running: actions-sos V-25 + V-18 wf_537e4a2d-ba1 (slot 3), learn V-20 wf_c67ac1fc-ea5 (slot 9). Next on CORE's rows: tests-docs V-22a + V-26b + V-27 + V-29 (fast-forwarded first), core's whole-lane review; V-17b + C2 after the actions-sos run returns
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 15:07 IST: V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, merge base 60dffe33, skipReview). Then READY-SLICE; then V-17b + C2 after core 561cab2 merges; then the whole-lane review from f69bc68a before the final READY
-LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
+LANE: learn BUILDING   # 2026-11-09 15:26 IST: V-20 wf_c67ac1fc-ea5 (slot 9, tier 2, the slice; fast-forwarded to 6fad2554, the merge base)
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
-SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-09 15:11 IST
+SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
+UPDATED: 2026-11-09 15:26 IST
+
+# 2026-11-09 15:26 IST · learn V-20 launched on CORE's row (15:25, 10.0 GB)
+
+- build/learn and its worktree fast-forwarded to BASE 6fad2554 (--ff-only, clean). wf_c67ac1fc-ea5 (lane.js, args tracks/CORE/args/args_v3_learn_V-20.json, base and diffFrom 6fad2554; wf_sim OK, builder prompt 10763 B, nothing cut). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/215e6cdd-fe29-4f0b-a91c-05f0cf744b73/subagents/workflows/wf_c67ac1fc-ea5/journal.jsonl. Return -> LANE: learn READY <tip> (the lane's one V3 unit; merge base 6fad2554).
 
 # 2026-11-09 15:11 IST · from the HUB (15:15, by message) · core 561cab2 merged; V-17b may follow; BASE 6fad2554
 
