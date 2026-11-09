@@ -1159,3 +1159,128 @@ test('unlock: the reward sheet shows once per feature', () => {
     assert.equal(sheets.length, 2);
   } finally { cleanup(); delete globalThis.UI; }
 });
+
+/* ── V-21: the coach after a route change, and place()'s branches ───────────────────────────── */
+
+const noDone = (w) => w.calls.filter((c) => c[0] === 'done');
+function routeTo(w, hash) { location.hash = hash; w.win.fire('hashchange'); w.doc.fire('ui:rendered'); }
+
+test('coach: the tour aborts when the route leaves Today', async () => {
+  const w = world({ hash: '#/today' });
+  try {
+    const p = G.coach('tour');
+    const layer = w.doc.getElementById('coach');
+    assert.equal(byClass(layer, 'coach-layer').length, 1);
+    routeTo(w, '#/today?from=x');
+    assert.equal(G.isOpen(), true, 'a query on Today is still Today');
+    routeTo(w, '#/');
+    assert.equal(G.isOpen(), true, 'the bare route is Today');
+    location.hash = '#/track'; w.win.fire('hashchange');
+    assert.equal(await p, 'aborted');
+    assert.equal(G.isOpen(), false);
+    assert.equal(byClass(layer, 'coach-layer').length, 0, 'the layer is removed');
+    assert.ok(layer.hasAttribute('hidden'), 'the mount hides again');
+    assert.deepEqual(noDone(w), [], 'aborted marks nothing, so the tour is offered again later');
+    location.hash = '#/today';
+    const p2 = G.coach('tour');
+    location.hash = '#/learn'; w.doc.fire('ui:rendered');
+    assert.equal(await p2, 'aborted', 'a render on the new route ends it too');
+    assert.deepEqual(noDone(w), []);
+  } finally { cleanup(); }
+});
+
+test('coach: a JIT aborts on leaving its feature', async () => {
+  const w = world({ hash: '#/actions/planner' });
+  try {
+    assert.equal(G.featureOfRoute('#/actions/planner'), 'planner');
+    const p = G.coach('planner');
+    routeTo(w, '#/actions/planner?from=x');
+    assert.equal(G.isOpen(), true, 'a query on the same feature keeps it');
+    location.hash = '#/actions/review'; w.win.fire('hashchange');
+    assert.equal(await p, 'aborted');
+    assert.equal(byClass(w.doc.getElementById('coach'), 'coach-layer').length, 0);
+    assert.deepEqual(noDone(w), []);
+  } finally { cleanup(); }
+});
+
+test('coach: a tour replayed from Settings stays on that screen until the route leaves it', async () => {
+  const w = world({ hash: '#/settings/help' });
+  try {
+    const p = G.coach('tour', { replay: true });
+    w.doc.fire('ui:rendered');
+    assert.equal(G.isOpen(), true, 'a render of the screen it was opened from does not end it');
+    routeTo(w, '#/track');
+    assert.equal(await p, 'aborted');
+    assert.deepEqual(noDone(w), []);
+  } finally { cleanup(); }
+});
+
+test("coach: the new route offers its JIT once the tour has aborted", async () => {
+  const w = world({ hash: '#/today', engine: { revealed: () => new Set(['planner']) } });
+  try {
+    const p = G.coach('tour');
+    location.hash = '#/actions/planner';
+    G.afterRender({ route: { path: '/actions/planner', parts: ['actions', 'planner'], query: {} }, view: w.view, profile: {}, features: new Set(['planner']) });
+    assert.equal(await p, 'aborted');
+    assert.equal(byTest(w.doc.getElementById('main'), 'jit-bar').length, 1, 'the route is not left bare for one render');
+  } finally { cleanup(); }
+});
+
+/* The tour's first step on a target at `rect`, #sos-btn at `sosAt` (or none), and the popover's own measured box. place()
+   re-runs on a resize, which is how the box (zero until the page lays it out) reaches it here. */
+function placed(rect, sosAt) {
+  const w = world({ hash: '#/today' });
+  target(w.doc, C.tutorials.find((t) => t.id === 'tour').steps[0].target, rect);
+  let sos = null;
+  if (sosAt) { sos = w.doc.createElement('a'); sos.setAttribute('id', 'sos-btn'); sos.rect = sosAt; w.doc.body.appendChild(sos); }
+  G.coach('tour');
+  const pop = byClass(w.doc.getElementById('coach'), 'coach-pop')[0];
+  return { w, pop, sos, measure(box) { pop.rect = box; w.win.fire('resize'); } };
+}
+const BELOW = { top: 400, bottom: 444, left: 16, right: 96, width: 80, height: 44 };
+const POP_BOX = { top: 458, left: 16, right: 336, bottom: 600, width: 320, height: 142 };
+
+test('coach place: narrow branch sets maxWidth', () => {
+  const { pop, measure } = placed(BELOW, { top: 500, left: 318, bottom: 556, right: 374, width: 56, height: 56 });
+  try {
+    measure(POP_BOX);
+    assert.equal(pop.style.left, '16px');
+    assert.equal(pop.style.top, '458px', 'stays below the target');
+    assert.equal(pop.style.maxWidth, '294px', 'narrowed to end 8 px before SOS');
+    assert.equal(pop.style.bottom, '');
+    measure({ top: 458, left: 16, right: 300, bottom: 490, width: 284, height: 32 });
+    assert.equal(pop.style.maxWidth, '', 'clear of SOS: not narrowed');
+  } finally { cleanup(); }
+});
+
+test('coach place: flip branch anchors above SOS', () => {
+  const { pop, sos, measure } = placed(BELOW, { top: 500, left: 200, bottom: 556, right: 256, width: 56, height: 56 });
+  try {
+    measure(POP_BOX);
+    assert.equal(pop.style.top, '', 'no room beside SOS: no longer top-anchored');
+    assert.equal(pop.style.maxWidth, '');
+    assert.equal(pop.style.bottom, '414px', 'above the target (800 - 400 + 14)');
+    sos.rect = { top: 380, left: 200, bottom: 556, right: 256, width: 56, height: 176 };
+    measure(POP_BOX);
+    assert.equal(pop.style.bottom, '432px', 'and above SOS when SOS is the higher one (800 - 380 + 12)');
+  } finally { cleanup(); }
+});
+
+test('coach place: above-target unchanged', () => {
+  const { w, pop, measure } = placed({}, null);
+  try {
+    assert.equal(pop.style.left, '16px');
+    assert.equal(pop.style.bottom, '114px', 'above the target (800 - 700 + 14)');
+    assert.equal(pop.style.top, '');
+    assert.equal(pop.style.maxWidth, '');
+    const sos = w.doc.createElement('a'); sos.setAttribute('id', 'sos-btn');
+    sos.rect = { top: 664, left: 318, bottom: 720, right: 374, width: 56, height: 56 };
+    w.doc.body.appendChild(sos);
+    measure(POP_BOX);
+    assert.equal(pop.style.bottom, '148px', 'SOS under the popover: it sits above SOS (800 - 664 + 12)');
+    sos.rect = { top: 664, left: 350, bottom: 720, right: 390, width: 40, height: 56 };
+    measure(POP_BOX);
+    assert.equal(pop.style.bottom, '114px', 'SOS clear of it: only the target counts');
+    assert.equal(pop.style.top, '');
+  } finally { cleanup(); }
+});
