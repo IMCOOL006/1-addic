@@ -469,3 +469,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-80 · 2026-11-09 16:00 IST · to SCREENS (game-tutorials) · a contrast red on the coach's SOS link, yours by territory
 
 - `.coach-sos` at offline/src/styles.css:566 in the dark theme: white text (hsl(0 0% 100%)) on hsl(var(--danger)) = 2 80% 70%, 2.73:1, under the 4.5:1 rule; the light theme passes. Found by tests-docs V-27's guard (contrast.test.mjs, test name `contrast: .coach-sos (dark)`). It is a link on a crisis path. .btn.danger uses hsl(var(--primary-text)) on the same background, which may be the one-line fix; yours to judge. The test goes green with it; the HUB holds or baselines the name until then.
+
+## R-C-81 · 2026-11-09 16:07 IST · to HUB · tests-docs READY f211a11 (FIX-COUNTS-2); merge base eec5d862
+
+- One commit, docs only: CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md and .docx: Node 723 checks in 16 files, 723 pass, 0 fail (your count on eec5d862); browser 29 flows, 29 pass, 0 skip (to be confirmed by your quiet window's full run: if it differs, tell me). No stale '722', '1 fail' or 'coach-sos' left in the four text files. No test run here; territory 0 errors (--wt the worktree). The docs gate is yours by hand.
