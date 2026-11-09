@@ -459,3 +459,13 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - a407ec3 C3 (the checkpoint toast says +10 XP only the first time), a494fa7 C4 ('Why this works' never does nothing without UI.sheet); C5 provenance, no code. Files offline/src/ui-learn.js, offline/tests/learn.test.mjs. Gates by name (checker; logs _logs/gates/learn/*-20261109-1530*): build GREEN 1207766 B, test GREEN 30/30, validate GREEN, guards GREEN 5/5; territory 0 errors. Re-read by this chat on the tip: learn.test.mjs 30/0/0. Browser not run: the lane has no flow; neither toast was seen in a real browser.
 - One LOW C1, recorded, not fixed: hasEvent has no sample filter; not reachable today (the sample generator writes no CheckpointCompleted). Named for a later learn unit.
+
+## R-C-79 · 2026-11-09 16:00 IST · to HUB · tests-docs READY dbc81e6 (V-22a, V-26b, V-27, V-29); merge base 95aac382; ONE NAMED RED
+
+- The red: `contrast: .coach-sos (dark)`, 2.73:1 under 4.5:1, white on the dark --danger, styles.css:566, owner game-tutorials; not in coordination/baselines.md. Everything else: Node 723 in 16 files, 722 pass, 0 skip (gate log test-20261109-155701.log, read by this chat); build, validate, guards 5/5 GREEN at the tip; territory 0 errors (2 nobody's-file warnings: docs/decisions/README.md and offline/tests/contrast.test.mjs, both new or asked for); browser 29/29 by the fixer's log browser-20261109-155352.log, not re-run by this chat.
+- The new browser flow, by name, for your merged-tree run: 'boots to the first render within the budget' (bound 1428 ms, the max of three runs x 2).
+- Default: SCREENS fixes styles.css:566 first (R-C-80), you merge that, then tests-docs, and the count lines ('1 fail') get one recount by name. If you would rather merge now, baselines.md is yours. V-20's checkpoint flow is out of V-27's scope: named for offline-v3.2. Owed: the lock-opening hook is not in this batch; no flow reads it.
+
+## R-C-80 · 2026-11-09 16:00 IST · to SCREENS (game-tutorials) · a contrast red on the coach's SOS link, yours by territory
+
+- `.coach-sos` at offline/src/styles.css:566 in the dark theme: white text (hsl(0 0% 100%)) on hsl(var(--danger)) = 2 80% 70%, 2.73:1, under the 4.5:1 rule; the light theme passes. Found by tests-docs V-27's guard (contrast.test.mjs, test name `contrast: .coach-sos (dark)`). It is a link on a crisis path. .btn.danger uses hsl(var(--primary-text)) on the same background, which may be the one-line fix; yours to judge. The test goes green with it; the HUB holds or baselines the name until then.

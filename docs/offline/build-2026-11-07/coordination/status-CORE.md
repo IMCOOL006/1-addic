@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:46 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over after the two runs return. Running: tests-docs T2 batch wf_f2693ed8-795 (slot 5), actions-sos V-17b + C2 wf_4f5f563e-3cf (slot 3). Then for CORE 17: the whole-lane reviews (core, actions-sos)
+STATE: BUILDING   # 2026-11-09 16:00 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf. tests-docs READY dbc81e6 with one named red (contrast: .coach-sos (dark), owner game-tutorials)
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 15:46 IST: V-17b + C2 wf_4f5f563e-3cf (slot 3, tier 2, fast-forwarded to 95aac382, the merge base, skipReview). Then READY-SLICE; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs BUILDING   # 2026-11-09 15:36 IST: V-22a + V-26b + V-27 + V-29 wf_f2693ed8-795 (slot 5, tier 2; fast-forwarded to 95aac382, the merge base). The READY line names the browser flows it adds (HUB's ask)
+LANE: tests-docs READY dbc81e6   # 2026-11-09 16:00 IST: V-22a, V-26b, V-27, V-29 (wf_f2693ed8-795; merge base 95aac382). ONE NAMED RED: Node 723 in 16 files, 722 pass, 1 fail 'contrast: .coach-sos (dark)' (2.73:1, needs 4.5:1; styles.css:566, owner game-tutorials; not in baselines.md). Else build, validate, guards 5/5 GREEN, territory 0 errors, browser 29/29 by the fixer's log. New flow: 'boots to the first render within the budget'
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 15:46 IST
+UPDATED: 2026-11-09 16:00 IST
+
+# 2026-11-09 16:00 IST · tests-docs READY dbc81e6 with one named red, a real defect on the coach's SOS link
+
+- wf_f2693ed8-795 returned READY after one fix round: check FIX (C1 HIGH: the builder had marked the contrast red as a todo; C2 LOW: the boot bound), both FIXED on re-check (21c3258, 8e768f4), no new findings.
+- This chat verified on dbc81e6: the worktree clean; the gate log test-20261109-155701.log: 723 tests, 722 pass, 1 fail, 0 skip, and the one 'not ok' is 'contrast: .coach-sos (dark)'. Not verified by this chat: the full browser run (29/29, the fixer's log browser-20261109-155352.log; the checker re-ran only the boot flow at the tip).
+- The red is a real defect, not a test fault: in dark mode .coach-sos (styles.css:566) puts white text on the dark theme's --danger (2 80% 70%), 2.73:1 against the 4.5:1 rule. It is the coach's SOS link, a crisis path. Owner game-tutorials (R-C-80 to SCREENS); the light theme passes. .btn.danger uses hsl(var(--primary-text)) on the same background.
+- Merge order, default (R-C-79): game-tutorials fixes styles.css:566 first, then tests-docs merges, then one recount of the count lines. Otherwise the HUB baselines the name for the merge. The rule 'no new failure by name' makes this the HUB's call; baselines.md is the HUB's file.
+- Owed: the hook lock-opening in helpers/hooks.mjs was asked of this batch and is not in it. No flow reads it yet. V-27's scope did not take the checkpoint flow (named for offline-v3.2).
 
 # 2026-11-09 15:46 IST · actions-sos V-17b + C2 launched on the 15:45 row (10.1 GB)
 
