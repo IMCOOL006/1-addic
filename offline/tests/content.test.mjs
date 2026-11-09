@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -616,4 +616,20 @@ test('content: the tour shows the harbor chip, the objectives and the quest-line
     assert.ok(/optional|up to you|skip/i.test(s.text), `${s.target}: says it is optional`);
     assert.ok(!NO_LOSS.test(s.text), `${s.target}: no loss wording`);
   }
+});
+
+// FIX-MARKERS (R-H-53): the markers are comments, because these blocks are strings and arrays of strings a flag would change.
+test('content FIX-MARKERS: the four safety blocks are marked and keep their shape', () => {
+  const lines = readFileSync(src('content-core.js'), 'utf8').split('\n');
+  for (const [pack, start] of [['P-28', '    in: {'], ['P-29', "      context: '"], ['P-30', '    overdose: ['], ['P-32', '    withdrawal: [']]) {
+    const found = lines.filter((l) => l.startsWith(start));
+    assert.equal(found.length, 1, `${pack}: exactly one line starts with ${start}`);
+    assert.ok(found[0].includes(`// clinicalReview (pack ${pack}`), `${pack}: the line carries its clinicalReview comment`);
+  }
+  const R = C.resources;
+  for (const key of ['overdose', 'withdrawal']) {
+    assert.ok(Array.isArray(R[key]) && R[key].length > 0, `resources.${key} is a non-empty array`);
+    assert.ok(R[key].every((x) => typeof x === 'string'), `resources.${key} holds only strings`);
+  }
+  assert.equal(typeof R.in.context, 'string', 'resources.in.context is a string');
 });
