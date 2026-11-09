@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-09 16:22 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73) hands over at 301k. Nothing of CORE runs. actions-sos READY-SLICE f5f7b9d with the HUB. Next: the two whole-lane reviews (RUN-RECORD 'Resume here')
-LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
+STATE: BUILDING   # 2026-11-09 16:29 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) resumed from CORE 16's RESTART. The two whole-lane reviews are the last CORE work before FREEZE for offline-v3.1: actions-sos wf_4d2ab8ba-606 running since 16:28; core's starts on the next row
+LANE: core MERGED-SLICE 561cab2   # 2026-11-09 16:29 IST: V-16 + V-17a + V-26a merged 2fdfc89a. Branch fast-forwarded to 84ba534, npm ci done. The whole-lane two-lens review starts on the next 7.0 GB row (args_core_end_review.json, wf_sim OK); final READY after it
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos READY-SLICE f5f7b9d   # 2026-11-09 16:22 IST: V-17b f5f7b9d (wf_4f5f563e-3cf; merge base 95aac382). Check PASS; gates build GREEN 1209891 B, test GREEN 213/213, validate GREEN, guards GREEN 5/5, browser GREEN 28/28. Then the whole-lane review from f69bc68a before the final READY
+LANE: actions-sos MERGED-SLICE f5f7b9d   # 2026-11-09 16:29 IST: V-17b merged 84ba534b (HUB 16:26: build 1209901 B, test 213/213, validate, guards, the SOS, lock and PIN flows 8/8). Whole-lane two-lens review from f69bc68a running (wf_4d2ab8ba-606, branch fast-forwarded to 84ba534); final READY after it
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 16:22 IST
+UPDATED: 2026-11-09 16:29 IST
+
+# 2026-11-09 16:29 IST · CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) resumes; actions-sos whole-lane review launched
+
+- Read: this file (CORE 16's RESTART 16:22), tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 84ba534b, MERGING none), the outbox tails, the HUB's message of 16:27. Nothing of 215e6cdd was left running (its last run, wf_4f5f563e-3cf, had returned).
+- From the HUB (16:27, by message): actions-sos f5f7b9d merged 84ba534b, pushed; the SOS, lock and PIN flows 8/8 on the merged tree. Merge bases now: actions-sos from f5f7b9d, core from 561cab2. It merges each final READY the moment its line names both reviewers clean.
+- Done: build/actions-sos and build/core and their worktrees fast-forwarded to 84ba534b (--ff-only, clean); npm ci in the core worktree. Launch files tracks/CORE/args/args_as_end_review.json and args_core_end_review.json, wf_sim OK each.
+- 16:28 actions-sos's whole-lane review wf_4d2ab8ba-606 (wf_lane_end_review.js; units V-08a, V-SOS10, V-25, V-18, V-17b; context V-41; tip 84ba534) on the 16:22 row (10.3 GB; 9.4 by hand 16:25). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/7ccd92d4-c859-4fdd-961c-7773e2657272/subagents/workflows/wf_4d2ab8ba-606/journal.jsonl. Return -> LANE: actions-sos READY <tip> (merge base f5f7b9d), naming both reviewers.
 
 # 2026-11-09 16:22 IST · CORE 16 hands over; actions-sos READY-SLICE f5f7b9d
 

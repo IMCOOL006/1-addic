@@ -1,0 +1,68 @@
+{
+ "lane": "actions-sos",
+ "wt": "C:/Users/ruchi/1-addic-wt/actions-sos",
+ "tip": "84ba534",
+ "units": [
+  {
+   "id": "V-08a",
+   "shas": [
+    "b7b4db9"
+   ],
+   "note": "Actions.useSkill({skillId, helpful}) -> {ok, event}; merged as a slice, never reviewed"
+  },
+  {
+   "id": "V-SOS10",
+   "shas": [
+    "3e3ffbc"
+   ],
+   "note": "the SOS rating '10' stays on one line at 390 px; merged as a slice, never reviewed"
+  },
+  {
+   "id": "V-25",
+   "shas": [
+    "d9e105a"
+   ],
+   "note": "the unlock gives a sign of life: the 'Opening your notebook' line under the Unlock button, ui-onboarding.js lockPage"
+  },
+  {
+   "id": "V-18",
+   "shas": [
+    "638c94a"
+   ],
+   "note": "RC23, RC22, R8-RC1 in actions.js"
+  },
+  {
+   "id": "V-17b",
+   "shas": [
+    "f5f7b9d"
+   ],
+   "note": "SOS waiting saves carry the lock row's mark, Store.status().lockId; ui-sos.js"
+  }
+ ],
+ "context": [
+  {
+   "id": "V-41",
+   "shas": [
+    "6c77d1d",
+    "7d8a261",
+    "e4025f8",
+    "94c4e5f",
+    "fb5015b",
+    "b735852"
+   ],
+   "note": "the R-O-6 verbs and their review fixes RC1-RC4, RS1; reviewed by lane.js 2026-11-08 09:08"
+  }
+ ],
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/src/styles.css",
+  "offline/tests/actions.test.mjs"
+ ],
+ "known": "Ruled, not findings: the commits' Co-Authored-By trailer names Opus 5.5, the model that wrote them, and d9e105a and 638c94a carry no Claude-Session line (LOW C1, on the HUB's MERGED lines). C2, an open LOW with no code: V-08a's locked test returns early at offline/tests/actions.test.mjs:3084; the error code is tested, and V-41's locked test covers the lock API for done, swap and claim but not useSkill. Owed by tests-docs, not this lane: the hook lock-opening in offline/tests/helpers/hooks.mjs (ui-onboarding.js lockPage, p#lock-opening); no browser flow reads it yet.",
+ "extra": "The branch was fast-forwarded to the trunk tip 84ba534 before this review, so the tree holds every other lane's merged work and the consumers of this lane's shapes; judge only the listed commits. offline/1-addic.html is generated: never commit its rebuild. V-17b's save mark is era:hasLock:lockId, taken when save() begins; two real tabs are not proven, a stub stands in: say whether the stub is honest. V-25's unlock time on a phone is not measured (the PC takes about 1.2 s); the default taken is that the 'Opening your notebook' line sits under the Unlock button, so the button just tapped does not move.",
+ "session": "7ccd92d4-c859-4fdd-961c-7773e2657272",
+ "now": "2026-11-09 16:28 IST",
+ "browserGrep": "SOS"
+}

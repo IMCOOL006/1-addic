@@ -1,7 +1,7 @@
 {
  "lane": "core",
  "wt": "C:/Users/ruchi/1-addic-wt/core",
- "tip": "561cab2",
+ "tip": "84ba534",
  "units": [
   {
    "id": "V-11",
@@ -49,8 +49,8 @@
   "offline/tests/store.test.mjs"
  ],
  "known": "C1: the commits' Co-Authored-By trailer names Opus 5.5, the model that wrote them; ruled by CORE, not a finding.",
- "extra": "The core brief's tail was moved out of the repo root: C:/Users/ruchi/1-addic-wt/_logs/reports/core/stray-root-core.md-20261108-0253.md holds its flagged-lane notes and open questions; read it. offline/1-addic.html is generated: never commit its rebuild. The worktree has node_modules after npm ci, for the browser gate only.",
- "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
- "now": "2026-11-09 15:07 IST",
+ "extra": "The branch was fast-forwarded to the trunk tip 84ba534 before this review, so the tree holds every other lane's merged work and the consumers of this lane's shapes; judge only the listed commits. offline/1-addic.html is generated: never commit its rebuild. The consumers: actions-sos V-17b reads Store.status().lockId (offline/src/ui-sos.js), tests-docs V-26b reads build.mjs's size lines. The core brief's tail was moved out of the repo root: C:/Users/ruchi/1-addic-wt/_logs/reports/core/stray-root-core.md-20261108-0253.md holds its flagged-lane notes and open questions; read it. The worktree has node_modules after npm ci, for the browser gate only.",
+ "session": "7ccd92d4-c859-4fdd-961c-7773e2657272",
+ "now": "2026-11-09 16:28 IST",
  "browserGrep": "SOS"
 }
