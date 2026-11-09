@@ -275,24 +275,22 @@ test('workbook-settings: sample data is marked, and the buttons are honest (O6, 
   await S().resetAll();
   const page = UI.pages.settings(ctx('data'));
   const load = byTest(page, 'load-sample'); const erase = byTest(page, 'erase-sample');
-  const hasSample = !!(Content.sample && typeof Content.sample.generate === 'function');
-  assert.equal(load.getAttribute('disabled') !== null, !hasSample, 'Load is enabled only when the sample exists');
-  if (!hasSample) assert.match(page.textContent, /Sample data is not in this version yet\./);
-  if (typeof Actions.eraseSample !== 'function') {
-    assert.notEqual(erase.getAttribute('disabled'), null, 'no eraseSample yet: the button is disabled');
-    assert.equal(byTest(page, 'erase-sample-note').textContent, P.TEXT.eraseSampleLater);
-  }
-  if (hasSample && typeof Actions.eraseSample === 'function') {
-    await SUI.doLoadSample();
-    assert.ok(S().view.get('meta', 'sample'));
-    assert.ok(byTest(UI.pages.settings(ctx('data')), 'sample-loaded'));
-    await Actions.logCraving({ intensity: 4, triggerIds: [], feelings: [], skills: [] });
-    const mine = S().view.list('logs').filter((l) => !l.sample).map((l) => l.id);
-    await SUI.doEraseSample();
-    const left = S().view.list('logs').map((l) => l.id);
-    for (const id of mine) assert.ok(left.includes(id), 'own rows stay');
-    assert.equal(S().view.list('logs').filter((l) => l.sample).length, 0);
-  }
+  assert.ok(Content.sample && typeof Content.sample.generate === 'function', 'Content.sample.generate is in the trunk');
+  assert.ok(typeof Actions.eraseSample === 'function', 'Actions.eraseSample is in the trunk');
+  assert.equal(load.getAttribute('disabled'), null, 'Load is enabled: the sample exists and no own profile is here');
+  assert.notEqual(erase.getAttribute('disabled'), null, 'Erase waits until a sample is loaded');
+  assert.equal(byTest(page, 'erase-sample-note').textContent, 'No sample data is loaded.');
+  await SUI.doLoadSample();
+  assert.ok(S().view.get('meta', 'sample'));
+  assert.ok(byTest(UI.pages.settings(ctx('data')), 'sample-loaded'));
+  assert.ok(S().view.list('logs').some((l) => l.sample), 'the load wrote sample logs for the erase to take');
+  await Actions.logCraving({ intensity: 4, triggerIds: [], feelings: [], skills: [] });
+  const mine = S().view.list('logs').filter((l) => !l.sample).map((l) => l.id);
+  assert.ok(mine.length >= 1, 'the own log is there before the erase');
+  await SUI.doEraseSample();
+  const left = S().view.list('logs').map((l) => l.id);
+  for (const id of mine) assert.ok(left.includes(id), 'own rows stay');
+  assert.equal(S().view.list('logs').filter((l) => l.sample).length, 0);
 });
 
 /* FIX-SAMPLE (R-H-28): the sample is offered only on a notebook without an own profile. This tree has no
