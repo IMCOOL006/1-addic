@@ -515,8 +515,9 @@ const Store = (function () {
   }
 
   // Eight hex characters (FNV-1a) over the lock row's random salt and sealed check, so another tab's save can tell the
-  // lock changed: created, removed or replaced, the same PIN after an erase included. Locking and unlocking change no
-  // row and so no mark. It is a digest of the row, never of the PIN, and neither the salt nor the check leaves the store.
+  // lock changed: created, removed or replaced, the same PIN after an erase included, or the notebook was imported over
+  // with a PIN set (replaceAll seals the check again). Locking and unlocking change no row and so no mark. It is a
+  // digest of the row, never of the PIN, and neither the salt nor the check leaves the store.
   function lockMark(L) {
     const s = lockId(L);
     if (!s) return '';
@@ -537,6 +538,8 @@ const Store = (function () {
   }
 
   // Replaces every row (never merges), in one write; the current lock stays and the new rows are sealed under it.
+  // With a PIN set the lock row's check is sealed again under the same key with a fresh IV (the PIN, the salt and the
+  // key do not change), in that one write, so the row and Store.status().lockId move: another tab can tell (ES3).
   function replaceAll(obj) {
     return run(async () => {
       await load();
@@ -553,10 +556,13 @@ const Store = (function () {
         }
       }
       const epoch = state.epoch;
+      const key = state.key; // taken before the first wait: a lock while the rows are sealed empties state.key
       const kept = keep(next, state.unread);
-      const puts = (await sealAll(next, state.key)).concat(kept.puts);
-      if (state.lock) puts.push(['meta', 'lock', clone(state.lock)]);
+      const puts = (await sealAll(next, key)).concat(kept.puts);
+      const lock = state.lock ? Object.assign(clone(state.lock), { check: await seal(key, 'meta', 'lock', CHECK) }) : null;
+      if (lock) puts.push(['meta', 'lock', lock]);
       await write({ clear: true, puts, dels: [] });
+      if (lock) state.lock = lock; // stored now, whether or not this tab locked meanwhile: a failed write never gets here
       if (state.mode === 'indexeddb') { // a stale snapshot is replaced too: a PIN set later never brings its rows back (RC14)
         const ls = storage();
         if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
