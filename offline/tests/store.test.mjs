@@ -796,6 +796,14 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.ok(!main().textContent.includes('call your local emergency number'), 'and its words');
   });
 
+  // ES1: RS7's discreet window covers main too. Checked as text, as RS7's own test is: Node cannot paint CSS.
+  test('shell: safety line hidden while discreet', () => {
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.match(css, /\}\s*html\[data-discreet\] \.boot-line \{ display: none; \}/, 'for the whole wait: no :not([data-route]), because boot paints the chrome before the load ends');
+    assert.doesNotMatch(css, /discreet[^{}]*\.boot-failure/, 'a start failure still shows the numbers');
+    assert.doesNotMatch(fs.readFileSync(SHELL_URL, 'utf8'), /data-discreet/, 'only a script sets the flag, so with no script the line stays');
+  });
+
   test('(a): locked, nothing waits in #print-root: render empties it, and so does a lock inside SOS', async (t) => {
     setup();
     const pr = document.getElementById('print-root');
