@@ -1,6 +1,6 @@
 TRACK: SCREENS
 STATE: WAITING-OWNER   # 2026-11-09 19:18 IST: SCREENS 16:08 (6f1291e1): both R-H-53 fixes are merged (R-S-32 526663bb, FIX-MARKERS 3a0b2100). Nothing of SCREENS is running and no merge is open. Content V-10b waits for the owner's I6; a background watch on outbox-OWNER.md and the HUB's messages reopen the work
-LANE: content MERGED-SLICE cd17758   # FIX-MARKERS merged 3a0b2100 (HUB; build, 41/41, validate, guards GREEN). The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
+LANE: content MERGED cd17758   # FIX-MARKERS merged 3a0b2100 (HUB; build, 41/41, validate, guards GREEN). V-10b after I6 is the lane's one remaining unit; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
