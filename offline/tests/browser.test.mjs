@@ -100,8 +100,8 @@ flow('loads offline with zero console errors and zero network requests', {}, asy
 });
 
 // V-26b: navigation start to the first ui:rendered, on a fresh context (the first open, the slowest). Printed for the log.
-// The budget: the highest of three runs on the owner's machine (714, 559, 611 ms on 9 November 2026), times 2, rounded up.
-const BOOT_BUDGET_MS = 1500;
+// The budget: the highest of three runs on the owner's machine (714, 559, 611 ms on 9 November 2026), times 2.
+const BOOT_BUDGET_MS = 1428;
 flow('boots to the first render within the budget', {
   onboarded: false,
   beforeOpen: (page) => page.addInitScript(() => {
