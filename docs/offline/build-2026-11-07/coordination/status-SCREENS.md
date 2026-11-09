@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 14:47 IST: SCREENS 14:38 (9c7e67fd). content READY-SLICE 96dd899 (V-23) for the HUB. Next: workbook-settings V-24 on the next 7.0 GB row if CORE 14:46 has not started by then (HUB 14:40, R-H-46), then game-tutorials V-21 the row after CORE's
-LANE: content READY-SLICE 96dd899   # V-23 (tier 2): merge base 22db886d, one commit, 3 own files, for the HUB. Check PASS wf_c2451856-9d5 (14:43-14:47): build, test 40/40, validate, guards 5/5 GREEN. One LOW C1 (a redundant assert), named for a later content unit. V-10b waits for the owner's I6
+STATE: RUNNING   # 2026-11-09 14:51 IST: SCREENS 14:38 (9c7e67fd). content V-23 merged 7a1d6b82. Next: workbook-settings V-24 on the 14:54 row (7.0 GB; HUB 14:40: CORE has no run ready yet), then game-tutorials V-21 the row after CORE's
+LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # fast-forwarded to 60dffe33 (12:00, clean). Next: V-24 then V-22b (tier 2, slot 6), two one-unit batches; args/v3_workbook-settings_t2.json
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 14:47 IST
+UPDATED: 2026-11-09 14:51 IST
+
+# 2026-11-09 14:51 IST · from the HUB · content 96dd899 merged (trunk 7a1d6b82); BASE 7a1d6b82
+
+- HUB 14:40 (14:53 by its message) merged content READY-SLICE 96dd899 (V-23) at 7a1d6b82 and pushed the trunk with build/content. On the merged tree: build 1205512 B, content.test.mjs 40/40, validate, guards 5/5 GREEN, territory 0.
+- The lane's next unit is V-10b, after the owner's I6 answer. It starts from a fast-forward to the trunk tip.
+- SCREENS' next starts: workbook-settings V-24 + V-22b (slot 6) on the next 7.0 GB row, because CORE 14:46 has no run ready yet; then game-tutorials V-21 (slot 8) the row after CORE's start.
 
 # 2026-11-09 14:47 IST · content READY-SLICE 96dd899 (V-23), for the HUB
 
