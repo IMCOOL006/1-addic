@@ -367,6 +367,8 @@ body.calm .xp, body.calm .badge, body.calm .harbor { display: none !important; }
 html[data-discreet]:not([data-route]) #app-name, html[data-discreet]:not([data-route]) #sos-btn { font-size: 0; }
 html[data-discreet]:not([data-route]) #app-name::after { content: "Notebook"; font-size: 1rem; }
 html[data-discreet]:not([data-route]) #sos-btn::after { content: "Help"; font-size: 1rem; }
+/* No crisis copy in that window (ES1), for the whole wait: boot sets data-route before the load ends. Only a script sets the flag, so with no script the line stays. */
+html[data-discreet] .boot-line { display: none; }
 
 /* ── Motion ───────────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

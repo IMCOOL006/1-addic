@@ -796,6 +796,14 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.ok(!main().textContent.includes('call your local emergency number'), 'and its words');
   });
 
+  // ES1: RS7's discreet window covers main too. Checked as text, as RS7's own test is: Node cannot paint CSS.
+  test('shell: safety line hidden while discreet', () => {
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.match(css, /\}\s*html\[data-discreet\] \.boot-line \{ display: none; \}/, 'for the whole wait: no :not([data-route]), because boot paints the chrome before the load ends');
+    assert.doesNotMatch(css, /discreet[^{}]*\.boot-failure/, 'a start failure still shows the numbers');
+    assert.doesNotMatch(fs.readFileSync(SHELL_URL, 'utf8'), /data-discreet/, 'only a script sets the flag, so with no script the line stays');
+  });
+
   test('(a): locked, nothing waits in #print-root: render empties it, and so does a lock inside SOS', async (t) => {
     setup();
     const pr = document.getElementById('print-root');
@@ -1200,6 +1208,16 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       const plain = tag === 'div' || tag === 'span';
       assert.equal(node.getAttribute('role'), plain ? 'group' : null, tag + (plain ? ': a plain node is a group' : ': keeps its own role'));
     }
+    let own = null;
+    const { f, labelOf } = customField('Mood', () => {
+      own = globalThis.document.createElement('div');
+      own.setAttribute('role', 'radiogroup');
+      return { el: own, get: () => null, set() {} };
+    });
+    assert.equal(f.validate(), false);
+    assert.equal(document.activeElement, own, 'a div with its own role takes the focus');
+    assert.equal(own.getAttribute('role'), 'radiogroup', 'and keeps that role');
+    assert.equal(labelOf(own) && labelOf(own).textContent.trim(), 'Mood', 'named by the field label');
   });
 
   test('field N2: contenteditable keeps tab stop', () => {
@@ -1262,6 +1280,15 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       return named;
     }).f.validate();
     assert.equal(named.getAttribute('aria-labelledby'), null, 'a name the page gave is kept');
+    let pointed = null;
+    const byPage = customField('When', () => {
+      pointed = globalThis.document.createElement('select');
+      pointed.setAttribute('aria-labelledby', 'page-day');
+      return pointed;
+    });
+    assert.equal(pointed.getAttribute('aria-labelledby'), 'page-day', 'aria-labelledby the page set is kept when the field is built');
+    byPage.f.validate();
+    assert.equal(pointed.getAttribute('aria-labelledby'), 'page-day', 'and after validate');
     let bare = null;
     customField(undefined, () => { bare = globalThis.document.createElement('select'); return bare; });
     assert.equal(bare.getAttribute('aria-labelledby'), null, 'with no field label there is no label to point at');
