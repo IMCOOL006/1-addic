@@ -1362,6 +1362,37 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.match(said.textContent, /not available on this device\.\s+Open this file in the browser where you set your PIN\./);
   });
 
+  test('FIX-IMPORT-MARK RC1: the real Store: a tab locked on #/lock is not drawn again while its PIN is checked after another tab imported', async () => {
+    setup();
+    globalThis.window = { addEventListener() {} };
+    document.addEventListener = () => {};
+    globalThis.indexedDB = fakeIndexedDB();
+    const other = freshStore(); // the tab that imports, open with the PIN set
+    await other.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK }); });
+    await other.lock.set('2468', { autoLockMin: 'never' });
+    const S = freshStore(); // this tab, opened after the PIN was set: locked
+    globalThis.Store = S;
+    let draws = 0;
+    const drawLock = page('LOCK PAGE');
+    const U = freshUi(); // boot runs once per copy, and this one wires onLock to the real Store
+    U.pages.lock = () => { draws += 1; return drawLock(); };
+    try {
+      at('#/lock');
+      await U.boot();
+      assert.equal(S.status().locked, true, 'control: this tab is locked');
+      assert.equal(draws, 1, 'the lock page is drawn once');
+      await other.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { todos: [{ id: 'n1', text: 'NEW-ROW' }] } });
+      assert.equal(await S.lock.unlock('1357'), false, 'a wrong PIN is refused');
+      await new Promise((r) => setTimeout(r, 40)); // the frame of the store notice
+      assert.equal(S.status().lockId, other.status().lockId, 'control: the check took the stored row');
+      assert.equal(draws, 1, 'still the first drawing: the refusal and the focus land on the form on screen');
+      assert.equal(location.hash, '#/lock');
+      assert.match(main().textContent, /LOCK PAGE/);
+    } finally {
+      delete globalThis.indexedDB;
+    }
+  });
+
   test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
     setup();
     t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'], now: Date.now() });
@@ -2376,6 +2407,34 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(await M.lock.unlock('1357'), false, 'a wrong PIN is refused');
     assert.equal(await M.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
     assert.equal(M.view.get('todos', 'n1').text, 'NEW-ROW');
+  });
+
+  test('FIX-IMPORT-MARK RC1: a locked tab hears no onLock when unlock resyncs; the store notice still reaches it, and a tab that was open still hears onLock', async () => {
+    const { S } = await pinned();
+    const lockedTab = freshStore();
+    await lockedTab.load();
+    const openTab = freshStore();
+    await openTab.load();
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    const heardLocked = [];
+    const heardOpen = [];
+    const notices = [];
+    lockedTab.lock.onLock((i) => heardLocked.push(i.reason));
+    lockedTab.subscribe((i) => notices.push(i.label));
+    openTab.lock.onLock((i) => heardOpen.push(i.reason));
+    await S.replaceAll(IMPORT);
+    assert.equal(await lockedTab.lock.unlock('1357'), false, 'a wrong PIN opens nothing');
+    assert.equal(lockedTab.status().lockId, S.status().lockId, 'control: the unlock took the stored row');
+    assert.equal(lockedTab.status().locked, true);
+    assert.deepEqual(heardLocked, [], 'a locked tab is already on its lock page: no onLock draws it again while the PIN is checked');
+    assert.deepEqual(notices, ['lock'], 'the store notice stays: it only repaints the chrome on the lock page');
+    assert.equal(await lockedTab.lock.unlock(IMPORT_PIN), true, 'the same PIN then opens the imported notebook');
+    assert.equal(lockedTab.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.deepEqual(heardLocked, [], 'and opening it never called onLock');
+    // A tab that was open has a page to leave: its refused save takes the new row and it hears the lock.
+    await assert.rejects(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.deepEqual(heardOpen, ['auto'], 'a tab that was open hears onLock, so it leaves its page for #/lock');
+    assert.equal(openTab.status().locked, true);
   });
 
   test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {

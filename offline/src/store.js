@@ -732,10 +732,12 @@ const Store = (function () {
   }
 
   // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
-  // lock is stored.
+  // lock is stored. Only a tab that was open hears onLock: a locked tab is already on its lock page, and that notice
+  // would draw the page again while its PIN is checked (FIX-IMPORT-MARK RC1). The store notice below still reaches it.
   async function resync() {
     const all = await state.backend.readAll();
     const L = lockOf(all);
+    const wasOpen = !state.locked; // read before the stored row is taken
     state.epoch += 1;
     state.key = null;
     disarm();
@@ -744,7 +746,7 @@ const Store = (function () {
     const d = L ? null : await decode(all, null);
     state.rows = d ? d.rows : blank();
     state.unread = d ? d.unread : blank();
-    if (L) call(state.lockSubs, { reason: 'auto' });
+    if (L && wasOpen) call(state.lockSubs, { reason: 'auto' });
     notify(L ? 'lock' : 'unlock');
   }
 
