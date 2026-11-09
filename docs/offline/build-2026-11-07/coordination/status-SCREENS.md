@@ -1,12 +1,25 @@
 TRACK: SCREENS
-STATE: WAITING-OWNER   # 2026-11-09 15:33 IST: SCREENS 14:38 (9c7e67fd). Every SCREENS unit that can run without the owner is merged (the last, game-tutorials V-21, at 4cdda60a). content V-10b waits for the owner's I6 (the India numbers). HUB 14:40: SCREENS starts nothing more unless I6 arrives or a fix by name comes back. This state stops the launcher opening fresh chats; nothing of SCREENS is running
+STATE: WAITING-OWNER   # 2026-11-09 16:02 IST: SCREENS 14:38 (9c7e67fd). FIX-COACH-SOS READY a3f0bf7 for the HUB (R-H-49). Otherwise content V-10b waits for the owner's I6; nothing of SCREENS is running
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 419718c   # V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials MERGED 4df19dc   # V-21 merged 4cdda60a (HUB 14:40; build 1208111 B, 50/50, validate, guards 5/5, the tour flows 3/3 GREEN on the merged tree). The lane's V3 units are complete
+LANE: game-tutorials READY a3f0bf7   # FIX-COACH-SOS (R-H-49): merge at a3f0bf7 alone, merge base 396d09f4; one line in the lane's styles.css block. .coach-sos dark 6.68:1 (was 2.73), light 8.10:1 (unchanged). build, test 50/50, validate, guards 5/5 GREEN; tests-docs' contrast test 45/45 on a scratch of the trunk with this file
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 15:33 IST
+UPDATED: 2026-11-09 16:02 IST
+
+# 2026-11-09 16:02 IST · game-tutorials READY a3f0bf7 (FIX-COACH-SOS), for the HUB
+
+- R-H-49 / R-C-79, R-C-80: tests-docs' contrast check found the coach's SOS link in the dark theme at 2.73:1.
+- Merge build/game-tutorials at a3f0bf7 alone, merge base 396d09f4 (the worktree was fast-forwarded to the trunk tip first). One commit, one line at styles.css:568, inside the game-tutorials block (lines 558-649), both trailers.
+- The change: .coach-sos text goes from white to hsl(var(--primary-text)), the same pair as .btn.danger. The background, size and tap target are unchanged.
+- Computed (WCAG 2), in the commit message too:
+  - dark: 214 34% 9% on 2 80% 70% = 6.68:1 (was 2.73:1);
+  - light: 0 0% 100% on 0 70% 36% = 8.10:1, unchanged, because --primary-text is white in light.
+- A caveat to the HUB's 'never dimmer than today's light theme': the link is the same filled danger button in both themes, but dark's text contrast (6.68:1) is below light's (8.10:1). Black text would reach only 7.7:1; 8.1:1 needs a different background than --danger, which the unit excludes. Default: this fix, the pair .btn.danger already uses. Say if you want more.
+- Gates: build GREEN 1209520 B, test GREEN 50/50, validate GREEN, guards GREEN 5/5 (logs _logs/gates/game-tutorials/*-20261109-1601*). Proof beyond the gates: tests-docs' contrast.test.mjs (from its worktree) on a scratch of the trunk with this styles.css: 45/45, both .coach-sos names ok (_logs/scratch/coach_sos).
+- This fix was made and proved by this chat. No builder or checker ran: one line, the HUB's merge gates and the contrast check on the merged tree are the independent judge. Not run: the browser suite.
+- Territory: styles.css is SHARED (append-only rule); the edit is inside the lane's own block, by the HUB's word. check_territory: no error.
 
 # 2026-11-09 15:33 IST · from the HUB · game-tutorials 4df19dc merged (4cdda60a); SCREENS' tier 2 complete; WAITING-OWNER
 
