@@ -4,7 +4,7 @@ LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5e
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES3T the V-17b test, EC3, ES2, EF1, SF1), wf_1433b81c-993, base and merge base 82c5eddf, flagged, two reviewers
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs READY 1686bb8   # 2026-11-09 20:19 IST: FIX-TD-V32; merge base 82c5eddf. Three new flows by name in R-C-87; the suite is 32 flows. Check PASS at 0ce14e5, the gates GREEN (browser 32/0/0); C1 fixed by this chat in 1686bb8 (the changed flow 1/1/0). The count lines are FIX-COUNTS-4's
+LANE: tests-docs MERGED 1686bb8   # 2026-11-09 20:22 IST from the HUB: FIX-TD-V32 merged 0c03fc0c (HUB: build 1212699 B, test, validate, guards GREEN, territory 0; the three new flows 3/3 by name; docs GREEN); the trunk and build/tests-docs pushed. Next: FIX-COUNTS-4 after actions-sos FIX-AS-V32 merges (Node 758 in 16 files; browser 32 flows, the names in offline/README.md)
 SLOTS-ASKED: 0
 UPDATED: 2026-11-09 20:19 IST
 
