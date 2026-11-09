@@ -189,6 +189,31 @@ test('workbook-settings FIX-TOUR-REPLAY: Replay the tour is a link to Today with
   }
 });
 
+test('workbook-settings R-S-32: Settings Help shows one Replay the tour control', async () => {
+  const had = Object.prototype.hasOwnProperty.call(globalThis, 'GuidanceUI'); const real = globalThis.GuidanceUI;
+  const tourEntry = { id: 'tour', name: 'Replay the tour', route: '#/today?tour=1', kind: 'tour' };
+  const drillEntry = { id: 'drill', name: 'SOS practice drill', route: '#/sos?drill=1', kind: 'drill' };
+  let list = [drillEntry, tourEntry];
+  globalThis.GuidanceUI = { coach: () => {}, training: () => list };
+  const controls = (page, words) => page.all((n) => (n.tagName === 'a' || n.tagName === 'button') && n.textContent === words);
+  try {
+    await S().resetAll();
+    const help = UI.pages.settings(ctx('help'));
+    const replays = controls(help, 'Replay the tour');
+    assert.equal(replays.length, 1, 'one control reads Replay the tour');
+    assert.equal(replays[0].getAttribute('data-test'), 'tour-replay', 'and it is the tour-replay link');
+    const drills = controls(help, drillEntry.name);
+    assert.equal(drills.length, 1, 'the drill is still drawn');
+    assert.equal(drills[0].getAttribute('href'), drillEntry.route);
+    list = [tourEntry];
+    const tourOnly = UI.pages.settings(ctx('help'));
+    assert.equal(controls(tourOnly, 'Replay the tour').length, 1);
+    assert.match(tourOnly.textContent, /No training drills yet\./, 'a list holding only the tour says so honestly');
+  } finally {
+    if (had) globalThis.GuidanceUI = real; else delete globalThis.GuidanceUI;
+  }
+});
+
 test('workbook-settings: settings persist through Actions.settings.patch', async () => {
   await S().resetAll();
   let page = UI.pages.settings(ctx('look'));
