@@ -7,13 +7,13 @@ toc: true
 confidential: false
 auto_glossary: false
 Prepared by: Claude, the owner's window of the build program (rendered by owner-docs/build_resume_doc.py)
-Date: 9 November 2026, 18:17 IST
-Edition: offline-v3.0 in progress; trunk build/offline-v1 at 903016c; tags offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1
-Status: Rendered from the live state at 2026-11-09 18:17 IST; refresh with one command at the 98% trigger
+Date: 9 November 2026, 20:46 IST
+Edition: offline-v3.0 in progress; trunk build/offline-v1 at c5dc374; tags offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1, offline-v3.2
+Status: Rendered from the live state at 2026-11-09 20:46 IST; refresh with one command at the 98% trigger
 ---
 
 > [!SUMMARY]
-> **What this is.** The one document the owner needs to resume and finish the 1-addic offline build (V3) after it parked at 98% of the weekly usage limit (the owner's R-O-9). It holds the state at parking, what remains to the tag `offline-v3.0`, the exact commands, and paste-ready prompts. It was rendered from the live files and git at **2026-11-09 18:17 IST**. One line of state: trunk `build/offline-v1` at **903016c**, tags **offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1**, **66 merges** recorded on status-HUB.md, HUB TAGGED, CORE WAITING, SCREENS WAITING-OWNER.
+> **What this is.** The one document the owner needs to resume and finish the 1-addic offline build (V3) after it parked at 98% of the weekly usage limit (the owner's R-O-9). It holds the state at parking, what remains to the tag `offline-v3.0`, the exact commands, and paste-ready prompts. It was rendered from the live files and git at **2026-11-09 20:46 IST**. One line of state: trunk `build/offline-v1` at **c5dc374**, tags **offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1, offline-v3.2**, **72 merges** recorded on status-HUB.md, HUB RUNNING, CORE WAITING, SCREENS WAITING-OWNER.
 
 ## Read this first
 
@@ -33,54 +33,54 @@ Everything above was read from the live files and git at render time.
 
 # 1 Where we stopped
 
-Rendered **2026-11-09 18:17 IST**. The trunk is `build/offline-v1` at `903016c` (`903016c merge(offline): tests-docs READY 5ba8b91 (FIX-COUNTS-3: the counts true on the trunk dcabd906; CLAUDE.md, README.md, offline/README.md, the guide .md and .docx; docs only)`). Pushed: yes, origin/build/offline-v1 is at the same tip (as last fetched). Tags: offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1. Merges recorded on status-HUB.md: 66. Uncommitted: 3 file(s) uncommitted in the main folder (this document's own three files not counted), of them 2 under docs/offline/build-2026-11-07/: M docs/offline/build-2026-11-07/coordination/lane-widening.md; M docs/offline/build-2026-11-07/coordination/status-HUB.md.
+Rendered **2026-11-09 20:46 IST**. The trunk is `build/offline-v1` at `c5dc374` (`c5dc374 merge(offline): tests-docs READY 69f2b72 (FIX-COUNTS-4: the counts true on the trunk aac18546: Node 763 checks in 16 files, 32 browser flows with their names; docs only)`). Pushed: yes, origin/build/offline-v1 is at the same tip (as last fetched). Tags: offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1, offline-v3.2. Merges recorded on status-HUB.md: 72. Uncommitted: 2 file(s) uncommitted in the main folder (this document's own three files not counted), of them 1 under docs/offline/build-2026-11-07/: M docs/offline/build-2026-11-07/coordination/status-HUB.md.
 
-The HUB's last hand-over note in `tracks/HUB/RUN-RECORD.md`: *## Resume here (written 2026-11-09 16:12 IST by HUB 14:40 38b3cc2e at about 252k context, a safe point: no merge in flight, nothing of the HUB's running, _int detached at the trunk tip, the trunk pushed)*.
+The HUB's last hand-over note in `tracks/HUB/RUN-RECORD.md`: *## Resume here (written 2026-11-09 19:17 IST by HUB 16:12 ca715d55 at about 255k context, a safe point: no merge in flight, nothing of the HUB's running, _int detached at the trunk tip 3a0b2100, the trunk pushed)*.
 
 ## 1.1 The HUB (status-HUB.md)
 
 | Line | Value (cut to about 300 characters) |
 |---|---|
-| STATE | TAGGED   # 2026-11-09 18:16 IST: HUB 16:12 (ca715d55, session 31). TAG offline-v3.1 at 903016cc, pushed 18:15 IST with every build/* branch (the tag object ad24a214). FREEZE 18:10 (dcabd906), QUIET 18:10-18:13 GREEN by every name, FIX-COUNTS-3 merged 903016cc. The hand-off note on tracks/HUB/RUN-... |
-| BASE | 903016cc (the trunk tip at the tag offline-v3.1, 2026-11-09 18:16 IST; new lanes and fixes cut from here, merge base this tip; every lane complete for v3.1: core bf9b83c, actions-sos a397a8d, tests-docs 5ba8b91, learn a494fa7, workbook-settings 419718c, game-tutorials a3f0bf7, engine 97ac73a, tod... |
-| MERGING | none   # 2026-11-09 18:16 IST: fourteen merges on 9 Nov; the tag offline-v3.1 at 903016cc |
-| MERGE-QUEUE | none; expected after the tag: fixes by name toward offline-v3.2 (FIX-IMPORT-MARK core; actions-sos EC3, ES2, EF1, SF1; core EC2-EC5, ES2, ESR1; tests-docs' browser checks and the sos-craving retake; R-S-31; content V-10b after I6), each cut from 903016cc |
+| STATE | RUNNING   # 2026-11-09 19:21 IST: HUB 19:18 (d9d055f4, session 32) started by the launcher 19:18 on HUB 16:12's RESTART line. Read PLAN.md, status-HUB.md, the run record's Resume here (19:17), status-CORE.md and status-SCREENS.md, the outbox tails (R-C-85, R-S-33, R-O-9, R-H-53), the launcher sta... |
+| BASE | aac18546 (the trunk tip after the actions-sos FIX-AS-V32 merge = the offline-v3.2 FREEZE, 2026-11-09 20:37 IST; fixes cut from the trunk tip at their start, merge base that tip; the tag offline-v3.1 is 903016cc; lanes: actions-sos fb3966b, tests-docs 1686bb8 (FIX-COUNTS-4 next, docs only), core 4... |
+| MERGING | tests-docs 69f2b72 (FIX-COUNTS-4) since 2026-11-09 20:44 IST; docs only: the docs gate by hand on the merged tree |
+| MERGE-QUEUE | tests-docs READY 69f2b72 (FIX-COUNTS-4; merge base aac18546; R-C-89; docs only) queued 2026-11-09 20:44 IST; then TAG offline-v3.2 on the merge |
 | SLOTS-ALLOWED | 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the formula at 8.0; R-O-7): tests-docs 5, today-track 6, engine 2 (idle after V-40c; V-19 + V-30 tier 2 only when no tier 1 lane waits), content 4, core 1, actions-sos 3, game-tutorials 8 granted now. Every tier 1 lane has a slot; nothi... |
 | OWNER | R-O-9 (2026-11-08 08:53, filed by the owner's window, read by the HUB 09:00): at 98% of the owner's weekly usage the program PARKS (the owner's stop word given in advance; only the owner reads /usage, so the trigger is the owner's line): the launcher loop stops first (--stop), every live chat par... |
 | RULING | R-H-49 (2026-11-09 16:01 IST): R-C-79's one named red on tests-docs READY dbc81e6 ('contrast: .coach-sos (dark)' 2.73:1, styles.css:566) is a real defect in game-tutorials' territory, not a test fault: SCREENS fixes it first as FIX-COACH-SOS by name within the hour (to 17:00), the HUB merges the... |
-| UPDATED | 2026-11-09 18:16 IST |
+| UPDATED | 2026-11-09 20:44 IST |
 
 ## 1.2 CORE (status-CORE.md)
 
 | Line | Value |
 |---|---|
-| STATE | WAITING   # 2026-11-09 18:14 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): nothing of CORE runs. tests-docs READY 5ba8b91 (FIX-COUNTS-3) is with the HUB; it merges it and tags offline-v3.1 |
-| UPDATED | 2026-11-09 18:14 IST |
+| STATE | WAITING   # 2026-11-09 20:43 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. tests-docs READY 69f2b72 (FIX-COUNTS-4) is with the HUB, which tags offline-v3.2 on its merge |
+| UPDATED | 2026-11-09 20:43 IST |
 
 Lanes of CORE (the tip is `git rev-parse --short build/<lane>`; "pushed" compares it with origin as last fetched):
 
 | Lane | Lane line says | Branch tip | Pushed | Note on the lane line |
 |---|---|---|---|---|
-| core | MERGED bf9b83c | bf9b83c | yes | 2026-11-09 17:38 IST: the whole-lane review's READY merged 7dea9bc7 (HUB: build, store.test 99/99, validate, guards GREEN, full Node 735/735, nine browser flows 9/9). The lane's V3 units complete. ES1 is recorded as the owner's default (R-H-51); nothing more unless the owner says 'reverse ES1' |
+| core | MERGED 49c788f | 49c788f | yes | 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call |
 | engine | MERGED 97ac73a | 97ac73a | yes | 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete |
-| actions-sos | MERGED a397a8d | a397a8d | yes | 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete |
+| actions-sos | MERGED fb3966b | fb3966b | yes | 2026-11-09 20:37 IST: FIX-AS-V32 merged aac18546, pushed (the HUB: build, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9, the SOBER flow's first run against SF1's hold). R-H-54: C1 and FIX-SOS-FOCUS LOW, named for v3.3; the dro... |
 | learn | MERGED a494fa7 | a494fa7 | yes | 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2 |
-| tests-docs | READY 5ba8b91 | 5ba8b91 | yes | 2026-11-09 18:14 IST: FIX-COUNTS-3, docs only; merge base dcabd906. Node 743 checks in 16 files, 743 pass, 0 fail; browser 29 flows, 29 pass (the HUB's quiet window); the .docx rebuilt; territory 0; no test run. R-C-85 |
+| tests-docs | READY 69f2b72 | 69f2b72 | yes | 2026-11-09 20:43 IST: FIX-COUNTS-4; merge base aac18546. Docs only, the HUB's numbers: Node 763 in 16 files, browser 32 flows; 32 names in offline/README.md; no old count in the four text files; .docx rebuilt, 0 images missing; territory 0. R-C-89 |
 
 ## 1.3 SCREENS (status-SCREENS.md)
 
 | Line | Value |
 |---|---|
-| STATE | WAITING-OWNER   # 2026-11-09 16:10 IST: SCREENS 16:08 (6f1291e1) took over 9c7e67fd's RESTART. Nothing of SCREENS is running. Every unit that can run without the owner is merged; content V-10b waits for the owner's I6 (the India numbers). A background watch on outbox-OWNER.md and the HUB's messag... |
-| UPDATED | 2026-11-09 16:10 IST |
+| STATE | WAITING-OWNER   # 2026-11-09 19:18 IST: SCREENS 16:08 (6f1291e1): both R-H-53 fixes are merged (R-S-32 526663bb, FIX-MARKERS 3a0b2100). Nothing of SCREENS is running and no merge is open. Content V-10b waits for the owner's I6; a background watch on outbox-OWNER.md and the HUB's messages reopen t... |
+| UPDATED | 2026-11-09 19:18 IST |
 
 Lanes of SCREENS:
 
 | Lane | Lane line says | Branch tip | Pushed | Note on the lane line |
 |---|---|---|---|---|
-| content | MERGED-SLICE 96dd899 | 96dd899 | yes | V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later |
+| content | MERGED cd17758 | cd17758 | yes | FIX-MARKERS merged 3a0b2100 (HUB; build, 41/41, validate, guards GREEN). V-10b after I6 is the lane's one remaining unit; LOW C1 (content.test.mjs:381) goes with it or later |
 | today-track | MERGED 670df19 | 670df19 | yes | V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only |
-| workbook-settings | MERGED 419718c | 419718c | yes | V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit |
+| workbook-settings | MERGED b76d4f3 | b76d4f3 | yes | R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only |
 | actions | MERGED 0977edd | 0977edd | yes | READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only |
 | game-tutorials | MERGED a3f0bf7 | a3f0bf7 | yes | FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete |
 
@@ -91,22 +91,22 @@ The launcher's own status (`python docs/offline/build-2026-11-07/tools/fresh_cha
 ```
 launcher: active; loop running (pid 39876)
 paused tracks: none
-last check: 2026-11-09T18:15:14; free memory then 9.74 GB
-  HUB: STATE QUIET-DONE, UPDATED 2026-11-09 18:13, live 3, newest ca715d55 176k -> nothing to do
-  CORE: STATE WAITING, UPDATED 2026-11-09 18:14, live 2, newest 7ccd92d4 269k -> nothing to do
-  SCREENS: STATE WAITING-OWNER, UPDATED 2026-11-09 16:10, live 2, newest 6f1291e1 94k; at a stop -> nothing to do
-  launched HUB 2026-11-09T12:41 a2f8f5ea (HUB 12:41) because NO CHAT live for HUB (last step 09 Nov 10:40); stepped
+last check: 2026-11-09T20:46:14; free memory then 9.24 GB
+  HUB: STATE RUNNING, UPDATED 2026-11-09 20:44, live 2, newest d9d055f4 181k -> nothing to do
+  CORE: STATE WAITING, UPDATED 2026-11-09 20:43, live 1, newest 987cb3b4 273k -> nothing to do
+  SCREENS: STATE WAITING-OWNER, UPDATED 2026-11-09 19:18, live 1, newest 6f1291e1 258k; at a stop -> nothing to do
   launched HUB 2026-11-09T14:40 38b3cc2e (HUB 14:40) because NO CHAT live for HUB (last step 09 Nov 12:42); stepped
   launched HUB 2026-11-09T16:12 ca715d55 (HUB 16:12) because HAND-OVER written (status RESTART, 2026-11-09 16:12); stepped
-  launched CORE 2026-11-09T13:42 a7a160f2 (CORE 13:42) because NO CHAT live for CORE (last step 09 Nov 11:41); stepped
+  launched HUB 2026-11-09T19:18 d9d055f4 (HUB 19:18) because HAND-OVER written (status RESTART, 2026-11-09 19:16); stepped
   launched CORE 2026-11-09T14:46 215e6cdd (CORE 14:46) because NO CHAT live for CORE (last step 09 Nov 13:42); stepped
   launched CORE 2026-11-09T16:24 7ccd92d4 (CORE 16:24) because HAND-OVER written (status RESTART, 2026-11-09 16:22); stepped
+  launched CORE 2026-11-09T19:51 987cb3b4 (CORE 19:51) because HAND-OVER written (status RESTART, 2026-11-09 19:50); stepped
 ```
 
 ## 1.5 What was in flight
 
-- No merge in flight (MERGING: none   # 2026-11-09 18:16 IST: fourteen merges on 9 Nov; the tag offline-v3.1...).
-- CORE lane `tests-docs` READY 5ba8b91 waits for the HUB's merge: 2026-11-09 18:14 IST: FIX-COUNTS-3, docs only; merge base dcabd906. Node 743 checks in 16 files, 743 pass, 0 fail; browser 29 flows, 29 pass (the HUB's quiet window); the .docx rebuilt; territory 0; no test run. R-C-85
+- A merge in flight (MERGING on status-HUB.md): tests-docs 69f2b72 (FIX-COUNTS-4) since 2026-11-09 20:44 IST; docs only: the docs gate by hand on the merged tree
+- CORE lane `tests-docs` READY 69f2b72 waits for the HUB's merge: 2026-11-09 20:43 IST: FIX-COUNTS-4; merge base aac18546. Docs only, the HUB's numbers: Node 763 in 16 files, browser 32 flows; 32 names in offline/README.md; no old count in the four text files; .docx rebuilt, 0 images missing; territory 0. R-C-89
 
 <!-- pagebreak -->
 
@@ -116,14 +116,14 @@ The chain, in order, from PLAN-V3.md section 7 and the HUB's status file. **Done
 
 | Unit | Lane (track) | What it is | The lane's line now | Status |
 |---|---|---|---|---|
-| V-42 | content (SCREENS) | the quest-line's words: content-quests.js with Content.questLine (8 to 12 steps), Content.objectives (a pool of about 20), the run's words, the Content.xp rows, the JIT tutorials and help entries | MERGED-SLICE 96dd899 | Done |
-| V-41 | actions-sos (CORE, flagged) | the verbs: Actions.objective.done and swap, Actions.questLine.claim; a refusal returns ok:false and never throws; sample mode writes nothing of the person's own | MERGED a397a8d | Done |
-| V-46 | core (CORE, flagged) | the app's chrome builds its feature set from Engine.unlocked, so a reward the quest-line opened shows | MERGED bf9b83c | Done |
+| V-42 | content (SCREENS) | the quest-line's words: content-quests.js with Content.questLine (8 to 12 steps), Content.objectives (a pool of about 20), the run's words, the Content.xp rows, the JIT tutorials and help entries | MERGED cd17758 | Done |
+| V-41 | actions-sos (CORE, flagged) | the verbs: Actions.objective.done and swap, Actions.questLine.claim; a refusal returns ok:false and never throws; sample mode writes nothing of the person's own | MERGED fb3966b | Done |
+| V-46 | core (CORE, flagged) | the app's chrome builds its feature set from Engine.unlocked, so a reward the quest-line opened shows | MERGED 49c788f | Done |
 | V-43 | today-track (SCREENS) | Today's objectives card, the run line in the header, the quest-line's current step card; Your Harbor's growth elements and the spine 'Your way' | MERGED 670df19 | Done |
 | V-28 | game-tutorials (SCREENS) | the tour step on status-open, the JIT wiring and the 'New' dot for the status feature (unlock surfaces, part 1) | MERGED a3f0bf7 | Done |
 | V-44 | game-tutorials (SCREENS) | the reward sheet on a claim ('You unlocked ...'); the tools and game surfaces honour Engine.unlocked; the JIT tutorials and tour steps for the three features (unlock surfaces, part 2) | MERGED a3f0bf7 | Done |
-| V-45 | tests-docs (CORE) | three browser flows (an objective done grows the harbor; a break keeps best and total; a quest-line step unlocks a feature), their hooks, the guide lessons for the three, screenshots | READY 5ba8b91 | Done |
-| V-01t | tests-docs (CORE) | the status layer's browser flows, their hooks, the #/status screenshots and the guide lesson Your Harbor | READY 5ba8b91 | Done |
+| V-45 | tests-docs (CORE) | three browser flows (an objective done grows the harbor; a break keeps best and total; a quest-line step unlocks a feature), their hooks, the guide lessons for the three, screenshots | READY 69f2b72 | Done |
+| V-01t | tests-docs (CORE) | the status layer's browser flows, their hooks, the #/status screenshots and the guide lesson Your Harbor | READY 69f2b72 | Done |
 | FREEZE | the HUB | no new unit starts after the chain's last READY; fixes by name only | - | Done |
 | Full gates | the HUB | the HUB runs every gate on the integration worktree at the trunk tip (the quiet window): python docs/offline/build-2026-11-07/tools/gates.py --wt C:/Users/ruchi/1-addic-wt/_int --lane hub --full build test validate guards browser docs | - | Done |
 | Reds by name | the HUB | every FAIL line is read by name against coordination/baselines.md; a red is fixed by its lane (by territory), then the gate runs again | - | Done |
@@ -225,7 +225,7 @@ The message file's subject is `merge(offline): <lane> READY <tip7>` or `merge(of
 Copy the whole block. Paste it into a fresh Claude Code window opened in `C:\Users\ruchi\1-addic`.
 
 ```
-You are the owner's HUB window of the 1-addic offline build program (the build of 7 November 2026; edition V3; tag offline-v3.0). The program was parked at 2026-11-09 18:17 IST when the owner's weekly usage limit reached 98% (the owner's R-O-9). You resume it from its files. You are in C:\Users\ruchi\1-addic (the main folder; the trunk build/offline-v1 is checked out here; the lanes live in worktrees under C:\Users\ruchi\1-addic-wt\<lane>). Paths below are relative to docs/offline/build-2026-11-07/ (<docs>). Time stamps come from `date`, never estimated. The document you were pasted from (owner-docs/1-addic-Resume-Prompt.md) says the state at parking: trunk 903016c, tags offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1, 66 merges, pending nothing: every unit of the chain is merged; FREEZE, the full gates and the tag follow; its section 1 has every lane's tip.
+You are the owner's HUB window of the 1-addic offline build program (the build of 7 November 2026; edition V3; tag offline-v3.0). The program was parked at 2026-11-09 20:46 IST when the owner's weekly usage limit reached 98% (the owner's R-O-9). You resume it from its files. You are in C:\Users\ruchi\1-addic (the main folder; the trunk build/offline-v1 is checked out here; the lanes live in worktrees under C:\Users\ruchi\1-addic-wt\<lane>). Paths below are relative to docs/offline/build-2026-11-07/ (<docs>). Time stamps come from `date`, never estimated. The document you were pasted from (owner-docs/1-addic-Resume-Prompt.md) says the state at parking: trunk c5dc374, tags offline-v1.0, offline-v1.1, offline-v3.0, offline-v3.1, offline-v3.2, 72 merges, pending nothing: every unit of the chain is merged; FREEZE, the full gates and the tag follow; its section 1 has every lane's tip.
 
 1. Read first, in this order, before you write anything: PLAN.md; PLAN-V3.md; coordination/status-HUB.md; tracks/HUB/RUN-RECORD.md from its last "Resume here" heading to the end; coordination/status-CORE.md; coordination/status-SCREENS.md; the four outboxes coordination/outbox-HUB.md, outbox-CORE.md, outbox-SCREENS.md and outbox-OWNER.md (the last three entries of each, every R-O entry of outbox-OWNER.md); coordination/baselines.md.
 
@@ -255,13 +255,13 @@ Use these only if the launcher cannot start a chat (its `--status` shows no live
 **CORE** (lanes core, engine, actions-sos, learn, tests-docs):
 
 ```
-ultracode. You are the CORE chat of the 1-addic offline edition build of 7 November 2026 (`docs/offline/build-2026-11-07/PLAN.md`), started by hand by the owner because the launcher could not start you. Your full kickoff is the fenced block under "# Prompt 1 · CORE" in docs/offline/build-2026-11-07/KICKOFF-PROMPTS.md: read it first and follow it as if the launcher had given it to you (it names your lanes, the rules, the records and the V3 units). Then resume: read your status file coordination/status-CORE.md and tracks/CORE/RUN-RECORD.md, then continue from the last finished step; a workflow run your run record names as running is alive only if its session is still listed by `claude agents`: if that session is gone, the run died with it, so relaunch that lane with done and priorNote from its branch's last commit and its progress notes, never wait for it. The program was parked at 2026-11-09 18:17 IST at 98% of the owner's weekly usage and is resuming now; the HUB merges, you build. Memory (PLAN.md section 4): never start a run under 4.0 GB free; a new run needs a row of 7.0 GB; under 4.0 GB the newest run pauses at its next commit. Rewrite your status file at every step: STATE with a note, one LANE line per lane with its state and tip (NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY-SLICE <tip>, READY <tip>, RED <round>, MERGED, PAUSED <tip>), UPDATED from `date`. Over 250,000 tokens plan the hand-over; at 300,000, at the next safe point, write the run record and STATE: RESTART, then stop. Your lanes at parking: core MERGED bf9b83c; engine MERGED 97ac73a; actions-sos MERGED a397a8d; learn MERGED a494fa7; tests-docs READY 5ba8b91.
+ultracode. You are the CORE chat of the 1-addic offline edition build of 7 November 2026 (`docs/offline/build-2026-11-07/PLAN.md`), started by hand by the owner because the launcher could not start you. Your full kickoff is the fenced block under "# Prompt 1 · CORE" in docs/offline/build-2026-11-07/KICKOFF-PROMPTS.md: read it first and follow it as if the launcher had given it to you (it names your lanes, the rules, the records and the V3 units). Then resume: read your status file coordination/status-CORE.md and tracks/CORE/RUN-RECORD.md, then continue from the last finished step; a workflow run your run record names as running is alive only if its session is still listed by `claude agents`: if that session is gone, the run died with it, so relaunch that lane with done and priorNote from its branch's last commit and its progress notes, never wait for it. The program was parked at 2026-11-09 20:46 IST at 98% of the owner's weekly usage and is resuming now; the HUB merges, you build. Memory (PLAN.md section 4): never start a run under 4.0 GB free; a new run needs a row of 7.0 GB; under 4.0 GB the newest run pauses at its next commit. Rewrite your status file at every step: STATE with a note, one LANE line per lane with its state and tip (NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY-SLICE <tip>, READY <tip>, RED <round>, MERGED, PAUSED <tip>), UPDATED from `date`. Over 250,000 tokens plan the hand-over; at 300,000, at the next safe point, write the run record and STATE: RESTART, then stop. Your lanes at parking: core MERGED 49c788f; engine MERGED 97ac73a; actions-sos MERGED fb3966b; learn MERGED a494fa7; tests-docs READY 69f2b72.
 ```
 
 **SCREENS** (lanes content, today-track, workbook-settings, actions, game-tutorials):
 
 ```
-ultracode. You are the SCREENS chat of the 1-addic offline edition build of 7 November 2026 (`docs/offline/build-2026-11-07/PLAN.md`), started by hand by the owner because the launcher could not start you. Your full kickoff is the fenced block under "# Prompt 2 · SCREENS" in docs/offline/build-2026-11-07/KICKOFF-PROMPTS.md: read it first and follow it as if the launcher had given it to you (it names your lanes, the rules, the records and the V3 units). Then resume: read your status file coordination/status-SCREENS.md and tracks/SCREENS/RUN-RECORD.md, then continue from the last finished step; a workflow run your run record names as running is alive only if its session is still listed by `claude agents`: if that session is gone, the run died with it, so relaunch that lane with done and priorNote from its branch's last commit and its progress notes, never wait for it. The program was parked at 2026-11-09 18:17 IST at 98% of the owner's weekly usage and is resuming now; the HUB merges, you build. Memory (PLAN.md section 4): never start a run under 4.0 GB free; a new run needs a row of 7.0 GB; under 4.0 GB the newest run pauses at its next commit. Rewrite your status file at every step: STATE with a note, one LANE line per lane with its state and tip (NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY-SLICE <tip>, READY <tip>, RED <round>, MERGED, PAUSED <tip>), UPDATED from `date`. Over 250,000 tokens plan the hand-over; at 300,000, at the next safe point, write the run record and STATE: RESTART, then stop. Your lanes at parking: content MERGED-SLICE 96dd899; today-track MERGED 670df19; workbook-settings MERGED 419718c; actions MERGED 0977edd; game-tutorials MERGED a3f0bf7.
+ultracode. You are the SCREENS chat of the 1-addic offline edition build of 7 November 2026 (`docs/offline/build-2026-11-07/PLAN.md`), started by hand by the owner because the launcher could not start you. Your full kickoff is the fenced block under "# Prompt 2 · SCREENS" in docs/offline/build-2026-11-07/KICKOFF-PROMPTS.md: read it first and follow it as if the launcher had given it to you (it names your lanes, the rules, the records and the V3 units). Then resume: read your status file coordination/status-SCREENS.md and tracks/SCREENS/RUN-RECORD.md, then continue from the last finished step; a workflow run your run record names as running is alive only if its session is still listed by `claude agents`: if that session is gone, the run died with it, so relaunch that lane with done and priorNote from its branch's last commit and its progress notes, never wait for it. The program was parked at 2026-11-09 20:46 IST at 98% of the owner's weekly usage and is resuming now; the HUB merges, you build. Memory (PLAN.md section 4): never start a run under 4.0 GB free; a new run needs a row of 7.0 GB; under 4.0 GB the newest run pauses at its next commit. Rewrite your status file at every step: STATE with a note, one LANE line per lane with its state and tip (NEW, SCOUTED, BUILDING, CHECKING, REVIEWING, READY-SLICE <tip>, READY <tip>, RED <round>, MERGED, PAUSED <tip>), UPDATED from `date`. Over 250,000 tokens plan the hand-over; at 300,000, at the next safe point, write the run record and STATE: RESTART, then stop. Your lanes at parking: content MERGED cd17758; today-track MERGED 670df19; workbook-settings MERGED b76d4f3; actions MERGED 0977edd; game-tutorials MERGED a3f0bf7.
 ```
 
 # 8 The parking checklist
