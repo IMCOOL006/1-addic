@@ -96,6 +96,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 - 11:54 tests-docs READY 44a07e0 (FIX-COUNTS: the test counts true in CLAUDE.md, README.md, offline/README.md and the guide) -> 60dffe33, trunk 60dffe33 = the tag offline-v3.0. build, test, validate, guards, docs GREEN by name. Merge base 5ee84d5a.
 
 ## Blockers and questions
+- 2026-11-09 16:01 IST (HUB 14:40): tests-docs' new contrast check found the coach's SOS link too dim in dark mode (2.73:1; R-C-79). Ruled R-H-49: game-tutorials fixes it first (SCREENS, by 17:00), then tests-docs merges on top; nothing is baselined. V-LIMIT runs since 16:00 by default (no objection from the owner's window).
 - 2026-11-09 14:47 IST (HUB 14:40): the weekly-limit gap, 2026-11-08 12:51 to 2026-11-09 14:30 IST (R-H-48): every chat died on its first request; the launcher relaunched each track every two hours (45 chats). Lifted by the reset. Asked of the owner: the /usage reading; V-LIMIT (default yes, 16:00).
 
 - 11:54 CLOSED: the test-count lines in CLAUDE.md, README.md, offline/README.md and the guide are true on the trunk (FIX-COUNTS 44a07e0, merged at 60dffe33 = the tag).
