@@ -2522,6 +2522,53 @@ describe('boot.js: a start failure shows one line and the urgent-help numbers', 
   });
 });
 
+// V-26a: build.mjs prints what each part adds to the file. It writes beside itself, so these builds run from a
+// throwaway folder and never rewrite offline/1-addic.html.
+describe('build.mjs prints the size of every part (V-26a)', () => {
+  const { spawnSync } = require('node:child_process');
+  const os = require('node:os');
+  const path = require('node:path');
+
+  function buildIn(files) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'core-build-'));
+    try {
+      fs.mkdirSync(path.join(dir, 'src'));
+      fs.copyFileSync(new URL('../build.mjs', import.meta.url), path.join(dir, 'build.mjs'));
+      for (const [name, text] of Object.entries(files)) fs.writeFileSync(path.join(dir, 'src', name), text);
+      const r = spawnSync(process.execPath, [path.join(dir, 'build.mjs')], { encoding: 'utf8' });
+      const built = path.join(dir, '1-addic.html');
+      return { status: r.status, lines: r.stdout.split(/\r?\n/).filter(Boolean), fileBytes: fs.existsSync(built) ? fs.statSync(built).size : null };
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  const SHELL = '<main id="main"></main>\n\n'; // 23 bytes as inlined: the build trims the trailing newlines
+  const CSS = 'body { color: red; }\n'; // 21 bytes
+
+  test('build: one size line per built part in list order, then the shell, the styles and the total', () => {
+    const store = 'var a = "café";\n// ' + 'x'.repeat(2045) + '\n'; // 2066 bytes, one fewer characters: sizes are bytes
+    const boot = 'var s = "</script>";\n'; // 21 bytes in the file, 22 as inlined: the size is what the part adds to the page
+    const r = buildIn({ 'shell.html': SHELL, 'styles.css': CSS, 'store.js': store, 'boot.js': boot });
+    assert.equal(r.status, 0, 'the build succeeds');
+    assert.deepEqual(r.lines.slice(0, 4), [
+      'part store.js 2066 B (2.0 kB)',
+      'part boot.js 22 B (0.0 kB)',
+      'part shell.html 23 B (0.0 kB)',
+      'part styles.css 21 B (0.0 kB)',
+    ]);
+    assert.equal(r.lines.length, 5, 'an absent part prints no size line');
+    assert.equal(r.lines[4].startsWith('built offline/1-addic.html ' + r.fileBytes + ' B ('), true, 'the total is last and is the size of the file written: ' + r.lines[4]);
+    assert.match(r.lines[4], /, 2 parts, skipped \(absent\): content-core\.js, /, 'the rest of the total line is unchanged');
+  });
+
+  test('build: a part that does not parse prints no size and writes no file', () => {
+    const r = buildIn({ 'shell.html': SHELL, 'styles.css': CSS, 'store.js': 'var = ;\n', 'boot.js': 'var ok = 1;\n' });
+    assert.equal(r.status, 1, 'the build fails');
+    assert.deepEqual(r.lines, [], 'nothing on stdout: no size line for a build that did not finish');
+    assert.equal(r.fileBytes, null, 'no file written');
+  });
+});
+
 // V-46 (R-H-44 on R-S-21): the chrome's features come from Engine.unlocked when the engine has it, so a feature that a
 // claimed quest-line reward or a FeatureUnlocked event opened shows in the chrome. Last in the file on purpose: the
 // real engine loads every content file into the shared Content.
