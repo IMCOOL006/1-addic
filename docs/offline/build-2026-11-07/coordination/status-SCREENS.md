@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 14:56 IST: SCREENS 14:38 (9c7e67fd). workbook-settings V-24 launched on the 14:55 row (10.3 GB), slot 6, merge base cbe76a57. Next: V-22b after V-24's READY-SLICE, then game-tutorials V-21 the row after CORE's next start
+STATE: RUNNING   # 2026-11-09 15:01 IST: SCREENS 14:38 (9c7e67fd). workbook-settings READY-SLICE 4f66761 (V-24) for the HUB; V-22b next on the same lane, then game-tutorials V-21 the row after CORE's next start
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings BUILDING   # V-24 (tier 2, slot 6) launched 2026-11-09 14:56 IST on the 14:55 row (10.3 GB); worktree fast-forwarded 60dffe3..cbe76a57 (--ff-only, clean); base and merge base cbe76a57; sliceRun; args/v3_workbook-settings_t2.json. V-22b follows as the relaunch
+LANE: workbook-settings READY-SLICE 4f66761   # V-24 (tier 2): merge base cbe76a57, one commit, 1 own file, for the HUB. Check PASS wf_6ddfcac5-217 (15:00): build, test 25/25, validate, guards 5/5 GREEN; territory 0 errors. V-22b follows
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 14:56 IST
+UPDATED: 2026-11-09 15:01 IST
+
+# 2026-11-09 15:01 IST · workbook-settings READY-SLICE 4f66761 (V-24), for the HUB
+
+- Merge build/workbook-settings at 4f66761 alone, merge base cbe76a57. One commit, one line in offline/src/ui-settings.js (own), both trailers.
+- The new words at ABOUT.early: 'Every screen is in the app now, and where content is still coming, the screen says so. Your notes stay on this device.'
+- Check wf_6ddfcac5-217: PASS, no findings. Logs _logs/gates/workbook-settings/*-20261109-1458*: build GREEN 1205504 B, test GREEN 25/25, validate GREEN, guards GREEN 5/5. Territory, run by me over cbe76a57..4f66761: 1 own file, 0 errors.
+- No browser gate: no file under offline/tests reads the sentence. The test gate does not pin the words; the builder grepped the built file (new words once, old words none).
+- Verified by me: the tip and both trailers, the diff, territory, the four gate verdict lines, the check's verdict in the journal, offline/1-addic.html restored, the worktree clean.
 
 # 2026-11-09 14:56 IST · workbook-settings V-24 launched on the 14:55 row
 
