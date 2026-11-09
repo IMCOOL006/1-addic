@@ -59,10 +59,10 @@ async function markOnboarded(page, tourDone) {
   if (!(await routeRegistered(page, 'onboarding'))) return;
   if (await missingGlobal(page, ['Store', 'Actions.onboard'])) return;
   await page.evaluate(async (tour) => {
-    try { await Actions.onboard({}); } catch (e) { /* the flow then starts wherever the app lands */ }
-    if (tour && Actions.tutorial && typeof Actions.tutorial.done === 'function') {
-      try { await Actions.tutorial.done('tour', { skipped: true }); } catch (e) { /* the tour may then start on Today */ }
-    }
+    try {
+      await Actions.onboard({});
+      if (tour && Actions.tutorial && typeof Actions.tutorial.done === 'function') await Actions.tutorial.done('tour', { skipped: true });
+    } catch (e) { /* the flow then starts wherever the app lands */ }
   }, tourDone === true);
   await F.go(page, '#/today');
 }
