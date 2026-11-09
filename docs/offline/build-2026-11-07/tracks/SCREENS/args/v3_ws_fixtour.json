@@ -1,0 +1,50 @@
+{
+  "lane": "workbook-settings",
+  "chat": "SCREENS",
+  "tier": 2,
+  "flagged": false,
+  "area": "Settings' Replay the tour goes to Today; two LOWs of the lane.",
+  "files": [
+    "offline/src/ui-settings.js",
+    "offline/tests/workbook-settings.test.mjs"
+  ],
+  "units": [
+    "FIX-TOUR-REPLAY",
+    "FIX-WS-LOWS"
+  ],
+  "batches": [
+    [
+      "FIX-TOUR-REPLAY",
+      "FIX-WS-LOWS"
+    ]
+  ],
+  "unitTier": {
+    "FIX-TOUR-REPLAY": 2,
+    "FIX-WS-LOWS": 2
+  },
+  "unitNotes": {
+    "FIX-TOUR-REPLAY": "ui-settings.js:421 (helpTab). 'Replay the tour' calls G.coach('tour',{replay:true}) on #/settings/help, so the Today steps show as centred cards there. Make it the link the file's training list draws at :426: h('a', { class: 'btn', href: '#/today?tour=1', 'data-test': 'tour-replay', text: 'Replay the tour' }). Keep the typeof G.coach guard and the tour-later else. ui-guidance.js:668-675 opens the tour on arrival at that hash. New test, exactly this name: 'workbook-settings FIX-TOUR-REPLAY: Replay the tour is a link to Today with tour=1'. With a stand-in globalThis.GuidanceUI (coach counts calls, training returns []), restored in finally, render the help tab, assert byTest 'tour-replay' has that href and the coach stand-in was not called. The flow 'tour replay from Settings Help' (browser.test.mjs:169, not yours) must stay green.",
+    "FIX-WS-LOWS": "One commit, after FIX-TOUR-REPLAY. (a) workbook-settings.test.mjs:296-297: the comment above withSampleStandIns says this tree has no Content.sample. Make it true: both are real here (the round trip is the test above); these cases use stand-ins only to count calls. Comment only. (b) ui-settings.js: TEXT.eraseSampleLater (:50) promises a later update that has shipped. Grep offline/ for the words, then delete the key; at :603 eraseLine becomes !sampleRow ? 'No sample data is loaded.' : null; keep canErase on the button (:600, :621). In the test 'workbook-settings: pure helpers', the assert at :119 pinning those words becomes assert.equal('eraseSampleLater' in P.TEXT, false, 'the promise of a later update is gone'). The test's name does not change."
+  },
+  "laneNote": "FIX-TOUR-REPLAY + FIX-WS-LOWS: fixes by name from the HUB (R-S-31; toward offline-v3.2; SCREENS 16:08, 2026-11-09 18:21 IST). One batch, one builder, one commit per unit in that order, the unit id in the message, both trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_6f1291e1-0216-436a-a494-2f0b2049e32d). The worktree was fast-forwarded --ff-only to 903016cc, the tag offline-v3.1. The unit notes are the spec. Only offline/src/ui-settings.js and offline/tests/workbook-settings.test.mjs change. Test names are failure identities: add the one new name, never rename or delete one. Under 4.0 GB free memory before a heavy gate: commit what is clean and return the note. Restore offline/1-addic.html after any build. Gates through gates.py: build, test, validate, guards, browser --grep tour (three flows). Say in for_the_chat, change neither: (1) whether the Help tab's training list also shows a 'Replay the tour' link (ui-guidance.js:223), so two controls of one name do the same thing; (2) browser.test.mjs:170 and helpers/hooks.mjs:98 cite ui-settings.js:421 if the line moved.",
+  "done": [
+    "U-19",
+    "U-20a",
+    "U-20b",
+    "U-21",
+    "FIX-SAMPLE",
+    "C1",
+    "V-24",
+    "V-22b"
+  ],
+  "brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/workbook-settings.md",
+  "contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/workbook-settings.md",
+  "slot": 6,
+  "base": "903016cc",
+  "diffFrom": "903016cc",
+  "session": "https://claude.ai/code/session_6f1291e1-0216-436a-a494-2f0b2049e32d",
+  "now": "2026-11-09 18:21 IST",
+  "sliceRun": false,
+  "start": "build",
+  "priorNote": ""
+}

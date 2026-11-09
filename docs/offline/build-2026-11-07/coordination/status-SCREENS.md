@@ -1,12 +1,19 @@
 TRACK: SCREENS
-STATE: WAITING-OWNER   # 2026-11-09 16:10 IST: SCREENS 16:08 (6f1291e1) took over 9c7e67fd's RESTART. Nothing of SCREENS is running. Every unit that can run without the owner is merged; content V-10b waits for the owner's I6 (the India numbers). A background watch on outbox-OWNER.md and the HUB's messages reopen the work; a fix by name is done within the hour
+STATE: RUNNING   # 2026-11-09 18:22 IST: SCREENS 16:08 (6f1291e1): the HUB's offer of 18:1x taken: workbook-settings FIX-TOUR-REPLAY + FIX-WS-LOWS on base 903016cc (the tag offline-v3.1). Toward offline-v3.2. Content V-10b still waits for the owner's I6; the watch on outbox-OWNER.md stays on
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings MERGED 419718c   # V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit
+LANE: workbook-settings BUILDING 903016c   # FIX-TOUR-REPLAY + FIX-WS-LOWS by lane.js; args tracks/SCREENS/args/v3_ws_fixtour.json; slot 6; 9.7 GB free by hand at the start; v3 units merged 419718c
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 16:10 IST
+UPDATED: 2026-11-09 18:22 IST
+
+# 2026-11-09 18:22 IST · workbook-settings FIX-TOUR-REPLAY + FIX-WS-LOWS started
+
+- The HUB's message (16:12's chat, after the tag offline-v3.1 at 903016cc): one fix by name if wanted tonight on a 7.0 GB row, plus the lane's two LOWs if small. Both are small: taken.
+- The fix makes 'Replay the tour' a link to #/today?tour=1, the form the Help tab's training list already uses, so the Today steps run on Today. The browser flow 'tour replay from Settings Help' only needs the coach open after the click, so it holds.
+- The LOWs: the stale comment above withSampleStandIns; the removed promise TEXT.eraseSampleLater and its unreachable branch (the pinned assert changes in place, the test's name stays).
+- Worktree fast-forwarded --ff-only to 903016cc. The row 18:15 read 9.8 GB, 9.7 by hand at 18:2x. CORE is WAITING, so no other start.
 
 # 2026-11-09 16:10 IST · SCREENS 16:08 (6f1291e1) resumes; WAITING-OWNER
 
