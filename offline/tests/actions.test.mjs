@@ -3571,4 +3571,125 @@ describe('V3 actions-sos V-41 (objectives and the quest line)', () => {
     assert.equal((await done(a)).ok, true, 'unlocked: written');
   });
 });
+// ── V-25 (V3-25): unlock gives a sign of life. The Store's unlock waits on the test, so the line can be read while the key is made ──
+describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
+  const O = require(src('ui-onboarding.js'));
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const unlockGate = () => {
+    const real = S();
+    const g = { calls: 0, release: null, fail: null };
+    g.store = Object.create(real);
+    g.store.lock = Object.assign(Object.create(real.lock), { unlock: () => { g.calls += 1; return new Promise((res, rej) => { g.release = res; g.fail = rej; }); } });
+    return g;
+  };
+  const lockForm = (g) => {
+    const d = sosDom({ onboarding: true, store: g.store });
+    const page = d.UI.pages.lock({});
+    const form = page.querySelector('form');
+    const msg = page.querySelectorAll('p').find((p) => p.attrs.id === 'lock-msg');
+    return { d, page, form, msg, pin: d.byId(page, 'lock-pin'), btn: d.byId(page, 'lock-unlock'), line: d.byId(page, 'lock-opening') };
+  };
+  const submit = (f) => f.form.on.submit[0]({ preventDefault() {} });
+  const said = (n) => n.textContent.trim();
+  const controls = (f) => [f.pin.disabled, f.btn.disabled];
+
+  test('V-25: while the PIN is checked the lock form says Opening your notebook in a polite status line, the controls disabled; a right PIN empties it and goes to Today', async () => {
+    assert.equal(O.COPY.opening, 'Opening your notebook');
+    const g = unlockGate();
+    const f = lockForm(g);
+    assert.equal(f.line.tag, 'p');
+    assert.deepEqual([f.line.attrs.id, f.line.attrs.role, f.line.attrs['aria-live']], ['lock-opening', 'status', 'polite'], 'a polite status line');
+    assert.ok(!f.line.hidden, 'in the page from the start, so a screen reader hears the words when they come');
+    assert.equal(f.form.querySelector('[data-testid="lock-opening"]'), f.line, 'in the lock form');
+    assert.equal(said(f.line), '', 'empty before a try');
+    assert.match(readFileSync(src('styles.css'), 'utf8'), /#lock-opening:empty \{ position: absolute; \}/, 'empty, it takes no room and no gap');
+    f.pin.value = '2468';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening, 'shown at once, before the key is made');
+    assert.deepEqual(controls(f), [true, true], 'the controls stay disabled meanwhile');
+    assert.equal(g.calls, 1);
+    await tick();
+    assert.equal(said(f.line), O.COPY.opening, 'still shown while the key is made');
+    g.release(true);
+    await done;
+    assert.equal(said(f.line), '', 'cleared on success');
+    assert.deepEqual(f.d.replaced, ['#/today'], 'on to Today');
+    assert.equal(f.msg.hidden, true, 'no message');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+  });
+
+  test('V-25: a wrong PIN: the line stays through the pause, is empty after, the message shows, the controls come back and the focus is on the PIN', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '1111';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening);
+    g.release(false);
+    await tick();
+    assert.equal(said(f.line), O.COPY.opening, 'through the pause after a wrong PIN');
+    assert.deepEqual(controls(f), [true, true], 'still disabled through the pause');
+    await done;
+    assert.equal(said(f.line), '', 'cleared on a wrong PIN');
+    assert.equal(said(f.msg), O.COPY.wrong, 'the wrong-PIN message');
+    assert.equal(f.msg.hidden, false);
+    assert.deepEqual(f.d.go, [], 'still locked: no way on');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+    assert.equal(f.d.doc.activeElement, f.pin, 'the focus is on the PIN');
+  });
+
+  test('V-25: an unlock that throws (a PIN is not available here): the line is empty after, the message says so, the controls come back', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '2468';
+    const done = submit(f);
+    assert.equal(said(f.line), O.COPY.opening);
+    const err = Object.assign(new Error('x'), { code: 'NO_CRYPTO' });
+    g.fail(err);
+    await done;
+    assert.equal(said(f.line), '', 'cleared on a thrown unlock');
+    assert.equal(said(f.msg), O.lockError(err));
+    assert.equal(f.msg.hidden, false);
+    assert.deepEqual(f.d.go, [], 'still locked: no way on');
+    assert.deepEqual(controls(f), [false, false], 'the controls come back');
+  });
+
+  test('V-25: an empty PIN makes no line and no try; a second submit while the key is made neither clears the line nor tries again', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '';
+    await submit(f);
+    assert.equal(said(f.line), '', 'nothing tried, nothing said');
+    assert.equal(g.calls, 0, 'nothing tried');
+    assert.deepEqual(controls(f), [false, false], 'nothing disabled');
+    f.pin.value = '2468';
+    const done = submit(f);
+    await submit(f); // the first submit emptied the field; Enter again
+    assert.equal(said(f.line), O.COPY.opening, 'a second submit leaves the line');
+    assert.equal(g.calls, 1, 'one try');
+    assert.deepEqual(controls(f), [true, true], 'still disabled');
+    g.release(true);
+    await done;
+    assert.equal(said(f.line), '');
+  });
+
+  test('V-25: while the PIN is checked, urgent help and the SOBER practice stay open: both outside the form, neither disabled', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '2468';
+    const done = submit(f);
+    const urgent = f.d.byId(f.page, 'lock-urgent');
+    const sober = f.d.byId(f.page, 'lock-sober');
+    assert.equal(said(f.line), O.COPY.opening);
+    assert.equal(f.form.querySelector('[data-testid="lock-urgent"]'), null, 'urgent help is outside the lock form');
+    assert.equal(f.form.querySelector('[data-testid="lock-sober"]'), null, 'so is the SOBER practice');
+    assert.deepEqual([!!urgent.disabled, !!sober.disabled], [false, false], 'neither waits for the PIN');
+    assert.ok(urgent.attrs.href, 'urgent help is a link, live');
+    const heads = f.page.querySelectorAll('h1').length;
+    sober.click();
+    assert.equal(f.page.querySelectorAll('h1').length, heads + 1, 'the SOBER practice opens while the key is made');
+    g.release(true);
+    await done;
+  });
+});
 // -- V3 actions-sos tests end --
