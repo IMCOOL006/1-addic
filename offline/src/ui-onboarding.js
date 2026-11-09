@@ -242,7 +242,15 @@
     const unlock = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock', dataset: tid('lock-unlock') });
     const panel = h('div', { class: 'stack', hidden: true });
     // ES1: urgent help stays open while the key is made, so a right PIN moves on, and a wrong one takes the focus, only from the lock page.
-    const onLock = () => safe(() => UI.route().parts[0] === 'lock', true);
+    const onLock = () => panel.hidden && safe(() => UI.route().parts[0] === 'lock', true);
+    // EC1: the practice is SOS too. ui-core draws #/lock again when the notebook opens (ui-core.js:889) and never an SOS route, so the route is #/sos while the
+    // practice is open: the key arriving leaves it where it is. Done goes on to Today if the notebook opened meanwhile, else back to #/lock (not drawn again: a PIN being checked goes on).
+    const setRoute = (to) => safe(() => history.replaceState(history.state, '', to), null);
+    const closePractice = () => {
+      panel.hidden = true; panel.replaceChildren();
+      if (safe(() => S.status().locked === false, false)) UI.go('#/today', { replace: true });
+      else setRoute('#/lock');
+    };
     const form = h('form', { class: 'form stack', novalidate: true, onSubmit: async (ev) => {
       ev.preventDefault();
       const tried = pin.value;
@@ -259,8 +267,9 @@
     } }, field('PIN', pin), msg, unlock, opening);
     const sober = typeof UI.sosSoberView === 'function'
       ? btn(L.sober.label, () => {
-        panel.replaceChildren(UI.sosSoberView(() => { panel.hidden = true; panel.replaceChildren(); }, 'Done', L.sober.title));
+        panel.replaceChildren(UI.sosSoberView(closePractice, 'Done', L.sober.title));
         panel.hidden = false;
+        setRoute('#/sos');
         const t = panel.querySelector('h1'); if (t && t.focus) t.focus();
       }, { testid: 'lock-sober' })
       : h('a', { class: 'btn', href: L.sober.href, text: L.sober.label, dataset: tid('lock-sober') });

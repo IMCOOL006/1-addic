@@ -3690,6 +3690,7 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(f.page.querySelectorAll('h1').length, heads + 1, 'the SOBER practice opens while the key is made');
     g.release(true);
     await done;
+    assert.deepEqual(f.d.replaced, [], 'EC1: the practice stays open, the key ready or not');
   });
 
   // ES1, EC1: the real router. ui-core.js (boot, render, go, schedule) and the real lock page in a context of their own, over a stand-in DOM. The Store's unlock
@@ -3802,6 +3803,52 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(a.location.hash, '#/sos/urgent', 'still there');
     assert.notEqual(a.doc.activeElement, pin, 'the focus is not pulled back to the lock form');
     assert.equal(a.doc.activeElement, before, 'it stays where it was');
+  });
+
+  test('EC1: the SOBER practice opened while the key is made stays open when the key is ready, and its Done goes on to Today (the real router)', async () => {
+    const a = await routerApp();
+    a.submit('2468');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    await a.keyReady(true);
+    assert.equal(a.store.locked, false, 'the notebook is open');
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.doesNotMatch(a.text(), /TODAY/, 'Today is not drawn over it');
+    assert.notEqual(a.location.hash, '#/today', 'the route has not moved on');
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/today', 'Done goes on to Today, the notebook being open');
+    assert.match(a.text(), /TODAY/);
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/);
+  });
+
+  test('EC1: the SOBER practice closed while the key is still made: back on the lock route, the form goes on, and the key then goes on to Today (the real router)', async () => {
+    const a = await routerApp();
+    a.submit('2468');
+    a.hook('lock-sober').on.click[0]({});
+    a.soberDone();
+    assert.equal(a.location.hash, '#/lock', 'still locked: back on the lock route');
+    assert.ok(a.hook('lock-pin'), 'the same lock form, not drawn again');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/);
+    await a.keyReady(true);
+    assert.equal(a.location.hash, '#/today', 'nothing open: on to Today');
+    assert.match(a.text(), /TODAY/);
+  });
+
+  test('EC1: a wrong PIN with the SOBER practice open: the practice stays, the message shows, the focus is not pulled out of it; Done goes back to the lock route (the real router)', async () => {
+    const a = await routerApp();
+    const pin = a.hook('lock-pin');
+    a.hook('lock-sober').on.click[0]({});
+    a.submit('1111');
+    await a.keyReady(false);
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice stays');
+    assert.ok(a.text().includes(require(src('ui-onboarding.js')).COPY.wrong), 'the wrong-PIN message shows');
+    assert.notEqual(a.doc.activeElement, pin, 'the focus is not pulled to the PIN');
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'still locked: the lock route');
+    assert.ok(a.hook('lock-pin'), 'the lock form');
+    assert.equal(a.store.locked, true);
   });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
