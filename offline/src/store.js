@@ -115,7 +115,7 @@ const Store = (function () {
     return false;
   }
   // Two tabs of the file share the storage. Each write carries the lock row its tab knows, and the backend refuses
-  // it when the stored one differs (another tab set, changed or removed the PIN): no tab then writes plain rows beside
+  // it when the stored one differs (another tab set, changed or removed the PIN, or imported a backup with a PIN set): no tab then writes plain rows beside
   // a lock, seals a row under an old key or drops the lock row (RC2, RS3).
   const lockOf = (all) => ((all && Array.isArray(all.meta) ? all.meta : []).find((r) => r && r.key === 'lock' && r.salt && r.check) || null);
   const lockId = (L) => (L && L.salt && L.check ? String(L.salt) + '|' + JSON.stringify(L.check) : '');
@@ -515,8 +515,9 @@ const Store = (function () {
   }
 
   // Eight hex characters (FNV-1a) over the lock row's random salt and sealed check, so another tab's save can tell the
-  // lock changed: created, removed or replaced, the same PIN after an erase included. Locking and unlocking change no
-  // row and so no mark. It is a digest of the row, never of the PIN, and neither the salt nor the check leaves the store.
+  // lock changed: created, removed or replaced, the same PIN after an erase included, or the notebook was imported over
+  // with a PIN set (replaceAll seals the check again). Locking and unlocking change no row and so no mark. It is a
+  // digest of the row, never of the PIN, and neither the salt nor the check leaves the store.
   function lockMark(L) {
     const s = lockId(L);
     if (!s) return '';
@@ -537,6 +538,8 @@ const Store = (function () {
   }
 
   // Replaces every row (never merges), in one write; the current lock stays and the new rows are sealed under it.
+  // With a PIN set the lock row's check is sealed again under the same key with a fresh IV (the PIN, the salt and the
+  // key do not change), in that one write, so the row and Store.status().lockId move: another tab can tell (ES3).
   function replaceAll(obj) {
     return run(async () => {
       await load();
@@ -553,10 +556,13 @@ const Store = (function () {
         }
       }
       const epoch = state.epoch;
+      const key = state.key; // taken before the first wait: a lock while the rows are sealed empties state.key
       const kept = keep(next, state.unread);
-      const puts = (await sealAll(next, state.key)).concat(kept.puts);
-      if (state.lock) puts.push(['meta', 'lock', clone(state.lock)]);
+      const puts = (await sealAll(next, key)).concat(kept.puts);
+      const lock = state.lock ? Object.assign(clone(state.lock), { check: await seal(key, 'meta', 'lock', CHECK) }) : null;
+      if (lock) puts.push(['meta', 'lock', lock]);
       await write({ clear: true, puts, dels: [] });
+      if (lock) state.lock = lock; // stored now, whether or not this tab locked meanwhile: a failed write never gets here
       if (state.mode === 'indexeddb') { // a stale snapshot is replaced too: a PIN set later never brings its rows back (RC14)
         const ls = storage();
         if (ls) try { ls.removeItem(SNAPSHOT); } catch (e) { /* nothing there */ }
@@ -726,10 +732,12 @@ const Store = (function () {
   }
 
   // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
-  // lock is stored.
+  // lock is stored. Only a tab that was open hears onLock: a locked tab is already on its lock page, and that notice
+  // would draw the page again while its PIN is checked (FIX-IMPORT-MARK RC1). The store notice below still reaches it.
   async function resync() {
     const all = await state.backend.readAll();
     const L = lockOf(all);
+    const wasOpen = !state.locked; // read before the stored row is taken
     state.epoch += 1;
     state.key = null;
     disarm();
@@ -738,7 +746,7 @@ const Store = (function () {
     const d = L ? null : await decode(all, null);
     state.rows = d ? d.rows : blank();
     state.unread = d ? d.unread : blank();
-    if (L) call(state.lockSubs, { reason: 'auto' });
+    if (L && wasOpen) call(state.lockSubs, { reason: 'auto' });
     notify(L ? 'lock' : 'unlock');
   }
 

@@ -1362,6 +1362,37 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.match(said.textContent, /not available on this device\.\s+Open this file in the browser where you set your PIN\./);
   });
 
+  test('FIX-IMPORT-MARK RC1: the real Store: a tab locked on #/lock is not drawn again while its PIN is checked after another tab imported', async () => {
+    setup();
+    globalThis.window = { addEventListener() {} };
+    document.addEventListener = () => {};
+    globalThis.indexedDB = fakeIndexedDB();
+    const other = freshStore(); // the tab that imports, open with the PIN set
+    await other.commit('t', (d) => { d.put('events', { id: 'e1', type: 'CravingLogged', note: MARK }); });
+    await other.lock.set('2468', { autoLockMin: 'never' });
+    const S = freshStore(); // this tab, opened after the PIN was set: locked
+    globalThis.Store = S;
+    let draws = 0;
+    const drawLock = page('LOCK PAGE');
+    const U = freshUi(); // boot runs once per copy, and this one wires onLock to the real Store
+    U.pages.lock = () => { draws += 1; return drawLock(); };
+    try {
+      at('#/lock');
+      await U.boot();
+      assert.equal(S.status().locked, true, 'control: this tab is locked');
+      assert.equal(draws, 1, 'the lock page is drawn once');
+      await other.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { todos: [{ id: 'n1', text: 'NEW-ROW' }] } });
+      assert.equal(await S.lock.unlock('1357'), false, 'a wrong PIN is refused');
+      await new Promise((r) => setTimeout(r, 40)); // the frame of the store notice
+      assert.equal(S.status().lockId, other.status().lockId, 'control: the check took the stored row');
+      assert.equal(draws, 1, 'still the first drawing: the refusal and the focus land on the form on screen');
+      assert.equal(location.hash, '#/lock');
+      assert.match(main().textContent, /LOCK PAGE/);
+    } finally {
+      delete globalThis.indexedDB;
+    }
+  });
+
   test('RC10, RS10: the real Store: no lock fires in SOS, a wake there never locks, and leaving it past the limit draws the lock', async (t) => {
     setup();
     t.mock.timers.enable({ apis: ['setTimeout', 'setInterval', 'Date'], now: Date.now() });
@@ -1584,7 +1615,7 @@ const MARK = 'PRIVATE-MARKER-7f3a';
 function fakeIndexedDB() {
   const dbs = new Map();
   const cp = (v) => JSON.parse(JSON.stringify(v));
-  const fake = { failOpen: false, failWrites: false, opened: 0 };
+  const fake = { failOpen: false, failWrites: false, opened: 0, writes: 0 };
   function makeDb(rec) {
     return {
       objectStoreNames: { contains: (n) => rec.stores.has(n) },
@@ -1592,6 +1623,7 @@ function fakeIndexedDB() {
       close() {},
       transaction(names, mode) {
         for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
+        if (mode === 'readwrite') fake.writes += 1;
         const t = { error: null, aborted: false, abort() { t.aborted = true; } };
         const ops = [];
         const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
@@ -2189,6 +2221,265 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(R.status().lockId, seen, 'the mark comes from the row, so it survives a reload and is readable while locked');
     assert.ok(idb.dump().includes('"salt"'));
   });
+
+  /* FIX-IMPORT-MARK (ES3): an import with a PIN set writes the lock row's check again, so the mark moves; the PIN, the
+     salt and the key stay. Every test holds a control on the moved mark, so none can pass on a mark that never moves. */
+  const IMPORT_PIN = 'kite-2468';
+  const IMPORT = { app: '1-addic', schemaVersion: 1, stores: { todos: [{ id: 'n1', text: 'NEW-ROW' }] } };
+  const storedLock = (idb) => idb.rows('meta').find((r) => r.key === 'lock');
+  const refusedAs = (code) => (e) => e.code === code;
+  async function pinned() {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await addRows(S);
+    await S.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+    return { idb, S, mark: S.status().lockId, row: JSON.stringify(storedLock(idb)) };
+  }
+
+  test('FIX-IMPORT-MARK 1: an import with a PIN set moves lockId in one write, and another tab reads the new mark once it resyncs', async () => {
+    const { idb, S, mark } = await pinned();
+    const lockedTab = freshStore();
+    await lockedTab.load();
+    const openTab = freshStore();
+    await openTab.load();
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    assert.equal(lockedTab.status().lockId, mark, 'before the import every tab reads one mark');
+    const writes = idb.writes;
+    await S.replaceAll(IMPORT);
+    assert.equal(idb.writes - writes, 1, 'the new rows and the lock row go in one write');
+    const moved = S.status().lockId;
+    assert.match(moved, /^[0-9a-f]{8}$/);
+    assert.notEqual(moved, mark, 'the import moved the mark');
+    assert.equal(lockedTab.status().lockId, mark, 'a locked tab holds the old mark until it looks');
+    assert.equal(await lockedTab.lock.unlock('1357'), false, 'a wrong try opens nothing');
+    assert.equal(lockedTab.status().lockId, moved, 'and it reads the stored row first: the new mark');
+    assert.equal(lockedTab.status().locked, true);
+    // An open tab's next save is refused: it never lands in the imported notebook.
+    await assert.rejects(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.equal(openTab.status().lockId, moved, 'the open tab takes the new mark too');
+    assert.equal(openTab.status().locked, true, 'and locks, so it opens the notebook as it now is');
+    assert.equal(idb.rows('events').some((r) => r.id === 'late'), false, 'nothing of that save was written');
+  });
+
+  test('FIX-IMPORT-MARK 2: after the import the same PIN opens, in this store and a fresh one; a wrong PIN is refused', async () => {
+    const { idb, S, mark } = await pinned();
+    await S.replaceAll(IMPORT);
+    assert.notEqual(S.status().lockId, mark, 'control: the import moved the mark');
+    await S.commit('after', (d) => { d.put('todos', { id: 'n2', text: 'AFTER-IMPORT' }); }); // this store knows the row it wrote
+    assert.equal(await S.lock.verify(IMPORT_PIN), true);
+    assert.equal(await S.lock.verify('1357'), false);
+    S.lock.lockNow();
+    assert.equal(await S.lock.unlock('1357'), false, 'a wrong PIN is refused');
+    assert.equal(S.status().locked, true);
+    assert.equal(await S.lock.unlock(IMPORT_PIN), true, 'the same PIN opens, in the same store');
+    assert.equal(S.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.equal(S.view.get('todos', 'n2').text, 'AFTER-IMPORT');
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().locked, true, 'a fresh store opens locked');
+    assert.equal(R.status().lockId, S.status().lockId, 'and reads the same mark from the stored row');
+    assert.equal(await R.lock.unlock('1357'), false, 'a wrong PIN is refused there too');
+    assert.equal(R.view.get('todos', 'n1'), null, 'and opens nothing');
+    assert.equal(await R.lock.unlock(IMPORT_PIN), true, 'the same PIN opens the imported rows');
+    assert.equal(R.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.equal(R.view.get('todos', 'n2').text, 'AFTER-IMPORT');
+    assert.equal(R.status().unreadable, 0, 'every row opens under the key');
+    assert.equal(idb.dump().includes('NEW-ROW'), false, 'the new rows are sealed');
+  });
+
+  test('FIX-IMPORT-MARK 3: the salt and every other field stay, the check differs, and no key is derived', async (t) => {
+    const { idb, S, mark, row } = await pinned();
+    const before = JSON.parse(row);
+    const derive = t.mock.method(crypto.subtle, 'deriveKey');
+    await S.replaceAll(IMPORT);
+    assert.equal(derive.mock.callCount(), 0, 'no key is derived: an import has no PIN');
+    derive.mock.restore();
+    const after = storedLock(idb);
+    assert.notEqual(S.status().lockId, mark, 'control: the import moved the mark');
+    assert.equal(after.salt, before.salt, 'the salt stays');
+    assert.deepEqual({ ...after, check: null }, { ...before, check: null }, 'the key, iterations, minutes and date stay');
+    assert.deepEqual(Object.keys(after.check).sort(), ['ct', 'iv']);
+    assert.notEqual(after.check.iv, before.check.iv, 'a fresh IV');
+    assert.notEqual(after.check.ct, before.check.ct, 'and so a new sealed check');
+  });
+
+  test('FIX-IMPORT-MARK 4: with no PIN an import leaves lockId empty and no lock row, even from a backup that carries one', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await addRows(S);
+    assert.equal(S.status().lockId, '');
+    await S.replaceAll({ ...IMPORT, stores: { ...IMPORT.stores, meta: [{ key: 'lock', salt: 'eA==', check: { iv: 'eA==', ct: 'eA==' } }] } });
+    assert.equal(S.status().lockId, '', 'no lock: empty');
+    assert.equal(S.status().hasLock, false);
+    assert.equal(S.status().locked, false);
+    assert.equal(storedLock(idb), undefined, 'no lock row is stored');
+    assert.equal(S.view.get('todos', 'n1').text, 'NEW-ROW');
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().lockId, '', 'a reload agrees');
+    assert.equal(R.view.get('todos', 'n1').text, 'NEW-ROW', 'plain: it opens with no PIN');
+    await S.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+    const mark = S.status().lockId;
+    await S.replaceAll(IMPORT);
+    assert.notEqual(S.status().lockId, mark, 'control: with a PIN set the same import moves the mark');
+  });
+
+  test('FIX-IMPORT-MARK 5: a refused import leaves the lock row byte for byte and lockId as it was', async () => {
+    const { idb, S, mark, row } = await pinned();
+    const stored = () => JSON.stringify(storedLock(idb));
+    const same = (why) => { assert.equal(stored(), row, why + ': the row'); assert.equal(S.status().lockId, mark, why + ': the mark'); };
+    await assert.rejects(S.replaceAll(null), refusedAs('BAD_BACKUP'));
+    same('no backup');
+    await assert.rejects(S.replaceAll({ stores: { events: 'nope' } }), refusedAs('BAD_BACKUP'));
+    same('a damaged backup');
+    await assert.rejects(S.replaceAll({ stores: { events: [{ type: 'no id' }] } }), refusedAs('BAD_ROW'));
+    same('a bad row');
+    idb.failWrites = true;
+    await assert.rejects(S.replaceAll(IMPORT), refusedAs('WRITE_FAILED'));
+    idb.failWrites = false;
+    same('a write that fails');
+    assert.equal(S.view.count('events'), 2, 'the notebook is as it was');
+    await S.commit('after', (d) => { d.put('todos', { id: 'n3', text: 'STILL-SAVES' }); });
+    same('a save after the refused import'); // this store still holds the row that is stored
+    S.lock.lockNow();
+    await assert.rejects(S.replaceAll(IMPORT), refusedAs('LOCKED'));
+    same('locked');
+    assert.equal(await S.lock.unlock(IMPORT_PIN), true);
+    // Another tab changed the PIN: this tab's import is refused, and the row that tab wrote stays.
+    const other = freshStore();
+    await other.load();
+    assert.equal(await other.lock.unlock(IMPORT_PIN), true);
+    await other.lock.set('9753', { autoLockMin: 'never' });
+    const theirs = stored();
+    await assert.rejects(S.replaceAll(IMPORT), refusedAs('LOCKED'));
+    assert.equal(stored(), theirs, 'a stale import leaves the row the other tab wrote');
+    assert.equal(S.status().lockId, other.status().lockId, 'and this tab now reads that row');
+    assert.equal(S.status().locked, true);
+    assert.equal(await S.lock.unlock('9753'), true);
+    await S.replaceAll(IMPORT);
+    assert.notEqual(stored(), theirs, 'control: the same import, no longer refused, moves the row');
+  });
+
+  test('FIX-IMPORT-MARK 6: a lock while the import is sealed: the check still seals under its key, the mark moves, the same PIN opens', async (t) => {
+    const { S, mark } = await pinned();
+    const encrypt = crypto.subtle.encrypt.bind(crypto.subtle);
+    let fired = false;
+    const spy = t.mock.method(crypto.subtle, 'encrypt', (...a) => { if (!fired) { fired = true; S.lock.lockNow(); } return encrypt(...a); });
+    await S.replaceAll(IMPORT);
+    spy.mock.restore();
+    assert.equal(fired, true);
+    assert.equal(S.status().locked, true, 'it locked while the rows were sealed');
+    assert.equal(S.view.get('todos', 'n1'), null, 'the imported rows are not in memory');
+    assert.notEqual(S.status().lockId, mark, 'the mark moved with the row it wrote');
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().lockId, S.status().lockId, 'this store holds the row that is stored');
+    assert.equal(await S.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+    assert.equal(S.view.get('todos', 'n1').text, 'NEW-ROW');
+  });
+
+  test('FIX-IMPORT-MARK 7: the localStorage snapshot and memory modes move the mark the same way', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    globalThis.indexedDB.failOpen = true; // the fallback: IndexedDB is there and will not open
+    globalThis.localStorage = fakeLocalStorage();
+    const S = freshStore();
+    await addRows(S);
+    assert.equal(S.status().persistence, 'localstorage');
+    await S.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+    const mark = S.status().lockId;
+    await S.replaceAll(IMPORT);
+    assert.notEqual(S.status().lockId, mark, 'localStorage: the import moved the mark');
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().lockId, S.status().lockId, 'the snapshot holds the new row');
+    assert.equal(await R.lock.unlock(IMPORT_PIN), true, 'and the same PIN opens it');
+    assert.equal(R.view.get('todos', 'n1').text, 'NEW-ROW');
+    delete globalThis.indexedDB;
+    delete globalThis.localStorage;
+    const M = freshStore();
+    await addRows(M);
+    assert.equal(M.status().persistence, 'memory');
+    await M.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+    const held = M.status().lockId;
+    await M.replaceAll(IMPORT);
+    assert.notEqual(M.status().lockId, held, 'memory: the import moved the mark');
+    M.lock.lockNow();
+    assert.equal(await M.lock.unlock('1357'), false, 'a wrong PIN is refused');
+    assert.equal(await M.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+    assert.equal(M.view.get('todos', 'n1').text, 'NEW-ROW');
+  });
+
+  test('FIX-IMPORT-MARK RC1: a locked tab hears no onLock when unlock resyncs; the store notice still reaches it, and a tab that was open still hears onLock', async () => {
+    const { S } = await pinned();
+    const lockedTab = freshStore();
+    await lockedTab.load();
+    const openTab = freshStore();
+    await openTab.load();
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    const heardLocked = [];
+    const heardOpen = [];
+    const notices = [];
+    lockedTab.lock.onLock((i) => heardLocked.push(i.reason));
+    lockedTab.subscribe((i) => notices.push(i.label));
+    openTab.lock.onLock((i) => heardOpen.push(i.reason));
+    await S.replaceAll(IMPORT);
+    assert.equal(await lockedTab.lock.unlock('1357'), false, 'a wrong PIN opens nothing');
+    assert.equal(lockedTab.status().lockId, S.status().lockId, 'control: the unlock took the stored row');
+    assert.equal(lockedTab.status().locked, true);
+    assert.deepEqual(heardLocked, [], 'a locked tab is already on its lock page: no onLock draws it again while the PIN is checked');
+    assert.deepEqual(notices, ['lock'], 'the store notice stays: it only repaints the chrome on the lock page');
+    assert.equal(await lockedTab.lock.unlock(IMPORT_PIN), true, 'the same PIN then opens the imported notebook');
+    assert.equal(lockedTab.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.deepEqual(heardLocked, [], 'and opening it never called onLock');
+    // A tab that was open has a page to leave: its refused save takes the new row and it hears the lock.
+    await assert.rejects(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.deepEqual(heardOpen, ['auto'], 'a tab that was open hears onLock, so it leaves its page for #/lock');
+    assert.equal(openTab.status().locked, true);
+  });
+
+  /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
+     kind of field; read back at once, from what was written, and from a fresh store. Meta rows stay plain by design. */
+  const sampleRow = (store, idKey, tag) => ({ [idKey]: tag, text: store === 'meta' ? 'plain by design' : store + ' ' + tag + ' ' + MARK,
+    count: 7, flag: false, none: null, list: [1, 'two', { three: 3 }], nested: { deep: { deeper: ['end'] } }, uni: 'निशान 🌱 ü', at: '2026-11-09T12:00:00.000Z' });
+  for (const [mode, prepare] of [
+    ['indexeddb', () => { globalThis.indexedDB = fakeIndexedDB(); }],
+    ['localstorage', () => { globalThis.indexedDB = fakeIndexedDB(); globalThis.indexedDB.failOpen = true; globalThis.localStorage = fakeLocalStorage(); }],
+    ['memory', () => { delete globalThis.indexedDB; delete globalThis.localStorage; }],
+  ]) {
+    test('FIX-IMPORT-MARK RC2 (' + mode + '): export then import under a PIN gives every row of every store back identical', async () => {
+      prepare();
+      const S = freshStore();
+      await S.load();
+      assert.equal(S.status().persistence, mode, 'control: the backend under test');
+      await S.commit('full', (d) => {
+        for (const [store, idKey] of Object.entries(S.STORES)) for (const tag of ['r1', 'r2']) d.put(store, sampleRow(store, idKey, tag));
+      });
+      await S.lock.set(IMPORT_PIN, { autoLockMin: 'never' });
+      const mark = S.status().lockId;
+      const file = JSON.stringify(S.exportJson()); // the backup as it is saved on the device
+      const before = JSON.parse(file).stores;
+      for (const store of Object.keys(S.STORES)) assert.equal(before[store].length, 2, 'control: the backup holds both rows of ' + store);
+      await S.replaceAll(JSON.parse(file));
+      assert.notEqual(S.status().lockId, mark, 'control: the import took the path that seals the check again');
+      assert.deepEqual(S.exportJson().stores, before, 'identical at once');
+      S.lock.lockNow();
+      assert.equal(await S.lock.unlock('1357'), false, 'a wrong PIN is refused');
+      assert.throws(() => S.exportJson(), (e) => e.code === 'LOCKED', 'and nothing can be read out while locked');
+      assert.equal(await S.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+      assert.equal(S.status().unreadable, 0, 'every row opens under the key');
+      assert.deepEqual(S.exportJson().stores, before, 'identical once read back from what was written');
+      if (mode === 'memory') return; // nothing outlives this store
+      const R = freshStore();
+      await R.load();
+      assert.equal(R.status().locked, true, 'a fresh store opens locked');
+      assert.equal(await R.lock.unlock('1357'), false, 'a wrong PIN is refused there too');
+      assert.equal(await R.lock.unlock(IMPORT_PIN), true, 'the same PIN opens');
+      assert.equal(R.status().unreadable, 0, 'every row opens under the key there too');
+      assert.deepEqual(R.exportJson().stores, before, 'identical from a fresh store');
+      const onDisk = mode === 'indexeddb' ? globalThis.indexedDB.dump() : JSON.stringify([...globalThis.localStorage.m.values()]);
+      assert.equal(onDisk.includes(MARK), false, 'no row of the backup was written plain');
+    });
+  }
 
   test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {
     const S = freshStore();
