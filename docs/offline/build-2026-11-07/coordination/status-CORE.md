@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 19:53 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52) resumes CORE 17's RESTART. Nothing of CORE runs. core READY 49c788f is merging (the HUB's line, 19:51). Next, on its merge: the actions-sos offline-v3.2 batch (EC3, ES2, EF1, SF1, the V-17b test); its launch file is being staged
-LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST from the HUB: FIX-IMPORT-MARK merged 82c5eddf (HUB: build 1212699 B, store.test 111/111, validate, guards GREEN, territory 0, full Node 758/758, browser SOS|lock|PIN 8/8); the trunk and build/core pushed. RS1 LOW open by name FIX-STALE-SAVE-SAY (offline-v3.2). Next for CORE: the actions-sos batch EC3/ES2/EF1/SF1 + the V-17b test, cut from 82c5eddf
+STATE: BUILDING   # 2026-11-09 19:57 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). core MERGED 82c5eddf. actions-sos FIX-AS-V32 running, wf_1433b81c-993, slot 3 (RUN-RECORD 'Resume here')
+LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED a397a8d   # 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete
+LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES3T the V-17b test, EC3, ES2, EF1, SF1), wf_1433b81c-993, base and merge base 82c5eddf, flagged, two reviewers
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 19:53 IST
+UPDATED: 2026-11-09 19:57 IST
+
+# 2026-11-09 19:57 IST · actions-sos FIX-AS-V32 launched on the by-hand row 19:55 (9.5 GB)
+
+- From the board (19:55): core READY 49c788f merged 82c5eddf, pushed; BASE 82c5eddf; MERGING none.
+- build/actions-sos and its worktree fast-forwarded to 82c5eddf (--ff-only, clean). wf_1433b81c-993 (lane.js, args tracks/CORE/args/args_v3_actions-sos_FIX-AS-V32.json from mk_as_v32.py; unit note tracks/CORE/briefs/actions-sos/FIX-AS-V32.md; base and diffFrom 82c5eddf; slot 3; wf_sim OK, nothing cut). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/987cb3b4-a89e-435e-a65d-bbb9929bdb52/subagents/workflows/wf_1433b81c-993/journal.jsonl. Return -> LANE: actions-sos READY <tip>, merge base 82c5eddf, naming both reviewers. SF1 holds the practice on '#/sos/craving?from=lock': a lock-sober browser flow must not pin the old hash.
 
 # 2026-11-09 19:53 IST · CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52) resumes
 

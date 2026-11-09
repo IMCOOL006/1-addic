@@ -1,0 +1,6 @@
+{
+ "FIX-AS-V32": {
+  "tier": 1,
+  "note": "FIX-AS-V32 (actions-sos, flagged; offline-v3.2; merge base 82c5eddf; R-H-53). Five items, one commit each: ES3T (the V-17b test that a kept save is dropped on another tab's import, now that FIX-IMPORT-MARK moves lockId; two comments in ui-sos.js), EC3, ES2, EF1, SF1. [The whole note, with each item's file, test name and proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/FIX-AS-V32.md: read it before you build.]"
+ }
+}

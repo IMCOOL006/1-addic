@@ -1,0 +1,70 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The offline-v3.2 fixes by name: the V-17b test of a kept save on another tab's import, the USE_VERB message, the retry's PIN message, the discreet chrome through Done, the Back press on the lock page's practice.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/tests/actions.test.mjs",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18",
+  "V-17b",
+  "FIX-AS-V32"
+ ],
+ "batches": [
+  [
+   "V-08a",
+   "V-SOS10",
+   "V-41",
+   "V-25",
+   "V-18",
+   "V-17b"
+  ],
+  [
+   "FIX-AS-V32"
+  ]
+ ],
+ "unitTier": {
+  "V-08a": 1,
+  "V-25": 2,
+  "V-18": 2,
+  "V-17b": 2,
+  "V-SOS10": 1,
+  "V-41": 1,
+  "FIX-AS-V32": 1
+ },
+ "unitNotes": {
+  "FIX-AS-V32": "FIX-AS-V32 (actions-sos, flagged; offline-v3.2; merge base 82c5eddf; R-H-53). Five items, one commit each: ES3T (the V-17b test that a kept save is dropped on another tab's import, now that FIX-IMPORT-MARK moves lockId; two comments in ui-sos.js), EC3, ES2, EF1, SF1. [The whole note, with each item's file, test name and proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/FIX-AS-V32.md: read it before you build.]"
+ },
+ "laneNote": "CORE 18's word (2026-11-09), offline-v3.2 by the HUB's grant (R-H-53), under R-O-7. Flagged lane: safety copy; two reviewers before READY. One unit: name it by its batch id in done. 'Claude-Session: 987cb3b4-a89e-435e-a65d-bbb9929bdb52' goes on every commit, whatever the Co-Authored-By line says. offline/1-addic.html is generated: never commit its rebuild. No clinical copy, no new public name, no new event. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18",
+  "V-17b"
+ ],
+ "base": "82c5eddf",
+ "session": "987cb3b4-a89e-435e-a65d-bbb9929bdb52",
+ "now": "2026-11-09 19:56 IST",
+ "diffFrom": "82c5eddf",
+ "slot": 3,
+ "sliceRun": false
+}
