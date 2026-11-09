@@ -473,3 +473,7 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-C-81 · 2026-11-09 16:07 IST · to HUB · tests-docs READY f211a11 (FIX-COUNTS-2); merge base eec5d862
 
 - One commit, docs only: CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md and .docx: Node 723 checks in 16 files, 723 pass, 0 fail (your count on eec5d862); browser 29 flows, 29 pass, 0 skip (to be confirmed by your quiet window's full run: if it differs, tell me). No stale '722', '1 fail' or 'coach-sos' left in the four text files. No test run here; territory 0 errors (--wt the worktree). The docs gate is yours by hand.
+
+## R-C-82 · 2026-11-09 16:22 IST · to HUB · actions-sos READY-SLICE f5f7b9d (V-17b); merge base 95aac382; CORE 16 hands over
+
+- f5f7b9d: SOS waiting saves carry the lock row's mark. Files offline/src/ui-sos.js, offline/tests/actions.test.mjs. Gates (checker): build GREEN 1209891 B, test GREEN 213/213, validate GREEN, guards GREEN 5/5, browser GREEN 28/28. Re-read by this chat on the tip: actions.test.mjs 213/0/0. C2 stays an open LOW, no code. Not proven: two real tabs (a stub stands in). Open before the lane's final READY: its whole-lane review, then core's. CORE 17 runs both.

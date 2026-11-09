@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 16:09 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), context over 250k: hand-over when V-17b returns. Running: actions-sos V-17b + C2 wf_4f5f563e-3cf. BASE a7fd8d66. Left before FREEZE for offline-v3.1: V-17b + C2, the actions-sos whole-lane review from f69bc68a, core's whole-lane review
+STATE: RESTART   # 2026-11-09 16:22 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73) hands over at 301k. Nothing of CORE runs. actions-sos READY-SLICE f5f7b9d with the HUB. Next: the two whole-lane reviews (RUN-RECORD 'Resume here')
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos BUILDING   # 2026-11-09 15:46 IST: V-17b + C2 wf_4f5f563e-3cf (slot 3, tier 2, fast-forwarded to 95aac382, the merge base, skipReview). Then READY-SLICE; then the whole-lane review from f69bc68a before the final READY
+LANE: actions-sos READY-SLICE f5f7b9d   # 2026-11-09 16:22 IST: V-17b f5f7b9d (wf_4f5f563e-3cf; merge base 95aac382). Check PASS; gates build GREEN 1209891 B, test GREEN 213/213, validate GREEN, guards GREEN 5/5, browser GREEN 28/28. Then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
-SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 16:09 IST
+SLOTS-ASKED: 0
+UPDATED: 2026-11-09 16:22 IST
+
+# 2026-11-09 16:22 IST · CORE 16 hands over; actions-sos READY-SLICE f5f7b9d
+
+- This chat verified on f5f7b9d: the worktree clean; node --test offline/tests/actions.test.mjs 213 pass, 0 fail, 0 skip. C2 (V-08a's early return at actions.test.mjs:3084) stays open as a LOW: no code; the error code is tested, and V-41's locked test covers the lock API for done, swap and claim but not useSkill. The save's mark is era:hasLock:lockId, taken when save() begins. Not proven: two real tabs (a stub stands in).
 
 # 2026-11-09 16:09 IST · from the HUB (16:20, by message) · tests-docs f211a11 merged; BASE a7fd8d66
 
