@@ -241,6 +241,8 @@
     const opening = h('p', { id: 'lock-opening', class: 'muted', role: 'status', 'aria-live': 'polite', dataset: tid('lock-opening') });
     const unlock = h('button', { type: 'submit', class: 'btn primary', text: 'Unlock', dataset: tid('lock-unlock') });
     const panel = h('div', { class: 'stack', hidden: true });
+    // ES1: urgent help stays open while the key is made, so a right PIN moves on, and a wrong one takes the focus, only from the lock page.
+    const onLock = () => safe(() => UI.route().parts[0] === 'lock', true);
     const form = h('form', { class: 'form stack', novalidate: true, onSubmit: async (ev) => {
       ev.preventDefault();
       const tried = pin.value;
@@ -251,9 +253,9 @@
       const r = await attemptUnlock(S, tried);
       opening.textContent = '';
       unlock.disabled = false; pin.disabled = false;
-      if (r.ok) { UI.go('#/today', { replace: true }); return; }
+      if (r.ok) { if (onLock()) UI.go('#/today', { replace: true }); return; }
       msg.textContent = r.message; msg.hidden = false;
-      pin.focus();
+      if (onLock()) pin.focus();
     } }, field('PIN', pin), msg, unlock, opening);
     const sober = typeof UI.sosSoberView === 'function'
       ? btn(L.sober.label, () => {
