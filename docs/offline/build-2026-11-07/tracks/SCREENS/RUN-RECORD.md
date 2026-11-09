@@ -343,13 +343,20 @@
 
 - Chat 9c7e67fd (SCREENS 14:38) stops at the context rule with nothing running. Today it took content V-23, workbook-settings V-24 and V-22b, game-tutorials V-21 and FIX-COACH-SOS from the limit's stop to merged.
 
+## 2026-11-09 16:10 IST · SCREENS 16:08 (6f1291e1) resumes; WAITING-OWNER
+
+- Started on 9c7e67fd's RESTART line. Nothing was running (ListAgents-equivalent `claude agents --json`: 9c7e67fd idle; no SCREENS run live), so nothing to wait on or relaunch.
+- Read: status-SCREENS.md, the Resume here, status-HUB.md (BASE eec5d862; the trunk tip a7fd8d6 carries tests-docs FIX-COUNTS-2 on top), outbox-OWNER.md (to R-O-9; no I6), outbox-HUB.md (to R-H-49, merged), outbox-SCREENS.md (to R-S-31).
+- Written STATE: WAITING-OWNER. The background watch runs on outbox-OWNER.md at size 15296.
+- No workflow was launched: no unit is open without the owner.
+
 ## Resume here
 
-- Fresh chat: nothing of SCREENS is running and there is nothing to build until the owner's I6 arrives or a fix by name comes back. First step: write STATE: WAITING-OWNER on status-SCREENS.md with a # note (HUB 14:40's word; the launcher then opens no more SCREENS chats), commit it, and start one background Bash loop that exits when outbox-OWNER.md changes size (until [ "$(stat -c %s FILE)" != "$S0" ]; do sleep 120; done). HUB messages arrive by themselves. Do not relaunch anything.
+- SCREENS 16:08 (6f1291e1) holds STATE: WAITING-OWNER with a background watch on outbox-OWNER.md (a loop that exits when the file's size leaves 15296 bytes). Nothing of SCREENS is running and there is nothing to build until the owner's I6 arrives or a fix by name comes back. HUB messages arrive by themselves. Do not relaunch anything. If this chat has gone, a chat reopened by the HUB or the owner keeps STATE: WAITING-OWNER and starts one background Bash loop on outbox-OWNER.md (until [ "$(stat -c %s FILE)" != "$S0" ]; do sleep 120; done).
 - The one unit left: content V-10b, after the owner's I6 (the India numbers). Recipe: read the owner's answer in outbox-OWNER.md; fast-forward build/content and its worktree to the trunk tip (git -C C:/Users/ruchi/1-addic-wt/content merge --ff-only build/offline-v1); lane.js with lane_args_v3.json lanes.content, units ['V-10b'], base and diffFrom that tip, done adding V-10, V-10r, V-42, C1, V-23, slot 4; one start on a 7.0 GB row (ask the HUB, the rows are CORE's). The builder removes verify:true only on the entries the owner confirmed (content-core.js:421-432, +1 line after V-23's comment at :133) and quotes the answer in the commit body. LOW C1 (content.test.mjs:381, a redundant assert) may go with it.
 - If a fix by name comes back (a 'from the HUB' note and an R-H line): fix on the lane's branch within the hour, two rounds at most; READY <tip> with the merge base.
 - Named, not built (no plan unit): workbook-settings C1 (the comment at workbook-settings.test.mjs:296), the eraseSampleLater branch in ui-settings.js, Settings' 'Replay the tour' to '#/today?tour=1' (R-S-31). R-S-30 to tests-docs: the guide's lines 431 and 439.
 - Lane states: content MERGED-SLICE 96dd899; workbook-settings MERGED 419718c; game-tutorials MERGED a3f0bf7 (FIX-COACH-SOS at 18852152); today-track MERGED 670df19; actions MERGED 0977edd. All worktrees clean with offline/1-addic.html restored.
 - Weekly limit: hit 2026-11-08 12:43-12:51 IST, reset 2026-11-09 14:30. R-O-9's park needs the owner's line; none came. The launcher opens no SCREENS chats while STATE is WAITING-OWNER.
-- The live chats at 2026-11-09 15:33 IST: HUB 14:40 (38b3cc2e), CORE 14:46 (215e6cdd). The tag offline-v3.0 is at 60dffe33; tier 2 goes toward offline-v3.1.
+- The live chats at 2026-11-09 16:10 IST: HUB 14:40 (38b3cc2e), CORE 14:46 (215e6cdd), SCREENS 16:08 (6f1291e1). The tag offline-v3.0 is at 60dffe33; tier 2 goes toward offline-v3.1.
 - Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; check_territory.py <lane> <base>..<tip>; wf_sim fails a builder prompt over 12,288 bytes, trim the laneNote and priorNote; gen_t2.py carries session 9c7e67fd, change SESSION for a new chat; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; 'HUB 08 Nov hh:mm' names in ListAgents belong to another project.

@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: RESTART   # 2026-11-09 16:06 IST: SCREENS 14:38 (9c7e67fd) hands over at 302k context, at a safe point: nothing of SCREENS is running. Every unit that can run without the owner is merged; content V-10b waits for the owner's I6. The fresh chat reads RUN-RECORD.md 'Resume here', writes STATE: WAITING-OWNER and keeps a background watch on outbox-OWNER.md
+STATE: WAITING-OWNER   # 2026-11-09 16:10 IST: SCREENS 16:08 (6f1291e1) took over 9c7e67fd's RESTART. Nothing of SCREENS is running. Every unit that can run without the owner is merged; content V-10b waits for the owner's I6 (the India numbers). A background watch on outbox-OWNER.md and the HUB's messages reopen the work; a fix by name is done within the hour
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 419718c   # V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 16:06 IST
+UPDATED: 2026-11-09 16:10 IST
+
+# 2026-11-09 16:10 IST · SCREENS 16:08 (6f1291e1) resumes; WAITING-OWNER
+
+- Read the Resume here, this file, status-HUB.md and the outboxes. No owner line after R-O-9 (no I6), and no R-H line to SCREENS after R-H-49, which is merged (18852152).
+- Written STATE: WAITING-OWNER, per HUB 14:40's word. Nothing relaunched, no slot asked.
+- The watch: one background loop on outbox-OWNER.md, which exits when its size leaves 15296 bytes. HUB messages arrive by themselves.
 
 # 2026-11-09 16:06 IST · hand-over at 302k; nothing running
 
