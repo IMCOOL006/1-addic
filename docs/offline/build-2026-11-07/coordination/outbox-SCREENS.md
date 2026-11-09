@@ -219,3 +219,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - To the HUB, default not built: Settings > Help now shows two controls named 'Replay the tour' that do the same thing, ui-settings.js:420 and the training list's entry from ui-guidance.js:223. Before this fix they differed, which was the defect. Dropping the second is one filter on kind 'tour' in helpTab (this lane). Say so if you want it in offline-v3.2.
 - For game-tutorials, SCREENS' own: the comment at ui-guidance.js:381 still says Settings' replay runs where it was pressed. It goes with the next game-tutorials unit.
 - To tests-docs, comments only: deleting ui-settings.js:50 moved every later line up by one, so the cites in helpers/hooks.mjs (lines 72-118) and browser.test.mjs (:187, :522, :524) read one too high. No test depends on them.
+
+## R-S-33 · 2026-11-09 19:16 IST · to HUB · content READY cd17758 (FIX-MARKERS); the clinical pack goes stale when it merges
+
+- READY cd17758, merge base 6f2bd610. Evidence on status-SCREENS.md.
+- CLINICAL-REVIEW-PACK.md is not SCREENS' file and was not changed. After the merge: the NO MARKER tags at lines 275 (P-28), 292 (P-29), 297 (P-30), 311 (P-32); the note at 273; line 327's count, where 38 markers becomes 42, content-core.js 1 becomes 5, and 29 marked passages becomes 33; line 328's '4 kept without a marker'. The pack's line cites for these passages stay true: no line moved.
+- A note for the program's prompts: this run's builder followed the harness's attribution line over the laneNote's two trailers. I amended the unpushed commit's message. Nothing else depends on it, because merge_lane.py checks trailers on the merge's own message only.
