@@ -1,0 +1,6 @@
+{
+ "FIX-TD-V32": {
+  "tier": 1,
+  "note": "FIX-TD-V32 (tests-docs; offline-v3.2; merge base 82c5eddf; R-H-53). Five items, one commit each: T1 a browser check that discreet mode paints no emergency line while the app loads, T2 V-20's toasts in a browser, T3 the lock page's SOBER practice, T4 the sos-craving retake, T5 the hook lock-opening. [The whole note, with the flow names and the proofs: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/FIX-TD-V32.md: read it before you build.]"
+ }
+}

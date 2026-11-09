@@ -1,0 +1,89 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "The offline-v3.2 browser checks by name: the discreet start's emergency line, the lesson and checkpoint toasts, the lock page's SOBER practice; the sos-craving retake; one hook.",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-35",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45",
+  "V-22a",
+  "V-26b",
+  "V-27",
+  "V-29",
+  "FIX-TD-V32"
+ ],
+ "batches": [
+  [
+   "U-35",
+   "V-07",
+   "V-03",
+   "V-06",
+   "V-01t",
+   "V-45",
+   "V-22a",
+   "V-26b",
+   "V-27",
+   "V-29"
+  ],
+  [
+   "FIX-TD-V32"
+  ]
+ ],
+ "unitTier": {
+  "U-35": 1,
+  "V-07": 1,
+  "V-03": 1,
+  "V-06": 1,
+  "V-01t": 1,
+  "V-22a": 2,
+  "V-26b": 2,
+  "V-27": 2,
+  "V-29": 2,
+  "V-45": 1,
+  "FIX-TD-V32": 1
+ },
+ "unitNotes": {
+  "FIX-TD-V32": "FIX-TD-V32 (tests-docs; offline-v3.2; merge base 82c5eddf; R-H-53). Five items, one commit each: T1 a browser check that discreet mode paints no emergency line while the app loads, T2 V-20's toasts in a browser, T3 the lock page's SOBER practice, T4 the sos-craving retake, T5 the hook lock-opening. [The whole note, with the flow names and the proofs: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/FIX-TD-V32.md: read it before you build.]"
+ },
+ "laneNote": "CORE 18's word (2026-11-09), offline-v3.2 by the HUB's grant (R-H-53), under R-O-7. One unit: name it by its batch id in done. 'Claude-Session: 987cb3b4-a89e-435e-a65d-bbb9929bdb52' goes on every commit, whatever the Co-Authored-By line says. offline/1-addic.html is generated: never commit its rebuild. Nothing under offline/src. The count lines and the README's flow names are FIX-COUNTS-4's, not this batch's. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45",
+  "V-22a",
+  "V-26b",
+  "V-27",
+  "V-29"
+ ],
+ "base": "82c5eddf",
+ "session": "987cb3b4-a89e-435e-a65d-bbb9929bdb52",
+ "now": "2026-11-09 19:59 IST",
+ "diffFrom": "82c5eddf",
+ "slot": 5,
+ "sliceRun": false
+}

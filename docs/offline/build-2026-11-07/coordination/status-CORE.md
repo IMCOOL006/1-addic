@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 19:57 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). core MERGED 82c5eddf. actions-sos FIX-AS-V32 running, wf_1433b81c-993, slot 3 (RUN-RECORD 'Resume here')
+STATE: BUILDING   # 2026-11-09 19:59 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Two runs live: actions-sos FIX-AS-V32 wf_1433b81c-993 (slot 3) and tests-docs FIX-TD-V32 wf_a4cb21aa-480 (slot 5) (RUN-RECORD 'Resume here')
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES3T the V-17b test, EC3, ES2, EF1, SF1), wf_1433b81c-993, base and merge base 82c5eddf, flagged, two reviewers
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
+LANE: tests-docs BUILDING   # 2026-11-09 19:59 IST: offline-v3.2 FIX-TD-V32 (T1 the discreet emergency line painted, T2 the lesson and checkpoint toasts, T3 the lock page's practice, T4 the sos-craving retake, T5 the hook lock-opening), wf_a4cb21aa-480, base and merge base 82c5eddf
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 19:57 IST
+UPDATED: 2026-11-09 19:59 IST
+
+# 2026-11-09 19:59 IST · tests-docs FIX-TD-V32 launched on the 19:57 row (9.5 GB)
+
+- build/tests-docs and its worktree fast-forwarded to 82c5eddf (--ff-only, clean). wf_a4cb21aa-480 (lane.js, args tracks/CORE/args/args_v3_tests-docs_FIX-TD-V32.json from mk_td_v32.py; unit note tracks/CORE/briefs/tests-docs/FIX-TD-V32.md; base and diffFrom 82c5eddf; slot 5; wf_sim OK, nothing cut). SCREENS is WAITING-OWNER with nothing ready, so its turn on this row is forfeit. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/987cb3b4-a89e-435e-a65d-bbb9929bdb52/subagents/workflows/wf_a4cb21aa-480/journal.jsonl. Return -> LANE: tests-docs READY <tip>, merge base 82c5eddf, naming the three new browser flows so the HUB runs them by name. The count lines wait for FIX-COUNTS-4.
 
 # 2026-11-09 19:57 IST · actions-sos FIX-AS-V32 launched on the by-hand row 19:55 (9.5 GB)
 
