@@ -1176,6 +1176,97 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  // V-16: the custom field's node rules (contracts/core.md N1, N2, Q-a).
+  const customField = (label, render) => {
+    setup();
+    findIn(globalThis.document);
+    const f = UI.form({ fields: [{ name: 'x', type: 'custom', label, required: true, render }] });
+    const field = f.el.children.find((e) => e.dataset.name === 'x');
+    const labelOf = (node) => field.all().find((e) => e.id && e.id === node.getAttribute('aria-labelledby'));
+    return { f, labelOf };
+  };
+
+  test('field N1: ul keeps implicit role', () => {
+    for (const tag of ['ul', 'ol', 'table', 'svg', 'div', 'span']) {
+      let node = null;
+      const { f, labelOf } = customField('Steps', () => {
+        node = globalThis.document.createElement(tag);
+        return { el: node, get: () => null, set() {} };
+      });
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, node, tag + ': the node takes the focus');
+      assert.equal(node.getAttribute('tabindex'), '-1', tag + ': outside the tab order');
+      assert.equal(labelOf(node) && labelOf(node).textContent.trim(), 'Steps', tag + ': named by the field label');
+      const plain = tag === 'div' || tag === 'span';
+      assert.equal(node.getAttribute('role'), plain ? 'group' : null, tag + (plain ? ': a plain node is a group' : ': keeps its own role'));
+    }
+  });
+
+  test('field N2: contenteditable keeps tab stop', () => {
+    for (const v of ['', 'true']) {
+      let node = null;
+      const { f, labelOf } = customField('Note', () => {
+        node = globalThis.document.createElement('div');
+        node.setAttribute('contenteditable', v);
+        return { el: node, get: () => null, set() {} };
+      });
+      assert.equal(f.validate(), false);
+      assert.equal(document.activeElement, node, 'contenteditable="' + v + '": it takes the focus');
+      assert.equal(node.getAttribute('tabindex'), null, 'contenteditable="' + v + '": keeps its tab stop');
+      assert.equal(node.getAttribute('role'), null, 'contenteditable="' + v + '": no role=group written on it');
+      assert.equal(node.getAttribute('aria-invalid'), 'true');
+      assert.equal(labelOf(node) && labelOf(node).textContent.trim(), 'Note', 'named by the field label');
+    }
+    let box = null;
+    let inner = null;
+    const { f } = customField('Note', () => {
+      box = globalThis.document.createElement('div');
+      const p = globalThis.document.createElement('p');
+      inner = globalThis.document.createElement('div');
+      inner.setAttribute('contenteditable', 'true');
+      box.appendChild(p);
+      box.appendChild(inner);
+      return { el: box, get: () => null, set() {} };
+    });
+    assert.equal(f.validate(), false);
+    assert.equal(document.activeElement, inner, 'an editable node inside takes the focus');
+    assert.equal(inner.getAttribute('aria-invalid'), 'true', 'and carries the mark');
+    assert.equal(box.getAttribute('tabindex'), null, 'the wrapper is left as it was');
+    let off = null;
+    customField('Note', () => {
+      off = globalThis.document.createElement('div');
+      off.setAttribute('contenteditable', 'false');
+      return { el: off, get: () => null, set() {} };
+    }).f.validate();
+    assert.equal(off.getAttribute('tabindex'), '-1', 'contenteditable="false" is no control');
+  });
+
+  test('field Q-a: bare control is named', () => {
+    for (const tag of ['select', 'input', 'textarea', 'button', 'a']) {
+      let ctl = null;
+      const { f, labelOf } = customField('When', () => {
+        ctl = globalThis.document.createElement(tag);
+        if (tag === 'a') ctl.setAttribute('href', '#/plan');
+        return ctl;
+      });
+      assert.equal(labelOf(ctl) && labelOf(ctl).textContent.trim(), 'When', tag + ': named by the field label before any focus');
+      assert.equal(f.validate(), false);
+      assert.equal(ctl.getAttribute('aria-labelledby'), labelOf(ctl).id, tag + ': the name holds after validate');
+      assert.equal(ctl.getAttribute('role'), null, tag + ': no role written');
+      assert.equal(ctl.getAttribute('tabindex'), null, tag + ': keeps its tab stop');
+    }
+    let named = null;
+    customField('When', () => {
+      named = globalThis.document.createElement('select');
+      named.setAttribute('aria-label', 'Day');
+      return named;
+    }).f.validate();
+    assert.equal(named.getAttribute('aria-labelledby'), null, 'a name the page gave is kept');
+    let bare = null;
+    customField(undefined, () => { bare = globalThis.document.createElement('select'); return bare; });
+    assert.equal(bare.getAttribute('aria-labelledby'), null, 'with no field label there is no label to point at');
+  });
+
   test('RC11: the fallback lock page says a PIN is not available on this device when the Store has no crypto', async () => {
     setup();
     globalThis.Store = { view: { get: () => null, list: () => [], count: () => 0 },
@@ -1555,7 +1646,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
       contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id',
       reveals: 'id', tips: 'id', recoveryPlan: 'key' });
     await S.load();
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0, lockId: '' });
     assert.equal(await addRows(S), 'wrote', 'commit resolves with what the rule returned');
     assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
     assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
@@ -1647,7 +1738,8 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.notEqual(idb.rows('events').find((r) => r.id === 'e1').enc.iv, iv1, 'a fresh iv for every row write');
     const R = freshStore(); // the page reloads
     await R.load();
-    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5, unreadable: 0 });
+    assert.match(R.status().lockId, /^[0-9a-f]{8}$/);
+    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5, unreadable: 0, lockId: R.status().lockId });
     assert.equal(R.view.get('profile', 'me'), null);
     assert.equal(R.view.count('events'), 0);
     assert.equal(await R.lock.unlock('2468'), true);
@@ -1667,7 +1759,8 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.onLock((info) => heard.push(info.reason));
     S.lock.lockNow();
     assert.deepEqual(heard, ['manual']);
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0, unreadable: 0 });
+    assert.match(S.status().lockId, /^[0-9a-f]{8}$/);
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0, unreadable: 0, lockId: S.status().lockId });
     assert.equal(S.view.get('profile', 'me'), null);
     assert.deepEqual(S.view.list('events'), []);
     assert.equal(S.view.count('events'), 0);
@@ -1799,7 +1892,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.lockNow();
     ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
     await S.resetAll(); // Forgot PIN: erase, then start again from a backup
-    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
+    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0, lockId: '' });
     assert.equal(S.view.count('todos'), 0);
     for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
     assert.equal(ls.getItem('1-addic:snapshot'), null);
@@ -2020,6 +2113,54 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(ls.getItem('1-addic:snapshot'), null);
     assert.equal(V.view.get('events', 'f2').note, MARK);
     assert.ok(!idb2.dump().includes(MARK), 'sealed in IndexedDB');
+  });
+
+  test('status: lockId changes after erase and new PIN', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    const PIN = 'kite-2468';
+    const shape = /^[0-9a-f]{8}$/;
+    await S.load();
+    assert.equal(S.status().lockId, '', 'no lock: empty');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    const first = S.status().lockId;
+    assert.match(first, shape, 'a short opaque digest');
+    assert.equal(S.status().lockId, first, 'two reads are equal');
+    const salt = /"salt":"([^"]+)"/.exec(idb.dump())[1];
+    const told = JSON.stringify(S.status());
+    assert.ok(salt.length > 8, 'the salt was read from the stored row');
+    assert.equal(told.includes(salt), false, 'the salt never leaves the store');
+    assert.equal(told.includes(PIN), false, 'nor the PIN');
+    assert.equal(/"(salt|check|iv|ct)"/.test(told), false, 'nor any part of the sealed check');
+    S.lock.lockNow();
+    assert.equal(S.status().locked, true);
+    assert.equal(S.status().lockId, first, 'locking changes no row and so no mark');
+    assert.equal(await S.lock.unlock(PIN), true);
+    assert.equal(S.status().lockId, first, 'nor does opening');
+    await S.resetAll();
+    assert.equal(S.status().lockId, '', 'erased: no lock, empty');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    const second = S.status().lockId;
+    assert.match(second, shape);
+    assert.notEqual(second, first, 'the same PIN after an erase is a new lock: a new salt, a new mark');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    assert.notEqual(S.status().lockId, second, 'a PIN set over the old one replaces the row');
+    await S.lock.remove(PIN);
+    assert.equal(S.status().lockId, '', 'removed: empty');
+  });
+
+  test('status: lockId after a reload is the same mark, locked, and a mark of the row the other tab wrote', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    await S.lock.set('2468', { autoLockMin: 'never' });
+    const seen = S.status().lockId;
+    assert.match(seen, /^[0-9a-f]{8}$/);
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().locked, true, 'a reload opens locked');
+    assert.equal(R.status().lockId, seen, 'the mark comes from the row, so it survives a reload and is readable while locked');
+    assert.ok(idb.dump().includes('"salt"'));
   });
 
   test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {
@@ -2378,6 +2519,53 @@ describe('boot.js: a start failure shows one line and the urgent-help numbers', 
   test('no ui-core in the build: the bare shell stays, quietly', () => {
     const main = run(null, Content);
     assert.equal(main.children.length, 0);
+  });
+});
+
+// V-26a: build.mjs prints what each part adds to the file. It writes beside itself, so these builds run from a
+// throwaway folder and never rewrite offline/1-addic.html.
+describe('build.mjs prints the size of every part (V-26a)', () => {
+  const { spawnSync } = require('node:child_process');
+  const os = require('node:os');
+  const path = require('node:path');
+
+  function buildIn(files) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'core-build-'));
+    try {
+      fs.mkdirSync(path.join(dir, 'src'));
+      fs.copyFileSync(new URL('../build.mjs', import.meta.url), path.join(dir, 'build.mjs'));
+      for (const [name, text] of Object.entries(files)) fs.writeFileSync(path.join(dir, 'src', name), text);
+      const r = spawnSync(process.execPath, [path.join(dir, 'build.mjs')], { encoding: 'utf8' });
+      const built = path.join(dir, '1-addic.html');
+      return { status: r.status, lines: r.stdout.split(/\r?\n/).filter(Boolean), fileBytes: fs.existsSync(built) ? fs.statSync(built).size : null };
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  const SHELL = '<main id="main"></main>\n\n'; // 23 bytes as inlined: the build trims the trailing newlines
+  const CSS = 'body { color: red; }\n'; // 21 bytes
+
+  test('build: one size line per built part in list order, then the shell, the styles and the total', () => {
+    const store = 'var a = "café";\n// ' + 'x'.repeat(2045) + '\n'; // 2066 bytes, one fewer characters: sizes are bytes
+    const boot = 'var s = "</script>";\n'; // 21 bytes in the file, 22 as inlined: the size is what the part adds to the page
+    const r = buildIn({ 'shell.html': SHELL, 'styles.css': CSS, 'store.js': store, 'boot.js': boot });
+    assert.equal(r.status, 0, 'the build succeeds');
+    assert.deepEqual(r.lines.slice(0, 4), [
+      'part store.js 2066 B (2.0 kB)',
+      'part boot.js 22 B (0.0 kB)',
+      'part shell.html 23 B (0.0 kB)',
+      'part styles.css 21 B (0.0 kB)',
+    ]);
+    assert.equal(r.lines.length, 5, 'an absent part prints no size line');
+    assert.equal(r.lines[4].startsWith('built offline/1-addic.html ' + r.fileBytes + ' B ('), true, 'the total is last and is the size of the file written: ' + r.lines[4]);
+    assert.match(r.lines[4], /, 2 parts, skipped \(absent\): content-core\.js, /, 'the rest of the total line is unchanged');
+  });
+
+  test('build: a part that does not parse prints no size and writes no file', () => {
+    const r = buildIn({ 'shell.html': SHELL, 'styles.css': CSS, 'store.js': 'var = ;\n', 'boot.js': 'var ok = 1;\n' });
+    assert.equal(r.status, 1, 'the build fails');
+    assert.deepEqual(r.lines, [], 'nothing on stdout: no size line for a build that did not finish');
+    assert.equal(r.fileBytes, null, 'no file written');
   });
 });
 

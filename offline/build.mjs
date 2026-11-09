@@ -106,6 +106,7 @@ function build() {
 
   const scripts = [];
   const skipped = [];
+  const sizes = []; // [part, bytes it adds to the page], printed once the file is written (V-26a)
   for (const name of PARTS) {
     const file = path.join(SRC, name);
     if (!fs.existsSync(file)) { skipped.push(name); continue; }
@@ -113,6 +114,7 @@ function build() {
     checkParses(code, name);
     const safe = escapeScript(code);
     checkParses(safe, name + ' (escaped)');
+    sizes.push([name, Buffer.byteLength(safe.replace(/\n*$/, '\n'), 'utf8')]);
     scripts.push('<script data-part="' + name + '">\n' + safe.replace(/\n*$/, '\n') + '</script>');
   }
 
@@ -145,6 +147,9 @@ function build() {
   } catch (err) {
     fail('cannot write ' + OUT_NAME + ' (' + err.code + ')');
   }
+  sizes.push(['shell.html', Buffer.byteLength(shell.replace(/\n*$/, ''), 'utf8')]);
+  sizes.push(['styles.css', Buffer.byteLength(css.replace(/\n*$/, '\n'), 'utf8')]);
+  for (const [name, n] of sizes) console.log('part ' + name + ' ' + n + ' B (' + (n / 1024).toFixed(1) + ' kB)');
   const bytes = Buffer.byteLength(html, 'utf8');
   console.log('built ' + OUT_NAME + ' ' + bytes + ' B (' + (bytes / 1024).toFixed(1) + ' kB), ' +
     scripts.length + ' parts, skipped (absent): ' + (skipped.length ? skipped.join(', ') : 'none'));
