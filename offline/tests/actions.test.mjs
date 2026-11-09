@@ -3663,6 +3663,28 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.equal(f.d.doc.activeElement, f.pin, 'the focus is on the PIN');
   });
 
+  test('ES2: a retry takes the old PIN message away while the new try runs', async () => {
+    const g = unlockGate();
+    const f = lockForm(g);
+    f.pin.value = '1111';
+    let done = submit(f);
+    g.release(false);
+    await done;
+    assert.equal(said(f.msg), O.COPY.wrong, 'the first wrong PIN: the message');
+    assert.equal(f.msg.hidden, false);
+    f.pin.value = '2222';
+    done = submit(f);
+    assert.equal(g.calls, 2, 'the second try is running');
+    assert.equal(f.msg.hidden, true, 'the old message is hidden while the new try runs');
+    assert.equal(said(f.msg), '', 'and empty: the PIN field is described by it');
+    assert.equal(said(f.line), O.COPY.opening, 'the line says Opening your notebook');
+    g.release(false);
+    await done;
+    assert.equal(said(f.msg), O.COPY.wrong, 'a second wrong PIN: the message again');
+    assert.equal(f.msg.hidden, false);
+    assert.equal(said(f.line), '', 'the line is empty after');
+  });
+
   test('V-25: an unlock that throws (a PIN is not available here): the line is empty after, the message says so, the controls come back', async () => {
     const g = unlockGate();
     const f = lockForm(g);

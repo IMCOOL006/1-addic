@@ -258,6 +258,7 @@
       pin.value = '';
       if (!tried) return;
       unlock.disabled = true; pin.disabled = true;
+      msg.hidden = true; msg.textContent = ''; // ES2: the last try's message goes while this one runs; emptied too, as the PIN field is described by it
       opening.textContent = COPY.opening;
       const r = await attemptUnlock(S, tried);
       opening.textContent = '';
