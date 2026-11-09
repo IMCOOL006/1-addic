@@ -3781,11 +3781,13 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     return doc;
   };
   const settle = () => new Promise((r) => setTimeout(r, 60)); // past ui-core's 16 ms frame (Node has no requestAnimationFrame)
-  const routerApp = async () => {
+  // opts.discreet: the device flag is on (EF1). opts.at: the address the page loads at (SF1: a reload).
+  const routerApp = async (opts = {}) => {
     const vm = require('node:vm');
     const doc = routerDom();
     const on = {};
-    const location = { hash: '#/lock' };
+    const location = { hash: opts.at || '#/lock' };
+    const flag = { set: [], removed: [] };
     const replaced = [];
     const history = { state: null, replaceState(s, t, url) { location.hash = url; replaced.push(url); } };
     const subs = new Set();
@@ -3797,13 +3799,13 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
         unlock: () => new Promise((res) => { store.release = (ok) => { if (ok) { store.locked = false; for (const f of subs) f({ label: 'unlock' }); } res(ok); }; }) },
     };
     const ctx = vm.createContext({ document: doc, window: { addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); } }, location, history, Store: store, Content: C(),
-      localStorage: { getItem: () => null, setItem() {}, removeItem() {} }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
+      localStorage: { getItem: (k) => (opts.discreet && k === '1-addic:discreet' ? '1' : null), setItem: (k, v) => { flag.set.push([k, v]); }, removeItem: (k) => { flag.removed.push(k); } }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
     vm.runInContext(readFileSync(src('ui-core.js'), 'utf8'), ctx, { filename: 'ui-core.js' });
     const UI = vm.runInContext('UI', ctx);
     const body = (text) => () => { const p = doc.createElement('div'); p.textContent = text; return p; };
     UI.pages.sos = body('URGENT NUMBERS');
     UI.pages.today = body('TODAY');
-    const a = { doc, store, location, replaced, UI, done: null, soberDone: null };
+    const a = { doc, store, location, replaced, UI, flag, done: null, soberDone: null };
     UI.sosSoberView = (onDone) => { a.soberDone = onDone; return body('SOBER PRACTICE')(); };
     vm.runInContext(readFileSync(src('ui-onboarding.js'), 'utf8'), ctx, { filename: 'ui-onboarding.js' });
     await UI.boot();
@@ -3939,6 +3941,24 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     await a.keyReady(true);
     assert.equal(a.location.hash, '#/today', 'the PIN being checked went on, then on to Today');
     assert.match(a.text(), /TODAY/);
+  });
+
+  test('ESR2: Done on a discreet lock page keeps the discreet chrome and the device flag (the real router)', async () => {
+    const a = await routerApp({ discreet: true });
+    const sosBtn = a.doc.getElementById('sos-btn');
+    const name = a.doc.getElementById('app-name');
+    assert.deepEqual([name.textContent, sosBtn.textContent], ['Notebook', 'Help'], 'discreet from the start');
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    a.submit('2468');
+    await a.keyReady(true); // the key arrives: ui-core paints the chrome as SOS, no button
+    a.store.locked = true; // the idle lock, or another tab
+    a.soberDone();
+    await settle();
+    assert.equal(a.location.hash, '#/lock', 'back on the lock route');
+    assert.deepEqual([name.textContent, sosBtn.textContent], ['Notebook', 'Help'], 'the name and the button stay discreet through Done');
+    assert.equal(sosBtn.hidden, false, 'the button is back');
+    assert.deepEqual(a.flag.removed, [], 'the device flag was not taken away');
   });
 });
 // ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
