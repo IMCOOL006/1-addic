@@ -2,7 +2,7 @@
 // mode. The real offline/src/store.js and engine.js are loaded by path when they exist (the merged trunk); while one is
 // absent, the stand-in at the bottom of this file takes its place: the Store of contract E (tracks/CORE/contracts/core.md)
 // in memory, and only the Engine names U-09 calls, with the shapes of tracks/CORE/contracts/engine.md.
-import { describe, test, before, beforeEach } from 'node:test';
+import { describe, test, before, beforeEach, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -4201,6 +4201,124 @@ describe('V3 actions-sos V-17b (waiting saves marked with lockId)', () => {
     assert.equal(calls, 1, 'never retried');
     assert.equal(events('SosCompleted').length, 0, 'nothing written');
     assert.equal(count(d, H.COPY.notSaved), 1, 'told it was not saved');
+  });
+
+  // ES3T: two real Stores over one fake IndexedDB, as two tabs are. Another tab's import with a PIN set seals the lock row's check again (core's FIX-IMPORT-MARK), so the mark a kept save carries moves.
+  describe('V-17b on two real stores (ES3T)', () => {
+    const STORE_PATH = require.resolve('../src/store.js');
+    const freshStore = () => { delete require.cache[STORE_PATH]; return require(STORE_PATH); };
+    const hadIDB = 'indexedDB' in globalThis;
+    const savedIDB = globalThis.indexedDB;
+    const savedStore = require.cache[STORE_PATH];
+    after(() => { // the rest of the file keeps its own Store and no IndexedDB
+      if (savedStore) require.cache[STORE_PATH] = savedStore; else delete require.cache[STORE_PATH];
+      if (hadIDB) globalThis.indexedDB = savedIDB; else delete globalThis.indexedDB;
+    });
+    function fakeIndexedDB() {
+      const dbs = new Map();
+      const cp = (v) => JSON.parse(JSON.stringify(v));
+      function makeDb(rec) {
+        return {
+          objectStoreNames: { contains: (n) => rec.stores.has(n) },
+          createObjectStore(n, o) { rec.stores.set(n, { keyPath: o.keyPath, rows: new Map() }); },
+          close() {},
+          transaction(names) {
+            for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
+            const t = { error: null, aborted: false, abort() { t.aborted = true; } };
+            const ops = [];
+            const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
+            t.objectStore = (n) => {
+              const st = rec.stores.get(n);
+              return {
+                getAll: () => request(() => Array.from(st.rows.values()).map(cp)),
+                get: (id) => request(() => (st.rows.has(id) ? cp(st.rows.get(id)) : undefined)),
+                put: (row) => request(() => { st.rows.set(row[st.keyPath], cp(row)); }),
+                delete: (id) => request(() => { st.rows.delete(id); }),
+                clear: () => request(() => { st.rows.clear(); }),
+              };
+            };
+            setTimeout(() => {
+              for (const op of ops) { if (t.aborted) break; op(); }
+              if (t.aborted) { if (t.onabort) t.onabort(); return; }
+              if (t.oncomplete) t.oncomplete();
+            }, 0);
+            return t;
+          },
+        };
+      }
+      return {
+        open(name, version) {
+          const r = {};
+          setTimeout(() => {
+            let rec = dbs.get(name);
+            if (!rec) { rec = { version: 0, stores: new Map() }; dbs.set(name, rec); }
+            r.result = makeDb(rec);
+            if (rec.version < version) { rec.version = version; if (r.onupgradeneeded) r.onupgradeneeded(); }
+            if (r.onsuccess) r.onsuccess();
+          }, 0);
+          return r;
+        },
+        deleteDatabase(name) {
+          const r = {};
+          setTimeout(() => { dbs.delete(name); if (r.onsuccess) r.onsuccess(); }, 0);
+          return r;
+        },
+      };
+    }
+    const twoTabs = async () => {
+      globalThis.indexedDB = fakeIndexedDB();
+      const T1 = freshStore(); await T1.load(); await T1.lock.set('2468', { autoLockMin: 'never' });
+      const T2 = freshStore(); await T2.load(); assert.equal(await T2.lock.unlock('2468'), true);
+      return { T1, T2 };
+    };
+    const actionsOn = (T1) => {
+      const written = [];
+      const A = Object.assign({}, Actions, { sosSession: async (p) => {
+        await T1.commit('tab save', (draft) => { draft.put('events', { id: 'tab-' + written.length, type: 'SosCompleted', at: '2026-03-11T12:00:00.000Z', payload: {} }); });
+        written.push(p);
+        return { ok: true };
+      } });
+      return { A, written };
+    };
+    const keep = async (T1, A) => {
+      T1.lock.lockNow();
+      assert.equal(T1.status().locked, true);
+      const d = sosDom({ store: T1 });
+      craving(d, A);
+      await until(() => count(d, H.COPY.lockedKept) === 1, 'kept for the unlock');
+      return d;
+    };
+
+    test('V-17b: a kept save is dropped, and told once, when another tab imports a backup with the PIN kept (two real stores)', async () => {
+      const { T1, T2 } = await twoTabs();
+      const { A, written } = actionsOn(T1);
+      const d = await keep(T1, A);
+      const first = T1.status().lockId;
+      await T2.replaceAll({ app: '1-addic', stores: {} });
+      assert.notEqual(T2.status().lockId, first, 'the import seals the lock row again: the mark moves');
+      assert.equal(T2.status().hasLock, true, 'the PIN is kept');
+      assert.equal(await T1.lock.unlock('2468'), true, 'the same PIN opens the imported notebook');
+      assert.notEqual(T1.status().lockId, first, 'this tab read the new mark when it resynced');
+      await until(() => written.length > 0 || count(d, H.COPY.keptLost) > 0, 'the kept save is decided');
+      await d.settle();
+      assert.deepEqual(written, [], 'C2: a kept save is never written into a notebook another tab imported');
+      assert.equal(T1.view.list('events').length, 0, 'nothing in the imported notebook');
+      assert.equal(count(d, H.COPY.keptLost), 1, 'told once that it was not saved');
+    });
+
+    test('V-17b: a kept save is written once after the unlock when no other tab changed the notebook (two real stores)', async () => {
+      const { T1 } = await twoTabs();
+      const { A, written } = actionsOn(T1);
+      const d = await keep(T1, A);
+      const first = T1.status().lockId;
+      assert.equal(await T1.lock.unlock('2468'), true);
+      await until(() => written.length > 0 || count(d, H.COPY.keptLost) > 0, 'the kept save is decided');
+      await d.settle();
+      assert.equal(T1.status().lockId, first, 'a lock and an unlock leave the mark where it was');
+      assert.equal(written.length, 1, 'written once');
+      assert.equal(T1.view.list('events').length, 1, 'one row in the notebook');
+      assert.equal(count(d, H.COPY.keptLost), 0, 'nothing says it was lost');
+    });
   });
 });
 // -- V3 actions-sos tests end --
