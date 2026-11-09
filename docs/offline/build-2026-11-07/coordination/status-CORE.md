@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:26 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). Running: actions-sos V-25 + V-18 wf_537e4a2d-ba1 (slot 3), learn V-20 wf_c67ac1fc-ea5 (slot 9). Next on CORE's rows: tests-docs V-22a + V-26b + V-27 + V-29 (fast-forwarded first), core's whole-lane review; V-17b + C2 after the actions-sos run returns
+STATE: BUILDING   # 2026-11-09 15:28 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). learn V-20 wf_c67ac1fc-ea5 running. actions-sos READY-SLICE 638c94a with the HUB. Next on CORE's rows: tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review, then V-17b + C2 once 638c94a merges (fast-forward first)
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos BUILDING   # 2026-11-09 15:07 IST: V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, merge base 60dffe33, skipReview). Then READY-SLICE; then V-17b + C2 after core 561cab2 merges; then the whole-lane review from f69bc68a before the final READY
+LANE: actions-sos READY-SLICE 638c94a   # 2026-11-09 15:28 IST: V-25 d9e105a, V-18 638c94a (wf_537e4a2d-ba1; merge base 60dffe33). Check PASS; gates build GREEN 1206087 B, test GREEN 202/202, test --full GREEN 662/662, validate GREEN, guards GREEN 5/5, browser GREEN 28/28/0, territory 0 errors. Then V-17b + C2, then the whole-lane review from f69bc68a before the final READY
 LANE: learn BUILDING   # 2026-11-09 15:26 IST: V-20 wf_c67ac1fc-ea5 (slot 9, tier 2, the slice; fast-forwarded to 6fad2554, the merge base)
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 15:26 IST
+UPDATED: 2026-11-09 15:28 IST
+
+# 2026-11-09 15:28 IST · actions-sos READY-SLICE 638c94a (V-25, V-18); merge base 60dffe33
+
+- wf_537e4a2d-ba1 returned: lane.js state READY, written here as READY-SLICE because the lane continues with V-17b + C2 and the whole-lane review. 3 agents; check PASS, one LOW C1.
+- This chat verified on 638c94a: the worktree clean but for the generated offline/1-addic.html (dropped); node --test offline/tests/actions.test.mjs 202 pass, 0 fail, 0 skip. The rest of the gates are the checker's logs (_logs/gates/actions-sos/*-20261109-152*): build, test, test --full 662/662 in 15 files, validate, guards 5/5, browser 28/28/0. No merge preview: the trunk has not changed the lane's files since 60dffe33.
+- C1 (LOW), ruled, not fixed: d9e105a and 638c94a carry only 'Co-Authored-By: Claude Opus 5.5', with no Claude-Session line. The builder followed its session's attribution instruction. Runs from now on carry the laneNote line 'Claude-Session goes on every commit, whatever the Co-Authored-By line says'.
+- For the owner: V-25's unlock time on a phone is not measured (the PC takes about 1.2 s). Default taken: the 'Opening your notebook' line sits under the Unlock button, so the button just tapped does not move.
+- tests-docs owes one hook, by the builder's note: lock-opening (ui-onboarding.js lockPage, p#lock-opening, data-testid) in offline/tests/helpers/hooks.mjs; no browser flow reads it yet. It goes in the tests-docs batch.
 
 # 2026-11-09 15:26 IST · learn V-20 launched on CORE's row (15:25, 10.0 GB)
 
