@@ -750,14 +750,16 @@ flow('lock page SOBER practice stays open, SOS still works, Done comes back', { 
   await openSober(page, 'first open');
   await page.locator(HOOKS.sosBtn).click();
   await F.waitRoute(page, 'sos', 4000);
-  await F.need(page, HOOKS.sosUrgentBtn, 2500);
+  // A failure, never a skip: this flow needs the sos route, so a missing button here is urgent help gone (C1).
+  assert.ok(await present(page, HOOKS.sosUrgentBtn, 2500), 'urgent help must be one tap from SOS, opened from the practice on the lock page');
   await page.locator(HOOKS.lockPage).first().waitFor({ state: 'detached', timeout: 4000 });
 
   // Done comes back to a working lock page.
   await openSober(page, 'done to lock');
   await tapSoberDone(page);
   await F.waitFor(page, () => location.hash === '#/lock');
-  const pin = await F.need(page, HOOKS.lockPin, 4000);
+  assert.ok(await present(page, HOOKS.lockPin, 4000), 'the PIN field is back on the lock page after Done');
+  const pin = page.locator(HOOKS.lockPin).first();
   assert.ok((await pin.isVisible()) && (await pin.isEnabled()), 'the PIN field is usable after Done');
   assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), 'the SOS button is visible after Done');
   await F.unlockWith(page, F.TEST_PIN);
