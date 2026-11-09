@@ -90,7 +90,7 @@ MERGED: tests-docs READY f211a11 (FIX-COUNTS-2: the counts true on the trunk; do
 QUIET: done   # 18:10-18:13 IST on _int at dcabd906, exit 0, every name read: build GREEN 1211715 B; test GREEN 743 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN all checks; browser GREEN 29 flows 29 pass 0 fail 0 skip in one full run; docs GREEN exit 0; logs _logs/gates/hub/{build-20261109-181038,test-20261109-181038,validate-20261109-181128,guards-20261109-181128,browser-20261109-181128,docs-20261109-181248}.log; no name to classify. FIX-COUNTS-3 (docs only) merges after it, then the tag. Earlier: done 2026-11-08 11:33-11:43 IST on _int at 5ee84d5a (offline-v3.0)
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up
 TAG: offline-v3.0 = 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (2026-11-08 11:55 IST, annotated, pushed). Earlier: offline-v1.1 = f69bc68a (02:01), offline-v1.0 = 45473b2 (2026-11-07 11:40)
-UPDATED: 2026-11-09 18:31 IST
+UPDATED: 2026-11-09 18:46 IST
 
 
 
