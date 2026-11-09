@@ -3813,4 +3813,168 @@ describe('V3 actions-sos V-18 (RC22, RC23, R8-RC1)', () => {
     assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, once');
   });
 });
+
+// ── V-17b (V3-17): SOS marks its waiting saves with Store.status().lockId. A save kept before a lock is dropped when the lock row changed (another tab erased and set a new PIN) ──
+describe('V3 actions-sos V-17b (waiting saves marked with lockId)', () => {
+  const H = require(src('ui-sos.js'));
+  const A1 = 'a1a1a1a1';
+  const B2 = 'b2b2b2b2';
+  const NONE = { lockId: '', hasLock: false };
+  const lockedErr = () => Object.assign(new Error('The notebook is locked.'), { code: 'LOCKED' });
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+
+  // A stub store for what SOS's waiting saves read: the status (its lock row's mark is the test's to change) and the
+  // notify an unlock sends; the rest goes to the real Store. A write lands in s.written, and while the status reads
+  // locked it is refused with LOCKED. s.during, once: the status changes while the save runs, and the write is refused.
+  function lockStub(start) {
+    const s = { st: Object.assign({ hasLock: true, locked: true, lockId: A1 }, start), subs: new Set(), calls: 0, written: [], during: null };
+    s.store = Object.assign(Object.create(S()), {
+      status: () => Object.assign({}, s.st),
+      subscribe(fn) { s.subs.add(fn); return () => s.subs.delete(fn); },
+    });
+    s.notify = (label) => { for (const fn of s.subs) fn({ label }); };
+    s.A = Object.assign({}, Actions, { sosSession: async (p) => {
+      s.calls += 1;
+      if (s.during) { const change = s.during; s.during = null; change(); throw lockedErr(); }
+      if (s.st.locked) throw lockedErr();
+      s.written.push(p);
+      return { ok: true };
+    } });
+    return s;
+  }
+  // a craving session tapped through to No: its save comes at the end
+  const craving = (d, A) => {
+    const root = d.open(['sos', 'craving'], null, A);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-no']) d.tapId(root, id);
+    return root;
+  };
+  const count = (d, msg) => d.toasts.filter((t) => t[0] === msg).length;
+  const kept = async (s) => {
+    const d = sosDom({ store: s.store });
+    craving(d, s.A);
+    await until(() => count(d, H.COPY.lockedKept) === 1, 'kept for the unlock');
+    return d;
+  };
+  const unlockNow = (s) => { s.st.locked = false; s.notify('unlock'); };
+
+  for (const [name, change] of [['replaced (another tab erased and set a new PIN)', { lockId: B2 }], ['removed (another tab erased)', NONE]]) {
+    test(`V-17b: a save kept for the unlock is dropped when its lock row was ${name}: never written, told once`, async () => {
+      const s = lockStub();
+      const d = await kept(s);
+      assert.equal(s.calls, 1, 'refused once while locked');
+      Object.assign(s.st, change);
+      unlockNow(s);
+      await until(() => count(d, H.COPY.keptLost) === 1, 'told it was not saved');
+      await d.settle();
+      assert.deepEqual(s.written, [], 'never written into the new notebook');
+      assert.equal(s.calls, 1, 'never tried again');
+      s.notify();
+      await d.settle();
+      assert.equal(s.calls, 1, 'nothing kept to write later');
+      assert.equal(count(d, H.COPY.keptLost), 1, 'told once');
+      craving(d, s.A);
+      await until(() => s.written.length === 1, 'a save on the notebook as it is goes in');
+      assert.equal(count(d, H.COPY.lockedKept), 1, 'and waits for nothing');
+    });
+  }
+
+  test('V-17b: the lockId the same across the lock and the unlock: the kept save is written, once; nothing says it was lost', async () => {
+    const s = lockStub();
+    const d = await kept(s);
+    unlockNow(s);
+    await until(() => s.written.length === 1, 'written after the unlock');
+    await d.settle();
+    s.notify();
+    await d.settle();
+    assert.equal(s.written.length, 1, 'once');
+    assert.equal(count(d, H.COPY.keptLost), 0, 'never told it was lost');
+  });
+
+  test('V-17b: each kept save carries the lockId of its own time: kept before the change it is dropped, kept after it is written; one toast', async () => {
+    const s = lockStub();
+    const tagged = (tag) => Object.assign({}, s.A, { sosSession: (p) => s.A.sosSession(Object.assign({ tag }, p)) });
+    const d = sosDom({ store: s.store });
+    craving(d, tagged('before'));
+    await until(() => count(d, H.COPY.lockedKept) === 1, 'the first kept');
+    s.st.lockId = B2;
+    craving(d, tagged('after'));
+    await until(() => count(d, H.COPY.lockedKept) === 2, 'the second kept');
+    unlockNow(s);
+    await until(() => count(d, H.COPY.keptLost) === 1, 'told it was not saved');
+    await d.settle();
+    assert.deepEqual(s.written.map((p) => p.tag), ['after'], 'only the save made in this notebook');
+    assert.equal(s.calls, 3, 'two refusals and one write: the first was never tried again');
+    assert.equal(count(d, H.COPY.keptLost), 1, 'one toast');
+  });
+
+  for (const [name, locked, start, change] of [
+    ['replaced', false, {}, { lockId: B2 }],
+    ['replaced', true, {}, { lockId: B2 }],
+    ['removed', false, {}, NONE],
+    ['removed', true, {}, NONE],
+    ['created', false, NONE, { lockId: A1, hasLock: true }],
+  ]) {
+    test(`V-17b: a lock row ${name} while the save runs, the notebook reading ${locked ? 'locked' : 'open'}: dropped, never retried or kept, told not saved`, async () => {
+      const s = lockStub(Object.assign({ locked }, start));
+      s.during = () => { Object.assign(s.st, change); };
+      const d = sosDom({ store: s.store });
+      craving(d, s.A);
+      await until(() => count(d, H.COPY.notSaved) === 1 || count(d, H.COPY.lockedKept) === 1 || s.calls > 1, 'the refused save ends');
+      await d.settle();
+      assert.equal(s.calls, 1, 'never retried');
+      assert.equal(count(d, H.COPY.lockedKept), 0, 'never told it waits');
+      assert.equal(count(d, H.COPY.notSaved), 1, 'told it was not saved');
+      unlockNow(s);
+      await d.settle();
+      s.notify();
+      await d.settle();
+      assert.deepEqual(s.written, [], 'nothing written');
+      assert.equal(s.calls, 1, 'nothing kept to write later');
+    });
+  }
+
+  test('V-17b: a store with no lockId, or one that is not a string, keeps the rule it had: written after the unlock, dropped when hasLock changed', async () => {
+    for (const [name, first, then] of [['absent', undefined, undefined], ['a number', 7, 8]]) {
+      const s = lockStub({ lockId: first });
+      if (first === undefined) delete s.st.lockId;
+      const d = await kept(s);
+      if (then !== undefined) s.st.lockId = then;
+      unlockNow(s);
+      await until(() => s.written.length === 1, `${name}: written after the unlock`);
+      await d.settle();
+      assert.equal(count(d, H.COPY.keptLost), 0, `${name}: never told it was lost`);
+    }
+    const s = lockStub();
+    delete s.st.lockId;
+    const d = await kept(s);
+    s.st.hasLock = false;
+    unlockNow(s);
+    await until(() => count(d, H.COPY.keptLost) === 1, 'the lock row went away: told');
+    await d.settle();
+    assert.deepEqual(s.written, [], 'hasLock still drops it');
+  });
+
+  test('V-17b: on the real Store a PIN set over the old one while the save runs changes lockId: dropped, never retried', async () => {
+    await S().lock.set('2468');
+    const first = S().status().lockId;
+    assert.match(first, /^[0-9a-f]{8}$/, 'the real Store marks its lock row');
+    let calls = 0;
+    const A = Object.assign({}, Actions, { sosSession: async (p) => {
+      calls += 1;
+      if (calls > 1) return Actions.sosSession(p);
+      await S().lock.set('1357');
+      throw lockedErr();
+    } });
+    const d = sosDom();
+    craving(d, A);
+    await until(() => count(d, H.COPY.notSaved) === 1 || count(d, H.COPY.lockedKept) === 1 || calls > 1, 'the refused save ends');
+    await d.settle();
+    assert.notEqual(S().status().lockId, first, 'a new row, a new mark');
+    assert.equal(S().status().hasLock, true, 'hasLock alone could not tell');
+    assert.equal(calls, 1, 'never retried');
+    assert.equal(events('SosCompleted').length, 0, 'nothing written');
+    assert.equal(count(d, H.COPY.notSaved), 1, 'told it was not saved');
+  });
+});
 // -- V3 actions-sos tests end --
