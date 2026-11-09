@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 20:40 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. actions-sos MERGED aac18546 = the offline-v3.2 FREEZE. QUIET: nothing heavy until the HUB's word. Then FIX-COUNTS-4 on its numbers
+STATE: WAITING   # 2026-11-09 20:43 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. tests-docs READY 69f2b72 (FIX-COUNTS-4) is with the HUB, which tags offline-v3.2 on its merge
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED fb3966b   # 2026-11-09 20:37 IST: FIX-AS-V32 merged aac18546, pushed (the HUB: build, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9, the SOBER flow's first run against SF1's hold). R-H-54: C1 and FIX-SOS-FOCUS LOW, named for v3.3; the dropped-save order intended
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs MERGED 1686bb8   # 2026-11-09 20:21 IST: FIX-TD-V32 merged 0c03fc0c, pushed (the HUB: build, test, validate, guards GREEN, territory 0; the three new flows 3/3 by name on the merged tree; docs GREEN). FIX-COUNTS-4 follows the actions-sos merge
+LANE: tests-docs READY 69f2b72   # 2026-11-09 20:43 IST: FIX-COUNTS-4; merge base aac18546. Docs only, the HUB's numbers: Node 763 in 16 files, browser 32 flows; 32 names in offline/README.md; no old count in the four text files; .docx rebuilt, 0 images missing; territory 0. R-C-89
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 20:40 IST
+UPDATED: 2026-11-09 20:43 IST
+
+# 2026-11-09 20:43 IST · tests-docs READY 69f2b72 (FIX-COUNTS-4); merge base aac18546
+
+- From the HUB (by message, 20:41): QUIET done at aac18546, every name read: build 1213207 B; Node 763/0/0 in 16 files; validate; guards 5/5; browser 32/0/0; docs GREEN. FIX-COUNTS-4 done in the tests-docs worktree: one commit, five files; no test run. R-C-89.
 
 # 2026-11-09 20:40 IST · from the HUB (20:37, by message) · actions-sos fb3966b merged aac18546; the offline-v3.2 FREEZE; QUIET; FIX-COUNTS-4 on its numbers
 
