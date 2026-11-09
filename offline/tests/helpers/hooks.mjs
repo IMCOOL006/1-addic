@@ -195,6 +195,8 @@ export const HOOKS = {
   statusGrowthItem: dt('status-growth-item'), // ui-status.js:388 (data-kind; one per growth unit, never removed)
   statusGrowthLayer: dt('status-growth-layer'), // ui-harbor.js:120 (an svg g in the scene)
   statusWay: dt('status-way'), // ui-status.js:393 (the spine "Your way")
+  // FIX-TD-V32 (offline-v3.2)
+  bootLine: '.boot-line', // shell.html:26 a class on the first-paint crisis line (no hook attribute); styles.css:360 hides it in discreet mode
 };
 
 // Stable skip reasons (the contract's strings; the chat reads them by name).

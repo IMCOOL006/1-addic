@@ -649,3 +649,40 @@ flow('saved label is always shown', {}, async ({ page }) => {
     assert.match(await textOf(page, HOOKS.savedLabel), /^(Saved on this device|Saved \(fallback\)|Not saved)/, `saved label text on #/${r}`);
   }
 });
+
+/* ── offline-v3.2 (FIX-TD-V32) ── */
+
+// T1: core's ES1 (styles.css:360) keeps the crisis line of shell.html:26 off the first paint of a discreet start. The probe goes in
+// before any page script: it samples the line's display on every DOM change until the line is gone. The flag is read by the
+// head's own script (build.mjs THEME_SCRIPT). The control proves the probe samples at all, so the flow cannot pass by never sampling.
+const bootProbe = (sel) => {
+  const probe = { samples: [], seen: false, gone: false };
+  window.__bootLineProbe = probe;
+  const obs = new MutationObserver(() => {
+    if (probe.gone) return;
+    const el = document.querySelector(sel);
+    if (el) { probe.seen = true; probe.samples.push(getComputedStyle(el).display); }
+    else if (probe.seen) { probe.gone = true; obs.disconnect(); }
+  });
+  obs.observe(document, { childList: true, subtree: true, attributes: true });
+};
+// The flag goes in by an init script too, in the new document before the head's script reads it: a write from the old page
+// before the reload can lose to the app's own settle (the first load's applyDiscreet) or reach the new document late. Init
+// scripts run in the order they were added, so the control's removal runs after the discreet case's write.
+async function bootSamples(page, discreet) {
+  await page.addInitScript((on) => {
+    if (on) localStorage.setItem('1-addic:discreet', '1'); else localStorage.removeItem('1-addic:discreet');
+  }, discreet);
+  await page.reload();
+  await ready(page);
+  await F.waitFor(page, () => window.__bootLineProbe && window.__bootLineProbe.gone === true);
+  return page.evaluate(() => window.__bootLineProbe.samples);
+}
+flow('discreet start shows no emergency line while the app loads', {}, async ({ page }) => {
+  await page.addInitScript(bootProbe, HOOKS.bootLine);
+  const hidden = await bootSamples(page, true);
+  assert.ok(hidden.length >= 1, 'discreet: the line was sampled at least once');
+  assert.deepEqual([...new Set(hidden)], ['none'], 'discreet: every sample of the line is display none');
+  const control = await bootSamples(page, false);
+  assert.ok(control.some((d) => d !== 'none'), `control: without the flag the line is painted (samples: ${control.join(',') || 'none'})`);
+});
