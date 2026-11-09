@@ -25,5 +25,6 @@ One short record per decision from PLAN.md §15, answered by the owner on 16 Oct
 | [0019](0019-safety-floor.md) | D19 The safety floor stays open | Accepted |
 | [0020](0020-device-transfer-and-recovery.md) | C3 Moving, losing and recovering devices | Accepted |
 | [0021](0021-forecast-check.md) | C5 The forecast check | Accepted |
+| [0022](0022-offline-edition.md) | O1-O9 Offline single-file edition | Accepted |
 
 Owner inputs I1–I13 and confirmations C1–C5 are recorded in [owner-inputs.md](owner-inputs.md).
