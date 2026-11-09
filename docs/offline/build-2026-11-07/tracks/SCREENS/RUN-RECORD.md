@@ -339,9 +339,13 @@
 
 - R-H-49: the coach's SOS link at 2.73:1 in the dark theme, found by tests-docs' contrast check. Fixed in this chat at a3f0bf7 (one line; dark 6.68:1, light 8.10:1), merged 18852152. Trunk eec5d862, Node 723/723.
 
+## 2026-11-09 16:06 IST · hand-over at 302k
+
+- Chat 9c7e67fd (SCREENS 14:38) stops at the context rule with nothing running. Today it took content V-23, workbook-settings V-24 and V-22b, game-tutorials V-21 and FIX-COACH-SOS from the limit's stop to merged.
+
 ## Resume here
 
-- Chat 9c7e67fd (SCREENS 14:38), alive and idle, context over 250k, STATE WAITING-OWNER since 2026-11-09 15:33 IST. Nothing of SCREENS is running. It waits on outbox-OWNER.md (a background watch) and on HUB messages.
+- Fresh chat: nothing of SCREENS is running and there is nothing to build until the owner's I6 arrives or a fix by name comes back. First step: write STATE: WAITING-OWNER on status-SCREENS.md with a # note (HUB 14:40's word; the launcher then opens no more SCREENS chats), commit it, and start one background Bash loop that exits when outbox-OWNER.md changes size (until [ "$(stat -c %s FILE)" != "$S0" ]; do sleep 120; done). HUB messages arrive by themselves. Do not relaunch anything.
 - The one unit left: content V-10b, after the owner's I6 (the India numbers). Recipe: read the owner's answer in outbox-OWNER.md; fast-forward build/content and its worktree to the trunk tip (git -C C:/Users/ruchi/1-addic-wt/content merge --ff-only build/offline-v1); lane.js with lane_args_v3.json lanes.content, units ['V-10b'], base and diffFrom that tip, done adding V-10, V-10r, V-42, C1, V-23, slot 4; one start on a 7.0 GB row (ask the HUB, the rows are CORE's). The builder removes verify:true only on the entries the owner confirmed (content-core.js:421-432, +1 line after V-23's comment at :133) and quotes the answer in the commit body. LOW C1 (content.test.mjs:381, a redundant assert) may go with it.
 - If a fix by name comes back (a 'from the HUB' note and an R-H line): fix on the lane's branch within the hour, two rounds at most; READY <tip> with the merge base.
 - Named, not built (no plan unit): workbook-settings C1 (the comment at workbook-settings.test.mjs:296), the eraseSampleLater branch in ui-settings.js, Settings' 'Replay the tour' to '#/today?tour=1' (R-S-31). R-S-30 to tests-docs: the guide's lines 431 and 439.
