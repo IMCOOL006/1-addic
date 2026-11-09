@@ -649,3 +649,132 @@ flow('saved label is always shown', {}, async ({ page }) => {
     assert.match(await textOf(page, HOOKS.savedLabel), /^(Saved on this device|Saved \(fallback\)|Not saved)/, `saved label text on #/${r}`);
   }
 });
+
+/* ── offline-v3.2 (FIX-TD-V32) ── */
+
+// T1: core's ES1 (styles.css:360) keeps the crisis line of shell.html:26 off the first paint of a discreet start. The probe goes in
+// before any page script: it samples the line's display on every DOM change until the line is gone. The flag is read by the
+// head's own script (build.mjs THEME_SCRIPT). The control proves the probe samples at all, so the flow cannot pass by never sampling.
+const bootProbe = (sel) => {
+  const probe = { samples: [], seen: false, gone: false };
+  window.__bootLineProbe = probe;
+  const obs = new MutationObserver(() => {
+    if (probe.gone) return;
+    const el = document.querySelector(sel);
+    if (el) { probe.seen = true; probe.samples.push(getComputedStyle(el).display); }
+    else if (probe.seen) { probe.gone = true; obs.disconnect(); }
+  });
+  obs.observe(document, { childList: true, subtree: true, attributes: true });
+};
+// The flag goes in by an init script too, in the new document before the head's script reads it: a write from the old page
+// before the reload can lose to the app's own settle (the first load's applyDiscreet) or reach the new document late. Init
+// scripts run in the order they were added, so the control's removal runs after the discreet case's write.
+async function bootSamples(page, discreet) {
+  await page.addInitScript((on) => {
+    if (on) localStorage.setItem('1-addic:discreet', '1'); else localStorage.removeItem('1-addic:discreet');
+  }, discreet);
+  await page.reload();
+  await ready(page);
+  await F.waitFor(page, () => window.__bootLineProbe && window.__bootLineProbe.gone === true);
+  return page.evaluate(() => window.__bootLineProbe.samples);
+}
+flow('discreet start shows no emergency line while the app loads', {}, async ({ page }) => {
+  await page.addInitScript(bootProbe, HOOKS.bootLine);
+  const hidden = await bootSamples(page, true);
+  assert.ok(hidden.length >= 1, 'discreet: the line was sampled at least once');
+  assert.deepEqual([...new Set(hidden)], ['none'], 'discreet: every sample of the line is display none');
+  const control = await bootSamples(page, false);
+  assert.ok(control.some((d) => d !== 'none'), `control: without the flag the line is painted (samples: ${control.join(',') || 'none'})`);
+});
+
+// T2: V-20's toasts (ui-learn.js:543 and :619). The text of the toast shown is what counts. A CheckpointCompleted earns once per
+// module (ui-learn.js:615), so the second finish has no XP in its words. Each toast stays 4.5 s (ui-core.js:163): the second finish waits for the
+// first to go, so the check of its words cannot read the first one's.
+const toastSaid = (page, text) => F.waitFor(page, ({ sel, want }) => Array.from(document.querySelectorAll(sel)).some((el) => el.textContent.trim() === want), { sel: HOOKS.toast, want: text }, 6000);
+const toastsNow = (page) => page.evaluate((sel) => Array.from(document.querySelectorAll(sel)).map((el) => el.textContent.trim()), HOOKS.toast);
+async function answerCheckpoint(page, moduleId) {
+  await F.go(page, `#/learn/${moduleId}?checkpoint=1`);
+  await F.need(page, HOOKS.checkpointPage, 4000);
+  for (let n = 1; n <= 2; n += 1) {
+    if (await present(page, HOOKS.checkpointQ(n), 300)) await F.click(page, HOOKS.checkpointOpt(n, 0));
+  }
+  await F.click(page, HOOKS.checkpointFinish);
+}
+flow('finishing a lesson and a checkpoint says +10 XP once', { routes: ['lesson', 'learn'], globals: ['Store', 'Actions.completeLesson', 'Actions.checkpoint', 'Content.modules'] }, async ({ page }) => {
+  const first = await page.evaluate(() => {
+    const m = Content.modules.find((x) => x && x.id && Array.isArray(x.lessons) && x.lessons.length);
+    return m ? { moduleId: m.id, lessonId: m.lessons[0].id } : null;
+  });
+  if (!first) throw new F.Skip('no module with lessons in Content.modules');
+  await F.go(page, `#/lesson/${first.lessonId}`);
+  await F.need(page, HOOKS.lessonNext, 4000);
+  for (let i = 0; i < 30 && !(await F.visible(page, HOOKS.lessonFinish)); i += 1) await F.click(page, HOOKS.lessonNext);
+  await F.click(page, HOOKS.lessonFinish);
+  await toastSaid(page, 'Lesson done. +10 XP');
+
+  await answerCheckpoint(page, first.moduleId);
+  await toastSaid(page, 'Checkpoint saved. +10 XP');
+  await F.need(page, HOOKS.modulePage, 4000); // the page moved on (ui-learn.js:620)
+  await F.waitFor(page, (sel) => document.querySelectorAll(sel).length === 0, HOOKS.toast, 8000);
+
+  await answerCheckpoint(page, first.moduleId);
+  await toastSaid(page, 'Checkpoint saved.');
+  const said = await toastsNow(page);
+  assert.ok(!said.some((t) => t.includes('+10 XP')), `a second checkpoint says no XP (shown: ${said.join(' | ')})`);
+});
+
+// T3: the SOBER practice opened from the lock page (ui-onboarding.js:270-275, EC1, ESR1). It holds the craving route while it is open
+// (matched by path: the route may carry a query), SOS is one tap from it, and Done comes back to the lock page or on to Today.
+const onCravingPath = (page) => page.evaluate(() => location.hash.startsWith('#/sos/craving'));
+async function toLock(page) {
+  await page.evaluate(() => (Store.status().locked ? null : Store.lock.lockNow()));
+  await F.go(page, '#/lock');
+  await F.waitRoute(page, 'lock');
+  await F.need(page, HOOKS.lockPage, 4000);
+}
+async function openSober(page, where) {
+  await toLock(page);
+  await F.click(page, HOOKS.lockSober);
+  assert.ok(await F.visible(page, HOOKS.sosTitle), `the practice's heading shows (${where})`);
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), `the SOS button is visible over the practice (${where})`);
+  assert.ok(await onCravingPath(page), `the practice holds the craving route (${where})`);
+}
+async function tapSoberDone(page) {
+  for (let i = 0; i < 20 && !(await F.visible(page, HOOKS.sosStepDone)); i += 1) await F.click(page, HOOKS.sosStepNext);
+  await F.click(page, HOOKS.sosStepDone);
+}
+flow('lock page SOBER practice stays open, SOS still works, Done comes back', { routes: ['sos'], globals: ['Store.lock', 'UI.sosSoberView'], timeout: 180000 }, async ({ page }) => {
+  await lockSet(page);
+
+  // SOS from the practice opens at once; the practice gives way.
+  await openSober(page, 'first open');
+  await page.locator(HOOKS.sosBtn).click();
+  await F.waitRoute(page, 'sos', 4000);
+  // A failure, never a skip: this flow needs the sos route, so a missing button here is urgent help gone (C1).
+  assert.ok(await present(page, HOOKS.sosUrgentBtn, 2500), 'urgent help must be one tap from SOS, opened from the practice on the lock page');
+  await page.locator(HOOKS.lockPage).first().waitFor({ state: 'detached', timeout: 4000 });
+
+  // Done comes back to a working lock page.
+  await openSober(page, 'done to lock');
+  await tapSoberDone(page);
+  await F.waitFor(page, () => location.hash === '#/lock');
+  assert.ok(await present(page, HOOKS.lockPin, 4000), 'the PIN field is back on the lock page after Done');
+  const pin = page.locator(HOOKS.lockPin).first();
+  assert.ok((await pin.isVisible()) && (await pin.isEnabled()), 'the PIN field is usable after Done');
+  assert.ok(await page.locator(HOOKS.sosBtn).isVisible(), 'the SOS button is visible after Done');
+  await F.unlockWith(page, F.TEST_PIN);
+  await F.waitRoute(page, 'today', 20000);
+
+  // The right PIN from the form while the practice is open: the practice stays, Done then goes to Today.
+  await openSober(page, 'unlock while open');
+  const polite = await F.need(page, HOOKS.lockOpening, 2500);
+  assert.equal((await polite.textContent()).trim(), '', 'the polite line is empty before a try');
+  await F.unlockWith(page, F.TEST_PIN);
+  await F.waitFor(page, () => Store.status().locked === false, undefined, 20000);
+  await F.waitFor(page, (sel) => document.querySelector(sel).textContent.trim() === '', HOOKS.lockOpening, 4000); // T5: empty again after the try
+  assert.ok(await onCravingPath(page), 'the practice keeps the craving route after the right PIN');
+  assert.ok(await F.visible(page, HOOKS.sosTitle), 'the practice stays open after the right PIN');
+  await tapSoberDone(page);
+  await F.waitRoute(page, 'today', 8000);
+  assert.equal(await page.evaluate(() => Store.status().locked), false, 'unlocked on Today');
+});
