@@ -686,3 +686,39 @@ flow('discreet start shows no emergency line while the app loads', {}, async ({ 
   const control = await bootSamples(page, false);
   assert.ok(control.some((d) => d !== 'none'), `control: without the flag the line is painted (samples: ${control.join(',') || 'none'})`);
 });
+
+// T2: V-20's toasts (ui-learn.js:543 and :619). The text of the toast shown is what counts. A CheckpointCompleted earns once per
+// module (ui-learn.js:615), so the second finish has no XP in its words. Each toast stays 4.5 s (ui-core.js:163): the second finish waits for the
+// first to go, so the check of its words cannot read the first one's.
+const toastSaid = (page, text) => F.waitFor(page, ({ sel, want }) => Array.from(document.querySelectorAll(sel)).some((el) => el.textContent.trim() === want), { sel: HOOKS.toast, want: text }, 6000);
+const toastsNow = (page) => page.evaluate((sel) => Array.from(document.querySelectorAll(sel)).map((el) => el.textContent.trim()), HOOKS.toast);
+async function answerCheckpoint(page, moduleId) {
+  await F.go(page, `#/learn/${moduleId}?checkpoint=1`);
+  await F.need(page, HOOKS.checkpointPage, 4000);
+  for (let n = 1; n <= 2; n += 1) {
+    if (await present(page, HOOKS.checkpointQ(n), 300)) await F.click(page, HOOKS.checkpointOpt(n, 0));
+  }
+  await F.click(page, HOOKS.checkpointFinish);
+}
+flow('finishing a lesson and a checkpoint says +10 XP once', { routes: ['lesson', 'learn'], globals: ['Store', 'Actions.completeLesson', 'Actions.checkpoint', 'Content.modules'] }, async ({ page }) => {
+  const first = await page.evaluate(() => {
+    const m = Content.modules.find((x) => x && x.id && Array.isArray(x.lessons) && x.lessons.length);
+    return m ? { moduleId: m.id, lessonId: m.lessons[0].id } : null;
+  });
+  if (!first) throw new F.Skip('no module with lessons in Content.modules');
+  await F.go(page, `#/lesson/${first.lessonId}`);
+  await F.need(page, HOOKS.lessonNext, 4000);
+  for (let i = 0; i < 30 && !(await F.visible(page, HOOKS.lessonFinish)); i += 1) await F.click(page, HOOKS.lessonNext);
+  await F.click(page, HOOKS.lessonFinish);
+  await toastSaid(page, 'Lesson done. +10 XP');
+
+  await answerCheckpoint(page, first.moduleId);
+  await toastSaid(page, 'Checkpoint saved. +10 XP');
+  await F.need(page, HOOKS.modulePage, 4000); // the page moved on (ui-learn.js:620)
+  await F.waitFor(page, (sel) => document.querySelectorAll(sel).length === 0, HOOKS.toast, 8000);
+
+  await answerCheckpoint(page, first.moduleId);
+  await toastSaid(page, 'Checkpoint saved.');
+  const said = await toastsNow(page);
+  assert.ok(!said.some((t) => t.includes('+10 XP')), `a second checkpoint says no XP (shown: ${said.join(' | ')})`);
+});

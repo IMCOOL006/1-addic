@@ -197,6 +197,14 @@ export const HOOKS = {
   statusWay: dt('status-way'), // ui-status.js:393 (the spine "Your way")
   // FIX-TD-V32 (offline-v3.2)
   bootLine: '.boot-line', // shell.html:26 a class on the first-paint crisis line (no hook attribute); styles.css:360 hides it in discreet mode
+  toast: '#toasts .toast', // ui-core.js:161 a class on each toast (no hook attribute); shell.html:29 #toasts
+  lessonNext: dt('lesson-next'), // ui-learn.js:508
+  lessonFinish: dt('lesson-finish'), // ui-learn.js:547
+  modulePage: dt('module-page'), // ui-learn.js:592
+  checkpointPage: dt('checkpoint-page'), // ui-learn.js:623
+  checkpointQ: (n) => dt(`checkpoint-q-${n}`), // ui-learn.js:626 (n from 1)
+  checkpointOpt: (n, k) => dt(`cp-opt-${n}-${k}`), // ui-learn.js:627 (n from 1, k from 0)
+  checkpointFinish: dt('checkpoint-finish'), // ui-learn.js:622
 };
 
 // Stable skip reasons (the contract's strings; the chat reads them by name).
