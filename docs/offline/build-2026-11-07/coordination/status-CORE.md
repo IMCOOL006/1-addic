@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:28 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). learn V-20 wf_c67ac1fc-ea5 running. actions-sos READY-SLICE 638c94a with the HUB. Next on CORE's rows: tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review, then V-17b + C2 once 638c94a merges (fast-forward first)
+STATE: BUILDING   # 2026-11-09 15:34 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). learn READY a494fa7 and actions-sos MERGED-SLICE 638c94a (1380ef4c). Next on CORE's rows (every row is CORE's from 15:35, HUB): tests-docs V-22a + V-26b + V-27 + V-29, actions-sos V-17b + C2 and its whole-lane review, core's whole-lane review
 LANE: core MERGED-SLICE 561cab2   # 2026-11-09 15:11 IST: V-16 + V-17a + V-26a merged 2fdfc89a (trunk 315b798a; HUB 15:15: build 1207194 B, store.test 98/98, validate, guards 5/5, full Node suite 658/658). The whole-lane two-lens review, before core's final READY, is staged (args_core_end_review.json)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos READY-SLICE 638c94a   # 2026-11-09 15:28 IST: V-25 d9e105a, V-18 638c94a (wf_537e4a2d-ba1; merge base 60dffe33). Check PASS; gates build GREEN 1206087 B, test GREEN 202/202, test --full GREEN 662/662, validate GREEN, guards GREEN 5/5, browser GREEN 28/28/0, territory 0 errors. Then V-17b + C2, then the whole-lane review from f69bc68a before the final READY
-LANE: learn BUILDING   # 2026-11-09 15:26 IST: V-20 wf_c67ac1fc-ea5 (slot 9, tier 2, the slice; fast-forwarded to 6fad2554, the merge base)
+LANE: actions-sos MERGED-SLICE 638c94a   # 2026-11-09 15:34 IST: V-25 + V-18 merged 1380ef4c (HUB 15:37: build 1208938 B, actions.test 202/202, validate, guards 5/5, full Node suite 676/676, the onboarding, SOS, lock, PIN and quest-line flows 10/10). Fast-forwarded to 1380ef4c; V-17b + C2 next, then the whole-lane review from f69bc68a before the final READY
+LANE: learn READY a494fa7   # 2026-11-09 15:34 IST: V-20 a407ec3 (C3), a494fa7 (C4), C5 no code (wf_c67ac1fc-ea5; merge base 6fad2554). The lane's one V3 unit. Check PASS; gates build GREEN 1207766 B, test GREEN 30/30, validate GREEN, guards GREEN 5/5, territory 0 errors; browser not run (no flow of the lane's)
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, actions-sos 3, tests-docs 5, learn 9)
-UPDATED: 2026-11-09 15:28 IST
+UPDATED: 2026-11-09 15:34 IST
+
+# 2026-11-09 15:34 IST · learn READY a494fa7 (V-20); actions-sos 638c94a merged; BASE 1380ef4c
+
+- wf_c67ac1fc-ea5 returned READY-SLICE; written READY, because V-20 is the lane's one V3 unit. This chat verified on a494fa7: node --test offline/tests/learn.test.mjs 30 pass, 0 fail, 0 skip; the generated page dropped, the worktree clean. C3 proved red before the change; C4's test was not run against the old code, and its fallback cannot run on the trunk (ui-core.js defines UI.sheet), so only the test exercises it. Neither toast was seen in a real browser.
+- C1 (LOW), recorded for a later learn unit, not fixed: ui-learn.js hasEvent has no sample filter, so a sample CheckpointCompleted row would drop '+10 XP' from a finish that earns. Not reachable today: the sample generator writes no CheckpointCompleted.
+- From the HUB (15:37, by message): actions-sos 638c94a merged 1380ef4c. Every row is CORE's from 15:35; fast-forward each lane to the trunk tip before its run and name that tip as the merge base. When tests-docs is READY, say which browser flows it adds, so the HUB runs them by name.
+- Done: tests-docs and actions-sos fast-forwarded to 1380ef4c (--ff-only, clean).
 
 # 2026-11-09 15:28 IST · actions-sos READY-SLICE 638c94a (V-25, V-18); merge base 60dffe33
 

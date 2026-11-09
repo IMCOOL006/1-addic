@@ -63,7 +63,7 @@
   "V-27": "Contrast guard (1 h, V3-27): a Node check (offline/tests/contrast.test.mjs or inside guards) of the fg/bg token pairs of styles.css in both themes at 4.5:1 for text and 3:1 for large text, by name; .coach-sos and .gt-dot included. A red names the pair and goes to the token's owner by outbox.",
   "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others."
  },
- "laneNote": "Tier 2 now; every tier 1 unit is merged. A hook another lane's file needs is asked by outbox (element and attribute; the owner adds it). CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "laneNote": "CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; Claude-Session goes on every commit, whatever the Co-Authored-By line says; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
  "done": [
   "U-34",
   "U-37",
@@ -76,11 +76,11 @@
   "V-01t",
   "V-45"
  ],
- "base": "60dffe33",
+ "base": "1380ef4c",
  "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
- "now": "2026-11-09 14:52 IST",
- "diffFrom": "60dffe33",
+ "now": "2026-11-09 15:33 IST",
+ "diffFrom": "1380ef4c",
  "slot": 5,
  "sliceRun": false,
- "priorNote": "CORE 15: V-45 (949f0f7) and FIX-COUNTS (44a07e0: Node 651/0/0 in 15 files, browser 28/28/0) are merged; offline-v3.0 is tagged at 60dffe33. The worktree was fast-forwarded to the trunk tip (diffFrom): build V-22a, V-26b, V-27, V-29 as one batch; the checker judges the commits after diffFrom. V-26b: if core V-26a is not in the trunk, the boot test does not depend on it (say so). V-27: never fix a red pair here; note it (pair, theme, ratio, styles.css:line, owner by territory.json) for CORE's outbox. New tests change the counts: after the batch, run npm test and the browser suite once on the lane tree and write the true numbers in CLAUDE.md ('Tests as of'), README.md, offline/README.md and the guide (Tested line, Part 4); rebuild the .docx."
+ "priorNote": "CORE 16: the v3.0 units are merged; the lane is fast-forwarded to the trunk. Hook owed: lock-opening (ui-onboarding.js lockPage, p#lock-opening, data-testid) in hooks.mjs once actions-sos 638c94a is in the trunk; no flow reads it yet. V-26a's lines: contracts/tests-docs.md, last section. Build V-22a, V-26b, V-27, V-29 as one batch. V-26b: if core V-26a is not in the trunk, the boot test does not depend on it (say so). V-27: never fix a red pair here; note it (pair, theme, ratio, styles.css:line, owner by territory.json) for CORE's outbox. New tests change the counts: after the batch, run npm test and the browser suite once on the lane tree and write the true numbers in CLAUDE.md ('Tests as of'), README.md, offline/README.md and the guide (Tested line, Part 4); rebuild the .docx."
 }
