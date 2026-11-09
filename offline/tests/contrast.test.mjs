@@ -146,16 +146,9 @@ const PAIRS = [
   { name: '.gt-dot', ...both('.gt-dot') },
 ];
 
-// A red waiting for its owner's fix: still measured and reported by name as TODO with the ratio, and not counted as a
-// pass. Delete the line in the commit that fixes the pair. Not a place to put a pair nobody has been told about.
-const KNOWN_RED = {
-  '.coach-sos (dark)': 'owed by game-tutorials, styles.css:568: white on --danger; the rule .btn.danger uses --primary-text',
-};
-
 for (const pair of PAIRS) {
   for (const theme of THEMES) {
-    const name = `${pair.name} (${theme.name})`;
-    test(`contrast: ${name}`, { todo: KNOWN_RED[name] || false }, () => {
+    test(`contrast: ${pair.name} (${theme.name})`, () => {
       const min = pair.min || TEXT;
       const f = locate(pair.fg, theme.tokens);
       const b = locate(pair.bg, theme.tokens);
