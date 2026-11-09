@@ -2,11 +2,11 @@ TRACK: SCREENS
 STATE: RUNNING   # 2026-11-09 15:02 IST: SCREENS 14:38 (9c7e67fd). workbook-settings READY-SLICE 4f66761 (V-24) for the HUB; V-22b building as wf_f28919eb-ddf on the same branch. Then game-tutorials V-21 the row after CORE's next start
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings READY-SLICE 4f66761   # V-24: for the HUB, merge at 4f66761 alone, merge base cbe76a57 (check PASS wf_6ddfcac5-217). V-22b is BUILDING on the same branch after it as wf_f28919eb-ddf (since 15:03; diffFrom 4f66761; args/v3_workbook-settings_v22b.json); its own READY line follows
+LANE: workbook-settings BUILDING 4f66761   # V-24 MERGED-SLICE 4f66761 (2cf7c40e, trunk d9fc835f; HUB 14:40). V-22b building on the branch as wf_f28919eb-ddf (diffFrom 4f66761, no rebase; merge base 4f66761 on its READY line)
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 15:02 IST
+UPDATED: 2026-11-09 15:03 IST
 
 # 2026-11-09 15:01 IST · workbook-settings READY-SLICE 4f66761 (V-24), for the HUB
 
