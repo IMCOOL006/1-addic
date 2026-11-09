@@ -47,7 +47,6 @@ const SettingsUI = (function () {
     pinWrong: 'That PIN did not match',
     noCrypto: 'A PIN cannot be set in this browser.',
     forgot: 'Forgot your PIN? It cannot be recovered. You can erase this notebook on the lock screen, then start again from a backup file.',
-    eraseSampleLater: 'Erasing only the sample comes with the next update. Erase everything removes it too.',
     noSample: 'Sample data is not in this version yet.',
     sampleOwnProfile: 'Sample data is for a fresh notebook. This one already holds your own profile, so the sample is not loaded. Your entries stay as they are.',
     tourLater: 'Replaying the tour comes with the tutorials update.',
@@ -418,7 +417,7 @@ const SettingsUI = (function () {
     const C = ns('Content');
     const G = ns('GuidanceUI');
     const tour = G && typeof G.coach === 'function'
-      ? h('button', { type: 'button', class: 'btn', 'data-test': 'tour-replay', text: 'Replay the tour', onClick: () => { safe(() => G.coach('tour', { replay: true }), null); } })
+      ? h('a', { class: 'btn', href: '#/today?tour=1', 'data-test': 'tour-replay', text: 'Replay the tour' })
       : h('p', { class: 'muted', 'data-test': 'tour-later', text: TEXT.tourLater });
     const drills = G && typeof G.training === 'function' ? safe(() => G.training(), []) || [] : null;
     const drillList = drills
@@ -600,7 +599,7 @@ const SettingsUI = (function () {
     const canErase = !!(A && typeof A.eraseSample === 'function');
     const ownProfile = hasOwnProfile(view);
     const ownNoteId = nextId('sample-note');
-    const eraseLine = !canErase ? TEXT.eraseSampleLater : (!sampleRow ? 'No sample data is loaded.' : null);
+    const eraseLine = !sampleRow ? 'No sample data is loaded.' : null;
     return [
       h('section', { class: 'card ws-card' }, h('h3', { class: 'card-title', text: 'Backup' }),
         h('p', { 'data-test': 'last-backup', text: 'Last backup: ' + (last || 'never') }),
