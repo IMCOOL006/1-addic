@@ -1226,7 +1226,7 @@ const Content = {
 
   /* ── Resources. Every number and link is a candidate to VERIFY (ADR 0010, owner input I6). ── */
   resources: {
-    in: {
+    in: { // clinicalReview (pack P-28: the crisis numbers; each entry keeps verify)
       name: 'India', verifyNote: 'These numbers were collected from public sources in October 2026 and have not yet been verified by the owner. Check each one before you rely on it.',
       emergency: [
         { name: 'Emergency (police, ambulance, fire)', number: '112', note: 'National emergency number', verify: true },
@@ -1249,7 +1249,7 @@ const Content = {
         { name: 'Hospital for Mental Health, Ahmedabad', note: 'Government hospital with a de-addiction unit', verify: true },
         { name: 'District hospitals and civil hospitals', note: 'Ask for the psychiatry or de-addiction OPD', verify: true },
       ],
-      context: 'Gujarat has alcohol prohibition, so drinking is illegal there and people often hide it. That is one more reason this app keeps everything on your device. The helplines are confidential. If you are worried about the law, say so to a counsellor; they have heard it before.',
+      context: 'Gujarat has alcohol prohibition, so drinking is illegal there and people often hide it. That is one more reason this app keeps everything on your device. The helplines are confidential. If you are worried about the law, say so to a counsellor; they have heard it before.', // clinicalReview (pack P-29)
     },
     intl: {
       name: 'Elsewhere',
@@ -1259,14 +1259,14 @@ const Content = {
         { name: 'Your local emergency number', tel: '112', note: 'Usually 112, 911 or 999', verify: true },
       ],
     },
-    overdose: [
+    overdose: [ // clinicalReview (pack P-30)
       'Call the emergency number first. Say "overdose", the substance if you know it, and the address.',
       'If the person is not breathing or is unresponsive, follow the operator\'s instructions. If you have naloxone and opioids are involved, use it.',
       'Lay an unconscious person on their side so they do not choke.',
       'Stay with them. Do not let them "sleep it off" alone.',
       'After a break from opioids, tolerance drops. The same old amount can kill. Never use alone, and never use an unknown source.',
     ],
-    withdrawal: [
+    withdrawal: [ // clinicalReview (pack P-32)
       'Stopping heavy daily drinking suddenly can cause seizures or delirium. Stopping sleeping pills or benzodiazepines suddenly can too.',
       'If you drink heavily every day, or take sedatives every day, talk to a doctor about stopping safely. Many hospitals have a detox unit.',
       'Shaking, sweating, confusion, hallucinations or a seizure after stopping are emergencies: call the emergency number.',
