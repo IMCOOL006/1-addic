@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 9 November 2026, 722 of 723 logic checks passed and 1 is open (Part 4); 29 of 29 browser checks passed (Part 4)
+Tested: 9 November 2026, 722 of 723 logic checks passed and 1 failed (Part 4); 29 of 29 browser checks passed (Part 4)
 ---
 
 > [!SUMMARY]
@@ -446,13 +446,13 @@ None of these lose data. They are rough edges to be aware of in this early versi
 
 The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
-- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 9 November 2026, **722 of 723** logic checks passed, in 16 test files. None failed. One is open: in the dark theme, the small SOS link inside the guided tour has too little colour contrast (2.73 to 1, where the aim is 4.5 to 1). The fix is waiting. The tour's SOS link still works, and the main SOS button passes.
+- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 9 November 2026, **722 of 723** logic checks passed, in 16 test files. One failed: in the dark theme, the small SOS link inside the guided tour has too little colour contrast (2.73 to 1, where the aim is 4.5 to 1). The fix is waiting. The tour's SOS link still works, and the main SOS button passes.
 - **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 9 November 2026 there were **29** of them. In one full run **all 29 passed**.
 
 | Area | What is checked | Status |
 |---|---|---|
 | Opening | Opens from a plain file with no console errors and no network requests; the first screen draws within its time budget | Pass |
-| Colours | Text and buttons meet the contrast minimum in the light and dark themes | 1 open (the tour's SOS link, dark theme) |
+| Colours | Text and buttons meet the contrast minimum in the light and dark themes | 1 fails (the tour's SOS link, dark theme) |
 | Getting around | The five tabs open by link and Back works; no sideways scrolling at phone width | Pass |
 | First run | Onboarding all the way through, and Skip; the guided tour, its Skip, and replaying it from Settings | Pass |
 | SOS | Reachable before onboarding and on the lock screen, never gated | Pass |

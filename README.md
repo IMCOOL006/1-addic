@@ -19,5 +19,5 @@ See `CLAUDE.md` for how cloud sessions are configured. Dependencies are installe
 - `npm run screens` writes the guide's screenshots to `offline/docs/images/` from the built file.
 - `npm run check` runs build, tests, the browser flows and the guide (`python offline/docs/build_guide.py`).
 - The guide: `offline/docs/1-addic-Guide.md`, built to `offline/docs/1-addic-Guide.docx`.
-- Tests (9 November 2026): `npm test` runs 723 checks in 16 files: 722 pass, none fail, and 1 is an open colour-contrast item (the guided tour's SOS link in the dark theme); `npm run test:browser` runs 29 named flows, and in one full run all 29 pass. The names are in [`offline/README.md`](offline/README.md#for-developers).
+- Tests (9 November 2026): `npm test` runs 723 checks in 16 files: 722 pass and 1 fails, a colour-contrast check waiting for its fix (the guided tour's SOS link in the dark theme); `npm run test:browser` runs 29 named flows, and in one full run all 29 pass. The names are in [`offline/README.md`](offline/README.md#for-developers).
 - `offline/releases/1-addic-v1.1.html` is a kept copy of the build at tag `offline-v1.1` (1113578 bytes), for comparison; build your own with `npm run build`.
