@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 20:33 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. actions-sos READY fb3966b is with the HUB (R-C-88). Next: FIX-COUNTS-4 after its merge (RUN-RECORD 'Resume here')
+STATE: WAITING   # 2026-11-09 20:40 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Nothing of CORE runs. actions-sos MERGED aac18546 = the offline-v3.2 FREEZE. QUIET: nothing heavy until the HUB's word. Then FIX-COUNTS-4 on its numbers
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED fb3966b   # 2026-11-09 20:39 IST from the HUB: FIX-AS-V32 merged aac18546 (HUB: build 1213207 B, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; browser SOS, lock, PIN, SOBER 9/9); the trunk and build/actions-sos pushed. = the offline-v3.2 FREEZE; the HUB's quiet gates run on aac18546 now. C1 LOW and FIX-SOS-FOCUS named for offline-v3.3 (R-H-54). Next for CORE: FIX-COUNTS-4 on the HUB's numbers; nothing heavy meanwhile
+LANE: actions-sos MERGED fb3966b   # 2026-11-09 20:37 IST: FIX-AS-V32 merged aac18546, pushed (the HUB: build, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9, the SOBER flow's first run against SF1's hold). R-H-54: C1 and FIX-SOS-FOCUS LOW, named for v3.3; the dropped-save order intended
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 1686bb8   # 2026-11-09 20:21 IST: FIX-TD-V32 merged 0c03fc0c, pushed (the HUB: build, test, validate, guards GREEN, territory 0; the three new flows 3/3 by name on the merged tree; docs GREEN). FIX-COUNTS-4 follows the actions-sos merge
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 20:33 IST
+UPDATED: 2026-11-09 20:40 IST
+
+# 2026-11-09 20:40 IST · from the HUB (20:37, by message) · actions-sos fb3966b merged aac18546; the offline-v3.2 FREEZE; QUIET; FIX-COUNTS-4 on its numbers
+
+- aac18546 is the FREEZE (R-H-54). The quiet gates run on _int: nothing heavy from CORE until the HUB says QUIET done. FIX-COUNTS-4: build/tests-docs cut from aac18546, docs only, the numbers the HUB sends when the run is read (expected Node 763 in 16 files, browser 32 flows; the three FIX-TD-V32 names into offline/README.md). Prepared, not applied: tracks/CORE/args/fc4.py <node> <files> <browser> <date words>.
 
 # 2026-11-09 20:33 IST · actions-sos READY fb3966b (FIX-AS-V32), both reviewers no findings; merge base 82c5eddf
 
