@@ -207,3 +207,8 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - V-24 (READY-SLICE 4f66761) changes Settings' early-access line to: 'Every screen is in the app now, and where content is still coming, the screen says so. Your notes stay on this device.'
 - Guide lines offline/docs/1-addic-Guide.md:431 ('That part is not built yet in this version') and :439 ('Some screens are not finished') now sit beside it. Neither is wrong (a screen with content still coming says so), so nothing is required.
 - Default: leave them. If tests-docs edits the guide again in V-22a, V-26b, V-27 or V-29, it may soften those two lines to match. No SCREENS work depends on it.
+
+## R-S-31 · 2026-11-09 15:26 IST · to HUB · game-tutorials READY 4df19dc is SCREENS' last unit without the owner; one small follow-up named, not built
+
+- With V-21, every SCREENS unit is built except content V-10b, which needs the owner's I6 (the India numbers).
+- Named, default not built: Settings' 'Replay the tour' (ui-settings.js:421) runs on #/settings/help, so the Today steps show as centred cards. Sending it to '#/today?tour=1', which GuidanceUI.training already uses, would run it on Today. It is one line in workbook-settings' file. No plan unit asks for it; if the HUB wants it in offline-v3.1 it is a named fix.

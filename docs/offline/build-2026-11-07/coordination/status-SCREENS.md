@@ -1,12 +1,23 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 15:16 IST: SCREENS 14:38 (9c7e67fd). game-tutorials V-21 launched on the 15:15 row (10.2 GB), slot 8, merge base ff9fbd99. It is SCREENS' last tier 2 unit; content V-10b waits for the owner's I6
+STATE: RUNNING   # 2026-11-09 15:26 IST: SCREENS 14:38 (9c7e67fd). game-tutorials READY 4df19dc (V-21) for the HUB. That is SCREENS' last unit that can run without the owner: content V-10b waits for the owner's I6
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 419718c   # V-22b merged 6fad2554 (HUB 14:40; every gate green on the merged tree, 25/25). The lane's V3 units are complete; two LOWs named for a later unit
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
-LANE: game-tutorials BUILDING   # V-21 (tier 2, slot 8) launched 2026-11-09 15:16 IST on the 15:15 row (10.2 GB); worktree fast-forwarded 60dffe3..ff9fbd99 (--ff-only, clean); base and merge base ff9fbd99; sliceRun false; args/v3_game-tutorials_t2.json
+LANE: game-tutorials READY 4df19dc   # V-21: for the HUB, merge at 4df19dc alone, merge base ff9fbd99. One commit, 2 own files. Check PASS wf_97732225-045: build 1208111 B, test 50/50, validate, guards 5/5, browser --grep tour 3/0/0 GREEN; territory 0 errors. The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 15:16 IST
+UPDATED: 2026-11-09 15:26 IST
+
+# 2026-11-09 15:26 IST · game-tutorials READY 4df19dc (V-21), for the HUB
+
+- Merge build/game-tutorials at 4df19dc alone, merge base ff9fbd99. One commit: offline/src/ui-guidance.js, offline/tests/game-tutorials.test.mjs (both own), both trailers.
+- What it does: a running tour ends as 'aborted' when the route leaves the screen it belongs on, and a JIT ends when its feature's route is left. 'aborted' marks nothing (no TutorialCompleted), so the tour is offered again later. The layer is removed; skip, Escape and tap-outside are unchanged; nothing opens on SOS, lock or onboarding.
+- Where the code differs from the brief, and why: staysOn() also keeps a tutorial on the path it was opened from. The brief's literal rule would have killed Settings' 'Replay the tour' on its first render (ui-settings.js:421 runs it on #/settings/help) and the JITs Training opens on #/today. place() has no code change, only Node cases; its branches are now at ui-guidance.js:335-346.
+- Check wf_97732225-045: PASS. Logs _logs/gates/game-tutorials/*-20261109-152*: build GREEN 1208111 B, test GREEN 50/50, validate GREEN, guards GREEN 5/5, browser --grep tour GREEN 3/0/0 (tour complete, tour skip, tour replay). Territory, run by me over ff9fbd99..4df19dc: 2 own files, 0 errors. Seven new test names, none renamed.
+- LOW C1 is the carried name difference from V-44 ('unlock: jitFor offers an early-opened feature only when unlocked'), already recorded.
+- Not run: the full browser suite (the unit asks for --grep tour only) and the other Node files. Not checked in a browser: the staysOn branch for a tour started elsewhere; it is covered by a Node mutation.
+- The builder's question, default taken: Settings' 'Replay the tour' still runs on #/settings/help, so its Today steps show as centred cards, as before this unit. Going to '#/today?tour=1' would run it on Today. That is workbook-settings' file; no unit asked for it, so nothing was built (R-S-31).
+- Verified by me: the tip and both trailers, the diff stat, territory, the five gate verdict lines, the check's verdict in the journal, offline/1-addic.html restored, the worktree clean. Assumed from the checker: its mutation run (the scratch copy).
 
 # 2026-11-09 15:07 IST · workbook-settings READY 419718c (V-22b), for the HUB
 
