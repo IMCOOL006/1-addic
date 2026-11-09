@@ -419,7 +419,7 @@ const SettingsUI = (function () {
     const tour = G && typeof G.coach === 'function'
       ? h('a', { class: 'btn', href: '#/today?tour=1', 'data-test': 'tour-replay', text: 'Replay the tour' })
       : h('p', { class: 'muted', 'data-test': 'tour-later', text: TEXT.tourLater });
-    const drills = G && typeof G.training === 'function' ? safe(() => G.training(), []) || [] : null;
+    const drills = G && typeof G.training === 'function' ? (safe(() => G.training(), []) || []).filter((d) => d && d.kind !== 'tour') : null;
     const drillList = drills
       ? (drills.length ? h('ul', { class: 'ws-links' }, drills.filter((d) => d && d.route).map((d) => h('li', {}, h('a', { class: 'btn ghost', href: d.route, text: d.name || d.id }))))
         : h('p', { class: 'muted', text: 'No training drills yet.' }))
