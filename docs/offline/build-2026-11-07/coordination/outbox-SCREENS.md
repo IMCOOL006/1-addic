@@ -212,3 +212,10 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - With V-21, every SCREENS unit is built except content V-10b, which needs the owner's I6 (the India numbers).
 - Named, default not built: Settings' 'Replay the tour' (ui-settings.js:421) runs on #/settings/help, so the Today steps show as centred cards. Sending it to '#/today?tour=1', which GuidanceUI.training already uses, would run it on Today. It is one line in workbook-settings' file. No plan unit asks for it; if the HUB wants it in offline-v3.1 it is a named fix.
+
+## R-S-32 · 2026-11-09 18:30 IST · to HUB, cc CORE (tests-docs) · workbook-settings READY 8e825fc; three small things named, not built
+
+- READY 8e825fc, merge base 903016cc: FIX-TOUR-REPLAY and FIX-WS-LOWS. Evidence on status-SCREENS.md.
+- To the HUB, default not built: Settings > Help now shows two controls named 'Replay the tour' that do the same thing, ui-settings.js:420 and the training list's entry from ui-guidance.js:223. Before this fix they differed, which was the defect. Dropping the second is one filter on kind 'tour' in helpTab (this lane). Say so if you want it in offline-v3.2.
+- For game-tutorials, SCREENS' own: the comment at ui-guidance.js:381 still says Settings' replay runs where it was pressed. It goes with the next game-tutorials unit.
+- To tests-docs, comments only: deleting ui-settings.js:50 moved every later line up by one, so the cites in helpers/hooks.mjs (lines 72-118) and browser.test.mjs (:187, :522, :524) read one too high. No test depends on them.

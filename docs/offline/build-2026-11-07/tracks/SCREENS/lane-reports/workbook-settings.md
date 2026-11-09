@@ -1,6 +1,6 @@
 ## workbook-settings (SCREENS, 1-addic offline build): the slice report
 
-State: READY (run 5, 2026-11-09 15:01 IST, V-22b built, check PASS, tip 419718c, base cbe76a57, diffFrom 4f66761). Before: READY-SLICE (run 4, 2026-11-09 14:55 IST, V-24 built, check PASS, tip 4f66761, base cbe76a57; V-22b not built, next batch). Before: READY (run 3, 2026-11-07 17:58 IST, FIX-SAMPLE built, check PASS). Branch build/workbook-settings. Base 1ef2482e. Tip 0e76065 (was 9cbf630 after run 2, cc1f1ea, READY-SLICE, run 2026-11-07 16:15 IST). Run 2 (continued from cc1f1ea) 2026-11-07 16:31 IST.
+State: READY (run 6, 2026-11-09 18:21 IST, FIX-TOUR-REPLAY and FIX-WS-LOWS built, check PASS, tip 8e825fc, base 903016cc, diffFrom 903016cc). Before: READY (run 5, 15:01 IST, V-22b, tip 419718c).
 Commits:
 - 83aa85b feat U-19 Settings page, seven tabs
 - e0af4fd test U-19 helpers, tab renders, memory round trips
@@ -14,6 +14,9 @@ Run 2 (2026-11-07 16:31 IST), after cc1f1ea:
 - 9d96690 feat U-21 My Recovery Plan
 - 5e80f01 fix U-21 C5 erase/import drop an unsaved plan draft
 - 9cbf630 test U-20b C6 practise link checked both ways
+Run 6 (2026-11-09 18:21 IST), after 903016cc (tip 8e825fc):
+- 8e825fc fix(workbook-settings, FIX-WS-LOWS): the shipped promise of a later update is gone; a stale comment made true
+- da7e08c fix(workbook-settings, FIX-TOUR-REPLAY): Replay the tour is a link to Today with tour=1
 Run 5 (2026-11-09 15:01 IST), after 4f66761 (tip 419718c):
 - 419718c test(settings, V-22b) the sample card test asserts the eraseSample round trip (C1b)
 Run 4 (2026-11-09 14:55 IST), after cbe76a57 (tip 4f66761):
@@ -23,6 +26,7 @@ Run 3 (2026-11-07 17:58 IST), after 9cbf630:
 - 0e76065 test FIX-SAMPLE own profile, no profile and sample profile, by name
 
 ### Turn caps
+Run 6 (2026-11-09 18:21 IST): one builder, FIX-TOUR-REPLAY + FIX-WS-LOWS, steps_used 10. capHits 0.
 Run 5 (2026-11-09 15:01 IST): builder V-22b steps_used 8. capHits 0.
 Builder (U-19): steps_used 36, returned a note. capHits 0.
 Run 2 (2026-11-07): builder U-20a steps_used 33; builder U-20b+U-21 steps_used 44; check-fix builder (C5, C6) returned a note. capHits 0.
@@ -30,6 +34,10 @@ Run 3 (2026-11-07 17:58 IST): builder FIX-SAMPLE steps_used 14. capHits 0.
 Run 4 (2026-11-09 14:55 IST): builder V-24 steps_used 8. capHits 0.
 
 ### Units
+Run 6 (2026-11-09 18:21 IST):
+- FIX-TOUR-REPLAY (da7e08c, tier 2). Settings > Help: "Replay the tour" is now a link (ui-settings.js:420, href #/today?tour=1, data-test tour-replay) so the tour opens on Today, not where it was pressed; the G.coach guard and the tour-later else are kept. Test by name; it fails on the old button (expected a, actual button). Tour browser flows green (3).
+- FIX-WS-LOWS (8e825fc, tier 2). The eraseSampleLater key and its dead branch are gone (no reader under offline/); eraseLine as specified at ui-settings.js:602; canErase kept on the button; a stale comment corrected; the pure-helpers assert changed, name kept. Nothing visible changes for a person using the file. Closes open question 8.
+- Held: none. Spec was the chat unit notes (the v1 brief has neither unit). Line shift: deleting line 50 moved ui-settings.js lines after it up by one.
 Run 5 (2026-11-09 15:01 IST):
 - V-22b (419718c, tier 2, test only). Nothing changes for a person using the file. The sample card test (workbook-settings.test.mjs:274-294) keeps its name and runs the real Content.sample and Actions with no if: asserts both exist, Load enabled, Erase disabled with "No sample data is loaded." before a load, a sample log and an own log exist, then erase leaves own rows. Questions closed: C1 (the round trip can now fail). Held: none. Spec was the chat's note (v1 brief has no V-22b).
 - U-19 Settings (83aa85b, e0af4fd, cc1f1ea). #/settings and #/settings/<tab> (privacy, look, rhythm, names, help, about, data; unknown goes to privacy). A person can: set, change, remove a PIN and the ... (full text: workbook-settings-report-annex.md)
@@ -48,6 +56,7 @@ Run 3 (2026-11-07 17:58 IST):
 - To build (earlier run): U-20a (ui-workbook.js: UI.pages.workbook, #/workbook/reasons, ?big=1, #/workbook/network; read engine.js:684-698 and actions.js:509-540), U-20b (artifact browser, ARTIFACTS/GROUPS, data-tour workbook-groups and workbook-card), U-21 (ui-plan.js: PlanUI.view/merge/SECTIONS, data-tour plan-sections and plan-print; Engine.prefillRecoveryPlan engine.js:831, Actions.recoveryPlan.save ~actions.js:870).
 
 ### Contract changes
+Run 6: P.TEXT.eraseSampleLater removed; tour-replay is an a (href #/today?tour=1), was a button; data-test unchanged. Lines after ui-settings.js:50 are one lower.
 Run 5: none.
 - (run 4) none; ABOUT.early text changed only.
 - (run 3) SettingsUI.hasOwnProfile(view) (pure, exported); SettingsUI.TEXT.sampleOwnProfile; doLoadSample returns false (refused) or true. New hook data-test="load-sample-note" (only with an own profile); tests-docs to add to helpers/hooks.mjs.
@@ -60,6 +69,7 @@ Run 5: none.
 - Events, content keys, data-tour targets: none.
 
 ### Gates
+Run 6 (2026-11-09 18:21 IST), VERIFIED by the check at 8e825fc, logs under C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/: build GREEN 1211497 B (build-20261109-182536.log); test GREEN 26/0/0 lane file (test-20261109-182537.log); validate GREEN (validate-20261109-182539.log); guards GREEN 5/5 (guards-20261109-182540.log); browser --grep tour GREEN 3 (browser-20261109-182639.log). ASSUMED (builder): build-20261109-182414, test-20261109-182414, validate-20261109-182416, guards-20261109-182416, browser-20261109-182421. Territory 903016cc..HEAD: 2 files, both own (ui-settings.js, workbook-settings.test.mjs), 0 shared, 0 errors, 0 warnings; trailers present. Not run: full browser and full Node suite. The gate rebuilt offline/1-addic.html (modified, uncommitted).
 Run 5 (2026-11-09 15:01 IST), VERIFIED by the check: build GREEN 1205504 B (build-20261109-150402.log), test 25/25 (test-20261109-150403.log), validate GREEN (validate-20261109-150407.log), guards 5/5 (guards-20261109-150407.log), all under C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/. Mutations of eraseSample and Content.sample each fail the test. ASSUMED: browser gate not run (test only). Territory: cbe76a57..HEAD 2 files, both own, 0 shared, 0 warnings. Side effect: tracked offline/1-addic.html modified by the build gate; never commit it.
 Run 4 (2026-11-09 14:55 IST), VERIFIED by the check at 4f66761, logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
 - build GREEN 1205504B: build-20261109-145810.log
@@ -69,37 +79,15 @@ Run 4 (2026-11-09 14:55 IST), VERIFIED by the check at 4f66761, logs in C:/Users
 ASSUMED: builder build-20261109-145653, test-20261109-145656, validate-20261109-145701, guards-20261109-145702. Browser NOT RUN (no flow reads the words).
 Territory run 4, cbe76a57..HEAD: 1 file, 1 own (ui-settings.js), 0 shared, 0 errors, 0 warnings; trailers present.
 
-Run 3 (2026-11-07 17:58 IST), VERIFIED by the check at 0e76065, logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
-- build GREEN: build-20261107-180752.log
-- test GREEN 25/0 (FIX-SAMPLE tests ok 9-12): test-20261107-180754.log
-- validate GREEN: validate-20261107-180807.log
-- guards RED 11 failures, all other lanes' tour targets (bp-*, insights-*, review-start baselined; quicklog-*, planner-* lifted on trunk but absent from this older branch); the diff touches no data-tour: guards-20261107-180808.log
-ASSUMED (builder, not run by the check): browser GREEN 10 pass / 9 skip: browser-20261107-180341.log; builder build-20261107-180319, test-20261107-180323, validate-20261107-180339, guards-20261107-180340.
-Territory run 3, 1ef2482e..HEAD: 5 files, 4 own, 1 shared (styles.css, append point, earlier run), 0 nobody's, 0 errors, 0 warnings. Continuation commits touch only ui-settings.js and workbook-settings.test.mjs.
-
-Run 2 (2026-11-07 16:31 IST), VERIFIED by the check at 9d96690, and at 9cbf630 by the re-check; logs in C:/Users/ruchi/1-addic-wt/_logs/gates/workbook-settings/:
-- build GREEN 559958B: build-20261107-170726.log; 9cbf630: build-20261107-172657.log
-- test GREEN 20/0: test-20261107-170729.log; 9cbf630 21 passed: test-20261107-172659.log
-- validate GREEN: validate-20261107-170902.log; 9cbf630: validate-20261107-172713.log
-- guards RED pass 4 fail 11, all baselined, none this lane's (planner-*, bp-*, review-start still baselined; quicklog-*, insights-* lifted by today-track merge 9f3026c6, absent from this older base): guards-20261107-170903.log; 9cbf630: guards-20261107-172714.log. This lane's workbook-groups, workbook-card, plan-sections, plan-print now pass; the HUB can lift them.
-ASSUMED (not run by the check): browser-20261107-170132.log, browser-20261107-172225.log; builders' build-20261107-164020, test-20261107-164023, validate-20261107-164035, guards-20261107-164035.
-Territory run 2, 1ef2482e..HEAD: 5 files, 4 own (ui-plan.js, ui-settings.js, ui-workbook.js, tests/workbook-settings.test.mjs), 1 shared at append point (styles.css, no token redefined), 0 errors.
-
-Earlier run:
-VERIFIED (check run, tip cc1f1ea):
-- build GREEN size 495935B: C:\Users\ruchi\1-addic-wt\_logs\gates\workbook-settings\build-20261107-162757.log
-- test GREEN pass 10 fail 0: ...\test-20261107-162758.log
-- validate GREEN: ...\validate-20261107-162759.log
-- guards RED pass 4 fail 15: ...\guards-20261107-162759.log. All 15 are tour targets baselined in coordination/baselines.md lines 26-40 (quicklog-button, quicklog-intensity, quicklog-save, planner-day, planner-gaps, planner-add, bp-new, bp-form, workbook-groups, workbook-card, insights-triggers, insights-heatmap, review-start, plan-sections, plan-print); no new name.
-- Territory 1ef2482e..HEAD: 3 files, 2 own, 1 shared (styles.css, appended section), 0 nobody's, 0 errors, 0 warnings.
-ASSUMED (builders' report, not re-run by the check):
-- browser pass 9, skip 10, fail 0: ...\browser-20261107-162626.log; PIN/export/erase/import/dark flows passing: ...\browser-20261107-162555.log.
-- Builders' own build/test/validate/guards logs: ...\build-20261107-162625.log, test-20261107-162625.log, validate-20261107-162626.log, guards-20261107-162626.log.
+Older gate blocks (runs 1 to 3): see workbook-settings-report-annex.md
 
 ### Review gates
+Run 6: none (not flagged).
 None.
 
 ### Check
+Run 6 (2026-11-09 18:21 IST): verdict PASS at 8e825fc over 903016cc..HEAD. Findings: none (id/severity/fix/re-check: none). Mutations fail the new tests (old button, a link that calls coach, restored key). Earlier units confirmed by passing tests, not re-judged. Not checked: full browser and Node suites. For the chat, not findings: the Help tab shows two "Replay the tour" links with one destination (ui-settings.js:420 and training() at ui-guidance.js:223); cites one too high at browser.test.mjs:187, :522, :524 and hooks.mjs:72-118; comment at ui-guidance.js:381 out of date.
+
 Verdict PASS at cc1f1ea. Findings (all LOW, no fix commits, none re-checked):
 - C1 workbook-settings.test.mjs:284-294: the eraseSample round trip runs only when Content.sample.generate and Actions.eraseSample exist; re-check after actions-sos and content U-33 merge.
 - C2 ui-settings.js:534,613: brief says erase goes to #/onboarding; built stays on #/settings/data with a Start again link (a recorded change).
@@ -125,6 +113,7 @@ Run 3: no review findings (not flagged).
 Run 4: none (not flagged).
 
 ### Safety and content marks
+Run 6: none (no new words, numbers, network or crisis content; SOS untouched); no clinicalReview or verify added.
 Run 5: none (test only; no words, no network, SOS untouched).
 - (run 3) FIX-SAMPLE: no crisis or medical line, no numbers; clinicalReview and verify none. Sample never overwrites an own profile.
 - (run 2) Reasons big view is ungated and calm; no new numbers or clinical claims; risks behind Show sensitive items; tel: links only.
@@ -133,6 +122,7 @@ Run 5: none (test only; no words, no network, SOS untouched).
 - verify: true: none (no numbers; Urgent help is a link to #/sos/urgent).
 
 ### Requests for other lanes
+- (run 6) tests-docs: fix the ui-settings.js line cites (browser.test.mjs:187, :522, :524; hooks.mjs:72-118), one too high. guidance (ui-guidance.js): comment at :381 says the tour runs where pressed; it now arrives on Today. HUB/owner: two "Replay the tour" controls show in Help; to drop one, filter kind tour out of the drill list in helpTab (this lane) or stop the push at ui-guidance.js:223. Default: both shown.
 - (run 5) tests-docs: fix the comment above withSampleStandIns (test:296-297). P.TEXT.eraseSampleLater and the !canErase branch in ui-settings.js are reachable only if Actions.eraseSample is missing; another test pins that wording; removing it needs its own unit.
 - (run 4) tests-docs: offline/docs/1-addic-Guide.md:431 ('not built yet in this version') and :439 ('Some screens are not finished') now sit beside the new sentence; update if wanted. Default: left as is.
 - (run 3) tests-docs: add data-test="load-sample-note" to helpers/hooks.mjs. HUB/CORE: R-H-28 Settings stop-gap at 0e76065; keep as second check after actions-sos RS-SAMPLE.
@@ -143,10 +133,13 @@ Run 5: none (test only; no words, no network, SOS untouched).
 - offline/tests/helpers/hooks.mjs (tests-docs): contract names use data-test; BASE hooks use data-testid; both are on the controls.
 
 ### Docs owed
+- (run 6) none.
 - (run 5) none.
 - Older docs owed (runs 1 to 4): see C:/Users/ruchi/1-addic-wt/_logs/reports/workbook-settings-report-annex.md
 
 ### Open questions
+9. (run 6) Two Replay the tour controls in Help; default: both shown, asked of the HUB.
+8 is closed by FIX-WS-LOWS (run 6).
 8. (run 5) Remove the dead eraseSampleLater branch? Default: left, own unit later.
 7. (run 4) Guide lines 431/439 contradict the new sentence; default: left, tests-docs file.
 6. (run 3) Keep the Settings own-profile guard after RS-SAMPLE merges? Default: keep. C1 open by name.
@@ -157,6 +150,7 @@ Run 5: none (test only; no words, no network, SOS untouched).
 3. High contrast not applied by core on every render; asked of core.
 
 ### For the HUB at the merge
+- (run 6) Merge 8e825fc over 903016cc: two files (ui-settings.js, workbook-settings.test.mjs), no shared file. Never commit offline/1-addic.html.
 - (run 5) Merge 419718c over cbe76a57 (V-24 already merged as 2cf7c40e): V-22b adds only the test file, no shared file. Never commit offline/1-addic.html.
 - (run 4) Merge 4f66761 over cbe76a57: one file (ui-settings.js), no shared file. Never commit offline/1-addic.html (the gate leaves it modified).
 - (run 3) Merge 0e76065 over be0f806d: two files (ui-settings.js, workbook-settings.test.mjs), no shared file. Never commit offline/1-addic.html.
