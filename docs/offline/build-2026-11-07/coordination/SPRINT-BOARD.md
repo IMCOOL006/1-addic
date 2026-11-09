@@ -6,7 +6,7 @@ NEXT (the HUB, in order): merge each tier 2 READY-SLICE as it lands (content V-2
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-09 14:47 IST by `board.py`.
+Rewritten 2026-11-09 14:50 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -29,19 +29,19 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 ## The HUB
 
 - STATE: RUNNING — 2026-11-09 14:45 IST: HUB 14:40 (38b3cc2e, session 30) started by the launcher 14:40 after the weekly-limit gap. Read: PLAN.md, PLAN-V3.md section 2, this file whole, the run record's Resume here…
-- BASE: 60dffe33 (the trunk tip = the tag offline-v3.0, 2026-11-08 12:00 IST; new lanes cut from here; merge bases: every lane the trunk tip after its fast-forward (core from fbc663d, actions-sos from b735852, learn from 75eb8e5, tests-docs from 44a07e0, content from eb38166, workbook-settings from 0e76065, game-tutorials from 3aefecb); engine 97ac73a and today-track 670df19 complete; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
+- BASE: 7a1d6b82 (the trunk tip after the content V-23 merge, 2026-11-09 14:50 IST; new lanes cut from here; merge bases: every lane the trunk tip after its fast-forward (core from 60dffe33 or its fast-forward tip, actions-sos from b735852, learn from 75eb8e5, tests-docs from 44a07e0, content from 96dd899, workbook-settings from 0e76065, game-tutorials from 3aefecb); engine 97ac73a and today-track 670df19 complete; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # SCREENS track PAUSED in the launcher 2026-11-08 01:17 IST (`--pause-track SCREENS`, the HUB's tooling call on the owner's window's note): every SCREENS lane is merged and complete and nothing of SCREENS runs before the actions-sos merge; d06645fa died idle about 01:13 (as 4d443a20 did after 23:33), the launcher relaunched 1c2cf086 at 01:15; the HUB resumes the track (`--resume-track SCREENS`) at the actions-sos merge for the workbook-settings C1 re-check (R-S-17). SCREENS added 2026-11-07 16:03 on the rows 16:00-16:02
 - QUIET: done   # 11:33-11:43 IST on _int at 5ee84d5a, exit 0, every name read: build GREEN 1205260 B; test GREEN 651 pass 0 fail 0 skip in 15 files; validate GREEN; guards GREEN 5/5 all checks; browser GREEN 28 flows 28 pass 0 fail 0 skip in one full run; docs GREEN; logs _logs/gates/hub/{build-20261108-113233,test-20261108-113239,validate-20261108-113456,guards-20261108-113458,browser-20261108-113459,docs-20261108-114156}.log; no name to classify. FIX-COUNTS (docs only) merged after it with build, test, validate, guards, docs GREEN; TAG offline-v3.0 at 60dffe33 11:55
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | FIX-COUNTS merged 11:54 | TAG offline-v3.0 11:55 IST (60dffe33) | hand-off note 12:05 | tier 2 on the branches toward offline-v3.1, one start per 7.0 GB row; the launcher stays up
-- UPDATED: 2026-11-09 14:45 IST
+- UPDATED: 2026-11-09 14:50 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 38b3cc2e (launcher-started 2026-11-09 14:40) | RUNNING — 2026-11-09 14:45 IST: HUB 14:40 (38b3cc2e, session 30) started by the launcher 14:40 after the weekly-limit gap. Read… | 147k | 2026-11-09 14:45 IST |
-| CORE | 215e6cdd (launcher-started 2026-11-09 14:46) | BUILDING — 2026-11-08 12:24 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot… | 103k | 2026-11-08 12:24 IST |
+| HUB | 38b3cc2e (launcher-started 2026-11-09 14:40) | RUNNING — 2026-11-09 14:45 IST: HUB 14:40 (38b3cc2e, session 30) started by the launcher 14:40 after the weekly-limit gap. Read… | 157k | 2026-11-09 14:50 IST |
+| CORE | 215e6cdd (launcher-started 2026-11-09 14:46) | BUILDING — 2026-11-08 12:24 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot… | 146k | 2026-11-08 12:24 IST |
 | SCREENS | 9c7e67fd (launcher-started 2026-11-09 14:38) | RUNNING — 2026-11-09 14:47 IST: SCREENS 14:38 (9c7e67fd). content READY-SLICE 96dd899 (V-23) for the HUB. Next: workbook-settings… | 207k | 2026-11-09 14:47 IST |
 
 ## Lanes (10)
@@ -65,7 +65,9 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Merges
 
-- the merge queue: none; tier 2 toward offline-v3.1, each lane READY-SLICE per unit: CORE: core V-16, V-17a, V-26a (slot 1; two reviewers at the end); actions-sos V-25, V-18, V-17b then its whole-lane review from f69bc68a (slot 3); learn V-20 (slot 9); tests-docs V-22a, V-26b, V-27, V-29 (slot 5). SCREENS: content V-23 (slot 4); workbook-settings V-24, V-22b (slot 6); game-tutorials V-21 (slot 8). The HUB's tooling V-12 to V-15 and the review pack V-09 by a plain sub-agent in a quiet moment
+- the merge queue: none; tier 2 toward offline-v3.1, each lane READY-SLICE per unit: CORE: core V-16, V-17a, V-26a (slot 1; two reviewers at the end); actions-sos V-25, V-18, V-17b then its whole-lane review from f69bc68a (slot 3); learn V-20 (slot 9); tests-docs V-22a, V-26b, V-27, V-29 (slot 5). SCREENS: workbook-settings V-24, V-22b (slot 6); game-tutorials V-21 (slot 8); content V-10b waits for the owner's I6. The HUB's own: V-LIMIT (default 16:00 today) and the review pack V-09 by plain sub-agents
+
+- 2026-11-09 14:50 IST: content V-23 (96dd899) merged 7a1d6b82, the first tier 2 merge toward offline-v3.1; build, test 40/40, validate, guards GREEN on the merged tree; pushed.
 
 - 07:41 core READY-SLICE 8bf7b5c (U-01) -> 7eaf7f4, trunk fde4bbbd. build GREEN 103409 B; guards GREEN by name (15 screen tour-target names baselined until the screens land).
 - 07:44 engine READY-SLICE 04fc0c1 (U-05) -> 6089dad, trunk 33d2a04f. build GREEN 127289 B; test GREEN (logic.test.mjs); validate SKIP until U-08.
