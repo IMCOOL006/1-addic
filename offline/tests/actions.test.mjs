@@ -3692,4 +3692,125 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     await done;
   });
 });
+// ── V-18 (V3-18): RC23 (a plan's status over a sample plan), RC22 (the kept date on the feeling flow and the leave path), R8-RC1 (the retry at once) ──
+describe('V3 actions-sos V-18 (RC22, RC23, R8-RC1)', () => {
+  before(async () => { if (typeof S().load === 'function') await S().load(); });
+  beforeEach(async () => { await S().resetAll(); });
+  const BP = { situation: 'Office farewell dinner', plan: 'Order a lime soda first.', backups: ['Step outside and call Asha.'], exit: 'Leave after the speeches.' };
+  const smpPlans = () => ({ plans: [
+    { id: 'smp-plan-1', date: daysAgo(-3), start: '19:00', end: '22:00', status: 'planned', sample: true, title: 'Office farewell dinner', kind: 'risky', risky: true, battlePlan: BP },
+    { id: 'smp-plan-2', date: daysAgo(-1), start: '18:30', end: '19:15', status: 'planned', sample: true, title: 'Evening walk', kind: 'want', risky: false },
+  ] });
+  const loadPlans = () => withSample({ generate: () => ({ stores: smpPlans() }) }, () => Actions.loadSample());
+  const plan = (id) => S().view.get('plans', id);
+  const battle = () => events('BattlePlanCreated').filter((e) => e.sample !== true);
+
+  test('RC23: a status change over a sample plan keeps the mark and writes no BattlePlanCreated; eraseSample takes the row', async () => {
+    await loadPlans();
+    for (const status of ['done', 'skipped', 'planned']) {
+      for (const id of ['smp-plan-1', 'smp-plan-2']) {
+        await Actions.plans.update(id, { status });
+        assert.deepEqual([plan(id).status, plan(id).sample], [status, true], `${id} ${status}: written, still the sample's`);
+      }
+    }
+    assert.deepEqual(battle(), [], "no BattlePlanCreated for a row that is not the person's");
+    await Actions.plans.update('smp-plan-1', { status: 'done', risky: false });
+    assert.deepEqual([plan('smp-plan-1').risky, plan('smp-plan-1').sample], [false, true], 'a status and a flag: still the sample');
+    assert.deepEqual(battle(), []);
+    await Actions.eraseSample();
+    assert.deepEqual([plan('smp-plan-1'), plan('smp-plan-2')], [null, null], 'eraseSample takes them');
+    assert.deepEqual(battle(), []);
+  });
+
+  test("RC23: the person's words over a sample battle plan make it theirs and write BattlePlanCreated once; a status change after adds no second; eraseSample keeps it", async () => {
+    await loadPlans();
+    await Actions.plans.update('smp-plan-1', { status: 'done', title: 'My farewell dinner' });
+    assert.equal(plan('smp-plan-1').sample, undefined, "a status with the person's words: theirs");
+    assert.deepEqual([plan('smp-plan-1').title, plan('smp-plan-1').status], ['My farewell dinner', 'done']);
+    assert.deepEqual(battle().map((e) => e.payload.planId), ['smp-plan-1'], "the event for the person's row");
+    await Actions.plans.update('smp-plan-1', { status: 'planned' });
+    assert.equal(battle().length, 1, 'once');
+    await Actions.eraseSample();
+    assert.equal(plan('smp-plan-1').title, 'My farewell dinner', 'eraseSample keeps their row');
+    assert.equal(battle().length, 1, 'and its event');
+  });
+
+  test("RC23: the person's own plan keeps its one BattlePlanCreated across a status change; a battle plan added over their own plan writes it", async () => {
+    const made = await Actions.plans.add({ date: daysAgo(-2), start: '19:00', end: '21:00', title: 'Dinner', kind: 'risky', battlePlan: BP });
+    assert.equal(battle().length, 1);
+    await Actions.plans.update(made.plan.id, { status: 'done' });
+    assert.equal(plan(made.plan.id).status, 'done');
+    assert.equal(battle().length, 1, 'a status change adds no second');
+    const walk = await Actions.plans.add({ date: daysAgo(-2), start: '07:00', end: '08:00', title: 'Walk', kind: 'want' });
+    await Actions.plans.update(walk.plan.id, { battlePlan: BP });
+    assert.deepEqual(battle().map((e) => e.payload.planId).sort(), [made.plan.id, walk.plan.id].sort(), "a battle plan added over the person's own row writes it");
+  });
+
+  test('RC23: an unknown status over a sample plan is refused and writes nothing', async () => {
+    await loadPlans();
+    const before = await snapshot();
+    await refused(Actions.plans.update('smp-plan-1', { status: 'lost' }), 'bad-plan');
+    assert.deepEqual(await snapshot(), before, 'nothing written');
+    assert.equal(plan('smp-plan-1').sample, true);
+  });
+
+  test('RC22: a session kept for the unlock keeps the day of the tap on the feeling flow and the leave path, though the unlock comes after midnight', async () => {
+    const paths = [
+      ['the feeling flow', (d) => {
+        const root = d.open(['sos', 'feeling']);
+        d.tapId(root, 'sos-feeling-' + d.calm());
+        d.toRating(root);
+        return () => d.rate(root, 3);
+      }],
+      ['the leave path', (d) => {
+        const root = d.open(['sos', 'craving']);
+        d.tap(root, 'Skip');
+        d.tapId(root, 'sos-tool-why');
+        d.tap(root, 'Done');
+        d.tap(root, 'It helped');
+        return () => { root.querySelectorAll('a').find((x) => x.textContent.trim() === 'Back to SOS').click(); d.fire('ui:rendered', {}); };
+      }],
+    ];
+    for (const [name, walk] of paths) {
+      await S().resetAll();
+      await S().lock.set('2468');
+      const d = sosDom();
+      const last = walk(d);
+      const day = E().todayStr(new Date());
+      S().lock.lockNow(); // the lock comes as the session ends: the save is kept for the unlock
+      last();
+      await until(() => d.toasts.some((t) => t[0] === d.UI.sosHelpers.COPY.lockedKept), name + ': kept for the unlock');
+      shiftClock(14 * 3600 * 1000);
+      try {
+        assert.notEqual(E().todayStr(new Date()), day, name + ': the unlock comes on the next day');
+        assert.equal(await S().lock.unlock('2468'), true);
+        await until(() => list('logs').length >= 1, name + ': saved at the unlock');
+        await d.settle();
+        assert.deepEqual(list('logs').map((l) => l.date), [day], name + ': the day of the tap');
+        assert.equal(events('SosCompleted').length, 1, name + ': saved once');
+      } finally { shiftClock(-14 * 3600 * 1000); }
+    }
+  });
+
+  test('R8-RC1: a save refused LOCKED by a lock and unlock in this tab is tried once more at once: one settle after the refusal it has run', async () => {
+    await S().lock.set('2468');
+    const s = { calls: 0, refused: 0 };
+    const A = Object.assign({}, Actions, { sosSession: async (p) => {
+      s.calls += 1;
+      if (s.calls > 1) return Actions.sosSession(p);
+      S().lock.lockNow();
+      assert.equal(await S().lock.unlock('2468'), true, 'unlocked again, the same PIN');
+      s.refused += 1;
+      throw Object.assign(new Error('This tab locked while the save ran.'), { code: 'LOCKED' });
+    } });
+    const d = sosDom();
+    const root = d.open(['sos', 'craving'], null, A);
+    for (const id of ['sos-rate-skip', 'sos-checkin', 'sos-reassess-passed', 'sos-used-yes']) d.tapId(root, id);
+    await until(() => s.refused === 1, 'the stub refused once');
+    await d.settle();
+    assert.equal(s.calls, 2, 'at once: tried once more within a settle of the refusal');
+    await until(() => d.go.length > 0, 'and the save ends');
+    assert.deepEqual(events('SosCompleted').map((e) => e.payload.outcome), ['used'], 'saved now, once');
+  });
+});
 // -- V3 actions-sos tests end --

@@ -546,7 +546,8 @@ const Actions = (() => {
   /* RS37R, RS38 (ruling 2026-11-07 22:52 IST): every update verb goes through claimRow. A patch that changes the value
      of a field that is not a true/false flag makes a sample row the person's (the mark goes, so eraseSample keeps their
      words); a patch that changes nothing, or only flags (a to-do ticked, a contact hidden or shown), keeps it. A null
-     patch: the verb always writes the person's words or score (a debrief, a prediction's result). */
+     patch: the verb always writes the person's words or score (a debrief, a prediction's result). RC23: a plan's status
+     is a state, like a flag: a status change keeps the mark. */
   function sameValue(a, b) {
     const blank = (v) => v === undefined || v === null || v === '';
     if (blank(a) || blank(b)) return blank(a) && blank(b);
@@ -555,7 +556,7 @@ const Actions = (() => {
     return [...new Set([...Object.keys(a), ...Object.keys(b)])].every((k) => sameValue(a[k], b[k]));
   }
   function claimRow(prev, patch, next) {
-    if (next.sample === true && (patch === null || Object.keys(patch).some((k) => !isBool(patch[k]) && !sameValue(patch[k], prev[k])))) delete next.sample;
+    if (next.sample === true && (patch === null || Object.keys(patch).some((k) => k !== 'status' && !isBool(patch[k]) && !sameValue(patch[k], prev[k])))) delete next.sample;
     return next;
   }
   const contacts = {
@@ -650,7 +651,7 @@ const Actions = (() => {
         const plan = claimRow(prev, p, Object.assign({}, prev, p, { id }));
         if (!endsAfter(plan)) fail('bad-plan', 'The end time must be after the start time.');
         tx.put('plans', plan);
-        if (plan.battlePlan && !tx.has('BattlePlanCreated', 'planId', id)) tx.event('BattlePlanCreated', { planId: id });
+        if (plan.battlePlan && plan.sample !== true && !tx.has('BattlePlanCreated', 'planId', id)) tx.event('BattlePlanCreated', { planId: id }); // RC23: only for the person's row
         return { plan, events: tx.events };
       });
     },
