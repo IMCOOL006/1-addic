@@ -43,3 +43,7 @@ Waits for today-track V-01b: #/status (UI.pages.status), data-test status-*, tod
 - All data-test (source: tracks/SCREENS/contracts/today-track-v3-annex.md, 'V-43 as built'). Today: objectives-card, objective[data-id][data-done], objective-done, objective-swap, run-line, run-current, run-best, run-total, run-kept, run-back, questline-card, questline-step[data-state][data-id], questline-claim. Your Harbor: status-growth, status-growth-item[data-kind], status-growth-layer, status-way. data-tour: objectives-card, questline-card, run-line.
 - growthItems' grows is the Content.objectives element (R-C-65); the kind is grows.grows.
 
+
+## V-26a's output for V-26b (2026-11-09 15:06 IST; core 561cab2)
+
+- The format is in contracts/core.md (last section). Each part: `part <name> <bytes> B (<x.x> kB)` (regex `^part (\S+) (\d+) B \((\d+\.\d) kB\)$`); 29 parts, then shell.html, then styles.css (31 lines at 561cab2); the total line `built offline/1-addic.html <N> B (<x.x> kB), <P> parts, skipped (absent): ...` unchanged.

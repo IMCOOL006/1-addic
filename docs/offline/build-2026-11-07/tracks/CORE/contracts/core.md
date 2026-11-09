@@ -134,3 +134,8 @@ Adds or relies on (all at base f69bc68a unless marked):
 ## 2026-11-08 06:58 IST · V-46 (R-H-44 on R-S-21): ctx.features reads Engine.unlocked
 
 - `UI.ctx(r).features` (a Set) = `Engine.unlocked(view)` when it is a function, else `Engine.revealed(view)`, else `new Set(Content.reveal.always)`; each step inside safe(), a throw falls through to the next. It is always a superset of Engine.revealed(view). No new public name. Consumers: the chrome, ui-guidance.js:137, ui-today.js:139, ui-track.js:525; today-track V-43 and game-tutorials V-44 keep their own typeof-guarded reads.
+
+## V-17a and V-26a, final shapes (2026-11-09 15:06 IST; core 4aa3ca9, 561cab2)
+
+- **Store.status().lockId** is a string. '' with no lock (never set, removed or erased; memory mode and IndexedDB alike). Otherwise 8 lower-case hex characters, FNV-1a over the stored lock row's salt and sealed check (lockMark, store.js). It changes when the lock row is created, removed or replaced, including the same PIN after an erase and a PIN set over the old one. It does not change on lock, unlock or reload, so it is readable and identical while locked. It is never derived from the PIN, and neither the salt nor the check leaves the store.
+- **build.mjs per-part lines**: one line per built part in parts-list order, then shell.html, then styles.css, each `part <name> <bytes> B (<x.x> kB)` (regex `^part (\S+) (\d+) B \((\d+\.\d) kB\)$`; kB = bytes/1024, one decimal), then the total line unchanged: `built offline/1-addic.html <N> B (<x.x> kB), <P> parts, skipped (absent): ...`. The figure is the bytes the part adds to the page (escaped and trimmed), not its size on disk. An absent part prints no line; a failed build prints no size line. Consumer: tests-docs V-26b.

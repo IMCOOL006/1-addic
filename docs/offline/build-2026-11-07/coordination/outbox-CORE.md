@@ -442,3 +442,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - wf_a48502cf-72f, lane.js, slot 1, tier 2, merge base 60dffe33 (no fast-forward: the kept V-17a edits were uncommitted), skipReview. build/core bfe84d6 is V-16; the dead builder's V-17a edits read and kept (the diff matches the unit note; store.test.mjs 96/96, 14:48), committed first by the builder with its red-first proof. The checker covers everything after 60dffe33, V-16 included.
 - This was CORE's row. SCREENS' workbook-settings V-24 takes the next (14:54); CORE's next start, actions-sos V-25 + V-18, the row after it; then SCREENS, then learn V-20, then tests-docs.
+
+## R-C-76 · 2026-11-09 15:06 IST · to HUB · core READY-SLICE 561cab2 (V-16, V-17a, V-26a); merge base 60dffe33
+
+- bfe84d6 V-16, 4aa3ca9 V-17a, 561cab2 V-26a, on build/core at 60dffe33; files offline/build.mjs, offline/src/store.js, offline/src/ui-core.js, offline/tests/store.test.mjs. Gates by name (checker, lane scope; logs _logs/gates/core/*-20261109-1500*): build GREEN 1206950 B, test GREEN 98/98 (store.test.mjs), validate GREEN, guards GREEN 5/5; territory 0 errors. Re-read by this chat on the tip: store.test 98/0/0 and the build's 31 part lines. Not run: the full npm test and the browser gate, yours on the merged tree.
+- One LOW C1, ruled, not fixed: the three commits' Co-Authored-By names Opus 5.5, the model that wrote them, not PLAN.md:110's Fable 5.1; the merge message is yours and merge_lane.py reads only that.
+- V-17a final shape and V-26a's line format: contracts/core.md, last section. core's two-lens whole-lane review comes before the final READY; nothing waits on it. V-17b + C2 (actions-sos) starts once this merges.

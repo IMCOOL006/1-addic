@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 14:51 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), first live CORE since the weekly limit (2026-11-08 12:51 to 2026-11-09 14:30). core V-17a + V-26a wf_a48502cf-72f (slot 1, tier 2, base 60dffe33, skipReview). Next on CORE's rows: actions-sos V-25 + V-18, learn V-20, tests-docs V-22a + V-26b + V-27 + V-29
-LANE: core BUILDING   # 2026-11-09 14:51 IST: V-17a + V-26a wf_a48502cf-72f (slot 1, tier 2, merge base 60dffe33, skipReview; V-16 committed bfe84d6, V-17a's kept edits commit first). Then READY-SLICE; then the whole-lane review (V-11, V-46, V-16, V-17a, V-26a) before the final READY
+STATE: BUILDING   # 2026-11-09 15:06 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). core READY-SLICE 561cab2 with the HUB. Next on CORE's rows: actions-sos V-25 + V-18 (the next row at or above 7.0 GB), learn V-20, tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review
+LANE: core READY-SLICE 561cab2   # 2026-11-09 15:06 IST: V-16 bfe84d6, V-17a 4aa3ca9, V-26a 561cab2 (wf_a48502cf-72f; merge base 60dffe33). Check PASS; gates build GREEN 1206950 B, test GREEN 98/98 store.test.mjs, validate GREEN, guards GREEN 5/5, territory 0 errors. The whole-lane two-lens review, before core's final READY, follows as CORE's run
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-09 14:51 IST
+UPDATED: 2026-11-09 15:06 IST
+
+# 2026-11-09 15:06 IST · core READY-SLICE 561cab2 (V-16, V-17a, V-26a); merge base 60dffe33
+
+- wf_a48502cf-72f returned: lane.js state READY, written here as READY-SLICE because this run had skipReview and the whole-lane review is still owed. 3 agents, check PASS, one LOW C1 (the trailers).
+- This chat verified on 561cab2: the worktree clean but for the generated offline/1-addic.html (dropped); node --test offline/tests/store.test.mjs 98 pass, 0 fail, 0 skip; node offline/build.mjs printed 31 part lines and 'built offline/1-addic.html 1206950 B (1178.7 kB), 29 parts, skipped (absent): none'. Not run: the full npm test and the browser gate (the HUB's merged-tree gates; the lane's scope is store.test.mjs).
+- C1, ruled, not fixed: the three commits carry 'Co-Authored-By: Claude Opus 5.5', the model that wrote them, where PLAN.md:110 names Fable 5.1. merge_lane.py checks the Fable string only on the HUB's merge-message file. Rewriting the commits would misstate the author and rewrite history; the owner has been told.
+- Shapes published: V-17a's lockId and V-26a's size lines in contracts/core.md (last section), contracts/actions-sos.md, contracts/tests-docs.md.
 
 # 2026-11-09 14:51 IST · CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73) resumes after the weekly limit; core relaunched
 
