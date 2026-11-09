@@ -1,0 +1,65 @@
+{
+ "lane": "core",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The shell's static safety line, the core LOWs, Store.status().lockId, build.mjs per-part sizes.",
+ "files": [
+  "offline/build.mjs",
+  "offline/src/shell.html",
+  "offline/src/styles.css",
+  "offline/src/ui-core.js",
+  "offline/src/store.js",
+  "offline/src/boot.js",
+  "offline/tests/store.test.mjs",
+  "package.json",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a"
+ ],
+ "batches": [
+  [
+   "V-11",
+   "V-46",
+   "V-16"
+  ],
+  [
+   "V-17a",
+   "V-26a"
+  ]
+ ],
+ "unitTier": {
+  "V-11": 1,
+  "V-16": 2,
+  "V-17a": 2,
+  "V-26a": 2
+ },
+ "unitNotes": {
+  "V-17a": "Store.status().lockId (0.5 h, V3-17): an opaque id that changes when the notebook is erased or a new PIN is set, in status(); as ruled in contracts/actions-sos.md:130; a test that a new PIN after an erase changes it. The SOS side (V-17b) is actions-sos'.",
+  "V-26a": "build.mjs prints the size of every part and the total (0.3 h, V3-26); the parts list unchanged."
+ },
+ "laneNote": "build/core stays at bfe84d6 plus the kept V-17a edits: no fast-forward, no merge. CORE's word (2026-11-09 14:49 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/core/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-01",
+  "U-03",
+  "U-02",
+  "U-04",
+  "FIX-V11",
+  "V-11",
+  "V-46",
+  "V-16"
+ ],
+ "base": "60dffe33",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 14:49 IST",
+ "diffFrom": "60dffe33",
+ "slot": 1,
+ "sliceRun": false,
+ "priorNote": "CORE 16 (215e6cdd), 2026-11-09: relaunch of wf_ebf2f562-296 (died at the weekly limit 2026-11-08 12:51). V-16 is committed and proved (bfe84d6): do not rebuild it. V-17a is built but UNCOMMITTED in this worktree (offline/src/store.js, offline/tests/store.test.mjs): CORE read the diff and kept it, store.test 96/96. NEVER stash, check out over or re-type it. Show red first from a copy in _logs/scratch (store.js at bfe84d6; log core__V-17a-red.log), one mutation of lockMark, commit by path, then V-26a. The checker judges every commit after 60dffe33, V-16 included. skipReview: the whole-lane two-lens review is CORE's separate run. In your note: the final lockId shape (name, type, when it changes, locked and no-store values) and V-26a's exact per-part line format.\n",
+ "skipReview": true
+}

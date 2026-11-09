@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-08 12:24 IST: CORE 15 (80a57fa8-75f9-4552-9327-c1b964682602). core V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2; base 60dffe33; skipReview). SCREENS has the next 7.0 row; CORE's next start (actions-sos V-25 + V-18) the row after, and never between HUB 13's 'committing' and 'done' lines for lane.js (V-15)
-LANE: core BUILDING   # 2026-11-08 12:19 IST: V-16 + V-17a + V-26a wf_ebf2f562-296 (slot 1, tier 2, base 60dffe33, skipReview). Then READY-SLICE; then the whole-lane review (V-11, V-46 and this batch) before the final READY
+STATE: BUILDING   # 2026-11-09 14:51 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73), first live CORE since the weekly limit (2026-11-08 12:51 to 2026-11-09 14:30). core V-17a + V-26a wf_a48502cf-72f (slot 1, tier 2, base 60dffe33, skipReview). Next on CORE's rows: actions-sos V-25 + V-18, learn V-20, tests-docs V-22a + V-26b + V-27 + V-29
+LANE: core BUILDING   # 2026-11-09 14:51 IST: V-17a + V-26a wf_a48502cf-72f (slot 1, tier 2, merge base 60dffe33, skipReview; V-16 committed bfe84d6, V-17a's kept edits commit first). Then READY-SLICE; then the whole-lane review (V-11, V-46, V-16, V-17a, V-26a) before the final READY
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-08 12:24 IST
+UPDATED: 2026-11-09 14:51 IST
+
+# 2026-11-09 14:51 IST · CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73) resumes after the weekly limit; core relaunched
+
+- Read: this file (CORE 15's 12:24 BUILDING), tracks/CORE/RUN-RECORD.md 'Resume here' (12:15), status-HUB.md, the outboxes' tails (R-H-47, R-C-74), the HUB's message of 14:47.
+- The dead run: wf_ebf2f562-296 (journal in session 80a57fa8) has no result lines: its builder's last text is 'You've hit your weekly limit'; the later agents died the same way. 80a57fa8 is listed blocked (dead). Nothing of CORE ran between 2026-11-08 12:51 and now.
+- The kept work: build/core bfe84d6 (V-16 committed; progress note: red first, mutation 7 of 7, store.test 94/94). Uncommitted in the worktree, V-17a whole: offline/src/store.js (status().lockId, lockMark FNV-1a over lockId(L), '' with no lock) and offline/tests/store.test.mjs (two new tests, the status() deepEquals). Read as a diff by this chat against the unit note tracks/CORE/briefs/core/V-17a.md: complete; node --test offline/tests/store.test.mjs 96/96, 0 fail, at 14:48. Kept, not stashed.
+- 2026-11-09 14:51 IST: launched wf_a48502cf-72f (lane.js, args tracks/CORE/args/args_v3_core_V-17a.json from gen8.py; batch V-17a + V-26a; done + V-16; base and diffFrom 60dffe33 so the checker sees V-16; skipReview; wf_sim OK, builder prompt 11149 B, nothing cut) on the row 10.4 GB (by hand, Win32_OperatingSystem, 14:50). The transcript and journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/215e6cdd-fe29-4f0b-a91c-05f0cf744b73/subagents/workflows/wf_a48502cf-72f/. Return -> LANE: core READY-SLICE <tip> (merge base 60dffe33); then the whole-lane review before the final READY.
 
 # 2026-11-08 12:24 IST · from the HUB (HUB 13 'HUB 12:09', 2b59e0da, by message, 12:22) · the core run noted; lane.js changes with V-15
 
