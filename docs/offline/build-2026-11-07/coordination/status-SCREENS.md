@@ -1,12 +1,23 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-08 12:27 IST: SCREENS 11:07 (c26b6cc6). content V-23 is BUILDING as wf_d31c33a1-c99 (12:25, slot 4, the 12:21 row 7.1 GB, 7.09 by hand at 12:23; sliceRun). CORE took the first row after the tag (core V-16 + V-17a + V-26a, 12:19). The next qualifying row is CORE's (actions-sos V-25 + V-18), then SCREENS (workbook-settings V-24)
-LANE: content BUILDING   # V-23 (tier 2) wf_d31c33a1-c99 since 12:25; worktree fast-forwarded eb38166..22db886d (the trunk tip after the tag, docs-only commits); base and merge base 22db886d; args/v3_content_t2.json; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7/subagents/workflows/wf_d31c33a1-c99/journal.jsonl
+STATE: RUNNING   # 2026-11-09 14:43 IST: SCREENS 14:38 (9c7e67fd). The owner's weekly limit stopped every chat from 2026-11-08 12:43 IST to its reset at 14:30 today. content V-23's check relaunched as wf_c2451856-9d5 (the builder's 96dd899 stands). Next: workbook-settings V-24, V-22b and game-tutorials V-21 on 7.0 GB rows, by turn with CORE
+LANE: content CHECKING 96dd899   # V-23 (tier 2): builder done 96dd899 (2026-11-08 12:32). Its checker died on the weekly limit at 12:43 with no verdict; the check relaunched as wf_c2451856-9d5 (14:43, start 'check', args/v3_content_v23_check.json). Merge base 22db886d. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/9c7e67fd-395a-48f0-abea-b26daf2e1640/subagents/workflows/wf_c2451856-9d5/journal.jsonl
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # fast-forwarded to 60dffe33 (12:00, clean). Next: V-24 then V-22b (tier 2, slot 6), two one-unit batches; args/v3_workbook-settings_t2.json
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-08 12:27 IST
+UPDATED: 2026-11-09 14:43 IST
+
+# 2026-11-09 14:43 IST · SCREENS 14:38 (9c7e67fd) resumes after the weekly limit; content V-23's check relaunched
+
+- The owner's weekly usage limit stopped the program. Sub-agents were refused from 2026-11-08 12:43 IST, the chats from about 13:03. The limit reset at 14:30 IST today (the message in the transcripts: 'resets Nov 9, 2:30pm').
+- From 12:43 yesterday to 14:30 today nothing of SCREENS ran. The launcher went on opening a fresh chat per track about every two hours; each of the 14 SCREENS chats between 13:39 and 12:39 today was refused on its first request and did nothing. The status files of all three tracks stopped at 12:24-12:39 yesterday. No PARKED line was written (R-O-9's trigger needs the owner's line, and the limit came first).
+- content V-23: the builder finished at 96dd899 (2026-11-08 12:32; one commit, both trailers). The run wf_d31c33a1-c99's checker and report writer were refused, the run ended at 12:44 with no verdict. Its session c26b6cc6 is still listed, idle and blocked, and its run is over (the task notification says completed); nothing of it is alive.
+- Relaunched at 14:43 as wf_c2451856-9d5 (start 'check', args/v3_content_v23_check.json, the same run shape as V-42's check at 09:00 yesterday). Not a new start: the row was spent on the 12:21 row yesterday. wf_sim OK on the args against the current lane.js (V-15).
+- The content worktree was clean at 96dd899 except the checker's generated offline/1-addic.html (1205512 B, the size in its 12:35 build log); restored with git checkout.
+- The trunk has only docs and tools commits after V-23's merge base 22db886d (git diff --stat 22db886d a66d699 -- offline/ package.json is empty).
+- Free memory by hand 10.6 GB at 14:40; the rows have read 10.7-11.5 GB since 10:00.
+- Next, as before: workbook-settings V-24 then V-22b (slot 6), then game-tutorials V-21 (slot 8), one start per 7.0 GB row across both tracks, alternating. CORE's next start is actions-sos V-25 + V-18 and no CORE chat is working yet (CORE 13:42 was refused at the limit). SCREENS waits for its turn; if CORE has not used its row by the time the content check returns, SCREENS takes it with a line in outbox-SCREENS.md.
 
 # 2026-11-08 12:27 IST · content V-23 launched (wf_d31c33a1-c99) on SCREENS' first row after the tag
 

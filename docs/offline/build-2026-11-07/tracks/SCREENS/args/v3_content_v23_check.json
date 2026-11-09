@@ -1,0 +1,55 @@
+{
+"lane": "content",
+"chat": "SCREENS",
+"tier": 1,
+"flagged": false,
+"area": "The status feature's content, the India numbers, the content LOWs, the clinical-review fixes.",
+"files": [
+"offline/src/content-core.js",
+"offline/src/content-lessons-a.js",
+"offline/src/content-lessons-b.js",
+"offline/src/content-lessons-c.js",
+"offline/src/content-exercises.js",
+"offline/src/content-practices.js",
+"offline/src/content-sample.js",
+"offline/tests/content.test.mjs",
+"offline/src/content-quests.js"
+],
+"units": [
+"V-23"
+],
+"batches": [
+[
+"V-23"
+]
+],
+"unitTier": {
+"V-23": 2
+},
+"unitNotes": {
+"V-23": "C2 (both items so numbered in the lane report: the content-sample.js:6 header against plans 1-3 days ahead; the sample erase assertion), C3, C4 (0.3 h, V3-23): one comment, one assert, the 'guide' id note."
+},
+"laneNote": "V3 V-23 (tier 2; PLAN-V3.md section 2; SCREENS 11:07, 2026-11-08 12:25 IST). THIS RUN BUILDS V-23 ONLY: one batch, one builder. V-10, V-10r and V-42 with its C1 are done and merged (V-42 at 899f77e4). V-10b is NOT built: it waits for the owner's I6 answer, and no number, url or verify flag changes without it. The worktree C:/Users/ruchi/1-addic-wt/content was fast-forwarded with merge --ff-only (no merge commit) to BASE 22db886d, the commit of the tag offline-v3.0 at 60dffe33 or the trunk tip after it (docs-only commits): base and diffFrom are 22db886d. Tier 2: this goes toward offline-v3.1; the HUB merges it as it lands. Under 4.0 GB free memory (PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory) before a heavy gate: commit what is clean and return the note (the chat pauses the newest run). Test names are failure identities: add new names, never rename or delete one. Restore offline/1-addic.html (git checkout -- offline/1-addic.html) after any build so the tree ends clean. One commit per unit, the unit id in the message, both trailers (Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com> and Claude-Session: https://claude.ai/code/session_9c7e67fd-395a-48f0-abea-b26daf2e1640). SPEC: the brief tracks/SCREENS/briefs/content-v3.md section 'V-23' (written at f69bc68a: re-read each cited line in the worktree; the code wins, say so in the note). The three items, LOWs of the v1 report (lane-reports/content.md:86-88): (C2a) offline/src/content-sample.js:6 (the header comment) says nothing is dated after nowIso, but the sample's plans run 1-3 days ahead: fix the comment only, no data change; (C2b/C3) offline/tests/content.test.mjs, the sample test: one explicit assert that every row generate() returns, in every store, carries sample: true (the meta row {key:'sample'} is written by Actions.loadSample, not by generate), so erasing the sample leaves nothing behind. Actions.eraseSample IS in the trunk now (actions-sos RS-SAMPLE): assert the round trip through it only if content.test.mjs already loads the Store and Actions the way other test files do (offline/tests/helpers); if that needs new harness code, keep the generate-level assert alone and say so; (C4) offline/src/content-core.js:133, the M10 rank: one comment that the M10 milestone is the base rank id 'guide' (the 'graduate' badge at :149 is a different thing, My Recovery Plan built); no id change. Files: content-sample.js, content.test.mjs, content-core.js (own). Gates: build, test, validate, guards through gates.py; no browser (no DOM change). RESUME OF THE CHECK (2026-11-09 14:42 IST): the V-23 builder finished at 96dd899 (one commit; its gates at 12:31 green: build, test 40/40, validate, guards). The run wf_d31c33a1-c99's checker was stopped mid-way on 2026-11-08 12:43 IST by the owner's weekly usage limit (reset 2026-11-09 14:30 IST), so no verdict exists. This run is start 'check' only: the builder is not relaunched. The worktree is clean at 96dd899 with offline/1-addic.html restored. The checker's own partial gate logs of 12:35 (build, test, validate, guards) were green but are not a verdict: run the gates again. Base, merge base and diffFrom stay 22db886d; the trunk has only docs and tools commits after it (no offline/ or package.json change, checked with git diff --stat 22db886d a66d699). No DOM change, so no browser gate.",
+"done": [
+"U-31a",
+"U-31b",
+"U-29",
+"U-30",
+"U-32",
+"U-33",
+"V-10",
+"V-10r",
+"V-42",
+"C1"
+],
+"brief": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/briefs/content-v3.md",
+"contract": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/SCREENS/contracts/content-v3.md",
+"slot": 4,
+"base": "22db886d",
+"diffFrom": "22db886d",
+"session": "https://claude.ai/code/session_9c7e67fd-395a-48f0-abea-b26daf2e1640",
+"now": "2026-11-09 14:42 IST",
+"sliceRun": true,
+"start": "check",
+"priorNote": "{\"done\": [{\"unit\": \"V-23\", \"shas\": [\"96dd899\"]}], \"tip\": \"96dd899\", \"in_flight\": \"none (tree clean at 96dd899; offline/1-addic.html restored after the build)\", \"next\": [{\"unit\": \"V-10b\", \"first_step\": \"Read outbox-OWNER.md for the owner's I6 answer; with no answer nothing is cleared and the unit stays not started (report 'waiting'). With one, remove verify: true only on the confirmed India entries at content-core.js:421-432 (line numbers shift +1 after V-23's comment at :133) and quote the answer in the commit body.\"}], \"files_touched\": [\"C:/Users/ruchi/1-addic-wt/content/offline/src/content-sample.js\", \"C:/Users/ruchi/1-addic-wt/content/offline/src/content-core.js\", \"C:/Users/ruchi/1-addic-wt/content/offline/tests/content.test.mjs\"], \"shared_touched\": [], \"one_thing\": \"The brief (written at f69bc68a) says Actions.eraseSample is absent. The code wins here: it is on the trunk (actions.js:1080, RS-SAMPLE). content.test.mjs already stubs globalThis.Store.commit over an in-memory draft, so the loadSample test now erases through the real A.eraseSample. That needed no new harness code. It asserts erased.erased === out.count, that the meta 'sample' row is null, and that no rows are left. No test name was added, renamed or deleted.\", \"evidence\": [\"C:/Users/ruchi/1-addic-wt/_logs/gates/content/build-20261108-123123.log\", \"C:/Users/ruchi/1-addic-wt/_logs/gates/content/test-20261108-123133.log\", \"C:/Users/ruchi/1-addic-wt/_logs/gates/content/validate-20261108-123137.log\", \"C:/Users/ruchi/1-addic-wt/_logs/gates/content/guards-20261108-123138.log\"], \"steps_used\": 9, \"blocked\": [], \"for_the_chat\": [\"READY content 96dd899 (V-23, tier 2, toward offline-v3.1). All four gates are green: build, test 40/40, validate, guards 5/5. Territory check 22db886d..HEAD: 3 own files, 0 shared, 0 errors. Browser not run because nothing in the DOM changed. Closes V3-23 and the v1 LOWs C2, C3 and C4 (lane-reports/content.md:86-88).\", \"Where the brief and the code differ: the brief says Actions.eraseSample is absent, but it is on the trunk, so the erase round trip is asserted through it.\", \"V-10b not started: it waits for the owner's I6 answer. No number, url or verify flag was changed.\"]}"
+}

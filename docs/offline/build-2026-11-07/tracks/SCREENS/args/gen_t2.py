@@ -1,10 +1,10 @@
 """Usage: python gen_t2.py <lane> <base sha> "<now>" [<merged-at sha>]
 Writes tracks/SCREENS/args/v3_<lane>_t2.json for a SCREENS tier 2 run (V3, after the FREEZE): the lane object of
 lane_args_v3.json with units/batches cut to the tier 2 batch, base = diffFrom = <base>, done = the finished units,
-the session of SCREENS 11:07, and a laneNote naming what is in the worktree. Prints the path and the size."""
+the session of SCREENS 14:38, and a laneNote naming what is in the worktree. Prints the path and the size."""
 import json, sys
 D = 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/'
-SESSION = 'https://claude.ai/code/session_c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7'
+SESSION = 'https://claude.ai/code/session_9c7e67fd-395a-48f0-abea-b26daf2e1640'
 lane, base, now = sys.argv[1], sys.argv[2], sys.argv[3]
 merged_at = sys.argv[4] if len(sys.argv) > 4 else ''
 L = json.load(open(D + 'tracks/HUB/workflows/lane_args_v3.json', encoding='utf-8'))['lanes'][lane]
@@ -22,7 +22,7 @@ if lane == 'content':
              done=['U-31a', 'U-31b', 'U-29', 'U-30', 'U-32', 'U-33', 'V-10', 'V-10r', 'V-42', 'C1'],
              brief=D + 'tracks/SCREENS/briefs/content-v3.md', contract=D + 'tracks/SCREENS/contracts/content-v3.md', slot=4)
     a['unitNotes'] = {'V-23': L['unitNotes']['V-23']}
-    a['laneNote'] = ("V3 V-23 (tier 2; PLAN-V3.md section 2; SCREENS 11:07, " + now + "). THIS RUN BUILDS V-23 ONLY: one batch, one builder."
+    a['laneNote'] = ("V3 V-23 (tier 2; PLAN-V3.md section 2; SCREENS 14:38, " + now + "). THIS RUN BUILDS V-23 ONLY: one batch, one builder."
         " V-10, V-10r and V-42 with its C1 are done and merged (V-42 at 899f77e4). V-10b is NOT built: it waits for the owner's I6"
         " answer, and no number, url or verify flag changes without it." + COMMON +
         " SPEC: the brief tracks/SCREENS/briefs/content-v3.md section 'V-23' (written at f69bc68a: re-read each cited line in the"
@@ -39,7 +39,7 @@ if lane == 'content':
 elif lane == 'workbook-settings':
     a.update(units=['V-24', 'V-22b'], batches=[['V-24'], ['V-22b']], done=['U-19', 'U-20a', 'U-20b', 'U-21', 'FIX-SAMPLE', 'C1'],
              brief=D + 'tracks/SCREENS/briefs/workbook-settings.md', contract=D + 'tracks/SCREENS/briefs/workbook-settings.md', slot=6)
-    a['laneNote'] = ("V3 V-24 + V-22b (tier 2, two one-unit batches, a fresh builder each, V-24 first; PLAN-V3.md section 2; SCREENS 11:07, " + now + ")."
+    a['laneNote'] = ("V3 V-24 + V-22b (tier 2, two one-unit batches, a fresh builder each, V-24 first; PLAN-V3.md section 2; SCREENS 14:38, " + now + ")."
         " The v1 units U-19, U-20a, U-20b, U-21 and FIX-SAMPLE are done and merged (42d2467d); C1 was closed on e8da3fbd (R-S-18)." + COMMON +
         " No V3 brief or contract exists for this lane: this note and the unit notes are the spec; the v1 brief"
         " tracks/SCREENS/briefs/workbook-settings.md gives the lane's files and rules. V-24: offline/src/ui-settings.js:65, TEXT.early"
@@ -58,7 +58,7 @@ elif lane == 'game-tutorials':
              done=['U-27', 'U-26', 'U-28', 'FIX-TOUR', 'V-08b', 'V-28', 'V-44'],
              brief=D + 'tracks/SCREENS/briefs/game-tutorials-v3.md', contract=D + 'tracks/SCREENS/contracts/game-tutorials-v3.md', slot=8)
     a['unitNotes'] = {'V-21': L['unitNotes']['V-21']}
-    a['laneNote'] = ("V3 V-21 (tier 2; PLAN-V3.md section 2; SCREENS 11:07, " + now + "). THIS RUN BUILDS V-21 ONLY: one batch, one builder."
+    a['laneNote'] = ("V3 V-21 (tier 2; PLAN-V3.md section 2; SCREENS 14:38, " + now + "). THIS RUN BUILDS V-21 ONLY: one batch, one builder."
         " V-08b, V-28 and V-44 are done and merged" + (f" (V-28 + V-44 at {merged_at})" if merged_at else "") + "." + COMMON +
         " SPEC: the brief tracks/SCREENS/briefs/game-tutorials-v3.md section 'V-21' (written at f69bc68a, before V-28 and V-44 moved"
         " ui-guidance.js: re-read coach(), onRoute and place() in the worktree; the code wins, say so in the note). The unit: (1) in"

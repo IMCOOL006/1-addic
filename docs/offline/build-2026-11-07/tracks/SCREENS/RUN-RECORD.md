@@ -316,18 +316,23 @@
 - 12:00: content, workbook-settings and game-tutorials were fast-forwarded (--ff-only) to 60dffe33; all clean. args/v3_<lane>_t2.json were regenerated with base 60dffe33; workbook-settings is batches [[V-24],[V-22b]].
 - Rows: 11:47 5.4, 11:58 4.3 GB.
 
+## 2026-11-09 14:43 IST · SCREENS 14:38 resumes (9c7e67fd) after the weekly limit
+
+- The owner's weekly limit refused every agent from 2026-11-08 12:43 IST to 2026-11-09 14:30 IST. c26b6cc6's run wf_d31c33a1-c99 ended at 12:44 with no check verdict; the V-23 builder's 96dd899 stands.
+- Relaunched content V-23's check as wf_c2451856-9d5 at 14:43 (args/v3_content_v23_check.json). The launcher's chats of 13:39 yesterday to 12:39 today were refused on their first request and did nothing.
+
 ## Resume here
 
-- Chat c26b6cc6 (SCREENS 11:07), live. RUNNING: content V-23, wf_d31c33a1-c99 (lane.js, start 'build', sliceRun, since 2026-11-08 12:27 IST), journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/c26b6cc6-42e0-4b1c-9ebf-30ba97e949b7/subagents/workflows/wf_d31c33a1-c99/journal.jsonl. It is alive only while session c26b6cc6 is listed by ListAgents; if that session is gone, relaunch with done and priorNote from build/content's last commit after 22db886d.
-- Row turns: CORE took 12:19 (core V-16 + V-17a + V-26a); SCREENS took the 12:21 row (content V-23); the next qualifying row is CORE's (actions-sos V-25 + V-18), then SCREENS (workbook-settings V-24).
+- Chat 9c7e67fd (SCREENS 14:38), live. RUNNING: content V-23's check, wf_c2451856-9d5 (lane.js, start 'check', sliceRun, since 2026-11-09 14:43 IST), journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/9c7e67fd-395a-48f0-abea-b26daf2e1640/subagents/workflows/wf_c2451856-9d5/journal.jsonl. It is alive only while session 9c7e67fd is listed by claude agents and working. If it is gone, relaunch with args/v3_content_v23_check.json (restamp session and now).
+- On return: verify tip 96dd899, both trailers, territory (python tools/check_territory.py content), the gate logs by name; restore offline/1-addic.html; LANE: content READY-SLICE 96dd899 (merge base 22db886d).
+- Row turns: CORE took 12:19 (core V-16 + V-17a + V-26a); SCREENS took the 12:21 row (content V-23); the next qualifying row is CORE's (actions-sos V-25 + V-18), then SCREENS (workbook-settings V-24). A track with nothing ready on its row sends a line and the other takes it. As of 2026-11-09 14:43 IST no CORE chat is working (CORE 13:42 was refused at the limit).
 - The tag offline-v3.0 is at 60dffe33 (11:57). Tier 2 goes toward offline-v3.1. The HUB merges each READY as it lands.
-- The start rule: one start per 7.0 GB row (the table at the end of coordination/lane-widening.md) across both tracks, alternating. CORE takes the first qualifying row after the tag, SCREENS the next, and so on. A track with nothing ready sends a line and the other takes the row.
+- The start rule: one start per 7.0 GB row (the table at the end of coordination/lane-widening.md) across both tracks, alternating.
 - SCREENS' order:
-  - (1) content V-23 (slot 4): Workflow({scriptPath: 'C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/HUB/workflows/lane.js', args: <tracks/SCREENS/args/v3_content_t2.json>});
+  - (1) content V-23 (slot 4): checking now;
   - (2) workbook-settings V-24 then V-22b (slot 6), args/v3_workbook-settings_t2.json;
   - (3) game-tutorials V-21 (slot 8), args/v3_game-tutorials_t2.json.
-  - All three worktrees are at 60dffe33, clean. HUB 13 ('HUB 12:09', up 12:18): fast-forward to the trunk tip at the launch (git -C <wt> merge --ff-only build/offline-v1; the trunk was 5fc162a0 at 12:18, docs commits after the tag), then python gen_t2.py <lane> <that tip> "<date>" [34f70172 for game-tutorials]; the merge base is that tip.
-- READY-SLICE per unit (HUB 12, 12:06): content V-23 and workbook-settings V-24 are sliceRun true (READY-SLICE <tip>); workbook-settings V-22b is then the relaunch with done + ['V-24'], priorNote = the V-24 builder's note, diffFrom = the V-24 tip, sliceRun false; game-tutorials V-21 is sliceRun false (READY). HUB 12 handed over at 12:06; HUB 13 ('HUB 12:xx' in ListAgents) merges in arrival order.
-- On return: verify the tip, both trailers, territory (python tools/check_territory.py <lane>), the gate logs by name; restore offline/1-addic.html; LANE: <lane> READY <tip> (merge base 60dffe33); the report is at tracks/SCREENS/lane-reports/<lane>.md (lane.js writes over it).
+  - Before each launch: fast-forward the worktree to the trunk tip (git -C <wt> merge --ff-only build/offline-v1; a66d699 at 2026-11-09 14:43 IST), then python tracks/SCREENS/args/gen_t2.py <lane> <that tip> "<date>" [34f70172 for game-tutorials], then wf_sim, then Workflow. The merge base is that tip.
+- READY-SLICE per unit (HUB 12, 12:06): content V-23 and workbook-settings V-24 are sliceRun true; V-22b is the relaunch with done + ['V-24'], priorNote = the V-24 builder's note, diffFrom = the V-24 tip, sliceRun false; game-tutorials V-21 is sliceRun false (READY).
 - Under 4.0 GB, the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
-- Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; ListAgents: HUB 12 is 'HUB 09:02', CORE 15 is 'CORE 11:10'; 'HUB 08 Nov hh:mm' names belong to another project.
+- Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; 'HUB 08 Nov hh:mm' names in ListAgents belong to another project.
