@@ -3917,7 +3917,32 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way to it');
     assert.equal(a.hook('lock-page'), undefined, 'the lock page is gone');
     assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
-    assert.equal(during, '#/sos/craving', 'while the practice was open: a reload lands in the same flow');
+    assert.equal(during, '#/sos/craving?from=lock', 'while the practice was open: a reload lands in the same flow (SF1)');
+  });
+
+  test('SF1: the practice on the lock page is held on a hash no other history entry has, so the first Back works (the real router)', async () => {
+    const { parseSos } = require(src('ui-sos.js'));
+    const a = await routerApp();
+    const behind = '#/sos/craving'; // the entry a finished craving flow leaves right behind the lock page
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    assert.match(a.text(), /SOBER PRACTICE/, 'the practice is open');
+    const held = a.location.hash;
+    assert.notEqual(held, behind, 'never the hash of the entry behind it');
+    assert.notEqual(held, '#/sos', 'ESR1: nor the header SOS button\'s target');
+    assert.equal(a.UI.route().parts[0], 'sos', 'an SOS route: the key arriving draws nothing over it');
+    await a.follow(behind); // Back, as a browser does it: between two entries with one hash it fires no hashchange
+    assert.equal(a.location.hash, behind);
+    assert.match(a.text(), /URGENT NUMBERS/, 'the first Back moves: that entry\'s SOS page is drawn');
+    assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way');
+    // a reload on the held hash: the same craving flow, no PIN asked
+    const reload = await routerApp({ at: held });
+    assert.match(reload.text(), /URGENT NUMBERS/, 'the SOS page, as for any SOS route');
+    assert.equal(reload.hook('lock-page'), undefined, 'not the lock page');
+    assert.deepEqual([parseSos(reload.UI.route()).flow, parseSos(reload.UI.route()).drill], ['craving', false], 'the craving flow, not a drill');
+    const d = sosDom();
+    const root = d.open(['sos', 'craving'], reload.UI.route().query);
+    assert.ok(d.byId(root, 'sos-rate-skip'), 'the real page starts the craving flow under that query');
   });
 
   test('ESR2: Done back on the lock page shows the SOS button again (the real router)', async () => {
