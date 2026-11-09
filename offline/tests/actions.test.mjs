@@ -1788,6 +1788,7 @@ describe('onboarding and SOS fixes (FIX-ONB-EMO)', () => {
   });
   test('USEVERB: recordEvent refuses the types each verb owns, with USE_VERB, and writes nothing', async () => {
     for (const type of ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged']) await refused(Actions.recordEvent(type, {}), 'USE_VERB');
+    await assert.rejects(Actions.recordEvent('SkillUsed', {}), (err) => /\buseSkill\b/.test(err.message), 'EC3: the message names useSkill, the only verb for a skill used with no log');
     assert.equal(events().length, 0, 'nothing written');
     await Actions.recordEvent('MindfulMinute');
     assert.equal(events('MindfulMinute').length, 1, 'other types still work');

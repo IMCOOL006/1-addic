@@ -259,7 +259,7 @@ const Actions = (() => {
   const VERB_OWNED = ['SosCompleted', 'LogCreated', 'SkillUsed', 'SlipLogged', 'RecoveryPlanConfirmed', 'OnboardingCompleted', 'ModuleCompleted',
     'ObjectiveDone', 'ObjectiveSwapped', 'QuestLineStepDone', 'FeatureUnlocked'];
   async function recordEvent(type, payload) {
-    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, recoveryPlan.save, onboard, completeLesson, checkpoint, objective.done, objective.swap or questLine.claim).`);
+    if (VERB_OWNED.includes(type)) fail('USE_VERB', `${type} is written by its own verb (sosSession, logCraving, logFeeling, logSlip, useSkill, recoveryPlan.save, onboard, completeLesson, checkpoint, objective.done, objective.swap or questLine.claim).`);
     if (!EVENT_TYPES.includes(type)) fail('bad-event', `Unknown event type "${type}".`);
     const pl = payload === undefined ? {} : payload;
     if (!isObj(pl) || jsonSize(pl) > 5000) fail('bad-event', 'An event payload must be a small object.');
@@ -276,7 +276,7 @@ const Actions = (() => {
 
   /* ── useSkill (V-08a) ────────────────────────────────────────────────────────────────────── */
   // A skill used in a game or a tool, credited with one SkillUsed {skillId, helpful} and no log; XP and mastery are the
-  // Engine's. Unlike every other verb it never throws: a refusal comes back as {ok: false, code, message} and writes
+  // Engine's. Like V-41's verbs (and unlike the rest) it never throws: a refusal comes back as {ok: false, code, message} and writes
   // nothing. It refuses a non-object, a skillId not an id or not in Content.skills, a non-boolean helpful, and the
   // store's own refusal (no store, locked), passed through. A loaded sample is not a refusal (R-C-48): the event is the
   // person's own, unmarked. The drill records nothing: its caller does not call (ui-tools.js isDrill).
