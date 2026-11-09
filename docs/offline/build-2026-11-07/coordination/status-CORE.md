@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 16:29 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) resumed from CORE 16's RESTART. The two whole-lane reviews are the last CORE work before FREEZE for offline-v3.1: actions-sos wf_4d2ab8ba-606 running since 16:28; core's starts on the next row
-LANE: core MERGED-SLICE 561cab2   # 2026-11-09 16:29 IST: V-16 + V-17a + V-26a merged 2fdfc89a. Branch fast-forwarded to 84ba534, npm ci done. The whole-lane two-lens review starts on the next 7.0 GB row (args_core_end_review.json, wf_sim OK); final READY after it
+STATE: BUILDING   # 2026-11-09 16:33 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): the two whole-lane reviews run: actions-sos wf_4d2ab8ba-606 (16:28), core wf_3b34e2e2-37e (16:33). Their READY lines are the last CORE work before FREEZE for offline-v3.1
+LANE: core MERGED-SLICE 561cab2   # 2026-11-09 16:33 IST: V-16 + V-17a + V-26a merged 2fdfc89a. Whole-lane two-lens review running (wf_3b34e2e2-37e, branch fast-forwarded to 84ba534); final READY after it
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED-SLICE f5f7b9d   # 2026-11-09 16:29 IST: V-17b merged 84ba534b (HUB 16:26: build 1209901 B, test 213/213, validate, guards, the SOS, lock and PIN flows 8/8). Whole-lane two-lens review from f69bc68a running (wf_4d2ab8ba-606, branch fast-forwarded to 84ba534); final READY after it
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 16:29 IST
+UPDATED: 2026-11-09 16:33 IST
+
+# 2026-11-09 16:33 IST · core's whole-lane review launched on the 16:32 row (10.0 GB)
+
+- wf_3b34e2e2-37e (wf_lane_end_review.js, args tracks/CORE/args/args_core_end_review.json; units V-11, V-46, V-16, V-17a, V-26a; tip 84ba534). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/7ccd92d4-c859-4fdd-961c-7773e2657272/subagents/workflows/wf_3b34e2e2-37e/journal.jsonl. Return -> LANE: core READY <tip> (merge base 561cab2), naming both reviewers.
 
 # 2026-11-09 16:29 IST · CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272) resumes; actions-sos whole-lane review launched
 
