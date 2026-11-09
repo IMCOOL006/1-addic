@@ -7,7 +7,7 @@ toc: true
 App: 1-addic, offline edition (the file 1-addic.html)
 Prepared by: Claude Code
 Date: 7 November 2026
-Tested: 9 November 2026, 743 of 743 logic checks passed (Part 4); 29 of 29 browser checks passed (Part 4)
+Tested: 9 November 2026, 763 of 763 logic checks passed (Part 4); 32 of 32 browser checks passed (Part 4)
 ---
 
 > [!SUMMARY]
@@ -446,8 +446,8 @@ None of these lose data. They are rough edges to be aware of in this early versi
 
 The steps in Part 3 were written against the screens of the real file, and every picture was taken from that file by the screenshot script (`npm run screens`) on 8 November 2026. Two kinds of checks are run on the same file.
 
-- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 9 November 2026, **743 of 743** logic checks passed, in 16 test files.
-- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 9 November 2026 there were **29** of them. In one full run **all 29 passed**.
+- **Logic checks** (`npm test`) run the app's engine and data layer directly: nothing derived ever goes down after a slip, an SOS drill writes nothing, a backup restores every record, and a wrong PIN opens nothing. On 9 November 2026, **763 of 763** logic checks passed, in 16 test files.
+- **Real-browser checks** (`npm run test:browser`) open the file in Chrome, offline, at phone size, and use the screens by tapping and typing. On 9 November 2026 there were **32** of them. In one full run **all 32 passed**.
 
 | Area | What is checked | Status |
 |---|---|---|
