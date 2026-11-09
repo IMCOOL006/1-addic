@@ -2,11 +2,18 @@ TRACK: SCREENS
 STATE: RUNNING   # 2026-11-09 18:56 IST: SCREENS 16:08 (6f1291e1): offline-v3.2 fixes by name (R-H-53): workbook-settings R-S-32 on the 18:55 row (9.7 GB); content FIX-MARKERS on the next qualifying row. Content V-10b still waits for the owner's I6. Stops on the owner's 'park' or a row under 4.0 GB
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings BUILDING 17d6b50   # R-S-32 by lane.js; args tracks/SCREENS/args/v32_workbook-settings.json; slot 6; base and diffFrom 17d6b503
+LANE: workbook-settings READY b76d4f3   # R-S-32; check PASS wf_9e9f9d2b-3f5; full Node 745/745 at the tip; browser 29/29; merge base 17d6b503
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 18:56 IST
+UPDATED: 2026-11-09 19:03 IST
+
+# 2026-11-09 19:03 IST · workbook-settings READY b76d4f3 (R-S-32), for the HUB
+
+- Merge build/workbook-settings at b76d4f3 alone, merge base 17d6b503. One commit, two files: offline/src/ui-settings.js (one line, :422), offline/tests/workbook-settings.test.mjs (one new test), both own, both trailers.
+- What it does: Settings > Help shows one 'Replay the tour' control, the tour-replay link. The training list's entry of kind 'tour' is filtered out before the empty check, so a list holding only the tour says 'No training drills yet.' ui-guidance.js is unchanged. No words changed.
+- Check wf_9e9f9d2b-3f5: PASS, no findings. Logs _logs/gates/workbook-settings/*-20261109-1858*: build GREEN 1211537 B, test GREEN 27/27 (lane file), validate GREEN, guards GREEN 5/5, browser GREEN 29/0/0 (the checker's full run) and --grep tour 3/0/0 (the builder's).
+- Run by me at b76d4f3: npm test, exit 0, 745 pass, 0 fail, 0 skip (744 plus the new 'workbook-settings R-S-32: Settings Help shows one Replay the tour control', which the builder saw fail with 2 controls before the fix). Territory 17d6b503..b76d4f3: 2 own, 0 errors. Trailers and diff read. offline/1-addic.html restored, the tree clean.
 
 # 2026-11-09 18:56 IST · R-H-53: two fixes by name toward offline-v3.2
 
