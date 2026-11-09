@@ -593,3 +593,5 @@
 - **What comes in offline-v3.3:** the four LOWs above by name; content V-10b after I6; FIX-LANEJS-TIP in the HUB's tooling; the owner's findings from the walk of v3.1 or v3.2 when they write. Nothing is owed tonight; on 'park' or 'day closed' R-O-9 applies (launcher --pause, every chat at a clean point, the resume document).
 
 - 2026-11-09 21:45 IST: R-H-56: both tracks paused in the launcher 21:44:22 (the owner's window's observation 21:43: CORE 21:42 launched for an idle CORE 18 under V-14's 30-minute still rule; hourly re-reads for nothing while the program rests on the owner's inputs). The HUB picked (a) pause over (b) STILL_MIN; resumes a track at the owner's line. CORE 21:42 (8b2ee4e2) told to write its Resume here and wait or stop; SCREENS has no live chat. The launcher loop stays up for the HUB.
+
+- 2026-11-09 22:50 IST: the two-hourly board; nothing changed since 21:46 (both tracks paused, CORE 19 WAITING, no R-O line, memory 9.2-9.4 GB). Context about 200k.
