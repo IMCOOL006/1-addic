@@ -1,12 +1,23 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 15:02 IST: SCREENS 14:38 (9c7e67fd). workbook-settings READY-SLICE 4f66761 (V-24) for the HUB; V-22b building as wf_f28919eb-ddf on the same branch. Then game-tutorials V-21 the row after CORE's next start
+STATE: RUNNING   # 2026-11-09 15:07 IST: SCREENS 14:38 (9c7e67fd). workbook-settings READY 419718c (V-22b) for the HUB; the lane's V3 units are done with it. Next: game-tutorials V-21 on the row after CORE's next start (actions-sos V-25 + V-18)
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82 (HUB 14:40; every gate green on the merged tree, 40/40). LOW C1 named for a later content unit. Next unit V-10b waits for the owner's I6, from a fast-forward to the trunk tip
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings BUILDING 4f66761   # V-24 MERGED-SLICE 4f66761 (2cf7c40e, trunk d9fc835f; HUB 14:40). V-22b building on the branch as wf_f28919eb-ddf (diffFrom 4f66761, no rebase; merge base 4f66761 on its READY line)
+LANE: workbook-settings READY 419718c   # V-22b: for the HUB, merge at 419718c alone, merge base 4f66761 (V-24 merged 2cf7c40e). One commit, test-only, 1 own file. Check PASS wf_f28919eb-ddf: build, test 25/25, validate, guards 5/5 GREEN; territory 0 errors. Two LOWs named. The lane's V3 units are complete
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 15:03 IST
+UPDATED: 2026-11-09 15:07 IST
+
+# 2026-11-09 15:07 IST · workbook-settings READY 419718c (V-22b), for the HUB
+
+- Merge build/workbook-settings at 419718c alone, merge base 4f66761. One commit: offline/tests/workbook-settings.test.mjs (own), both trailers. Test-only.
+- Test name kept. It now runs the real Content.sample and Actions with no if: it asserts both exist, Load enabled, Erase disabled before a load, then the load / own log / erase round trip, and that a sample log and an own log exist before the erase.
+- Check wf_f28919eb-ddf: PASS. Logs _logs/gates/workbook-settings/*-20261109-1504*: build GREEN 1205504 B, test GREEN 25/25, validate GREEN, guards GREEN 5/5. The checker's mutations on a throwaway copy made the test fail (eraseSample removed fails by name). Territory, run by me over 4f66761..419718c: 1 own file, 0 errors. No browser gate (no source or screen change).
+- Two LOWs, not fixed (no fix round outside the plan), named for a later unit:
+  - C1: the comment above withSampleStandIns (workbook-settings.test.mjs:296-297) still says this tree has no Content.sample; the tests are correct.
+  - P.TEXT.eraseSampleLater and the !canErase branch in ui-settings.js are now reachable only if Actions.eraseSample is missing; another test pins the wording, so removing them is a unit of its own.
+- With this the lane's V3 units (V-24, V-22b) are done.
+- Verified by me: the tip and both trailers, the diff, territory, the four gate verdict lines, the check's verdict in the journal, offline/1-addic.html restored, the worktree clean. Assumed from the checker: its mutation runs (the copy is gone).
 
 # 2026-11-09 15:01 IST · workbook-settings READY-SLICE 4f66761 (V-24), for the HUB
 

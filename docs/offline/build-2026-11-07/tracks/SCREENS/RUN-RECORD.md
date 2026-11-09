@@ -326,18 +326,21 @@
 - content READY-SLICE 96dd899 (V-23): check PASS wf_c2451856-9d5 (14:43-14:47), merged 7a1d6b82 by HUB 14:40. One LOW C1 (content.test.mjs:381, a redundant assert) named for a later content unit.
 - workbook-settings V-24 launched on the 14:55 row (10.3 GB) as wf_6ddfcac5-217. Base cbe76a57.
 
+## 2026-11-09 15:07 IST · workbook-settings V-24 merged, V-22b READY; context over 250k
+
+- workbook-settings: V-24 READY-SLICE 4f66761 merged 2cf7c40e (trunk d9fc835f). V-22b READY 419718c (wf_f28919eb-ddf; merge base 4f66761), with the HUB. The lane's V3 units are done. Two LOWs named on status-SCREENS.md (a stale comment in the test; the eraseSampleLater branch).
+- The args for V-22b had to be trimmed: wf_sim fails a builder prompt over 12,288 bytes. Cut the other unit's spec and the priorNote's evidence.
+
 ## Resume here
 
-- Chat 9c7e67fd (SCREENS 14:38), live. RUNNING: workbook-settings V-24, wf_6ddfcac5-217 (lane.js, start 'build', sliceRun, since 2026-11-09 14:56 IST), journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/9c7e67fd-395a-48f0-abea-b26daf2e1640/subagents/workflows/wf_6ddfcac5-217/journal.jsonl. It is alive only while session 9c7e67fd is listed by claude agents and working. If it is gone, relaunch from build/workbook-settings' last commit after cbe76a57.
-- On return: verify the tip, both trailers, territory (python tools/check_territory.py workbook-settings cbe76a57..<tip>), the gate logs by name; restore offline/1-addic.html; LANE: workbook-settings READY-SLICE <tip> (merge base cbe76a57). Then V-22b as the relaunch: args/v3_workbook-settings_t2.json + done ['V-24'], priorNote = the V-24 builder's note (journal), diffFrom = the V-24 tip, sliceRun false, start 'build'. V-22b's relaunch is the same lane and needs no new row unless the HUB says so; READY <tip>.
-- Merged today: content V-23 at 7a1d6b82. content's next unit is V-10b, waiting for the owner's I6; content LOW C1 (the redundant assert at content.test.mjs:381) goes with it or later.
-- Row turns: CORE relaunched its interrupted core run on the 14:50 reading; SCREENS took the 14:55 row (V-24). Next qualifying row: CORE's new start (actions-sos V-25 + V-18), then SCREENS (game-tutorials V-21). A track with no run ready forfeits its turn (HUB 14:40).
-- The live chats: HUB 14:40 (38b3cc2e), CORE 14:46 (215e6cdd). Sessions listed with 'blocked' and no pid are the dead ones from the limit.
-- The tag offline-v3.0 is at 60dffe33. Tier 2 goes toward offline-v3.1. The HUB merges each READY as it lands.
-- The start rule: one start per 7.0 GB row (the table at the end of coordination/lane-widening.md) across both tracks, alternating.
-- SCREENS' order:
-  - (1) workbook-settings V-24 (running), then V-22b (slot 6);
-  - (2) game-tutorials V-21 (slot 8), args/v3_game-tutorials_t2.json, sliceRun false (READY).
-  - Before a launch: fast-forward the worktree to the trunk tip (git -C <wt> merge --ff-only build/offline-v1), then python tracks/SCREENS/args/gen_t2.py <lane> <that tip> "<date>" [34f70172 for game-tutorials], then wf_sim, then Workflow. The merge base is that tip. gen_t2.py now names this session.
+- Chat 9c7e67fd (SCREENS 14:38), live, context over 250k. Nothing of SCREENS is running at 2026-11-09 15:07 IST. Plan: launch game-tutorials V-21 on the first row after CORE's 15:05 row, take it to READY, then write STATE: RESTART (or sooner at 300k).
+- With the HUB: workbook-settings READY 419718c (merge base 4f66761). content V-23 and workbook-settings V-24 are merged.
+- Left for SCREENS toward offline-v3.1: game-tutorials V-21 (slot 8, tier 2), then content V-10b only after the owner's I6 answer (outbox-OWNER.md; the builder's first step is in the V-23 run's journal: remove verify:true only on the confirmed India entries at content-core.js:421-432, +1 line after V-23's comment, and quote the answer in the commit body).
+- V-21's recipe: git -C C:/Users/ruchi/1-addic-wt/game-tutorials merge --ff-only build/offline-v1 (the worktree is at 60dffe3, clean); python tracks/SCREENS/args/gen_t2.py game-tutorials <that tip> "<date>" 34f70172; node tracks/HUB/workflows/wf_sim.mjs (run from tracks/HUB/workflows; a builder prompt over 12,288 bytes is a SIM RED, trim the laneNote); Workflow lane.js with args/v3_game-tutorials_t2.json, sliceRun false (READY). The merge base is that tip. Gates include browser --grep tour.
+- On return: verify the tip, both trailers, territory (check_territory.py game-tutorials <base>..<tip>), the gate logs by name; git checkout -- offline/1-addic.html in the worktree; LANE: game-tutorials READY <tip> with the merge base; python hub_commit the status file and lane report.
+- Row turns: alternating, one start per 7.0 GB row. CORE started actions-sos V-25 + V-18 on the 15:05 row; SCREENS' game-tutorials V-21 takes the next row. CORE's queue after that: learn V-20, tests-docs, core's review.
+- Low notes named, no fix round: content C1 (content.test.mjs:381 redundant assert), workbook-settings C1 (comment at the test's :296) and the eraseSampleLater branch. R-S-30 to tests-docs: the guide's lines 431 and 439 beside V-24's sentence.
+- Weekly limit: hit 2026-11-08 12:43-12:51 IST, reset 2026-11-09 14:30. R-O-9's park needs the owner's line; none came.
+- The tag offline-v3.0 is at 60dffe33. The HUB merges each READY. The live chats: HUB 14:40 (38b3cc2e), CORE 14:46 (215e6cdd).
 - Under 4.0 GB, the newest run pauses at its next commit; a run in its read-only check is stopped and relaunched with start 'check'.
-- Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; check_territory.py <lane> <base>..<tip>; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; 'HUB 08 Nov hh:mm' names in ListAgents belong to another project.
+- Facts (kept): setlane.py "<now>" then "PREFIX=full line" pairs plus --section; rr.py <section-file> <resume-file>; hub_commit.py from the repo root with repo-relative paths; the HUB pushes; memory by hand: PowerShell Get-CimInstance Win32_OperatingSystem FreePhysicalMemory; check_territory.py <lane> <base>..<tip>; gen_t2.py carries this session's id, change SESSION for a new chat; a merged-tree scratch proof: git archive <trunk> offline package.json | tar -x into _logs/scratch/<name>, copy the lane's files over, node --test <files>; 'HUB 08 Nov hh:mm' names in ListAgents belong to another project.
