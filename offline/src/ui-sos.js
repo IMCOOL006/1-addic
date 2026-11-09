@@ -481,7 +481,7 @@
     try {
       while (waiting.length && !isLockedNow()) {
         const fn = waiting[0];
-        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook changed is dropped, never written into this one
+        if (marks.get(fn) === markNow()) { // RS26: a kept save whose notebook this tab can see has changed is dropped, not written into this one (the one case it cannot see: ES3, above)
           try { await fn(); } catch (err) { if (err && err.code === 'LOCKED') break; lost = true; }
         } else lost = true;
         waiting.shift();
