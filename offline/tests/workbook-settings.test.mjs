@@ -116,7 +116,7 @@ test('workbook-settings: pure helpers', () => {
   assert.equal(P.ERASE_PARTIAL_TEXT, 'Most of your notebook was erased, but an older copy may still be on this device. Close other tabs of this file and erase again.');
   assert.equal(P.errorText({ code: 'ERASE_PARTIAL' }), P.ERASE_PARTIAL_TEXT);
   assert.equal(P.TEXT.pinHelp, 'Set a PIN before you write anything private.');
-  assert.equal(P.TEXT.eraseSampleLater, 'Erasing only the sample comes with the next update. Erase everything removes it too.');
+  assert.equal('eraseSampleLater' in P.TEXT, false, 'the promise of a later update is gone');
   assert.equal(P.importErrorText({ errors: ['a', 'b', 'c', 'd'] }), 'This file is not a backup this app can read. a; b; c.');
   assert.equal(P.ABOUT.clinicalReview, true, 'the About safety line is marked for clinical review');
 });
@@ -311,8 +311,9 @@ test('workbook-settings: sample data is marked, and the buttons are honest (O6, 
   assert.equal(S().view.list('logs').filter((l) => l.sample).length, 0);
 });
 
-/* FIX-SAMPLE (R-H-28): the sample is offered only on a notebook without an own profile. This tree has no
-   Content.sample, so a stand-in generate and a stand-in Actions.loadSample count the calls. */
+/* FIX-SAMPLE (R-H-28): the sample is offered only on a notebook without an own profile. Content.sample and
+   Actions.loadSample are both real here (the round trip is the test above); these cases use stand-ins only to
+   count the calls. */
 async function withSampleStandIns(fn) {
   const realActions = globalThis.Actions; const hadSample = Object.prototype.hasOwnProperty.call(Content, 'sample'); const realSample = Content.sample;
   const seen = { loads: 0 };
