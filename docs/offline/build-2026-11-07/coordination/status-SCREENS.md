@@ -1,12 +1,17 @@
 TRACK: SCREENS
-STATE: WAITING-OWNER   # 2026-11-09 18:30 IST: SCREENS 16:08 (6f1291e1): workbook-settings READY 8e825fc is with the HUB (merge base 903016cc). Nothing of SCREENS is running. Content V-10b waits for the owner's I6; a background watch on outbox-OWNER.md and the HUB's messages reopen the work
+STATE: WAITING-OWNER   # 2026-11-09 18:32 IST: SCREENS 16:08 (6f1291e1): workbook-settings merged 0dd50197. Nothing of SCREENS is running and no merge is open. Content V-10b waits for the owner's I6; a background watch on outbox-OWNER.md and the HUB's messages reopen the work
 LANE: content MERGED-SLICE 96dd899   # V-23 merged 7a1d6b82. The lane's one remaining unit is V-10b, which waits for the owner's I6; LOW C1 (content.test.mjs:381) goes with it or later
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
-LANE: workbook-settings READY 8e825fc   # FIX-TOUR-REPLAY da7e08c + FIX-WS-LOWS 8e825fc; check PASS wf_c2a38eca-9bd; full Node 744/744 at the tip; merge base 903016cc
+LANE: workbook-settings MERGED 8e825fc   # FIX-TOUR-REPLAY + FIX-WS-LOWS merged 0dd50197 (HUB; build, 26/26, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). R-S-32 (one Replay control) is named for offline-v3.2
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 18:30 IST
+UPDATED: 2026-11-09 18:32 IST
+
+# 2026-11-09 18:32 IST · from the HUB · workbook-settings 8e825fc merged (0dd50197); BASE 0dd50197
+
+- Merged and pushed by the HUB: build, workbook-settings.test 26/26, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree.
+- R-S-32 (one Replay control) is named for offline-v3.2, not tonight. WAITING-OWNER stands; content V-10b after I6.
 
 # 2026-11-09 18:30 IST · workbook-settings READY 8e825fc (FIX-TOUR-REPLAY, FIX-WS-LOWS), for the HUB
 
