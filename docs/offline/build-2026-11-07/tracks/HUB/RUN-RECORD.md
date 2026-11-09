@@ -611,3 +611,5 @@ Owner items open (one line each, to the owner's next window): the walk of the v3
 The next owner window: open Claude Code in C:/Users/ruchi/1-addic and paste section 6 of docs/offline/build-2026-11-07/owner-docs/1-addic-Resume-Prompt.docx (the .md beside it; refresh with `python docs/offline/build-2026-11-07/owner-docs/build_resume_doc.py`). It verifies the state without redoing anything, files the owner's lines as R-O-10 onward, relays, routes the walk findings by outbox, sends builds with SendUserFile, and never writes STATE: RESTART while a launcher HUB is live. The HUB sends one line per event by SendMessage to the owner's window's name; the window's own watch script is optional.
 
 - 2026-11-10 00:51 IST: the two-hourly board; nothing changed since 23:28 (both tracks paused, CORE 19 WAITING, no R-O line, memory 8.8-9.0 GB). Context about 215k.
+
+- 2026-11-10 02:53 IST: the two-hourly board; nothing changed (both tracks paused, CORE 19 WAITING, no R-O line, memory 8.2-8.5 GB). Context about 225k; the hand-over is planned for the 250k mark at a safe point (this is one).
