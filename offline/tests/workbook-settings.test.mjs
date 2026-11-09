@@ -171,6 +171,24 @@ test('workbook-settings: every tab renders with its hooks; unknown tab is privac
   if (typeof globalThis.GuidanceUI === 'undefined') assert.ok(byTest(help, 'tour-later') && byTest(help, 'drills-later'), 'tour and drills say they come later');
 });
 
+test('workbook-settings FIX-TOUR-REPLAY: Replay the tour is a link to Today with tour=1', async () => {
+  const had = Object.prototype.hasOwnProperty.call(globalThis, 'GuidanceUI'); const real = globalThis.GuidanceUI;
+  let coached = 0;
+  globalThis.GuidanceUI = { coach: () => { coached += 1; }, training: () => [] };
+  try {
+    await S().resetAll();
+    const link = byTest(UI.pages.settings(ctx('help')), 'tour-replay');
+    assert.ok(link, 'the Help tab draws the replay control');
+    assert.equal(link.tagName, 'a', 'a link, as the training list draws');
+    assert.equal(link.getAttribute('href'), '#/today?tour=1', 'the tour opens on Today, where its steps have their targets');
+    assert.equal(link.textContent, 'Replay the tour');
+    link.fire('click');
+    assert.equal(coached, 0, 'the tour is not started on the Settings screen');
+  } finally {
+    if (had) globalThis.GuidanceUI = real; else delete globalThis.GuidanceUI;
+  }
+});
+
 test('workbook-settings: settings persist through Actions.settings.patch', async () => {
   await S().resetAll();
   let page = UI.pages.settings(ctx('look'));

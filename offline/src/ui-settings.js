@@ -418,7 +418,7 @@ const SettingsUI = (function () {
     const C = ns('Content');
     const G = ns('GuidanceUI');
     const tour = G && typeof G.coach === 'function'
-      ? h('button', { type: 'button', class: 'btn', 'data-test': 'tour-replay', text: 'Replay the tour', onClick: () => { safe(() => G.coach('tour', { replay: true }), null); } })
+      ? h('a', { class: 'btn', href: '#/today?tour=1', 'data-test': 'tour-replay', text: 'Replay the tour' })
       : h('p', { class: 'muted', 'data-test': 'tour-later', text: TEXT.tourLater });
     const drills = G && typeof G.training === 'function' ? safe(() => G.training(), []) || [] : null;
     const drillList = drills
