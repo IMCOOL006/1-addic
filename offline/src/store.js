@@ -506,11 +506,26 @@ const Store = (function () {
 
   // autoLockMin is the lock's idle minutes (1, 5 or 15; 0 is never; null without a PIN), so the settings screen can
   // show the choice in force (RC3). unreadable counts the stored rows that did not open (0 while locked) (Q4).
+  // lockId is an opaque mark of the lock row, '' with no lock (V-17a).
   function status() {
     let unreadable = 0;
     if (!state.locked) for (const n of NAMES) unreadable += state.unread[n].size;
     return { persistence: state.mode, lastSavedAt: state.lastSavedAt, hasLock: !!state.lock, locked: state.locked,
-      autoLockMin: state.lock ? state.lock.autoLockMin : null, unreadable };
+      autoLockMin: state.lock ? state.lock.autoLockMin : null, unreadable, lockId: lockMark(state.lock) };
+  }
+
+  // Eight hex characters (FNV-1a) over the lock row's random salt and sealed check, so another tab's save can tell the
+  // lock changed: created, removed or replaced, the same PIN after an erase included. Locking and unlocking change no
+  // row and so no mark. It is a digest of the row, never of the PIN, and neither the salt nor the check leaves the store.
+  function lockMark(L) {
+    const s = lockId(L);
+    if (!s) return '';
+    let x = 0x811c9dc5;
+    for (let i = 0; i < s.length; i += 1) {
+      x ^= s.charCodeAt(i);
+      x = Math.imul(x, 0x01000193);
+    }
+    return (x >>> 0).toString(16).padStart(8, '0');
   }
 
   // Decrypted rows, in key order. When a lock exists the caller asks for the PIN first (Store.lock.verify).

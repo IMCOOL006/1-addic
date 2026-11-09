@@ -1646,7 +1646,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
       contacts: 'id', plans: 'id', todos: 'id', motivation: 'id', predictions: 'id', quests: 'id', tutorials: 'id',
       reveals: 'id', tips: 'id', recoveryPlan: 'key' });
     await S.load();
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0, lockId: '' });
     assert.equal(await addRows(S), 'wrote', 'commit resolves with what the rule returned');
     assert.equal(S.view.get('profile', 'me').name, 'Asha ' + MARK);
     assert.deepEqual(S.view.list('events').map((e) => e.id), ['e1', 'e2']);
@@ -1738,7 +1738,8 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.notEqual(idb.rows('events').find((r) => r.id === 'e1').enc.iv, iv1, 'a fresh iv for every row write');
     const R = freshStore(); // the page reloads
     await R.load();
-    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5, unreadable: 0 });
+    assert.match(R.status().lockId, /^[0-9a-f]{8}$/);
+    assert.deepEqual(R.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 5, unreadable: 0, lockId: R.status().lockId });
     assert.equal(R.view.get('profile', 'me'), null);
     assert.equal(R.view.count('events'), 0);
     assert.equal(await R.lock.unlock('2468'), true);
@@ -1758,7 +1759,8 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.onLock((info) => heard.push(info.reason));
     S.lock.lockNow();
     assert.deepEqual(heard, ['manual']);
-    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0, unreadable: 0 });
+    assert.match(S.status().lockId, /^[0-9a-f]{8}$/);
+    assert.deepEqual(S.status(), { persistence: 'memory', lastSavedAt: null, hasLock: true, locked: true, autoLockMin: 0, unreadable: 0, lockId: S.status().lockId });
     assert.equal(S.view.get('profile', 'me'), null);
     assert.deepEqual(S.view.list('events'), []);
     assert.equal(S.view.count('events'), 0);
@@ -1890,7 +1892,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     S.lock.lockNow();
     ls.setItem('1-addic:snapshot', '{"app":"1-addic","stores":{}}');
     await S.resetAll(); // Forgot PIN: erase, then start again from a backup
-    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0 });
+    assert.deepEqual(S.status(), { persistence: 'indexeddb', lastSavedAt: null, hasLock: false, locked: false, autoLockMin: null, unreadable: 0, lockId: '' });
     assert.equal(S.view.count('todos'), 0);
     for (const n of Object.keys(S.STORES)) assert.equal(idb.rows(n).length, 0, n + ' is empty');
     assert.equal(ls.getItem('1-addic:snapshot'), null);
@@ -2111,6 +2113,54 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(ls.getItem('1-addic:snapshot'), null);
     assert.equal(V.view.get('events', 'f2').note, MARK);
     assert.ok(!idb2.dump().includes(MARK), 'sealed in IndexedDB');
+  });
+
+  test('status: lockId changes after erase and new PIN', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    const PIN = 'kite-2468';
+    const shape = /^[0-9a-f]{8}$/;
+    await S.load();
+    assert.equal(S.status().lockId, '', 'no lock: empty');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    const first = S.status().lockId;
+    assert.match(first, shape, 'a short opaque digest');
+    assert.equal(S.status().lockId, first, 'two reads are equal');
+    const salt = /"salt":"([^"]+)"/.exec(idb.dump())[1];
+    const told = JSON.stringify(S.status());
+    assert.ok(salt.length > 8, 'the salt was read from the stored row');
+    assert.equal(told.includes(salt), false, 'the salt never leaves the store');
+    assert.equal(told.includes(PIN), false, 'nor the PIN');
+    assert.equal(/"(salt|check|iv|ct)"/.test(told), false, 'nor any part of the sealed check');
+    S.lock.lockNow();
+    assert.equal(S.status().locked, true);
+    assert.equal(S.status().lockId, first, 'locking changes no row and so no mark');
+    assert.equal(await S.lock.unlock(PIN), true);
+    assert.equal(S.status().lockId, first, 'nor does opening');
+    await S.resetAll();
+    assert.equal(S.status().lockId, '', 'erased: no lock, empty');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    const second = S.status().lockId;
+    assert.match(second, shape);
+    assert.notEqual(second, first, 'the same PIN after an erase is a new lock: a new salt, a new mark');
+    await S.lock.set(PIN, { autoLockMin: 'never' });
+    assert.notEqual(S.status().lockId, second, 'a PIN set over the old one replaces the row');
+    await S.lock.remove(PIN);
+    assert.equal(S.status().lockId, '', 'removed: empty');
+  });
+
+  test('status: lockId after a reload is the same mark, locked, and a mark of the row the other tab wrote', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await S.load();
+    await S.lock.set('2468', { autoLockMin: 'never' });
+    const seen = S.status().lockId;
+    assert.match(seen, /^[0-9a-f]{8}$/);
+    const R = freshStore();
+    await R.load();
+    assert.equal(R.status().locked, true, 'a reload opens locked');
+    assert.equal(R.status().lockId, seen, 'the mark comes from the row, so it survives a reload and is readable while locked');
+    assert.ok(idb.dump().includes('"salt"'));
   });
 
   test('RC3: status() gives the auto-lock minutes in force, so the settings screen can show the choice', async () => {
