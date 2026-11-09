@@ -119,9 +119,13 @@ None recorded in the notes' for_the_chat beyond: the HUB baselines the 15 tour-t
 See C:/Users/ruchi/1-addic-wt/_logs/reports/core-report-annex.md. 2026-11-08 V-46: none.
 
 ### Open questions
-- 2026-11-09: none new; the autoLockMin change keeping lockId is by construction, no test names it.
+- 2026-11-09 (the review's EC4): an autoLockMin change moves lockId: lock.set writes a new salt. Contract corrected.
 - 2026-11-08 V-46: claimed-reward path through UI.ctx untested until content V-42; default: engine V-40 tests cover it.
 2026-11-08: link text is bare '112' (clinical reviewer); line stays in view while the Store loads off SOS (RS6). Earlier questions and defaults: core-report-annex.md. New ones: see Review 17:16 IST.
+
+### Whole-lane review (2026-11-09 17:33 IST, wf_3b34e2e2-37e)
+
+Both lenses clean at bf9b83c: EC1 FIXED 1a93a6a, ES1 FIXED bf9b83c (discreet holds). LOWs recorded, named for offline-v3.2: EC2-EC5, ES2, ESR1, ui-core.js:382's guard. The whole result: C:/Users/ruchi/1-addic-wt/_logs/reports/core/end-review/wf_3b34e2e2-37e-result.json.
 
 ### For the HUB at the merge
 - 2026-11-09: tip 561cab2 replaces fbc663d (3 commits: store.js, ui-core.js, build.mjs, store.test.mjs; html rebuilt 1206950 B, do not commit the gates' rebuild). Record lockId and the part lines in contracts/core.md. Run the whole-lane review.

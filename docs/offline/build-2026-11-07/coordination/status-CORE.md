@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 16:33 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): the two whole-lane reviews run: actions-sos wf_4d2ab8ba-606 (16:28), core wf_3b34e2e2-37e (16:33). Their READY lines are the last CORE work before FREEZE for offline-v3.1
-LANE: core MERGED-SLICE 561cab2   # 2026-11-09 16:33 IST: V-16 + V-17a + V-26a merged 2fdfc89a. Whole-lane two-lens review running (wf_3b34e2e2-37e, branch fast-forwarded to 84ba534); final READY after it
+STATE: BUILDING   # 2026-11-09 17:33 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): core READY bf9b83c. actions-sos's review came back RED at 4376554 on a defect its first fix round brought in: second fix round wf_6da935fd-7ff running since 17:32
+LANE: core READY bf9b83c   # 2026-11-09 17:33 IST: whole-lane review wf_3b34e2e2-37e: BOTH REVIEWERS CLEAN (contracts: EC1 FIXED 1a93a6a; safety: ES1 FIXED bf9b83c; 0 open, LOWs recorded). Merge base 84ba534b (the fast-forward from 561cab2). Checker: build GREEN 1210120 B, test GREEN 99/99, validate GREEN, guards GREEN 5/5, browser --grep SOS GREEN 4/4, territory 0. This chat: full Node 735/735. R-C-83
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED-SLICE f5f7b9d   # 2026-11-09 16:29 IST: V-17b merged 84ba534b (HUB 16:26: build 1209901 B, test 213/213, validate, guards, the SOS, lock and PIN flows 8/8). Whole-lane two-lens review from f69bc68a running (wf_4d2ab8ba-606, branch fast-forwarded to 84ba534); final READY after it
+LANE: actions-sos RED 1   # 2026-11-09 17:33 IST: MERGED-SLICE f5f7b9d stands. Whole-lane review wf_4d2ab8ba-606 RED at 4376554: EC1, EC2, ES1 FIXED; the EC1 fix made the header SOS button dead while the practice is open on the lock page (real Chrome). Second fix round wf_6da935fd-7ff running; ES3 ruled accepted for offline-v3.1
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED f211a11   # 2026-11-09 16:09 IST: FIX-COUNTS-2 merged a7fd8d66 (HUB 16:20: docs gate exit 0, build, test, validate, guards GREEN, territory 0). The lane's V3 units complete
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 16:33 IST
+UPDATED: 2026-11-09 17:33 IST
+
+# 2026-11-09 17:33 IST · core READY bf9b83c, both reviewers clean; actions-sos RED after its first review round; second fix round running
+
+- core (wf_3b34e2e2-37e, 16:33-17:27, 10 agents): 7 findings: 2 confirmed, 5 LOW, 0 refuted; EC1 FIXED 1a93a6a, ES1 FIXED bf9b83c. This chat verified at bf9b83c: the worktree clean; store.test.mjs 99/0/0; npm test 735/0/0. Not verified: the full browser suite; ES1's rule has not been painted in a browser. Contract corrected (contracts/core.md, last section). R-C-83.
+- actions-sos (wf_4d2ab8ba-606, 16:28-17:26, 14 agents): 6 findings: 4 confirmed (EC1, EC2, ES1, ES3), 2 LOW (EC3, ES2). EC1 2898cd8, EC2 5fd0904, ES1 f6ece46 re-checked FIXED; ES3 4376554 comment only. New from the fix: ECR1 = ESR1 = the checker's HIGH: 2898cd8 holds the route on #/sos while the SOBER practice is open on the lock page, so the header SOS link (href #/sos) fires no hashchange and does nothing (real Chrome, 390 px). ECR2 = ESR2 LOW: the SOS button stays hidden after Done in one path.
+- Ruled by CORE: ES3 (another tab's import with a PIN set keeps the lock row, so a kept SOS save lands in the imported notebook) is accepted for offline-v3.1: both skeptics rated it LOW, it is the person's own entry in their own notebook, and it needs a change to encryption code in a flagged lane just before the tag. Named FIX-IMPORT-MARK for offline-v3.2.
+- 17:32 second fix round wf_6da935fd-7ff (tracks/CORE/args/wf_as_end_fix2.js, args_as_end_fix2.json; F1 = hold the practice on #/sos/craving with a regression test that models the browser's same-hash rule, F2 = the chrome back on Done, F3 = the comment at ui-sos.js:484; then both lenses told to attack the fix, the gates, the full Node suite, a real-Chrome probe). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/7ccd92d4-c859-4fdd-961c-7773e2657272/subagents/workflows/wf_6da935fd-7ff/journal.jsonl. Return -> LANE: actions-sos READY <tip> (merge base 84ba534b) naming both reviewers.
+- The two results in full: C:/Users/ruchi/1-addic-wt/_logs/reports/core/end-review/wf_3b34e2e2-37e-result.json and .../actions-sos/end-review/wf_4d2ab8ba-606-result.json.
 
 # 2026-11-09 16:33 IST · core's whole-lane review launched on the 16:32 row (10.0 GB)
 
