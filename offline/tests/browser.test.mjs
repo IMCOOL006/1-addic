@@ -26,12 +26,14 @@ after(async () => { if (L && L.browser) await L.browser.close(); });
 const TABS = ['today', 'learn', 'workbook', 'track', 'actions'];
 
 // One named flow: fresh context, open, probe needs, run, assert clean. spec: {start, routes, globals, hooks,
-// page (newPage options), onboarded (default true: the first-run onboarding is completed through Actions first),
-// tour (true: the flow drives the first-run tour itself, so it is not marked done first)}.
+// page (newPage options), beforeOpen (page => ..., run before the file is opened), onboarded (default true: the first-run
+// onboarding is completed through Actions first), tour (true: the flow drives the first-run tour itself, so it is not
+// marked done first)}.
 function flow(name, spec, body) {
   test(name, { skip: TOP || false, timeout: spec.timeout || 120000 }, async (t) => {
     const s = await newPage(L.browser, spec.page || {});
     try {
+      if (spec.beforeOpen) await spec.beforeOpen(s.page);
       await openApp(s.page, '#/today');
       if (spec.onboarded !== false) await markOnboarded(s.page, spec.tour !== true);
       if (spec.start && spec.start !== '#/today') await F.go(s.page, spec.start);
@@ -59,10 +61,10 @@ async function markOnboarded(page, tourDone) {
   if (!(await routeRegistered(page, 'onboarding'))) return;
   if (await missingGlobal(page, ['Store', 'Actions.onboard'])) return;
   await page.evaluate(async (tour) => {
-    try { await Actions.onboard({}); } catch (e) { /* the flow then starts wherever the app lands */ }
-    if (tour && Actions.tutorial && typeof Actions.tutorial.done === 'function') {
-      try { await Actions.tutorial.done('tour', { skipped: true }); } catch (e) { /* the tour may then start on Today */ }
-    }
+    try {
+      await Actions.onboard({});
+      if (tour && Actions.tutorial && typeof Actions.tutorial.done === 'function') await Actions.tutorial.done('tour', { skipped: true });
+    } catch (e) { /* the flow then starts wherever the app lands */ }
   }, tourDone === true);
   await F.go(page, '#/today');
 }
@@ -95,6 +97,21 @@ flow('loads offline with zero console errors and zero network requests', {}, asy
   assert.equal(await page.title(), '1-addic');
   for (const r of [...TABS, 'sos', 'sos/urgent', 'settings', 'settings/help', 'settings/data', 'today']) await F.go(page, '#/' + r);
   await page.waitForTimeout(300);
+});
+
+// V-26b: navigation start to the first ui:rendered, on a fresh context (the first open, the slowest). Printed for the log.
+// The budget: the highest of three runs on the owner's machine (714, 559, 611 ms on 9 November 2026), times 2.
+const BOOT_BUDGET_MS = 1428;
+flow('boots to the first render within the budget', {
+  onboarded: false,
+  beforeOpen: (page) => page.addInitScript(() => {
+    document.addEventListener('ui:rendered', () => { if (window.__bootMs === undefined) window.__bootMs = performance.now(); });
+  }),
+}, async ({ page }) => {
+  await page.waitForFunction(() => window.__bootMs !== undefined, null, { timeout: 20000 });
+  const ms = Math.round(await page.evaluate(() => window.__bootMs));
+  process.stdout.write(`boot ms: ${ms}\n`);
+  assert.ok(ms < BOOT_BUDGET_MS, `the first render came ${ms} ms after navigation; the budget is ${BOOT_BUDGET_MS} ms`);
 });
 
 flow('phone viewport 390 px has no horizontal scroll', {}, async ({ page }) => {
