@@ -207,6 +207,7 @@ export const HOOKS = {
   checkpointFinish: dt('checkpoint-finish'), // ui-learn.js:622
   lockPage: tid('lock-page'), // ui-onboarding.js:286
   lockSober: tid('lock-sober'), // ui-onboarding.js:275 (the SOBER practice, shown on the lock page)
+  lockOpening: tid('lock-opening'), // ui-onboarding.js:241 (V-25: the polite line while the key is made; empty before and after a try)
   sosTitle: '.sos-title', // ui-sos.js:434 a class on the heading of each SOS screen (no hook attribute)
 };
 

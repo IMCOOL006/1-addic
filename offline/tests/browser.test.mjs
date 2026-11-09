@@ -765,8 +765,11 @@ flow('lock page SOBER practice stays open, SOS still works, Done comes back', { 
 
   // The right PIN from the form while the practice is open: the practice stays, Done then goes to Today.
   await openSober(page, 'unlock while open');
+  const polite = await F.need(page, HOOKS.lockOpening, 2500);
+  assert.equal((await polite.textContent()).trim(), '', 'the polite line is empty before a try');
   await F.unlockWith(page, F.TEST_PIN);
   await F.waitFor(page, () => Store.status().locked === false, undefined, 20000);
+  await F.waitFor(page, (sel) => document.querySelector(sel).textContent.trim() === '', HOOKS.lockOpening, 4000); // T5: empty again after the try
   assert.ok(await onCravingPath(page), 'the practice keeps the craving route after the right PIN');
   assert.ok(await F.visible(page, HOOKS.sosTitle), 'the practice stays open after the right PIN');
   await tapSoberDone(page);
