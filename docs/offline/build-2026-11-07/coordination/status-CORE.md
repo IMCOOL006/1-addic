@@ -1,12 +1,16 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 19:59 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). Two runs live: actions-sos FIX-AS-V32 wf_1433b81c-993 (slot 3) and tests-docs FIX-TD-V32 wf_a4cb21aa-480 (slot 5) (RUN-RECORD 'Resume here')
+STATE: BUILDING   # 2026-11-09 20:19 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). tests-docs READY 1686bb8 is with the HUB (R-C-87). Live: actions-sos FIX-AS-V32 wf_1433b81c-993
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos BUILDING   # 2026-11-09 19:57 IST: offline-v3.2 FIX-AS-V32 (ES3T the V-17b test, EC3, ES2, EF1, SF1), wf_1433b81c-993, base and merge base 82c5eddf, flagged, two reviewers
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs BUILDING   # 2026-11-09 19:59 IST: offline-v3.2 FIX-TD-V32 (T1 the discreet emergency line painted, T2 the lesson and checkpoint toasts, T3 the lock page's practice, T4 the sos-craving retake, T5 the hook lock-opening), wf_a4cb21aa-480, base and merge base 82c5eddf
+LANE: tests-docs READY 1686bb8   # 2026-11-09 20:19 IST: FIX-TD-V32; merge base 82c5eddf. Three new flows by name in R-C-87; the suite is 32 flows. Check PASS at 0ce14e5, the gates GREEN (browser 32/0/0); C1 fixed by this chat in 1686bb8 (the changed flow 1/1/0). The count lines are FIX-COUNTS-4's
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 20:01 IST
+UPDATED: 2026-11-09 20:19 IST
+
+# 2026-11-09 20:19 IST · tests-docs READY 1686bb8 (FIX-TD-V32); merge base 82c5eddf
+
+- wf_a4cb21aa-480 returned READY at 0ce14e5, 3 agents, check PASS, C1 and C2 LOW. This chat verified: the worktree clean, the gate summary and browser log by name (32/0/0), sos-craving-phone.png shows '10' on one line. C1 fixed here in 1686bb8. Not run at 1686bb8: the full suite. R-C-87.
 
 # 2026-11-09 20:01 IST · from the HUB (by message) · both runs may continue; the pacing rule for the next starts
 
