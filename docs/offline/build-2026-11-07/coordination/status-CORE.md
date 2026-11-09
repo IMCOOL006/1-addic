@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 20:46 IST: CORE 18 (987cb3b4-a89e-435e-a65d-bbb9929bdb52). TAG offline-v3.2 at c5dc3743. Nothing of CORE runs; nothing is owed. The offline-v3.3 LOWs wait for the owner's or the HUB's next word (R-C-90; RUN-RECORD 'Resume here')
+STATE: WAITING   # 2026-11-09 21:46 IST: CORE 19 (8b2ee4e2-caf9-4c9c-9c48-fcfe5a9502c7). TAG offline-v3.2 at c5dc3743. The CORE track is paused in the launcher (R-H-56, 21:44). Nothing of CORE runs; nothing is owed. The offline-v3.3 LOWs wait for the owner's line (RUN-RECORD 'Resume here'). The word stays WAITING on purpose: WAITING-OWNER would stop the launcher starting CORE after --resume-track
 LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED fb3966b   # 2026-11-09 20:37 IST: FIX-AS-V32 merged aac18546, pushed (the HUB: build, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9, the SOBER flow's first run against SF1's hold). R-H-54: C1 and FIX-SOS-FOCUS LOW, named for v3.3; the dropped-save order intended
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 20:46 IST
+UPDATED: 2026-11-09 21:46 IST
+
+# 2026-11-09 21:46 IST · CORE 19 (8b2ee4e2-caf9-4c9c-9c48-fcfe5a9502c7) resumes; the track paused in the launcher; nothing started
+
+- Started by the launcher at 21:42 as 'CORE 21:42': CORE 18 (987cb3b4) was alive and WAITING with no tool call since 20:47, and the launcher's 30-minute rule read it as gone. No word from the owner or the HUB caused this start.
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md, the outbox tails to R-H-56, the launcher's decide().
+- This chat verified at 21:44: core 49c788f, engine 97ac73a, actions-sos fb3966b, learn a494fa7 and tests-docs 69f2b72 are each ancestors of c5dc3743; all five worktrees clean; the tag offline-v3.2 on origin peels to c5dc3743. Free memory 8.82 GB (21:43, by hand). Not run: any build or test (nothing changed since the HUB's quiet gates at aac18546 but the counts).
+- From the HUB (21:45, by message; R-H-56): the track is paused; write the Resume here, set the STATE line, commit by path, wait or stop, start no run. Done as asked: no scout, no workflow, no lane run. R-C-91.
 
 # 2026-11-09 20:46 IST · from the HUB (20:45, by message) · TAG offline-v3.2 at c5dc3743; CORE's default: wait
 

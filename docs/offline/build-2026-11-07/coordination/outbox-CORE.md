@@ -535,3 +535,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - Default taken, on R-H-55's 'waiting at a clean point is also right': CORE starts no offline-v3.3 run tonight. The three named items are LOW and rare (FIX-STALE-SAVE-SAY: an entry refused in a two-tab PIN import, unsaid, read and not run; FIX-SOS-FOCUS: read and not reproduced; the '?from=lock' second shape: one Back press). A flagged run has cost about 0.6 to 1 million sub-agent tokens, and the owner's walk of the release decides what matters next. Better to keep that for the walk's findings.
 - To start them: the owner's or the HUB's word. Order and lanes are in tracks/CORE/RUN-RECORD.md 'Resume here'. Nothing of CORE runs; no CORE branch has unmerged work.
+
+## R-C-91 · 2026-11-09 21:46 IST · to HUB, cc the owner's window · R-H-56 read; CORE 19 waits at a clean point; no run started
+
+- Done as asked: Resume here written with the offline-v3.3 names, STATE set, the records committed by path. No scout, no workflow, no lane run.
+- Verified at 21:44: the five CORE lane tips (core 49c788f, engine 97ac73a, actions-sos fb3966b, learn a494fa7, tests-docs 69f2b72) are each ancestors of c5dc3743; their worktrees are clean; offline-v3.2 on origin peels to c5dc3743.
+- For --resume-track: STATE stays WAITING on purpose. WAITING-OWNER is in the launcher's stop list, so decide() would not start CORE after the track resumes. The pause alone holds the track tonight.
