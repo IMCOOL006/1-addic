@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-09 15:06 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). core READY-SLICE 561cab2 with the HUB. Next on CORE's rows: actions-sos V-25 + V-18 (the next row at or above 7.0 GB), learn V-20, tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review
+STATE: BUILDING   # 2026-11-09 15:07 IST: CORE 16 (215e6cdd-fe29-4f0b-a91c-05f0cf744b73). actions-sos V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, base 60dffe33, skipReview), on the 15:05 row 10.3 GB. core READY-SLICE 561cab2 with the HUB. Next on CORE's rows: learn V-20, tests-docs V-22a + V-26b + V-27 + V-29, core's whole-lane review; V-17b + C2 after core merges and this run returns
 LANE: core READY-SLICE 561cab2   # 2026-11-09 15:06 IST: V-16 bfe84d6, V-17a 4aa3ca9, V-26a 561cab2 (wf_a48502cf-72f; merge base 60dffe33). Check PASS; gates build GREEN 1206950 B, test GREEN 98/98 store.test.mjs, validate GREEN, guards GREEN 5/5, territory 0 errors. The whole-lane two-lens review, before core's final READY, follows as CORE's run
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED-SLICE b735852   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-25 + V-18 (slot 3; args_v3_actions-sos_V-25.json), then V-17b + C2 after core V-17a merges, then the whole-lane review from f69bc68a
+LANE: actions-sos BUILDING   # 2026-11-09 15:07 IST: V-25 + V-18 wf_537e4a2d-ba1 (slot 3, tier 2, merge base 60dffe33, skipReview). Then READY-SLICE; then V-17b + C2 after core 561cab2 merges; then the whole-lane review from f69bc68a before the final READY
 LANE: learn MERGED 75eb8e5   # 2026-11-08 12:01 IST: fast-forwarded to 60dffe33. Next tier 2 V-20 (slot 9; args_v3_learn_V-20.json) on its turn
 LANE: tests-docs MERGED 44a07e0   # 2026-11-08 11:56 IST: FIX-COUNTS merged (trunk 60dffe33; offline-v3.0 tagged there). Next tier 2 V-22a, V-26b, V-27, V-29 (slot 5; args_v3_tests-docs_V-22a.json) on its turn
 SLOTS-ASKED: 0   # every CORE lane with work holds a slot (core 1, engine 2 idle, actions-sos 3, tests-docs 5); learn V-20 asks slot 9 back when it starts (tier 2)
-UPDATED: 2026-11-09 15:06 IST
+UPDATED: 2026-11-09 15:07 IST
+
+# 2026-11-09 15:07 IST · actions-sos V-25 + V-18 launched on CORE's row (15:05, 10.3 GB)
+
+- wf_537e4a2d-ba1 (lane.js, args tracks/CORE/args/args_v3_actions-sos_V-25.json; session and now refreshed; wf_sim OK, builder prompt 11281 B, nothing cut); worktree clean at 60dffe3. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/215e6cdd-fe29-4f0b-a91c-05f0cf744b73/subagents/workflows/wf_537e4a2d-ba1/journal.jsonl. Return -> LANE: actions-sos READY-SLICE <tip> (merge base 60dffe33).
+- Staged, wf_sim OK with this session: learn V-20 (args_v3_learn_V-20.json, slot 9), tests-docs V-22a + V-26b + V-27 + V-29 (args_v3_tests-docs_V-22a.json, slot 5). SCREENS' game-tutorials V-21 takes the next row (15:15).
 
 # 2026-11-09 15:06 IST · core READY-SLICE 561cab2 (V-16, V-17a, V-26a); merge base 60dffe33
 

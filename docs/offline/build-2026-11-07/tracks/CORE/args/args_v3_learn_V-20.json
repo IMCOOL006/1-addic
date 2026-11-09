@@ -23,7 +23,7 @@
  "unitNotes": {
   "V-20": "C3, C4 (0.5 h, V3-20): the '+10 XP' words at ui-learn.js:610 appear only the first time a module's checkpoint is finished (CheckpointCompleted earns once per module, engine.js:181); C4 as the lane report names it; C5 is provenance only (no code). Tests by name."
  },
- "laneNote": "Tier 2. One batch. CORE's word (2026-11-08 12:02 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/learn/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 80a57fa8-75f9-4552-9327-c1b964682602'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "laneNote": "Tier 2. One batch. CORE's word (2026-11-08 12:02 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/learn/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
  "done": [
   "U-12",
   "U-13",
@@ -32,8 +32,8 @@
   "FIX-RS9"
  ],
  "base": "60dffe33",
- "session": "80a57fa8-75f9-4552-9327-c1b964682602",
- "now": "2026-11-08 12:02 IST",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 14:52 IST",
  "diffFrom": "60dffe33",
  "slot": 9,
  "sliceRun": true,

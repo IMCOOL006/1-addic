@@ -63,7 +63,7 @@
   "V-27": "Contrast guard (1 h, V3-27): a Node check (offline/tests/contrast.test.mjs or inside guards) of the fg/bg token pairs of styles.css in both themes at 4.5:1 for text and 3:1 for large text, by name; .coach-sos and .gt-dot included. A red names the pair and goes to the token's owner by outbox.",
   "V-29": "ADR 0022 row (0.1 h): one line in docs/decisions/README.md for 0022 (the offline edition), matching the others."
  },
- "laneNote": "Tier 2 now; every tier 1 unit is merged. A hook another lane's file needs is asked by outbox (element and attribute; the owner adds it). CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 80a57fa8-75f9-4552-9327-c1b964682602'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "laneNote": "Tier 2 now; every tier 1 unit is merged. A hook another lane's file needs is asked by outbox (element and attribute; the owner adds it). CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/tests-docs/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
  "done": [
   "U-34",
   "U-37",
@@ -77,8 +77,8 @@
   "V-45"
  ],
  "base": "60dffe33",
- "session": "80a57fa8-75f9-4552-9327-c1b964682602",
- "now": "2026-11-08 11:55 IST",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 14:52 IST",
  "diffFrom": "60dffe33",
  "slot": 5,
  "sliceRun": false,

@@ -40,7 +40,7 @@
   "V-25": "Unlock gives a sign of life (0.3 h, V3-25): an aria-live polite line 'Opening your notebook' in the lock form during the key derivation (ui-onboarding.js:240-252), cleared on success or failure; the controls stay disabled meanwhile as now; the owner times it on a phone (the PC takes about 1.2 s).",
   "V-18": "RC22, RC23, R8-RC1 (1 h, V3-18) as ruled in contracts/actions-sos.md:172, :177, :183: a status change over a sample plan keeps the mark and BattlePlanCreated only for the person's row; the two test gaps closed; test-only where the ruling says so."
  },
- "laneNote": "Flagged; tier 2 now, every tier 1 unit merged. No reviewers in this run (skipReview): CORE runs the whole-lane two-lens review after V-17b. Contracts: PLAN-V3.md section 7 and contracts/actions-sos.md; a change is asked of its owner by outbox. CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/actions-sos/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 80a57fa8-75f9-4552-9327-c1b964682602'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "laneNote": "Flagged; tier 2 now, every tier 1 unit merged. No reviewers in this run (skipReview): CORE runs the whole-lane two-lens review after V-17b. Contracts: PLAN-V3.md section 7 and contracts/actions-sos.md; a change is asked of its owner by outbox. CORE's word (2026-11-08 11:55 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/actions-sos/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
  "done": [
   "U-09",
   "U-10",
@@ -54,8 +54,8 @@
   "V-41"
  ],
  "base": "60dffe33",
- "session": "80a57fa8-75f9-4552-9327-c1b964682602",
- "now": "2026-11-08 11:55 IST",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 15:06 IST",
  "diffFrom": "60dffe33",
  "slot": 3,
  "sliceRun": false,

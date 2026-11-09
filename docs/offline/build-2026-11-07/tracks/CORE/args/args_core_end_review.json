@@ -1,0 +1,56 @@
+{
+ "lane": "core",
+ "wt": "C:/Users/ruchi/1-addic-wt/core",
+ "tip": "561cab2",
+ "units": [
+  {
+   "id": "V-11",
+   "shas": [
+    "e79e1b0"
+   ],
+   "note": "static safety line in the shell before boot; merged as a slice, never reviewed"
+  },
+  {
+   "id": "V-46",
+   "shas": [
+    "fbc663d"
+   ],
+   "note": "the chrome reads Engine.unlocked; skipReview, never reviewed"
+  },
+  {
+   "id": "V-16",
+   "shas": [
+    "bfe84d6"
+   ],
+   "note": "LOWs N1, N2, Q-a in ui-core.js"
+  },
+  {
+   "id": "V-17a",
+   "shas": [
+    "4aa3ca9"
+   ],
+   "note": "Store.status().lockId; contracts/core.md last section; consumer actions-sos V-17b"
+  },
+  {
+   "id": "V-26a",
+   "shas": [
+    "561cab2"
+   ],
+   "note": "build.mjs per-part size lines; consumer tests-docs V-26b"
+  }
+ ],
+ "files": [
+  "offline/build.mjs",
+  "offline/src/shell.html",
+  "offline/src/styles.css",
+  "offline/src/ui-core.js",
+  "offline/src/store.js",
+  "offline/src/boot.js",
+  "offline/tests/store.test.mjs"
+ ],
+ "known": "C1: the commits' Co-Authored-By trailer names Opus 5.5, the model that wrote them; ruled by CORE, not a finding.",
+ "extra": "The core brief's tail was moved out of the repo root: C:/Users/ruchi/1-addic-wt/_logs/reports/core/stray-root-core.md-20261108-0253.md holds its flagged-lane notes and open questions; read it. offline/1-addic.html is generated: never commit its rebuild. The worktree has node_modules after npm ci, for the browser gate only.",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 15:07 IST",
+ "browserGrep": "SOS"
+}
