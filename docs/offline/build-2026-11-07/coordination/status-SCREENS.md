@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: RUNNING   # 2026-11-09 14:43 IST: SCREENS 14:38 (9c7e67fd). The owner's weekly limit stopped every chat from 2026-11-08 12:43 IST to its reset at 14:30 today. content V-23's check relaunched as wf_c2451856-9d5 (the builder's 96dd899 stands). Next: workbook-settings V-24, V-22b and game-tutorials V-21 on 7.0 GB rows, by turn with CORE
-LANE: content CHECKING 96dd899   # V-23 (tier 2): builder done 96dd899 (2026-11-08 12:32). Its checker died on the weekly limit at 12:43 with no verdict; the check relaunched as wf_c2451856-9d5 (14:43, start 'check', args/v3_content_v23_check.json). Merge base 22db886d. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/9c7e67fd-395a-48f0-abea-b26daf2e1640/subagents/workflows/wf_c2451856-9d5/journal.jsonl
+STATE: RUNNING   # 2026-11-09 14:47 IST: SCREENS 14:38 (9c7e67fd). content READY-SLICE 96dd899 (V-23) for the HUB. Next: workbook-settings V-24 on the next 7.0 GB row if CORE 14:46 has not started by then (HUB 14:40, R-H-46), then game-tutorials V-21 the row after CORE's
+LANE: content READY-SLICE 96dd899   # V-23 (tier 2): merge base 22db886d, one commit, 3 own files, for the HUB. Check PASS wf_c2451856-9d5 (14:43-14:47): build, test 40/40, validate, guards 5/5 GREEN. One LOW C1 (a redundant assert), named for a later content unit. V-10b waits for the owner's I6
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED 0e76065   # fast-forwarded to 60dffe33 (12:00, clean). Next: V-24 then V-22b (tier 2, slot 6), two one-unit batches; args/v3_workbook-settings_t2.json
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED 3aefecb   # V-28 + V-44 merged 34f70172; fast-forwarded to 60dffe33 (12:00, clean). Next: V-21 (tier 2, slot 8); args/v3_game-tutorials_t2.json
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-09 14:43 IST
+UPDATED: 2026-11-09 14:47 IST
+
+# 2026-11-09 14:47 IST · content READY-SLICE 96dd899 (V-23), for the HUB
+
+- Merge build/content at 96dd899 alone, merge base 22db886d. One commit: offline/src/content-core.js, content-sample.js, offline/tests/content.test.mjs (all own). Trailers both present (its Claude-Session is c26b6cc6, the session that built it).
+- Check wf_c2451856-9d5: PASS. Logs _logs/gates/content/*-20261109-1442* and -1443*: build GREEN 1205512 B, test GREEN content.test.mjs 40/40, validate GREEN, guards GREEN 5/5. No browser gate (no DOM change). Territory, per the checker: 3 own files, 0 shared, 0 errors.
+- LOW C1 (test only, not fixed; no fix round outside the plan): content.test.mjs:381, the per-store assert V-23 added, can never be the failing one, because :380 fails first on the same rows. The V-23 acceptance holds through the eraseSample asserts at :430-433, which the checker's mutation runs proved bite. Named for a later content batch.
+- What V-23 did: the content-sample.js header says plans run 1-3 days past nowIso; the loadSample test erases through the real Actions.eraseSample; one comment at the M10 'guide' rank. Closes the v1 LOWs C2, C3, C4. No number, url or verify flag changed; V-10b still waits for the owner's I6.
+- Verified by me: the tip, both trailers, the four gate verdict lines, the check's verdict in the journal, offline/1-addic.html restored, the worktree clean. Assumed from the checker: the mutation runs (its temp export is gone).
 
 # 2026-11-09 14:43 IST · SCREENS 14:38 (9c7e67fd) resumes after the weekly limit; content V-23's check relaunched
 
