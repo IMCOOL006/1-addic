@@ -76,10 +76,10 @@
   "V-01t",
   "V-45"
  ],
- "base": "1380ef4c",
+ "base": "95aac382",
  "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
- "now": "2026-11-09 15:33 IST",
- "diffFrom": "1380ef4c",
+ "now": "2026-11-09 15:36 IST",
+ "diffFrom": "95aac382",
  "slot": 5,
  "sliceRun": false,
  "priorNote": "CORE 16: the v3.0 units are merged; the lane is fast-forwarded to the trunk. Hook owed: lock-opening (ui-onboarding.js lockPage, p#lock-opening, data-testid) in hooks.mjs once actions-sos 638c94a is in the trunk; no flow reads it yet. V-26a's lines: contracts/tests-docs.md, last section. Build V-22a, V-26b, V-27, V-29 as one batch. V-26b: if core V-26a is not in the trunk, the boot test does not depend on it (say so). V-27: never fix a red pair here; note it (pair, theme, ratio, styles.css:line, owner by territory.json) for CORE's outbox. New tests change the counts: after the batch, run npm test and the browser suite once on the lane tree and write the true numbers in CLAUDE.md ('Tests as of'), README.md, offline/README.md and the guide (Tested line, Part 4); rebuild the .docx."

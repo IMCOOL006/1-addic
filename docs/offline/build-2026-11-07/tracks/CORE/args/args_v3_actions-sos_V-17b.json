@@ -1,0 +1,68 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "Actions.useSkill, the unlock sign of life, the actions-sos LOWs, SOS waiting saves marked with lockId.",
+ "files": [
+  "offline/src/actions.js",
+  "offline/src/ui-sos.js",
+  "offline/src/ui-onboarding.js",
+  "offline/src/styles.css",
+  "offline/tests/actions.test.mjs"
+ ],
+ "units": [
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18",
+  "V-17b"
+ ],
+ "batches": [
+  [
+   "V-08a",
+   "V-SOS10",
+   "V-41",
+   "V-25",
+   "V-18"
+  ],
+  [
+   "V-17b"
+  ]
+ ],
+ "unitTier": {
+  "V-08a": 1,
+  "V-25": 2,
+  "V-18": 2,
+  "V-17b": 2,
+  "V-SOS10": 1,
+  "V-41": 1
+ },
+ "unitNotes": {
+  "V-17b": "SOS marks its waiting saves with Store.status().lockId (0.5 h, V3-17; after core V-17a merges): a save queued before a lock is dropped when the lockId changed (another tab erased and set a new PIN); a test with a stub store whose lockId changes."
+ },
+ "laneNote": "Flagged; tier 2; every tier 1 unit merged. No reviewers in this run (skipReview). Contracts: PLAN-V3.md section 7 and contracts/actions-sos.md; a change is asked of its owner by outbox. CORE's word (2026-11-09 15:34 IST): on the trunk's code (worktree at its merge base; never merge or copy in); detail in the brief's '## V3' and tracks/CORE/briefs/actions-sos/<unit>.md. A hook in another lane's file: never edit it; a request line in your note (lane, file:line, element, its attribute: data-test on SCREENS files, data-testid on ui-sos.js). No new dependency. Trailers 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>' and 'Claude-Session: 215e6cdd-fe29-4f0b-a91c-05f0cf744b73'; Claude-Session goes on every commit, whatever the Co-Authored-By line says; message from a file; add by path. offline/1-addic.html is generated: never commit the gates' rebuild of it. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18"
+ ],
+ "base": "1380ef4c",
+ "session": "215e6cdd-fe29-4f0b-a91c-05f0cf744b73",
+ "now": "2026-11-09 15:34 IST",
+ "diffFrom": "1380ef4c",
+ "slot": 3,
+ "sliceRun": false,
+ "priorNote": "CORE 16, 2026-11-09: V-25 + V-18 (638c94a) merged 1380ef4c; the worktree is fast-forwarded to the trunk, where Store.status().lockId is real (contracts/core.md, last section; contracts/actions-sos.md, last section: '' with no lock, else 8 hex characters, unchanged by lock, unlock or reload). Build V-17b on the real store: record lockId at queue time, compare at flush, drop the save when it changed (RS26's remainder; RS22: any lock-row change drops the save, removal included), with a typeof guard for a store that lacks it. Test by name with a stub whose lockId changes; wait by condition. C2 (the carried V-08a LOW, actions.test.mjs): assert the lock API and test the error code; if V-41's locked test already does it, say so and write no code. skipReview: CORE's whole-lane two-lens review from f69bc68a follows.\n",
+ "skipReview": true
+}
