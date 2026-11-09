@@ -3,7 +3,8 @@
    nowIso, for "Load sample data". Actions.loadSample checks it with backupErrors, puts every row and adds the meta row
    {key:'sample', loadedAt}. Rules: every row and every event has sample: true (the Engine skips them, so sample data
    never awards or lowers anything); ids start with smp-; the same nowIso gives the same rows (a seeded generator,
-   never Math.random); the contacts are invented and carry no phone numbers; nothing is dated after nowIso. */
+   never Math.random); the contacts are invented and carry no phone numbers; logs, events and responses are dated at
+   or before nowIso, and only the three plans are dated 1-3 days after it (the week ahead in the planner). */
 const C_sm = (typeof Content !== 'undefined') ? Content : require('./content-core.js');
 
 C_sm.sample = (function () {
