@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 18:14 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): nothing of CORE runs. tests-docs READY 5ba8b91 (FIX-COUNTS-3) is with the HUB; it merges it and tags offline-v3.1
+STATE: WAITING   # 2026-11-09 18:19 IST: CORE 17 (7ccd92d4-c859-4fdd-961c-7773e2657272): offline-v3.1 tagged at 903016cc; every CORE lane's V3 units are merged; nothing of CORE runs and nothing is owed. offline-v3.2 starts only on the owner's or the HUB's word
 LANE: core MERGED bf9b83c   # 2026-11-09 17:38 IST: the whole-lane review's READY merged 7dea9bc7 (HUB: build, store.test 99/99, validate, guards GREEN, full Node 735/735, nine browser flows 9/9). The lane's V3 units complete. ES1 is recorded as the owner's default (R-H-51); nothing more unless the owner says 'reverse ES1'
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED a397a8d   # 2026-11-09 18:12 IST: the whole-lane review's READY merged dcabd906 (HUB: build, actions.test 221/221, validate, guards GREEN, full Node 743/743, ten browser flows 10/10). The lane's V3 units complete
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs READY 5ba8b91   # 2026-11-09 18:14 IST: FIX-COUNTS-3, docs only; merge base dcabd906. Node 743 checks in 16 files, 743 pass, 0 fail; browser 29 flows, 29 pass (the HUB's quiet window); the .docx rebuilt; territory 0; no test run. R-C-85
+LANE: tests-docs MERGED 5ba8b91   # 2026-11-09 18:19 IST: FIX-COUNTS-3 merged 903016cc (HUB: docs gate GREEN). TAG offline-v3.1 at 903016cc, pushed 18:15 with every build/* branch
 SLOTS-ASKED: 0
-UPDATED: 2026-11-09 18:14 IST
+UPDATED: 2026-11-09 18:19 IST
+
+# 2026-11-09 18:19 IST · from the HUB (by message) · FIX-COUNTS-3 merged 903016cc; TAG offline-v3.1; BASE 903016cc
+
+- TAG offline-v3.1 at 903016cc, pushed 18:15 IST with every build/* branch. Nothing is owed tonight. Every fix toward offline-v3.2 is cut from 903016cc, merge base that tip; one start per memory row at or above 7.0 GB; the same gates; READY with the tip and the merge base.
+- The HUB's order if CORE continues: FIX-IMPORT-MARK (core, the encryption code, two reviewers before READY); then actions-sos EC3, ES2, EF1, SF1 as one fix batch by name; then the tests-docs checks (the discreet emergency-line check, the checkpoint flow, a lock-sober flow, the sos-craving screenshot retake).
+- CORE's default: not started. These units are outside PLAN-V3.md, each flagged review costs the owner about a million sub-agent tokens or more, and this chat is over 250k. They wait for the owner's word or the HUB's next grant.
 
 # 2026-11-09 18:14 IST · tests-docs READY 5ba8b91 (FIX-COUNTS-3); merge base dcabd906
 
