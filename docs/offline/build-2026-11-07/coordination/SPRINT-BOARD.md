@@ -1,4 +1,4 @@
-STATE: TAGGED offline-v3.2, RESTING (2026-11-10 08:56 IST, HUB 19:18; the two-hourly board, nothing changed since 9 Nov 23:28): the tag offline-v3.2 is on origin at c5dc3743 (9 Nov 20:44 IST), pushed with every lane branch; the full gates on the frozen trunk GREEN by every name (763 logic checks in 16 files; 32 browser flows; build, validate, guards, docs). The two build tracks are paused in the launcher since 9 Nov 21:44; the owner's window handed over at 23:28 (your next window resumes from owner-docs/1-addic-Resume-Prompt.docx section 6). The HUB chat stays up; memory 7.9 GB. One line from you (I6, the walk's findings, or 'continue v3.3') wakes the tracks; 'park' or 'day closed' rests the machine.
+STATE: TAGGED offline-v3.2, RESTING (2026-11-10 10:56 IST, HUB 19:18; the two-hourly board, nothing changed since 9 Nov 23:28): the tag offline-v3.2 is on origin at c5dc3743 (9 Nov 20:44 IST), pushed with every lane branch; the full gates on the frozen trunk GREEN by every name (763 logic checks in 16 files; 32 browser flows; build, validate, guards, docs). The two build tracks are paused in the launcher since 9 Nov 21:44; the owner's window handed over at 23:28 (your next window resumes from owner-docs/1-addic-Resume-Prompt.docx section 6). The HUB chat stays up; memory 7.6 GB. One line from you (I6, the walk's findings, or 'continue v3.3') wakes the tracks; 'park' or 'day closed' rests the machine.
 NEEDS YOU (one line each; the owner's window handed over at 23:28, so write to the HUB chat or your next window, which resumes from owner-docs/1-addic-Resume-Prompt.docx section 6): (1) the walk of offline-v3.2 (offline/1-addic.html at the tag; build fresh with npm run build), the findings in one message; (2) I6, the India crisis numbers, for content V-10b; (3) 'continue v3.3' to wake the build tracks for the three named LOW fixes, or 'park' / 'day closed' to rest the machine (R-O-9); (4) your /usage reading and its reset time; (5) ES1, a default you may reverse: in discreet mode the emergency line no longer shows while the app loads; say 'reverse ES1' to put it back; (6) V-Q8, who reads the clinical-review pack and when; (7) O-Q1, SOS open before sign-up (default yes).
 NEXT (the HUB): walk offline-v3.2 with you when you write (offline/1-addic.html at the tag; the findings in one message); file your answers; merge v3.3 fixes by name as they land (FIX-STALE-SAVE-SAY, FIX-SOS-FOCUS, the C1 Back path; content V-10b after your I6), cut from c5dc3743; the board at every merge and every two hours.
 
@@ -6,7 +6,7 @@ NEXT (the HUB): walk offline-v3.2 with you when you write (offline/1-addic.html 
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-10 08:56 IST by `board.py`.
+Rewritten 2026-11-10 10:56 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -34,13 +34,13 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 - TRACKS-ALLOWED: CORE SCREENS   # both tracks PAUSED in the launcher 2026-11-09 21:44:22 IST (--pause-track CORE, --pause-track SCREENS; R-H-56, the HUB's tooling call under R-O-7): after the tag offline-v3.2 the launcher relaunched idle chats hourly (V-14's 30-minute still rule) for nothing to do; nothing of either track is owed before the owner writes; the HUB resumes a track (--resume-track) at the owner's line (I6, the walk's findings, 'continue v3.3'). Earlier: SCREENS paused 2026-11-08 01:17-...; SCREENS added 2026-11-07 16:03
 - QUIET: done   # offline-v3.2: 20:38:58-20:41:40 IST on _int at aac18546, gates.py --lane hub --full, exit 0, every name read: build GREEN 1213207 B; test GREEN 763 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN 5/5; browser GREEN 32 pass 0 fail 0 skip; docs GREEN exit 0 (logs _logs/gates/hub/*-20261109-2038* to -2041*). Nothing baselined. Next: FIX-COUNTS-4 (CORE 18, docs only, these numbers), merged, then TAG offline-v3.2. Earlier: done 18:10-18:13 for offline-v3.1 at dcabd906
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up | v3.2 FREEZE 2026-11-09 20:37 | QUIET 20:39-20:41 GREEN | TAG offline-v3.2 20:44
-- UPDATED: 2026-11-10 08:56 IST
+- UPDATED: 2026-11-10 10:56 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | d9d055f4 (launcher-started 2026-11-09 19:18) | RUNNING — 2026-11-10 08:56 IST: HUB 19:18 (d9d055f4, session 32) resting after TAG offline-v3.2 (c5dc3743, 9 Nov 20:44); both… | 244k | 2026-11-10 08:56 IST |
+| HUB | d9d055f4 (launcher-started 2026-11-09 19:18) | RUNNING — 2026-11-10 08:56 IST: HUB 19:18 (d9d055f4, session 32) resting after TAG offline-v3.2 (c5dc3743, 9 Nov 20:44); both… | 251k | 2026-11-10 10:56 IST |
 | CORE | 8b2ee4e2 (launcher-started 2026-11-09 21:43) | WAITING — 2026-11-09 21:46 IST: CORE 19 (8b2ee4e2-caf9-4c9c-9c48-fcfe5a9502c7). TAG offline-v3.2 at c5dc3743. The CORE track is… | 164k | 2026-11-09 21:46 IST |
 | SCREENS | 6f1291e1 (launcher-started 2026-11-09 16:08) | WAITING-OWNER — 2026-11-09 19:18 IST: SCREENS 16:08 (6f1291e1): both R-H-53 fixes are merged (R-S-32 526663bb, FIX-MARKERS 3a0b2100).… | 258k | 2026-11-09 19:18 IST |
 
@@ -171,7 +171,7 @@ Slots allowed: 7 (2026-11-08 05:05 IST: the row 05:02 8.0 GB (five slots by the 
 
 ## Machine
 
-- Free memory 7.9 GB of 31.8 GB at 2026-11-10 08:56 IST; claude 33, node 8 processes; 5 slots by the rule (lane-widening.md).
+- Free memory 7.6 GB of 31.8 GB at 2026-11-10 10:47 IST; claude 33, node 8 processes; 5 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 39876); its last launch: CORE 8b2ee4e2 at 2026-11-09 21:43.
 
 ## Files of the build
