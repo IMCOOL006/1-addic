@@ -629,3 +629,5 @@ The next owner window: open Claude Code in C:/Users/ruchi/1-addic and paste sect
 - **Mechanics:** as the 9 Nov 19:17 Resume here says (hubedit.py from the previous job's tmp, now C:/Users/ruchi/.claude-pro/jobs/d9d055f4/tmp/hubedit.py; note bodies with the Write tool into the job's tmp, appended with hubedit; a long bash with two heredocs failed to parse once). The watch: a Monitor (60 s loop diffing the LANE/STATE lines of status-CORE.md and status-SCREENS.md and the R-O count, plus a memory row only under 4.0 GB; 30 min; re-arm at expiry). Messages: SendMessage to the names `claude agents` lists; the owner's window has no live chat until the owner opens the next one.
 
 - 2026-11-10 10:56 IST: the two-hourly board; nothing changed (both tracks paused, no R-O line, memory 7.6 GB). Context about 250k; the Resume here of 08:55 stands.
+
+- 2026-11-10 12:57 IST: the two-hourly board; nothing changed (both tracks paused, no R-O line, memory 7.3 GB). Context about 255k; the Resume here of 08:55 stands.
