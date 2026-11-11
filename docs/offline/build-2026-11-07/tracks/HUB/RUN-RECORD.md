@@ -659,3 +659,5 @@ The next owner window: open Claude Code in C:/Users/ruchi/1-addic and paste sect
 - 2026-11-11 04:38 IST: HUB 04:36 (d608716f, session 33) resumed from Resume here: read in (about 40k), nothing changed (both tracks paused, no CORE/SCREENS chat alive, no R-O line since R-O-9, no merge in flight, BASE c5dc3743 = the tag offline-v3.2; memory 6.1 GB). STATE WATCHING; the board re-stamped; the quiet watch (a Monitor on the LANE/STATE lines of the two status files and the R-O count, memory under 4.0 GB only) armed; the board every two hours.
 
 - 2026-11-11 06:39 IST: the two-hourly board; nothing changed (both tracks paused, no CORE/SCREENS chat alive, no R-O line since R-O-9, memory 6.4 GB). Context about 45k.
+
+- 2026-11-11 08:41 IST: the two-hourly board; nothing changed (both tracks paused, no CORE/SCREENS chat alive, no R-O line since R-O-9). Memory 3.8 GB (08:20) and 3.6 GB (08:31) under the 4.0 floor, 6.5 GB now: nothing of this build runs, nothing to pause; a track start waits for a 7.0 GB row. Context about 50k.
