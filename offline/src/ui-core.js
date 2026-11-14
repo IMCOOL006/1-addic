@@ -154,15 +154,25 @@ const UI = (function () {
   }
 
   /* ── Feedback: toast, sheet, confirm ───────────────────────────────────────────────────── */
+  let hushed = false; // the rest of the turn in which a refused save was said (RC1, RS3)
   function toast(msg, tone) {
     const box = byId('toasts');
     if (!box) return null;
     const t = ['info', 'ok', 'warn'].includes(tone) ? tone : 'info';
+    if (t === 'warn' && hushed) return null; // the same refused save, said again by the page that asked for it
     const el = h('div', { class: 'toast toast-' + t, role: t === 'warn' ? 'alert' : 'status', text: msg });
     box.appendChild(el);
     while (box.children.length > 3) box.removeChild(box.firstChild);
     setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 4500);
     return el;
+  }
+  // A save refused because another tab changed the notebook is said once, in #toasts, outside #main, where it outlives
+  // the page (FIX-STALE-SAVE-SAY). The page that asked for the save toasts its own refusal later in this same turn: that
+  // warn is dropped, so one refused save gives one toast (RC1, RS3). The next turn toasts as before.
+  function sayStale() {
+    toast('This notebook changed in another tab, so your last change was not saved.', 'warn');
+    hushed = true;
+    setTimeout(() => { hushed = false; }, 0);
   }
 
   let openSheet = null;
@@ -1039,7 +1049,7 @@ const UI = (function () {
           if (pageKey(route()) === 'sos') { chrome('sos'); return; } // never pull a person out of SOS
           // A save refused because another tab changed the notebook: the page that asked for it is about to be
           // replaced, so say it in #toasts, outside #main, where it stays (FIX-STALE-SAVE-SAY).
-          if (info && info.stale) toast('This notebook changed in another tab, so your last change was not saved.', 'warn');
+          if (info && info.stale) sayStale();
           go('#/lock', { replace: true });
         }), null);
       }

@@ -869,6 +869,61 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(location.hash, '#/lock');
   });
 
+  // RC1, RS3: one refused save gives one toast. The page that asked for the save says its own refusal in the same turn
+  // (ui-exercise.js, ui-settings.js, ui-workbook.js, ui-plan.js and ui-actions.js toast it as a warn); the toast of
+  // ui-core, which names the cause, is the one shown. The next turn toasts as before; SOS and a lock without the flag
+  // drop nothing.
+  const bootWithSave = async (t, hash) => {
+    const b = await bootPending(t, hash);
+    let lockFn = null;
+    globalThis.Store.lock = { onLock: (f) => { lockFn = f; } };
+    b.U.pages.today = () => { const p = globalThis.document.createElement('p'); p.textContent = 'A page with a Save button'; return p; };
+    b.opened();
+    await b.booting;
+    // A save as the pages make it, refused as the real Store refuses it: resync takes the stored lock and tells onLock,
+    // then the promise rejects with LOCKED (stale when a change in another tab refused it); the catch toasts e.message.
+    const save = async (info) => {
+      const commit = async () => {
+        globalThis.Store.status = () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true });
+        lockFn(info);
+        throw Object.assign(new Error('This changed in another tab, so nothing was saved here.'), { code: 'LOCKED', stale: info.stale });
+      };
+      await commit().catch((e) => { b.U.toast(e.message, 'warn'); });
+      await new Promise((r) => setImmediate(r));
+    };
+    return { U: b.U, save };
+  };
+
+  test('FIX-STALE-SAVE-SAY (b): one refused save gives one toast when the page toasts its own refusal too; the next turn toasts as before', async (t) => {
+    const s = await bootWithSave(t, '#/today');
+    assert.match(main().textContent, /A page with a Save button/, 'control: the page is drawn');
+    await s.save({ reason: 'auto', stale: true });
+    assert.equal(toastsOf().length, 1, 'one refused save, one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS, 'the one that names the cause');
+    assert.equal(location.hash, '#/lock');
+    assert.match(main().textContent, /Locked/);
+    s.U.toast('Kept.', 'ok');
+    assert.equal(toastsOf().length, 2, 'in that turn only a warn is dropped');
+    t.mock.timers.tick(1); // the next turn
+    s.U.toast('A later warning.', 'warn');
+    assert.equal(toastsOf().length, 3, 'a warn toast in a later turn shows as before');
+  });
+
+  test('FIX-STALE-SAVE-SAY (b): inside SOS the warn toast of the page still shows', async (t) => {
+    const s = await bootWithSave(t, '#/sos/craving');
+    await s.save({ reason: 'auto', stale: true });
+    assert.equal(toastsOf().length, 1, 'ui-core says nothing inside SOS, so the line of the page is the one');
+    assert.doesNotMatch(toastsOf()[0].textContent, STALE_WORDS);
+    assert.equal(location.hash, '#/sos/craving');
+  });
+
+  test('FIX-STALE-SAVE-SAY (b): a lock without the stale flag drops no warn toast', async (t) => {
+    const s = await bootWithSave(t, '#/today');
+    await s.save({ reason: 'auto' });
+    assert.equal(toastsOf().length, 1, 'nothing was said before it, so the toast of the page shows');
+    assert.doesNotMatch(toastsOf()[0].textContent, STALE_WORDS);
+  });
+
   test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
     const b = await bootPending(t, '#/today');
     const touches = [];
@@ -2603,6 +2658,21 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     await assert.rejects(B.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
     assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }]);
     assert.equal(B.status().locked, true);
+  });
+
+  test("FIX-STALE-SAVE-SAY (a): the refused save's error carries stale", async () => {
+    const { S } = await pinned();
+    const openTab = freshStore();
+    await openTab.load();
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    await S.replaceAll(IMPORT); // the other tab brings back a backup
+    const caught = (p) => p.then(() => null, (e) => e);
+    const refused = await caught(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }));
+    assert.equal(refused && refused.code, 'LOCKED');
+    assert.equal(refused.stale, true, 'a page can tell a refusal that ui-core has already said (RC1)');
+    const locked = await caught(openTab.commit('next', (d) => { d.put('events', { id: 'next', type: 'CravingLogged' }); }));
+    assert.equal(locked && locked.code, 'LOCKED', 'control: the tab is locked now');
+    assert.equal(locked.stale, undefined, 'a save refused because the tab is locked carries no flag');
   });
 
   test('FIX-STALE-SAVE-SAY (a): a lock from the timer and lockNow carry no stale flag', async (t) => {

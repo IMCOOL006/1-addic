@@ -393,7 +393,9 @@ const Store = (function () {
     } catch (e) {
       if (e && e.code === 'STALE') {
         try { await resync(true); } catch (err) { /* the next write asks again */ }
-        throw fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
+        const f = fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
+        f.stale = true; // a change in another tab refused it and ui-core has said so: a page need not say it again (RC1)
+        throw f;
       }
       const f = fail('WRITE_FAILED', 'This could not be saved on this device.');
       f.cause = e;
