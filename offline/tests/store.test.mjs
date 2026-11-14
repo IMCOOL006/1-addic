@@ -1042,7 +1042,7 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(location.hash, '#/today', 'control: no lock page');
     assert.match(keptLine(), STALE_WORDS);
     await k.frame();
-    await k.send({ label: 'commit' });
+    await k.send({ label: 'unlock' }); // a store notice that is not this tab's write going through (RS1: (f))
     await k.frame();
     t.mock.timers.tick(4500);
     assert.match(keptLine(), STALE_WORDS, 'store renders of the same page and the toast time keep it');
@@ -1053,6 +1053,27 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(document.getElementById('kept').textContent, '', 'and empties it');
     await k.to('#/today');
     assert.equal(keptLine(), null, 'it does not come back');
+  });
+
+  // RS1 (review of FIX-STALE-SAVE-KEEP): the line says only what is true. A notice without the flag under a write's own
+  // label (a save, a backup brought back, an erase) is this tab's next write going through: the line goes. The resync's
+  // 'lock' and 'unlock' keep it ((a), (b)), and so does 'bulk': its one notice may stand for a resync held inside it.
+  test('FIX-STALE-SAVE-KEEP (f): a later save that goes through on the same page clears the line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    for (const label of ['craving', 'replaceAll', 'resetAll']) {
+      await k.send({ label: 'unlock', stale: true });
+      assert.match(keptLine(), STALE_WORDS, 'control: shown (' + label + ')');
+      await k.send({ label: 'unlock' });
+      await k.send({ label: 'bulk' });
+      await k.frame();
+      assert.match(keptLine(), STALE_WORDS, 'an unlock or a bulk notice without the flag keeps it (' + label + ')');
+      await k.send({ label });
+      assert.equal(keptLine(), null, 'the next write that goes through clears it (' + label + ')');
+      assert.equal(document.getElementById('kept').textContent, '', 'and empties it (' + label + ')');
+      await k.frame();
+      assert.equal(keptLine(), null, 'the page drawn again does not bring it back (' + label + ')');
+    }
+    assert.equal(location.hash, '#/today', 'control: no lock is stored, the page stays');
   });
 
   test('FIX-STALE-SAVE-KEEP (c): inside SOS no line is shown, and a line raised outside SOS is hidden on a route to SOS', async (t) => {

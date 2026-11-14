@@ -171,7 +171,8 @@ const UI = (function () {
   // warn is dropped, so one refused save gives one toast (RC1, RS3). The next turn toasts as before.
   // The toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the person is on
   // another page with the notebook open: after the unlock (a lock stored) or the first route to another path (none
-  // stored). Store renders of the same page keep it; SOS never shows it; a reload forgets it (FIX-STALE-SAVE-KEEP).
+  // stored), or until this tab's next write goes through (RS1). Other store renders keep it; SOS never shows it; a
+  // reload forgets it (FIX-STALE-SAVE-KEEP).
   const STALE_SAID = 'This notebook changed in another tab, so your last change was not saved.';
   let keptStale = false;
   function sayStale() {
@@ -938,8 +939,12 @@ const UI = (function () {
   }
   // The store's notices. A save refused because another tab removed the PIN or erased the notebook leaves this tab
   // open, with no lock page to go to: the notice carries stale, and the same one toast says it, outside SOS (RC2, RS1).
+  // A notice without the flag under a write's own label (a save, a backup brought back, an erase) is this tab's next
+  // write going through, so the kept line goes and never says what is no longer true (RS1, FIX-STALE-SAVE-KEEP review).
+  // The resync's 'lock' and 'unlock' keep it, and so does 'bulk': its one notice may stand for a resync held inside it.
   function heard(n) {
     if (n && n.stale && pageKey(route()) !== 'sos') sayStale();
+    else if (n && n.label !== 'lock' && n.label !== 'unlock' && n.label !== 'bulk') clearKept();
     schedule();
   }
 
