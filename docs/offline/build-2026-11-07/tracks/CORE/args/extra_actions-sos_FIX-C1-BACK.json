@@ -1,0 +1,6 @@
+{
+ "FIX-C1-BACK": {
+  "tier": 1,
+  "note": "FIX-C1-BACK (actions-sos, flagged; offline-v3.3; merge base 482b23af; the checker's C1, R-C-88). The lock page's SOBER practice is held on the fixed hash '#/sos/craving?from=lock'; after a reload and a second practice two adjacent history entries share it, so one Back press does nothing (the checker's real-Chrome probe). Make every hold's hash differ from every earlier hold's, also across a reload; keep SF1, ESR1, EC1 and ESR2 green by name. [The whole note, with the probe, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/FIX-C1-BACK.md: read it before you build.]"
+ }
+}
