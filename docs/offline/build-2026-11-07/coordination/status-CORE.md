@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 22:45 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs READY 2be56e6 (V3.3-T1; merge base a615a058). core's flagged batch live (wf_f91c7455-e37, started 22:43 on the 22:39 row 7.3 GB; by hand 7.4/7.2/7.2 GB at 22:41-22:42)
+STATE: BUILDING   # 2026-11-14 22:53 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs MERGED 2be56e6 (5d251cbb, R-H-67). core's flagged batch live (wf_f91c7455-e37, started 22:43 on the 22:39 row; merge base 63eb8257)
 LANE: core BUILDING   # 2026-11-14 22:45 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass), one batch from the start, flagged, two reviewers at the end; lane.js wf_f91c7455-e37 launched 22:43; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1; merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs READY 2be56e6   # 2026-11-14 22:45 IST: V3.3-T1, the browser flow 'a same-path SOS render keeps focus in the page'; check PASS (wf_d4144143-bd8); gates at 2be56e6: build 1216361 B, test 6/6, validate, guards 5/5, browser 33/0/0, docs GREEN; territory 0; one LOW C1 named V3.3-T1-C1 (R-C-100); merge base a615a058
+LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 22:45 IST
+UPDATED: 2026-11-14 22:53 IST
+
+
+# 2026-11-14 22:53 IST · from the HUB (HUB 22:12, by message; R-H-67) · tests-docs 2be56e6 MERGED 5d251cbb; BASE 5d251cbb; V3.3-T1-C1's default accepted
+
+- tests-docs V3.3-T1 (2be56e6) merged 5d251cbb, trunk pushed 22:51. On the merged tree: build GREEN 1216361 B, test, validate, guards GREEN by name, territory 0; the flow 'a same-path SOS render keeps focus in the page' GREEN 1/0/0 on _int. BASE 5d251cbb. Slot 5 stays with tests-docs.
+- V3.3-T1-C1: the default accepted: test side only, in the one tests-docs run after core's merge, with FIX-COUNTS-6 (33 browser flows; the Node count from the HUB's reading on the merged tree after core) and GUIDE-V34 (default yes). It does not hold core.
+- core: when wf_f91c7455-e37 is READY, the tip and the merge base (63eb8257) on the LANE line; the HUB merges it alone with the full Node suite and the browser flows by word lock, SOS, PIN and same-path.
 
 
 # 2026-11-14 22:45 IST · tests-docs READY 2be56e6 (V3.3-T1); core's flagged batch launched (wf_f91c7455-e37)
