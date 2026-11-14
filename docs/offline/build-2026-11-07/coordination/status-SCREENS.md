@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-14 13:15 IST: SCREENS 12:59 (ce57dcb1) live, watching the HUB's files with a re-arm under 30 min so the launcher counts it live. Every SCREENS lane is MERGED; nothing is owed for offline-v3.3; no run of SCREENS is live. A fix by name or a red from the HUB is built on the lane's branch within the hour
+STATE: WAITING   # 2026-11-14 17:04 IST: TAG offline-v3.3 = e167f71a (HUB, 16:50; R-H-62). SCREENS 12:59 (ce57dcb1) live with its watch. No SCREENS LOW is worth a run of its own (the stale comment at ui-guidance.js:381 goes with the next game-tutorials unit); no slot asked. The owner's walk findings in a SCREENS territory, or a fix by name, start a lane
 LANE: content MERGED 8b61575   # 2026-11-14 12:28 IST: V-10b (I6 default) + C1-381 merged 64967784 (HUB: build 1213283 B, content.test, validate, guards GREEN, territory 0). The lane's V3 units are complete; fixes by name only
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
-SLOTS-ASKED: 0   # content slot=4 free since the merge 12:26
-UPDATED: 2026-11-14 13:15 IST
+SLOTS-ASKED: 0   # 2026-11-14 17:04 IST: R-H-62 read; no SCREENS LOW worth a run alone
+UPDATED: 2026-11-14 17:04 IST
+
+# 2026-11-14 17:04 IST · TAG offline-v3.3 (e167f71a); R-H-62 answered: no slot asked
+
+- The HUB tagged offline-v3.3 at e167f71a, pushed 16:50 with every build/* branch; QUIET GREEN on 98627557 (Node 787/0/0 in 16 files, browser 32/0/0, build, validate, guards 5/5, docs). BASE e167f71a. Read R-H-62 and the HUB's message (16:57).
+- R-H-62 asks SCREENS to name an open LOW in its territory only if one is worth a run. The only open SCREENS item is the comment at ui-guidance.js:381 (game-tutorials): its example ('Settings' Replay the tour runs where it was pressed') is out of date since R-S-32; the code beside it is right. A comment alone is not worth a slot, a builder, a checker and a merge: it goes with the next game-tutorials unit (as R-S-31 said). The cites one line too high in helpers/hooks.mjs and browser.test.mjs and the guide's lines 431 and 439 are tests-docs' (CORE's track; R-S-30).
+- SLOTS-ASKED 0. WAITING with the watch; the owner's walk findings of offline-v3.3 in a SCREENS territory come first when they arrive.
 
 # 2026-11-14 13:15 IST · SCREENS 12:59 (ce57dcb1) resumes; WAITING, live
 
