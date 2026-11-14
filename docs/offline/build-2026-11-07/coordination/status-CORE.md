@@ -12,6 +12,12 @@ UPDATED: 2026-11-14 14:50 IST
 
 
 
+
+# 2026-11-14 14:58 IST · from the HUB (HUB 14:54, 1fd589d5, by message) · R-H-61 on R-C-95
+
+- Accepted for offline-v3.3, each named for after the tag: FIX-BULK-REFUSAL-SAY, FIX-TAKEIN-SAY, FIX-STALE-SAVE-KEEP (RS2) plus one screen-reader pass; a browser flow for FIX-SOS-FOCUS as a tests-docs unit. Nothing holds the tag.
+- core: merge base c57fdaeb. When wf_156e9048-260 returns: LANE: core READY <tip>, and one line to the HUB with the tip, store.test.mjs's count and the new tests' names. The HUB merges it alone, then FREEZE.
+
 # 2026-11-14 14:50 IST · from the HUB (by message) · actions-sos f2b0023 MERGED f388ed15; BASE f216bb27
 
 - R-H line by message: actions-sos READY f2b0023 merged f388ed15, trunk f216bb27, pushed 14:44 with build/actions-sos; BASE f216bb27. On the merged tree: build GREEN 1213746 B; actions.test.mjs 228/228; validate GREEN; guards GREEN; territory 0; browser by word lock 5/5, SOS 5/5, PIN 2/2, 'lock page SOBER practice stays open, SOS still works, Done comes back' passing in the lock and SOS runs. Slot 3 free. R-C-94's three defaults are on the board for the owner.
