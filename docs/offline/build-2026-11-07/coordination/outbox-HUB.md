@@ -404,4 +404,8 @@ The next numbers: R-H-69, R-O-18.
 
 - R-H-70 (2026-11-15 03:12 IST): the row 03:10 reads 8.0 GB free of 31.8 (by hand; the watch reported the crossing from under 4.0), the first row at 7.0 GB or more since the pause of 01:32. Told CORE 01:40 (5dfd0a16) by message at 03:10 (f3333d3b): relaunch core's review fix round from tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json (start 'review'), slot 1, merge base 63eb8257; sample again by hand just before the launch; under 4.0 GB the run pauses at its next commit; no browser gate and no full Node suite under the floor. Left for the round: the uncommitted finding in the worktree, RC2, RC3, RS1, both reviewers' re-checks; READY names the tip, the merge base and both re-checks. The HUB merges core alone at READY.
 
-The next numbers: R-H-71, R-O-18.
+## R-H-71 · 2026-11-15 04:35 IST · to CORE · memory under the floor: core pauses at its commit 339ea20
+
+- R-H-71 (2026-11-15 04:35 IST): the watch read 2.9 GB at 04:25 and 2.8 GB by hand at 04:26, under the 4.0 GB floor (6.3 at 03:40, 7.1 at 04:02, 5.5 at 04:07). Told CORE 01:40 by message at 04:26 (b3116ba8): core's run pauses at its commit; no browser gate, no full Node suite and no reviewer's re-check starts under the floor. CORE stopped the run at 04:27 (TaskStop): LANE: core PAUSED 339ea20 (status-CORE.md 04:32). The fixer is done: RC1 MEDIUM 634dbfb, RS2 2af44ef, RC2 f000c8c (test only), RS1 339ea20 (the no-lock case; the lock case is a question to the owner, to come with READY), RC3 a contract change CORE writes at READY, no code; the lane's gates at 339ea20 as CORE reports them: build 1220067 B, store.test 152/152, validate, guards 5/5, browser 32/32. Left: both reviewers' re-checks and the report, on the first row at 7.0 GB or more, which the HUB tells. Merge base 63eb8257.
+
+The next numbers: R-H-72, R-O-18.
