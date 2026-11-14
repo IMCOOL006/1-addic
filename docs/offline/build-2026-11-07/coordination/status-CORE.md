@@ -1,13 +1,19 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-14 16:43 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). tests-docs READY be7c546 (FIX-COUNTS-5, docs only; merge base 0e115013) is with HUB 14:54 (1fd589d5), who merges it with the docs gate and tags offline-v3.3. Nothing of CORE runs; after the tag nothing is owed (R-H-61 names the later fixes)
+STATE: WAITING   # 2026-11-14 17:07 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). TAG offline-v3.3 = e167f71a (R-H-62). Slots asked for the named LOWs after the tag: tests-docs V3.3-T1 first, then core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (flagged). Read-only scouts write the unit notes; no lane run before the HUB says the lane.js fix is in and grants a slot
 LANE: core MERGED 11f2f70   # 2026-11-14 16:10 IST: merged 98627557, pushed with build/core (the HUB: build 1216361 B, store.test 132/132, validate, guards, territory 0; full Node 787/0/0 in 16 files; browser lock 5/5, SOS 5/5, PIN 2/2). FREEZE offline-v3.3 at 98627557
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs READY be7c546   # 2026-11-14 16:43 IST: FIX-COUNTS-5, one commit over 0e115013, five files (CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md and .docx); the HUB's QUIET numbers at 98627557: Node 787/0/0 in 16 files, browser 32/32; territory 0 errors; docs gate GREEN at the tip; R-C-97
-SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 16:43 IST
+LANE: tests-docs MERGED be7c546   # 2026-11-14 17:07 IST: FIX-COUNTS-5 merged e167f71a = TAG offline-v3.3 (pushed 16:50 with build/tests-docs; the HUB: docs gate GREEN on the merged tree). Next by name: V3.3-T1, the browser flow 'a same-path SOS render keeps focus in the page' (not flagged; slot asked)
+SLOTS-ASKED: 2   # 2026-11-14 17:07 IST on R-H-62, in this order: (1) tests-docs V3.3-T1 (tier 1 test, not flagged); (2) core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP with the screen-reader pass, one flagged run, two reviewers. Each fast-forwards to the trunk tip at its start (BASE e167f71a), merge base that tip; one start per 7.0 GB row
+UPDATED: 2026-11-14 17:07 IST
 
+
+# 2026-11-14 17:07 IST · from the HUB (HUB 14:54, by message; R-H-62) · TAG offline-v3.3 e167f71a; tests-docs MERGED; slots asked for the LOWs after the tag
+
+- TAG offline-v3.3 = e167f71a pushed 16:50 IST; tests-docs be7c546 merged e167f71a (docs gate GREEN on the merged tree); build/tests-docs on origin. BASE e167f71a.
+- R-H-62: ask slots for tests-docs V3.3-T1 first, then core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP in one flagged run (two reviewers; the kept line's words the shortest true ones; a wording question to the owner by outbox with its default). The HUB grants on the first 7.0 GB row after the ask, one start per row. Before any run: one line to the HUB (it applies FIX-LANEJS-TIP and FIX-LANEJS-TRAILER to lane.js first and says when it is in; its trailer ruling is R-H-63). The owner's walk findings go before any LOW; the owner's 'park' stops this.
+- Done: SLOTS-ASKED 2. Read-only scouts write the unit notes in tracks/CORE/briefs/tests-docs/V3.3-T1.md and tracks/CORE/briefs/core/FIX-*.md; nothing in a worktree changes before a grant.
 
 # 2026-11-14 16:43 IST · tests-docs READY be7c546 (FIX-COUNTS-5); merge base 0e115013
 
