@@ -48,7 +48,7 @@ Legend: **Done** = settled and built · **In progress** = built on a branch and 
 | O9 | Pushing | Trunk, lane branches and the tag to origin; never `main` | Keep | Everything pushed; `main` untouched | Done |
 | Q10 | May the HUB run the workflow tool itself? | No; it merges by script, the build chats run the workflow | Keep | Eight merges done this way | Done |
 | Q11 | When does the SCREENS chat start? | When free memory leaves room for a second chat and one more lane | Decide now: free memory, or wait for the pharma tag | Never started; the open question of the afternoon | Pending |
-| Q12 | Models | Fresh HUB on Fable 5.1 at high effort; build chats on Opus 5.5 | Keep | Four HUB and three CORE sessions ran on it | Done |
+| Q12 | Models | Fresh HUB on Fable 5.2 at high effort (the owner's R-O-12, 2026-11-14; Fable 5.1 before); build chats on Opus 5.5 | Owner | Thirty-four HUB sessions ran on Fable 5.1 to 14 Nov; the owner's line changes the model only | Done |
 | Q13 | May the 4 GB memory floor drop? | No; fewer lanes instead | Keep; free memory rather than lower the floor | A lane costs about 3 GB measured | Pending |
 
 ## The product decisions, O1 to O9
@@ -219,7 +219,7 @@ Legend: **Done** = settled and built · **In progress** = built on a branch and 
 
 ### Q12. Models
 
-**Default in force.** A fresh HUB runs on Claude Fable 5.1 at high effort; the build chats run on Claude Opus 5.5. A chat hands over to a fresh one at about 250k context.
+**In force.** A fresh HUB runs on Claude Fable 5.2 at high effort (the owner's R-O-12, 2026-11-14 12:54, ruled R-H-59; Claude Fable 5.1 before that); the build chats run on Claude Opus 5.5. A chat hands over to a fresh one at about 250k context. The records of earlier days keep the model they were written on.
 
 **Recommendation.** Keep. Four HUB sessions and three CORE sessions ran on this today; the hand-overs worked.
 

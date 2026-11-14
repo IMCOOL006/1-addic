@@ -80,7 +80,7 @@ BASELINES = DOCS / "coordination" / "baselines.md"
 TRUNK = "build/offline-v1"
 BUILT = "offline/1-addic.html"
 DOCS_ONLY = ("docs/offline/build-2026-11-07/", ".claude/agents/")
-TRAILERS = ("Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>", "Claude-Session: ")
+TRAILERS = ("Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>", "Claude-Session: ")  # the HUB's model since R-O-12 (2026-11-14); the check below accepts any Claude co-author line
 SUBJECT = "merge(offline): "
 LANE_RE = re.compile(r"^[a-z][a-z0-9-]+$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
@@ -552,8 +552,9 @@ def cmd_commit(lane, msgfile):
         usage(f"message file {msgfile} is missing")
     msg = mp.read_text(encoding="utf-8")
     for t in TRAILERS:
-        if t not in msg:
-            stop("BLOCKED", f"the message file lacks the trailer line starting '{t.strip()}'", msgfile=str(mp))
+        key = "Co-Authored-By: Claude " if t.startswith("Co-Authored-By: ") else t
+        if key not in msg:
+            stop("BLOCKED", f"the message file lacks the trailer line starting '{key.strip()}'", msgfile=str(mp))
     if not msg.lstrip().startswith(SUBJECT):
         stop("BLOCKED", f"the message must start with '{SUBJECT}<lane> <kind> <tip7> onto <trunk7>'", msgfile=str(mp))
     g0 = Git(INT, LOGS / f"{lane}-commit.git.log")
