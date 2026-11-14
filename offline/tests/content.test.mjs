@@ -377,7 +377,6 @@ test('content: sample passes backup validation', () => {
 
 test('content: all rows sample:true', () => {
   const st = C.sample.generate(NOW).stores;
-  assert.ok(sampleRows(st).every((r) => r.sample === true), 'every row and event is marked');
   for (const [name, rows] of Object.entries(st)) assert.ok(rows.every((r) => r && r.sample === true), `${name}: every row generate() returns carries sample: true (the meta row is Actions.loadSample's), so erasing the sample leaves nothing`);
   for (const [name, rows] of Object.entries(st)) if (name !== 'profile') assert.ok(rows.every((r) => /^smp-/.test(r.id)), `${name}: ids smp-`);
   assert.equal(st.profile[0].name, 'Sample');
@@ -632,4 +631,26 @@ test('content FIX-MARKERS: the four safety blocks are marked and keep their shap
     assert.ok(R[key].every((x) => typeof x === 'string'), `resources.${key} holds only strings`);
   }
   assert.equal(typeof R.in.context, 'string', 'resources.in.context is a string');
+});
+
+// V-10b (R-O-11, R-H-58): the owner's I6 default. No number is confirmed, so none is cleared and none changes.
+test('content V-10b: every crisis number keeps its please-verify flag (the I6 default)', () => {
+  const R = C.resources;
+  const lists = Object.entries(R.in).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [`in.${k}`, v]);
+  assert.deepEqual(lists.map(([k]) => k).sort(), ['in.crisis', 'in.emergency', 'in.groups', 'in.treatment'], 'resources.in holds the four lists');
+  lists.push(['intl.lines', R.intl.lines]);
+  const nums = [];
+  for (const [where, list] of lists) {
+    assert.ok(Array.isArray(list) && list.length > 0, `resources.${where} is a non-empty list`);
+    for (const e of list) {
+      assert.equal(e.verify, true, `resources.${where} "${e.name}": verify stays true until the owner confirms it (I6)`);
+      for (const k of ['number', 'alt', 'tel']) if (typeof e[k] === 'string') nums.push(e[k]);
+    }
+  }
+  assert.ok(typeof R.in.verifyNote === 'string' && R.in.verifyNote.trim().length > 0, 'resources.in.verifyNote is a non-empty string');
+  assert.equal(R.opioidSafety && R.opioidSafety.verify, true, 'resources.opioidSafety keeps verify: true');
+  assert.deepEqual(nums.sort(), [
+    '+91 9999 666 555', '011-2658-9391', '108', '112', '112', '14416', '14446',
+    '1800-116-117', '1800-599-0019', '1800-891-4416', '1860-2662-345',
+  ], 'a number changes only after the owner confirms it (I6)');
 });
