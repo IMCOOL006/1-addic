@@ -1,19 +1,18 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-14 16:18 IST: context over 300k, hand-over written; CORE 12:02 (393886cb-a443-4703-8331-923de2473966). core MERGED 11f2f70 (98627557) = FREEZE offline-v3.3; QUIET on _int. tests-docs FIX-COUNTS-5 prepared (slot 5 granted); READY only after the HUB's QUIET numbers (RUN-RECORD 'Resume here')
+STATE: WAITING   # 2026-11-14 16:43 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). tests-docs READY be7c546 (FIX-COUNTS-5, docs only; merge base 0e115013) is with HUB 14:54 (1fd589d5), who merges it with the docs gate and tags offline-v3.3. Nothing of CORE runs; after the tag nothing is owed (R-H-61 names the later fixes)
 LANE: core MERGED 11f2f70   # 2026-11-14 16:10 IST: merged 98627557, pushed with build/core (the HUB: build 1216361 B, store.test 132/132, validate, guards, territory 0; full Node 787/0/0 in 16 files; browser lock 5/5, SOS 5/5, PIN 2/2). FREEZE offline-v3.3 at 98627557
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs BUILDING   # 2026-11-14 16:18 IST: FIX-COUNTS-5 (docs only; slot 5 granted 16:1x): build/tests-docs and its worktree fast-forwarded 69f2b72 -> 0e115013 (--ff-only, clean); tracks/CORE/args/fc5.py dry-run on a copy with 787 16 32: every line once, no 763 left. Nothing applied in the worktree yet: waits for the QUIET numbers
+LANE: tests-docs READY be7c546   # 2026-11-14 16:43 IST: FIX-COUNTS-5, one commit over 0e115013, five files (CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md and .docx); the HUB's QUIET numbers at 98627557: Node 787/0/0 in 16 files, browser 32/32; territory 0 errors; docs gate GREEN at the tip; R-C-97
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 16:18 IST
+UPDATED: 2026-11-14 16:43 IST
 
 
+# 2026-11-14 16:43 IST · tests-docs READY be7c546 (FIX-COUNTS-5); merge base 0e115013
 
-
-
-
-
+- From the HUB (HUB 14:54, 1fd589d5, by message ~16:30): QUIET done GREEN on _int at 98627557 (16:13-16:28, exit 0): build 1216361 B; Node 787 checks in 16 files, 787/0/0; validate; guards 5/5; browser 32/0/0; docs. Read here too in _logs/gates/hub/gates-summary.log ('=== done GREEN 2026-11-14 16:28:49').
+- Done in C:/Users/ruchi/1-addic-wt/tests-docs (at 0e115013, clean): `python tracks/CORE/args/fc5.py 787 16 32 98627557` exit 0 (each line once, no 763 left); `python offline/docs/build_guide.py` exit 0, 0 images missing (the .docx text: 787 four times, 763 none); commit be7c546 by path from a message file with Claude-Session; check_territory.py tests-docs 0e115013..HEAD --wt: 5 own, 0 shared, 0 errors; gates.py docs --lane tests-docs: GREEN (_logs/gates/tests-docs/docs-20261114-163908.log). No Node or browser suite run by the lane (the HUB's numbers are the source). The worktree clean at be7c546. The trunk moved 98627557 -> 82d747d4 by the HUB's docs commit only; merge base stays 0e115013 as the HUB asked.
 
 # 2026-11-14 16:18 IST · from the HUB (HUB 14:54, by message) · core 11f2f70 MERGED 98627557; FREEZE offline-v3.3; QUIET; FIX-COUNTS-5
 

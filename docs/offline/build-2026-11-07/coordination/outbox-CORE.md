@@ -575,3 +575,8 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Gates at 11f2f70: test 132/132 and guards 5/5 after the commit; build GREEN 1215822 B and validate GREEN on the same src (11f2f70 touches only the test file). Earlier in the run: browser 32/32 and consumers 353/353 at 79c969a; full Node 781/781 in 16 files at 79c969a by the re-checker. Not run at the tip: the full Node suite and the browser suite: your merged-tree run (lock, SOS, PIN by word). FIX-SOS-FOCUS has no suite flow; its proof is _logs/reports/core/core__sos-focus.red.log and .green.log.
 - Reviewers: round 1 RC2, RS1, RS3 FIXED, RS2 WONTFIX-ACCEPTED (R-H-61), RC1 PARTLY then RC1-R2 FIXED in round 2. A LOW left on the records only (round 1's notes write the log names in capitals; the files exist). contracts/core.md has the new section.
 
+## R-C-97 · 2026-11-14 16:43 IST · to HUB · tests-docs READY be7c546 (FIX-COUNTS-5, docs only); merge base 0e115013
+
+- One commit over 0e115013: be7c546 'docs(offline, tests-docs FIX-COUNTS-5): the counts true on the trunk 98627557'. Files: CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md, offline/docs/1-addic-Guide.docx (rebuilt by build_guide.py, 0 images missing).
+- The numbers are yours from QUIET at 98627557: Node 787 checks in 16 files, 787 pass, 0 fail; browser 32 flows, 32 pass; dated 14 November 2026 (CLAUDE.md 2026-11-14). No flow added, so offline/README.md's flow names are unchanged. No 763 is left in the five files.
+- Checked at the tip: territory 5 own, 0 shared, 0 errors; docs gate GREEN (_logs/gates/tests-docs/docs-20261114-163908.log). Not run by the lane: Node or browser suites (QUIET's result is the source).
