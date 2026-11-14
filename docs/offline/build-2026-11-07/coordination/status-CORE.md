@@ -1,12 +1,21 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 18:54 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). Two runs live: tests-docs V3.3-T1 (wf_62685dc2-4da, slot 5, merge base a615a058) and core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (wf_d828e455-ef0, slot 1, flagged, merge base 63eb8257)
-LANE: core BUILDING   # 2026-11-14 18:54 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass), one batch, flagged, two reviewers at the end; build/core and its worktree fast-forwarded 11f2f70 -> 63eb8257 (--ff-only; the gates' rebuilt offline/1-addic.html restored first, its copy in _logs/scratch/core-ff-20261114/); lane.js wf_d828e455-ef0 launched 18:37 on the 18:29 row (8.4 GB); merge base 63eb8257
+STATE: WAITING   # 2026-11-14 22:21 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17 'Continue'. CORE 16:19's two runs (wf_62685dc2-4da, wf_d828e455-ef0) died at about 19:12 with 45b995c7. Both relaunches are ready (wf_sim SIM OK); free memory 4.8 GB by hand at 22:21 (HUB 22:12: 3.2 GB at 22:18, under the 4.0 GB floor): no start until a row reads 7.0 GB or more (HUB 22:12), tests-docs first, core on the next row
+LANE: core SCOUTED   # 2026-11-14 22:21 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass) to build from the start: the dead run made no edit and no commit; build/core = origin at 63eb8257, worktree clean; merge base 63eb8257; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1 stands (17:14)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
-LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs BUILDING   # 2026-11-14 17:59 IST: V3.3-T1 (the browser flow 'a same-path SOS render keeps focus in the page'), slot 5 granted 17:15 (R-H-62); build/tests-docs and its worktree fast-forwarded be7c546 -> a615a058 (--ff-only, clean); lane.js wf_62685dc2-4da launched 17:48 (10.2 GB free 17:45); merge base a615a058
-SLOTS-ASKED: 0   # 2026-11-14 17:59 IST: both asks of 17:0x granted 17:15 (tests-docs 5, core 1; status-HUB.md at 544ca14)
-UPDATED: 2026-11-14 18:54 IST
+LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
+LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
+LANE: tests-docs BUILDING 2be56e6   # 2026-11-14 22:21 IST: V3.3-T1 built in 2be56e6 (19:07; red on 324194c^, green on the build, by the commit message and _logs/reports/tests-docs/tests-docs__progress.md); the builder died in its batch-end gates; the check to run (lane.js start 'check'; args tracks/CORE/args/args_v3_tests-docs_V3.3-T1-check.json); merge base a615a058; slot 5 stands (17:14)
+SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
+UPDATED: 2026-11-14 22:21 IST
+
+
+# 2026-11-14 22:21 IST · CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) reads in on R-O-17; both runs of CORE 16:19 dead; relaunches ready, waiting for memory
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE e167f71a, SLOTS core 1 and tests-docs 5 granted 17:14, R-H-64, R-H-65), outbox-OWNER.md R-O-16 and R-O-17, lane.js's header and its build and check stages. `claude agents --json` 22:15: 45b995c7 not listed; live in 1-addic: HUB 22:12 (c6aeb509), the owner's window (5029727e), this chat.
+- The journals: wf_62685dc2-4da's builder committed 2be56e6 at 19:07 and was in its batch-end gates (build test validate guards browser) at 19:10; no hand-off note. wf_d828e455-ef0's builder only read the unit notes and store.js/ui-core.js; no edit (worktree clean), no commit.
+- From HUB 22:12 (by message, 22:18): 3.2 GB free, no run, gate or browser suite until a row reads 7.0 GB; slots stand; tests-docs first, core on the next 7.0 GB row; R-H-64 and R-H-65 stand; main is the owner's.
+- Prepared: args_v3_tests-docs_V3.3-T1-check.json (start 'check', base and diffFrom a615a058, priorNote naming 2be56e6 and its evidence) and args_v3_core_FIX-BULK-REFUSAL-SAY-r.json (base and diffFrom 63eb8257, no priorNote: with one the builder prompt was 12510 bytes, over 12288). Both carry Claude-Session 1b24d2dd-cfc2-4de6-8e02-1990884f4eba. wf_sim: SIM OK for both, core also with --fix.
+
 
 
 # 2026-11-14 18:54 IST · core launched (wf_d828e455-ef0); R-C-98 the owner's questions with their defaults; R-C-99 to SCREENS
