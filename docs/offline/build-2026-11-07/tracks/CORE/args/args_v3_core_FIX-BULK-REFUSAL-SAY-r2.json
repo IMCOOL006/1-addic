@@ -1,0 +1,216 @@
+{
+ "lane": "core",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "After offline-v3.3, by name: one wording for every stale refused save; an automatic write's refusal not called the person's; a kept line; a screen-reader pass.",
+ "files": [
+  "offline/src/store.js",
+  "offline/src/ui-core.js",
+  "offline/src/shell.html",
+  "offline/src/styles.css",
+  "offline/tests/store.test.mjs",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK",
+  "FIX-STALE-SAVE-SAY",
+  "FIX-SOS-FOCUS",
+  "FIX-BULK-REFUSAL-SAY",
+  "FIX-TAKEIN-SAY",
+  "FIX-STALE-SAVE-KEEP"
+ ],
+ "batches": [
+  [
+   "V-11",
+   "V-46",
+   "V-16",
+   "V-17a",
+   "V-26a",
+   "FIX-IMPORT-MARK",
+   "FIX-STALE-SAVE-SAY",
+   "FIX-SOS-FOCUS"
+  ],
+  [
+   "FIX-BULK-REFUSAL-SAY",
+   "FIX-TAKEIN-SAY",
+   "FIX-STALE-SAVE-KEEP"
+  ]
+ ],
+ "unitTier": {
+  "V-11": 1,
+  "V-16": 2,
+  "V-17a": 2,
+  "V-26a": 2,
+  "FIX-BULK-REFUSAL-SAY": 1,
+  "FIX-TAKEIN-SAY": 1,
+  "FIX-STALE-SAVE-KEEP": 1
+ },
+ "unitNotes": {
+  "FIX-BULK-REFUSAL-SAY": "FIX-BULK-REFUSAL-SAY (core, flagged; after the tag offline-v3.3; merge base 63eb8257; R-H-61 (1)). One wording for every save refused because another tab changed the notebook. Defensive: Store.bulk() has no caller in offline/src (Load sample data goes through write(), which already carries stale); keep the stale flag through bulk()'s notify so a bulk refusal says the same line. Keep the refusal. [The whole note, with the lines, the callers, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-BULK-REFUSAL-SAY.md: read it before you build.]",
+  "FIX-TAKEIN-SAY": "FIX-TAKEIN-SAY (core, flagged; after the tag offline-v3.3; merge base 63eb8257; R-H-61 (2)). takeIn's automatic write after an unlock can be refused in a race with another tab's lock change and is then called 'your last change' though nothing of the person's was lost. An automatic write's refusal is not said as the person's change; a person's own refused save keeps the one toast. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-TAKEIN-SAY.md: read it before you build.]",
+  "FIX-STALE-SAVE-KEEP": "FIX-STALE-SAVE-KEEP (core, flagged; after the tag offline-v3.3; merge base 63eb8257; RS2 of R-C-95, R-H-61, R-H-62). The refused-save toast leaves after 4.5 s: a kept line says it until the person unlocks or leaves, never in SOS, in the shortest true words (a wording question goes to the owner with its default); plus one screen-reader pass (a real-Chrome probe and its log) over the refused-save toast, the kept line and FIX-SOS-FOCUS's focus move. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-STALE-SAVE-KEEP.md: read it before you build.]"
+ },
+ "laneNote": "CORE 22:12's word (2026-11-14), after the tag offline-v3.3 by the HUB's grant (slot 1, R-H-62), under R-O-7. Flagged lane: encryption and the person's data; two reviewers before READY. One batch of three units: name each by its id in done, one commit per unit at least. 'Claude-Session: 1b24d2dd-cfc2-4de6-8e02-1990884f4eba' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. Never make a refused save succeed, retry it, or keep the entry anywhere new. No clinical copy, no new public name, no new event type (stale and any automatic mark are fields on the existing lock event or error). SOS is never interrupted: no toast, kept line, lock or redirect in SOS. Words: the shortest true ones at grade 6 to 8; a wording question goes to CORE as an OWNER QUESTION with the default you build. A file outside the list: an outbox ask in your hand-off, not an edit. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-01",
+  "U-03",
+  "U-02",
+  "U-04",
+  "FIX-V11",
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK",
+  "FIX-STALE-SAVE-SAY",
+  "FIX-SOS-FOCUS"
+ ],
+ "base": "63eb8257b0fbf237e2cca35d76db5680ad199a4c",
+ "session": "FILL",
+ "now": "FILL",
+ "diffFrom": "63eb8257b0fbf237e2cca35d76db5680ad199a4c",
+ "slot": 1,
+ "sliceRun": false,
+ "start": "review",
+ "carried": {
+  "check": {
+   "verdict": "PASS",
+   "tip": "8f0cdaa",
+   "units": [
+    {
+     "unit": "U-01, U-03, U-02, U-04, FIX-V11, V-11, V-46, V-16, V-17a, V-26a, FIX-IMPORT-MARK, FIX-STALE-SAVE-SAY, FIX-SOS-FOCUS",
+     "state": "present. They were already in base 63eb8257 (merged earlier), so they are not in this diff. Their tests in store.test.mjs pass by name (V-26a, V-46 and FIX-STALE-SAVE-SAY e2e are in the test log)."
+    },
+    {
+     "unit": "FIX-BULK-REFUSAL-SAY",
+     "state": "present, 3a1dbd8. state.dirtyStale is at store.js:28. notify() holds the stale flag at :425 and bulk()'s flush sends it at :497-502. Tests (a), (b) and (c) pass. (d) is covered by the existing FIX-STALE-SAVE-SAY (b) tests, which is what the brief allows."
+    },
+    {
+     "unit": "FIX-TAKEIN-SAY",
+     "state": "present, 3760bcd. The code is write(w, auto), resync(!auto), and takeIn passes true. Tests (a) to (d) pass. One documented change from the brief, see C1."
+    },
+    {
+     "unit": "FIX-STALE-SAVE-KEEP",
+     "state": "present, 8f0cdaa. #kept is in shell.html:14. ui-core.js has STALE_SAID, sayStale, clearKept, the SOS hide in chrome(), and the clear in render() at :877. styles.css has a new /* -- core -- */ section. The shell test and tests (a) to (e) pass. The screen-reader probe log is at _logs/reports/core/core__stale-sr.log."
+    }
+   ],
+   "findings": [
+    {
+     "id": "C1",
+     "severity": "LOW",
+     "unit": "FIX-TAKEIN-SAY",
+     "where": "C:/Users/ruchi/1-addic-wt/core/offline/src/store.js:398-400",
+     "expected": "Brief WANT 1: f.stale = true only when !auto. As built, only resync(!auto) changed and f.stale is still set on every STALE error. The builder documented this on purpose: the error can't be observed because lock.set (store.js:711) and unlock (store.js:772) swallow takeIn's error. I checked both catch sites and the claim holds. The HUB should accept the deviation in writing, or the line should follow the brief.",
+     "evidence": "C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__FIX-TAKEIN-SAY-mut.log:20 (M4 SURVIVED); C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__units.md:19"
+    },
+    {
+     "id": "C2",
+     "severity": "LOW",
+     "unit": "all three commits",
+     "where": "3a1dbd8, 3760bcd, 8f0cdaa (commit trailers)",
+     "expected": "The check asks for the trailer 'Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>'. These commits carry 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'. The Claude-Session line (1b24d2dd-...) is correct. The repo history already mixes Fable 5.1, Fable 5.2 and Opus 5.5 trailers, so the HUB should decide whether the trailer must name the model that actually ran.",
+     "evidence": "git -C C:/Users/ruchi/1-addic-wt/core log --format='%h%n%(trailers)' 63eb8257..HEAD; written to C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__check.md"
+    },
+    {
+     "id": "C3",
+     "severity": "LOW",
+     "unit": "FIX-STALE-SAVE-KEEP",
+     "where": "C:/Users/ruchi/1-addic-wt/core/offline/src/shell.html:14 vs C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/contracts/core.md:9",
+     "expected": "The unit brief asks for the new shell id #kept, but contract section A does not list it yet. The builder filed the CONTRACT CHANGE for the HUB. The HUB adds #kept (plain, hidden, outside #main, ui-core its only consumer) to section A. The contract is not the lane's file.",
+     "evidence": "C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__check.md; C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__units.md:29"
+    }
+   ],
+   "gates": [
+    "build GREEN size=1218625B log=C:/Users/ruchi/1-addic-wt/_logs/gates/core/build-20261115-000551.log",
+    "test GREEN 146 pass 0 fail (store.test.mjs; the 14 new FIX-BULK-REFUSAL-SAY, FIX-TAKEIN-SAY and FIX-STALE-SAVE-KEEP tests pass by name; no 'not ok') log=C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261115-000558.log",
+    "validate GREEN log=C:/Users/ruchi/1-addic-wt/_logs/gates/core/validate-20261115-001131.log",
+    "guards GREEN 5/5 log=C:/Users/ruchi/1-addic-wt/_logs/gates/core/guards-20261115-001133.log",
+    "No failure to judge against baselines.md: none of the four gates failed."
+   ],
+   "territory": "Summary line: 'core 63eb8257..HEAD: 5 files changed, 5 own, 0 shared, 0 nobody's, 0 errors'. No warnings. The five files are shell.html, store.js, styles.css, ui-core.js and store.test.mjs, and core owns all of them. styles.css gets a new section at the end, /* -- core -- */ ... /* -- end core -- */ (lines 752-762), and redefines no tokens. Nothing outside the lane was committed (the only uncommitted file is the rebuilt offline/1-addic.html). Rules: the new text goes in with textContent and there is no innerHTML. #kept is hidden on every SOS route, and a refusal inside SOS raises nothing (tests c). The SOS button and urgent help stay one tap away. The change adds no network call, no URL and no new words: it reuses the existing toast sentence, which is short, neutral and person-first. The event log is untouched.",
+   "not_checked": [
+    "Browser gate: not run. The lane owns no browser tests and the prompt did not ask for one. The brief's 'browser lock, SOS and PIN flows green on the merged tree' is the HUB's run on the merged tree. For reference only, the builder's browser log reports 32/32: C:/Users/ruchi/1-addic-wt/_logs/gates/core/browser-20261114-233615.log.",
+    "Whole-tree npm test count (801 expected on the merged tree): the lane's test gate runs store.test.mjs only.",
+    "Screen-reader probe: I did not run it again. I read only the builder's claims in core__units.md, not the probe log itself.",
+    "The flagged two-reviewer passes are separate from this check."
+   ]
+  },
+  "review": [
+   {
+    "findings": [
+     {
+      "id": "RC1",
+      "severity": "MEDIUM",
+      "unit": "FIX-STALE-SAVE-KEEP (8f0cdaa)",
+      "where": "C:/Users/ruchi/1-addic-wt/core/offline/src/ui-core.js:751-752 (the only code that hides #kept for SOS) with its consumer C:/Users/ruchi/1-addic-wt/core/offline/src/ui-onboarding.js:252, :273-280",
+      "scenario": "A save is refused while a lock is stored, so the kept line shows on #/lock. The person then taps the lock page's 'Ride the wave (SOBER)' button (lock-sober). The SOS craving practice (UI.sosSoberView) opens inside the lock page and the address becomes '#/sos/craving?from=lock&n=...', but 'This notebook changed in another tab, so your last change was not saved.' stays on screen above the practice for as long as it runs. That breaks the brief's rules 'Nothing in SOS, ever: no line, no toast' and (c) 'inside SOS no line is shown'.",
+      "evidence": "ui-onboarding.js:252 setRoute = history.replaceState, which fires no hashchange. :274-278 draws the SOS SOBER view into the lock page's panel and calls setRoute('#/sos/craving?from=lock&n=...'). ui-core.js:1035 renders only on 'hashchange', so chrome() never runs with key 'sos'. Nothing else repaints the chrome: touch() and wake() at ui-core.js:1014-1027 do not, and neither does soberView at ui-sos.js:599-611. ui-onboarding.js:256 (ESR2) confirms the chrome is not painted as SOS while the practice is open. The tests and the probe reach SOS only through a route render: store.test.mjs:1039-1051 'FIX-STALE-SAVE-KEEP (c): ... hidden on a route to SOS' uses U.go, and _logs/reports/core/core__stale-sr.probe.mjs:63-68 sets location.hash. No test or probe taps lock-sober with the line raised.",
+      "fix": "Hide #kept while the lock page's SOS practice is open, and show it again on Done. Smallest fix: an outbox ask to actions-sos. In the lock-sober handler, after setRoute, call UI.applyDiscreet(isDiscreet()). That runs chrome(pageKey(route())) = chrome('sos'), as closePractice already repaints at :256. A core-only alternative is a CSS rule in the core section that hides .kept while the lock panel holds the SOBER view, but it needs a stable class on that view (ui-sos.js). Add a named test: raise the line, draw the lock page, tap lock-sober, then check #kept is hidden; after Done on #/lock, check it is shown again."
+     },
+     {
+      "id": "RC2",
+      "severity": "LOW",
+      "unit": "FIX-BULK-REFUSAL-SAY (3a1dbd8)",
+      "where": "C:/Users/ruchi/1-addic-wt/core/offline/tests/store.test.mjs:944-963 (the tests named instead of brief (d)); C:/Users/ruchi/1-addic-wt/core/offline/src/ui-core.js:935-937",
+      "scenario": "A later edit makes heard() depend on the label, for example `if (n && n.stale && n.label === 'unlock' && ...)`. All 801 tests still pass, yet a commit refused inside Store.bulk() (notice { label: 'bulk', stale: true }) then gives the person no toast and no kept line. The unit's end-to-end purpose has no test that pins it.",
+      "evidence": "Brief FIX-BULK-REFUSAL-SAY.md:22 (d) asks for heard({ label: 'bulk', stale: true }): one toast on a non-SOS route, none on '#/sos/craving'. core__units.md:12 names 'FIX-STALE-SAVE-SAY (b): a save refused with no lock stored any more ...' and '... inside SOS ...' instead. Both send { label: 'unlock', stale: true } (store.test.mjs:947, :961). In store.test.mjs, \"label: 'bulk'\" appears only in the store-level assertions at :2931, :2943 and :2953; no ui-core test feeds a 'bulk' notice. core__mut-bulk.json has no mutant of heard().",
+      "fix": "Add 'FIX-BULK-REFUSAL-SAY (d): ...' to the bootWithNotice group (or reuse bootKept). On '#/today', send({ label: 'bulk', stale: true }) and expect one toast matching STALE_WORDS plus the kept line. On '#/sos/craving', expect no toast and no line. Then check that a label-aware heard() mutant fails it."
+     },
+     {
+      "id": "RC3",
+      "severity": "LOW",
+      "unit": "FIX-BULK-REFUSAL-SAY (3a1dbd8), FIX-TAKEIN-SAY (3760bcd)",
+      "where": "C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/contracts/core.md:152 vs C:/Users/ruchi/1-addic-wt/core/offline/src/store.js:425, :497-501, :398, :738",
+      "scenario": "A consumer written to the contract expects a no-lock refusal to arrive as { label: 'unlock', stale: true }, with stale 'absent elsewhere'. It meets { label: 'bulk', stale: true } instead. It also expects onLock { reason: 'auto', stale: true } for any write refused by another tab's lock change, but an automatic takeIn refusal now gives { reason: 'auto' } and flagless notices. So the store event shapes no longer match the written contract, and no CONTRACT CHANGE was filed for them.",
+      "evidence": "contracts/core.md:152: 'the store notice is { label: 'unlock', stale: true } ... stale is optional and absent elsewhere'. store.js:425 and :497-501 put stale on the 'bulk' notice. store.js:398 and :738 send automatic refusals through resync(false). store.test.mjs:2931 pins [{ label: 'bulk', stale: true }], and 'FIX-TAKEIN-SAY (a)' pins heard [{ reason: 'auto' }] with notes [{ label: 'lock' }, { label: 'unlock' }]. core__units.md:11 and :20 say 'Public names: none'. Only #kept was filed (check C3). This is separate from C1, which covers the error's flag.",
+      "fix": "File a CONTRACT CHANGE so the HUB amends contracts/core.md:152 to say: (1) inside Store.bulk(), a no-lock refusal's flag rides on the one { label: 'bulk', stale: true } notice; (2) an automatic write (takeIn after lock.set or unlock) refused because the lock changed resyncs with onLock { reason: 'auto' } and notices without stale, and unlock() still resolves true followed by { label: 'unlock' }. No code change."
+     }
+    ],
+    "questions": [
+     "ui-core.js:877: in the no-lock case the line is cleared on any path change while the notebook is open, and that includes a route to SOS. A person who opens SOS right after the refusal comes back to no line, while in the lock case SOS only hides it (test (c) covers only the lock case). Is clearing it on the way into SOS intended, given that brief WANT 4 says 'the first route render to a different path'?",
+     "store.js:497-501 with ui-core.js:157-180: inside bulk() the stale toast is said only at the flush, after fn settles. A future bulk() caller that catches a refused commit inside fn and toasts its own warn would show two toasts, because the hush window opens only at the flush. Should contract E say that a bulk() caller toasts a refusal only after bulk() settles?",
+     "styles.css:374: the print rule hides .topbar, .nav, .sos-btn, .toasts and .coach but not .kept. Printing a page with the browser (no #print-root document) while the line is raised prints the lost-change sentence. Is that intended?",
+     "core__stale-sr.probe.mjs:63-68 reaches SOS by setting location.hash only. If RC1 is fixed, should the probe (or a browser flow, after the tag) also tap lock-sober with the line raised?",
+     "Evidence I ran: gates.py --wt core --lane core --full test at the tip 8f0cdaa: GATE test GREEN pass=801 fail=0 skip=0, 16 files (log=C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\test-20261115-002217.log), matching 787 + 14. The lane's own gates from the check are test-20261115-000558.log (146/146), build-20261115-000551.log, validate-20261115-001131.log and guards-20261115-001133.log. The browser gate is browser-20261114-233615.log (32/32, run at 23:36:15 after the tip commit at 23:33:14). I did not run the browser gate. I did not write core__review-contracts.md, because the agent rules forbid report files; the findings are returned here only."
+    ]
+   },
+   {
+    "findings": [
+     {
+      "id": "RS1",
+      "severity": "LOW",
+      "unit": "FIX-STALE-SAVE-KEEP (8f0cdaa)",
+      "where": "C:/Users/ruchi/1-addic-wt/core/offline/src/ui-core.js:877 and :935-937 (with :177-184); C:/Users/ruchi/1-addic-wt/core/offline/tests/store.test.mjs test 'FIX-STALE-SAVE-KEEP (b)'",
+      "scenario": "Another tab removed the PIN or erased the notebook, so no lock is stored. A Track save is refused and the kept line appears. The person enters the craving or slip again and this time it saves. The top bar now says 'Saved on this device · <time>', but the line under it still says 'This notebook changed in another tab, so your last change was not saved.' until the person leaves the page, which invites a duplicate entry. The same false line returns on #/lock after the person logs a slip in SOS from the lock page, a slip that ui-sos keeps for the unlock ('It goes in your log when you unlock.').",
+      "evidence": "The lane's own test 'FIX-STALE-SAVE-KEEP (b)' sends { label: 'commit' } (a save that went through) and asserts that the line still holds the words ('store renders of the same page and the toast time keep it'). heard() (ui-core.js:935-937) never clears the line, and clearKept() runs only at :877 (a route render to another path while unlocked). store.js has no cross-tab channel: every notice other than resync's lock/unlock comes from this tab's own commit (:485), replaceAll (:582), resetAll (:616) or bulk (:501). The saved label is built at ui-core.js:614-622, and the ui-sos wording is at ui-sos.js:43. For the lock case: tests '(c)' and '(d)' ('back on the lock page, still locked: shown again') and C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__stale-sr.log line 12. No custom run (gates only); the evidence is the code lines and the lane's own test.",
+      "fix": "In heard(), call clearKept() on a non-stale notice whose label is not 'lock' or 'unlock'. That covers this tab's own commit, replaceAll, resetAll and bulk going through, so the line only ever says something true. For the lock case, either clear the line on a route into SOS (as the no-lock case already does) or tie the words to the moment (owner question 1 of the brief). Change test (b)'s 'commit' assertion and add 'FIX-STALE-SAVE-KEEP (f): a later save that goes through on the same page clears the line'."
+     },
+     {
+      "id": "RS2",
+      "severity": "LOW",
+      "unit": "FIX-STALE-SAVE-KEEP (8f0cdaa)",
+      "where": "C:/Users/ruchi/1-addic-wt/core/offline/src/styles.css:374 (print rule), with :755-761 and C:/Users/ruchi/1-addic-wt/core/offline/src/shell.html:14",
+      "scenario": "While the kept line is showing (same page, no lock stored), the person prints the page with the browser's own Print (Ctrl+P, or Share > Print), or uses the app's Print in a browser without :has(). The printout then carries 'This notebook changed in another tab, so your last change was not saved.' above their page, because the print rule hides .topbar, .nav, .sos-btn, .toasts, .coach and dialog but not .kept.",
+      "evidence": "The print rule is at styles.css:372-381, and its own comment says 'never the nav, SOS or toasts'; .kept is not in the list. styles.css:376 hides #app only through body:has(#print-root > *), and only when the app's printDoc (ui-core.js:981-988) has filled #print-root. #kept sits inside #app (shell.html:3, :14).",
+      "fix": "Add .kept to the print hide list at styles.css:374 (core's own block), or add @media print { .kept { display: none !important; } } in the new /* -- core -- */ section. Add a text test next to 'FIX-STALE-SAVE-KEEP: shell.html has one plain #kept line after the header, outside #main, ...'."
+     }
+    ],
+    "questions": [
+     "store.test.mjs 'FIX-TAKEIN-SAY (b)' pins that, after the refused takeIn, the fallback snapshot stays in localStorage next to the new PIN until the next unlock takes it in. That snapshot holds a plain CravingLogged row with a note, because store.js:741-742 is not reached. This behaviour is unchanged from the base and the brief KEEPs it. Will the HUB accept this plaintext window in writing against the rule at store.js:716-718 ('must not stay readable beside a PIN')?",
+     "Owner question 1 of FIX-TAKEIN-SAY names only the unlock consequence. The same automatic path also runs after lock.set (store.js:711). In the race, the tab goes to #/lock silently, lock.set still resolves, and ui-settings.js:276 then toasts 'Your PIN is set. Your notes are locked on this device.' over the lock page, where that PIN may now be refused because another tab's lock is stored. Before this lane, the stale toast at least said the notebook had changed. Should the lock.set case go to the owner together with the unlock case?",
+     "'FIX-STALE-SAVE-KEEP (c): a refusal inside SOS raises no line, there or after' (ui-core.js:936, :1071): suppose a Track save is still in flight when the person taps SOS, and it is refused while they are in SOS. It is never said, not even after they leave SOS (ui-sos keeps only its own saves for the unlock). Is that intended, or should the flag be raised hidden while in SOS and the line shown once they are out?",
+     "With the line showing on #/lock at 390 x 844 (about 90 px above the page), is the lock page's own Urgent help link still above the fold? The fixed SOS button keeps urgent help one tap away either way (ui-core.js:742, styles.css:141-142), but C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__stale-sr.log records no position.",
+     "No finding (checked): on every SOS route the line stays hidden, and no toast or line is raised there (ui-core.js:752, :183, :936, :1071; the lock screen's SOBER goes to #/sos/craving?from=lock, ui-onboarding.js:169, :278). No new words: STALE_SAID is the old toast text (:175), set with textContent, contains no personal data and is safe in discreet mode. The kept flag and dirtyStale live in memory only, and the lane adds no storage key, log, URL or network call. resync(!auto) changes only the stale flags: the key is still dropped and the old PIN is refused ('FIX-TAKEIN-SAY (b)'). V-11's static safety line stays in place. bulk() has no caller. My gates at the tip 8f0cdaa were all GREEN: build 1218625 B (C:/Users/ruchi/1-addic-wt/_logs/gates/core/build-20261115-002423.log); test 146/0/0 (test-20261115-002429.log); guards 5/5 (guards-20261115-003319.log); browser 32/0/0 (browser-20261115-003616.log). There was no FAIL line, so nothing needed judging against the baselines. My notes are in C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__review-safety.md; the earlier review's notes were copied to core__review-safety-20261114.md before I overwrote that file."
+    ]
+   }
+  ]
+ },
+ "priorNote": "Review fix round (v3.4), stopped twice under the 4.0 GB floor: RC1 committed 634dbfb and RS2 committed 2af44ef (red first, mutations, logs core__v34-RC1-*, core__v34-RS2-*); uncommitted edits in store.js and store.test.mjs were the next finding in progress: read git diff first, finish or redo it, then the remaining LOWs (RC2, RC3, RS1) you take."
+}

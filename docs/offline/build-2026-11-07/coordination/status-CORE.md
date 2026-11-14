@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 01:06 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba). core's run wf_f91c7455-e37 resumed 01:04 for the review fix round (RC1 MEDIUM first) and its re-checks (the HUB 01:00 8.1 GB; by hand 8.6 at 01:03). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 8f0cdaa   # 2026-11-15 01:06 IST: the review fix round live (resumeFromRunId; everything before the fixer from the journal); RC1 MEDIUM first, then the LOWs the fixer takes; both reviewers re-check; READY only with no finding above LOW open. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 01:35 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba), context about 240k: the hand-over is planned (RUN-RECORD 'Resume here'). core PAUSED 2af44ef under the floor (3.7 GB at the commit 01:31, 3.5 at 01:32): the review fix round's RC1 and RS2 committed; the rest of the round and both re-checks wait for a 7.0 GB row. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core PAUSED 2af44ef   # 2026-11-15 01:35 IST: review fix round: RC1 MEDIUM 634dbfb (red first, mutation 6 of 6, store.test 147/147), RS2 LOW 2af44ef (red first, mutation 4 of 4); stopped 01:32 (TaskStop) at the commit under 4.0 GB; uncommitted in the worktree: store.js (1 line) and store.test.mjs (+22), the next finding in progress, left as they are. Left: that finding, the LOWs the fixer takes (RC2, RC3, RS1), both re-checks. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 01:06 IST
+UPDATED: 2026-11-15 01:35 IST
+
+
+# 2026-11-15 01:35 IST · core PAUSED 2af44ef: the fix round's RC1 and RS2 committed; the rest waits for a 7.0 GB row
+
+- Resumed 01:04 (the HUB 01:00 8.1 GB; by hand 8.6 at 01:03). The fixer: 634dbfb RC1 (the kept line hides when the lock page opens its SOBER practice; red first core__v34-RC1-red.log, mutation core__v34-RC1-mut.log 6 of 6, store.test 147/147 core__v34-RC1-full.log), 2af44ef RS2 (no printout carries the kept line; core__v34-RS2-red.log, -mut.log 4 of 4, -green.log), all under C:/Users/ruchi/1-addic-wt/_logs/reports/core/. The commit 2af44ef at 01:31 read 3.7 GB (3.5 at 01:32): stopped 01:32. Uncommitted: store.js 1 line, store.test.mjs +22 (the next finding in progress), left on disk.
+- Ready for the next start: (a) this session: resume wf_f91c7455-e37 with the same args (everything before the fixer replays; a new fixer reads the commits, the progress file and the diff); (b) a fresh CORE: tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json (start 'review', carried check and both reviews from the journal, a priorNote naming 634dbfb, 2af44ef and the uncommitted diff; now and session 'FILL'); wf_sim SIM OK.
 
 
 # 2026-11-15 01:01 IST · core PAUSED 8f0cdaa again: the check and both reviews done; the review fix round waits for a 7.0 GB row
