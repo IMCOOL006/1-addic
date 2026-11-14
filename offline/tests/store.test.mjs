@@ -1000,6 +1000,25 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.ok(rule && !/position\s*:/.test(rule), 'a plain line in the flow: never fixed over the bar, the SOS button or the nav');
   });
 
+  test('RS2: a printout never carries the kept line: an @media print rule hides .kept', () => {
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const blocks = [];
+    for (let i = css.indexOf('@media print'); i !== -1; i = css.indexOf('@media print', i + 1)) {
+      const open = css.indexOf('{', i);
+      let depth = 0;
+      let end = open;
+      for (; end < css.length; end++) {
+        if (css[end] === '{') depth++;
+        else if (css[end] === '}' && --depth === 0) break;
+      }
+      blocks.push(css.slice(open + 1, end));
+    }
+    assert.ok(blocks.length > 0, 'control: the print rules are found');
+    const hides = blocks.some((b) => Array.from(b.matchAll(/([^{}]+)\{([^{}]*)\}/g))
+      .some((m) => m[1].split(',').some((s) => s.trim() === '.kept') && /display\s*:\s*none\s*!important/.test(m[2])));
+    assert.ok(hides, 'display: none !important, as the top bar, the SOS button and the toasts have it');
+  });
+
   test('FIX-STALE-SAVE-KEEP (a): a stale refusal on a page puts the kept line in #kept, and it is still there after the toast time and after a lock page draw', async (t) => {
     const k = await bootKept(t, '#/today');
     assert.equal(keptLine(), null, 'control: no line before');

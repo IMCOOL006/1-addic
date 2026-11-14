@@ -759,4 +759,6 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
   background: hsl(var(--surface-2)); color: hsl(var(--text)); font-size: 0.9375rem; line-height: 1.4;
 }
 .kept[hidden] { display: none; }
+/* RS2: a printout never carries the kept line, the browser's own Print too (as the top bar and the toasts). */
+@media print { .kept { display: none !important; } }
 /* -- end core -- */
