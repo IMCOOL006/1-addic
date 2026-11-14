@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-14 22:21 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17 'Continue'. CORE 16:19's two runs (wf_62685dc2-4da, wf_d828e455-ef0) died at about 19:12 with 45b995c7. Both relaunches are ready (wf_sim SIM OK); free memory 4.8 GB by hand at 22:21 (HUB 22:12: 3.2 GB at 22:18, under the 4.0 GB floor): no start until a row reads 7.0 GB or more (HUB 22:12), tests-docs first, core on the next row
+STATE: BUILDING   # 2026-11-14 22:25 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs V3.3-T1's check live (wf_d4144143-bd8, started on the 22:23 row, 9.3 GB by hand); core's flagged batch starts on the next row at 7.0 GB or more
 LANE: core SCOUTED   # 2026-11-14 22:21 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass) to build from the start: the dead run made no edit and no commit; build/core = origin at 63eb8257, worktree clean; merge base 63eb8257; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1 stands (17:14)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs BUILDING 2be56e6   # 2026-11-14 22:21 IST: V3.3-T1 built in 2be56e6 (19:07; red on 324194c^, green on the build, by the commit message and _logs/reports/tests-docs/tests-docs__progress.md); the builder died in its batch-end gates; the check to run (lane.js start 'check'; args tracks/CORE/args/args_v3_tests-docs_V3.3-T1-check.json); merge base a615a058; slot 5 stands (17:14)
+LANE: tests-docs CHECKING 2be56e6   # 2026-11-14 22:25 IST: V3.3-T1's check (lane.js start 'check', wf_d4144143-bd8; args tracks/CORE/args/args_v3_tests-docs_V3.3-T1-check.json; slot 5); merge base a615a058
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 22:21 IST
+UPDATED: 2026-11-14 22:25 IST
+
+
+# 2026-11-14 22:25 IST · tests-docs V3.3-T1's check launched (wf_d4144143-bd8)
+
+- The 22:23 row: 9.3 GB free by hand (22:23:46), 8.8 GB at 22:24. lane.js start 'check' on 2be56e6 (base and diffFrom a615a058). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1b24d2dd-cfc2-4de6-8e02-1990884f4eba/subagents/workflows/wf_d4144143-bd8/journal.jsonl. Return -> the tip from git, `LANE: tests-docs READY <tip>` (merge base a615a058), an R-C to the HUB.
 
 
 # 2026-11-14 22:21 IST · CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) reads in on R-O-17; both runs of CORE 16:19 dead; relaunches ready, waiting for memory
