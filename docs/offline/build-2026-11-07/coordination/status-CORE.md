@@ -1,14 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 12:25 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966) on R-H-58. Two runs live: core wf_1ac18d52-8f7 (FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS, slot 1, merge base c57fdaeb) and actions-sos wf_7810193e-4e0 (FIX-C1-BACK, slot 3, merge base 482b23af); both flagged, two reviewers each
+STATE: BUILDING   # 2026-11-14 14:02 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966). actions-sos READY f2b0023 (FIX-C1-BACK, merge base 482b23af, R-C-94); core wf_1ac18d52-8f7 still live in its review fix round (FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS, merge base c57fdaeb)
 LANE: core BUILDING   # 2026-11-14 12:08 IST: build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only, clean); wf_1ac18d52-8f7 (lane.js, args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY.json from mk_core_v33.py; unit notes tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md and FIX-SOS-FOCUS.md; wf_sim OK); two reviewers at its end. Earlier: MERGED 49c788f (FIX-IMPORT-MARK, 82c5eddf)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos BUILDING   # 2026-11-14 12:23 IST: build/actions-sos and its worktree fast-forwarded fb3966b -> 482b23af (--ff-only, clean; no code differs from c5dc3743); wf_7810193e-4e0 on the 12:22 row (10.5 GB) after SCREENS's content start on 12:12 (R-S-34); args tracks/CORE/args/args_v3_actions-sos_FIX-C1-BACK.json from mk_as_v33.py; unit note tracks/CORE/briefs/actions-sos/FIX-C1-BACK.md; wf_sim OK. Earlier: MERGED fb3966b (FIX-AS-V32, aac18546)
+LANE: actions-sos READY f2b0023   # 2026-11-14 14:02 IST: FIX-C1-BACK, merge base 482b23af. wf_7810193e-4e0: check PASS (build 1213670 B, actions.test 228/228, validate, guards 5/5, territory 0); safety reviewer no findings (browser --grep lock 5/5 at f2b0023); contracts RC2 FIXED, RC1 (the contract line) closed by this chat in contracts/actions-sos.md. lane.js said RED only for RC1. For the HUB's merged-tree run by name: 'lock page SOBER practice stays open, SOS still works, Done comes back'
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 12:25 IST
+UPDATED: 2026-11-14 14:02 IST
 
 
+
+
+# 2026-11-14 14:02 IST · actions-sos READY f2b0023 (FIX-C1-BACK); merge base 482b23af
+
+- wf_7810193e-4e0 returned RED at f2b0023 with one open item, RC1: the contract line, which the lane cannot write. Closed here: contracts/actions-sos.md, section 'FIX-C1-BACK'. RC2 (a record's wording) FIXED by its finder. Check C1 (Co-Authored-By names Opus 5.5) is the standing LOW. The safety reviewer: no findings; three questions, defaults taken in the contract (the clock value in the address stays; the limits named; discreet address unchanged). Lane report: tracks/CORE/lane-reports/actions-sos.md (19575 B). R-C-94.
+- This chat verified: the worktree clean at f2b0023; one commit over 482b23af, two files (ui-onboarding.js, actions.test.mjs); Claude-Session on it. Gates read from the checker's logs (_logs/gates/actions-sos/*-20261114-1256*, -1259*) and the reviewer's (*-20261114-131*). Not run by this chat: any gate (no commit after the check; the HUB's memory rule).
 
 # 2026-11-14 12:25 IST · actions-sos FIX-C1-BACK launched on the 12:22 row (10.5 GB)
 
