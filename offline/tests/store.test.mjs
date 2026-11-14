@@ -2765,6 +2765,58 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.deepStrictEqual(heard, [{ reason: 'auto' }, { reason: 'manual' }]);
   });
 
+  /* FIX-BULK-REFUSAL-SAY: a commit refused inside Store.bulk() is said with the same flag as one outside it. bulk()
+     holds every notice back and sends one 'bulk' at the end; the stale flag of a notice held back goes on that one.
+     (ui-core reads n.stale whatever the label: 'FIX-STALE-SAVE-SAY (b): a save refused with no lock stored any more
+     ...' and '... inside SOS a save refused with no lock stored shows no toast' pin the toast and SOS for it.) */
+  const openTabOver = async () => {
+    const { S } = await pinned();
+    const A = freshStore();
+    await A.load();
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    const heard = [];
+    const notes = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    A.subscribe((n) => notes.push({ ...n }));
+    const late = (id) => A.bulk(async () => A.commit('late', (d) => { d.put('events', { id, type: 'CravingLogged' }); }))
+      .then(() => null, (e) => e);
+    return { S, A, heard, notes, late };
+  };
+
+  test('FIX-BULK-REFUSAL-SAY (a): a commit refused inside bulk with no lock stored any more still sends the stale notice once', async () => {
+    const { S, A, heard, notes, late } = await openTabOver();
+    assert.equal(await S.lock.remove(IMPORT_PIN), true, 'the other tab removes the PIN');
+    const refused = await late('late');
+    assert.equal(refused && refused.code, 'LOCKED', 'the refusal stands');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [], 'no lock is stored, so no lock page to go to');
+    assert.deepStrictEqual(notes, [{ label: 'bulk', stale: true }], 'one notice, and it carries the flag');
+    assert.ok(!A.view.get('events', 'late'), 'nothing of the refused save is kept');
+    assert.equal(A.status().locked, false, 'the tab stays open');
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (b): another tab brings back a backup, a lock still stored, a commit inside bulk: onLock carries the flag once, the bulk notice does not', async () => {
+    const { S, A, heard, notes, late } = await openTabOver();
+    await S.replaceAll(IMPORT);
+    const refused = await late('late');
+    assert.equal(refused && refused.code, 'LOCKED');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }], 'said once, by onLock');
+    assert.deepStrictEqual(notes, [{ label: 'bulk' }], 'so the notice carries no flag');
+    assert.equal(A.status().locked, true);
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (c): a bulk with no refusal sends one notice with no stale', async () => {
+    const { S, A, notes, late } = await openTabOver();
+    assert.equal(await S.lock.remove(IMPORT_PIN), true);
+    assert.ok(await late('late'), 'control: the first bulk was refused');
+    assert.equal(await late('next'), null, 'the next bulk goes in');
+    assert.ok(A.view.get('events', 'next'));
+    assert.deepStrictEqual(notes, [{ label: 'bulk', stale: true }, { label: 'bulk' }], 'the flag does not stick');
+    await A.commit('after', (d) => { d.put('events', { id: 'after', type: 'CravingLogged' }); });
+    assert.deepStrictEqual(notes.slice(2), [{ label: 'after' }], 'nor does it reach a commit outside bulk');
+  });
+
   /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
      kind of field; read back at once, from what was written, and from a fresh store. Meta rows stay plain by design. */
   const sampleRow = (store, idKey, tag) => ({ [idKey]: tag, text: store === 'meta' ? 'plain by design' : store + ' ' + tag + ' ' + MARK,

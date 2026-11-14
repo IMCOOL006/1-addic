@@ -25,7 +25,7 @@ const Store = (function () {
 
   const state = {
     loading: null, mode: 'memory', backend: null, rows: blank(), unread: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
-    subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, asked: false, chain: Promise.resolve(), epoch: 0,
+    subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, dirtyStale: false, asked: false, chain: Promise.resolve(), epoch: 0,
     fails: 0, last: 0, timer: null, held: false,
   };
 
@@ -417,8 +417,9 @@ const Store = (function () {
       try { fn(arg); } catch (e) { if (typeof console !== 'undefined') console.error('[store] a listener failed:', e && e.name); }
     }
   }
+  // Inside bulk() a notice is held back; a held stale flag goes on the one 'bulk' notice (FIX-BULK-REFUSAL-SAY).
   function notify(label, more) {
-    if (state.bulk) { state.dirty = true; return; }
+    if (state.bulk) { state.dirty = true; if (more && more.stale) state.dirtyStale = true; return; }
     call(state.subs, Object.assign({ label }, more));
   }
   function listen(set, fn) {
@@ -490,7 +491,12 @@ const Store = (function () {
       return await fn();
     } finally {
       state.bulk -= 1;
-      if (!state.bulk && state.dirty) { state.dirty = false; notify('bulk'); }
+      if (!state.bulk && state.dirty) {
+        const stale = state.dirtyStale;
+        state.dirty = false;
+        state.dirtyStale = false;
+        notify('bulk', stale ? { stale: true } : null);
+      }
     }
   }
 
