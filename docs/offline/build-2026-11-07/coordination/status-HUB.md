@@ -100,7 +100,7 @@ MERGED: tests-docs READY be7c546 (FIX-COUNTS-5, docs only: the counts true on th
 QUIET: done   # offline-v3.3: 16:13:19-16:28:50 IST 2026-11-14 on _int at 98627557 (FREEZE 16:12), gates.py --lane hub --full, exit 0, every GATE line read, no FAIL line: build GREEN 1216361 B; test GREEN 787 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN 5/5 all checks ran; browser GREEN 32 pass 0 fail 0 skip; docs GREEN exit 0 (logs _logs/gates/hub/*-20261114-1613* to -1627*). Nothing baselined. Next: FIX-COUNTS-5 (tests-docs slot 5, docs only: 763 -> 787 Node checks, 32 flows unchanged), then TAG offline-v3.3. Earlier: offline-v3.2 QUIET done 20:38:58-20:41:40 IST 2026-11-09 on _int at aac18546, exit 0: build 1213207 B; Node 763/0/0 in 16 files; validate; guards 5/5; browser 32/0/0; docs exit 0
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up | v3.2 FREEZE 2026-11-09 20:37 | QUIET 20:39-20:41 GREEN | TAG offline-v3.2 20:44 | parked 2026-11-11 21:15 on R-O-10 | resumed 2026-11-14 11:56 on R-O-11 (continue v3.3): the tracks woken 12:02; FREEZE offline-v3.3 when the three fixes and V-10b are merged, then QUIET and the tag | FREEZE offline-v3.3 16:12 IST 2026-11-14 at 98627557 | QUIET 16:13-16:28 GREEN | TAG offline-v3.3 16:50 IST (e167f71a)
 TAG: offline-v3.0 = 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (2026-11-08 11:55 IST, annotated, pushed). Earlier: offline-v1.1 = f69bc68a (02:01), offline-v1.0 = 45473b2 (2026-11-07 11:40)
-UPDATED: 2026-11-14 17:04 IST
+UPDATED: 2026-11-14 17:08 IST
 
 
 
@@ -108,6 +108,11 @@ UPDATED: 2026-11-14 17:04 IST
 
 
 
+
+# 2026-11-14 17:08 IST · HUB 14:54 (1fd589d5): TAG offline-v3.3 pushed 16:50; the hand-off note written; what is next (R-H-62, R-H-63)
+
+- TAG offline-v3.3 = e167f71a pushed 16:50 IST: core 11f2f70 merged 98627557 (16:10), FREEZE 16:12, QUIET 16:13-16:28 GREEN (Node 787/0/0 in 16 files, browser 32/0/0), tests-docs FIX-COUNTS-5 be7c546 merged e167f71a (16:48). The hand-off note and a Resume here (written ahead, 2026-11-14 17:08 IST) are on tracks/HUB/RUN-RECORD.md; R-H-62 says what is next; the lane.js fix is in (R-H-63, 3cda1d1).
+- Waiting: CORE's slot asks for tests-docs V3.3-T1 and core's three named LOWs; the owner's walk of offline-v3.3 (R-O-15 onward). The HUB's context about 210k: it hands over at its next clean point past 250k or before a merge it cannot fit.
 
 # 2026-11-14 15:02 IST · HUB 14:54 (1fd589d5, claude-fable-5-2) resumes from the Resume here of 14:52; core is the one lane left; R-H-61
 
