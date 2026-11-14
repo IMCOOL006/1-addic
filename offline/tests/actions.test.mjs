@@ -3781,7 +3781,7 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     return doc;
   };
   const settle = () => new Promise((r) => setTimeout(r, 60)); // past ui-core's 16 ms frame (Node has no requestAnimationFrame)
-  // opts.discreet: the device flag is on (EF1). opts.at: the address the page loads at (SF1: a reload).
+  // opts.discreet: the device flag is on (EF1). opts.at: the address the page loads at (SF1: a reload). opts.now: a clock that does not move (FIX-C1-BACK).
   const routerApp = async (opts = {}) => {
     const vm = require('node:vm');
     const doc = routerDom();
@@ -3799,7 +3799,7 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
         unlock: () => new Promise((res) => { store.release = (ok) => { if (ok) { store.locked = false; for (const f of subs) f({ label: 'unlock' }); } res(ok); }; }) },
     };
     const ctx = vm.createContext({ document: doc, window: { addEventListener: (t, f) => { (on[t] = on[t] || []).push(f); } }, location, history, Store: store, Content: C(),
-      localStorage: { getItem: (k) => (opts.discreet && k === '1-addic:discreet' ? '1' : null), setItem: (k, v) => { flag.set.push([k, v]); }, removeItem: (k) => { flag.removed.push(k); } }, navigator: {}, Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
+      localStorage: { getItem: (k) => (opts.discreet && k === '1-addic:discreet' ? '1' : null), setItem: (k, v) => { flag.set.push([k, v]); }, removeItem: (k) => { flag.removed.push(k); } }, navigator: {}, Date: opts.now ? class extends Date { static now() { return opts.now(); } } : Date, console, setTimeout, clearTimeout, setInterval, clearInterval, URLSearchParams, CustomEvent, Event });
     vm.runInContext(readFileSync(src('ui-core.js'), 'utf8'), ctx, { filename: 'ui-core.js' });
     const UI = vm.runInContext('UI', ctx);
     const body = (text) => () => { const p = doc.createElement('div'); p.textContent = text; return p; };
@@ -3917,7 +3917,8 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     assert.doesNotMatch(a.text(), /SOBER PRACTICE/, 'the practice gives way to it');
     assert.equal(a.hook('lock-page'), undefined, 'the lock page is gone');
     assert.equal(sosBtn.hidden, true, 'the SOS page shows no SOS button');
-    assert.equal(during, '#/sos/craving?from=lock', 'while the practice was open: a reload lands in the same flow (SF1)');
+    // FIX-C1-BACK: the held hash is no longer one fixed string; it starts with the practice's own SOS route and 'from=lock', and ends with a part no earlier hold had
+    assert.match(during, /^#\/sos\/craving\?from=lock&n=[0-9a-z]+$/, 'while the practice was open: a reload lands in the same flow (SF1)');
   });
 
   test('SF1: the practice on the lock page is held on a hash no other history entry has, so the first Back works (the real router)', async () => {
@@ -3943,6 +3944,56 @@ describe('V3 actions-sos V-25 (unlock gives a sign of life)', () => {
     const d = sosDom();
     const root = d.open(['sos', 'craving'], reload.UI.route().query);
     assert.ok(d.byId(root, 'sos-rate-skip'), 'the real page starts the craving flow under that query');
+  });
+
+  test('FIX-C1-BACK: every hold of the practice on the lock page has a hash no earlier hold had, also across a reload, so the first Back moves (the real router)', async () => {
+    const { parseSos } = require(src('ui-sos.js'));
+    const shape = /^#\/sos\/craving\?from=lock&n=[0-9a-z]+$/;
+    const a = await routerApp();
+    a.hook('lock-sober').on.click[0]({});
+    await settle();
+    const first = a.location.hash;
+    assert.match(first, shape, 'held on the practice\'s own SOS route, with a part of its own');
+    // in the same visit: Done, then the practice again at once (the same millisecond, maybe)
+    a.soberDone();
+    assert.equal(a.location.hash, '#/lock', 'Done: back on the lock route, as before');
+    a.hook('lock-sober').on.click[0]({});
+    const again = a.location.hash;
+    assert.match(again, shape);
+    assert.notEqual(again, first, 'a second hold in the same visit has a hash of its own');
+    // a reload on the first held hash: the same craving flow, no PIN asked
+    const reload = await routerApp({ at: first });
+    assert.match(reload.text(), /URGENT NUMBERS/, 'the SOS page, as for any SOS route');
+    assert.equal(reload.hook('lock-page'), undefined, 'no PIN asked');
+    assert.deepEqual([parseSos(reload.UI.route()).flow, parseSos(reload.UI.route()).drill], ['craving', false], 'the craving flow, not a drill');
+    // the craving flow finished: the lock page on a new history entry, and the practice again
+    await reload.tap('#/lock');
+    assert.ok(reload.hook('lock-sober'), 'the lock page');
+    reload.hook('lock-sober').on.click[0]({});
+    await settle();
+    const second = reload.location.hash;
+    assert.match(second, shape);
+    assert.notEqual(second, first, 'after a reload the hold\'s hash still differs from the earlier hold\'s');
+    assert.notEqual(second, '#/sos/craving', 'never the plain craving route');
+    assert.notEqual(second, '#/sos', 'ESR1: nor the header SOS button\'s target');
+    assert.match(reload.text(), /SOBER PRACTICE/, 'the practice is open');
+    // one Back, as a browser does it: to the entry the first hold left behind
+    await reload.follow(first);
+    assert.equal(reload.location.hash, first);
+    assert.match(reload.text(), /URGENT NUMBERS/, 'the first Back moves: that entry\'s SOS page is drawn');
+    assert.doesNotMatch(reload.text(), /SOBER PRACTICE/, 'the practice gives way');
+  });
+
+  test('FIX-C1-BACK: holds in one visit have hashes of their own even when the clock has not moved (the real router)', async () => {
+    const a = await routerApp({ now: () => 1763100000000 });
+    const held = [];
+    for (let i = 0; i < 3; i += 1) {
+      a.hook('lock-sober').on.click[0]({});
+      held.push(a.location.hash);
+      a.soberDone();
+      assert.equal(a.location.hash, '#/lock', 'Done: back on the lock route');
+    }
+    assert.equal(new Set(held).size, 3, 'three holds, three hashes: ' + held.join(' '));
   });
 
   test('ESR2: Done back on the lock page shows the SOS button again (the real router)', async () => {
