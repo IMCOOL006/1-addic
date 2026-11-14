@@ -1156,6 +1156,26 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.match(keptLine(), STALE_WORDS, 'one line, the words once');
   });
 
+  // RC2 (review of FIX-BULK-REFUSAL-SAY), brief (d): a commit refused inside Store.bulk() comes as the one 'bulk'
+  // notice with the flag; ui-core hears it as it hears the 'unlock' one: one toast and the kept line on a page, nothing
+  // in SOS. The real Store.bulk() end to end: 'RC2: another tab removes the PIN ...' in 'FIX-STALE-SAVE-SAY (e2e)'.
+  test('FIX-BULK-REFUSAL-SAY (d): a bulk notice with the flag gives one toast and the kept line on a page', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.send({ label: 'bulk', stale: true });
+    assert.equal(toastsOf().length, 1, 'one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS);
+    assert.match(keptLine(), STALE_WORDS, 'and the kept line, in the same words');
+    assert.equal(location.hash, '#/today', 'no lock is stored, so no lock page');
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (d): inside SOS a bulk notice with the flag shows no toast and no line', async (t) => {
+    const k = await bootKept(t, '#/sos/craving');
+    await k.send({ label: 'bulk', stale: true });
+    assert.equal(toastsOf().length, 0, 'SOS is never interrupted');
+    assert.equal(keptLine(), null, 'and no kept line');
+    assert.equal(location.hash, '#/sos/craving');
+  });
+
   test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
     const b = await bootPending(t, '#/today');
     const touches = [];
@@ -3669,4 +3689,26 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       assert.deepEqual(errors, [], 'nothing on the console');
     });
   }
+
+  // RC2 (review of FIX-BULK-REFUSAL-SAY): the bulk notice's flag, end to end: a real Store.bulk() in this tab, its commit
+  // refused because another tab removed the PIN, and the real ui-core hears { label: 'bulk', stale: true }.
+  test('RC2: another tab removes the PIN, then a commit refused inside Store.bulk() here: one toast with the stale words and the kept line, the page stays', async () => {
+    const s = await twoTabs();
+    assert.equal(await s.other.lock.remove(PIN), true, 'the other tab removes the PIN');
+    const S = globalThis.Store;
+    const e = await S.bulk(async () => S.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }))
+      .then(() => null, (err) => err);
+    assert.equal(e && e.code, 'LOCKED', 'the save is refused');
+    assert.equal(e.stale, true);
+    await wait(50); // ui-core's real 16 ms redraw
+    assert.equal(s.toasts().length, 1, 'one refused save, one toast: ' + JSON.stringify(s.toasts()));
+    assert.match(s.toasts()[0], STALE);
+    const kept = document.getElementById('kept');
+    assert.equal(kept.hidden, false, 'the kept line is shown');
+    assert.match(kept.textContent.trim(), STALE, 'in the same words');
+    assert.equal(location.hash, '#/today', 'no lock is stored: no lock page');
+    assert.match(s.main(), new RegExp(PAGE), 'the page stays');
+    assert.ok(!S.view.get('events', 'late'), 'nothing of the refused save is kept');
+    assert.deepEqual(errors, [], 'nothing on the console');
+  });
 });
