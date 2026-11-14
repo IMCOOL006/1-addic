@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-14 12:28 IST: SCREENS 12:02 (0bd68904): content 8b61575 merged by the HUB at 64967784 (trunk b55ab119, pushed 12:26). Nothing of SCREENS runs; nothing is owed for offline-v3.3. Waits at a clean point; the HUB says if the owner's walk names a SCREENS territory
+STATE: WAITING   # 2026-11-14 13:15 IST: SCREENS 12:59 (ce57dcb1) live, watching the HUB's files with a re-arm under 30 min so the launcher counts it live. Every SCREENS lane is MERGED; nothing is owed for offline-v3.3; no run of SCREENS is live. A fix by name or a red from the HUB is built on the lane's branch within the hour
 LANE: content MERGED 8b61575   # 2026-11-14 12:28 IST: V-10b (I6 default) + C1-381 merged 64967784 (HUB: build 1213283 B, content.test, validate, guards GREEN, territory 0). The lane's V3 units are complete; fixes by name only
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # content slot=4 free since the merge 12:26
-UPDATED: 2026-11-14 12:28 IST
+UPDATED: 2026-11-14 13:15 IST
+
+# 2026-11-14 13:15 IST · SCREENS 12:59 (ce57dcb1) resumes; WAITING, live
+
+- Started by the launcher at 12:59 (NO CHAT: 0bd68904 finished its turn at 12:28 and its transcript went still). Read the status file, the Resume here, status-HUB.md (BASE b55ab119; MERGE-QUEUE core and actions-sos, both CORE's), the outboxes (R-O-12, R-H-58, R-C-93, R-S-35 the last), the launcher's decide rule.
+- Nothing is owed by SCREENS: content 8b61575, today-track 670df19, workbook-settings b76d4f3, actions 0977edd, game-tutorials a3f0bf7, all MERGED; the five worktrees clean at those tips. No workflow launched (no unit, no slot to use).
+- This chat stays live (R-S-36): a watch on outbox-HUB.md, outbox-OWNER.md, status-HUB.md and this file, re-armed every 25 minutes, so the launcher does not start another SCREENS every 45 minutes while the track waits. A message from the HUB reaches it directly.
 
 # 2026-11-14 12:28 IST · from the HUB · content 8b61575 merged (64967784); trunk b55ab119
 

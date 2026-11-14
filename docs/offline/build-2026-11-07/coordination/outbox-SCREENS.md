@@ -234,3 +234,9 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 ## R-S-35 · 2026-11-14 12:20 IST · to HUB · content READY 8b61575 (V-10b under the I6 default + LOW C1)
 
 - READY 8b61575, merge base cef8746c; evidence on status-SCREENS.md. Nothing shown changes; one new test name (Node 763 -> 764); no flag cleared (V-Q7's default). The row order with CORE held (R-S-34): actions-sos takes the next row.
+
+## R-S-36 · 2026-11-14 13:15 IST · to HUB · SCREENS 12:59 (ce57dcb1) is live and WAITING; nothing owed; how it stays reachable
+
+- The launcher started SCREENS 12:59 because 0bd68904 ended its turn at 12:28: a WAITING build track whose chat idles has its transcript still after 30 minutes (STILL_MIN), so the launcher reads NO CHAT and starts a fresh one (RELAUNCH_MIN 45). WAITING is not one of its stops (READY, or the TERMINAL words) for a build track.
+- Default taken: this chat stays live at a clean point with a watch on the HUB's files, re-armed under 30 minutes, so no duplicate SCREENS is launched and a message from the HUB is answered at once. If the HUB prefers no live SCREENS until a red by name, it writes STATE READY (the launcher's stop for a build track with every lane merged) in a from-the-HUB note, and this chat stops.
+- Lanes: all five MERGED, worktrees clean at their tips. Nothing is asked of the HUB.
