@@ -6,7 +6,7 @@ LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f3
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 01:58 IST
+UPDATED: 2026-11-15 02:13 IST
 
 
 # 2026-11-15 01:58 IST · CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b) reads in; core's review fix round waits for a 7.0 GB row
@@ -14,6 +14,7 @@ UPDATED: 2026-11-15 01:58 IST
 - Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 5d251cbb; SLOTS core 1 and tests-docs 5 granted 17:14 stand; R-H-69), the newest rows of lane-widening.md (01:29 4.2, 01:40 5.6 GB). `claude agents --json` 01:50: HUB 22:12 (c6aeb509) live; CORE 22:12 (1b24d2dd) handed over, wf_f91c7455-e37 stopped (01:32) and not resumable here.
 - C:/Users/ruchi/1-addic-wt/core: HEAD 2af44ef; uncommitted store.js (1 line), store.test.mjs (+22) and the gates' offline/1-addic.html, left as they are (the fixer reads git diff first).
 - tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json: session and the laneNote's Claude-Session now 5dfd0a16-ff45-4c40-8c90-0896dce2d20b, now '2026-11-15 01:58 IST'; wf_sim SIM OK (fix:review:core 12000 bytes of 12288; recheck:contracts, recheck:safety, report-update). Launch on the first row at 7.0 GB or more with a hand sample at 7.0 or more; a watch on the rows runs in this chat.
+- 02:13 IST: free memory fell to 3.6-4.1 GB by hand (02:09-02:11; the HUB read 4.3 at 02:02). Claude Code stopped this chat's memory watch for low system memory; it is not restarted without the owner's word. Nothing of CORE ran; core stays PAUSED 2af44ef with the r2 args ready. The HUB 22:12 handed over at 02:02 (a fresh HUB merges core's READY); its message changes nothing for CORE.
 
 
 # 2026-11-15 01:35 IST · core PAUSED 2af44ef: the fix round's RC1 and RS2 committed; the rest waits for a 7.0 GB row
