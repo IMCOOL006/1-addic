@@ -1,0 +1,14 @@
+{
+ "FIX-BULK-REFUSAL-SAY": {
+  "tier": 1,
+  "note": "FIX-BULK-REFUSAL-SAY (core, flagged; after the tag offline-v3.3; merge base 63eb8257; R-H-61 (1)). One wording for every save refused because another tab changed the notebook. Defensive: Store.bulk() has no caller in offline/src (Load sample data goes through write(), which already carries stale); keep the stale flag through bulk()'s notify so a bulk refusal says the same line. Keep the refusal. [The whole note, with the lines, the callers, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-BULK-REFUSAL-SAY.md: read it before you build.]"
+ },
+ "FIX-TAKEIN-SAY": {
+  "tier": 1,
+  "note": "FIX-TAKEIN-SAY (core, flagged; after the tag offline-v3.3; merge base 63eb8257; R-H-61 (2)). takeIn's automatic write after an unlock can be refused in a race with another tab's lock change and is then called 'your last change' though nothing of the person's was lost. An automatic write's refusal is not said as the person's change; a person's own refused save keeps the one toast. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-TAKEIN-SAY.md: read it before you build.]"
+ },
+ "FIX-STALE-SAVE-KEEP": {
+  "tier": 1,
+  "note": "FIX-STALE-SAVE-KEEP (core, flagged; after the tag offline-v3.3; merge base 63eb8257; RS2 of R-C-95, R-H-61, R-H-62). The refused-save toast leaves after 4.5 s: a kept line says it until the person unlocks or leaves, never in SOS, in the shortest true words (a wording question goes to the owner with its default); plus one screen-reader pass (a real-Chrome probe and its log) over the refused-save toast, the kept line and FIX-SOS-FOCUS's focus move. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-STALE-SAVE-KEEP.md: read it before you build.]"
+ }
+}

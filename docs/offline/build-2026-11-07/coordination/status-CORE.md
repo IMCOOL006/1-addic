@@ -1,13 +1,18 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 17:59 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). tests-docs V3.3-T1 running (wf_62685dc2-4da, slot 5, merge base a615a058); core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (slot 1, flagged) starts on the next memory row at 7.0 GB or more
-LANE: core NEW   # 2026-11-14 17:59 IST: slot 1 granted 17:15 (R-H-62) for FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP and the screen-reader pass, one flagged run; unit notes verified in tracks/CORE/briefs/core/; starts on the next row at 7.0 GB or more after tests-docs (one start per row). Earlier: MERGED 11f2f70 (98627557)
+STATE: BUILDING   # 2026-11-14 18:54 IST: CORE 16:19 (45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8). Two runs live: tests-docs V3.3-T1 (wf_62685dc2-4da, slot 5, merge base a615a058) and core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (wf_d828e455-ef0, slot 1, flagged, merge base 63eb8257)
+LANE: core BUILDING   # 2026-11-14 18:54 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass), one batch, flagged, two reviewers at the end; build/core and its worktree fast-forwarded 11f2f70 -> 63eb8257 (--ff-only; the gates' rebuilt offline/1-addic.html restored first, its copy in _logs/scratch/core-ff-20261114/); lane.js wf_d828e455-ef0 launched 18:37 on the 18:29 row (8.4 GB); merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs BUILDING   # 2026-11-14 17:59 IST: V3.3-T1 (the browser flow 'a same-path SOS render keeps focus in the page'), slot 5 granted 17:15 (R-H-62); build/tests-docs and its worktree fast-forwarded be7c546 -> a615a058 (--ff-only, clean); lane.js wf_62685dc2-4da launched 17:48 (10.2 GB free 17:45); merge base a615a058
 SLOTS-ASKED: 0   # 2026-11-14 17:59 IST: both asks of 17:0x granted 17:15 (tests-docs 5, core 1; status-HUB.md at 544ca14)
-UPDATED: 2026-11-14 17:59 IST
+UPDATED: 2026-11-14 18:54 IST
 
+
+# 2026-11-14 18:54 IST · core launched (wf_d828e455-ef0); R-C-98 the owner's questions with their defaults; R-C-99 to SCREENS
+
+- core: args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY.json from mk_core_v34.py (FILES: store.js, ui-core.js, shell.html, styles.css, store.test.mjs, 1-addic.html); wf_sim SIM OK, 5 agents (the first draft was 77 bytes over the 12288-byte builder prompt: the area and one laneNote sentence shortened; the bulk unit's short note corrected to the verified premise). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8/subagents/workflows/wf_d828e455-ef0/journal.jsonl. Return -> the tip from git, both reviewers' findings from the journal, gates by hand if a fix round ran after the check, `LANE: core READY <tip>` (merge base 63eb8257), the contract lines into contracts/core.md, an R-C to the HUB.
+- The owner's questions are on R-C-98 with the defaults the builder builds; R-C-99 asks SCREENS about ui-settings.js's inline line (default no change).
 
 # 2026-11-14 17:59 IST · tests-docs V3.3-T1 launched; the four unit notes verified
 

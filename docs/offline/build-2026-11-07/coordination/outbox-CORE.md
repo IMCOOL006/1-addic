@@ -580,3 +580,17 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - One commit over 0e115013: be7c546 'docs(offline, tests-docs FIX-COUNTS-5): the counts true on the trunk 98627557'. Files: CLAUDE.md, README.md, offline/README.md, offline/docs/1-addic-Guide.md, offline/docs/1-addic-Guide.docx (rebuilt by build_guide.py, 0 images missing).
 - The numbers are yours from QUIET at 98627557: Node 787 checks in 16 files, 787 pass, 0 fail; browser 32 flows, 32 pass; dated 14 November 2026 (CLAUDE.md 2026-11-14). No flow added, so offline/README.md's flow names are unchanged. No 763 is left in the five files.
 - Checked at the tip: territory 5 own, 0 shared, 0 errors; docs gate GREEN (_logs/gates/tests-docs/docs-20261114-163908.log). Not run by the lane: Node or browser suites (QUIET's result is the source).
+
+## R-C-98 · 2026-11-14 18:54 IST · to HUB, cc the owner's window · tests-docs V3.3-T1 and core's three LOWs running; the owner's questions with their defaults (nothing waits on them)
+
+- Running in CORE 16:19 (45b995c7): tests-docs V3.3-T1, wf_62685dc2-4da (slot 5, 17:48 on the 17:43 row, merge base a615a058); core FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP with the screen-reader pass, wf_d828e455-ef0 (slot 1, flagged, 18:37 on the 18:29 row at 8.4 GB; merge base 63eb8257). Unit notes, each checked by an independent verifier: tracks/CORE/briefs/tests-docs/V3.3-T1.md and tracks/CORE/briefs/core/FIX-*.md.
+- What the scouts found (read in the code, verified): Store.bulk() has no caller in offline/src; Load sample data goes through write(), which already says a stale refusal. FIX-BULK-REFUSAL-SAY is therefore defensive: the stale flag is kept through bulk()'s notify (store.js:420-423); nothing a person sees changes. The kept line is a plain line in shell.html (core's file) outside main, so the lock page in ui-onboarding.js (actions-sos) is not edited.
+- For the owner, defaults built (one answer changes the words in one place):
+  1. The kept line's words: the toast's own words, one shared sentence: 'This notebook changed in another tab, so your last change was not saved.' (grade 6; names no PIN or backup). A change of words changes both.
+  2. How long the line stays: until the person unlocks (when a PIN is set), or until they go to another page (no PIN). No close button. Never in SOS.
+  3. An automatic save after an unlock that hits the same race says nothing (default). The cost: in that rare race a person who typed the right PIN is back on the lock page with the PIN box empty and no reason given. The other choice is one true line, 'Your notebook changed in another tab.'
+  4. The line on Settings > Your data after a refused sample load ('The notebook is locked', SCREENS's file): no change by default; R-C-99 asks SCREENS.
+
+## R-C-99 · 2026-11-14 18:54 IST · to SCREENS · ui-settings.js: the inline line after a stale refused save (a question; default no change)
+
+- When Load sample data is refused because another tab changed the notebook, ui-core already shows its one toast: 'This notebook changed in another tab, so your last change was not saved.' ui-settings.js's errorText(e) also writes an inline 'The notebook is locked' line, which is not true when no PIN is stored. The error carries e.stale === true (contracts/core.md, FIX-STALE-SAVE-SAY). Default: no change (the toast says it). If you want the inline line to match, honour e.stale there with the same words. Nothing in core's run depends on it.
