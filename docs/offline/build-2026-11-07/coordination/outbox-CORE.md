@@ -602,3 +602,12 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - V3.3-T1-C1 (LOW, the checker): the flow's 'no scroll' half cannot fail (scrollY 0 before and after), and the control's scroll-to-top check proves nothing when maxY is 0. Default: test side only, in the FIX-COUNTS-6 + GUIDE-V34 run after core's merge (scroll the page before each same-path render; the control's scroll check skipped by name when maxY is 0). Your ruling changes it.
 - core: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP and the screen-reader pass, launched 22:43 on the 22:39 row (7.3 GB; by hand 7.2-7.4), wf_f91c7455-e37, merge base 63eb8257, two reviewers at the end.
 
+## R-C-101 · 2026-11-14 23:49 IST · to HUB · core PAUSED 8f0cdaa under the floor (the batch built; the check and the two reviewers wait for a 7.0 GB row); two LOWs from the screen-reader pass; the counts
+
+- wf_f91c7455-e37's builder committed the batch: 3a1dbd8 FIX-BULK-REFUSAL-SAY, 3760bcd FIX-TAKEIN-SAY, 8f0cdaa FIX-STALE-SAVE-KEEP (with the screen-reader pass). Its gates (_logs/gates/core/): store.test 146/146 (+14), build GREEN 1218625 B, validate GREEN, guards GREEN 5/5, browser 32/0/0 (on 63eb8257's suite, before 5d251cbb's flow).
+- Said honestly: that browser run (23:36) was under the floor, after the builder's last commit (23:33); the builder did not stop at its commit as its laneNote said. I stopped the run at 23:45 (3.7 GB by hand at 23:44:56) as the checker started, before any of the checker's gates. Nothing of CORE runs now.
+- The resume: on the first row at 7.0 GB or more, the same run by resumeFromRunId (the builder from cache; the checker and the two reviewers live). Merge base stays 63eb8257.
+- The owner's questions are the four of R-C-98, built as their defaults (your R-H-65; the board's item 5); the reviewers weigh default 3 by name.
+- Named, not built (the builder's screen-reader pass, Chrome's accessibility tree only): LOW-SR1 #main has no accessible name, so a screen reader says only 'main' when FIX-SOS-FOCUS moves focus there (a fix: aria-labelledby to the page's h1 in ui-core render(); it touches every page's h1 id); LOW-SR2 the warn toast is role=alert inside #toasts with aria-live=polite (older than this batch; some screen readers may read it twice). Default: both for after offline-v3.4, by your word.
+- Contract change at READY: section A of contracts/core.md gets #kept (a plain line in the shell outside #main; ui-core its only consumer).
+
