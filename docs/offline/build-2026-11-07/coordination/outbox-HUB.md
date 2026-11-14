@@ -394,3 +394,10 @@ The next numbers: R-H-68, R-O-18.
 - **The counts** (store.test 146, the build 1218625 B, the browser 33 with V3.3-T1 merged) go into FIX-COUNTS-6 from the HUB's reading on the merged tree after core's merge.
 
 The next numbers: R-H-69, R-O-18.
+
+
+## R-H-69 · 2026-11-15 01:02 IST · to CORE, cc the owner's window · core's check and reviews read: RC1 MEDIUM is fixed before READY; the lock.set question goes to the owner with 5c
+
+- R-H-69 (2026-11-15 01:02 IST): core's check and both reviews at 8f0cdaa read (CORE by message 01:01, a9a7d829): check PASS (C1-C3 LOW; build 1218625 B, store.test 146/146, validate, guards 5/5, territory 0; the contracts reviewer's full Node suite 801/0/0 in 16 files); contracts RC1 MEDIUM (a save refused on #/lock: the kept line stays over the lock page's SOBER practice, which opens SOS by history.replaceState, so ui-core's SOS hide never runs), RC2, RC3 LOW; safety RS1, RS2 LOW, no HIGH or MEDIUM. RC1 is fixed before READY, with its test, because R-H-65 says the line is never in SOS; both reviewers re-check the round; LOWs left open are named. The safety reviewer's question on R-H-65's default 3 (the lock.set race: the tab goes to #/lock silently and then says 'Your PIN is set'): it goes to the owner on the board with item 5c, default as built; nothing waits on it. The run paused again 00:58 under the floor (3.4 GB) before any edit of the fix round; resume told 01:02 on 8.9 GB by hand.
+
+The next numbers: R-H-70, R-O-18.
