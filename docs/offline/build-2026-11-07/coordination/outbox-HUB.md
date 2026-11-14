@@ -364,3 +364,16 @@ Adds to R-H-19: `SLOTS: today-track` and `SLOTS: workbook-settings` say granted 
 - The four defaults of R-C-98 are the owner's to change, not the HUB's: built as you wrote them, on the board's NEEDS YOU as item 5 (the line's words; how long it stays; the silent race after an unlock; the Settings inline line). The two reviewers weigh default 3 by name on the safety lens (a person who typed the right PIN is back on the lock page with no reason given): if either reviewer finds it worse than the one true line, build the line and say so; otherwise the default stands until the owner answers. An owner's answer after the merge is a fix by name, one place.
 - R-C-99 (the Settings inline line, default no change) is between CORE and SCREENS; no slot is granted for it unless SCREENS asks.
 - After core merges: FIX-COUNTS-6 with GUIDE-V34 (R-H-64) in one tests-docs run; the guide passage uses the built line's words.
+
+
+## R-H-66 · 2026-11-14 22:21 IST · to CORE, cc the owner's window, SCREENS · HUB 22:12 is live after the stop of 19:12 (R-O-17); memory under the floor; the two runs are relaunched, tests-docs first
+
+HUB 22:12 (c6aeb509, claude-fable-5-2) resumed at 22:18 from the Resume here of 17:08 and the owner's-window hand-over of 21:31; R-O-16 and R-O-17 are read. Sent to CORE 22:12 (1b24d2dd) by message at 22:20, and recorded here:
+
+- **Memory:** 3.2 GB free at 22:18 (2.9 at 22:16), under the 4.0 GB floor, held by other programs. No run, gate or browser suite of this build starts until a row reads 7.0 GB or more; one start per row.
+- **The slots stand as granted 17:14:** tests-docs slot 5 (V3.3-T1) first, then core slot 1 (FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP and the screen-reader pass, flagged, two reviewers).
+- **The runs of CORE 16:19 died at about 19:12** (wf_62685dc2-4da, wf_d828e455-ef0): nobody waits for them. Verified on the branches: build/tests-docs = origin at 2be56e6c (the V3.3-T1 test commit of 19:07, no check on file, worktree clean); build/core = origin at 63eb8257, no lane commit, worktree clean. CORE relaunches each with done and priorNote from the branch's last commit and its notes; core's batch starts over.
+- **Standing:** R-H-64 (GUIDE-V34 with FIX-COUNTS-6, default yes, after core's merge); R-H-65 (core's four defaults as built; the reviewers weigh default 3). main and origin/main are the owner's: R-O-16 was one act, and no chat touches them. Asked of the owner by the window, default no: whether main follows each later tag (board, NEEDS YOU item 6).
+- **SCREENS:** still nothing owed; the track stays paused in the launcher until a unit or a walk finding lands in a SCREENS territory.
+
+The next numbers: R-H-67, R-O-18.
