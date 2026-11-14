@@ -192,7 +192,7 @@ const WHERE = `WHERE YOU WORK
 - THE SLICE RULE: the first batch is the slice (one unit); committed and green, it is merged at once (READY-SLICE ${lane} <tip>), so commit nothing half-done; a later batch never changes the slice's public shape without a line in the note.
 - Scratch ${W.scratch}/ (mkdir -p; files prefixed ${lane}): keep ${lane}__progress.md there (one line per unit: started / committed <sha> / gates) and ${lane}__units.md (YOUR OUTPUT). Write and Edit are REFUSED under ${REPO}/ (${WT}/ is yours): never write there.
 - Commit small, at every green unit and at least every 45 minutes, the message naming the unit, written to a scratch file: git -C ${W.wt} commit -F <file>; stage BY PATH, never git add -A, -u or .; every message ends with exactly:
-Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: ${session}
 - Never push, merge, rebase or stash; never checkout over uncommitted work; never touch another worktree, the base, ${REPO} or the branches ${TRUNK}, main, claude/*. No new npm dependency unless your unit names one. Windows, Git Bash: an odd count of single quotes breaks a heredoc, so write scripts and messages with Write into the scratch folder. LF line endings; never reformat lines you did not change.
 - Decisions in force, never re-opened: ${DECISIONS}. A unit the brief marks DROPPED, HELD or MOVED is not built.
@@ -261,7 +261,6 @@ const REVIEW_SCHEMA = {
       where: { type: 'string' }, scenario: { type: 'string' }, evidence: { type: 'string' }, fix: { type: 'string' } },
       required: ['id', 'severity', 'where', 'scenario', 'evidence', 'fix'] } },
     questions: { type: 'array', items: { type: 'string' } },
-    tip: { type: 'string' },
     read: { type: 'array', items: { type: 'string' } },
   },
   required: ['findings', 'questions'],
@@ -441,7 +440,7 @@ The lane check already ran (verdict ${check ? check.verdict : 'not run'}); do no
 
 YOUR BUDGET: about 60 tool calls; your hard cap is 80 and an agent cut off at the cap returns NOTHING. So: batch independent reads in one step; read the diff by file and range, never whole large files; write each finding, the moment you have it, to ${W.scratch}/${lane}__review-${lens.key}.md (id, severity, unit, file:line, scenario, evidence, fix); and at about 60 calls stop reading and return what you have.
 
-Return the structured result: findings ranked most severe first, each with an id (${lens.id}1, ...), severity, unit, file:line, the failure scenario in one sentence (the input and the wrong outcome), the evidence (a path, a test, or the lines), and the fix you suggest; questions for the lane (a hunch is a question with the line that raised it, not a finding); tip; the files you read.`
+Return the structured result: findings ranked most severe first, each with an id (${lens.id}1, ...), severity, unit, file:line, the failure scenario in one sentence (the input and the wrong outcome), the evidence (a path, a test, or the lines), and the fix you suggest; questions for the lane (a hunch is a question with the line that raised it, not a finding); the files you read.`
 }
 
 function gatePrompt(g) {
@@ -552,8 +551,11 @@ let reviewFix = null, reviewRecheck = null
 const held = []
 const gateResults = []
 let stopped = null
-let lastTip = DIFF_FROM || null
-const noteTip = n => { if (n && n.tip) lastTip = n.tip }
+let lastTip = start === 'review' ? null : (DIFF_FROM || null)
+// FIX-LANEJS-TIP (R-C-88): the run's tip is a sha from a builder's note or from the checker (the HEAD it judged),
+// never a reviewer's output (a reviewer once filled the field with prose); anything that is not a sha is ignored.
+const SHA_RE = /^[0-9a-f]{7,40}$/
+const noteTip = n => { const t = n && typeof n.tip === 'string' ? n.tip.trim() : ''; if (SHA_RE.test(t)) lastTip = t }
 
 if (start === 'build') {
   phase('Build')
@@ -618,13 +620,13 @@ let toFix = []
 if (start === 'build' || start === 'check') {
   phase('Check')
   check = await run(checkPrompt(notes, built, held), { label: 'check:' + lane, phase: 'Check', agentType: 'lane-checker', schema: CHECK_SCHEMA })
-  if (check && check.tip) lastTip = check.tip
+  noteTip(check)
   toFix = check ? check.findings.filter(f => f.severity !== 'LOW' || check.verdict === 'FIX') : []
   if (check && check.verdict === 'FIX' && toFix.length) {
     checkFix = await run(fixPrompt(toFix, 'the lane check', [W.checkNotes]), { label: 'fix:check:' + lane, phase: 'Check', agentType: BUILDER, effort: FIX_EFFORT, schema: NOTE_SCHEMA })
     noteTip(checkFix)
     checkRecheck = await run(recheckPrompt(toFix, checkFix, 'the independent checker'), { label: 'recheck:check:' + lane, phase: 'Check', agentType: 'lane-checker', schema: RECHECK_SCHEMA })
-    if (checkRecheck && checkRecheck.tip) lastTip = checkRecheck.tip
+    noteTip(checkRecheck)
   }
   if (!check) log(`${lane}: the checker returned no structured result`)
 }
@@ -642,7 +644,6 @@ if (REVIEWS) {
   const rs = review || await parallel(lensesRun.map(lens => () =>
     run(reviewPrompt(lens, check), { label: `review:${lens.key}:${lane}`, phase: 'Review', agentType: 'lane-reviewer', schema: REVIEW_SCHEMA })))
   review = rs
-  rs.filter(Boolean).forEach(r => { if (r.tip) lastTip = r.tip })
   const all = rs.filter(Boolean).flatMap(r => r.findings)
   if (all.length) {
     reviewFix = await run(fixPrompt(all, 'the two reviewers', lensesRun.map(l => W.scratch + '/' + lane + '__review-' + l.key + '.md')), { label: 'fix:review:' + lane, phase: 'Review', agentType: BUILDER, effort: FIX_EFFORT, schema: NOTE_SCHEMA })
@@ -651,7 +652,6 @@ if (REVIEWS) {
       const mine = rs[i] ? rs[i].findings : []
       return mine.length ? run(recheckPrompt(mine, reviewFix, lens.who), { label: `recheck:${lens.key}:${lane}`, phase: 'Review', agentType: 'lane-reviewer', schema: RECHECK_SCHEMA }) : Promise.resolve(null)
     }))
-    reviewRecheck.filter(Boolean).forEach(r => { if (r.tip) lastTip = r.tip })
   }
 }
 
