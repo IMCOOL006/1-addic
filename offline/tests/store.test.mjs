@@ -924,6 +924,43 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.doesNotMatch(toastsOf()[0].textContent, STALE_WORDS);
   });
 
+  // RC2, RS1: another tab removed the PIN or erased the notebook, so no lock is stored: the refused save leaves this tab
+  // open, with no lock page to go to, and the store notice { label: 'unlock', stale: true } is said in the same one
+  // toast, outside SOS. The page is drawn again one frame later, as for any store notice.
+  const bootWithNotice = async (t, hash) => {
+    const b = await bootPending(t, hash);
+    let notice = null;
+    globalThis.Store.subscribe = (f) => { notice = f; };
+    const drawn = { n: 0 };
+    b.U.pages.today = () => { drawn.n += 1; const p = globalThis.document.createElement('p'); p.textContent = 'Today'; return p; };
+    b.opened();
+    await b.booting;
+    const send = async (n) => { notice(n); await new Promise((r) => setImmediate(r)); };
+    return { send, drawn };
+  };
+
+  test('FIX-STALE-SAVE-SAY (b): a save refused with no lock stored any more is said in one warn toast; the page stays and is drawn again', async (t) => {
+    const { send, drawn } = await bootWithNotice(t, '#/today');
+    assert.equal(drawn.n, 1, 'control: drawn once at the start');
+    await send({ label: 'unlock', stale: true });
+    assert.equal(toastsOf().length, 1, 'one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS);
+    assert.equal(location.hash, '#/today', 'no lock is stored, so no lock page');
+    t.mock.timers.tick(20); // the next frame, a later turn
+    await new Promise((r) => setImmediate(r));
+    assert.equal(drawn.n, 2, 'the page is drawn again from what is stored');
+    await send({ label: 'unlock' });
+    await send({ label: 'commit' });
+    assert.equal(toastsOf().length, 1, 'a notice without the flag says nothing');
+  });
+
+  test('FIX-STALE-SAVE-SAY (b): inside SOS a save refused with no lock stored shows no toast', async (t) => {
+    const { send } = await bootWithNotice(t, '#/sos/craving');
+    await send({ label: 'unlock', stale: true });
+    assert.equal(toastsOf().length, 0, 'SOS is never interrupted');
+    assert.equal(location.hash, '#/sos/craving');
+  });
+
   test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
     const b = await bootPending(t, '#/today');
     const touches = [];
@@ -2674,6 +2711,42 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(locked && locked.code, 'LOCKED', 'control: the tab is locked now');
     assert.equal(locked.stale, undefined, 'a save refused because the tab is locked carries no flag');
   });
+
+  // RC2, RS1: with no lock stored any more (the PIN removed or the notebook erased in another tab) the refused save
+  // leaves this tab open: onLock hears nothing, as there is no lock page to go to, and the store notice carries stale
+  // instead. With a lock still stored, onLock carries the flag and the notice does not.
+  for (const [how, change, open] of [
+    ['removes the PIN', async (S) => assert.equal(await S.lock.remove(IMPORT_PIN), true), true],
+    ['erases the notebook', (S) => S.resetAll(), true],
+    ['brings back a backup, a lock still stored', (S) => S.replaceAll(IMPORT), false],
+  ]) {
+    test('FIX-STALE-SAVE-SAY (a): another tab ' + how + ': the refused save is said once, by onLock or by the store notice', async () => {
+      const { S } = await pinned();
+      const openTab = freshStore();
+      await openTab.load();
+      assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+      const heard = [];
+      const notes = [];
+      openTab.lock.onLock((i) => heard.push({ ...i }));
+      openTab.subscribe((n) => notes.push({ ...n }));
+      await change(S);
+      const refused = await openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }).then(() => null, (e) => e);
+      assert.equal(refused && refused.code, 'LOCKED');
+      assert.equal(refused.stale, true);
+      if (open) {
+        assert.deepStrictEqual(heard, [], 'no lock is stored, so no lock page to go to (RC2)');
+        assert.deepStrictEqual(notes, [{ label: 'unlock', stale: true }], 'the store notice says the save was refused (RS1)');
+        assert.equal(openTab.status().locked, false, 'the tab stays open');
+        assert.ok(!openTab.view.get('events', 'late'), 'the refusal stands');
+        await openTab.commit('next', (d) => { d.put('events', { id: 'next', type: 'CravingLogged' }); });
+        assert.ok(openTab.view.get('events', 'next'), 'the next save goes in');
+        assert.equal(notes.slice(1).some((n) => n.stale), false, 'and its notice carries no flag');
+      } else {
+        assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }]);
+        assert.deepStrictEqual(notes, [{ label: 'lock' }], 'onLock carries the flag; the notice does not');
+      }
+    });
+  }
 
   test('FIX-STALE-SAVE-SAY (a): a lock from the timer and lockNow carry no stale flag', async (t) => {
     globalThis.indexedDB = fakeIndexedDB();

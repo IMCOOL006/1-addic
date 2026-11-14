@@ -914,6 +914,12 @@ const UI = (function () {
       render('store');
     });
   }
+  // The store's notices. A save refused because another tab removed the PIN or erased the notebook leaves this tab
+  // open, with no lock page to go to: the notice carries stale, and the same one toast says it, outside SOS (RC2, RS1).
+  function heard(n) {
+    if (n && n.stale && pageKey(route()) !== 'sos') sayStale();
+    schedule();
+  }
 
   /* ── Speech, print, download ───────────────────────────────────────────────────────────── */
   function synth() {
@@ -1042,7 +1048,7 @@ const UI = (function () {
       } else {
         state.loaded = true;
       }
-      if (typeof S.subscribe === 'function') safe(() => S.subscribe(schedule), null);
+      if (typeof S.subscribe === 'function') safe(() => S.subscribe(heard), null);
       if (S.lock && typeof S.lock.onLock === 'function') {
         safe(() => S.lock.onLock((info) => {
           clearPrint(); // also inside SOS, where the page is not drawn again (a)
