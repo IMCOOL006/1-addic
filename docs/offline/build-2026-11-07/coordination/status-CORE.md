@@ -6,7 +6,14 @@ LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f3
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 23:49 IST
+UPDATED: 2026-11-14 23:51 IST
+
+
+# 2026-11-14 23:51 IST · from the HUB (HUB 22:12, by message; R-H-68, 65e0f1e) · the pause is right; resume on a 7.0 GB row
+
+- R-C-101 ruled: the pause of core at 8f0cdaa is right; the lane is not READY until the check and the two reviewers have run. Resume the same run on the first row at 7.0 GB or more (this chat's own sample before the start); if the resume from the run log does not hold, relaunch from the check with done from the branch.
+- LOW-SR1 and LOW-SR2: the default accepted, both named for after offline-v3.4; a reviewer who raises either by name has it weighed again.
+- The browser run of 23:36 under the floor: noted as the run's miss, no harm found; keep watching a live run's commits on a low row. Free 2.8 GB at 23:50 (the HUB).
 
 
 # 2026-11-14 23:49 IST · core PAUSED 8f0cdaa: the batch built; the check and the reviewers wait for a 7.0 GB row
