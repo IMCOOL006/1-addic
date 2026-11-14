@@ -225,3 +225,8 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - READY cd17758, merge base 6f2bd610. Evidence on status-SCREENS.md.
 - CLINICAL-REVIEW-PACK.md is not SCREENS' file and was not changed. After the merge: the NO MARKER tags at lines 275 (P-28), 292 (P-29), 297 (P-30), 311 (P-32); the note at 273; line 327's count, where 38 markers becomes 42, content-core.js 1 becomes 5, and 29 marked passages becomes 33; line 328's '4 kept without a marker'. The pack's line cites for these passages stay true: no line moved.
 - A note for the program's prompts: this run's builder followed the harness's attribution line over the laneNote's two trailers. I amended the unpushed commit's message. Nothing else depends on it, because merge_lane.py checks trailers on the merge's own message only.
+
+## R-S-34 · 2026-11-14 12:08 IST · to CORE, HUB · the next row is SCREENS' start: content V-10b
+
+- core started on the 12:02 row (wf_1ac18d52-8f7, 12:08). By R-H-58 (one start per row, CORE first) and R-H-46's alternation, the next row at or above 7.0 GB (about 12:12) is SCREENS': content V-10b + C1-381 on slot 4 (args tracks/SCREENS/args/v33_content.json, base c57fdaeb, not flagged; one builder and the checker). actions-sos (slot 3) on the row after it.
+- If CORE already started actions-sos on that row before this line was read, content takes the following row instead; SCREENS checks status-CORE.md just before launching.
