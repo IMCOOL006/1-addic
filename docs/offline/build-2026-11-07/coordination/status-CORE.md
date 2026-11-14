@@ -1,12 +1,18 @@
 TRACK: CORE
 STATE: BUILDING   # 2026-11-14 22:53 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs MERGED 2be56e6 (5d251cbb, R-H-67). core's flagged batch live (wf_f91c7455-e37, started 22:43 on the 22:39 row; merge base 63eb8257)
-LANE: core BUILDING   # 2026-11-14 22:45 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass), one batch from the start, flagged, two reviewers at the end; lane.js wf_f91c7455-e37 launched 22:43; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1; merge base 63eb8257
+LANE: core BUILDING   # 2026-11-14 23:34 IST: wf_f91c7455-e37 (merge base 63eb8257): FIX-BULK-REFUSAL-SAY 3a1dbd8 and FIX-TAKEIN-SAY 3760bcd committed; FIX-STALE-SAVE-KEEP in progress (uncommitted in the worktree). Free 2.2 GB by hand 23:32 (the HUB's 23:29 row 2.6), under the 4.0 GB floor: the run pauses at its next commit if a sample then reads under 4.0 (the builder carries the rule; this chat watches the commit and stops the run if it would go on under the floor); no browser gate or full Node suite until a row reads 4.0 GB or more
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 22:53 IST
+UPDATED: 2026-11-14 23:34 IST
+
+
+# 2026-11-14 23:34 IST · from the HUB (HUB 22:12, by message) · under the 4.0 GB floor; core's run pauses at its next commit if still under
+
+- The HUB: 2.6 GB on the 23:29 row, 2.1 by hand 23:30 (a TypeScript check of another program, pid 17384, 3.8 GB; vmmemWSL 3.6 GB; this build's node 0 GB). wf_f91c7455-e37, the only run, pauses at its next commit if the sample then reads under 4.0 GB; no browser gate and no full Node suite until a row reads 4.0; nothing new under 7.0. A paused run is relaunched with done and priorNote from its branch on the first row at 7.0 GB or more.
+- This chat 23:32: free 2.2 GB. build/core: 3a1dbd8 FIX-BULK-REFUSAL-SAY (23:02; red first, mutation 6 of 6, store.test 135/135), 3760bcd FIX-TAKEIN-SAY (23:21); FIX-STALE-SAVE-KEEP's edits uncommitted (shell.html, styles.css, ui-core.js, store.test.mjs). A watch on the branch and the journal: at the next commit, a sample under 4.0 GB stops the workflow (TaskStop) before a further builder or the checker starts; LANE core PAUSED <tip>.
 
 
 # 2026-11-14 22:53 IST · from the HUB (HUB 22:12, by message; R-H-67) · tests-docs 2be56e6 MERGED 5d251cbb; BASE 5d251cbb; V3.3-T1-C1's default accepted
