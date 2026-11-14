@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-14 16:22 IST: context over 300k, hand-over written; CORE 12:02 (393886cb-a443-4703-8331-923de2473966). core MERGED 11f2f70 (98627557) = FREEZE offline-v3.3; QUIET on _int. tests-docs FIX-COUNTS-5 prepared (slot 5 granted); READY only after the HUB's QUIET numbers (RUN-RECORD 'Resume here')
+STATE: RESTART   # 2026-11-14 16:18 IST: context over 300k, hand-over written; CORE 12:02 (393886cb-a443-4703-8331-923de2473966). core MERGED 11f2f70 (98627557) = FREEZE offline-v3.3; QUIET on _int. tests-docs FIX-COUNTS-5 prepared (slot 5 granted); READY only after the HUB's QUIET numbers (RUN-RECORD 'Resume here')
 LANE: core MERGED 11f2f70   # 2026-11-14 16:10 IST: merged 98627557, pushed with build/core (the HUB: build 1216361 B, store.test 132/132, validate, guards, territory 0; full Node 787/0/0 in 16 files; browser lock 5/5, SOS 5/5, PIN 2/2). FREEZE offline-v3.3 at 98627557
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
-LANE: tests-docs BUILDING   # 2026-11-14 16:22 IST: FIX-COUNTS-5 (docs only; slot 5 granted 16:1x): build/tests-docs and its worktree fast-forwarded 69f2b72 -> 0e115013 (--ff-only, clean); tracks/CORE/args/fc5.py dry-run on a copy with 787 16 32: every line once, no 763 left. Nothing applied in the worktree yet: waits for the QUIET numbers
+LANE: tests-docs BUILDING   # 2026-11-14 16:18 IST: FIX-COUNTS-5 (docs only; slot 5 granted 16:1x): build/tests-docs and its worktree fast-forwarded 69f2b72 -> 0e115013 (--ff-only, clean); tracks/CORE/args/fc5.py dry-run on a copy with 787 16 32: every line once, no 763 left. Nothing applied in the worktree yet: waits for the QUIET numbers
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 16:22 IST
+UPDATED: 2026-11-14 16:18 IST
 
 
 
@@ -15,7 +15,7 @@ UPDATED: 2026-11-14 16:22 IST
 
 
 
-# 2026-11-14 16:22 IST · from the HUB (HUB 14:54, by message) · core 11f2f70 MERGED 98627557; FREEZE offline-v3.3; QUIET; FIX-COUNTS-5
+# 2026-11-14 16:18 IST · from the HUB (HUB 14:54, by message) · core 11f2f70 MERGED 98627557; FREEZE offline-v3.3; QUIET; FIX-COUNTS-5
 
 - core READY 11f2f70 merged 98627557 (trunk and build/core pushed 16:10). On the merged tree: build 1216361 B, store.test 132/132, validate, guards, territory 0; full Node 787 pass, 0 fail, 0 skip in 16 files; browser lock 5/5, SOS 5/5, PIN 2/2. FREEZE offline-v3.3 at 98627557; QUIET on _int since 16:13: no Node or browser suite from a lane until the HUB's 'QUIET: done'.
 - tests-docs slot 5 granted for FIX-COUNTS-5 (docs only): Node 787 checks in 16 files (the HUB's reading); the browser count from the QUIET result (32 expected). Prepared: fc5.py (dry run clean on a copy); build/tests-docs at 0e115013. READY only after the QUIET numbers.
