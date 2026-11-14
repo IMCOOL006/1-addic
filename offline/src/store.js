@@ -387,12 +387,15 @@ const Store = (function () {
     state.chain = p.catch(() => {});
     return p;
   }
-  async function write(w) {
+  // auto: a write the person did not ask for (takeIn after a PIN is set or an unlock). Refused because another tab
+  // changed the lock, it resyncs the same, but nothing of the person's was lost, so neither onLock nor the store
+  // notice carries stale (FIX-TAKEIN-SAY). Its error reaches no page: lock.set() and unlock() let it go.
+  async function write(w, auto) {
     try {
       await state.backend.write(Object.assign({ expect: state.lock }, w));
     } catch (e) {
       if (e && e.code === 'STALE') {
-        try { await resync(true); } catch (err) { /* the next write asks again */ }
+        try { await resync(!auto); } catch (err) { /* the next write asks again */ }
         const f = fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
         f.stale = true; // a change in another tab refused it and ui-core has said so: a page need not say it again (RC1)
         throw f;
@@ -732,7 +735,7 @@ const Store = (function () {
       }
     }
     if (puts.length) {
-      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] });
+      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] }, true);
       if (epoch === state.epoch) for (const [n, id, v] of puts) state.rows[n].set(id, v); // locked meanwhile: not in memory (RC18)
     }
     if (Object.keys(left).length) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: left }));

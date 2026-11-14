@@ -1844,7 +1844,9 @@ function fakeIndexedDB() {
       transaction(names, mode) {
         for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
         if (mode === 'readwrite') fake.writes += 1;
-        const t = { error: null, aborted: false, abort() { t.aborted = true; } };
+        // Once, as the next readwrite transaction opens and before its ops run: another tab's change lands (FIX-TAKEIN-SAY).
+        if (mode === 'readwrite' && fake.beforeWrite) { const f = fake.beforeWrite; fake.beforeWrite = null; f(); }
+        const t ={ error: null, aborted: false, abort() { t.aborted = true; } };
         const ops = [];
         const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
         t.objectStore = (n) => {
@@ -1893,6 +1895,12 @@ function fakeIndexedDB() {
   };
   fake.rows = (store) => { const rec = dbs.get('1-addic'); return rec ? Array.from(rec.stores.get(store).rows.values()) : []; };
   fake.storeNames = () => Array.from(dbs.get('1-addic').stores.keys());
+  fake.beforeWrite = null;
+  // Every row of every store, as it is now, and back again (another tab's whole change in one step).
+  fake.copy = () => new Map(Array.from(dbs.get('1-addic').stores).map(([n, st]) => [n, Array.from(st.rows.values()).map(cp)]));
+  fake.restore = (c) => {
+    for (const [n, st] of dbs.get('1-addic').stores) { st.rows.clear(); for (const r of c.get(n) || []) st.rows.set(r[st.keyPath], cp(r)); }
+  };
   fake.dump = () => JSON.stringify(Array.from(dbs.values()).map((rec) => Array.from(rec.stores).map(([n, st]) => [n, Array.from(st.rows.values())])));
   return fake;
 }
@@ -2815,6 +2823,77 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.deepStrictEqual(notes, [{ label: 'bulk', stale: true }, { label: 'bulk' }], 'the flag does not stick');
     await A.commit('after', (d) => { d.put('events', { id: 'after', type: 'CravingLogged' }); });
     assert.deepStrictEqual(notes.slice(2), [{ label: 'after' }], 'nor does it reach a commit outside bulk');
+  });
+
+  /* FIX-TAKEIN-SAY: takeIn's write after an unlock is automatic: the person did nothing. Refused because another tab
+     changed the lock between the unlock's read and that write, it resyncs as before, but nothing of the person's was
+     lost, so neither onLock nor the store notice carries stale. A person's own refused save still does. */
+  const SNAP = 'f1';
+  const raced = async (change) => {
+    const { idb, S } = await pinned();
+    const before = idb.copy();
+    await change(S); // the other tab's change, kept aside and put back as the takeIn write opens
+    const after = idb.copy();
+    idb.restore(before);
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1,
+      stores: { events: [{ id: SNAP, type: 'CravingLogged', note: MARK + '-fallback' }] } }));
+    const A = freshStore();
+    await A.load();
+    assert.equal(A.status().locked, true, 'control: A loads the lock as it was');
+    const heard = [];
+    const notes = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    A.subscribe((n) => notes.push({ ...n }));
+    let landed = false;
+    idb.beforeWrite = () => { landed = true; idb.restore(after); };
+    return { idb, ls, A, heard, notes, landed: () => landed };
+  };
+  const newPin = (S) => S.lock.set('1357');
+
+  test('FIX-TAKEIN-SAY (a): a takeIn write refused because another tab changed the lock says nothing as stale', async () => {
+    const { A, heard, notes, landed } = await raced(newPin);
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true, 'the unlock resolves without throwing');
+    assert.equal(landed(), true, 'control: the change landed on the takeIn write');
+    assert.deepStrictEqual(heard, [{ reason: 'auto' }], 'a lock page, with no stale flag: nothing of the person was lost');
+    assert.deepStrictEqual(notes, [{ label: 'lock' }, { label: 'unlock' }], "resync's notice, then the unlock's own");
+    assert.equal(A.status().locked, true, 'the tab took the new lock');
+  });
+
+  test('FIX-TAKEIN-SAY (b): the snapshot stays after that refusal and the next unlock takes it in', async () => {
+    const { idb, ls, A, heard, notes } = await raced(newPin);
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    assert.ok(ls.getItem('1-addic:snapshot').includes(SNAP), 'nothing was written, so the snapshot stays');
+    assert.equal(await A.lock.unlock(IMPORT_PIN), false, 'the old PIN opens nothing now');
+    assert.equal(await A.lock.unlock('1357'), true, 'the new PIN opens it');
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'taken in, so no plain copy stays');
+    assert.equal(A.view.get('events', SNAP).note, MARK + '-fallback');
+    assert.ok(!idb.dump().includes(MARK), 'sealed in IndexedDB');
+    assert.equal(heard.concat(notes).some((n) => n.stale), false, 'no notice said a save was lost');
+  });
+
+  test("FIX-TAKEIN-SAY (c): a person's own save refused the same way still carries stale", async () => {
+    const { S } = await pinned();
+    const A = freshStore();
+    await A.load();
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    const heard = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    await newPin(S);
+    const refused = await A.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }).then(() => null, (e) => e);
+    assert.equal(refused && refused.code, 'LOCKED');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }]);
+  });
+
+  test('FIX-TAKEIN-SAY (d): with no lock stored any more, a refused takeIn sends the notices without stale', async () => {
+    const { ls, A, heard, notes, landed } = await raced(async (S) => assert.equal(await S.lock.remove(IMPORT_PIN), true));
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    assert.equal(landed(), true, 'control: the change landed on the takeIn write');
+    assert.deepStrictEqual(heard, [], 'no lock is stored, so no lock page');
+    assert.deepStrictEqual(notes, [{ label: 'unlock' }, { label: 'unlock' }], 'neither notice carries stale');
+    assert.equal(A.status().locked, false);
+    assert.ok(ls.getItem('1-addic:snapshot').includes(SNAP), 'the snapshot stays');
   });
 
   /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
