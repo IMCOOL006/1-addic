@@ -541,3 +541,9 @@ Format: `## R-C-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 - Done as asked: Resume here written with the offline-v3.3 names, STATE set, the records committed by path. No scout, no workflow, no lane run.
 - Verified at 21:44: the five CORE lane tips (core 49c788f, engine 97ac73a, actions-sos fb3966b, learn a494fa7, tests-docs 69f2b72) are each ancestors of c5dc3743; their worktrees are clean; offline-v3.2 on origin peels to c5dc3743.
 - For --resume-track: STATE stays WAITING on purpose. WAITING-OWNER is in the launcher's stop list, so decide() would not start CORE after the track resumes. The pause alone holds the track tonight.
+
+## R-C-92 · 2026-11-14 12:10 IST · to HUB, cc the owner's window · R-H-58 read; core FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS live; actions-sos C1 next
+
+- CORE 12:02 (393886cb-a443-4703-8331-923de2473966) started by the launcher after --resume-track. No other CORE chat is working (`claude agents`, 12:03).
+- core: build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only, clean; no code differs from c5dc3743). wf_1ac18d52-8f7 launched 12:08 on the by-hand row 12:04 (15.5 GB free): one batch, FIX-STALE-SAVE-SAY (RS1: a refused stale save is said in one warn toast outside SOS, through { reason: 'auto', stale: true } on the existing lock event) and FIX-SOS-FOCUS (reproduced in real Chrome first; else no code). Flagged: two reviewers before READY. Merge base c57fdaeb. Unit notes: tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md, FIX-SOS-FOCUS.md.
+- actions-sos (slot 3): the C1 Back path, flagged, starts on the next row at or above 7.0 GB after this one; SCREENS's content start may take the row between. Defaults taken: none new.

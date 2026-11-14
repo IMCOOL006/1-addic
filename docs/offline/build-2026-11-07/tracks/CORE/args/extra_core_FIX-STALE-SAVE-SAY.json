@@ -1,0 +1,10 @@
+{
+ "FIX-STALE-SAVE-SAY": {
+  "tier": 1,
+  "note": "FIX-STALE-SAVE-SAY (core, flagged; offline-v3.3; merge base c57fdaeb; RS1 of R-C-86). A save refused because another tab changed the notebook (an import or a PIN change) is lost with nothing on screen saying so: the lock page replaces the page before its refusal shows. Keep the refusal; the stale branch of Store's write() tells the lock listeners { reason: 'auto', stale: true }, and ui-core's onLock shows one warn toast outside SOS. [The whole note, with the lines, the words, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md: read it before you build.]"
+ },
+ "FIX-SOS-FOCUS": {
+  "tier": 1,
+  "note": "FIX-SOS-FOCUS (core, flagged; offline-v3.3; merge base c57fdaeb; R-C-88 question 2). A route render of the same path with a new query (Back or Forward between '#/sos/craving' and '#/sos/craving?from=lock') replaces main but does not move focus, so a keyboard user can fall to body. Reproduce it in real Chrome first (a red log); only then: focus main with no scroll when the focused element was inside main and is gone. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-SOS-FOCUS.md: read it before you build.]"
+ }
+}

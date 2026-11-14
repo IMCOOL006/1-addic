@@ -1,0 +1,69 @@
+{
+ "lane": "core",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The offline-v3.3 fixes by name: a save refused after another tab's import or PIN change is said in a toast that survives the lock page; a same-path route render keeps keyboard focus inside the page.",
+ "files": [
+  "offline/src/store.js",
+  "offline/src/ui-core.js",
+  "offline/tests/store.test.mjs",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK",
+  "FIX-STALE-SAVE-SAY",
+  "FIX-SOS-FOCUS"
+ ],
+ "batches": [
+  [
+   "V-11",
+   "V-46",
+   "V-16",
+   "V-17a",
+   "V-26a",
+   "FIX-IMPORT-MARK"
+  ],
+  [
+   "FIX-STALE-SAVE-SAY",
+   "FIX-SOS-FOCUS"
+  ]
+ ],
+ "unitTier": {
+  "V-11": 1,
+  "V-16": 2,
+  "V-17a": 2,
+  "V-26a": 2,
+  "FIX-STALE-SAVE-SAY": 1,
+  "FIX-SOS-FOCUS": 1
+ },
+ "unitNotes": {
+  "FIX-STALE-SAVE-SAY": "FIX-STALE-SAVE-SAY (core, flagged; offline-v3.3; merge base c57fdaeb; RS1 of R-C-86). A save refused because another tab changed the notebook (an import or a PIN change) is lost with nothing on screen saying so: the lock page replaces the page before its refusal shows. Keep the refusal; the stale branch of Store's write() tells the lock listeners { reason: 'auto', stale: true }, and ui-core's onLock shows one warn toast outside SOS. [The whole note, with the lines, the words, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md: read it before you build.]",
+  "FIX-SOS-FOCUS": "FIX-SOS-FOCUS (core, flagged; offline-v3.3; merge base c57fdaeb; R-C-88 question 2). A route render of the same path with a new query (Back or Forward between '#/sos/craving' and '#/sos/craving?from=lock') replaces main but does not move focus, so a keyboard user can fall to body. Reproduce it in real Chrome first (a red log); only then: focus main with no scroll when the focused element was inside main and is gone. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-SOS-FOCUS.md: read it before you build.]"
+ },
+ "laneNote": "CORE 12:02's word (2026-11-14), offline-v3.3 by the HUB's grant (R-H-58 on the owner's R-O-11), under R-O-7. Flagged lane: encryption and the person's data; two reviewers before READY. One batch of two units: name each by its id in done, one commit per unit at least. 'Claude-Session: 393886cb-a443-4703-8331-923de2473966' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No clinical copy, no new public name, no new event type (stale is a field on the existing lock event). SOS is never interrupted. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-01",
+  "U-03",
+  "U-02",
+  "U-04",
+  "FIX-V11",
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK"
+ ],
+ "base": "c57fdaeb",
+ "session": "393886cb-a443-4703-8331-923de2473966",
+ "now": "2026-11-14 12:07 IST",
+ "diffFrom": "c57fdaeb",
+ "slot": 1,
+ "sliceRun": false
+}

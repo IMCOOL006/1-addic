@@ -1,12 +1,21 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-09 21:46 IST: CORE 19 (8b2ee4e2-caf9-4c9c-9c48-fcfe5a9502c7). TAG offline-v3.2 at c5dc3743. The CORE track is paused in the launcher (R-H-56, 21:44). Nothing of CORE runs; nothing is owed. The offline-v3.3 LOWs wait for the owner's line (RUN-RECORD 'Resume here'). The word stays WAITING on purpose: WAITING-OWNER would stop the launcher starting CORE after --resume-track
-LANE: core MERGED 49c788f   # 2026-11-09 19:55 IST: FIX-IMPORT-MARK merged 82c5eddf (the HUB: build 1212699 B, store.test GREEN, validate, guards GREEN). RS1 LOW open, named FIX-STALE-SAVE-SAY, the HUB's call
+STATE: BUILDING   # 2026-11-14 12:09 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966) on R-H-58 (the owner's R-O-11, continue v3.3). core FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS live as wf_1ac18d52-8f7 (slot 1, flagged, merge base c57fdaeb); actions-sos the C1 Back path (slot 3) on the next 7.0 GB row
+LANE: core BUILDING   # 2026-11-14 12:08 IST: build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only, clean); wf_1ac18d52-8f7 (lane.js, args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY.json from mk_core_v33.py; unit notes tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md and FIX-SOS-FOCUS.md; wf_sim OK); two reviewers at its end. Earlier: MERGED 49c788f (FIX-IMPORT-MARK, 82c5eddf)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED fb3966b   # 2026-11-09 20:37 IST: FIX-AS-V32 merged aac18546, pushed (the HUB: build, actions.test 226/226, validate, guards GREEN, territory 0; full Node 763/763; the SOS, lock, PIN and SOBER flows 9/9, the SOBER flow's first run against SF1's hold). R-H-54: C1 and FIX-SOS-FOCUS LOW, named for v3.3; the dropped-save order intended
+LANE: actions-sos MERGED fb3966b   # 2026-11-14 12:09 IST: slot 3 granted 12:02 (R-H-58) for the C1 Back path (flagged); starts on the next row at or above 7.0 GB after core's start. Earlier: FIX-AS-V32 merged aac18546
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
-SLOTS-ASKED: 0
-UPDATED: 2026-11-09 21:46 IST
+SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
+UPDATED: 2026-11-14 12:09 IST
+
+
+# 2026-11-14 12:09 IST · CORE 12:02 (393886cb-a443-4703-8331-923de2473966) resumes on R-H-58; core FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS launched
+
+- Started by the launcher at 12:02 after the HUB's --resume-track CORE (R-H-58 on the owner's R-O-11, 'continue v3.3'). Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE c5dc3743, SLOTS core 1 and actions-sos 3 granted 12:02), the outbox tails (R-H-55 to R-H-58, R-C-83 to R-C-91), the owner's R-O-11, lane.js's header, RS1's text in wf_78aca99f-7e4's journal, R-C-88's question 2, the checker's SF1 second-shape log. `claude agents --json` 12:03: the live 1-addic chats are HUB 11:56 (29a61bf6), SCREENS 12:02 (0bd68904) and this chat; no older CORE is working.
+- Memory by hand 12:04: 15.5 GB free of 31.8 (the HUB's row 11:58 16.0 GB). CORE starts first on the rows (R-H-58).
+- build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only; the worktree clean; no code changed on the trunk since c5dc3743: git diff c5dc3743 c57fdaeb -- offline is empty). Merge base c57fdaeb.
+- Unit notes written: tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md (RS1: the stale branch of write() tells the lock listeners { reason: 'auto', stale: true }; ui-core's onLock shows one warn toast outside SOS; tests in store.test.mjs) and FIX-SOS-FOCUS.md (reproduce in real Chrome first; then a route render that drops the focused element from main focuses main, no scroll).
+- Launched 12:08: wf_1ac18d52-8f7 (lane.js; args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY.json from mk_core_v33.py; base and diffFrom c57fdaeb; slot 1; flagged, two reviewers at the end; wf_sim OK, 5 agents). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/393886cb-a443-4703-8331-923de2473966/subagents/workflows/wf_1ac18d52-8f7/journal.jsonl. Return -> `LANE: core READY <tip>` (merge base c57fdaeb) naming both reviewers; the tip from git, not from lane.js's field (FIX-LANEJS-TIP is open in the HUB's tooling).
 
 # 2026-11-09 21:46 IST · CORE 19 (8b2ee4e2-caf9-4c9c-9c48-fcfe5a9502c7) resumes; the track paused in the launcher; nothing started
 
