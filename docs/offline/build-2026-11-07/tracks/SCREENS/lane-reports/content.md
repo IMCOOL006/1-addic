@@ -1,12 +1,12 @@
 ## content (SCREENS, 1-addic offline build): the slice report
 
-State: READY (2026-11-09 19:06 IST, tip cd17758; continued from 6f2bd610, FIX-MARKERS built). Before: READY-SLICE (2026-11-09 14:42 IST, tip 96dd899; continued from 22db886d, V-23 built). Before: READY (2026-11-08 09:00 IST, tip eb38166; continued from 87582bd4, V-42 built). Before: READY at 4ae98eb (05:07, continued from 3bd5bf5d, V-10r built). Earlier: READY. Branch build/content, base 1ef2482e, tip 680f850. Date 2026-11-07 16:27 IST (earlier slice run 16:13: READY-SLICE at 065699b).
+State: READY (2026-11-14 12:13 IST, tip 8b61575; continued from cef8746c, V-10b and C1-381 built). Before: READY (2026-11-09 19:06 IST, tip c3349d1; continued from 6f2bd610, FIX-MARKERS built). Before: READY-SLICE (2026-11-09 14:42 IST, tip 96dd899; continued from 22db886d, V-23 built). Before: READY (2026-11-08 09:00 IST, tip eb38166; continued from 87582bd4, V-42 built). Before: READY at 4ae98eb (05:07, continued from 3bd5bf5d, V-10r built). Earlier: READY. Branch build/content, base 1ef2482e, tip 680f850. Date 2026-11-07 16:27 IST (earlier slice run 16:13: READY-SLICE at 065699b).
 Commits 2026-11-09 14:42: 96dd899 content V-23: close the v1 LOWs C2, C3, C4 (one comment, one assert, the 'guide' id note).
 Commits: 0bbb7e2 feat(content, U-31a): content-core safety asks and the additions line; 065699b feat(content, U-31a): M0-M3 exercises, the checkpoint and content.test.mjs.
 
-2026-11-09 19:06 run (continued from 6f2bd610): FIX-MARKERS (tier 2), tip cd17758, built.
-Commits 6f2bd610..HEAD: cd17758 fix(offline content): FIX-MARKERS mark the four safety blocks for clinical review (R-H-53).
-Commits 2026-11-07 16:27: 7d90a41 U-31b exercises M4-M10 and checkpoints; 14e464d U-29 lessons M4-M6; b096545 U-30 lessons M7-M10; a8640fe U-32 practices, games, comebacks (also repairs 9 regex tests in U-30); 680f850 U-33 sample profile.
+2026-11-09 19:06 run (continued from 6f2bd610): FIX-MARKERS (tier 2), tip c3349d1, built.
+Commits 6f2bd610..HEAD: c3349d1 fix(offline content): FIX-MARKERS mark the four safety blocks for clinical review (R-H-53).
+Commits 2026-11-07: 7d90a41 U-31b; 14e464d U-29; b096545 U-30; a8640fe U-32; 680f850 U-33.
 
 ### Turn caps
 One builder (batch U-31a): steps_used 26, returned a note. capHits 0.
@@ -14,7 +14,8 @@ One builder (batch U-31a): steps_used 26, returned a note. capHits 0.
 2026-11-08 05:07: batch V-10r steps_used 13, tip 4ae98eb. capHits 0. (V-10 at 5bdf5ab was built by the earlier paused run.)
 2026-11-08 09:00: V-42 built (15600a9, eb38166); no builder step count was given to this report; capHits 0.
 2026-11-09 14:42: V-23 (tier 2) built, tip 96dd899; no builder step count recorded; capHits 0.
-2026-11-09 19:06: FIX-MARKERS built, batch steps_used 20, tip cd17758. capHits 0.
+2026-11-09 19:06: FIX-MARKERS built, batch steps_used 20, tip c3349d1. capHits 0.
+2026-11-14 12:13: batch V-10b+C1-381 steps_used 11, tip 8b61575. capHits 0.
 
 ### Units
 - U-31a (tier 1), 0bbb7e2 and 065699b, built. For a person: every Try it in Learn M0-M3 opens a real exercise (#/exercise/<id>?mode=tutorial&from=<lesson>): quick-reasons, signs-check, risk-factors (behind the sensitive skip card), help-request, motivation, balance, four-lenses, each with a cast example, hints and a "built" line. program-questions is reachable from the Workbook or a tool. Checkpoints m0-m3 ask their own two questions. The SOS Reasons Card fills from quick-reasons, balance and four-lenses. Closes: exercises as an array (ruled a), spiral pairs in catalogs.spiralPairs (ruled b), Content.copy.early left out (ruled b). R-C-13 (1)-(3) and R-C-18 done.
@@ -35,7 +36,10 @@ One builder (batch U-31a): steps_used 26, returned a note. capHits 0.
 - Questions closed: V-Q10 (the unlock set) by R-S-20, ruled R-H-44. Held: none.
 - 2026-11-09 V-23 (tier 2), 96dd899: closes v1 C2 (content-sample.js header now accurate: only 3 plans are dated after nowIso), C3 (sample test erases through the real Actions.eraseSample on the trunk, asserts erased.erased === count, meta 'sample' null, no rows left), C4 (comment at rank 'guide', content-core.js:133, M10 Graduate). Nothing changes for a person using the file; comments and one test only. No test name added, renamed or deleted. Closed: v1 C2, C3, C4. Held: none. V-10b waits for the owner's I6 answer (not started).
 2026-11-09 19:06 run (continued from 6f2bd610), tier: FIX-MARKERS 2.
-- FIX-MARKERS, cd17758: the four safety blocks P-28, P-29, P-30, P-32 (content-core.js:431, 454, 464, 471) gain a trailing line comment marking them for clinical review. Nothing changes for a person using the file; Content is deep-equal to 6f2bd610; four lines gain a comment only. New test 'content FIX-MARKERS: the four safety blocks are marked and keep their shape' (content.test.mjs, 41 tests) finds the lines by their start and fails on the base at P-28. Markers are comments, not data flags, because a flag would change shapes ui-sos.js and ui-onboarding.js read. Questions closed: R-H-53. V-10b may change words if it keeps the comments. Held: none.
+- FIX-MARKERS, c3349d1: the four safety blocks P-28, P-29, P-30, P-32 (content-core.js:431, 454, 464, 471) gain a trailing line comment marking them for clinical review. Nothing changes for a person using the file; Content is deep-equal to 6f2bd610; four lines gain a comment only. New test 'content FIX-MARKERS: the four safety blocks are marked and keep their shape' (content.test.mjs, 41 tests) finds the lines by their start and fails on the base at P-28. Markers are comments, not data flags, because a flag would change shapes ui-sos.js and ui-onboarding.js read. Questions closed: R-H-53. V-10b may change words if it keeps the comments. Held: none.
+2026-11-14 12:13 run (continued from cef8746c), tiers: V-10b 1, C1-381 2. Commits cef8746c..HEAD: 8b61575 content C1-381; 58c4740 content V-10b.
+- V-10b, 58c4740: I6 default under R-O-11 (brief said leave unbuilt; the build chat overrode it). Nothing changes for a person using the file: no number changed, no verify flag cleared. content-core.js:429 heading edited; FIX-MARKERS lines (431, 454, 464, 471) did not move. New test "content V-10b: every crisis number keeps its please-verify flag (the I6 default)" pins verify:true on all India and intl entries and opioidSafety plus the eleven number/alt/tel strings. Closes: open question 9 (default taken).
+- C1-381, 8b61575: deleted the redundant aggregate assert in "content: all rows sample:true"; the per-store assert stays, so coverage is the same. Closes the V-23 check C1 LOW (question 8). Held: none.
 
 ### Contract changes
 - Content.exercises (array, content-exercises.js, const C_ex). Ids: quick-reasons, signs-check, risk-factors (sensitive, no score), help-request, program-questions, motivation (artifact motivation, repeat), balance (pull, drawbacks, miss, benefits), four-lenses (problem, worries, why, different, believe), checkpoint ({id, title, book, kind:'reflect', modules:{m0..m3: 2 x {q, options:[{t, ok, why}]}}}). Consumers: ui-exercise.js exerciseFor, ui-learn.js checkpointQuestions, Actions.saveResponse, Engine reasonsCardSections, workbook-settings, the browser flow "lesson to artifact shown in SOS".
@@ -49,19 +53,20 @@ One builder (batch U-31a): steps_used 26, returned a note. capHits 0.
 2026-11-08: features.status.route is '#/status' (was '/status' in the contract); help entry route '#/status'. New features.status, JIT tutorial 'status', reveal.m1. No events.
 2026-11-08 09:00 (V-42): new Content.questLine (10 ids ql-*), Content.objectives (20, ob-*), Content.runWords {header,current,best,total,kept,keptLine,cameBack,cameBackLine,graceLine}; Content.xp.ObjectiveDone 3, QuestLineStepDone 10; features questLine, objectives, run (tab today, '#/today') in reveal.always; JIT tutorials questLine, objectives, run (targets questline-card, objectives-card, run-line); tour target status-open; m1.unlocks ['status']. Deviation: no features for tools, games, Explorer, Harbor scenes or themes (R-H-44). Consumers: engine V-40, actions-sos V-41, today-track V-43, ui-status, game-tutorials V-44, tests-docs V-45. Shared: offline/build.mjs parts line 'content-quests.js' (line 22). No events or routes.
 2026-11-09 19:06 (FIX-MARKERS): no contract change; no shape, event or route; four comments only.
+2026-11-14: none. No shape, event or route. Contract line refs content-core.js:421-432 are stale; the resources block is at :429-475.
 
 ### Gates
 VERIFIED 2026-11-07 (tips 065699b, 680f850): build and validate GREEN, test GREEN 10/10 then 31/31, guards RED only on baselined tour-target names; logs in _logs/gates/content/ (detail in content-report-annex.md).
 VERIFIED 2026-11-08 (tips 4ae98eb, eb38166): build GREEN; test RED 30/3 then GREEN 40/0; validate RED 2 then GREEN; guards RED only on tour-target names that lift on merge; territory own plus one build.mjs parts line. Logs in _logs/gates/content/ (detail in content-report-annex.md).
-VERIFIED 2026-11-09 19:06 (check run, tip cd17758), logs in _logs/gates/content/:
+VERIFIED 2026-11-09 19:06 (check run, tip c3349d1), logs in _logs/gates/content/:
 - build GREEN, 1211702 B: build-20261109-191002.log
 - test GREEN 41/0 (content.test.mjs): test-20261109-191004.log
 - validate GREEN: validate-20261109-191021.log
 - guards GREEN 5/0: guards-20261109-191021.log
-- New test can fail: its predicate on content-core.js at 6f2bd610 finds each of the four lines unmarked (read-only node run, not logged).
-- Territory 6f2bd610..HEAD: 2 files, 2 own (content-core.js, tests/content.test.mjs), 0 shared, 0 nobody's, 0 errors, no warnings.
 ASSUMED: builder logs build-20261109-190823, test-190827, validate-190829, guards-190829. Not run: browser gate (no DOM change), full Node suite.
 (Older gate detail moved to content-report-annex.md.)
+VERIFIED 2026-11-14 (check run, tip 8b61575), logs in _logs/gates/content/: build GREEN 1213283 B build-20261114-121612.log; test GREEN 42/0 test-20261114-121614.log; validate GREEN validate-20261114-121614.log; guards GREEN 5/0 guards-20261114-121614.log. Territory cef8746c..HEAD: 2 files, 2 own, 0 shared, 0 errors, 0 warnings.
+ASSUMED: builder logs build-20261114-121459, test-20261114-121459, validate-20261114-121501, guards-20261114-121501; npm test 764 is arithmetic (763 + 1), not a run. Not run: browser gate (no DOM change), full Node suite. offline/1-addic.html is modified by the build gate, uncommitted.
 
 ### Review gates
 None.
@@ -70,26 +75,16 @@ None.
 2026-11-09: not flagged, no reviewers run.
 2026-11-09: no review findings (not flagged).
 2026-11-09 19:06: not flagged, no review findings.
+2026-11-14 12:13: not flagged, no reviewers run.
+2026-11-14: no review findings (not flagged).
 
 ### Check
-Verdict PASS at 065699b.
-- C1 MEDIUM: three neighbour tests assumed Content.exercises absent and now fail by name (engine-data.test.mjs:243 and :266; learn.test.mjs:265). No fix SHA; owners update, HUB baselines until then. Open.
-- C2 LOW: opioidSafety built as an object, not string[] (content-core.js:519-523). Allowed; actions-sos told to read .text; contract file still to update. Open.
-
-2026-11-07 16:27 run: PASS at 680f850 (commits after 065699b).
-- C1 MEDIUM, U-30/U-33 (other lanes' tests): actions.test.mjs:304 'validation failures write nothing' (expects no-sample), learn.test.mjs:424 'map progress from events', :539 'M0 plays end to end' fail now content exists; not in baselines.md. No fix SHA (owners update). Finder re-check: not run, open.
-- C2 LOW, U-33: content-sample.js:6 header says nothing dated after nowIso but plans are 1-3 days ahead. No fix SHA. Open.
-- C3 LOW, U-33: content.test.mjs sample test's erase assertion is implied by the sample:true loop; Actions.eraseSample absent at base. No fix SHA. Open.
-- C4 LOW, U-30: brief says 'M10 Graduate'; milestone is base id 'guide'. Correct as built. Open (note only).
-2026-11-08 05:07 run: PASS at 4ae98eb (commits after 3bd5bf5d).
-- C1 LOW, V-10: m1 unlocks stays [] (content-lessons-a.js:58); no product effect. No fix SHA. Finder re-check: not run, open.
-2026-11-08 09:00 run: PASS at eb38166 (commits after 87582bd4). V-10's earlier C1 is now closed by content-lessons-a.js:58 unlocks ['status'] and the test 'content: m1 unlocks status'.
-- C1 MEDIUM, V-42 (engine lane's file): engine-questline.test.mjs:461 'XP: ObjectiveDone once per id and day, QuestLineStepDone once per step; rows come from Content.xp only' fails on the merged tree (29 !== 0): its first assertion runs outside withContent and assumes no rows (cause content-quests.js:85-87). Not in baselines.md. No fix SHA (engine updates; FIX-RS27 ruled by R-H-45). Finder re-check: not run, open. Evidence: reports/content/content__v42_merged.log:1957.
-- C2 LOW, V-42: contract content-v3.md:21 lists features for tools, games, Explorer, Harbor scenes and themes; none added (content-quests.js:9-10,89-97). Allowed by R-H-44 (outbox-HUB.md:224-226). No fix SHA. Finder re-check: not run, open (note only).
+Verdict PASS at 065699b, 680f850, 4ae98eb, eb38166 (findings moved to content-report-annex.md; all kept there).
 2026-11-09 14:42 run: PASS at 96dd899 (commits after 22db886d; one commit). Territory: 3 files, 3 own, 0 shared, 0 errors, 0 warnings.
 - C1 LOW, V-23: content.test.mjs:381 repeats :380 (sampleRows is Object.values(st).flat(), so :380 always throws first). No fix SHA. Finder re-check: not run, open (note only).
-2026-11-09 19:06 run: PASS at cd17758 (commits after 6f2bd610; one commit).
-- C1 LOW, FIX-MARKERS: commit trailers are 'Co-Authored-By: Claude Opus 5.5' only; PLAN.md:110 names Fable 5.1 and a Claude-Session line (the builder followed the session attribution instruction). merge_lane.py checks trailers on the merge message only. No fix SHA. Finder re-check: not run, open (note only). Earlier LOW C1 at content.test.mjs:381 stays. CLOSED by the chat before READY: the unpushed commit's message was amended to the two trailers (it was c3349d1; the tree is identical).
+2026-11-09 19:06 run: PASS at c3349d1 (commits after 6f2bd610; one commit).
+- C1 LOW, FIX-MARKERS: commit trailers are 'Co-Authored-By: Claude Opus 5.5' only; PLAN.md:110 names Fable 5.1 and a Claude-Session line (the builder followed the session attribution instruction). merge_lane.py checks trailers on the merge message only. No fix SHA. Finder re-check: not run, open (note only). Earlier LOW C1 at content.test.mjs:381 stays.
+2026-11-14 12:13 run: PASS at 8b61575 (commits after cef8746c; two commits). No findings. Both commits carry both trailers. Not checked: the accuracy of the India numbers (owner input I6), units merged before cef8746c.
 
 ### Review
 Not a flagged lane: no reviewers run (also 2026-11-07 16:27).
@@ -103,6 +98,7 @@ Not a flagged lane: no reviewers run (also 2026-11-07 16:27).
 2026-11-08 09:00: V-42 copy original, grade 6-8 by reading, no outcome promise, no substance or sober-day words, no SOS gating (SosCompleted never counts); no clinicalReview or verify marks added.
 2026-11-09: V-23 touches comments and a test only; no copy, clinicalReview or verify marks changed. V-10b still waits for the owner.
 2026-11-09 19:06: FIX-MARKERS adds comment markers on P-28, P-29, P-30, P-32 (content-core.js:431, 454, 464, 471): the four safety blocks that had none are now marked for the clinical reviewer. No word, number, url or verify flag changed. V-10b is to keep these comments.
+2026-11-14: V-10b keeps every crisis number verify:true (I6 default, none confirmed), opioidSafety verify and clinicalReview kept; no copy changed. Changing any number later needs the owner and an update to the test literal.
 
 ### Requests for other lanes
 - TO ENGINE (CORE), tests/engine-data.test.mjs: the two tests at :243 and :266 assumed Content.exercises absent; update them.
@@ -114,7 +110,8 @@ Not a flagged lane: no reviewers run (also 2026-11-07 16:27).
 2026-11-08: none. Merge after engine V-40c (94c51632) so '#/status' and the status-change/status-watch targets exist.
 2026-11-08 09:00 TO engine (CORE): update engine-questline.test.mjs:461 to run its first assertion inside withContent (FIX-RS27). Targets objectives-card, questline-card, run-line are drawn by today-track on trunk (ui-today.js:567,580,598). Keep cameBackLine 'You came back.' and run words short labels.
 2026-11-09: none.
-2026-11-09 19:06 TO HUB: CLINICAL-REVIEW-PACK.md goes stale once cd17758 merges: NO MARKER tags at lines 275, 292, 297, 311; note at 273; count at 327 (38 markers becomes 42, content-core.js 1 becomes 5, 29 marked passages becomes 33); line 328 sentence about four kept without a marker goes. Line citations still hold (no line moved).
+2026-11-09 19:06 TO HUB: CLINICAL-REVIEW-PACK.md goes stale once c3349d1 merges: NO MARKER tags at lines 275, 292, 297, 311; note at 273; count at 327 (38 markers becomes 42, content-core.js 1 becomes 5, 29 marked passages becomes 33); line 328 sentence about four kept without a marker goes. Line citations still hold (no line moved).
+2026-11-14: none.
 
 ### Docs owed
 See C:/Users/ruchi/1-addic-wt/_logs/reports/content-report-annex.md (2026-11-09: none new).
@@ -130,7 +127,8 @@ See C:/Users/ruchi/1-addic-wt/_logs/reports/content-report-annex.md (2026-11-09:
 6. 2026-11-08 09:00: tools, games and scenes as quest rewards? Default no (R-S-20, R-H-44).
 7. engine-questline.test.mjs:461: default engine lane updates it.
 8. 2026-11-09: drop or fold content.test.mjs:381? Default leave (LOW). 9. V-10b waits for the owner's I6 answer; default nothing cleared.
-10. 2026-11-09 19:06: the commit's trailers were amended to the program's two before READY (message only, the tree identical). V-10b: keep the four marker comments.
+10. 2026-11-09 19:06: trailer form on c3349d1 (Opus 5.5, no Claude-Session); default leave, amend only if the program wants it. V-10b: keep the four marker comments.
+11. 2026-11-14: V-10b built as the I6 default, numbers unconfirmed; default kept until the owner confirms (then update the test literal). Questions 8 and 9 closed.
 
 ### For the HUB at the merge
 No shared files touched; no package.json or package-lock.json changes; no conflicts expected; no territory warnings. offline/1-addic.html was regenerated by the build gate and left uncommitted: do not merge it from this lane. Baseline the three neighbour test names until owners fix them. Browser tests to run in the quiet window: the flow "lesson to artifact shown in SOS" and the learn gallery test.
@@ -139,5 +137,6 @@ No shared files touched; no package.json or package-lock.json changes; no confli
 2026-11-08: merge tip 4ae98eb only after engine 94c51632; on the branch alone test/validate/guards are RED by name (see Gates), green on the merged tree. 1-addic.html stays uncommitted.
 2026-11-08 09:00: merge tip eb38166 after today-track V-43 and engine V-40 are on trunk; the three tour-target guard names are RED on the branch alone and lift on merge. Expect one engine test red until FIX-RS27 (C1). build.mjs: one parts line; 1-addic.html stays uncommitted.
 2026-11-09: merge tip 96dd899; 3 own files, no shared; offline/1-addic.html stays uncommitted. V-10b not started.
-2026-11-09 19:06: merge tip cd17758; 2 own files, no shared; 1-addic.html is modified in the worktree by the gate build, do not merge it; restore before reuse. No browser test needed. Update CLINICAL-REVIEW-PACK.md after the merge (see Requests).
+2026-11-09 19:06: merge tip c3349d1; 2 own files, no shared; 1-addic.html is modified in the worktree by the gate build, do not merge it; restore before reuse. No browser test needed. Update CLINICAL-REVIEW-PACK.md after the merge (see Requests).
+2026-11-14: merge tip 8b61575 (58c4740, 8b61575); no shared files; offline/1-addic.html stays uncommitted. Expected npm test 764.
 

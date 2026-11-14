@@ -1,12 +1,20 @@
 TRACK: SCREENS
-STATE: BUILDING   # 2026-11-14 12:13 IST: SCREENS 12:02 (0bd68904): content V-10b (the I6 default) + C1-381 live as wf_adbfe96a-8c5 on the 12:12 row (15.4 GB), slot 4, base cef8746c; CORE agreed the order (R-S-34, R-C-92): core first (12:08), content, then actions-sos
-LANE: content BUILDING   # 2026-11-14 12:13 IST: V-10b + C1-381 as wf_adbfe96a-8c5 (args tracks/SCREENS/args/v33_content.json; build/content and its worktree fast-forwarded --ff-only to cef8746c, merge base cef8746c; not flagged: one builder and the checker). Earlier: MERGED cd17758
+STATE: WAITING   # 2026-11-14 12:20 IST: SCREENS 12:02 (0bd68904): content READY 8b61575 (V-10b under the I6 default + C1-381) for the HUB, merge base cef8746c; nothing of SCREENS runs; nothing else is owed for offline-v3.3 unless a red or a fix by name comes back
+LANE: content READY 8b61575   # 2026-11-14 12:20 IST: V-10b (58c4740) + C1-381 (8b61575), merge base cef8746c; wf_adbfe96a-8c5 check PASS, no findings; full Node 764/764 by SCREENS. Earlier: MERGED cd17758
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
-SLOTS-ASKED: 0   # content slot=4 granted 12:02 (R-H-58), in use since 12:13
-UPDATED: 2026-11-14 12:13 IST
+SLOTS-ASKED: 0   # content slot=4 (R-H-58) frees at the merge
+UPDATED: 2026-11-14 12:20 IST
+
+# 2026-11-14 12:20 IST · content READY 8b61575 (V-10b under the I6 default + LOW C1), for the HUB
+
+- Merge build/content at 8b61575 alone, merge base cef8746c (the trunk tip at 12:13; no offline/ change since c5dc3743). Two commits, two files, both own, both trailers read: 58c4740 V-10b, 8b61575 C1-381.
+- What it does: nothing a person sees changes. V-Q7's default (R-O-11, R-H-58): no number confirmed, no verify flag cleared, no name, number, url or note changed. content-core.js: one line, the Resources heading comment at :429 notes the I6 default in place (549 lines before and after; the four clinicalReview comments at 431, 454, 464, 471 kept). content.test.mjs: the new test 'content V-10b: every crisis number keeps its please-verify flag (the I6 default)' (every entry of in.emergency, in.crisis, in.groups, in.treatment and intl.lines verify true; verifyNote non-empty; opioidSafety verify true; the eleven number, alt and tel strings pinned, so a changed number fails by name until the owner confirms it), seen to fail with one flag flipped by the builder; and LOW C1: the redundant assert at :380 of 'content: all rows sample:true' deleted, :381 kept, the name kept.
+- Check wf_adbfe96a-8c5: PASS, no findings. Logs C:/Users/ruchi/1-addic-wt/_logs/gates/content/*-20261114-1216*: build GREEN 1213283 B, test GREEN 42/42 (lane file), validate GREEN, guards GREEN 5/5. No browser gate: no DOM change.
+- Run by me at 8b61575: npm test, exit 0, 764 pass, 0 fail, 0 skip (763 plus the new name). Territory cef8746c..8b61575: 2 own, 0 errors. Diffs read. offline/1-addic.html restored, the worktree clean.
+- For tests-docs at the tag: the count lines move 763 -> 764 (one new name). For the clinical pack: no line moved.
 
 # 2026-11-14 12:05 IST · SCREENS 12:02 (0bd68904-7c0c-4ab7-9809-fdcda30d3dba) resumes on R-H-58
 

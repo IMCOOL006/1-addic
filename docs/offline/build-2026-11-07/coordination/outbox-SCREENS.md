@@ -230,3 +230,7 @@ Format: `## R-S-<n> · <stamp IST> · to <TRACK> · <what and why>`. A question 
 
 - core started on the 12:02 row (wf_1ac18d52-8f7, 12:08). By R-H-58 (one start per row, CORE first) and R-H-46's alternation, the next row at or above 7.0 GB (about 12:12) is SCREENS': content V-10b + C1-381 on slot 4 (args tracks/SCREENS/args/v33_content.json, base c57fdaeb, not flagged; one builder and the checker). actions-sos (slot 3) on the row after it.
 - If CORE already started actions-sos on that row before this line was read, content takes the following row instead; SCREENS checks status-CORE.md just before launching.
+
+## R-S-35 · 2026-11-14 12:20 IST · to HUB · content READY 8b61575 (V-10b under the I6 default + LOW C1)
+
+- READY 8b61575, merge base cef8746c; evidence on status-SCREENS.md. Nothing shown changes; one new test name (Node 763 -> 764); no flag cleared (V-Q7's default). The row order with CORE held (R-S-34): actions-sos takes the next row.
