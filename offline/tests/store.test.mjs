@@ -3266,3 +3266,81 @@ describe('ui-core ctx.features reads Engine.unlocked (V-46)', () => {
     assert.deepEqual(sorted(UI.ctx().features), sorted(Content.reveal.always), 'both throwing: the day-one set');
   });
 });
+
+/* ── FIX-STALE-SAVE-SAY (e2e), RC1-R2: one refused save gives one toast, end to end ─────────────────────────────── */
+// The real Store of two tabs on one fake IndexedDB, a fresh copy of the real ui-core booted on the open tab, REAL timers,
+// and a page whose Save toasts e.message in its own catch, as ui-exercise.js:891 does. ui-core drops a further warn
+// toast only for the rest of the turn in which it said the refusal, so these go red if a macrotask comes between the
+// refusal's listener and the page's catch, if the stale toast does not hush, or if the hush never lifts.
+describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real timers', () => {
+  const PIN = 'kite-2468';
+  const BACKUP = { app: '1-addic', schemaVersion: 1, stores: { todos: [{ id: 'n1', text: 'NEW-ROW' }] } };
+  const STALE = /^This notebook changed in another tab, so your last change was not saved\.$/;
+  const PAGE = 'A page with a Save button';
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const realError = console.error;
+  let errors = [];
+  afterEach(async () => {
+    await wait(100); // ui-core's real 16 ms redraw runs inside this test's document, never after it is gone
+    console.error = realError;
+    clearStandIns();
+    delete globalThis.indexedDB;
+  });
+
+  async function twoTabs() {
+    errors = [];
+    console.error = (...a) => { errors.push(a.join(' ')); };
+    globalThis.document = fakeDom();
+    globalThis.document.addEventListener = () => {};
+    globalThis.Content = Content;
+    globalThis.indexedDB = fakeIndexedDB();
+    globalThis.window = { addEventListener() {} };
+    globalThis.location = { hash: '#/today' };
+    globalThis.history = { state: null, replaceState(s, t, url) { globalThis.location.hash = url; } };
+    const other = freshStore(); // the same file open in another tab
+    await other.load();
+    await other.lock.set(PIN, { autoLockMin: 'never' });
+    const open = freshStore(); // this tab, open on a page with a Save button
+    await open.load();
+    assert.equal(await open.lock.unlock(PIN), true, 'control: this tab is open');
+    globalThis.Store = open;
+    const U = freshUi();
+    U.pages.today = () => { const p = document.createElement('p'); p.textContent = PAGE; return p; };
+    await U.boot();
+    const box = () => document.getElementById('toasts');
+    const toasts = () => Array.from(box().children, (el) => el.textContent.trim());
+    const main = () => document.getElementById('main').textContent;
+    // The page's Save, as ui-exercise.js:891 does it: its own catch toasts the refusal's words.
+    const save = () => open.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); })
+      .then(() => null, (e) => { U.toast((e && e.message) || 'That did not save. Please try again.', 'warn'); return e; });
+    return { other, U, box, toasts, main, save };
+  }
+
+  for (const [how, change, lockPage] of [
+    ['brings back a backup, a lock still stored', (S) => S.replaceAll(BACKUP), true],
+    ['removes the PIN', async (S) => assert.equal(await S.lock.remove(PIN), true), false],
+    ['erases the notebook', (S) => S.resetAll(), false],
+  ]) {
+    test('FIX-STALE-SAVE-SAY (e2e): another tab ' + how + ', then a Save here: one toast with the stale words, '
+      + (lockPage ? 'then the lock page' : 'the page stays') + '; a warn toast in a later turn shows as before', async () => {
+      const s = await twoTabs();
+      assert.match(s.main(), new RegExp(PAGE), 'control: the page is drawn');
+      assert.deepEqual(s.toasts(), [], 'control: no toast before');
+      await change(s.other);
+      const e = await s.save();
+      assert.equal(e && e.code, 'LOCKED', 'the save is refused');
+      assert.equal(e.stale, true);
+      assert.equal(s.toasts().length, 1, 'one refused save, one toast: ' + JSON.stringify(s.toasts()));
+      assert.match(s.toasts()[0], STALE, 'the stale words, not the page’s own');
+      assert.equal(s.box().children[0].getAttribute('role'), 'alert', 'a warn toast is read out at once');
+      assert.equal(location.hash, lockPage ? '#/lock' : '#/today');
+      await wait(50); // ui-core's real 16 ms redraw
+      assert.match(s.main(), lockPage ? /Locked/ : new RegExp(PAGE), lockPage ? 'the lock page replaced the page' : 'the page stays');
+      assert.equal(s.toasts().length, 1, 'the toast is still there after the redraw: ' + JSON.stringify(s.toasts()));
+      assert.match(s.toasts()[0], STALE);
+      s.U.toast('A later warning.', 'warn');
+      assert.deepEqual(s.toasts().slice(1), ['A later warning.'], 'a warn toast in a later turn shows as before');
+      assert.deepEqual(errors, [], 'nothing on the console');
+    });
+  }
+});
