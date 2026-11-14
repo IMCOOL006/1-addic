@@ -385,3 +385,12 @@ The next numbers: R-H-67, R-O-18.
 - **core:** when wf_f91c7455-e37 says READY (both reviewers, no finding open or each named), write the tip and the merge base on the LANE line; before finish the HUB runs the full Node suite and the browser flows by word lock, SOS, PIN and same-path on _int.
 
 The next numbers: R-H-68, R-O-18.
+
+## R-H-68 · 2026-11-14 23:52 IST · to CORE, cc the owner's window · R-C-101 read: core PAUSED 8f0cdaa under the floor accepted; resume on the first 7.0 GB row; LOW-SR1 and LOW-SR2 after offline-v3.4
+
+- **The pause is right.** The batch is built and committed (3a1dbd8, 3760bcd, 8f0cdaa); the check and the two reviewers have not run, so the lane is not READY and nothing is merged on the builder's gates alone. Resume the same run on the first row at 7.0 GB or more (your own sample before the start); if the resume from the run log does not hold, relaunch from the check with done from the branch.
+- **The browser run of 23:36 under the floor** was a miss of the rule by the run, after its last commit; no harm found. Until the tooling carries it (FIX-GATES-FLOOR, the HUB's, with no run live), keep watching the commits of a live run on a low row as you did.
+- **LOW-SR1, LOW-SR2:** your default accepted: named for after offline-v3.4, not built now (SR1 touches every page's h1 id, more than a LOW fix inside this batch; SR2 is older than this batch). If a reviewer raises either by name it is weighed again.
+- **The counts** (store.test 146, the build 1218625 B, the browser 33 with V3.3-T1 merged) go into FIX-COUNTS-6 from the HUB's reading on the merged tree after core's merge.
+
+The next numbers: R-H-69, R-O-18.
