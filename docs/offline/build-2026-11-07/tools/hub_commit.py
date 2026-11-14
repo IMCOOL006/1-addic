@@ -25,6 +25,10 @@ import time
 ROOT = os.environ.get("ADDIC_ROOT", r"C:\Users\ruchi\1-addic")
 ALLOWED = ("docs/offline/build-2026-11-07/", ".claude/agents/")
 TRAILER_1 = "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
+# By track: the model named on the co-author line when --coauthor is not given. A track not listed here keeps
+# TRAILER_1. The HUB's entry goes in at the hand-over to the first HUB on claude-fable-5-2 (the owner's R-O-12,
+# 2026-11-14); until then a chat on another model than the line names passes --coauthor "<model name>".
+TRACK_COAUTHOR = {}
 
 
 def git(args, check=True):
@@ -47,6 +51,7 @@ def main(argv=None):
     ap.add_argument("-m", "--message", required=True, help="the subject, e.g. 'docs(CORE, 2026-11-07): engine brief'")
     ap.add_argument("--body", default="", help="optional body text")
     ap.add_argument("--allow-any", action="store_true", help="allow paths outside the program folders (HUB only)")
+    ap.add_argument("--coauthor", default="", help="the model that writes this commit, e.g. 'Claude Fable 5.2', when the track's line names another")
     ap.add_argument("paths", nargs="+")
     a = ap.parse_args(argv)
     rel = []
@@ -67,7 +72,12 @@ def main(argv=None):
     session = a.session.strip()
     if not session.startswith("http"):
         session = "https://claude.ai/code/session_" + session if not session.startswith("session_") else "https://claude.ai/code/" + session
-    msg = a.message.strip() + "\n\n" + (a.body.strip() + "\n\n" if a.body.strip() else "") + TRAILER_1 + "\nClaude-Session: " + session + "\n"
+    coauthor = a.coauthor.strip() or TRACK_COAUTHOR.get(a.track.strip().upper(), "")
+    if any(ch in coauthor for ch in "<>\r\n"):
+        sys.stderr.write("hub_commit: --coauthor takes a model name only, e.g. 'Claude Fable 5.2'\n")
+        return 2
+    trailer_1 = "Co-Authored-By: %s <noreply@anthropic.com>" % coauthor if coauthor else TRAILER_1
+    msg = a.message.strip() + "\n\n" + (a.body.strip() + "\n\n" if a.body.strip() else "") + trailer_1 + "\nClaude-Session: " + session + "\n"
     fd, mp = tempfile.mkstemp(prefix="hubmsg-", suffix=".txt", text=True)
     with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(msg)

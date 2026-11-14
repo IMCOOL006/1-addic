@@ -25,7 +25,7 @@ Each check:
      SCREENS when memory allows). The HUB has no gate;
   3. never launches anything while free memory is under 4.0 GB (logged per track that needed a chat);
   4. launches, in C:\\Users\\ruchi\\1-addic, `claude --bg --name "<TRACK> <HH:MM>" --model <model> [extra]
-     "<kickoff block>\\n\\n<resume line>"` (HUB: claude-fable-5-1 --effort high; CORE and SCREENS: claude-opus-5-5;
+     "<kickoff block>\\n\\n<resume line>"` (HUB: claude-fable-5-2 --effort high since R-O-12; CORE and SCREENS: claude-opus-5-5;
      the block is read from KICKOFF-PROMPTS.md at launch time, so an edit there reaches the next chat), records the
      session in tools/token_roles.json ("(launcher)") and in its state; at most one launch per track per 45 minutes;
   5. a launched chat with no step after 15 minutes is noted (the usage limit, most likely); after 45 minutes it is
@@ -94,7 +94,8 @@ BUILD_TRACKS = ("CORE", "SCREENS")
 PROGRAM_TAG = "offline-v1"
 # Per track: model and extra flags for `claude --bg`; gate (track, the line that must exist, the line that must name
 # this track); stop (STATE words that end the track besides TERMINAL: a build chat whose lanes are all merged).
-TRACK = {"HUB": {"model": "claude-fable-5-1", "extra": ("--effort", "high"), "gate": None, "stop": ()}}
+# The HUB's model is claude-fable-5-2 since the owner's R-O-12 (2026-11-14 12:54); it was claude-fable-5-1 before.
+TRACK = {"HUB": {"model": "claude-fable-5-2", "extra": ("--effort", "high"), "gate": None, "stop": ()}}
 for _t in BUILD_TRACKS:
     TRACK[_t] = {"model": MODEL, "extra": (), "gate": ("HUB", "BASE-READY", "TRACKS-ALLOWED"), "stop": ("READY",)}
 PAUSED_TRACKS_DEFAULT = ()
@@ -1135,7 +1136,7 @@ def self_test():
     r, n = decide("HUB", header("HUB", co), {"26196777": sess("HUB", t(6, 25), t(14, 50))}, hubwin, {}, now)
     checks.append(("the HUB with its live window (known by token_roles.json) -> nothing", r is None and "live 1" in n))
     checks.append(("HUB launches on Fable at high effort, CORE and SCREENS on Opus behind the gate",
-                   TRACK["HUB"]["model"] == "claude-fable-5-1" and TRACK["HUB"]["extra"] == ("--effort", "high") and TRACK["HUB"]["gate"] is None
+                   TRACK["HUB"]["model"] == "claude-fable-5-2" and TRACK["HUB"]["extra"] == ("--effort", "high") and TRACK["HUB"]["gate"] is None
                    and all(TRACK[tr]["model"] == "claude-opus-5-5" and TRACK[tr]["gate"] == ("HUB", "BASE-READY", "TRACKS-ALLOWED") for tr in BUILD_TRACKS)))
     checks.append(("no track is paused by default", paused_tracks_of({}) == set()))
     checks.append(("the regexes know the three tracks",
