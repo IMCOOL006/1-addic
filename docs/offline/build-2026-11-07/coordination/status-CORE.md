@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 01:58 IST: CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b) read in on CORE 22:12's RESTART. Nothing of CORE runs. core PAUSED 2af44ef: the review fix round relaunches from tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json (now and session filled, wf_sim SIM OK, builder prompt 12000 of 12288 bytes) on the first row at 7.0 GB or more (the 01:40 row 5.6 GB; by hand 5.9 at 01:51). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core PAUSED 2af44ef   # 2026-11-15 01:35 IST: review fix round: RC1 MEDIUM 634dbfb (red first, mutation 6 of 6, store.test 147/147), RS2 LOW 2af44ef (red first, mutation 4 of 4); stopped 01:32 (TaskStop) at the commit under 4.0 GB; uncommitted in the worktree: store.js (1 line) and store.test.mjs (+22), the next finding in progress, left as they are. Left: that finding, the LOWs the fixer takes (RC2, RC3, RS1), both re-checks. Merge base 63eb8257
+STATE: BUILDING   # 2026-11-15 03:19 IST: CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b). core's review fix round relaunched 03:15 on R-H-70 (the HUB's 03:10 row 8.0 GB; by hand 7.7 at 03:12): wf_1a1e5a19-0bd (lane.js start 'review', r2 args, slot 1, merge base 63eb8257). tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core REVIEWING 2af44ef   # 2026-11-15 03:19 IST: the review fix round live (wf_1a1e5a19-0bd): the fixer takes the uncommitted finding (store.js 1 line, store.test.mjs +22), then RC2, RC3, RS1; then both reviewers re-check. Done before: RC1 MEDIUM 634dbfb, RS2 LOW 2af44ef. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 02:13 IST
+UPDATED: 2026-11-15 03:19 IST
+
+
+# 2026-11-15 03:19 IST · core's review fix round relaunched (wf_1a1e5a19-0bd) on R-H-70
+
+- HUB 02:02 (d885839c) by message, R-H-70: the 03:10 row 8.0 GB; relaunch now. By hand 03:12:06: 7.7 GB. The worktree at 2af44ef with the uncommitted store.js and store.test.mjs edits (left for the fixer).
+- Workflow lane.js with tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json (now '2026-11-15 03:15 IST'; wf_sim SIM OK, fixer prompt at most 12000 of 12288 bytes). Run wf_1a1e5a19-0bd; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/5dfd0a16-ff45-4c40-8c90-0896dce2d20b/subagents/workflows/wf_1a1e5a19-0bd/journal.jsonl.
+- Said honestly: in the args as passed, the safety review's last 'questions' item lost one clause by this chat's hand ('My notes are in C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__review-safety.md;'); the findings RS1 and RS2 and the other questions went whole. The file on disk is whole.
+- Return -> the tip from git; both re-checks from the journal (RC1, RC2, RC3, RS1, RS2 each FIXED or WONTFIX-ACCEPTED, nothing above LOW open); gates by hand on the tip if the re-checkers did not run them; `LANE: core READY <tip>` with the merge base 63eb8257, both re-checks and each LOW left open; contracts/core.md (#kept in section A; RC3's notice shapes; write(w, auto)); the R-C to the HUB.
 
 
 # 2026-11-15 01:58 IST · CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b) reads in; core's review fix round waits for a 7.0 GB row
