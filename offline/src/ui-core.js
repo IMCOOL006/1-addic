@@ -169,10 +169,23 @@ const UI = (function () {
   // A save refused because another tab changed the notebook is said once, in #toasts, outside #main, where it outlives
   // the page (FIX-STALE-SAVE-SAY). The page that asked for the save toasts its own refusal later in this same turn: that
   // warn is dropped, so one refused save gives one toast (RC1, RS3). The next turn toasts as before.
+  // The toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the person is on
+  // another page with the notebook open: after the unlock (a lock stored) or the first route to another path (none
+  // stored). Store renders of the same page keep it; SOS never shows it; a reload forgets it (FIX-STALE-SAVE-KEEP).
+  const STALE_SAID = 'This notebook changed in another tab, so your last change was not saved.';
+  let keptStale = false;
   function sayStale() {
-    toast('This notebook changed in another tab, so your last change was not saved.', 'warn');
+    toast(STALE_SAID, 'warn');
     hushed = true;
     setTimeout(() => { hushed = false; }, 0);
+    keptStale = true;
+    const el = byId('kept');
+    if (el) { el.textContent = STALE_SAID; el.hidden = pageKey(route()) === 'sos'; }
+  }
+  function clearKept() {
+    keptStale = false;
+    const el = byId('kept');
+    if (el) { el.hidden = true; el.textContent = ''; }
   }
 
   let openSheet = null;
@@ -735,6 +748,8 @@ const UI = (function () {
       const coach = byId('coach');
       if (coach) { coach.hidden = true; coach.replaceChildren(); }
     }
+    const kept = byId('kept');
+    if (kept) kept.hidden = !keptStale || key === 'sos'; // nor the kept line (FIX-STALE-SAVE-KEEP)
     paintTheme(key);
     updateSaved();
   }
@@ -859,6 +874,7 @@ const UI = (function () {
     if (openSheet && state.lastPath !== null && r.path !== state.lastPath) openSheet.close('route');
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
+    if (keptStale && !locked && why === 'route' && state.lastPath !== null && r.path !== state.lastPath) clearKept();
     chrome(key);
     let node = null;
     const fn = pages[key] || (key === 'sos' ? urgentFallback : key === 'lock' ? lockFallback : key === 'today' ? todayPlaceholder : comingSoon);

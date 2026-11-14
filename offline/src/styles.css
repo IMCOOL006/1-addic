@@ -749,3 +749,14 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 /* V-25: the lock form's status line stays in the page while empty, so a screen reader hears it; empty, it takes no room and no gap */
 #lock-opening:empty { position: absolute; }
 /* -- end actions-sos -- */
+/* -- core -- */
+/* FIX-STALE-SAVE-KEEP: the kept line after a refused save, in the flow below the top bar: never fixed, never over the
+   bar, the SOS button or the nav; [hidden] wins over the block rule. */
+.kept {
+  display: block; max-width: 760px; box-sizing: border-box;
+  margin: var(--space-3) max(var(--space-4), calc((100% - 760px) / 2 + var(--space-4))) 0;
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius); border-left: 4px solid hsl(var(--gold));
+  background: hsl(var(--surface-2)); color: hsl(var(--text)); font-size: 0.9375rem; line-height: 1.4;
+}
+.kept[hidden] { display: none; }
+/* -- end core -- */

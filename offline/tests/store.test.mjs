@@ -192,9 +192,11 @@ function fakeDom() {
     contains: () => true,
   };
   for (const [id, tag] of [['main', 'main'], ['sos-btn', 'a'], ['nav', 'nav'], ['saved-label', 'span'], ['app-name', 'span'],
-    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div']]) {
+    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div'],
+    ['kept', 'p']]) {
     const e = new El(tag); e.id = id; ids[id] = e;
   }
+  ids.kept.hidden = true; // as shell.html has it
   return doc;
 }
 
@@ -959,6 +961,134 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     await send({ label: 'unlock', stale: true });
     assert.equal(toastsOf().length, 0, 'SOS is never interrupted');
     assert.equal(location.hash, '#/sos/craving');
+  });
+
+  // FIX-STALE-SAVE-KEEP: the toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the
+  // notebook is open on another page: after the unlock, or (no lock stored) on the first route to another path. Never in SOS.
+  const keptLine = () => { const k = document.getElementById('kept'); return k.hidden ? null : k.textContent.trim(); };
+  const bootKept = async (t, hash) => {
+    const b = await bootPending(t, hash);
+    let lockFn = null;
+    let notice = null;
+    globalThis.Store.lock = { onLock: (f) => { lockFn = f; } };
+    globalThis.Store.subscribe = (f) => { notice = f; };
+    b.U.pages.today = page('Today');
+    b.opened();
+    await b.booting;
+    const turn = () => new Promise((r) => setImmediate(r));
+    const locked = (v) => { globalThis.Store.status = () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: v, locked: v }); };
+    return {
+      U: b.U,
+      raw: (info) => { locked(true); lockFn(info); },
+      lock: async (info) => { locked(true); lockFn(info); await turn(); },
+      send: async (n) => { notice(n); await turn(); },
+      frame: async () => { t.mock.timers.tick(20); await turn(); },
+      to: async (h) => { b.U.go(h, { replace: true }); await turn(); },
+      unlocked: () => locked(false),
+      turn,
+    };
+  };
+
+  test('FIX-STALE-SAVE-KEEP: shell.html has one plain #kept line after the header, outside #main, hidden at the start; styles keep it in the flow', () => {
+    const html = fs.readFileSync(SHELL_URL, 'utf8');
+    assert.match(html, /<\/header>\s*<p id="kept" class="kept" hidden><\/p>\s*<a id="sos-btn"/, 'after the header, before the SOS button and the nav; no role, no aria-live');
+    assert.equal((html.match(/id="kept"/g) || []).length, 1);
+    assert.ok(html.indexOf('id="kept"') < html.indexOf('<main'), 'outside #main, so a page draw never takes it');
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.match(css, /\.kept\[hidden\] \{ display: none; \}/, '[hidden] wins over the block rule');
+    const rule = (css.match(/\.kept \{([^}]*)\}/) || [])[1] || '';
+    assert.ok(rule && !/position\s*:/.test(rule), 'a plain line in the flow: never fixed over the bar, the SOS button or the nav');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (a): a stale refusal on a page puts the kept line in #kept, and it is still there after the toast time and after a lock page draw', async (t) => {
+    const k = await bootKept(t, '#/today');
+    assert.equal(keptLine(), null, 'control: no line before');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.equal(location.hash, '#/lock');
+    assert.match(keptLine(), STALE_WORDS);
+    assert.equal(keptLine(), toastsOf()[0].textContent.trim(), 'one wording for the toast and the line');
+    t.mock.timers.tick(4500);
+    assert.equal(toastsOf().length, 0, 'control: the toast has left');
+    assert.match(keptLine(), STALE_WORDS, 'the line stays');
+    await k.to('#/lock'); // the lock page drawn again
+    await k.send({ label: 'lock' });
+    await k.frame();
+    assert.match(main().textContent, /Locked/, 'control: the lock page');
+    assert.match(keptLine(), STALE_WORDS, 'and stays through lock page draws');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (b): no lock stored: the notice shows the line, a store render keeps it, a route to another path clears it', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.send({ label: 'unlock', stale: true });
+    assert.equal(location.hash, '#/today', 'control: no lock page');
+    assert.match(keptLine(), STALE_WORDS);
+    await k.frame();
+    await k.send({ label: 'commit' });
+    await k.frame();
+    t.mock.timers.tick(4500);
+    assert.match(keptLine(), STALE_WORDS, 'store renders of the same page and the toast time keep it');
+    await k.to('#/today?x=1');
+    assert.match(keptLine(), STALE_WORDS, 'the same page with a new query keeps it');
+    await k.to('#/track');
+    assert.equal(keptLine(), null, 'another page clears it');
+    assert.equal(document.getElementById('kept').textContent, '', 'and empties it');
+    await k.to('#/today');
+    assert.equal(keptLine(), null, 'it does not come back');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (c): inside SOS no line is shown, and a line raised outside SOS is hidden on a route to SOS', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.match(keptLine(), STALE_WORDS, 'control: raised, on the lock page');
+    await k.to('#/sos/craving?from=lock');
+    assert.equal(keptLine(), null, 'hidden in SOS');
+    await k.send({ label: 'lock' });
+    await k.frame(); // a store notice inside SOS repaints only the chrome
+    assert.equal(keptLine(), null, 'and stays hidden there');
+    await k.to('#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'back on the lock page, still locked: shown again');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (c): a refusal inside SOS raises no line, there or after', async (t) => {
+    const k = await bootKept(t, '#/sos/craving');
+    await k.lock({ reason: 'auto', stale: true });
+    await k.send({ label: 'unlock', stale: true });
+    assert.equal(location.hash, '#/sos/craving', 'control: SOS stays');
+    assert.equal(keptLine(), null);
+    await k.to('#/lock');
+    assert.equal(keptLine(), null, 'nothing was said in SOS, so nothing is kept');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (d): unlock clears the line; a lock without stale never shows it', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto' });
+    assert.equal(location.hash, '#/lock', 'control: locked');
+    assert.equal(keptLine(), null, 'a lock without stale shows no line');
+    k.unlocked();
+    await k.to('#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.match(keptLine(), STALE_WORDS);
+    await k.to('#/sos/craving?from=lock');
+    await k.to('#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'control: SOS and back, still locked, keep it');
+    k.unlocked();
+    await k.send({ label: 'unlock' });
+    await k.frame(); // the lock page, open again, moves on to Today
+    await k.turn();
+    assert.equal(location.hash, '#/today', 'control: open again, on another page');
+    assert.equal(keptLine(), null, 'the unlock cleared it');
+    await k.lock({ reason: 'manual' });
+    assert.equal(keptLine(), null, 'a later lock without stale does not bring it back');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (e): one refused save gives one toast and one line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    k.raw({ reason: 'auto', stale: true });
+    k.U.toast('That could not be saved.', 'warn'); // the page's own refusal, in the same turn: hushed (RC1)
+    await k.turn();
+    assert.equal(toastsOf().length, 1, 'one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS);
+    assert.match(keptLine(), STALE_WORDS, 'one line, the words once');
   });
 
   test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
