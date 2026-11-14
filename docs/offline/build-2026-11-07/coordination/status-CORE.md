@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 03:19 IST: CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b). core's review fix round relaunched 03:15 on R-H-70 (the HUB's 03:10 row 8.0 GB; by hand 7.7 at 03:12): wf_1a1e5a19-0bd (lane.js start 'review', r2 args, slot 1, merge base 63eb8257). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 2af44ef   # 2026-11-15 03:19 IST: the review fix round live (wf_1a1e5a19-0bd): the fixer takes the uncommitted finding (store.js 1 line, store.test.mjs +22), then RC2, RC3, RS1; then both reviewers re-check. Done before: RC1 MEDIUM 634dbfb, RS2 LOW 2af44ef. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 04:32 IST: CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b). Nothing of CORE runs. core PAUSED 339ea20 under the floor (R-H-71): the review fix round's fixes all committed; both re-checks wait for a row at 7.0 GB or more. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core PAUSED 339ea20   # 2026-11-15 04:32 IST: the review fix round's fixer done: RC1 MEDIUM 634dbfb, RS2 2af44ef, RC2 f000c8c (test only), RS1 339ea20 (the no-lock case; the lock case an owner question), RC3 a CONTRACT CHANGE (CORE writes contracts/core.md at READY, no code); its gates at 339ea20: build 1220067 B, store.test 152/152, validate, guards 5/5, browser 32/32 (_logs/gates/core/*-20261115-0403* to -0411*). Stopped 04:27 (TaskStop) under the floor, worktree clean but for the generated file. Left: both reviewers' re-checks, the report. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 03:19 IST
+UPDATED: 2026-11-15 04:32 IST
+
+
+# 2026-11-15 04:32 IST · core PAUSED 339ea20 under the floor (R-H-71): the fixes done, both re-checks left
+
+- wf_1a1e5a19-0bd's fixer (from 03:44): restored store.js to the committed line (the last session's RC2 mutant run had left mutant M2 in it; git diff of store.js empty), kept the RC2 test; f000c8c RC2 (03:52, test only; core__v34b-RC2-green.log, -mut.log 4 of 4; store.test 151/151 test-20261115-034605.log); 339ea20 RS1 (04:03; red first core__v34b-RS1-red.log, green -green.log 33/33, -mut.log 5 of 5): a later save that goes through clears the kept line, the no-lock case; the lock case is an owner question; RC3 a CONTRACT CHANGE, no commit. Its batch-end gates at 339ea20 (progress note): build GREEN 1220067 B, test 152/152, validate, guards 5/5, browser 32/32 (_logs/gates/core/*-20261115-0403* to -0411*; read here from core__progress.md only, not the logs yet). Its result never reached the journal: the run was stopped while the fixer was still open.
+- Memory: commits read 6.2 GB (03:54) and 6.1 GB (04:03); the HUB's 04:25 row 2.9 GB, by hand 2.8 GB at 04:26. R-H-71 (HUB 02:02 by message): pause at the commit. Stopped 04:27 (TaskStop wi5gxuyr3); the worktree at 339ea20, clean but for offline/1-addic.html.
+- Next, on the first row at 7.0 GB or more (the HUB tells it; a hand sample first): a re-check run: lane.js start 'review' with the check carried, both reviewers fresh over 63eb8257..339ea20 with the five fixes named as known findings (no fixer unless a re-check opens a finding above LOW); then READY.
 
 
 # 2026-11-15 03:19 IST · core's review fix round relaunched (wf_1a1e5a19-0bd) on R-H-70
