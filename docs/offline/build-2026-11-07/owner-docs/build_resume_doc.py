@@ -971,7 +971,7 @@ Never start a second loop, and never double a live launcher HUB. One known fault
 - `python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --start` (expected: "loop started: pid N (alive: True)"; the answer "the loop already runs (pid N)" when step 2 showed no loop is the leftover pid file of step 2)
 - about a minute later: `python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py --launch-missing`. One exception: if step 2 showed a line "WEEKLY LIMIT: no launch for any track until <stamp>", do not run it yet, because it lifts that hold. Tell the owner the stamp and wait for the word that the limit has reset.
 - then `--status` again. Expected: "loop running (pid N)"; a "last check" of this minute; a row "launched HUB <today>T<hh:mm> <id> (HUB <hh:mm>) because ${HUB_REASON} (...)"; and ${BUILD_EXPECT}. A HUB row "live 1 ... -> nothing to do" in its place is the case of step 4.
-The fresh HUB chat runs on claude-fable-5-1 and starts from the HUB's own Resume here. It takes the HUB's work: the merges, the rulings, the gates, the tag. While a launcher HUB is live you do none of that work. When it is listed, send it one message: the owner's window hand-over that follows its Resume here in <docs>/tracks/HUB/RUN-RECORD.md is for it too (the hourly renewal, the idle chats that still have a process, the leftover watch loops, the watch rule).
+The fresh HUB chat runs on claude-fable-5-2 (the owner's R-O-12) and starts from the HUB's own Resume here. It takes the HUB's work: the merges, the rulings, the gates, the tag. While a launcher HUB is live you do none of that work. When it is listed, send it one message: the owner's window hand-over that follows its Resume here in <docs>/tracks/HUB/RUN-RECORD.md is for it too (the hourly renewal, the idle chats that still have a process, the leftover watch loops, the watch rule).
 
 4. If no fresh HUB chat is listed within five minutes, read the HUB row of `--status` and act on what it says.
 - "free memory X GB, under 4.0": the memory hold. The loop tries again every two minutes. Tell the owner; close nothing yourself.
@@ -1260,7 +1260,7 @@ ${EXPECT_TABLE}
 - **Any other word** (PARKED, WATCHING, WAITING) starts a fresh chat "because NO CHAT live".
 - **A build track** also needs the `BASE-READY` line and its name on the `TRACKS-ALLOWED` line of status-HUB.md.
 - **Nothing starts** while a track is paused in the launcher, while free memory is under 4.0 GB, or while a weekly-limit hold is on.
-- **The models:** the HUB runs on `claude-fable-5-1` (effort high), CORE and SCREENS on `claude-opus-5-5`.
+- **The models:** the HUB runs on `claude-fable-5-2` (effort high; the owner's R-O-12 of 14 November, `claude-fable-5-1` before it), CORE and SCREENS on `claude-opus-5-5`.
 - **The loop** checks every two minutes. `--status` prints the rows of its last check.
 
 ### 6.3 Three ways the owner's window is taken for a track's chat
@@ -1346,7 +1346,7 @@ The build runs as three Claude Code chats started by the launcher: the HUB, whic
 | `_locks` | `C:\Users\ruchi\1-addic-wt\_locks` | `1-addic.lock`: the test, browser and docs gates take it in arrival order, so two suites never run at once. |
 | Program files | `docs/offline/build-2026-11-07/` | PLAN.md, PLAN-V3.md, KICKOFF-PROMPTS.md, `coordination/` (status files, outboxes, the board, baselines), `tracks/<TRACK>/RUN-RECORD.md`, `tools/`, `owner-docs/` (this document). |
 
-**The launcher** (`python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py ...`): a loop that checks every two minutes and starts a fresh chat when a track needs one. It starts the HUB on `claude-fable-5-1` (effort high) and CORE and SCREENS on `claude-opus-5-5`, each with its kickoff block from `KICKOFF-PROMPTS.md` plus a resume line. It relaunches a chat whose status file says `STATE: RESTART` (a chat hands over at 300k context) or that has no live session for 30 minutes, unless the track's status word is a stop word or the track is paused (section 6.2). It never launches under 4.0 GB free. Its state and log live in `%LOCALAPPDATA%\1-addic-hub\launcher\`. Commands:
+**The launcher** (`python docs/offline/build-2026-11-07/tools/fresh_chat_launcher.py ...`): a loop that checks every two minutes and starts a fresh chat when a track needs one. It starts the HUB on `claude-fable-5-2` (effort high) and CORE and SCREENS on `claude-opus-5-5`, each with its kickoff block from `KICKOFF-PROMPTS.md` plus a resume line. It relaunches a chat whose status file says `STATE: RESTART` (a chat hands over at 300k context) or that has no live session for 30 minutes, unless the track's status word is a stop word or the track is paused (section 6.2). It never launches under 4.0 GB free. Its state and log live in `%LOCALAPPDATA%\1-addic-hub\launcher\`. Commands:
 
 | Command | What it does |
 |---|---|
@@ -1375,7 +1375,7 @@ The message file's subject is `merge(offline): <lane> READY <tip7>` or `merge(of
 
 **The gates** (`python docs/offline/build-2026-11-07/tools/gates.py --wt <worktree> --lane <lane> [--full] build test validate guards browser docs`): one `GATE <name> GREEN|RED|SKIP|VOID` line per gate and `FAIL <name>` lines; judged by failure name against `coordination/baselines.md`, never by count or exit code. A lane is green when every test it adds passes and nothing green on the base is red on the branch. The browser gate is the heavy one; the full suite runs once, in the quiet window, by the HUB.
 
-**The commit discipline:** `python docs/offline/build-2026-11-07/tools/hub_commit.py --track HUB --session <session link> -m "docs(HUB, <date>): ..." <paths>` from the main folder. It stages and commits only the paths named and adds the two trailers (`Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>` and `Claude-Session: <link>`). Never `git add -A`; never force-push, rebase, stash or check out over uncommitted work; only the HUB (or the owner's window when no launcher HUB is live) pushes, and only `build/offline-v1`, the lane branches and the tags.
+**The commit discipline:** `python docs/offline/build-2026-11-07/tools/hub_commit.py --track HUB --session <session link> -m "docs(HUB, <date>): ..." <paths>` from the main folder. It stages and commits only the paths named and adds the two trailers (`Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>` for the HUB track, with `--coauthor` for a chat on another model, and `Claude-Session: <link>`). Never `git add -A`; never force-push, rebase, stash or check out over uncommitted work; only the HUB (or the owner's window when no launcher HUB is live) pushes, and only `build/offline-v1`, the lane branches and the tags.
 
 <!-- pagebreak -->
 
