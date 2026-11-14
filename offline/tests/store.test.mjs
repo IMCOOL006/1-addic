@@ -17,7 +17,7 @@ function freshUi() {
 }
 
 const STAND_INS = ['Store', 'Engine', 'Actions', 'Content', 'location', 'history', 'document', 'localStorage', 'window',
-  'SpeechSynthesisUtterance'];
+  'SpeechSynthesisUtterance', 'MutationObserver'];
 function clearStandIns() {
   for (const k of STAND_INS) delete globalThis[k];
 }
@@ -1057,6 +1057,52 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(keptLine(), null);
     await k.to('#/lock');
     assert.equal(keptLine(), null, 'nothing was said in SOS, so nothing is kept');
+  });
+
+  // RC1 (review of FIX-STALE-SAVE-KEEP): the lock page draws its SOBER practice in place and moves the address to an
+  // SOS route by history.replaceState (ui-onboarding.js:252, :273-280), which fires no hashchange, so no route render
+  // paints the chrome. A browser hands a change in #main to a MutationObserver in the microtask after the tap, before
+  // the next paint; the stand-in hands the records over the same way, only to an observer whose options cover the node.
+  const moStandIn = () => {
+    const list = [];
+    globalThis.MutationObserver = class {
+      constructor(cb) { this.cb = cb; this.target = null; this.opts = {}; list.push(this); }
+      observe(target, opts) { this.target = target; this.opts = opts || {}; }
+      disconnect() { this.target = null; }
+    };
+    const deliver = (parent) => { // the records of a childList change of `parent`
+      for (const o of list) {
+        if (!o.target || !o.opts.childList) continue;
+        if (parent === o.target || (o.opts.subtree && o.target.contains(parent))) o.cb([{ type: 'childList', target: parent }], o);
+      }
+    };
+    return { list, deliver };
+  };
+
+  test('RC1: the lock page SOBER practice, opened in place (replaceState, no hashchange), hides the kept line; Done brings it back while locked', async (t) => {
+    const mo = moStandIn();
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.equal(location.hash, '#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'control: raised, on the lock page');
+    mo.deliver(main()); // a change in #main outside SOS
+    assert.match(keptLine(), STALE_WORDS, 'a change in #main outside SOS keeps the line');
+    // The tap on lock-sober, as ui-onboarding.js:273-280 does it: the practice in a panel of the lock page, then the hold.
+    const panel = document.createElement('div');
+    (main().firstChild || main()).appendChild(panel);
+    const practice = document.createElement('section');
+    practice.textContent = 'Ride the wave';
+    panel.replaceChildren(practice);
+    history.replaceState(history.state, '', '#/sos/craving?from=lock&n=lk2a9f0');
+    mo.deliver(panel);
+    assert.match(main().textContent, /Ride the wave/, 'control: the practice is drawn inside the lock page');
+    assert.equal(keptLine(), null, 'the practice is SOS: no kept line over it');
+    // Done, still locked (ui-onboarding.js:255-258): the panel empties, the hold goes back to #/lock, the chrome only.
+    panel.replaceChildren();
+    history.replaceState(history.state, '', '#/lock');
+    k.U.applyDiscreet(false);
+    mo.deliver(panel);
+    assert.match(keptLine(), STALE_WORDS, 'back on the lock page, still locked: shown again, as after the SOS button (c)');
   });
 
   test('FIX-STALE-SAVE-KEEP (d): unlock clears the line; a lock without stale never shows it', async (t) => {

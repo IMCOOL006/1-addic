@@ -187,6 +187,12 @@ const UI = (function () {
     const el = byId('kept');
     if (el) { el.hidden = true; el.textContent = ''; }
   }
+  // SOS never shows it, also when an SOS view is drawn in place inside another page: the lock page's SOBER practice
+  // moves the address to an SOS route by replaceState, which fires no hashchange, so chrome() does not run (RC1).
+  function keptOutOfSos() {
+    const el = byId('kept');
+    if (el && !el.hidden && pageKey(route()) === 'sos') el.hidden = true;
+  }
 
   let openSheet = null;
   function sheet(title, body, opts) {
@@ -1045,6 +1051,11 @@ const UI = (function () {
     if (main) main.addEventListener('focusout', (ev) => {
       if (state.deferred && !(ev.relatedTarget && main.contains(ev.relatedTarget))) { state.deferred = false; schedule(); }
     });
+    // Any change in #main checks the route again for the kept line (RC1). The browser hands it over in the microtask
+    // after the change, before the next paint, so the line is never drawn over an SOS view; it only ever hides it.
+    if (main && typeof MutationObserver === 'function') {
+      safe(() => new MutationObserver(keptOutOfSos).observe(main, { childList: true, subtree: true }), null);
+    }
     const s = synth();
     if (s) safe(() => { s.getVoices(); s.addEventListener('voiceschanged', () => s.getVoices()); }, null);
 
