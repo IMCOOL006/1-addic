@@ -249,6 +249,74 @@ flow('SOS reachable and not gated before onboarding or on lock screen', { onboar
   await urgentOneTap(page, 'from the lock screen');
 });
 
+// FIX-SOS-FOCUS (core 324194c; V3.3-T1). A route render of the same path with a new query (Back, Forward or a hash edit
+// between '#/sos/craving' and '#/sos/craving?from=lock') replaces #main's children: when the focused control was inside
+// #main, focus lands on #main (or inside it), never on body, and the page does not scroll. A path change still focuses
+// #main and scrolls to the top. No click on the slip page renders '?logged=1' in place (ui-sos.js:737 is the craving
+// flow's finish, a path change from craving to slip), so the slip pair is reached by a hash edit and Back.
+async function routeBy(page, how) {
+  await page.evaluate((h) => new Promise((resolve) => {
+    const done = () => { document.removeEventListener('ui:rendered', done); resolve(); };
+    document.addEventListener('ui:rendered', done);
+    setTimeout(done, 5000);
+    if (h === 'back') history.back(); else if (h === 'forward') history.forward(); else location.hash = h;
+  }), how);
+  await page.waitForTimeout(100);
+}
+
+const focusAt = (page) => page.evaluate((sel) => {
+  const a = document.activeElement;
+  const main = document.querySelector(sel);
+  return {
+    hash: location.hash, tag: a ? a.tagName : null, isMain: !!main && a === main, inMain: !!(a && main && main.contains(a)),
+    isBody: a === document.body, scrollY: Math.round(window.scrollY),
+    maxY: Math.max(0, Math.round(document.documentElement.scrollHeight - window.innerHeight)),
+  };
+}, HOOKS.main);
+
+async function tabIntoMain(page, where) {
+  for (let i = 0; i < 40; i += 1) {
+    await page.keyboard.press('Tab');
+    const s = await focusAt(page);
+    if (s.inMain && !s.isMain) return s;
+  }
+  return assert.fail(`Tab never reached a control inside ${HOOKS.main} (${where})`);
+}
+
+async function keepsFocus(page, how, hash, where) {
+  const before = await tabIntoMain(page, where);
+  await routeBy(page, how);
+  await page.waitForFunction((h) => location.hash === h, hash, { timeout: 5000 });
+  const s = await focusAt(page);
+  assert.ok(!s.isBody, `focus fell to body after ${where} (${hash})`);
+  assert.ok(s.isMain || s.inMain, `focus stays on ${HOOKS.main} or inside it after ${where} (on ${s.tag})`);
+  assert.equal(s.scrollY, Math.min(before.scrollY, s.maxY), `no scroll after ${where} (${before.scrollY} -> ${s.scrollY})`);
+}
+
+flow('a same-path SOS render keeps focus in the page', { routes: ['sos'] }, async ({ page }) => {
+  // A: the craving page and its '?from=lock' twin, by Back and Forward, focus inside #main before each.
+  await F.go(page, '#/sos/craving');
+  await F.go(page, '#/sos/craving?from=lock');
+  await F.waitRoute(page, 'sos');
+  await keepsFocus(page, 'back', '#/sos/craving', 'Back to the craving page');
+  await keepsFocus(page, 'forward', '#/sos/craving?from=lock', 'Forward to the craving page from the lock');
+  await keepsFocus(page, 'back', '#/sos/craving', 'Back again');
+  await keepsFocus(page, 'forward', '#/sos/craving?from=lock', 'Forward again');
+  // B: the slip page and its '?logged=1' render, by a hash edit and Back.
+  await F.go(page, '#/sos/slip');
+  await keepsFocus(page, '#/sos/slip?logged=1', '#/sos/slip?logged=1', 'the slip page with ?logged=1');
+  await keepsFocus(page, 'back', '#/sos/slip', 'Back to the slip page');
+  // Control: a path change with focus inside #main still focuses #main and scrolls to the top.
+  await F.go(page, '#/sos/craving');
+  const before = await tabIntoMain(page, 'the craving page before a path change');
+  if (before.maxY > 0) await page.evaluate((y) => window.scrollTo(0, y), Math.min(200, before.maxY));
+  await routeBy(page, '#/sos');
+  await page.waitForFunction(() => location.hash === '#/sos', null, { timeout: 5000 });
+  const s = await focusAt(page);
+  assert.ok(s.isMain, `a path change focuses ${HOOKS.main} (on ${s.tag})`);
+  assert.equal(s.scrollY, 0, 'a path change scrolls to the top');
+});
+
 /* ── Today, Learn ── */
 
 // The quick log is Track's "Add" (data-tour quicklog-button, ui-track.js:455): a kind, then the form. The check-in
