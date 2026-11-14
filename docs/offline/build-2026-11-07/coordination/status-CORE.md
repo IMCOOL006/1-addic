@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 01:35 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba), context about 240k: the hand-over is planned (RUN-RECORD 'Resume here'). core PAUSED 2af44ef under the floor (3.7 GB at the commit 01:31, 3.5 at 01:32): the review fix round's RC1 and RS2 committed; the rest of the round and both re-checks wait for a 7.0 GB row. tests-docs MERGED 2be56e6 (5d251cbb)
+STATE: RESTART   # 2026-11-15 01:37 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) hands over at 251k context, at a clean point: nothing of CORE runs. core PAUSED 2af44ef (the review fix round half done; uncommitted store.js and store.test.mjs edits left on disk): a fresh CORE relaunches it from tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json on the first row at 7.0 GB or more (RUN-RECORD 'Resume here'). tests-docs MERGED 2be56e6 (5d251cbb)
 LANE: core PAUSED 2af44ef   # 2026-11-15 01:35 IST: review fix round: RC1 MEDIUM 634dbfb (red first, mutation 6 of 6, store.test 147/147), RS2 LOW 2af44ef (red first, mutation 4 of 4); stopped 01:32 (TaskStop) at the commit under 4.0 GB; uncommitted in the worktree: store.js (1 line) and store.test.mjs (+22), the next finding in progress, left as they are. Left: that finding, the LOWs the fixer takes (RC2, RC3, RS1), both re-checks. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 01:35 IST
+UPDATED: 2026-11-15 01:37 IST
 
 
 # 2026-11-15 01:35 IST · core PAUSED 2af44ef: the fix round's RC1 and RS2 committed; the rest waits for a 7.0 GB row
