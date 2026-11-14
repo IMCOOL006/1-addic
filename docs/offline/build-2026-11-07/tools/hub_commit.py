@@ -26,9 +26,10 @@ ROOT = os.environ.get("ADDIC_ROOT", r"C:\Users\ruchi\1-addic")
 ALLOWED = ("docs/offline/build-2026-11-07/", ".claude/agents/")
 TRAILER_1 = "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 # By track: the model named on the co-author line when --coauthor is not given. A track not listed here keeps
-# TRAILER_1. The HUB's entry goes in at the hand-over to the first HUB on claude-fable-5-2 (the owner's R-O-12,
-# 2026-11-14); until then a chat on another model than the line names passes --coauthor "<model name>".
-TRACK_COAUTHOR = {}
+# TRAILER_1. The HUB's entry went in at 13:14 IST on 2026-11-14, at the hand-over of HUB 11:56 (0b2c238) to the
+# first HUB on claude-fable-5-2 (the owner's R-O-12). A chat on another model than its track's line names passes
+# --coauthor "<model name>".
+TRACK_COAUTHOR = {"HUB": "Claude Fable 5.2"}
 
 
 def git(args, check=True):
