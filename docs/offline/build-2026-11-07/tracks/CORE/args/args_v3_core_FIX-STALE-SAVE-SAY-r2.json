@@ -1,0 +1,167 @@
+{
+ "lane": "core",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The offline-v3.3 fixes by name: a save refused after another tab's import or PIN change is said in a toast that survives the lock page; a same-path route render keeps keyboard focus inside the page.",
+ "files": [
+  "offline/src/store.js",
+  "offline/src/ui-core.js",
+  "offline/tests/store.test.mjs",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK",
+  "FIX-STALE-SAVE-SAY",
+  "FIX-SOS-FOCUS"
+ ],
+ "batches": [
+  [
+   "V-11",
+   "V-46",
+   "V-16",
+   "V-17a",
+   "V-26a",
+   "FIX-IMPORT-MARK"
+  ],
+  [
+   "FIX-STALE-SAVE-SAY",
+   "FIX-SOS-FOCUS"
+  ]
+ ],
+ "unitTier": {
+  "V-11": 1,
+  "V-16": 2,
+  "V-17a": 2,
+  "V-26a": 2,
+  "FIX-STALE-SAVE-SAY": 1,
+  "FIX-SOS-FOCUS": 1
+ },
+ "unitNotes": {
+  "FIX-STALE-SAVE-SAY": "FIX-STALE-SAVE-SAY (core, flagged; offline-v3.3; merge base c57fdaeb; RS1 of R-C-86). A save refused because another tab changed the notebook (an import or a PIN change) is lost with nothing on screen saying so: the lock page replaces the page before its refusal shows. Keep the refusal; the stale branch of Store's write() tells the lock listeners { reason: 'auto', stale: true }, and ui-core's onLock shows one warn toast outside SOS. [The whole note, with the lines, the words, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md: read it before you build.]",
+  "FIX-SOS-FOCUS": "FIX-SOS-FOCUS (core, flagged; offline-v3.3; merge base c57fdaeb; R-C-88 question 2). A route render of the same path with a new query (Back or Forward between '#/sos/craving' and '#/sos/craving?from=lock') replaces main but does not move focus, so a keyboard user can fall to body. Reproduce it in real Chrome first (a red log); only then: focus main with no scroll when the focused element was inside main and is gone. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-SOS-FOCUS.md: read it before you build.]"
+ },
+ "laneNote": "CORE 12:02's word (2026-11-14), offline-v3.3 by the HUB's grant (R-H-58 on the owner's R-O-11), under R-O-7. Flagged lane: encryption and the person's data; two reviewers before READY. One batch of two units: name each by its id in done, one commit per unit at least. 'Claude-Session: 393886cb-a443-4703-8331-923de2473966' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No clinical copy, no new public name, no new event type (stale is a field on the existing lock event). SOS is never interrupted. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so. Round 2 of 2 (the last): test only unless a test proves a defect.",
+ "done": [
+  "U-01",
+  "U-03",
+  "U-02",
+  "U-04",
+  "FIX-V11",
+  "V-11",
+  "V-46",
+  "V-16",
+  "V-17a",
+  "V-26a",
+  "FIX-IMPORT-MARK"
+ ],
+ "base": "c57fdaeb",
+ "session": "393886cb-a443-4703-8331-923de2473966",
+ "now": "2026-11-14 14:43 IST",
+ "diffFrom": "c57fdaeb",
+ "slot": 1,
+ "sliceRun": false,
+ "start": "review",
+ "carried": {
+  "check": {
+   "verdict": "PASS",
+   "tip": "324194c",
+   "units": [
+    {
+     "unit": "U-01",
+     "state": "present (in base c57fdaeb, merged earlier; build.mjs, shell.html in tree)"
+    },
+    {
+     "unit": "U-03",
+     "state": "present (in base; ui-core.js)"
+    },
+    {
+     "unit": "U-02",
+     "state": "present (in base; styles.css)"
+    },
+    {
+     "unit": "U-04",
+     "state": "present (in base; store.js)"
+    },
+    {
+     "unit": "FIX-V11",
+     "state": "present (in base)"
+    },
+    {
+     "unit": "V-11",
+     "state": "present (in base; shell.html:26 boot-line, tests store.test.mjs:757,:783)"
+    },
+    {
+     "unit": "V-46",
+     "state": "present (in base)"
+    },
+    {
+     "unit": "V-16",
+     "state": "present (in base; tests store.test.mjs:1325,:1351,:1390)"
+    },
+    {
+     "unit": "V-17a",
+     "state": "present (in base; store.js:509-514 lockId, test store.test.mjs:2305)"
+    },
+    {
+     "unit": "V-26a",
+     "state": "present (in base; build.mjs:109-152 per-part sizes)"
+    },
+    {
+     "unit": "FIX-IMPORT-MARK",
+     "state": "present (in base; RC1 tests green by name)"
+    },
+    {
+     "unit": "FIX-STALE-SAVE-SAY",
+     "state": "present, meets the unit note (79df6bf): store.js:395 resync(true), :751 onLock {reason:'auto',stale:true} only for an open tab; ui-core.js:1037-1043 one warn toast outside SOS, then #/lock; tests (a) x3, (b) x3 pass"
+    },
+    {
+     "unit": "FIX-SOS-FOCUS",
+     "state": "present, meets the unit note (324194c): ui-core.js:864-878 focus to #main with preventScroll when a same-path route render removes the focused node; path change unchanged; store render unchanged; tests (a)(b)(c) pass"
+    }
+   ],
+   "findings": [],
+   "gates": [
+    "build GREEN 1214356 B, log=C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\build-20261114-122650.log",
+    "test GREEN 120 pass 0 fail 0 skip (store.test.mjs; all six FIX-STALE-SAVE-SAY and three FIX-SOS-FOCUS tests ok by name, both FIX-IMPORT-MARK RC1 tests still ok), log=C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\test-20261114-122654.log",
+    "validate GREEN exit 0, log=C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\validate-20261114-123059.log",
+    "guards GREEN 5/5, log=C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\guards-20261114-123100.log",
+    "browser not run by the checker (the lane adds no browser tests); the builder's run is GREEN 32/32 at C:\\Users\\ruchi\\1-addic-wt\\_logs\\gates\\core\\browser-20261114-121944.log, cited, not re-run"
+   ],
+   "territory": "I ran check_territory.py core c57fdaeb..HEAD. The summary line: 3 files changed, 3 own, 0 shared (append points), 0 nobody's, 0 errors, no warnings. The files are offline/src/store.js, offline/src/ui-core.js and offline/tests/store.test.mjs, which are all core's own files and are the only files the two unit notes allow. Nothing else is committed (offline/1-addic.html is only the gates' uncommitted rebuild). Both commits carry the two trailer lines (Co-Authored-By: Claude Fable 5.1, Claude-Session: 393886cb-...).",
+   "not_checked": [
+    "I did not re-run the browser gate: the lane adds no browser tests, so the builder's browser log GREEN 32/32 at 12:19 is cited instead.",
+    "I did not run the consumer suites (actions, ui tests of other lanes) against the store.js and ui-core.js change myself. The builder's run core__v33-consumers.log shows 353 pass, 0 fail (C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__v33-consumers.log). The HUB's full Node suite at merge covers this.",
+    "I did not repeat the red-first and mutation claims (core__FIX-STALE-SAVE-SAY-red.log, -mut.log, core__FIX-SOS-FOCUS-red.log, -mut.log). I judged them by reading the tests instead: FIX-STALE-SAVE-SAY (a) uses deepStrictEqual on {reason:'auto',stale:true}, which fails on the old {reason:'auto'}. FIX-SOS-FOCUS (a) fails without the fix, because the stand-in leaves activeElement on the detached button. The timer/lockNow, no-stale and SOS tests guard what stays the same, which is what the unit notes ask for.",
+    "The two-tab case was not run in a real browser (the builder says the same). The builder's open question is also not covered: when the other tab removes the PIN, a refused save gives no onLock and no toast. That is outside this unit's brief and is left to the HUB.",
+    "The contract edits (contracts/core.md :6 and :58) are the HUB's to write, not the lane's. I checked that the hand-off names both of them."
+   ]
+  },
+  "review": [
+   {
+    "findings": [
+     {
+      "id": "RC1-R2",
+      "severity": "MEDIUM",
+      "unit": "FIX-STALE-SAVE-SAY",
+      "where": "C:/Users/ruchi/1-addic-wt/core/offline/tests/store.test.mjs (the FIX-STALE-SAVE-SAY (b) tests near :698 call a stand-in commit under bootPending's mocked setTimeout); the rule under test: ui-core.js sayStale() and toast() (:157-176), heard() (:917-922), store.js:396-398 and :755-756",
+      "scenario": "Round 1's re-check of RC1 said PARTLY: the one-toast rule is right today (sayStale() shows the stale toast and hushes any further warn toast until a setTimeout(0)), but no lane test wires the real Store's refused save to the real ui-core with real timers and a page catch that toasts e.message. One macrotask between the refusal's listener and the page's catch (for example an await in store.js after f.stale = true) gives two warn alerts over the lock page and every lane test stays green; a heard() that toasts but never hushes survives the lane suite too.",
+      "evidence": "The contracts reviewer's proof C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__review-contracts-proof3.test.mjs: P1-P3 green on 79c969a; P4-P5 show the macrotask mutant (core__proof3-store-mutant.js) gives two toasts while the lane's (a) assertions still hold. GREEN 5/5 in C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261114-142955.log.",
+      "fix": "Test only, in offline/tests/store.test.mjs. Add named tests 'FIX-STALE-SAVE-SAY (e2e): ...' modelled on proof3's P1-P3: the real Store of two tabs on this file's fakeIndexedDB, the real ui-core (a fresh copy), REAL timers, a page catch that toasts e.message as ui-exercise.js:891 does. P1: the other tab brings back a backup, a lock still stored: exactly one toast with the stale words, then #/lock; a warn toast in a later turn shows as before. P2: the other tab removes the PIN; P3: the other tab erases the notebook: exactly one toast, the route stays. Prove each red on three mutants (one macrotask after the refusal's listener in store.js; heard() toasting without hushing; the hush never lifting) and green on the tip; write the logs under C:/Users/ruchi/1-addic-wt/_logs/reports/core/ and cite their names exactly as on disk (round 1's note cites core__RC1-mut.log for core__rc1-mut.log: the files exist, the case differs; use the real case). Wait for ui-core's real 16 ms redraw before a test's document goes (proof3's afterEach), so no test leaks a timer. No change under offline/src unless a test proves a defect; if one does, fix it in its own commit and say so. Then the full store.test.mjs, build, validate and guards through gates.py."
+     }
+    ],
+    "questions": []
+   },
+   {
+    "findings": [],
+    "questions": []
+   }
+  ]
+ },
+ "priorNote": "Round 1 (wf_1ac18d52-8f7, CORE 12:02): FIX-STALE-SAVE-SAY 79df6bf, FIX-SOS-FOCUS 324194c; check PASS at 324194c; reviewers: RC1 MEDIUM, RC2, RS1, RS2, RS3 LOW; fixes 9cbbc85 (RC1, RS3: the LOCKED error carries stale; ui-core's sayStale() hushes a further warn toast for one turn) and 79c969a (RC2, RS1: with no lock stored the store notice is { label: 'unlock', stale: true } and ui-core says the same toast). Re-checks: RC2, RS1, RS3 FIXED; RS2 WONTFIX-ACCEPTED (the 4.5 s toast, a later unit for the HUB); RC1 PARTLY (the end-to-end test is missing: this round). A new LOW from round 1 (the record's mutation logs missing) is refuted by CORE: core__rc1-mut.log, core__rc1-full.log, core__rc2-mut.log, core__rc2-full.log exist (8 of 8, 124/124, 8 of 8, 129/129); only the letter case of the names in the note differs. Tip 79c969a; the worktree must be clean but for the gates' offline/1-addic.html."
+}

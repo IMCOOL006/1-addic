@@ -1,15 +1,27 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 14:02 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966). actions-sos READY f2b0023 (FIX-C1-BACK, merge base 482b23af, R-C-94); core wf_1ac18d52-8f7 still live in its review fix round (FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS, merge base c57fdaeb)
-LANE: core BUILDING   # 2026-11-14 12:08 IST: build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only, clean); wf_1ac18d52-8f7 (lane.js, args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY.json from mk_core_v33.py; unit notes tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md and FIX-SOS-FOCUS.md; wf_sim OK); two reviewers at its end. Earlier: MERGED 49c788f (FIX-IMPORT-MARK, 82c5eddf)
+STATE: BUILDING   # 2026-11-14 14:50 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966), context over 250k: the hand-over is written (RUN-RECORD 'Resume here'). core round 2 of 2 live as wf_156e9048-260 (test only: RC1's end-to-end tests); actions-sos MERGED f2b0023 (f388ed15)
+LANE: core RED 1   # 2026-11-14 14:50 IST: wf_1ac18d52-8f7 returned RED at 79c969a (round 1: RC2, RS1, RS3 FIXED; RS2 WONTFIX-ACCEPTED; RC1 PARTLY, its end-to-end test missing; a new LOW refuted by CORE: the mutation logs exist, only the case of their names differs). Round 2 of 2 live: wf_156e9048-260 (lane.js start 'review', the check and review carried; args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY-r2.json), test only. Merge base c57fdaeb (the HUB 14:4x: it stays; no overlap with the trunk since)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos READY f2b0023   # 2026-11-14 14:02 IST: FIX-C1-BACK, merge base 482b23af. wf_7810193e-4e0: check PASS (build 1213670 B, actions.test 228/228, validate, guards 5/5, territory 0); safety reviewer no findings (browser --grep lock 5/5 at f2b0023); contracts RC2 FIXED, RC1 (the contract line) closed by this chat in contracts/actions-sos.md. lane.js said RED only for RC1. For the HUB's merged-tree run by name: 'lock page SOBER practice stays open, SOS still works, Done comes back'
+LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 14:02 IST
+UPDATED: 2026-11-14 14:50 IST
 
 
 
+
+
+# 2026-11-14 14:50 IST · from the HUB (by message) · actions-sos f2b0023 MERGED f388ed15; BASE f216bb27
+
+- R-H line by message: actions-sos READY f2b0023 merged f388ed15, trunk f216bb27, pushed 14:44 with build/actions-sos; BASE f216bb27. On the merged tree: build GREEN 1213746 B; actions.test.mjs 228/228; validate GREEN; guards GREEN; territory 0; browser by word lock 5/5, SOS 5/5, PIN 2/2, 'lock page SOBER practice stays open, SOS still works, Done comes back' passing in the lock and SOS runs. Slot 3 free. R-C-94's three defaults are on the board for the owner.
+- core: the merge base stays c57fdaeb (the trunk since changed only ui-onboarding.js, actions.test.mjs, content-core.js, content.test.mjs and docs). On READY the HUB runs the full Node suite and the SOS, lock and PIN flows, plus any flow CORE names for FIX-SOS-FOCUS (none in the suite: the lane proved it in Chrome by a probe, _logs/reports/core/core__sos-focus.red.log and .green.log). After that merge: FREEZE, QUIET, then tests-docs FIX-COUNTS on the HUB's numbers (CORE's to run).
+
+# 2026-11-14 14:50 IST · core round 1 RED at 79c969a; round 2 of 2 launched (test only)
+
+- wf_1ac18d52-8f7 returned RED at 79c969a. Commits over c57fdaeb: 79df6bf FIX-STALE-SAVE-SAY, 324194c FIX-SOS-FOCUS (reproduced in Chrome first), 9cbbc85 RC1+RS3 (the LOCKED error carries stale; ui-core's sayStale() hushes a further warn toast for one turn, so one refused save gives one toast), 79c969a RC2+RS1 (with no lock stored any more the store notice is { label: 'unlock', stale: true } and the same toast shows). Check PASS at 324194c. Gates at 79c969a by the fixer: build 1215822 B, store.test 129/129, validate, guards 5/5, browser 32/32, consumers 353/353; by the re-checkers: store.test 129/129, full Node 781/781 in 16 files.
+- Open after round 1: RC1 PARTLY (no lane test wires the real Store, the real ui-core, real timers and a page catch). Refuted by this chat: the safety re-checker's new LOW (the mutation logs 'missing'): core__rc1-mut.log '8 of 8 caught', core__rc1-full.log 124/124, core__rc2-mut.log '8 of 8 caught', core__rc2-full.log 129/129 exist; the note wrote the names in capitals. RS2 WONTFIX-ACCEPTED.
+- Round 2 of 2 launched 14:45 on the 14:42 row (8.1 GB): wf_156e9048-260; one finding RC1-R2 (the end-to-end tests modelled on the reviewer's proof core__review-contracts-proof3.test.mjs, red on three mutants). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/393886cb-a443-4703-8331-923de2473966/subagents/workflows/wf_156e9048-260/journal.jsonl.
 
 # 2026-11-14 14:02 IST · actions-sos READY f2b0023 (FIX-C1-BACK); merge base 482b23af
 
