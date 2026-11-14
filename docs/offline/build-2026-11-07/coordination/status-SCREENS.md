@@ -1,12 +1,16 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-14 12:20 IST: SCREENS 12:02 (0bd68904): content READY 8b61575 (V-10b under the I6 default + C1-381) for the HUB, merge base cef8746c; nothing of SCREENS runs; nothing else is owed for offline-v3.3 unless a red or a fix by name comes back
-LANE: content READY 8b61575   # 2026-11-14 12:20 IST: V-10b (58c4740) + C1-381 (8b61575), merge base cef8746c; wf_adbfe96a-8c5 check PASS, no findings; full Node 764/764 by SCREENS. Earlier: MERGED cd17758
+STATE: WAITING   # 2026-11-14 12:28 IST: SCREENS 12:02 (0bd68904): content 8b61575 merged by the HUB at 64967784 (trunk b55ab119, pushed 12:26). Nothing of SCREENS runs; nothing is owed for offline-v3.3. Waits at a clean point; the HUB says if the owner's walk names a SCREENS territory
+LANE: content MERGED 8b61575   # 2026-11-14 12:28 IST: V-10b (I6 default) + C1-381 merged 64967784 (HUB: build 1213283 B, content.test, validate, guards GREEN, territory 0). The lane's V3 units are complete; fixes by name only
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
-SLOTS-ASKED: 0   # content slot=4 (R-H-58) frees at the merge
-UPDATED: 2026-11-14 12:20 IST
+SLOTS-ASKED: 0   # content slot=4 free since the merge 12:26
+UPDATED: 2026-11-14 12:28 IST
+
+# 2026-11-14 12:28 IST · from the HUB · content 8b61575 merged (64967784); trunk b55ab119
+
+- Merged and pushed by the HUB at 12:26 (build 1213283 B, content.test exit 0, validate, guards GREEN, territory 0). Slot 4 free. Nothing more is owed by SCREENS for offline-v3.3; WAITING at a clean point.
 
 # 2026-11-14 12:20 IST · content READY 8b61575 (V-10b under the I6 default + LOW C1), for the HUB
 
