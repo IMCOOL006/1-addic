@@ -98,5 +98,6 @@
  "ce57dcb1": {"role": "SCREENS", "label": "offline-v1 SCREENS session 28, 14 Nov 12:59- (launcher)"},
  "46514f36": {"role": "HUB", "label": "offline-v1 HUB session 35, 14 Nov 13:14- (launcher)"},
  "1fd589d5": {"role": "HUB", "label": "offline-v1 HUB session 36, 14 Nov 14:54- (launcher)"},
- "45b995c7": {"role": "CORE", "label": "offline-v1 CORE session 35, 14 Nov 16:19- (launcher)"}
+ "45b995c7": {"role": "CORE", "label": "offline-v1 CORE session 35, 14 Nov 16:19- (launcher)"},
+ "565a7a85": {"role": "HUB", "label": "offline-v1 HUB session 37, 14 Nov 17:18- (launcher)"}
 }
