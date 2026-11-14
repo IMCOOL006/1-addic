@@ -377,7 +377,6 @@ test('content: sample passes backup validation', () => {
 
 test('content: all rows sample:true', () => {
   const st = C.sample.generate(NOW).stores;
-  assert.ok(sampleRows(st).every((r) => r.sample === true), 'every row and event is marked');
   for (const [name, rows] of Object.entries(st)) assert.ok(rows.every((r) => r && r.sample === true), `${name}: every row generate() returns carries sample: true (the meta row is Actions.loadSample's), so erasing the sample leaves nothing`);
   for (const [name, rows] of Object.entries(st)) if (name !== 'profile') assert.ok(rows.every((r) => /^smp-/.test(r.id)), `${name}: ids smp-`);
   assert.equal(st.profile[0].name, 'Sample');
