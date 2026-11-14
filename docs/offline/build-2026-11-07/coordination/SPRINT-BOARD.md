@@ -6,7 +6,7 @@ NEXT (the HUB, today): reads the full gates' result by name (a red is fixed by i
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-14 16:30 IST by `board.py`.
+Rewritten 2026-11-14 16:31 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -40,7 +40,7 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 1fd589d5 (launcher-started 2026-11-14 14:54) | BUILDING — 2026-11-14 16:30 IST: HUB 14:54 (1fd589d5): QUIET done GREEN on the frozen trunk 98627557 (Node 787/0/0 in 16 files… | 160k | 2026-11-14 16:30 IST |
+| HUB | 1fd589d5 (launcher-started 2026-11-14 14:54) | BUILDING — 2026-11-14 16:30 IST: HUB 14:54 (1fd589d5): QUIET done GREEN on the frozen trunk 98627557 (Node 787/0/0 in 16 files… | 164k | 2026-11-14 16:30 IST |
 | CORE | 45b995c7 (launcher-started 2026-11-14 16:19) | RESTART — 2026-11-14 16:18 IST: context over 300k, hand-over written; CORE 12:02 (393886cb-a443-4703-8331-923de2473966). core… | 93k | 2026-11-14 16:18 IST |
 | SCREENS | ce57dcb1 (launcher-started 2026-11-14 12:59) | WAITING — 2026-11-14 13:15 IST: SCREENS 12:59 (ce57dcb1) live, watching the HUB's files with a re-arm under 30 min so the… | 141k | 2026-11-14 13:15 IST |
 
