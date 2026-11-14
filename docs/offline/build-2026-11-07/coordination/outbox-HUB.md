@@ -400,4 +400,8 @@ The next numbers: R-H-69, R-O-18.
 
 - R-H-69 (2026-11-15 01:02 IST): core's check and both reviews at 8f0cdaa read (CORE by message 01:01, a9a7d829): check PASS (C1-C3 LOW; build 1218625 B, store.test 146/146, validate, guards 5/5, territory 0; the contracts reviewer's full Node suite 801/0/0 in 16 files); contracts RC1 MEDIUM (a save refused on #/lock: the kept line stays over the lock page's SOBER practice, which opens SOS by history.replaceState, so ui-core's SOS hide never runs), RC2, RC3 LOW; safety RS1, RS2 LOW, no HIGH or MEDIUM. RC1 is fixed before READY, with its test, because R-H-65 says the line is never in SOS; both reviewers re-check the round; LOWs left open are named. The safety reviewer's question on R-H-65's default 3 (the lock.set race: the tab goes to #/lock silently and then says 'Your PIN is set'): it goes to the owner on the board with item 5c, default as built; nothing waits on it. The run paused again 00:58 under the floor (3.4 GB) before any edit of the fix round; resume told 01:02 on 8.9 GB by hand.
 
-The next numbers: R-H-70, R-O-18.
+## R-H-70 · 2026-11-15 03:12 IST · to CORE · the row 03:10 reads 8.0 GB: relaunch core's review fix round
+
+- R-H-70 (2026-11-15 03:12 IST): the row 03:10 reads 8.0 GB free of 31.8 (by hand; the watch reported the crossing from under 4.0), the first row at 7.0 GB or more since the pause of 01:32. Told CORE 01:40 (5dfd0a16) by message at 03:10 (f3333d3b): relaunch core's review fix round from tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r2.json (start 'review'), slot 1, merge base 63eb8257; sample again by hand just before the launch; under 4.0 GB the run pauses at its next commit; no browser gate and no full Node suite under the floor. Left for the round: the uncommitted finding in the worktree, RC2, RC3, RS1, both reviewers' re-checks; READY names the tip, the merge base and both re-checks. The HUB merges core alone at READY.
+
+The next numbers: R-H-71, R-O-18.
