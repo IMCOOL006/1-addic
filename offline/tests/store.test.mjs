@@ -927,6 +927,89 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     }
   });
 
+  // FIX-SOS-FOCUS: Back or Forward between '#/sos/craving' and '#/sos/craving?from=lock' is a route render of the same
+  // path. The stand-in #main lets go of its old nodes as a browser does, and window counts the scrolls.
+  const focusBed = () => {
+    setup();
+    const S = lockedStore('2468');
+    S.locked = false;
+    globalThis.Store = S;
+    const m = main();
+    const replace = m.replaceChildren.bind(m);
+    m.replaceChildren = (...cs) => { for (const k of m.kids) k.parentNode = null; replace(...cs); };
+    const scrolls = [];
+    globalThis.window = { matchMedia: () => ({ matches: false }), scrollTo: (x, y) => { scrolls.push([x, y]); } };
+    const built = (text) => () => {
+      const p = globalThis.document.createElement('div');
+      const b = globalThis.document.createElement('button');
+      b.textContent = text;
+      p.appendChild(b);
+      return p;
+    };
+    UI.pages.sos = built('Breathe');
+    UI.pages.today = built('Today');
+    const button = () => main().all().find((e) => e.tagName === 'BUTTON');
+    return { scrolls, button };
+  };
+
+  test('FIX-SOS-FOCUS (a): a route render of the same path with a new query, focus inside #main before: #main takes it, no scroll', async () => {
+    const { scrolls, button } = focusBed();
+    at('#/sos/craving');
+    await UI.render();
+    button().focus();
+    const was = document.activeElement;
+    scrolls.length = 0;
+    at('#/sos/craving?from=lock');
+    await UI.render('route');
+    assert.ok(!main().contains(was), 'control: the focused button was replaced');
+    assert.equal(document.activeElement, main(), 'focus stays in the page, on #main');
+    assert.deepEqual(scrolls, [], 'no scroll to the top: only a path change scrolls');
+    button().focus();
+    scrolls.length = 0;
+    at('#/sos/craving'); // and Back again
+    await UI.render('route');
+    assert.equal(document.activeElement, main());
+    assert.deepEqual(scrolls, []);
+  });
+
+  test('FIX-SOS-FOCUS (b): the same render with focus outside #main leaves focus where it is', async () => {
+    const { scrolls } = focusBed();
+    at('#/sos/craving');
+    await UI.render();
+    const sos = document.getElementById('sos-btn');
+    sos.focus(); // the header's button, a toast or any node outside #main
+    scrolls.length = 0;
+    at('#/sos/craving?from=lock');
+    await UI.render('route');
+    assert.equal(document.activeElement, sos, 'focus outside #main is never moved');
+    assert.deepEqual(scrolls, []);
+    main().focus(); // #main itself is never replaced: focus stays on it
+    at('#/sos/craving');
+    await UI.render('route');
+    assert.equal(document.activeElement, main());
+    assert.deepEqual(scrolls, []);
+  });
+
+  test('FIX-SOS-FOCUS (c): a path change still focuses #main and scrolls to the top; a store render moves nothing', async () => {
+    const { scrolls, button } = focusBed();
+    at('#/today');
+    await UI.render();
+    button().focus();
+    scrolls.length = 0;
+    at('#/sos/craving');
+    await UI.render('route');
+    assert.equal(document.activeElement, main(), 'a path change: #main takes focus');
+    assert.deepEqual(scrolls, [[0, 0]], 'and the page scrolls to the top, once');
+    at('#/today');
+    await UI.render('route');
+    const b = button();
+    b.focus();
+    scrolls.length = 0;
+    await UI.render('store');
+    assert.equal(document.activeElement, b, 'a store render is unchanged: it moves no focus');
+    assert.deepEqual(scrolls, []);
+  });
+
   test('RC6: SOS is dark at night unless the theme is forced light; away from SOS the theme follows the device', () => {
     setup();
     globalThis.Engine = { isNight: () => true };

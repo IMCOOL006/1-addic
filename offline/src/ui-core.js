@@ -861,6 +861,8 @@ const UI = (function () {
       node = failure(key);
     }
     if (seq !== state.seq) return; // a newer render has started
+    const held = why === 'route' ? document.activeElement : null; // focus in the page, never #main itself
+    const inPage = !!held && held !== main && main.contains(held);
     main.replaceChildren(node);
     const moved = why === 'route' && state.lastPath !== null && state.lastPath !== r.path;
     const first = state.lastPath === null;
@@ -869,6 +871,10 @@ const UI = (function () {
       if (moved) {
         safe(() => main.focus({ preventScroll: true }), null);
         safe(() => window.scrollTo(0, 0), null);
+      } else if (inPage && !main.contains(held) && held.isConnected !== true) {
+        // The same path with a new query (Back or Forward to '#/sos/craving?from=lock') took the focused node away:
+        // focus stays in the page, on #main, with no scroll; only a path change scrolls (FIX-SOS-FOCUS).
+        safe(() => main.focus({ preventScroll: true }), null);
       }
       emit('ui:route', r);
     }
