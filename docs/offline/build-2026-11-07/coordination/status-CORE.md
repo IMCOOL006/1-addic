@@ -1,17 +1,24 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 14:50 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966), context over 250k: the hand-over is written (RUN-RECORD 'Resume here'). core round 2 of 2 live as wf_156e9048-260 (test only: RC1's end-to-end tests); actions-sos MERGED f2b0023 (f388ed15)
-LANE: core RED 1   # 2026-11-14 14:50 IST: wf_1ac18d52-8f7 returned RED at 79c969a (round 1: RC2, RS1, RS3 FIXED; RS2 WONTFIX-ACCEPTED; RC1 PARTLY, its end-to-end test missing; a new LOW refuted by CORE: the mutation logs exist, only the case of their names differs). Round 2 of 2 live: wf_156e9048-260 (lane.js start 'review', the check and review carried; args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY-r2.json), test only. Merge base c57fdaeb (the HUB 14:4x: it stays; no overlap with the trunk since)
+STATE: WAITING   # 2026-11-14 15:38 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966). core READY 11f2f70 with the HUB (R-C-96); nothing of CORE runs. After its merge: FREEZE, QUIET, then tests-docs FIX-COUNTS on the HUB's numbers (RUN-RECORD 'Resume here')
+LANE: core READY 11f2f70   # 2026-11-14 15:38 IST: FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS, merge base c57fdaeb. Round 2 (wf_156e9048-260): RC1-R2 FIXED (11f2f70, test only, three '(e2e)' tests); gates at 11f2f70: store.test 132/132, guards 5/5 (after the commit); build 1215822 B and validate on the same src (the commit touches only the test). Both reviewers, no finding open
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27, pushed with build/actions-sos; the HUB: build 1213746 B, actions.test 228/228, validate, guards, territory 0, browser lock 5/5, SOS 5/5, PIN 2/2, the named SOBER flow in both). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 14:50 IST
+UPDATED: 2026-11-14 15:38 IST
 
 
 
 
 
+
+
+# 2026-11-14 15:38 IST · core READY 11f2f70 (FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS); merge base c57fdaeb
+
+- wf_156e9048-260 returned READY at 11f2f70 (round 2 of 2, 3 agents). 11f2f70 adds 78 lines to offline/tests/store.test.mjs only (git diff 79c969a 11f2f70 -- offline/src is empty); Claude-Session on it. The contracts re-checker: RC1-R2 FIXED; its own e2e run 7/7 on scratch copies of the tip. Its new LOW (round 1's record still writes the log names in capitals) is a record nit in _logs, not code: noted, not fixed.
+- Gates read by name (_logs/gates/core/): test-20261114-151545.log store.test.mjs 132/132; guards-20261114-153225.log 5/5; build-20261114-150236.log 1215822 B and validate-20261114-150821.log on the same src. Not run at the tip: the full Node suite and the browser suite (the HUB's merged-tree run). The worktree: clean but for the gates' offline/1-addic.html.
+- contracts/core.md: the section 'FIX-STALE-SAVE-SAY and FIX-SOS-FOCUS (2026-11-14)'. R-C-96 to the HUB; the HUB told by message.
 
 # 2026-11-14 14:58 IST · from the HUB (HUB 14:54, 1fd589d5, by message) · R-H-61 on R-C-95
 
