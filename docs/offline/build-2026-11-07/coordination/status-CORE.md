@@ -1,13 +1,19 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 12:09 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966) on R-H-58 (the owner's R-O-11, continue v3.3). core FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS live as wf_1ac18d52-8f7 (slot 1, flagged, merge base c57fdaeb); actions-sos the C1 Back path (slot 3) on the next 7.0 GB row
+STATE: BUILDING   # 2026-11-14 12:25 IST: CORE 12:02 (393886cb-a443-4703-8331-923de2473966) on R-H-58. Two runs live: core wf_1ac18d52-8f7 (FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS, slot 1, merge base c57fdaeb) and actions-sos wf_7810193e-4e0 (FIX-C1-BACK, slot 3, merge base 482b23af); both flagged, two reviewers each
 LANE: core BUILDING   # 2026-11-14 12:08 IST: build/core and its worktree fast-forwarded 49c788f -> c57fdaeb (--ff-only, clean); wf_1ac18d52-8f7 (lane.js, args tracks/CORE/args/args_v3_core_FIX-STALE-SAVE-SAY.json from mk_core_v33.py; unit notes tracks/CORE/briefs/core/FIX-STALE-SAVE-SAY.md and FIX-SOS-FOCUS.md; wf_sim OK); two reviewers at its end. Earlier: MERGED 49c788f (FIX-IMPORT-MARK, 82c5eddf)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED fb3966b   # 2026-11-14 12:09 IST: slot 3 granted 12:02 (R-H-58) for the C1 Back path (flagged); starts on the next row at or above 7.0 GB after core's start. Earlier: FIX-AS-V32 merged aac18546
+LANE: actions-sos BUILDING   # 2026-11-14 12:23 IST: build/actions-sos and its worktree fast-forwarded fb3966b -> 482b23af (--ff-only, clean; no code differs from c5dc3743); wf_7810193e-4e0 on the 12:22 row (10.5 GB) after SCREENS's content start on 12:12 (R-S-34); args tracks/CORE/args/args_v3_actions-sos_FIX-C1-BACK.json from mk_as_v33.py; unit note tracks/CORE/briefs/actions-sos/FIX-C1-BACK.md; wf_sim OK. Earlier: MERGED fb3966b (FIX-AS-V32, aac18546)
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382 (HUB 15:45: build 1209510 B, learn.test 30/30, validate, guards 5/5, the lesson flow 1/1). The lane's V3 units complete. The suite has no checkpoint flow, so the two toasts stay unseen in a browser: named for offline-v3.2
 LANE: tests-docs MERGED 69f2b72   # 2026-11-09 20:44 IST: FIX-COUNTS-4 merged c5dc3743 (docs gate GREEN). TAG offline-v3.2 at c5dc3743, pushed 20:44:58 with every build/* branch
 SLOTS-ASKED: 0   # core 1 and actions-sos 3 granted 2026-11-14 12:02 (R-H-58); nothing more asked
-UPDATED: 2026-11-14 12:09 IST
+UPDATED: 2026-11-14 12:25 IST
 
+
+
+# 2026-11-14 12:25 IST · actions-sos FIX-C1-BACK launched on the 12:22 row (10.5 GB)
+
+- SCREENS 12:02 asked (R-S-34, by message) for the 12:12 row for content V-10b; agreed by message. Content started 12:13 (wf_adbfe96a-8c5) and is READY 8b61575 at 482b23af (R-S-35).
+- build/actions-sos and its worktree fast-forwarded fb3966b -> 482b23af (--ff-only, clean). wf_7810193e-4e0 (lane.js; args tracks/CORE/args/args_v3_actions-sos_FIX-C1-BACK.json; base and diffFrom 482b23af; slot 3; flagged; wf_sim OK, 5 agents). Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/393886cb-a443-4703-8331-923de2473966/subagents/workflows/wf_7810193e-4e0/journal.jsonl. Return -> `LANE: actions-sos READY <tip>` (merge base 482b23af) naming both reviewers; the HUB runs 'lock page SOBER practice stays open, SOS still works, Done comes back' by name on the merged tree.
 
 # 2026-11-14 12:09 IST · CORE 12:02 (393886cb-a443-4703-8331-923de2473966) resumes on R-H-58; core FIX-STALE-SAVE-SAY + FIX-SOS-FOCUS launched
 

@@ -1,0 +1,71 @@
+{
+ "lane": "actions-sos",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": true,
+ "area": "The offline-v3.3 fix by name: the lock page's practice is held on a hash no earlier hold used, so the first Back always moves.",
+ "files": [
+  "offline/src/ui-onboarding.js",
+  "offline/tests/actions.test.mjs",
+  "offline/1-addic.html"
+ ],
+ "units": [
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18",
+  "V-17b",
+  "FIX-AS-V32",
+  "FIX-C1-BACK"
+ ],
+ "batches": [
+  [
+   "V-08a",
+   "V-SOS10",
+   "V-41",
+   "V-25",
+   "V-18",
+   "V-17b",
+   "FIX-AS-V32"
+  ],
+  [
+   "FIX-C1-BACK"
+  ]
+ ],
+ "unitTier": {
+  "V-08a": 1,
+  "V-25": 2,
+  "V-18": 2,
+  "V-17b": 2,
+  "V-SOS10": 1,
+  "V-41": 1,
+  "FIX-C1-BACK": 1
+ },
+ "unitNotes": {
+  "FIX-C1-BACK": "FIX-C1-BACK (actions-sos, flagged; offline-v3.3; merge base 482b23af; the checker's C1, R-C-88). The lock page's SOBER practice is held on the fixed hash '#/sos/craving?from=lock'; after a reload and a second practice two adjacent history entries share it, so one Back press does nothing (the checker's real-Chrome probe). Make every hold's hash differ from every earlier hold's, also across a reload; keep SF1, ESR1, EC1 and ESR2 green by name. [The whole note, with the probe, the tests and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/actions-sos/FIX-C1-BACK.md: read it before you build.]"
+ },
+ "laneNote": "CORE 12:02's word (2026-11-14), offline-v3.3 by the HUB's grant (R-H-58 on the owner's R-O-11), under R-O-7. Flagged lane: safety copy; two reviewers before READY. One unit: name it by its id in done. 'Claude-Session: 393886cb-a443-4703-8331-923de2473966' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No copy change, no clinical copy, no new public name, no new event. SOS is never gated or interrupted. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-09",
+  "U-10",
+  "U-11",
+  "FIX-R5",
+  "FIX-R6",
+  "FIX-R7",
+  "FIX-R8",
+  "V-08a",
+  "V-SOS10",
+  "V-41",
+  "V-25",
+  "V-18",
+  "V-17b",
+  "FIX-AS-V32"
+ ],
+ "base": "482b23af",
+ "session": "393886cb-a443-4703-8331-923de2473966",
+ "now": "2026-11-14 12:23 IST",
+ "diffFrom": "482b23af",
+ "slot": 3,
+ "sliceRun": false
+}
