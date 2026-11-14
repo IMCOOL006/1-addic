@@ -1,12 +1,17 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-14 23:49 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba). core PAUSED 8f0cdaa under the 4.0 GB floor (3.7 GB 23:44:56): the batch is built and committed; the check and the two reviewers wait for a row at 7.0 GB or more (resume wf_f91c7455-e37). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core PAUSED 8f0cdaa   # 2026-11-14 23:49 IST: wf_f91c7455-e37 stopped by this chat at 23:45 (TaskStop) as its checker started: free 3.7 GB, under the floor, at the batch's last commit (R-H rule by message 23:30). Built: 3a1dbd8 FIX-BULK-REFUSAL-SAY, 3760bcd FIX-TAKEIN-SAY, 8f0cdaa FIX-STALE-SAVE-KEEP (with the screen-reader pass); the builder's gates GREEN (store.test 146/146, build 1218625 B, validate, guards 5/5, browser 32/0/0). Left: the check and the two reviewers. Merge base 63eb8257
+STATE: BUILDING   # 2026-11-15 00:05 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba). core's run wf_f91c7455-e37 resumed 00:03 on the 00:02 row (9.2 GB; by hand 8.8, 8.9): the builder replayed from cache, the check and the two reviewers live on 8f0cdaa. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core CHECKING 8f0cdaa   # 2026-11-15 00:05 IST: wf_f91c7455-e37 resumed by resumeFromRunId (R-H-68): the builder's result from cache (3a1dbd8, 3760bcd, 8f0cdaa), the checker, a fix round if any, then the two reviewers; merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 23:51 IST
+UPDATED: 2026-11-15 00:05 IST
+
+
+# 2026-11-15 00:05 IST · core's run resumed (wf_f91c7455-e37) on the 00:02 row
+
+- The HUB (by message): the 00:02 row 9.2 GB (4.7 at 23:57). By hand 00:03: 8.8, 8.9 GB. The worktree at 8f0cdaa, clean but for the gates' offline/1-addic.html. Workflow lane.js with resumeFromRunId wf_f91c7455-e37 and the same args (now '2026-11-14 22:43 IST'): the journal shows no new builder start (the builder from cache) and the checker started. A watch on the branch's commits (with a memory sample), the journal and the HUB's rows under 4.0 GB. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1b24d2dd-cfc2-4de6-8e02-1990884f4eba/subagents/workflows/wf_f91c7455-e37/journal.jsonl.
 
 
 # 2026-11-14 23:51 IST · from the HUB (HUB 22:12, by message; R-H-68, 65e0f1e) · the pause is right; resume on a 7.0 GB row
