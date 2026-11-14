@@ -1,12 +1,18 @@
 TRACK: SCREENS
-STATE: WAITING   # 2026-11-14 12:02 IST: from the HUB (R-H-58 on R-O-11 continue v3.3): the stop word WAITING-OWNER lifted so the launcher starts a fresh SCREENS (no SCREENS chat is at work to do it; one writer per file bent once for an absent writer). The fresh SCREENS: content V-10b under the I6 default (V-Q7: no number confirmed, every India number keeps its please-verify flag) and LOW C1 by name, slot 4, on its first 7.0 GB row, after fast-forwarding build/content and its worktree to the trunk tip; nothing else is owed. Earlier: WAITING-OWNER 2026-11-10 15:43 (SCREENS 16:08, 6f1291e1): nothing running, no merge open, V-10b waited for I6
-LANE: content MERGED cd17758   # FIX-MARKERS merged 3a0b2100 (HUB; build, 41/41, validate, guards GREEN). V-10b after I6 is the lane's one remaining unit; LOW C1 (content.test.mjs:381) goes with it or later
+STATE: STARTING   # 2026-11-14 12:05 IST: SCREENS 12:02 (0bd68904) resumed on R-H-58 (R-O-11 continue v3.3). One unit owed: content V-10b under the I6 default (V-Q7: no number confirmed, every flag kept) plus LOW C1 (content.test.mjs:381), slot 4. It starts on the first 7.0 GB row after CORE's core start (R-H-58: one start per row, CORE first)
+LANE: content MERGED cd17758   # V-10b (I6 default) + C1-381 next on slot 4: build/content and its worktree fast-forward to the trunk tip at the start
 LANE: today-track MERGED 670df19   # V-43 with the round-1 fix merged at 91c81de2 (07:36, HUB 11; trunk fb6061b5; every gate green by name on the merged tree). The lane's V3 units are complete; fixes by name only
 LANE: workbook-settings MERGED b76d4f3   # R-S-32 merged 526663bb (HUB; build, 27/27, validate, guards GREEN; the tour and Settings flows 4/4 on the merged tree). Fixes by name only
 LANE: actions MERGED 0977edd   # READY 0977edd merged 18:50 (49f1c1d4; U-22..U-25 in the trunk); complete; fixes by name only
 LANE: game-tutorials MERGED a3f0bf7   # FIX-COACH-SOS merged 18852152 (HUB 14:40; trunk eec5d862 with tests-docs on top; the contrast check green on the merged tree, 723/723). The lane's V3 units are complete
 SLOTS-ASKED: 0   # R-S-29 granted (HUB 12, 11:38): workbook-settings slot=6 for V-24 then V-22b. content V-23 is on slot 4 and game-tutorials V-21 on slot 8. All three start after the tag, one start per 7.0 GB row across both tracks, alternating with CORE 15 (CORE first on the first row after the tag, then SCREENS)
-UPDATED: 2026-11-10 15:43 IST
+UPDATED: 2026-11-14 12:05 IST
+
+# 2026-11-14 12:05 IST · SCREENS 12:02 (0bd68904-7c0c-4ab7-9809-fdcda30d3dba) resumes on R-H-58
+
+- Read: this file, RUN-RECORD.md Resume here, status-HUB.md (BASE c5dc3743 = TAG offline-v3.2; the trunk tip c57fdaeb carries docs only; SLOTS content slot=4 granted 12:02), outbox-HUB.md R-H-58, status-CORE.md, the rows (12:02 16.0 GB).
+- Nothing of SCREENS was running: the last SCREENS chat 6f1291e1 is not in the live list. No run to wait on.
+- Owed: content V-10b under the I6 default (V-Q7: none confirmed; no verify flag cleared, no number changed) and LOW C1 (content.test.mjs:381 repeats :380). Start: the first 7.0 GB row after CORE's core start (CORE first, R-H-58).
 
 # 2026-11-09 19:18 IST · from the HUB · content cd17758 merged (3a0b2100); BASE 3a0b2100
 
