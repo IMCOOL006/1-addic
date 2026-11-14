@@ -392,7 +392,7 @@ const Store = (function () {
       await state.backend.write(Object.assign({ expect: state.lock }, w));
     } catch (e) {
       if (e && e.code === 'STALE') {
-        try { await resync(); } catch (err) { /* the next write asks again */ }
+        try { await resync(true); } catch (err) { /* the next write asks again */ }
         throw fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
       }
       const f = fail('WRITE_FAILED', 'This could not be saved on this device.');
@@ -734,7 +734,9 @@ const Store = (function () {
   // Another tab changed the lock (or erased the data): this tab takes the stored state as it now is, locked when a
   // lock is stored. Only a tab that was open hears onLock: a locked tab is already on its lock page, and that notice
   // would draw the page again while its PIN is checked (FIX-IMPORT-MARK RC1). The store notice below still reaches it.
-  async function resync() {
+  // stale: this tab's save was just refused because of that change; onLock hears it, so the page can say the save
+  // was lost before the lock page replaces it (FIX-STALE-SAVE-SAY). Every other resync carries no flag.
+  async function resync(stale) {
     const all = await state.backend.readAll();
     const L = lockOf(all);
     const wasOpen = !state.locked; // read before the stored row is taken
@@ -746,7 +748,7 @@ const Store = (function () {
     const d = L ? null : await decode(all, null);
     state.rows = d ? d.rows : blank();
     state.unread = d ? d.unread : blank();
-    if (L && wasOpen) call(state.lockSubs, { reason: 'auto' });
+    if (L && wasOpen) call(state.lockSubs, stale ? { reason: 'auto', stale: true } : { reason: 'auto' });
     notify(L ? 'lock' : 'unlock');
   }
 

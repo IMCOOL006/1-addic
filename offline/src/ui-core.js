@@ -1028,9 +1028,12 @@ const UI = (function () {
       }
       if (typeof S.subscribe === 'function') safe(() => S.subscribe(schedule), null);
       if (S.lock && typeof S.lock.onLock === 'function') {
-        safe(() => S.lock.onLock(() => {
+        safe(() => S.lock.onLock((info) => {
           clearPrint(); // also inside SOS, where the page is not drawn again (a)
           if (pageKey(route()) === 'sos') { chrome('sos'); return; } // never pull a person out of SOS
+          // A save refused because another tab changed the notebook: the page that asked for it is about to be
+          // replaced, so say it in #toasts, outside #main, where it stays (FIX-STALE-SAVE-SAY).
+          if (info && info.stale) toast('This notebook changed in another tab, so your last change was not saved.', 'warn');
           go('#/lock', { replace: true });
         }), null);
       }

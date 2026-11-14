@@ -824,6 +824,51 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     assert.equal(doc.children.length, 0, 'a lock inside SOS empties it too');
   });
 
+  // FIX-STALE-SAVE-SAY: a save refused because another tab changed the notebook is said in #toasts, which is outside
+  // #main, so it stays when the lock page replaces the page that asked for the save.
+  const toastsOf = () => document.getElementById('toasts').children;
+  const STALE_WORDS = /^This notebook changed in another tab, so your last change was not saved\.$/;
+  const bootToLock = async (t, hash) => {
+    const b = await bootPending(t, hash);
+    let lockFn = null;
+    globalThis.Store.lock = { onLock: (f) => { lockFn = f; } };
+    b.opened();
+    await b.booting;
+    // The refused save took the stored lock, as the real Store does before it tells onLock.
+    globalThis.Store.status = () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: true, locked: true });
+    return async (info) => { lockFn(info); await new Promise((r) => setImmediate(r)); };
+  };
+
+  test('FIX-STALE-SAVE-SAY (b): a save refused because another tab changed the notebook is said in one warn toast, then the lock page', async (t) => {
+    const lock = await bootToLock(t, '#/today');
+    assert.equal(toastsOf().length, 0, 'control: no toast before');
+    await lock({ reason: 'auto', stale: true });
+    assert.equal(location.hash, '#/lock', 'the page goes to #/lock as before');
+    assert.equal(toastsOf().length, 1, 'one toast');
+    const el = toastsOf()[0];
+    assert.match(el.textContent.trim(), STALE_WORDS);
+    assert.equal(el.getAttribute('role'), 'alert', 'a warn toast is read out at once');
+    assert.match(String(el.getAttribute('class') || el.className), /\btoast-warn\b/);
+    assert.match(main().textContent, /Locked/, 'the lock page replaced the page; the toast is outside #main');
+    await lock({ reason: 'auto' });
+    assert.equal(toastsOf().length, 1, 'a later lock without stale adds none');
+  });
+
+  test('FIX-STALE-SAVE-SAY (b): inside SOS a refused save shows no toast and the route stays', async (t) => {
+    const lock = await bootToLock(t, '#/sos/craving');
+    await lock({ reason: 'auto', stale: true });
+    assert.equal(toastsOf().length, 0, 'SOS is never interrupted; ui-sos says its own line');
+    assert.equal(location.hash, '#/sos/craving');
+  });
+
+  test('FIX-STALE-SAVE-SAY (b): a lock without the stale flag shows no toast', async (t) => {
+    const lock = await bootToLock(t, '#/today');
+    await lock({ reason: 'auto' });
+    await lock({ reason: 'manual' });
+    assert.equal(toastsOf().length, 0);
+    assert.equal(location.hash, '#/lock');
+  });
+
   test('(b): ui-core touches the lock on input, on pageshow and when the page is visible again, never while hidden', async (t) => {
     const b = await bootPending(t, '#/today');
     const touches = [];
@@ -2435,6 +2480,63 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     await assert.rejects(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
     assert.deepEqual(heardOpen, ['auto'], 'a tab that was open hears onLock, so it leaves its page for #/lock');
     assert.equal(openTab.status().locked, true);
+  });
+
+  test('FIX-STALE-SAVE-SAY (a): an open tab whose save is refused because another tab imported hears onLock { reason: auto, stale: true } once; a locked tab hears nothing', async () => {
+    const { S } = await pinned();
+    const openTab = freshStore();
+    await openTab.load();
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    const lockedTab = freshStore();
+    await lockedTab.load();
+    const heardOpen = [];
+    const heardLocked = [];
+    openTab.lock.onLock((i) => heardOpen.push({ ...i }));
+    lockedTab.lock.onLock((i) => heardLocked.push({ ...i }));
+    await S.replaceAll(IMPORT); // the other tab brings back a backup
+    await assert.rejects(openTab.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.deepStrictEqual(heardOpen, [{ reason: 'auto', stale: true }], 'reason stays auto; stale says the save was refused');
+    assert.equal(openTab.status().locked, true);
+    assert.equal(await openTab.lock.unlock(IMPORT_PIN), true);
+    assert.ok(!openTab.view.get('events', 'late'), 'the refusal stands: the save is not in the imported notebook');
+    assert.equal(openTab.view.get('todos', 'n1').text, 'NEW-ROW');
+    assert.equal(heardOpen.length, 1, 'the unlock that follows tells onLock nothing');
+    assert.equal(await lockedTab.lock.unlock('1357'), false, 'a wrong PIN; its unlock resyncs');
+    await assert.rejects(lockedTab.commit('late', (d) => { d.put('events', { id: 'late2', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.equal(await lockedTab.lock.unlock(IMPORT_PIN), true);
+    assert.deepStrictEqual(heardLocked, [], 'a locked tab hears nothing, stale or not (FIX-IMPORT-MARK RC1)');
+  });
+
+  test('FIX-STALE-SAVE-SAY (a): a PIN set in another tab gives the refused save the same flag', async () => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    const B = freshStore(); // the same file in a second tab, opened before the PIN is set
+    await B.load();
+    const heard = [];
+    B.lock.onLock((i) => heard.push({ ...i }));
+    await A.lock.set('2468');
+    await assert.rejects(B.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }), refusedAs('LOCKED'));
+    assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }]);
+    assert.equal(B.status().locked, true);
+  });
+
+  test('FIX-STALE-SAVE-SAY (a): a lock from the timer and lockNow carry no stale flag', async (t) => {
+    globalThis.indexedDB = fakeIndexedDB();
+    const S = freshStore();
+    await addRows(S);
+    await S.lock.set('2468', { autoLockMin: 1 });
+    const heard = [];
+    S.lock.onLock((i) => heard.push({ ...i }));
+    t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: Date.now() });
+    S.lock.touch();
+    t.mock.timers.tick(60000);
+    assert.equal(S.status().locked, true, 'control: the timer locked it');
+    t.mock.timers.reset();
+    assert.equal(await S.lock.unlock('2468'), true);
+    S.lock.lockNow();
+    assert.deepStrictEqual(heard, [{ reason: 'auto' }, { reason: 'manual' }]);
   });
 
   /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
