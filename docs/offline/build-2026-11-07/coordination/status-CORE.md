@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-14 22:25 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs V3.3-T1's check live (wf_d4144143-bd8, started on the 22:23 row, 9.3 GB by hand); core's flagged batch starts on the next row at 7.0 GB or more
-LANE: core SCOUTED   # 2026-11-14 22:21 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass) to build from the start: the dead run made no edit and no commit; build/core = origin at 63eb8257, worktree clean; merge base 63eb8257; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1 stands (17:14)
+STATE: BUILDING   # 2026-11-14 22:45 IST: CORE 22:12 (1b24d2dd-cfc2-4de6-8e02-1990884f4eba) on R-O-17. tests-docs READY 2be56e6 (V3.3-T1; merge base a615a058). core's flagged batch live (wf_f91c7455-e37, started 22:43 on the 22:39 row 7.3 GB; by hand 7.4/7.2/7.2 GB at 22:41-22:42)
+LANE: core BUILDING   # 2026-11-14 22:45 IST: FIX-BULK-REFUSAL-SAY + FIX-TAKEIN-SAY + FIX-STALE-SAVE-KEEP (with the screen-reader pass), one batch from the start, flagged, two reviewers at the end; lane.js wf_f91c7455-e37 launched 22:43; args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r.json; slot 1; merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs CHECKING 2be56e6   # 2026-11-14 22:25 IST: V3.3-T1's check (lane.js start 'check', wf_d4144143-bd8; args tracks/CORE/args/args_v3_tests-docs_V3.3-T1-check.json; slot 5); merge base a615a058
+LANE: tests-docs READY 2be56e6   # 2026-11-14 22:45 IST: V3.3-T1, the browser flow 'a same-path SOS render keeps focus in the page'; check PASS (wf_d4144143-bd8); gates at 2be56e6: build 1216361 B, test 6/6, validate, guards 5/5, browser 33/0/0, docs GREEN; territory 0; one LOW C1 named V3.3-T1-C1 (R-C-100); merge base a615a058
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-14 22:25 IST
+UPDATED: 2026-11-14 22:45 IST
+
+
+# 2026-11-14 22:45 IST · tests-docs READY 2be56e6 (V3.3-T1); core's flagged batch launched (wf_f91c7455-e37)
+
+- tests-docs: wf_d4144143-bd8 returned READY, 2 agents (the checker and the report), check PASS. This chat verified: HEAD of C:/Users/ruchi/1-addic-wt/tests-docs = 2be56e6, clean; the GATE lines in C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/checker-v33t1-gates.out (build GREEN 1216361 B, test GREEN 6/0/0, validate GREEN, guards GREEN 5/5, browser GREEN 33/0/0, docs GREEN); the flow 'a same-path SOS render keeps focus in the page' passing in _logs/gates/tests-docs/browser-20261114-222655.log. Territory (the checker): 1 own file, 0 errors. Red-first (the builder, 2be56e6's message): focus fell to body on the 324194c^ scratch build (browser-20261114-183325.log). Not run by this chat: any gate (no commit after the check); the full Node suite (no Node file changed). Lane report: tracks/CORE/lane-reports/tests-docs.md (18978 B).
+- The checker's one LOW, named V3.3-T1-C1: the flow's 'no scroll' half cannot fail (scrollY is 0 before and after: the page is not scrolled before the same-path render), and the control's scroll-to-top check proves nothing when maxY is 0; the focus half is proven red-first. Default (R-C-100): test side only, in the FIX-COUNTS-6 + GUIDE-V34 run after core's merge: scroll the page down before each same-path render so the no-scroll check can fail, and skip the control's scroll check by name when maxY is 0.
+- The flow's name for FIX-COUNTS-6: 'a same-path SOS render keeps focus in the page' (browser 32 -> 33; offline/README.md's list).
+- core: the 22:39 row 7.3 GB (lane-widening.md), by hand 6.9 (22:40:13), then 7.4, 7.2, 7.2 (22:41-22:42); launched 22:43: wf_f91c7455-e37. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/1b24d2dd-cfc2-4de6-8e02-1990884f4eba/subagents/workflows/wf_f91c7455-e37/journal.jsonl. Return -> the tip from git, both reviewers' findings from the journal (R-H-65: they weigh default 3 by name), gates by hand if a fix round ran after the check, `LANE: core READY <tip>` (merge base 63eb8257), the contract lines into contracts/core.md, an R-C to the HUB.
 
 
 # 2026-11-14 22:25 IST · tests-docs V3.3-T1's check launched (wf_d4144143-bd8)
