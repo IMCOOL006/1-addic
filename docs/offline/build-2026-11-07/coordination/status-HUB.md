@@ -1,5 +1,5 @@
 TRACK: HUB
-STATE: BUILDING   # 2026-11-14 14:46 IST: HUB 13:14 (46514f36, claude-fable-5-2): actions-sos f2b0023 merged (f388ed15, trunk f216bb27, pushed 14:44); no merge in flight; one lane left for offline-v3.3: core (slot 1, flagged, in its review fix round on CORE 12:02); then FREEZE, QUIET, FIX-COUNTS, TAG offline-v3.3
+STATE: RESTART   # 2026-11-14 14:52 IST: HUB 13:14 (46514f36, claude-fable-5-2) hands over on the context rule (about 251k) at a clean point: no merge in flight, nothing of the HUB's running, _int detached at f216bb27; the launcher starts the fresh HUB from the Resume here of 2026-11-14 14:52 IST (tracks/HUB/RUN-RECORD.md). Merged for offline-v3.3: content 8b61575, actions-sos f2b0023. Left: core (slot 1, flagged, on CORE 12:02, a second round of its run starting); the fresh HUB merges it, then FREEZE, QUIET, FIX-COUNTS, TAG offline-v3.3
 BASE-READY: 2026-11-07 07:15 655516dc
 BASE: f216bb27 (the trunk tip after the actions-sos merge f388ed15, 2026-11-14 14:45 IST; lanes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the code before it c5dc3743 = TAG offline-v3.2). Earlier: b55ab119 (the trunk tip after the content merge 64967784, 2026-11-14 12:27 IST; lanes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the code before it c5dc3743 = TAG offline-v3.2). Earlier: c5dc3743 (the trunk tip = TAG offline-v3.2, 2026-11-09 20:44 IST; fixes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the tags offline-v3.1 903016cc, offline-v3.2 c5dc3743; lanes: tests-docs 69f2b72, actions-sos fb3966b, core 49c788f, content cd17758 (V-10b after the owner's I6), workbook-settings b76d4f3, learn a494fa7, game-tutorials a3f0bf7, engine 97ac73a, today-track 670df19; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 SLOTS-ALLOWED: 3 (2026-11-14 12:02 IST: the row 11:58 16.0 GB free of 31.8 with nothing of this build running: two build chats 3.0 GB + three lanes 2.1 GB leave 10.9 GB over the 4.0 GB floor; R-O-7, R-O-11): core 1, actions-sos 3, content 4 for offline-v3.3; one start per row at or above 7.0 GB across both tracks, tier 1 (the flagged fixes) first; under 4.0 GB the newest run pauses at its next commit. Earlier: 7 (2026-11-08 05:05: tests-docs 5, today-track 6, engine 2, content 4, core 1, actions-sos 3, game-tutorials 8; every V3 lane complete, fixes by name only)
@@ -98,7 +98,7 @@ MERGED: actions-sos READY f2b0023 (FIX-C1-BACK: the lock page's practice is held
 QUIET: done   # offline-v3.2: 20:38:58-20:41:40 IST on _int at aac18546, gates.py --lane hub --full, exit 0, every name read: build GREEN 1213207 B; test GREEN 763 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN 5/5; browser GREEN 32 pass 0 fail 0 skip; docs GREEN exit 0 (logs _logs/gates/hub/*-20261109-2038* to -2041*). Nothing baselined. Next: FIX-COUNTS-4 (CORE 18, docs only, these numbers), merged, then TAG offline-v3.2. Earlier: done 18:10-18:13 for offline-v3.1 at dcabd906
 HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up | v3.2 FREEZE 2026-11-09 20:37 | QUIET 20:39-20:41 GREEN | TAG offline-v3.2 20:44 | parked 2026-11-11 21:15 on R-O-10 | resumed 2026-11-14 11:56 on R-O-11 (continue v3.3): the tracks woken 12:02; FREEZE offline-v3.3 when the three fixes and V-10b are merged, then QUIET and the tag
 TAG: offline-v3.0 = 60dffe331a2f9c1dc4333ff524ec4729486b19d5 (2026-11-08 11:55 IST, annotated, pushed). Earlier: offline-v1.1 = f69bc68a (02:01), offline-v1.0 = 45473b2 (2026-11-07 11:40)
-UPDATED: 2026-11-14 14:45 IST
+UPDATED: 2026-11-14 14:52 IST
 
 
 
@@ -106,6 +106,11 @@ UPDATED: 2026-11-14 14:45 IST
 
 
 
+
+# 2026-11-14 14:52 IST · HUB 13:14 (46514f36) hands over on the context rule at a clean point; core is the one lane left before the freeze
+
+- No merge in flight (MERGING none since 14:45), nothing of the HUB's running (the watch stopped, no gate), _int detached at f216bb27, the trunk pushed. The Resume here of 2026-11-14 14:52 IST on tracks/HUB/RUN-RECORD.md has the loop, the commands, what was learned today and the prepared lane.js fix.
+- core: build/core at 79c969a over c57fdaeb (four commits), its LANE line BUILDING, a second round of its run starting at 14:49 (CORE 12:02). SCREENS WAITING, its track paused. Memory 7.2 GB at 14:49 after two holds under the floor today.
 
 # 2026-11-14 13:20 IST · HUB 13:14 (46514f36, claude-fable-5-2) resumes on R-O-12; nothing to merge yet; the watch armed
 
