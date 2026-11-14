@@ -1,0 +1,6 @@
+{
+ "V3.3-T1": {
+  "tier": 1,
+  "note": "V3.3-T1 (tests-docs, not flagged; after the tag offline-v3.3; merge base a615a058; R-H-61, R-H-62). One browser flow named exactly 'a same-path SOS render keeps focus in the page': it proves core's FIX-SOS-FOCUS (324194c) in the suite: a route render of the same path that removes the focused element from main puts focus on main (or inside it) with no scroll. Proven red on the pre-fix code (a scratch build from 324194c^ or a mutant), never by editing offline/src. [The whole note, with the steps, the hooks and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/V3.3-T1.md: read it before you build.]"
+ }
+}

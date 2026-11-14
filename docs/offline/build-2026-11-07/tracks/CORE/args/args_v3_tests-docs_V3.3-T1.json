@@ -1,0 +1,98 @@
+{
+ "lane": "tests-docs",
+ "chat": "CORE",
+ "tier": 1,
+ "flagged": false,
+ "area": "After the tag offline-v3.3, by name: a browser flow that a same-path SOS render keeps keyboard focus inside the page (FIX-SOS-FOCUS).",
+ "files": [
+  "offline/tests/browser.test.mjs",
+  "offline/tests/screens.mjs",
+  "offline/tests/helpers/*",
+  "offline/docs/*",
+  "offline/README.md",
+  "README.md (## Offline edition)",
+  "CLAUDE.md (## Offline edition)",
+  "docs/decisions/0022-*.md",
+  "docs/decisions/README.md (the 0022 row)",
+  "package.json (scripts, devDependencies)",
+  "package-lock.json"
+ ],
+ "units": [
+  "U-35",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45",
+  "V-22a",
+  "V-26b",
+  "V-27",
+  "V-29",
+  "FIX-TD-V32",
+  "FIX-COUNTS-4",
+  "FIX-COUNTS-5",
+  "V3.3-T1"
+ ],
+ "batches": [
+  [
+   "U-35",
+   "V-07",
+   "V-03",
+   "V-06",
+   "V-01t",
+   "V-45",
+   "V-22a",
+   "V-26b",
+   "V-27",
+   "V-29",
+   "FIX-TD-V32",
+   "FIX-COUNTS-4",
+   "FIX-COUNTS-5"
+  ],
+  [
+   "V3.3-T1"
+  ]
+ ],
+ "unitTier": {
+  "U-35": 1,
+  "V-07": 1,
+  "V-03": 1,
+  "V-06": 1,
+  "V-01t": 1,
+  "V-22a": 2,
+  "V-26b": 2,
+  "V-27": 2,
+  "V-29": 2,
+  "V-45": 1,
+  "V3.3-T1": 1
+ },
+ "unitNotes": {
+  "V3.3-T1": "V3.3-T1 (tests-docs, not flagged; after the tag offline-v3.3; merge base a615a058; R-H-61, R-H-62). One browser flow named exactly 'a same-path SOS render keeps focus in the page': it proves core's FIX-SOS-FOCUS (324194c) in the suite: a route render of the same path that removes the focused element from main puts focus on main (or inside it) with no scroll. Proven red on the pre-fix code (a scratch build from 324194c^ or a mutant), never by editing offline/src. [The whole note, with the steps, the hooks and the proof: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/V3.3-T1.md: read it before you build.]"
+ },
+ "laneNote": "CORE 16:19's word (2026-11-14), after the tag offline-v3.3 by the HUB's grant (slot 5, R-H-62). One unit: name it by its batch id V3.3-T1 in done. 'Claude-Session: 45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. Nothing under offline/src (the red proof uses a scratch copy outside the worktree's src or a mutant build). The count lines and offline/README.md's list of flow names are a later FIX-COUNTS unit's, not this batch's: do not edit CLAUDE.md, README.md, offline/README.md or the guide. A hook the flow needs goes in offline/tests/helpers/hooks.mjs; a hook in another lane's src file is an outbox ask, not an edit. One browser or screens run at a time. Under 4.0 GB free: stop at your next commit, say so.",
+ "done": [
+  "U-34",
+  "U-37",
+  "U-36a",
+  "U-35",
+  "FIX-TOURMARK",
+  "V-07",
+  "V-03",
+  "V-06",
+  "V-01t",
+  "V-45",
+  "V-22a",
+  "V-26b",
+  "V-27",
+  "V-29",
+  "FIX-TD-V32",
+  "FIX-COUNTS-4",
+  "FIX-COUNTS-5"
+ ],
+ "base": "a615a058b27dcfb2a99b63dfb957d0a526bfb8f4",
+ "session": "45b995c7-ba6e-4a78-b5a2-4e87b3bce8a8",
+ "now": "2026-11-14 17:48 IST",
+ "diffFrom": "a615a058b27dcfb2a99b63dfb957d0a526bfb8f4",
+ "slot": 5,
+ "sliceRun": false
+}
