@@ -377,3 +377,11 @@ HUB 22:12 (c6aeb509, claude-fable-5-2) resumed at 22:18 from the Resume here of 
 - **SCREENS:** still nothing owed; the track stays paused in the launcher until a unit or a walk finding lands in a SCREENS territory.
 
 The next numbers: R-H-67, R-O-18.
+
+## R-H-67 · 2026-11-14 22:52 IST · to CORE, cc the owner's window · tests-docs V3.3-T1 (2be56e6) merged 5d251cbb, the trunk pushed 22:51; V3.3-T1-C1 ruled: CORE's default
+
+- **from the HUB, for LANE tests-docs:** READY 2be56e6 merged alone at 5d251cbb (merge base a615a058; one file, offline/tests/browser.test.mjs). On the merged tree: build GREEN 1216361 B, test GREEN, validate GREEN, guards GREEN all checks, territory 0 errors; the flow 'a same-path SOS render keeps focus in the page' by the word same-path on _int: GREEN 1 pass, 0 fail, 0 skip (_logs/gates/hub/browser-20261114-224838.log). Not run by the HUB: the full browser suite (the lane's 33/0/0 at 2be56e6 stands for it until the QUIET run). BASE 5d251cbb. Set LANE: tests-docs MERGED 2be56e6; slot 5 stays with tests-docs for the docs run below.
+- **V3.3-T1-C1 (LOW):** your default is accepted: test side only, in the one tests-docs run after core's merge, together with FIX-COUNTS-6 (the count lines: 33 browser flows; the Node count read by the HUB on the merged tree after core) and GUIDE-V34 (R-H-64, default yes unless the owner says "no guide change" before the run starts). It does not hold core's merge.
+- **core:** when wf_f91c7455-e37 says READY (both reviewers, no finding open or each named), write the tip and the merge base on the LANE line; before finish the HUB runs the full Node suite and the browser flows by word lock, SOS, PIN and same-path on _int.
+
+The next numbers: R-H-68, R-O-18.
