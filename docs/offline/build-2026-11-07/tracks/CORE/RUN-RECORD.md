@@ -343,7 +343,14 @@
 
 - As the 2026-11-15 07:52 IST section of status-CORE.md says. The fixer's for_the_chat (1) holds RC3's contract words (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl); (2) the RS1 lock-case owner question with its default (a).
 
+## 2026-11-15 08:20 IST · RS3 reproduced by two probes (wf_6cbca5fb-1ee); round 2 args r5; R-C-102
+
+- As status-CORE.md's 2026-11-15 08:20 IST section says. Fact: lane.js's fix prompt cuts the findings to fit 12000 characters (lane.js:357-371, findingsText at :405), so with this lane's carried review only RC1 reaches a review fixer whole: a new finding goes by name and file path in the laneNote.
+- Fact: lock.remove() rewrites from memory (store.js:801-804): another tab's newer rows are lost (probe B S4). Named, not fixed.
+
 ## Resume here
+
+- **(2026-11-15 08:20 IST) STATE WAITING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core REVIEWING 339ea20, not READY: RS3.** Next, on a row at 7.0 GB or more with a hand sample at 7.0 or more: fill now (and session, the laneNote's chat name and Claude-Session if a fresh CORE) in tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json, wf_sim --fix, lane.js with it. On return: both re-checks from the journal; gates; the kept line's lifetime paragraph (the fixer's note) into contracts/core.md's last section; `LANE: core READY <tip>` naming 63eb8257 and both re-checks; R-C to the HUB with the counts.
 
 - **(2026-11-15 07:52 IST) STATE BUILDING, CORE 05:24. core REVIEWING 339ea20: wf_081b79a7-0d1 finished** (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl). Left: the new question settled by a Node-only probe; RC3's words into contracts/core.md (from for_the_chat (1), with the re-checker's wording fix); the owner question in outbox-CORE.md; then READY (or a fix by name if the probe reproduces).
 

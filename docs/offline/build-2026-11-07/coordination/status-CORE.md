@@ -1,12 +1,21 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 07:52 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 returned (lane.js state RED: RS1 and RC3 PARTLY, 1 new QUESTION); CORE settles the question with a Node-only probe before READY. tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 339ea20   # 2026-11-15 07:52 IST: both re-checks back (wf_081b79a7-0d1): RC1 FIXED 634dbfb, RC2 FIXED f000c8c, RS2 FIXED 2af44ef; RS1 PARTLY (the no-lock half FIXED 339ea20; the lock half the owner question with its default built); RC3 PARTLY (no code; the contract words CORE writes); NEW QUESTION (safety, traced not run): after the RS1 fix a render-time mark (A.markTipShown on Today) may clear the kept line one frame after it shows when another tab erased the notebook. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 08:20 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core REVIEWING 339ea20: RS3 (a regression of the RS1 fix, reproduced by two probes) gets the review's second fix round (args r5) on a row at 7.0 GB or more (5.1 GB by hand at 08:19). R-C-102. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core REVIEWING 339ea20   # 2026-11-15 08:20 IST: NOT READY: RS3 LOW, a regression of 339ea20 reproduced by two Node probes (wf_6cbca5fb-1ee): a render-time 'tip <id>' write clears the kept line ~40 ms after it shows when another tab erased the notebook. Round 2 (RS3 only) with args r5 on a 7.0 GB row. RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 07:52 IST
+UPDATED: 2026-11-15 08:20 IST
+
+
+# 2026-11-15 08:20 IST · RS3 reproduced: the review's second fix round before READY (R-C-102)
+
+- wf_6cbca5fb-1ee (two agents, Node only, probes under C:/Users/ruchi/1-addic-wt/_logs/scratch/core-kept-probe-20261115): A 'reproduces' (run-A.log, run-A2-traced.log, run-D.log, run-E.log; controls run-B.log, run-C.log keep the line; the fix in memory run-A-patched-acts.log keeps it); B, asked to refute, 'reproduces' (run1.log S1, S3; run2.log S5: also when the other tab removes the PIN after changing which tip rule holds). Their memory readings: 4.1 to 7.7 GB before each run; no browser, no full suite.
+- B also found, not asked: Store.lock.remove() rewrites the notebook from the removing tab's in-memory rows (store.js:801-804; since U-04), so another tab's newer rows are lost (run1.log:42-53). Named for the HUB in R-C-102 (default FIX-REMOVE-STALE-ROWS after this merge); not in this round.
+- contracts/core.md: a new last section (#kept for C3; RC3's words with the re-checker's wording fix; Store.bulk has no caller; the kept line's lifetime after RS3 lands).
+- Args r5 (tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json): r4 with RS3 first among the carried safety findings, a round-2 laneNote (RS3 only; RC3's words into core__units.md; gates once each; the lifetime paragraph for the contract), now 'FILL'. wf_sim --fix SIM OK; lane.js cuts a fix round's findings to fit 12000 characters, so only RC1 reaches the fixer's prompt whole: the laneNote names RS3 and its full text, C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__review-safety-RS3.md; the safety re-check gets RS3 whole.
+- Next: on a row at 7.0 GB or more with a hand sample at 7.0 or more: fill now in r5, wf_sim, lane.js. Return -> both re-checks (RS3 and RC3 closed?), gates, the lifetime paragraph into contracts/core.md, READY.
 
 
 # 2026-11-15 07:52 IST · core's re-checks returned (wf_081b79a7-0d1): three FIXED, two PARTLY, one new question
