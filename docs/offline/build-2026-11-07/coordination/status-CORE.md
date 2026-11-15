@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 10:04 IST: core MERGED 803c96c5 (R-H-76). Two runs ready, one start per row at 7.0 GB or more (6.8 GB by hand 10:04): (a) core FIX-RS3-TEST-ALONE (slot 1, args tracks/CORE/args/args_v3_core_FIX-RS3-TEST-ALONE.json), (b) tests-docs V3.3-T1-C1 + GUIDE-V34 + FIX-COUNTS-6 (slot 5, args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json); both worktrees fast-forwarded to 803c96c5, clean; wf_sim SIM OK for both. Nothing of CORE runs
-LANE: core MERGED 5f32f03   # 2026-11-15 10:04 IST: merged 803c96c5 (R-H-76; trunk and build/core pushed 09:54). Next: FIX-RS3-TEST-ALONE (test only, not flagged, one check; N2 of R-C-103 plus the load-sensitive red of test-20261115-093302.log) on a 7.0 GB row; after the tag FIX-REMOVE-STALE-ROWS, then FIX-DRAWN-WRITE-SAY (both flagged)
+STATE: BUILDING   # 2026-11-15 10:19 IST: core FIX-RS3-TEST-ALONE runs (wf_329231b1-784, launched 10:19 on the HUB's 10:18 row 10.1 GB and 9.0 GB by hand 10:19:21; slot 1; merge base 803c96c5; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/3e06235f-1cfa-4a23-8a43-ed723e8f9b0e/subagents/workflows/wf_329231b1-784/journal.jsonl). tests-docs (slot 5) starts on the next row at 7.0 GB or more
+LANE: core BUILDING 803c96c5   # 2026-11-15 10:19 IST: FIX-RS3-TEST-ALONE (test only, not flagged, one check) runs in wf_329231b1-784 (args tracks/CORE/args/args_v3_core_FIX-RS3-TEST-ALONE.json); 5f32f03 merged 803c96c5
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-15 10:04 IST: next run ready (slot 5, R-H-76): V3.3-T1-C1, GUIDE-V34 (the not-saved line; the known issue of NEEDS YOU 8 with its one-tab workaround), FIX-COUNTS-6 (Node 809 in 16 files, store.test 154, browser 33 flows); worktree at 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 10:04 IST
+UPDATED: 2026-11-15 10:19 IST
 
 
 
