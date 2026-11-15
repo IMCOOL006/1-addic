@@ -3551,6 +3551,16 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(A.view.get('events', 'c1').note, MARK + '-third');
     assert.equal(A.view.get('events', 'b1').note, MARK + '-other');
     assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
+    // A row another tab stored that will not open with this key (c1's seal under another id) is kept as it is stored,
+    // and this tab counts it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'c1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    await A.lock.set('2468');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
   });
 
   test('FIX-REMOVE-STALE-ROWS: an import keeps another tab’s unread row', async () => {
