@@ -171,15 +171,22 @@ const UI = (function () {
   // warn is dropped, so one refused save gives one toast (RC1, RS3). The next turn toasts as before.
   // The toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the person is on
   // another page with the notebook open: after the unlock (a lock stored) or the first route to another path (none
-  // stored), or until this tab's next write goes through (RS1). Other store renders keep it; SOS never shows it; a
-  // reload forgets it (FIX-STALE-SAVE-KEEP).
+  // stored), or until this tab's next write goes through after the person acted again (RS1, RS3). Other store renders
+  // keep it, and so does a write a page makes as it is drawn (a tip marked shown); SOS never shows it; a reload
+  // forgets it (FIX-STALE-SAVE-KEEP).
   const STALE_SAID = 'This notebook changed in another tab, so your last change was not saved.';
   let keptStale = false;
+  // The person's taps, keys, inputs and clicks in this tab (counted in boot, never throttled as touch() is), and their
+  // count when the line was said: only a write after a new act can be the person's save (RS3).
+  let acts = 0;
+  let keptAt = 0;
+  function acted() { acts += 1; }
   function sayStale() {
     toast(STALE_SAID, 'warn');
     hushed = true;
     setTimeout(() => { hushed = false; }, 0);
     keptStale = true;
+    keptAt = acts;
     const el = byId('kept');
     if (el) { el.textContent = STALE_SAID; el.hidden = pageKey(route()) === 'sos'; }
   }
@@ -941,10 +948,11 @@ const UI = (function () {
   // open, with no lock page to go to: the notice carries stale, and the same one toast says it, outside SOS (RC2, RS1).
   // A notice without the flag under a write's own label (a save, a backup brought back, an erase) is this tab's next
   // write going through, so the kept line goes and never says what is no longer true (RS1, FIX-STALE-SAVE-KEEP review).
+  // A write with no act of the person since the line was said (a tip a page marks shown as it is drawn) keeps it (RS3).
   // The resync's 'lock' and 'unlock' keep it, and so does 'bulk': its one notice may stand for a resync held inside it.
   function heard(n) {
     if (n && n.stale && pageKey(route()) !== 'sos') sayStale();
-    else if (n && n.label !== 'lock' && n.label !== 'unlock' && n.label !== 'bulk') clearKept();
+    else if (n && n.label !== 'lock' && n.label !== 'unlock' && n.label !== 'bulk' && acts > keptAt) clearKept();
     schedule();
   }
 
@@ -1050,6 +1058,7 @@ const UI = (function () {
     document.addEventListener('pointerdown', touch, true);
     document.addEventListener('keydown', touch, true);
     document.addEventListener('input', touch, true);
+    for (const type of ['pointerdown', 'keydown', 'input', 'click']) document.addEventListener(type, acted, true); // RS3
     document.addEventListener('visibilitychange', wake);
     window.addEventListener('pageshow', wake);
     const main = byId('main');

@@ -985,6 +985,7 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       frame: async () => { t.mock.timers.tick(20); await turn(); },
       to: async (h) => { b.U.go(h, { replace: true }); await turn(); },
       unlocked: () => locked(false),
+      act: (type) => { const ty = type || 'pointerdown'; for (const f of b.on['doc:' + ty] || []) f({ type: ty }); },
       turn,
     };
   };
@@ -1061,8 +1062,10 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
   test('FIX-STALE-SAVE-KEEP (f): a later save that goes through on the same page clears the line', async (t) => {
     const k = await bootKept(t, '#/today');
     for (const label of ['craving', 'replaceAll', 'resetAll']) {
+      k.act('click'); // the tap on Save that is refused
       await k.send({ label: 'unlock', stale: true });
       assert.match(keptLine(), STALE_WORDS, 'control: shown (' + label + ')');
+      k.act(); // the person acts on the page again (RS3)
       await k.send({ label: 'unlock' });
       await k.send({ label: 'bulk' });
       await k.frame();
@@ -1072,6 +1075,26 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
       assert.equal(document.getElementById('kept').textContent, '', 'and empties it (' + label + ')');
       await k.frame();
       assert.equal(keptLine(), null, 'the page drawn again does not bring it back (' + label + ')');
+    }
+    assert.equal(location.hash, '#/today', 'control: no lock is stored, the page stays');
+  });
+
+  // RS3 (review of the RS1 fix): a page drawn again may write on its own (Today marks its tip shown, 'tip <id>'; a
+  // feature revealed, 'reveal <id>'; ExplorerCompleted). Such a write is not a save of the person, so the line stays;
+  // a write that goes through after the person acted again (a tap, a key, an input, a click) clears it.
+  test('RS3: a render-time write after a refused save keeps the kept line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    for (const type of ['pointerdown', 'keydown', 'input', 'click']) {
+      k.act('click'); // the tap on Save that is refused
+      await k.send({ label: 'unlock', stale: true });
+      assert.match(keptLine(), STALE_WORDS, 'control: shown (' + type + ')');
+      for (const label of ['tip reasons', 'reveal journal', 'ExplorerCompleted']) await k.send({ label });
+      await k.frame();
+      t.mock.timers.tick(4500);
+      assert.match(keptLine(), STALE_WORDS, 'writes made while the page is drawn keep it (' + type + ')');
+      k.act(type);
+      await k.send({ label: 'craving' });
+      assert.equal(keptLine(), null, 'after a ' + type + ', the next write that goes through clears it');
     }
     assert.equal(location.hash, '#/today', 'control: no lock is stored, the page stays');
   });
@@ -3654,11 +3677,13 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     delete globalThis.indexedDB;
   });
 
-  async function twoTabs() {
+  async function twoTabs(opts) {
+    const o = opts || {};
     errors = [];
     console.error = (...a) => { errors.push(a.join(' ')); };
     globalThis.document = fakeDom();
-    globalThis.document.addEventListener = () => {};
+    const on = {}; // the document's listeners, so a test acts as the person does (RS3)
+    globalThis.document.addEventListener = (type, f) => { (on[type] = on[type] || []).push(f); };
     globalThis.Content = Content;
     globalThis.indexedDB = fakeIndexedDB();
     globalThis.window = { addEventListener() {} };
@@ -3667,12 +3692,14 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     const other = freshStore(); // the same file open in another tab
     await other.load();
     await other.lock.set(PIN, { autoLockMin: 'never' });
+    if (o.prep) await o.prep(other);
     const open = freshStore(); // this tab, open on a page with a Save button
     await open.load();
     assert.equal(await open.lock.unlock(PIN), true, 'control: this tab is open');
     globalThis.Store = open;
     const U = freshUi();
-    U.pages.today = () => { const p = document.createElement('p'); p.textContent = PAGE; return p; };
+    if (o.today) o.today(U);
+    else U.pages.today = () => { const p = document.createElement('p'); p.textContent = PAGE; return p; };
     await U.boot();
     const box = () => document.getElementById('toasts');
     const toasts = () => Array.from(box().children, (el) => el.textContent.trim());
@@ -3680,7 +3707,8 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     // The page's Save, as ui-exercise.js:891 does it: its own catch toasts the refusal's words.
     const save = () => open.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); })
       .then(() => null, (e) => { U.toast((e && e.message) || 'That did not save. Please try again.', 'warn'); return e; });
-    return { other, U, box, toasts, main, save };
+    const act = (type) => { for (const f of on[type] || []) f({ type }); };
+    return { other, U, box, toasts, main, save, act };
   }
 
   for (const [how, change, lockPage] of [
@@ -3731,5 +3759,54 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     assert.match(s.main(), new RegExp(PAGE), 'the page stays');
     assert.ok(!S.view.get('events', 'late'), 'nothing of the refused save is kept');
     assert.deepEqual(errors, [], 'nothing on the console');
+  });
+
+  // RS3 (review of the RS1 fix), end to end, with the real Today page, Engine, Actions and content. A tip was shown
+  // earlier today in the other tab, so Today here shows none. The other tab erases the notebook and the person's Save
+  // here is refused. The store render draws Today from the erased notebook; its tip card picks a tip and marks it shown
+  // ('tip <id>'), and that write goes through, as no lock is stored. It is not a save of the person: the line stays.
+  test('RS3: another tab erases the notebook, a Save here is refused, Today marks a tip shown as it is drawn: the kept line stays; a tap and a save clear it', async () => {
+    const fresh = (p) => { const r = require.resolve(p); delete require.cache[r]; return require(r); };
+    globalThis.Content = Content;
+    for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter((n) => /^content-.+\.js$/.test(n) && n !== 'content-core.js').sort()) {
+      require('../src/' + f);
+    }
+    globalThis.Engine = require('../src/engine.js');
+    const A = fresh('../src/actions.js');
+    globalThis.Actions = A;
+    try {
+      const s = await twoTabs({
+        prep: async (other) => { globalThis.Store = other; await A.markTipShown('breathe'); }, // earlier today, there
+        today: (U) => { globalThis.UI = U; fresh('../src/ui-today.js'); assert.equal(typeof U.pages.today, 'function', 'control: the real Today'); },
+      });
+      const S = globalThis.Store;
+      await wait(150); // the first draw and its store renders settle
+      const heard = [];
+      S.subscribe((n) => heard.push(n.label + (n.stale ? ' (stale)' : '')));
+      await s.other.resetAll(); // the other tab erases the notebook
+      s.act('pointerdown');
+      s.act('click'); // the person's tap on Save
+      const e = await s.save();
+      assert.equal(e && e.code, 'LOCKED', 'the save is refused');
+      assert.equal(e.stale, true);
+      const kept = document.getElementById('kept');
+      assert.equal(kept.hidden, false, 'control: the kept line is shown');
+      await wait(150); // the store render draws Today from the erased notebook, and its tip card marks a tip shown
+      assert.ok(heard.some((l) => /^tip /.test(l)), 'control: a tip was marked shown as Today was drawn: ' + JSON.stringify(heard));
+      assert.equal(S.status().hasLock, false, 'control: no lock is stored, so that write went through');
+      assert.equal(kept.hidden, false, 'the kept line stays: that write was not a save of the person');
+      assert.match(kept.textContent.trim(), STALE);
+      assert.equal(location.hash, '#/today', 'the page stays');
+      assert.equal(s.toasts().length, 1, 'one toast: ' + JSON.stringify(s.toasts()));
+      s.act('pointerdown'); // later, the person taps Save again
+      const later = await S.commit('later', (d) => { d.put('events', { id: 'later', type: 'CravingLogged' }); }).then(() => null, (err) => err);
+      assert.equal(later, null, 'control: the later save goes through');
+      await wait(30);
+      assert.equal(kept.hidden, true, 'a tap and a save that goes through clear it');
+      assert.equal(kept.textContent, '', 'and empty it');
+      assert.deepEqual(errors, [], 'nothing on the console');
+    } finally {
+      delete globalThis.UI;
+    }
   });
 });
