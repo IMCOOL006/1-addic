@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 11:35 IST: CORE 11:24 (43b081a3-0031-4428-a618-613fbb52e6d0) read in from Resume here 11:23 and R-H-78. Nothing of CORE runs. core MERGED cbae1bb (61317638). tests-docs PAUSED 0bd6321: its check (start 'check', args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6-check.json, wf_sim SIM OK with and without --fix) starts on a row at 7.0 GB or more with a hand sample at 7.0 or more (5.1 GB at 11:35:24 by hand)
+STATE: BUILDING   # 2026-11-15 11:42 IST: CORE 11:24 (43b081a3). tests-docs check RUNS: wf_74ca003e-4ca (launched 11:40 on the HUB watch row 11:39 8.6 GB and 8.0 GB by hand 11:40:32; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/43b081a3-0031-4428-a618-613fbb52e6d0/subagents/workflows/wf_74ca003e-4ca/journal.jsonl). core MERGED cbae1bb
 LANE: core MERGED cbae1bb   # 2026-11-15 11:26 IST: FIX-RS3-TEST-ALONE merged 61317638, trunk c71a1519 (R-H-78); slot 1 free until FIX-REMOVE-STALE-ROWS after the tag offline-v3.4
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs BUILDING 0bd6321   # 2026-11-15 11:35 IST: PAUSED, all three units committed (V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321); the 11:10 red = the planted-scroll proof by the builder's progress note (tests-docs__progress.md; the check confirms it); next: the check on a 7.0 GB row (done = the three units). Merge base 803c96c5
+LANE: tests-docs CHECKING 0bd6321   # 2026-11-15 11:42 IST: wf_74ca003e-4ca (lane.js start 'check', args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6-check.json as filed, now 11:40); done = V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321; merge base 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 11:35 IST
+UPDATED: 2026-11-15 11:42 IST
 
 
 
 
 
 
+
+# 2026-11-15 11:42 IST · the tests-docs check launched (wf_74ca003e-4ca)
+
+- HUB 09:56 by message: its watch read 8.6 GB at 11:39. By hand 8.0 GB at 11:40:32. Args refilled (now '2026-11-15 11:40 IST'); wf_sim SIM OK plain and --fix (12185 of 12288 B). The tip 0bd6321, worktree clean.
+- Run wf_74ca003e-4ca; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/43b081a3-0031-4428-a618-613fbb52e6d0/subagents/workflows/wf_74ca003e-4ca/journal.jsonl. Alive only while session 43b081a3 is listed; if it is gone, relaunch from the same args file (refill now; a fresh CORE its own session, chat name and Claude-Session).
+- HUB 09:56 (11:38): the tip's full Node and browser suites only above 4.0 GB; a run memory forbids is named as not run (the HUB runs both in QUIET on the merged tree). The brief's check section says so (086a46a8).
+- Return -> the check's verdict and gate lines from the journal; PASS: `LANE: tests-docs READY <tip>` (merge base 803c96c5), an R-C to the HUB with the counts; FIX: the run's one fix round and re-check, then the same.
 
 # 2026-11-15 11:35 IST · CORE 11:24 (43b081a3) reads in; the tests-docs check waits for a 7.0 GB row
 
