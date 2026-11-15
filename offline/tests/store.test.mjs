@@ -3584,7 +3584,7 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(A.status().unreadable, 1, 'this tab now counts it');
   });
 
-  test('FIX-REMOVE-STALE-ROWS: an import keeps another tab’s unread row', async () => {
+  test("FIX-REMOVE-STALE-ROWS: an import keeps another tab's unread row", async () => {
     const idb = globalThis.indexedDB = fakeIndexedDB();
     const A = freshStore();
     await A.load();
