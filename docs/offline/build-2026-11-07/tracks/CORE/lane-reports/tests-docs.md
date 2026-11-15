@@ -1,28 +1,19 @@
 ## tests-docs (CORE, 1-addic offline build): the slice report
 
-State: READY at tip 2be56e6 (continued run 2026-11-14 22:24 IST from a615a058: V3.3-T1 built, check PASS, 1 LOW finding C1 open by design). Earlier: READY at tip 0ce14e5 (continued run 2026-11-09 19:59 IST from 82c5eddf: FIX-TD-V32 built, check PASS, 2 LOW findings open by design). Earlier: READY at tip dbc81e64 (continued run 2026-11-09 15:36 IST from 95aac382: V-22a, V-26b, V-27, V-29 built, check FIX then both findings FIXED; open: the red name "contrast: .coach-sos (dark)" must be baselined or fixed before merge). Earlier: READY at tip 949f0f7 (continued run 2026-11-08 09:19 IST from 3fbd08f6: V-45 built, check PASS, one LOW finding C1 open by design). Earlier: READY at d964202 (06:06 run, V-01t). Branch build/tests-docs; earlier tips 2729d44, 2a515e5, c1058ab; base 30cb12ff. Worktree C:/Users/ruchi/1-addic-wt/tests-docs.
+State: READY at tip 0bd6321 (continued run 2026-11-15 11:40 IST from 803c96c5: nothing built this run, check PASS, 0 findings; units V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6 built by CORE 08:23 builder wf_8e0d7104-edf). Earlier: READY at tip 2be56e6 (continued run 2026-11-14 22:24 IST from a615a058: V3.3-T1 built, check PASS, 1 LOW finding C1 open by design). Earlier: READY at tip 0ce14e5 (continued run 2026-11-09 19:59 IST from 82c5eddf: FIX-TD-V32 built, check PASS, 2 LOW findings open by design). Earlier states: see the annex.
 Earlier run: READY-SLICE, tip 310780d, 2026-11-07 09:30 IST.
+Commits 803c96c5..0bd6321 (2026-11-15 run):
+- 0bd6321 docs(tests-docs, FIX-COUNTS-6): the count lines true on the trunk 803c96c5
+- c04af27 docs(tests-docs, GUIDE-V34): the guide on the not-saved line and the two-tab PIN issue
+- 450d59a test(tests-docs, V3.3-T1-C1): the same-path SOS flow's no-scroll half can fail
 Commits a615a058..2be56e6 (2026-11-14 22:24 run):
 - 2be56e6 test(tests-docs): V3.3-T1: a browser flow that a same-path SOS render keeps focus in the page
-Commits 82c5eddf..0ce14e5 (2026-11-09 19:59 run):
-- 0ce14e5 docs(offline): FIX-TD-V32 T4 retake the sos-craving screenshots (V-SOS10)
-- 08bb30c test(offline): FIX-TD-V32 T5 the hook lock-opening, read in the SOBER flow (V-25)
-- f2c95b5 test(offline): FIX-TD-V32 T3 the lock page SOBER practice (ES1, EC1, ESR1)
-- 7827464 test(offline): FIX-TD-V32 T2 a lesson and a checkpoint say +10 XP once (V-20)
-- 25b1747 test(offline): FIX-TD-V32 T1 a discreet start paints no emergency line (V-ES1)
-Commits 95aac382..dbc81e6 (2026-11-09 run):
-- dbc81e6 docs(offline): C1 V-27 the counts say 1 fail, not 1 todo
-- 8e768f4 test(offline): C2 V-26b the boot budget is max of 3 runs x 2, 1428 ms
-- 21c3258 test(offline): C1 V-27 the .coach-sos dark contrast is a real named red
-- b1cecf2 docs(offline): V-26b, V-27 the true counts in CLAUDE.md, the READMEs and the guide
-- 23cbc96 test(offline): V-27 contrast check of the styles.css colour pairs in both themes
-- b3f2b46 test(offline): V-26b boots to the first render within the budget
-- 20d7896 docs(offline): V-29 the ADR 0022 row in docs/decisions/README.md
-- 0a0c263 test(offline): V-22a C-TM-1 markOnboarded's two writes run in order, awaited, in one try
+Commits 82c5eddf..dbc81e6 (2026-11-09 runs, FIX-TD-V32, V-22a, V-26b, V-27, V-29): see the annex.
 Commits 2026-11-08 and older: see the annex. Older commits (to 2a515e5, c1058ab and before): see the annex.
 - 310780d test(tests-docs, U-34): browser harness: the 3.13 flows by name, offline at 390 px
 
 ### Turn caps
+- Run 2026-11-15 11:40: no builder this run; the three units were committed by the builder of wf_8e0d7104-edf (CORE 08:23), stopped under the floor at 0bd6321 before its tip gates; the check judged 803c96c5..0bd6321; capHits 0.
 - Run 2026-11-14 22:24: no builder this run; V3.3-T1 was built in 2be56e6 (19:07) by CORE 16:19's builder, which died in its batch-end gates; the check judged a615a058..2be56e6; capHits 0.
 - Run 2026-11-09 19:59: builder [FIX-TD-V32] steps_used 19, returned a note (25b1747, 7827464, f2c95b5, 08bb30c, 0ce14e5); capHits 0.
 - Run 2026-11-09 15:36: builder batch [V-22a, V-26b, V-27, V-29] steps_used 14, returned a note (0a0c263, 20d7896, b3f2b46, 23cbc96, b1cecf2); check fixer done (C1, C2: 21c3258, 8e768f4, dbc81e6); capHits 0.
@@ -34,6 +25,10 @@ Commits 2026-11-08 and older: see the annex. Older commits (to 2a515e5, c1058ab 
 - Builder batch [U-34]: steps_used 31, returned a note. capHits 0.
 
 ### Units
+Run 2026-11-15 11:40 IST (continued from 803c96c5; tier 1 each; built earlier, not this run):
+- V3.3-T1-C1 450d59a: the flow 'a same-path SOS render keeps focus in the page' (name kept) now scrolls the page down first, asserts scrollY > 0, then that scrollY is unchanged within 1 px; skips by name if the page cannot scroll. Red probe (planted scrollTo(0,0)) RED browser-20261115-111011.log, never committed; copy _logs/reports/tests-docs/tests-docs__v33t1c1-red-probe.log. Closes finding C1 of 2026-11-14.
+- GUIDE-V34 c04af27 (.docx rebuilt in 0bd6321): guide Troubleshooting row for the not-saved line (the app's words, ui-core.js:177 STALE_SAID); Known quirks row for removing the PIN with two tabs open, with the one-tab workaround. No new heading, no screenshot, India numbers unchanged.
+- FIX-COUNTS-6 0bd6321: 809 checks in 16 files, 33 flows in CLAUDE.md, README.md, offline/README.md (33rd flow name added) and the guide's Tested and Part 4 lines, stamped 15 November 2026, trunk 803c96c5. Closes the docs owed of 2026-11-14. Held: none.
 Run 2026-11-14 22:24 IST (continued from a615a058; V3.3-T1, tier 1):
 - V3.3-T1 2be56e6: browser flow 'a same-path SOS render keeps focus in the page' (offline/tests/browser.test.mjs). RED on the build before the fix (focus fell to body, browser-20261114-183325.log; Part B probe body in 2 of 2), GREEN with it (browser 33/0/0). Proof in _logs/reports/tests-docs/tests-docs__progress.md. Nothing under offline/src touched. For a person using the file: a same-path SOS press keeps keyboard focus in the page. Closes FIX-SOS-FOCUS test owed.
 - Counts: browser 33 flows (32 + this); CLAUDE.md, README.md, offline/README.md still say 32 until FIX-COUNTS-6 (R-H-64, after core's merge). Held: none.
@@ -59,6 +54,7 @@ Runs 03:26 and earlier (V-07, U-35, U-37, U-36a): see the annex.
 Earlier runs (2026-11-07, U-34, U-37, U-36a): see C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs-report-annex.md
 
 ### Contract changes
+- Run 2026-11-15: none new; the flow name is unchanged (33 flows, expect 33/0/0; Node 809/0/0 in 16 files). No hooks, routes or helpers.
 - Run 2026-11-14 22:24: one new browser flow name, "a same-path SOS render keeps focus in the page" (names are failure identities); browser suite 33 flows (expect 33/0/0). No hooks, routes or helpers. Consumer: HUB gates.
 - Older contract lines (2026-11-08 and before, helpers, npm scripts): see the annex.
 - Run 2026-11-09 19:59: hook lockOpening in hooks.mjs; three new browser flow names (names are failure identities); browser suite 32 flows (expect 32/0/0). No routes. Consumer: HUB gates.
@@ -67,6 +63,7 @@ Earlier runs (2026-11-07, U-34, U-37, U-36a): see C:/Users/ruchi/1-addic-wt/_log
 - No content keys, routes, UI.pages entries or data-tour targets added.
 
 ### Gates, run 2026-11-09 15:36 IST (logs under C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/)
+Run 2026-11-15 11:40 IST. VERIFIED at 0bd6321 (check run, logs in C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/): build-20261115-114416.log GREEN 1220739 B; test-20261115-114421.log GREEN 6/0/0 (lane globs); test-20261115-115027.log (--full) GREEN 809/0/0 in 16 files; validate-20261115-114428.log GREEN; guards-20261115-114429.log GREEN 5/5; browser-20261115-114430.log GREEN 33/0/0 (same-path flow passes, no skip); docs-20261115-114948.log GREEN, worktree clean. ASSUMED: none. Builder's earlier: build GREEN 10:53, V3.3-T1 flow GREEN 11:06 (browser-20261115-110610.log). Territory: 803c96c5..HEAD 6 files, 6 own, 0 shared, 0 nobody's, 0 errors, 0 warnings (CLAUDE.md and README.md only in '## Offline edition'; offline/README.md; Guide.md; Guide.docx; browser.test.mjs).
 Run 2026-11-14 22:24 IST. VERIFIED at 2be56e6 (check run): build-20261114-222629.log GREEN 1216361 B; test-20261114-222644.log GREEN 6 pass, 1 file; validate-20261114-222652.log GREEN; guards-20261114-222654.log GREEN 5/5; browser-20261114-222655.log GREEN 33/0/0; docs-20261114-223419.log GREEN. Full output: C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/checker-v33t1-gates.out. ASSUMED: full npm test (16 files) not run. Territory: check_territory a615a058..HEAD 1 file, 1 own, 0 shared, 0 nobody's, 0 errors, 0 warnings.
 Run 2026-11-09 19:59 IST. VERIFIED at 0ce14e5 (logs under the same folder): build-20261109-201211.log GREEN 1212699 B; test-20261109-201211.log GREEN 6 pass, 1 file; validate-20261109-201212.log GREEN; guards-20261109-201212.log GREEN; browser-20261109-201212.log GREEN 32/0/0; docs-20261109-201338.log GREEN 0 images missing. Builder's: build-20261109-200842.log, test-20261109-200843.log, validate-20261109-200846.log, guards-20261109-200846.log, browser-20261109-200847.log, docs-20261109-201020.log. ASSUMED: full npm test (16 files) not run. Territory: territory-td32-20261109-201130.log, 5 files, 5 own, 0 shared, 0 nobody's, 0 errors. Commits carry 'Co-Authored-By: Claude Opus 5.5' (see C2).
 Run 2026-11-09 15:36 IST:
@@ -79,22 +76,15 @@ Older gate blocks (2026-11-08 09:19, 06:06 and before): see the annex.
 ### Review gates
 None.
 
+### Check, run 2026-11-15 11:40 IST (V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6)
+Verdict PASS at 0bd6321 (judged 803c96c5..0bd6321 only). All three present. Findings: none; C1 of 2026-11-14 is addressed by 450d59a (the red probe shows the check can fail). Not checked: trailers (the commits carry Opus 5.5 and session 3e06235f, same as earlier merged commits such as 3a8f1ec; HUB to confirm per PLAN.md:110 rule 6); earlier units; the core contract's last section fact by fact; the rebuilt .docx contents. Notes: _logs/reports/tests-docs/tests-docs__check.md.
+
 ### Check, run 2026-11-14 22:24 IST (V3.3-T1)
 Verdict PASS at 2be56e6 (judged a615a058..2be56e6 only). V3.3-T1 present, RED before the fix, GREEN after.
 - C1 (LOW, V3.3-T1), fix: none (by design), finder's re-check: not applicable. browser.test.mjs:288-309 (keepsFocus, Parts A and B): the page is not scrolled down before each same-path route, so scrollY is 0 before and after and the "no scroll" promise of FIX-SOS-FOCUS cannot fail. Evidence: _logs/reports/tests-docs/tests-docs__v33t1-partb.red.log.
 Not checked: trailers (builder's own session values; FIX-COUNTS-5 be7c546 same form); counts of 32 in the READMEs (FIX-COUNTS-6); full npm test; the 17 earlier units; product content rules (test code only).
 
-### Check, run 2026-11-09 19:59 IST (FIX-TD-V32)
-Verdict PASS at 0ce14e5 (judged 82c5eddf..0ce14e5 only). T1 to T5 present and green.
-- C1 (LOW, FIX-TD-V32 T3), fix: none (by design), finder's re-check: not applicable. browser.test.mjs:753 and the PIN step: a missing urgent-help control skips by F.need instead of failing as at :81-83.
-- C2 (LOW, FIX-TD-V32, all five commits), fix: none, finder's re-check: not applicable. Trailer is Opus 5.5, not the Fable 5.1 line lane.js names; the session id is right; merge_lane.py does not block on it.
-Not checked: T1 mutation not re-run (builder's log read); T1 not stress-tested (1 green full run, 4 of 4 builder runs); full npm test; earlier prose.
-
-### Check, run 2026-11-09 15:36 IST (V-22a, V-26b, V-27, V-29)
-Verdict FIX at b1cecf2, then both FIXED at dbc81e6; the finder's re-check saw only C1 and C2 (the whole list), no new findings.
-- C1 (HIGH, V-27), fix 21c3258 (counts dbc81e6), finder's re-check FIXED: the .coach-sos (dark) red was marked todo through KNOWN_RED, against brief open question 3; removed, now a real named red (RED pass=44 fail=1).
-- C2 (LOW, V-26b), fix 8e768f4, finder's re-check FIXED: boot budget was 1500 'rounded up'; now 1428.
-Not checked: earlier units' acceptance (present below the base); grade level read, not measured; screenshots not re-taken; '.gm-badge.earned .gm-badge-mark' (light, builder reports 1.94:1) is outside V-27's pair list and unmeasured; delivery of the .coach-sos request to game-tutorials unconfirmed.
+Checks of 2026-11-09 (FIX-TD-V32, V-22a, V-26b, V-27, V-29): see the annex.
 
 ### Check, run 2026-11-08 09:19 IST (V-45)
 Verdict PASS at 949f0f7 (judged 3fbd08f6..949f0f7 only). V-45 meets PLAN-V3 section 7 row V-45 and contract 07:10.
@@ -107,12 +97,14 @@ Older checks (2026-11-08 and before): see the annex.
 Not a flagged lane: no reviewers run.
 
 ### Safety and content marks
+- Run 2026-11-15: test code and docs only; no content, no clinicalReview or verify marks, no network call. The guide quotes the app's own words; SOS stays ungated.
 - Run 2026-11-14 22:24: test code only; no content, no clinicalReview or verify marks, no network call, no innerHTML. The flow keeps SOS ungated and in the page.
 - Run 2026-11-09 19:59: no content written; no clinicalReview or verify marks; no network call. T3 keeps SOS ungated on the lock page; T1 guards the discreet start.
 - Run 2026-11-09: no content written; no clinicalReview or verify marks; no network call. The contrast test keeps a red visible, never hidden.
 No content written. clinicalReview: true passages: none. verify: true resources: none.
 
 ### Requests for other lanes
+- Run 2026-11-15: none new.
 - Run 2026-11-14 22:24: none new. Keep the SOS control reachable by Tab and its focus in the page (FIX-SOS-FOCUS).
 - Run 2026-11-09 19:59: none new. actions-sos lock-opening hook now used (T5).
 - Run 2026-11-09: game-tutorials (token owner, SCREENS): offline/src/styles.css:568, .coach-sos sets color hsl(0 0% 100%) on hsl(var(--danger)), 2.73:1 dark against 4.5:1; fix it or CORE/HUB baselines the name. Also unmeasured: .gm-badge.earned .gm-badge-mark (light, 1.94:1 reported). actions-sos: once 638c94a is on the trunk the lock-opening hook is added here.
@@ -120,17 +112,20 @@ No content written. clinicalReview: true passages: none. verify: true resources:
 - Core / actions-sos: keep sos-urgent, sos-*, lock-*, onb-* and data-tour nav-* names as contracted.
 
 ### Docs owed
+- Run 2026-11-15: counts (809/33) and the guide done. Nothing owed. Older lines: annex.
 - Run 2026-11-14 22:24: counts to 33 browser flows (not 32) in CLAUDE.md, README.md, offline/README.md: FIX-COUNTS-6, after core's merge (R-H-64).
 - Run 2026-11-09 19:59: counts to 32 browser flows (not 29) in CLAUDE.md, READMEs, guide: FIX-COUNTS-4's. The .docx was rebuilt for T4.
 - Run 2026-11-09: V-29 row and true counts done. Still owed: counts to 723 of 723 and the .docx after the .coach-sos fix.
 - Older docs-owed lines: see C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs-report-annex.md
 
 ### Open questions
+- Run 2026-11-15: none new. Trailer lines (Opus 5.5 vs the check prompt's Fable 5.1) left for the HUB; default kept.
 - Run 2026-11-14 22:24: none new. Default kept: C1 (scroll not primed) left open by design; trailers keep the builder's session values.
 - Run 2026-11-09 19:59: none new; T1 uses an init script (default kept). C1 and C2 left open by design.
 - Run 2026-11-09: brief Q3 kept (a red contrast pair is named, not skipped, goes to the token owner). The builder chose todo; the check overruled it (C1). Open for CORE/HUB: baseline "contrast: .coach-sos (dark)" in coordination/baselines.md or land the styles.css:568 fix before merge.
 
 ### For the HUB at the merge
+- Run 2026-11-15: no shared file changes (6 own files). Expect Node 809/0/0 (16 files), browser 33/0/0. Guide .docx rebuilt. Lane test gate covers 1 file only; full suites were run at the check.
 - Run 2026-11-14 22:24: no shared file changes (one test file). Browser expect 33/0/0; lane test gate covers 1 file only. Tag offline-v3.3 already cut; this rides toward offline-v3.4.
 - Run 2026-11-09 19:59: no shared file changes; browser expect 32/0/0; lane test gate covers 1 file only. 2 PNGs and the guide .docx changed.
 - Run 2026-11-09: no shared file changes. npm test is RED on one name until baselined or fixed: "contrast: .coach-sos (dark)" (expect 723 checks, 722 pass, 1 fail). The lane gate runs only harness.test.mjs, so its GREEN does not cover it. Browser expect 29/0/0. Territory: 2 nobody-file warnings, both named by the brief.

@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 11:42 IST: CORE 11:24 (43b081a3). tests-docs check RUNS: wf_74ca003e-4ca (launched 11:40 on the HUB watch row 11:39 8.6 GB and 8.0 GB by hand 11:40:32; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/43b081a3-0031-4428-a618-613fbb52e6d0/subagents/workflows/wf_74ca003e-4ca/journal.jsonl). core MERGED cbae1bb
+STATE: WAITING   # 2026-11-15 12:02 IST: CORE 11:24 (43b081a3). Nothing of CORE runs. tests-docs READY 0bd6321 (R-C-105): the HUB merges it alone, then FREEZE, QUIET and TAG offline-v3.4; then core FIX-REMOVE-STALE-ROWS (slot 1) and FIX-DRAWN-WRITE-SAY
 LANE: core MERGED cbae1bb   # 2026-11-15 11:26 IST: FIX-RS3-TEST-ALONE merged 61317638, trunk c71a1519 (R-H-78); slot 1 free until FIX-REMOVE-STALE-ROWS after the tag offline-v3.4
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs CHECKING 0bd6321   # 2026-11-15 11:42 IST: wf_74ca003e-4ca (lane.js start 'check', args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6-check.json as filed, now 11:40); done = V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321; merge base 803c96c5
+LANE: tests-docs READY 0bd6321   # 2026-11-15 12:02 IST: V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321; merge base 803c96c5; check PASS, no finding (wf_74ca003e-4ca); gates GREEN at the tip: build 1220739 B, full Node 809/0/0 in 16 files, browser 33/0/0, validate, guards 5/5, docs (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/*-20261115-114[4-9]*, test-20261115-115027.log); the 11:10 red = the planted proof, absent from the tip
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 11:42 IST
+UPDATED: 2026-11-15 12:02 IST
 
 
 
 
 
 
+
+# 2026-11-15 12:02 IST · tests-docs READY 0bd6321 (R-C-105)
+
+- wf_74ca003e-4ca returned READY: check PASS, no finding, nothing built (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/43b081a3-0031-4428-a618-613fbb52e6d0/subagents/workflows/wf_74ca003e-4ca/journal.jsonl). The gates, each read from its GATE line and log: build GREEN 1220739 B (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/build-20261115-114416.log); the lane's tests 6/0/0 (test-20261115-114421.log); the full Node suite 809 pass 0 fail 0 skip in 16 files, exit 0 (test-20261115-115027.log); validate GREEN (validate-20261115-114428.log); guards GREEN 5/5, all checks ran (guards-20261115-114429.log); the full browser suite 33 pass 0 fail 0 skip, exit 0, the same-path SOS flow green at log line 22 (browser-20261115-114430.log); docs GREEN exit 0, the worktree clean after it (docs-20261115-114948.log).
+- The 11:10 red was the planted-scroll proof, absent from the tip (the checker read browser.test.mjs). Territory 6 own files, 0 errors. The trailers: the committing session's (3e06235f), named by the checker under not_checked.
+- The lane report: tracks/CORE/lane-reports/tests-docs.md (19792 B).
+- Next: the HUB's merge word -> `LANE: tests-docs MERGED <sha>`. After the tag offline-v3.4: core FIX-REMOVE-STALE-ROWS (flagged, two reviewers; R-H-74: fast-forward build/core and its worktree to the trunk tip, a scout's note, args from r5's shape with start 'build', wf_sim, lane.js on a 7.0 GB row), then FIX-DRAWN-WRITE-SAY (N1; the actions.js part by outbox to actions-sos).
 
 # 2026-11-15 11:42 IST · the tests-docs check launched (wf_74ca003e-4ca)
 
