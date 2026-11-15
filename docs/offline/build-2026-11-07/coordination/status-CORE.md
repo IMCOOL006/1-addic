@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 15:10 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d11f252 under the floor (the review fix round's RC1 and RC2 committed; stopped 15:08 as its full Node suite began); resumes from wf_140080f1-59f's journal on the HUB's 4.5 GB line and a hand sample
-LANE: core PAUSED d11f252   # 2026-11-15 15:10 IST: FIX-REMOVE-STALE-ROWS: fix round RC1 c463efe, RC2 d11f252; at d11f252 build GREEN 1221933 B, store.test 159/0/0, validate GREEN, guards 5/5 (C:/Users/ruchi/1-addic-wt/_logs/gates/core/gates-summary.log); the full Node suite and the browser not run; resume = the same run id and args
+STATE: REVIEWING   # 2026-11-15 15:20 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RESUMED a second time: wf_140080f1-59f from its journal (task w4p7haj1z) on the HUB's line (5.7 GB at 15:19) and 6.3 GB by hand at 15:20:00; the review fix round reruns from d11f252
+LANE: core REVIEWING d11f252   # 2026-11-15 15:20 IST: FIX-REMOVE-STALE-ROWS: the review fix round (RC1 c463efe and RC2 d11f252 on the branch) reruns, then the full Node suite and the browser gate, the re-checks and the report; the same run id and args
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 15:10 IST
+UPDATED: 2026-11-15 15:20 IST
 
 
 
