@@ -1,16 +1,24 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 09:31 IST: core READY 5f32f03 for the HUB (R-C-103): round 2 done, both re-checks every finding FIXED; two new LOWs named (N1 a drawn write's refusal said as the person's; N2 the RS3 test must stay last); default no third round, N1 and N2 named follow-ups after the merge with FIX-REMOVE-STALE-ROWS. Nothing of CORE runs
-LANE: core READY 5f32f03   # 2026-11-15 09:31 IST: merge base 63eb8257; the review's two fix rounds done; re-checks wf_081b79a7-0d1 and wf_5b0dfd67-b3c: RC1, RC2, RC3, RS1, RS2, RS3 FIXED; gates at 5f32f03 GREEN (build 1220739 B, store.test 154/0/0, full Node 809/0/0 in 16 files, validate, guards 5/5, browser 32/0/0). Open: C1, C2 (the HUB's), RS1 lock case (owner question 1, default built), new N1 and N2 (R-C-103: default follow-ups after the merge)
+STATE: WAITING   # 2026-11-15 10:04 IST: core MERGED 803c96c5 (R-H-76). Two runs ready, one start per row at 7.0 GB or more (6.8 GB by hand 10:04): (a) core FIX-RS3-TEST-ALONE (slot 1, args tracks/CORE/args/args_v3_core_FIX-RS3-TEST-ALONE.json), (b) tests-docs V3.3-T1-C1 + GUIDE-V34 + FIX-COUNTS-6 (slot 5, args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json); both worktrees fast-forwarded to 803c96c5, clean; wf_sim SIM OK for both. Nothing of CORE runs
+LANE: core MERGED 5f32f03   # 2026-11-15 10:04 IST: merged 803c96c5 (R-H-76; trunk and build/core pushed 09:54). Next: FIX-RS3-TEST-ALONE (test only, not flagged, one check; N2 of R-C-103 plus the load-sensitive red of test-20261115-093302.log) on a 7.0 GB row; after the tag FIX-REMOVE-STALE-ROWS, then FIX-DRAWN-WRITE-SAY (both flagged)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
+LANE: tests-docs MERGED 2be56e6   # 2026-11-15 10:04 IST: next run ready (slot 5, R-H-76): V3.3-T1-C1, GUIDE-V34 (the not-saved line; the known issue of NEEDS YOU 8 with its one-tab workaround), FIX-COUNTS-6 (Node 809 in 16 files, store.test 154, browser 33 flows); worktree at 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 09:31 IST
+UPDATED: 2026-11-15 10:04 IST
 
 
 
 
+
+
+# 2026-11-15 10:04 IST · core MERGED 803c96c5; the next two runs ready (R-H-76)
+
+- R-H-76 (HUB 02:02, 09:56): core READY 5f32f03 merged 803c96c5, no third round (R-H-75): N1 and N2 named follow-ups. On the merged tree all green; one load-sensitive red by name on its first guards run ('RS3: another tab erases the notebook, ...', store.test.mjs:3768; test-20261115-093302.log), three later runs green. HUB 09:56 (eb2fe0a6) live since 10:02.
+- build/core and build/tests-docs and their worktrees fast-forwarded to 803c96c5 (core: the gates' rebuild of offline/1-addic.html dropped first); both clean.
+- Unit notes: tracks/CORE/briefs/core/FIX-RS3-TEST-ALONE.md; tracks/CORE/briefs/tests-docs/V3.3-T1-C1.md, GUIDE-V34.md, FIX-COUNTS-6.md. Args (now 'FILL'): tracks/CORE/args/args_v3_core_FIX-RS3-TEST-ALONE.json, tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json. wf_sim SIM OK for both (core: build, check, report; no review, not flagged).
+- The launch, each on its own row at 7.0 GB or more with a hand sample at 7.0 or more, core first: fill now (and session, the laneNote's chat name and Claude-Session if a fresh CORE), wf_sim, then lane.js with the file's object as args.
 
 # 2026-11-15 09:31 IST · core READY 5f32f03 (R-C-103)
 

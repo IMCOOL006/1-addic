@@ -1,0 +1,84 @@
+{
+  "lane": "core",
+  "chat": "CORE",
+  "tier": 1,
+  "flagged": false,
+  "area": "Toward offline-v3.4, by name (R-H-76): one test-only fix in store.test.mjs: the RS3 end-to-end test waits for its conditions with a deadline and restores what it loaded.",
+  "files": [
+    "offline/tests/store.test.mjs",
+    "offline/1-addic.html"
+  ],
+  "units": [
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP",
+    "FIX-RS3-TEST-ALONE"
+  ],
+  "batches": [
+    [
+      "V-11",
+      "V-46",
+      "V-16",
+      "V-17a",
+      "V-26a",
+      "FIX-IMPORT-MARK",
+      "FIX-STALE-SAVE-SAY",
+      "FIX-SOS-FOCUS"
+    ],
+    [
+      "FIX-BULK-REFUSAL-SAY",
+      "FIX-TAKEIN-SAY",
+      "FIX-STALE-SAVE-KEEP"
+    ],
+    [
+      "FIX-RS3-TEST-ALONE"
+    ]
+  ],
+  "unitTier": {
+    "V-11": 1,
+    "V-16": 2,
+    "V-17a": 2,
+    "V-26a": 2,
+    "FIX-BULK-REFUSAL-SAY": 1,
+    "FIX-TAKEIN-SAY": 1,
+    "FIX-STALE-SAVE-KEEP": 1,
+    "FIX-RS3-TEST-ALONE": 1
+  },
+  "unitNotes": {
+    "FIX-RS3-TEST-ALONE": "FIX-RS3-TEST-ALONE (core, test only, not flagged; merge base 803c96c5; R-H-76, N2 of R-C-103). The RS3 end-to-end test (store.test.mjs:3768) went red once on a loaded machine after a fixed 150 ms wait; make it (and its siblings of the same shape) poll for its conditions with a deadline, and restore Content, the require cache and the globals it changed in its finally. Names kept, no test added, the count stays 809. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-RS3-TEST-ALONE.md: read it before you build.]"
+  },
+  "laneNote": "THIS RUN (CORE 08:23, 2026-11-15): one unit, FIX-RS3-TEST-ALONE, test only, cut from the trunk 803c96c5 (core 5f32f03 merged): offline/tests/store.test.mjs only, no source file. Name it by its batch id FIX-RS3-TEST-ALONE in done. Red proof first as the note says (339ea20's ui-core.js in place, never committed, restored with git checkout), one commit naming FIX-RS3-TEST-ALONE. Then once each through gates.py: store.test, the full Node suite (809/0/0 in 16 files), guards; no browser run (no browser part). 'Claude-Session: 3e06235f-1cfa-4a23-8a43-ed723e8f9b0e' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. Test names are failure identities: keep every name exactly. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so.",
+  "done": [
+    "U-01",
+    "U-03",
+    "U-02",
+    "U-04",
+    "FIX-V11",
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP"
+  ],
+  "base": "803c96c531bee221787e29dc2ada6affb9abc2ac",
+  "session": "3e06235f-1cfa-4a23-8a43-ed723e8f9b0e",
+  "now": "FILL",
+  "diffFrom": "803c96c531bee221787e29dc2ada6affb9abc2ac",
+  "slot": 1,
+  "sliceRun": false,
+  "priorNote": "core 5f32f03 merged 803c96c5 (R-H-76): the review's two fix rounds done, every finding FIXED. This run: N2 of R-C-103 plus the load-sensitive red the HUB saw once on the merged tree (test-20261115-093302.log)."
+}
