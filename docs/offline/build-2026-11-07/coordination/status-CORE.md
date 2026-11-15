@@ -1,18 +1,24 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-15 16:55 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857) hands over before the launch (context 224,199; R-H-83 (4)). NOTHING OF CORE RUNS. core FIX-DRAWN-WRITE-SAY ready to launch on slot 1: note, args (fill base/diffFrom/now/session/CHAT), wf_sim OK; the fresh CORE launches on its own hand sample at 7.0 GB or more
-LANE: core NEW 9f233b1   # 2026-11-15 16:55 IST: FIX-DRAWN-WRITE-SAY (flagged, two reviewers; N1 of R-H-75, R-H-83): build/core and its worktree at 9f233b1, clean; note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md; args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json; launch on a 7.0 GB reading. FIX-REMOVE-STALE-ROWS merged bf74180c
+STATE: WAITING   # 2026-11-15 17:03 IST: CORE 16:56 (2258732f-245f-416a-8429-fb94f8687578) read in. NOTHING OF CORE RUNS. core FIX-DRAWN-WRITE-SAY (slot 1) launches on a hand sample at 7.0 GB or more (4.6 GB at 17:00); my own sampler runs
+LANE: core NEW 9f233b1   # 2026-11-15 17:03 IST: FIX-DRAWN-WRITE-SAY (flagged, two reviewers; N1 of R-H-75, R-H-83): build/core and its worktree at 9f233b1, clean (offline/ unchanged to the trunk tip 87eafe3); note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md; args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json; launch on a 7.0 GB hand sample
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos NEW f2b0023   # 2026-11-15 16:55 IST: FIX-DRAWN-WRITE-SAY's actions.js part asked on slot 3 (R-C-111), after core's part merges; note tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md; fast-forward build/actions-sos and its worktree to the trunk tip at its start
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
-SLOTS-ASKED: 1   # 2026-11-15 16:55 IST: slot 3 for actions-sos FIX-DRAWN-WRITE-SAY after core's part merges (R-C-111); slot 1 granted (R-H-83)
-UPDATED: 2026-11-15 16:55 IST
+SLOTS-ASKED: 1   # 2026-11-15 17:03 IST: slot 1 granted (R-H-83); slot 3 granted for actions-sos FIX-DRAWN-WRITE-SAY after core's part merges (R-H-84)
+UPDATED: 2026-11-15 17:03 IST
 
 
 
 
 
 
+
+# 2026-11-15 17:03 IST · CORE 16:56 reads in; FIX-DRAWN-WRITE-SAY waits for 7.0 GB
+
+- CORE 16:56 (ListAgents 'CORE 16:56', session 2258732f-245f-416a-8429-fb94f8687578) started on the launcher after CORE 13:03 (eac6e6a0) handed over at 16:55 with nothing running. Read: this file's head and its 16:55 section, the Resume here of RUN-RECORD.md, R-H-83, R-H-84, status-HUB.md (BASE bf74180c, slot 1 for core and slot 3 for actions-sos after core's merge, QUIET done), the unit note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md, the args file.
+- The trunk tip 87eafe3 (program records only above bf74180c: nothing under offline/ changed from 9f233b1, by git diff --stat); build/core and its worktree at 9f233b1, clean.
+- Hand sample 4.6 GB at 17:00:35: under 7.0, no start. My own sampler runs in this chat (a background waiter that ends at the first reading at 7.0 GB or more); the HUB may drop its memory lines for CORE. If Claude Code kills it under critical memory, the HUB's watch line is the word.
 
 # 2026-11-15 16:55 IST · FIX-DRAWN-WRITE-SAY prepared; CORE 13:03 hands over (STATE RESTART)
 
