@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: REVIEWING   # 2026-11-15 14:48 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RESUMED: wf_140080f1-59f resumed from its journal (task wh0stu0x1) on the HUB's word (6.4 GB at 14:47) and 6.5 GB by hand at 14:47:56; the build, the check and the two reviews cached, the review fix round live
-LANE: core REVIEWING d55a102   # 2026-11-15 14:48 IST: FIX-REMOVE-STALE-ROWS: the review fix round (RS1, RS2, RC1, RC2 and C1, all LOW) runs, then the re-checks and the report; resumed from wf_140080f1-59f's journal, the same args
+STATE: WAITING   # 2026-11-15 15:10 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d11f252 under the floor (the review fix round's RC1 and RC2 committed; stopped 15:08 as its full Node suite began); resumes from wf_140080f1-59f's journal on the HUB's 4.5 GB line and a hand sample
+LANE: core PAUSED d11f252   # 2026-11-15 15:10 IST: FIX-REMOVE-STALE-ROWS: fix round RC1 c463efe, RC2 d11f252; at d11f252 build GREEN 1221933 B, store.test 159/0/0, validate GREEN, guards 5/5 (C:/Users/ruchi/1-addic-wt/_logs/gates/core/gates-summary.log); the full Node suite and the browser not run; resume = the same run id and args
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 14:48 IST
+UPDATED: 2026-11-15 15:10 IST
 
 
 
 
 
 
+
+# 2026-11-15 15:10 IST · core FIX-REMOVE-STALE-ROWS PAUSED again, at d11f252 (the floor)
+
+- The HUB 13:18 by message: 3.9 GB at 15:06 by its watch, 3.6 at 15:06:58 and 3.4 at 15:07:09 by its hand. By my hand 3.2 GB at 15:07:39.
+- The review fix round (resumed 14:48) had committed RC1 c463efe (removing the PIN keeps and counts another tab's unread row) and RC2 d11f252 (the import test carries the brief's exact name), then ran gates.py at d11f252: build GREEN 1221933 B (build-20261115-150111.log), test GREEN store.test 159 pass 0 fail 0 skip (test-20261115-150123.log), validate GREEN, guards GREEN 5/5 all checks ran; at 15:07:20 it began the full Node suite (test-20261115-150720.log, cut off). Stopped by TaskStop at 15:08; no node process of the core worktree left; the worktree clean (the generated file only).
+- Not yet done: the full Node suite and the browser gate at the tip, the fix round's hand-off (RS1, RS2 and C1 are notes: the gap for a later unit, the guide's words for tests-docs, the trailers), the re-checks, the report.
+- Resume: on the HUB's line of 4.5 GB or more and a hand sample at 4.5 or more, Workflow(lane.js, resumeFromRunId 'wf_140080f1-59f', the args unchanged): the build, check and reviews cached; the fix round reruns as a fresh agent that finds RC1 and RC2 on the branch.
 
 # 2026-11-15 14:48 IST · core FIX-REMOVE-STALE-ROWS resumed (wf_140080f1-59f)
 
