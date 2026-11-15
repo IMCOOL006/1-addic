@@ -3668,6 +3668,18 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
   const STALE = /^This notebook changed in another tab, so your last change was not saved\.$/;
   const PAGE = 'A page with a Save button';
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  // FIX-RS3-TEST-ALONE: waits for what the next check reads, on real timers, every 10 ms; past the deadline it fails,
+  // naming what it waited for and the last state. A slow machine waits longer instead of going red. It looks first
+  // after one 10 ms timer, so the code after it always runs in a later turn than the code before it, as the fixed
+  // waits did (a warn toast in a later turn is shown, the refusal's own turn hushes one).
+  async function until(cond, what, state, ms = 10000) {
+    const end = Date.now() + ms;
+    for (;;) {
+      await wait(10);
+      if (cond()) return;
+      if (Date.now() > end) assert.fail('waited ' + ms + ' ms for ' + what + (state ? ': ' + state() : ''));
+    }
+  }
   const realError = console.error;
   let errors = [];
   afterEach(async () => {
@@ -3729,7 +3741,10 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       assert.match(s.toasts()[0], STALE, 'the stale words, not the page’s own');
       assert.equal(s.box().children[0].getAttribute('role'), 'alert', 'a warn toast is read out at once');
       assert.equal(location.hash, lockPage ? '#/lock' : '#/today');
-      await wait(50); // ui-core's real 16 ms redraw
+      if (lockPage) await until(() => /Locked/.test(s.main()), 'the lock page to be drawn', () => s.main().slice(0, 80));
+      // The page is on screen already: there is nothing to poll for. This only lets ui-core's real 16 ms redraw run
+      // before the checks that the page and the toast stay (its frame was set before this timer, so it fires first).
+      else await wait(50);
       assert.match(s.main(), lockPage ? /Locked/ : new RegExp(PAGE), lockPage ? 'the lock page replaced the page' : 'the page stays');
       assert.equal(s.toasts().length, 1, 'the toast is still there after the redraw: ' + JSON.stringify(s.toasts()));
       assert.match(s.toasts()[0], STALE);
@@ -3749,7 +3764,10 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       .then(() => null, (err) => err);
     assert.equal(e && e.code, 'LOCKED', 'the save is refused');
     assert.equal(e.stale, true);
-    await wait(50); // ui-core's real 16 ms redraw
+    await until(() => s.toasts().length > 0, 'the stale toast', () => JSON.stringify(s.toasts()));
+    // Then only a redraw to let happen before the checks that nothing more came (one toast, the page stays): ui-core's
+    // real 16 ms frame was set before this timer, so it fires first. There is no condition to poll for.
+    await wait(50);
     assert.equal(s.toasts().length, 1, 'one refused save, one toast: ' + JSON.stringify(s.toasts()));
     assert.match(s.toasts()[0], STALE);
     const kept = document.getElementById('kept');
@@ -3767,20 +3785,36 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
   // ('tip <id>'), and that write goes through, as no lock is stored. It is not a save of the person: the line stays.
   test('RS3: another tab erases the notebook, a Save here is refused, Today marks a tip shown as it is drawn: the kept line stays; a tap and a save clear it', async () => {
     const fresh = (p) => { const r = require.resolve(p); delete require.cache[r]; return require(r); };
-    globalThis.Content = Content;
-    for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter((n) => /^content-.+\.js$/.test(n) && n !== 'content-core.js').sort()) {
-      require('../src/' + f);
-    }
-    globalThis.Engine = require('../src/engine.js');
-    const A = fresh('../src/actions.js');
-    globalThis.Actions = A;
+    const files = fs.readdirSync(new URL('../src/', import.meta.url)).filter((n) => /^content-.+\.js$/.test(n) && n !== 'content-core.js').sort();
+    // What this test changes, kept so that its finally puts it back: Content's own keys (the content files attach to
+    // it), the module cache entries it fills and the globals it sets.
+    const cached = new Map([...files, 'engine.js', 'actions.js', 'ui-today.js'].map((f) => {
+      const p = require.resolve('../src/' + f);
+      return [p, require.cache[p]];
+    }));
+    const content = Object.getOwnPropertyDescriptors(Content);
+    const globals = new Map(['Engine', 'Actions', 'UI'].map((k) => [k, Object.getOwnPropertyDescriptor(globalThis, k)]));
     try {
+      globalThis.Content = Content;
+      for (const f of files) require('../src/' + f);
+      globalThis.Engine = require('../src/engine.js');
+      const A = fresh('../src/actions.js');
+      globalThis.Actions = A;
       const s = await twoTabs({
         prep: async (other) => { globalThis.Store = other; await A.markTipShown('breathe'); }, // earlier today, there
         today: (U) => { globalThis.UI = U; fresh('../src/ui-today.js'); assert.equal(typeof U.pages.today, 'function', 'control: the real Today'); },
       });
       const S = globalThis.Store;
-      await wait(150); // the first draw and its store renders settle
+      // The first draw and its store renders settle: Today is on screen and has not changed for five polls in a row
+      // (a render waiting on ui-core's 16 ms frame was set before the next poll's timer, so it runs first).
+      let last = null;
+      let still = 0;
+      await until(() => {
+        const now = s.main();
+        still = now === last ? still + 1 : 0;
+        last = now;
+        return now.trim() !== '' && still >= 5;
+      }, 'the first draw of Today to settle', () => JSON.stringify(s.main().slice(0, 80)));
       const heard = [];
       S.subscribe((n) => heard.push(n.label + (n.stale ? ' (stale)' : '')));
       await s.other.resetAll(); // the other tab erases the notebook
@@ -3791,7 +3825,8 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       assert.equal(e.stale, true);
       const kept = document.getElementById('kept');
       assert.equal(kept.hidden, false, 'control: the kept line is shown');
-      await wait(150); // the store render draws Today from the erased notebook, and its tip card marks a tip shown
+      // The store render draws Today from the erased notebook, and its tip card marks a tip shown.
+      await until(() => heard.some((l) => /^tip /.test(l)), 'a tip to be marked shown as Today is drawn', () => JSON.stringify(heard));
       assert.ok(heard.some((l) => /^tip /.test(l)), 'control: a tip was marked shown as Today was drawn: ' + JSON.stringify(heard));
       assert.equal(S.status().hasLock, false, 'control: no lock is stored, so that write went through');
       assert.equal(kept.hidden, false, 'the kept line stays: that write was not a save of the person');
@@ -3801,12 +3836,16 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       s.act('pointerdown'); // later, the person taps Save again
       const later = await S.commit('later', (d) => { d.put('events', { id: 'later', type: 'CravingLogged' }); }).then(() => null, (err) => err);
       assert.equal(later, null, 'control: the later save goes through');
-      await wait(30);
+      await until(() => kept.hidden === true, 'the kept line to clear', () => JSON.stringify({ hidden: kept.hidden, text: kept.textContent }));
       assert.equal(kept.hidden, true, 'a tap and a save that goes through clear it');
       assert.equal(kept.textContent, '', 'and empty it');
       assert.deepEqual(errors, [], 'nothing on the console');
     } finally {
-      delete globalThis.UI;
+      await wait(100); // ui-core's real redraw of Today runs while what it reads is still loaded, never after
+      for (const k of Reflect.ownKeys(Content)) if (!Object.prototype.hasOwnProperty.call(content, k)) delete Content[k];
+      for (const k of Reflect.ownKeys(content)) Object.defineProperty(Content, k, content[k]);
+      for (const [p, m] of cached) { if (m) require.cache[p] = m; else delete require.cache[p]; }
+      for (const [k, d] of globals) { if (d) Object.defineProperty(globalThis, k, d); else delete globalThis[k]; }
     }
   });
 });
