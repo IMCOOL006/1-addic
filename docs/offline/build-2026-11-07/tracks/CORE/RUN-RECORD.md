@@ -326,7 +326,13 @@
 
 - R-H-72 (HUB 02:02 by message 05:22): CORE 01:40 gone at about 04:52; nothing died with it. The r3 args filled (now, session, laneNote 'CORE 05:24' and Claude-Session; 3 lines), wf_sim --fix SIM OK (fix 12123 of 12288 bytes). Memory 2.9 GB by hand at 06:04 (rows 05:28 5.3 .. 06:01 3.2): nothing starts.
 
+## 2026-11-15 06:44 IST · core's two re-checks launched (wf_51966708-1a2)
+
+- 8.8 GB by hand 06:41:24 (HUB's 06:32 message, R-H-72). lane.js with the r3 args (now 06:41); the live fixer prompt equals wf_sim's dump. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_51966708-1a2/journal.jsonl.
+
 ## Resume here
+
+- **(2026-11-15 06:44 IST) STATE BUILDING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_51966708-1a2 running** (lane.js, r3 args, start 'review'; the fixer's hand-off only, then both re-checkers, then report-update). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_51966708-1a2/journal.jsonl. A fresh CORE does not relaunch it while this session is listed by `claude agents`; if this session is gone, the run died with it: relaunch from the r3 args (refill now, session, the laneNote's chat name and Claude-Session). On return: as the 06:41 section of status-CORE.md says.
 
 - **(2026-11-15 06:05 IST) STATE WAITING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core PAUSED 339ea20** (merge base 63eb8257). The r3 args are filled for this session (now 2026-11-15 05:49 IST; refill now, and session plus the laneNote's chat name and Claude-Session if a fresh CORE) and wf_sim OK. **Next:** on the first row at 7.0 GB or more with a hand sample at 7.0 or more: Workflow lane.js with tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r3.json (refill now first); its run id and journal go here. Return -> as the 03:19 bullet of status-CORE.md says (the tip from git; both re-checks from the journal; gates by hand if the re-checkers did not run them; contracts/core.md with RC3's text; the RS1 lock-case owner question with its default in outbox-CORE.md; `LANE: core READY <tip>` naming the merge base and both re-checks; lane-reports/core.md updated).
 
