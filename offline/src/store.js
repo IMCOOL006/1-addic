@@ -568,7 +568,7 @@ const Store = (function () {
       }
       const epoch = state.epoch;
       const key = state.key; // taken before the first wait: a lock while the rows are sealed empties state.key
-      const kept = keep(next, state.unread);
+      const kept = keep(next, (await decode(await state.backend.readAll(), key)).unread); // as stored now (FIX-REMOVE-STALE-ROWS)
       const puts = (await sealAll(next, key)).concat(kept.puts);
       const lock = state.lock ? Object.assign(clone(state.lock), { check: await seal(key, 'meta', 'lock', CHECK) }) : null;
       if (lock) puts.push(['meta', 'lock', lock]);

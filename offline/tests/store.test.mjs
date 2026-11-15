@@ -3553,6 +3553,24 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
   });
 
+  test('FIX-REMOVE-STALE-ROWS: an import keeps another tab’s unread row', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    // Another tab stored a row that will not open with this key (here e1's seal under another id); this tab never read it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'e1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    await A.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { events: [{ id: 'n1', type: 'CravingLogged', note: 'from the backup' }] } });
+    assert.deepEqual(storedIds(idb, 'events'), ['n1', 'u1'], 'every other row replaced, as an import does');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
+  });
+
   test('FIX-REMOVE-STALE-ROWS: a lock changed between the read and the write is refused as stale', async () => {
     const idb = globalThis.indexedDB = fakeIndexedDB();
     const A = freshStore();
