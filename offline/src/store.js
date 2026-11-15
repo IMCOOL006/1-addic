@@ -798,7 +798,11 @@ const Store = (function () {
       if (!state.lock) return false;
       const key = await keyFor(pin);
       if (!key) return refused();
-      const d = state.locked ? await decode(await state.backend.readAll(), key) : { rows: state.rows, unread: state.unread };
+      // The stored rows, read just before the rewrite, whether this tab is open or locked: another open tab may have
+      // saved a row since this tab read them, and a plain row changes no lock row, so the stale refusal would let a
+      // rewrite from memory drop it (FIX-REMOVE-STALE-ROWS). The gap that stays: a plain row another tab saves between
+      // this read and the write is still lost (the backend keeps no row version); a lock changed in it is refused as stale.
+      const d = await decode(await state.backend.readAll(), key);
       const rows = d.rows;
       const kept = keep(rows, d.unread);
       await write({ clear: true, puts: (await sealAll(rows, null)).concat(kept.puts), dels: [] });
