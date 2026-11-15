@@ -1,14 +1,22 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 08:51 IST: core's round 2 (wf_5b0dfd67-b3c) runs on: RS3 committed 5f32f03 at 08:49:59 (one commit, Claude-Session 3e06235f); memory back over the floor at the commit (7.6 GB 08:50:05, 7.1 GB 08:50:48 by hand; under it 08:39-08:40, 3.0 and 3.5 GB), so the run was not stopped: the fixer's gates, then both re-checks (R-H-74's 08:50 word: the pause lifted)
-LANE: core REVIEWING 5f32f03   # 2026-11-15 08:51 IST: NOT READY: round 2 (RS3 only) committed 5f32f03 (ui-core.js, store.test.mjs); the fixer's gates and the safety re-check of RS3 and the contracts re-check run in wf_5b0dfd67-b3c (slot 1, merge base 63eb8257, args r5). RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md
+STATE: WAITING   # 2026-11-15 09:09 IST: core's round 2 (wf_5b0dfd67-b3c) STOPPED on the HUB's 09:09 word: 0.3 GB at 09:08 on two readings (another program's TypeScript checks 4.7 and 4.4 GB, vmmemWSL 3.9 GB, untouched). RS3 committed 5f32f03 (nothing lost). Relaunch from the r5 args with done and priorNote from 5f32f03 (the fixer's gates and both re-checks left) on a hand sample at 7.0 GB or more, on the HUB's row
+LANE: core REVIEWING 5f32f03   # 2026-11-15 09:11 IST: NOT READY: round 2's fixer done (RS3 5f32f03; its gates GREEN: build 1220739 B, store.test, full Node 809/0/0 in 16 files, validate, guards 5/5, browser 32/0/0); both re-checks cut by the stop at 09:09 (0.3 GB); they run on the resume of wf_5b0dfd67-b3c (the fixer cached) on a 7.0 GB row. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 08:51 IST
+UPDATED: 2026-11-15 09:11 IST
 
 
+
+
+# 2026-11-15 09:11 IST · round 2 stopped under the floor after the fixer's hand-off; the re-checks wait
+
+- 09:09: TaskStop of wf_5b0dfd67-b3c on the HUB's word (0.3 GB at 09:08 on two readings; 1.7 GB by hand at 09:10; another program's TypeScript checks and vmmemWSL hold it, untouched). No process of this build left (read from the process list).
+- The fixer had returned (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/3e06235f-1cfa-4a23-8a43-ed723e8f9b0e/subagents/workflows/wf_5b0dfd67-b3c/journal.jsonl): done RS3 5f32f03, blocked none, shared_touched none, the kept line's lifetime paragraph in for_the_chat (saved whole: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__fix-round2-handoff.json). Its gates at 5f32f03, GREEN by the GATE lines read: build C:/Users/ruchi/1-addic-wt/_logs/gates/core/build-20261115-085011.log (1220739 B), store.test test-20261115-085019.log, full Node 809/0/0 in 16 files test-20261115-085537.log, validate validate-20261115-085517.log, guards 5/5 guards-20261115-085519.log, browser 32/0/0 browser-20261115-085941.log. Red, green and mutant logs: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__v34c-RS3-red.log, -green.log, -full.log, -mut.log.
+- recheck:contracts and recheck:safety had started and returned nothing (a store.test run of 09:08:33, test-20261115-090833.log, unfinished).
+- The relaunch: Workflow(scriptPath lane.js, resumeFromRunId 'wf_5b0dfd67-b3c', args = tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json as filed): the fixer returns cached (its prompt carries none of the reviewers' questions, checked), the two re-checks run live. On a hand sample at 7.0 GB or more, on the HUB's row.
 
 # 2026-11-15 08:28 IST · CORE 08:23 read in; core's review fix round 2 (RS3) launched
 
