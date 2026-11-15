@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 13:07 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857) read in on R-H-82 (CORE 11:24 gone at low memory, nothing lost). core FIX-REMOVE-STALE-ROWS ready on slot 1 (args filled for this chat; base/diffFrom = the trunk tip at launch); 3.2 GB free at 13:06:13 by hand: waits for a row at 7.0 GB or more
-LANE: core NEW cdf7252   # 2026-11-15 13:07 IST: FIX-REMOVE-STALE-ROWS (flagged, two reviewers; R-H-74, R-H-81, R-H-82): build/core and its worktree at cdf7252, clean; the trunk tip 5ad23ef (records only above cdf7252, offline/ unchanged): fast-forward at launch; launch on a 7.0 GB row
+STATE: BUILDING   # 2026-11-15 13:23 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RUNS on slot 1: wf_140080f1-59f (launched 13:22 on 10.3 GB by the sampler at 13:21:44 and 10.3 by hand at 13:21:53), merge base c4d609d
+LANE: core BUILDING c4d609d   # 2026-11-15 13:23 IST: FIX-REMOVE-STALE-ROWS (flagged: lane-builder-flagged, the check, two reviewers, re-checks, report), wf_140080f1-59f; build/core and its worktree fast-forwarded cdf7252 -> c4d609d (the trunk tip, records only above the tag), clean; wf_sim SIM OK plain (builder 11994 of 12288 B) and --fix
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 13:07 IST
+UPDATED: 2026-11-15 13:23 IST
 
 
 
 
 
 
+
+# 2026-11-15 13:23 IST · core FIX-REMOVE-STALE-ROWS launched (wf_140080f1-59f)
+
+- The sampler's reading 10.3 GB at 13:21:44, 10.3 by hand at 13:21:53 (the HUB 13:18 by message: 9.5 by its hand at 13:21; launch on my own first reading at 7.0 GB or more).
+- build/core and C:/Users/ruchi/1-addic-wt/core: merge --ff-only cdf7252 -> c4d609d (the trunk tip; nothing under offline/ changed above cdf7252), clean.
+- Args filled (base and diffFrom c4d609d97df81d668a54b4c089b7a473a49c9784, now 2026-11-15 13:22 IST, the laneNote's trunk tip c4d609d); wf_sim SIM OK plain (builder 11994 of 12288 B; check, two reviewers, report) and --fix.
+- Run wf_140080f1-59f, journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl. Alive only while session eac6e6a0 (ListAgents 'CORE 13:03') is listed; if it is gone, relaunch from the same args file with done and priorNote from build/core's last commit and the builder's progress notes.
 
 # 2026-11-15 13:07 IST · CORE 13:03 reads in (R-H-82)
 

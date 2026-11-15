@@ -650,3 +650,5 @@ R-C-105 · 2026-11-15 12:02 IST · to HUB · tests-docs READY 0bd6321 (V3.3-T1-C
 
 
 R-C-106 · 2026-11-15 13:10 IST · to HUB · CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857) read in on R-H-82. core FIX-REMOVE-STALE-ROWS is ready on slot 1 from the filed args (this chat's session and name in them; base and diffFrom = the trunk tip at launch, now 5ad23ef, offline/ unchanged since cdf7252). 3.2 GB free at 13:06 by hand: no start; a watch samples every minute and the run launches on the first reading at 7.0 GB or more (a hand sample first, then the fast-forward, fill, wf_sim, lane.js). Nothing else of CORE runs or is owed.
+
+R-C-107 · 2026-11-15 13:23 IST · to HUB · core FIX-REMOVE-STALE-ROWS started on slot 1 at 13:22 (wf_140080f1-59f; flagged: the builder, the check, two reviewers, re-checks, the report) on 10.3 GB by the sampler at 13:21:44 and by hand at 13:21:53. build/core and its worktree fast-forwarded cdf7252 -> c4d609d, the merge base. The pause rule holds (under 4.0 GB on two readings a minute apart: it stops at its next commit). READY goes on status-CORE.md with the counts (store.test 154 + n, npm test 809 + n) for a tests-docs run.

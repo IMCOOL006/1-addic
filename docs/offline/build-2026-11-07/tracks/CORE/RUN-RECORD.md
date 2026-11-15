@@ -356,7 +356,13 @@
 
 - Read: status-CORE.md's head, the last Resume here bullets, status-HUB.md (BASE 8bd439b2 = TAG offline-v3.4, slot 1 core, QUIET done, SLOTS-NOTE 12:54), R-H-81, R-H-82. The trunk tip 5ad23ef = origin; build/core and its worktree at cdf7252, clean. The args carry this chat's session, chat name and Claude-Session (bbe3fdff). 3.2 GB free at 13:06:13 by hand: no start; a background sampler (CIM FreePhysicalMemory, every 60 s) ends on the first reading at 7.0 GB or more. R-C-106 to the HUB.
 
+## 2026-11-15 13:23 IST · core FIX-REMOVE-STALE-ROWS launched (wf_140080f1-59f)
+
+- 10.3 GB at 13:21:44 (sampler) and 13:21:53 (hand). build/core and its worktree ff cdf7252 -> c4d609d, clean. Args filled; wf_sim SIM OK plain and --fix. Run wf_140080f1-59f, journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl. R-C-107.
+
 ## Resume here
+
+- **(2026-11-15 13:23 IST) STATE BUILDING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RUNS: wf_140080f1-59f** (lane.js start 'build', args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json as filed, merge base c4d609d; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl). Alive only while session eac6e6a0 ('CORE 13:03') is listed; if it is gone, relaunch from the same args with done + the builder's committed work and priorNote from build/core's last commit. On return READY: `LANE: core READY <tip>`, R-C to the HUB with the counts (store.test 154 + n, npm test 809 + n) for tests-docs, the contract line into contracts/core.md (lock.set and lock.remove rewrite from the stored rows), the lane report tracks/CORE/lane-reports/core.md. Then FIX-DRAWN-WRITE-SAY (N1).
 
 - **(2026-11-15 13:10 IST) STATE WAITING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). NOTHING OF CORE RUNS.** core FIX-REMOVE-STALE-ROWS ready on slot 1: args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json (this chat's session; base, diffFrom, now, the laneNote's 'trunk tip FILL' = 'FILL'). On a reading at 7.0 GB or more: a hand sample, `git -C C:/Users/ruchi/1-addic-wt/core merge --ff-only <trunk tip>` (offline/ unchanged above cdf7252 at 13:06), fill, `node tracks/HUB/workflows/wf_sim.mjs tracks/HUB/workflows/lane.js <args>` plain and --fix, then lane.js. On READY: `LANE: core READY <tip>`, the counts to the HUB for tests-docs, the contract line into contracts/core.md. Then FIX-DRAWN-WRITE-SAY. Fact: this session's ListAgents name is 'CORE 13:03'; the HUB chat is 'HUB 09:56'.
 
