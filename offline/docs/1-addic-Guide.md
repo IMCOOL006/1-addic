@@ -422,6 +422,7 @@ Nothing here is ever taken back. SOS, urgent help, the lessons, Settings and you
 | What you see | Why | What to do |
 |---|---|---|
 | The top bar says "Not saved — export before closing" | The browser is blocking storage, often in a private window. Your data lives only in memory and is lost when the tab closes | Export a backup now. Then open the file in a normal browser window and import it |
+| A message says "This notebook changed in another tab, so your last change was not saved." | The file is open in another tab too, and that tab changed the notebook first. The same words stay as a line under the top bar until you go to another page or your next change is saved. If the notebook is locked, they show on the lock page until you unlock. They never show in SOS | Enter the change again, after you unlock if the lock page shows. Keep the notebook open in one tab only |
 | The top bar says "Saved (fallback)" | The main storage was not available, so a simpler one is used | Your data is kept, but export backups often and open the file in a normal Chrome window when you can |
 | The Files app will not open the file on a phone | Some Files apps do not hand local pages to the browser | Open Chrome and type `file:///sdcard/Download/1-addic.html` |
 | My data is gone after opening the file | A different browser, a different folder, a private window, or the browser's data was cleared | Open the file from the same place in the same browser, or import your latest backup (Lesson 12) |
@@ -432,7 +433,7 @@ Nothing here is ever taken back. SOS, urgent help, the lessons, Settings and you
 
 ## Known quirks
 
-None of these lose data. They are rough edges to be aware of in this early version.
+Only one of these can lose data (removing your PIN with two tabs open), and one tab avoids it. The others are rough edges to be aware of in this early version.
 
 | Quirk | Effect | Status |
 |---|---|---|
@@ -441,6 +442,7 @@ None of these lose data. They are rough edges to be aware of in this early versi
 | Urgent-help numbers unverified | Every number shows "please verify" until the owner has checked it | Warn |
 | Read-aloud voice | Read-aloud uses your device's own voice, so it sounds different on each phone, and some devices have none | Info |
 | The backup file is not locked | Anyone who has the file can read it, even with a PIN set | Warn |
+| Removing your PIN with two tabs open | If 1-addic is open in two tabs and you remove your PIN in one, entries saved in the other tab after the first tab was opened can be lost. Before you remove your PIN, close every other tab that has 1-addic open, so only one tab is left | Warn |
 
 ## How this guide was checked
 
