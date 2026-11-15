@@ -1,12 +1,18 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 08:20 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core REVIEWING 339ea20: RS3 (a regression of the RS1 fix, reproduced by two probes) gets the review's second fix round (args r5) on a row at 7.0 GB or more (5.1 GB by hand at 08:19). R-C-102. tests-docs MERGED 2be56e6 (5d251cbb)
+STATE: RESTART   # 2026-11-15 08:21 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197) hands over at about 252k of context, at a safe point: nothing of CORE runs (no workflow, no watch). core REVIEWING 339ea20, not READY: RS3's second fix round waits for a row at 7.0 GB or more with args r5 (tracks/CORE/RUN-RECORD.md 'Resume here', first bullet). R-C-102 sent; the HUB told by message. tests-docs MERGED 2be56e6 (5d251cbb)
 LANE: core REVIEWING 339ea20   # 2026-11-15 08:20 IST: NOT READY: RS3 LOW, a regression of 339ea20 reproduced by two Node probes (wf_6cbca5fb-1ee): a render-time 'tip <id>' write clears the kept line ~40 ms after it shows when another tab erased the notebook. Round 2 (RS3 only) with args r5 on a 7.0 GB row. RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 08:20 IST
+UPDATED: 2026-11-15 08:21 IST
+
+
+# 2026-11-15 08:21 IST · CORE 05:24 hands over (context over 250k), nothing running
+
+- The fresh CORE: read 'Resume here' in tracks/CORE/RUN-RECORD.md (first bullet) and this file's sections of 08:2x and 07:5x. Do not wait for a run: none is running (wf_081b79a7-0d1 and wf_6cbca5fb-1ee finished; wf_51966708-1a2 was stopped and is dead). No watch runs (Claude Code stopped this chat's memory watch for low system memory; its notice says not to restart one without the owner's word).
+- The launch: on the HUB's word of a row at 7.0 GB or more and a hand sample at 7.0 or more: in tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json fill now, and the session, the laneNote's 'CORE 05:24' and its Claude-Session line with the fresh chat's own; wf_sim --fix; then lane.js with the file's object as args. Check the live fixer prompt against wf_sim's --dump (whitespace-normalised containment), as this chat did.
 
 
 # 2026-11-15 08:20 IST · RS3 reproduced: the review's second fix round before READY (R-C-102)

@@ -348,7 +348,13 @@
 - As status-CORE.md's 2026-11-15 08:20 IST section says. Fact: lane.js's fix prompt cuts the findings to fit 12000 characters (lane.js:357-371, findingsText at :405), so with this lane's carried review only RC1 reaches a review fixer whole: a new finding goes by name and file path in the laneNote.
 - Fact: lock.remove() rewrites from memory (store.js:801-804): another tab's newer rows are lost (probe B S4). Named, not fixed.
 
+## 2026-11-15 08:21 IST · CORE 05:24 hands over (context over 250k)
+
+- Nothing of CORE runs. Facts this chat found, not to rediscover: (1) a review fixer's StructuredOutput can fail on an unquoted value and the transcript keeps only 2048 bytes of each attempt (wf_51966708-1a2); the laneNote now asks for valid JSON. (2) lane.js cuts a fix round's findings to 12000 characters, so only RC1 of this lane's carried review reaches a fixer whole; a new finding goes by name and file in the laneNote (r5 does this for RS3). (3) Claude Code stops a background watch under low system memory; the HUB's messages carry the 7.0 GB rows. (4) With start 'review' the fixer reads the laneNote, never the priorNote. (5) The probes for RS3 are reusable: C:/Users/ruchi/1-addic-wt/_logs/scratch/core-kept-probe-20261115/A/probe.mjs and B/probe.mjs (real parts in build.mjs order, two tabs on one fake IndexedDB).
+
 ## Resume here
+
+- **(2026-11-15 08:21 IST) STATE RESTART: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197) handed over at about 252k of context; nothing runs.** The next bullet (08:2x) holds the next step: RS3's second fix round with args r5 on a 7.0 GB row, then READY. Owed at READY: the kept line's lifetime paragraph (from the round-2 fixer's note) into contracts/core.md's last section (replacing its placeholder bullet); `LANE: core READY <tip>` naming merge base 63eb8257, both re-checks, each LOW left open (C1, C2, RS1 lock case as owner question 1 of R-C-102); the counts for tests-docs; the R-C to the HUB. FIX-REMOVE-STALE-ROWS waits for the HUB's word (R-C-102).
 
 - **(2026-11-15 08:20 IST) STATE WAITING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core REVIEWING 339ea20, not READY: RS3.** Next, on a row at 7.0 GB or more with a hand sample at 7.0 or more: fill now (and session, the laneNote's chat name and Claude-Session if a fresh CORE) in tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json, wf_sim --fix, lane.js with it. On return: both re-checks from the journal; gates; the kept line's lifetime paragraph (the fixer's note) into contracts/core.md's last section; `LANE: core READY <tip>` naming 63eb8257 and both re-checks; R-C to the HUB with the counts.
 
