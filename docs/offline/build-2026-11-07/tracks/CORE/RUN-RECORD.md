@@ -365,7 +365,13 @@
 - Built d55a102 (four commits), check PASS (C1 LOW), reviews RS1 RS2 RC1 RC2 (all LOW); stopped 14:33 at the start of the review fix round, nothing uncommitted. Results copied to C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__FRSR-review-findings-20261115.json. Fact: a status-file insert anchored on '# 2026-11-15 13:23 IST' matched the STATE line's own comment and split it (9fd629ca); anchor dated sections on '
 # <stamp> ·' at a line start.
 
+## 2026-11-15 16:04 IST · core READY d11f252 (FIX-REMOVE-STALE-ROWS; R-C-110)
+
+- wf_140080f1-59f, paused twice under the floor (14:33 at d55a102, 15:08 at d11f252) and resumed twice from its journal (14:48, 15:20): the build, check and reviews came back cached each time; the fix round reran and found RC1 and RC2 on the branch. READY d11f252: full Node 814/0/0 in 16 files, store.test 159/0/0, build, validate, guards GREEN; browser 5/0/0 by name at d55a102. Contract section written; R-C-110 with the counts and the guide's words.
+
 ## Resume here
+
+- **(2026-11-15 16:04 IST) STATE WAITING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core READY d11f252 (R-C-110). NOTHING OF CORE RUNS.** Next: the HUB's merge word -> `LANE: core MERGED <sha>`; then FIX-DRAWN-WRITE-SAY (flagged, two reviewers; R-H-75; store.js + actions.js, the actions.js part by outbox to actions-sos): fast-forward build/core and its worktree to the trunk tip, a unit note, args from this run's file with units and batches + [FIX-DRAWN-WRITE-SAY], done + FIX-REMOVE-STALE-ROWS, wf_sim, lane.js on a 7.0 GB reading. Facts: Workflow resume (resumeFromRunId, the args unchanged) replays the finished agents and reruns only the cut one; Claude Code kills a background sampler under critical memory: then the HUB's watch sends the word.
 
 - **(2026-11-15 14:36 IST) STATE WAITING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d55a102** (wf_140080f1-59f stopped 14:33 under the floor as its review fix round began; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl). Resume in this session on two readings a minute apart at 4.5 GB or more: Workflow(scriptPath lane.js, resumeFromRunId 'wf_140080f1-59f', the args file unchanged). If this session is gone: lane.js from the args with start 'check', done + FIX-REMOVE-STALE-ROWS, priorNote = tip d55a102 and the five LOWs (C1, RS1, RS2, RC1, RC2; the findings copy above), on a 7.0 GB row. On READY: `LANE: core READY <tip>`, R-C with the counts (store.test 154 -> 158 + the fix round's, npm test 809 -> 813 + n) and the guide's two-tab words for tests-docs (RS2), contracts/core.md line. Then FIX-DRAWN-WRITE-SAY.
 

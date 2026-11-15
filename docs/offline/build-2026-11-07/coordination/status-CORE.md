@@ -1,18 +1,26 @@
 TRACK: CORE
-STATE: REVIEWING   # 2026-11-15 15:20 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RESUMED a second time: wf_140080f1-59f from its journal (task w4p7haj1z) on the HUB's line (5.7 GB at 15:19) and 6.3 GB by hand at 15:20:00; the review fix round reruns from d11f252
-LANE: core REVIEWING d11f252   # 2026-11-15 15:20 IST: FIX-REMOVE-STALE-ROWS: the review fix round (RC1 c463efe and RC2 d11f252 on the branch) reruns, then the full Node suite and the browser gate, the re-checks and the report; the same run id and args
+STATE: WAITING   # 2026-11-15 16:04 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core READY d11f252 (FIX-REMOVE-STALE-ROWS; R-C-110); nothing of CORE runs; next FIX-DRAWN-WRITE-SAY on the HUB's word
+LANE: core READY d11f252   # 2026-11-15 16:04 IST: FIX-REMOVE-STALE-ROWS, merge base c4d609d, 6 commits (store.js, store.test.mjs); check PASS (C1 LOW, no fix); reviews RC1 FIXED c463efe, RC2 FIXED d11f252, RS2 FIXED (the words for tests-docs), RS1 WONTFIX-ACCEPTED (the gap, a later unit); open 0. At d11f252: build GREEN 1221933 B, store.test 159/0/0, full Node 814/0/0 in 16 files, validate GREEN, guards 5/5; browser 5/0/0 by name at d55a102 (the app source unchanged since)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 15:20 IST
+UPDATED: 2026-11-15 16:04 IST
 
 
 
 
 
 
+
+# 2026-11-15 16:04 IST · core READY d11f252 (FIX-REMOVE-STALE-ROWS; R-C-110)
+
+- wf_140080f1-59f returned READY at d11f252 (task w4p7haj1z, 8 agents, 0 errors; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl). The commits after c4d609d: 1c4d3f4, 1a33ea5, 88aa02d, d55a102, c463efe (RC1), d11f252 (RC2); files offline/src/store.js, offline/tests/store.test.mjs; the worktree clean but the generated offline/1-addic.html (never committed).
+- The gates, read by me from their GATE lines in C:/Users/ruchi/1-addic-wt/_logs/gates/core/gates-summary.log: at d11f252 build GREEN 1221933 B (build-20261115-152446.log), store.test GREEN 159/0/0 (test-20261115-154129.log), the full Node suite GREEN 814 pass 0 fail 0 skip in 16 files, exit 0 (test-20261115-153953.log and test-20261115-155148.log), validate GREEN (validate-20261115-152929.log), guards GREEN 5/5 all checks ran (guards-20261115-152930.log). Browser GREEN 5/0/0 by name (--grep 'PIN|lock screen|lock page', memory under 7.0 GB) at d55a102 (browser-20261115-140728.log); after d55a102 only store.test.mjs changed, so the built app is the same; the full 33-flow suite was not run by the lane: the HUB's merged-tree gates and QUIET are its proof.
+- The findings: C1 LOW (the Co-Authored-By trailer names Claude Opus 5.5, the session's attribution, not Fable 5.1; Claude-Session present on all; no fix: no history rewrite); RC1 FIXED c463efe; RC2 FIXED d11f252; RS2 FIXED (the guide's words go to tests-docs in R-C-110); RS1 WONTFIX-ACCEPTED by the re-check (the read-to-write gap, the brief's WANT 4 default; a later unit by name).
+- The contract: tracks/CORE/contracts/core.md, section FIX-REMOVE-STALE-ROWS. The report: tracks/CORE/lane-reports/core.md (its State line was written before the last gates; the line under it corrects that).
+- Next: the HUB's merge word -> `LANE: core MERGED <sha>`; then FIX-DRAWN-WRITE-SAY (flagged; R-H-75) on the HUB's grant.
 
 # 2026-11-15 15:10 IST · core FIX-REMOVE-STALE-ROWS PAUSED again, at d11f252 (the floor)
 
