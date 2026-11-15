@@ -760,6 +760,19 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
 /* V-25: the lock form's status line stays in the page while empty, so a screen reader hears it; empty, it takes no room and no gap */
 #lock-opening:empty { position: absolute; }
 /* -- end actions-sos -- */
+/* -- core -- */
+/* FIX-STALE-SAVE-KEEP: the kept line after a refused save, in the flow below the top bar: never fixed, never over the
+   bar, the SOS button or the nav; [hidden] wins over the block rule. */
+.kept {
+  display: block; max-width: 760px; box-sizing: border-box;
+  margin: var(--space-3) max(var(--space-4), calc((100% - 760px) / 2 + var(--space-4))) 0;
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius); border-left: 4px solid hsl(var(--gold));
+  background: hsl(var(--surface-2)); color: hsl(var(--text)); font-size: 0.9375rem; line-height: 1.4;
+}
+.kept[hidden] { display: none; }
+/* RS2: a printout never carries the kept line, the browser's own Print too (as the top bar and the toasts). */
+@media print { .kept { display: none !important; } }
+/* -- end core -- */
 </style>
 </head>
 <body>
@@ -776,6 +789,7 @@ body.calm .gm-panel, body.calm .gm-celebrate, [data-route="sos"] .gm-celebrate {
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8" cy="17" r="2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
     </a>
   </header>
+  <p id="kept" class="kept" hidden></p>
   <a id="sos-btn" class="sos-btn" href="#/sos" data-tour="sos-button">SOS</a>
   <nav id="nav" class="nav" aria-label="Main">
     <a href="#/today" data-route="today" data-tour="nav-today">Today</a>
@@ -5462,7 +5476,7 @@ const Store = (function () {
 
   const state = {
     loading: null, mode: 'memory', backend: null, rows: blank(), unread: blank(), lock: null, key: null, locked: false, lastSavedAt: null,
-    subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, asked: false, chain: Promise.resolve(), epoch: 0,
+    subs: new Set(), lockSubs: new Set(), bulk: 0, dirty: false, dirtyStale: false, asked: false, chain: Promise.resolve(), epoch: 0,
     fails: 0, last: 0, timer: null, held: false,
   };
 
@@ -5824,12 +5838,15 @@ const Store = (function () {
     state.chain = p.catch(() => {});
     return p;
   }
-  async function write(w) {
+  // auto: a write the person did not ask for (takeIn after a PIN is set or an unlock). Refused because another tab
+  // changed the lock, it resyncs the same, but nothing of the person's was lost, so neither onLock nor the store
+  // notice carries stale (FIX-TAKEIN-SAY). Its error reaches no page: lock.set() and unlock() let it go.
+  async function write(w, auto) {
     try {
       await state.backend.write(Object.assign({ expect: state.lock }, w));
     } catch (e) {
       if (e && e.code === 'STALE') {
-        try { await resync(true); } catch (err) { /* the next write asks again */ }
+        try { await resync(!auto); } catch (err) { /* the next write asks again */ }
         const f = fail('LOCKED', 'This changed in another tab, so nothing was saved here.');
         f.stale = true; // a change in another tab refused it and ui-core has said so: a page need not say it again (RC1)
         throw f;
@@ -5854,8 +5871,9 @@ const Store = (function () {
       try { fn(arg); } catch (e) { if (typeof console !== 'undefined') console.error('[store] a listener failed:', e && e.name); }
     }
   }
+  // Inside bulk() a notice is held back; a held stale flag goes on the one 'bulk' notice (FIX-BULK-REFUSAL-SAY).
   function notify(label, more) {
-    if (state.bulk) { state.dirty = true; return; }
+    if (state.bulk) { state.dirty = true; if (more && more.stale) state.dirtyStale = true; return; }
     call(state.subs, Object.assign({ label }, more));
   }
   function listen(set, fn) {
@@ -5927,7 +5945,12 @@ const Store = (function () {
       return await fn();
     } finally {
       state.bulk -= 1;
-      if (!state.bulk && state.dirty) { state.dirty = false; notify('bulk'); }
+      if (!state.bulk && state.dirty) {
+        const stale = state.dirtyStale;
+        state.dirty = false;
+        state.dirtyStale = false;
+        notify('bulk', stale ? { stale: true } : null);
+      }
     }
   }
 
@@ -6163,7 +6186,7 @@ const Store = (function () {
       }
     }
     if (puts.length) {
-      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] });
+      await write({ clear: false, puts: puts.map(([n, id, , s]) => [n, id, s]), dels: [] }, true);
       if (epoch === state.epoch) for (const [n, id, v] of puts) state.rows[n].set(id, v); // locked meanwhile: not in memory (RC18)
     }
     if (Object.keys(left).length) ls.setItem(SNAPSHOT, JSON.stringify({ app: '1-addic', v: 1, stores: left }));
@@ -7535,10 +7558,37 @@ const UI = (function () {
   // A save refused because another tab changed the notebook is said once, in #toasts, outside #main, where it outlives
   // the page (FIX-STALE-SAVE-SAY). The page that asked for the save toasts its own refusal later in this same turn: that
   // warn is dropped, so one refused save gives one toast (RC1, RS3). The next turn toasts as before.
+  // The toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the person is on
+  // another page with the notebook open: after the unlock (a lock stored) or the first route to another path (none
+  // stored), or until this tab's next write goes through after the person acted again (RS1, RS3). Other store renders
+  // keep it, and so does a write a page makes as it is drawn (a tip marked shown); SOS never shows it; a reload
+  // forgets it (FIX-STALE-SAVE-KEEP).
+  const STALE_SAID = 'This notebook changed in another tab, so your last change was not saved.';
+  let keptStale = false;
+  // The person's taps, keys, inputs and clicks in this tab (counted in boot, never throttled as touch() is), and their
+  // count when the line was said: only a write after a new act can be the person's save (RS3).
+  let acts = 0;
+  let keptAt = 0;
+  function acted() { acts += 1; }
   function sayStale() {
-    toast('This notebook changed in another tab, so your last change was not saved.', 'warn');
+    toast(STALE_SAID, 'warn');
     hushed = true;
     setTimeout(() => { hushed = false; }, 0);
+    keptStale = true;
+    keptAt = acts;
+    const el = byId('kept');
+    if (el) { el.textContent = STALE_SAID; el.hidden = pageKey(route()) === 'sos'; }
+  }
+  function clearKept() {
+    keptStale = false;
+    const el = byId('kept');
+    if (el) { el.hidden = true; el.textContent = ''; }
+  }
+  // SOS never shows it, also when an SOS view is drawn in place inside another page: the lock page's SOBER practice
+  // moves the address to an SOS route by replaceState, which fires no hashchange, so chrome() does not run (RC1).
+  function keptOutOfSos() {
+    const el = byId('kept');
+    if (el && !el.hidden && pageKey(route()) === 'sos') el.hidden = true;
   }
 
   let openSheet = null;
@@ -8101,6 +8151,8 @@ const UI = (function () {
       const coach = byId('coach');
       if (coach) { coach.hidden = true; coach.replaceChildren(); }
     }
+    const kept = byId('kept');
+    if (kept) kept.hidden = !keptStale || key === 'sos'; // nor the kept line (FIX-STALE-SAVE-KEEP)
     paintTheme(key);
     updateSaved();
   }
@@ -8225,6 +8277,7 @@ const UI = (function () {
     if (openSheet && state.lastPath !== null && r.path !== state.lastPath) openSheet.close('route');
     if (locked && key !== 'sos' && key !== 'lock') { go('#/lock', { replace: true }); return; }
     if (!locked && key === 'lock') { go('#/today', { replace: true }); return; }
+    if (keptStale && !locked && why === 'route' && state.lastPath !== null && r.path !== state.lastPath) clearKept();
     chrome(key);
     let node = null;
     const fn = pages[key] || (key === 'sos' ? urgentFallback : key === 'lock' ? lockFallback : key === 'today' ? todayPlaceholder : comingSoon);
@@ -8282,8 +8335,13 @@ const UI = (function () {
   }
   // The store's notices. A save refused because another tab removed the PIN or erased the notebook leaves this tab
   // open, with no lock page to go to: the notice carries stale, and the same one toast says it, outside SOS (RC2, RS1).
+  // A notice without the flag under a write's own label (a save, a backup brought back, an erase) is this tab's next
+  // write going through, so the kept line goes and never says what is no longer true (RS1, FIX-STALE-SAVE-KEEP review).
+  // A write with no act of the person since the line was said (a tip a page marks shown as it is drawn) keeps it (RS3).
+  // The resync's 'lock' and 'unlock' keep it, and so does 'bulk': its one notice may stand for a resync held inside it.
   function heard(n) {
     if (n && n.stale && pageKey(route()) !== 'sos') sayStale();
+    else if (n && n.label !== 'lock' && n.label !== 'unlock' && n.label !== 'bulk' && acts > keptAt) clearKept();
     schedule();
   }
 
@@ -8389,12 +8447,18 @@ const UI = (function () {
     document.addEventListener('pointerdown', touch, true);
     document.addEventListener('keydown', touch, true);
     document.addEventListener('input', touch, true);
+    for (const type of ['pointerdown', 'keydown', 'input', 'click']) document.addEventListener(type, acted, true); // RS3
     document.addEventListener('visibilitychange', wake);
     window.addEventListener('pageshow', wake);
     const main = byId('main');
     if (main) main.addEventListener('focusout', (ev) => {
       if (state.deferred && !(ev.relatedTarget && main.contains(ev.relatedTarget))) { state.deferred = false; schedule(); }
     });
+    // Any change in #main checks the route again for the kept line (RC1). The browser hands it over in the microtask
+    // after the change, before the next paint, so the line is never drawn over an SOS view; it only ever hides it.
+    if (main && typeof MutationObserver === 'function') {
+      safe(() => new MutationObserver(keptOutOfSos).observe(main, { childList: true, subtree: true }), null);
+    }
     const s = synth();
     if (s) safe(() => { s.getVoices(); s.addEventListener('voiceschanged', () => s.getVoices()); }, null);
 

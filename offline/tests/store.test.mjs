@@ -17,7 +17,7 @@ function freshUi() {
 }
 
 const STAND_INS = ['Store', 'Engine', 'Actions', 'Content', 'location', 'history', 'document', 'localStorage', 'window',
-  'SpeechSynthesisUtterance'];
+  'SpeechSynthesisUtterance', 'MutationObserver'];
 function clearStandIns() {
   for (const k of STAND_INS) delete globalThis[k];
 }
@@ -192,9 +192,11 @@ function fakeDom() {
     contains: () => true,
   };
   for (const [id, tag] of [['main', 'main'], ['sos-btn', 'a'], ['nav', 'nav'], ['saved-label', 'span'], ['app-name', 'span'],
-    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div']]) {
+    ['coach', 'div'], ['toasts', 'div'], ['dialog', 'dialog'], ['settings-btn', 'a'], ['theme-btn', 'button'], ['print-root', 'div'],
+    ['kept', 'p']]) {
     const e = new El(tag); e.id = id; ids[id] = e;
   }
+  ids.kept.hidden = true; // as shell.html has it
   return doc;
 }
 
@@ -958,6 +960,263 @@ describe('ui-core render and the lock gate (U-03, stand-in DOM)', () => {
     const { send } = await bootWithNotice(t, '#/sos/craving');
     await send({ label: 'unlock', stale: true });
     assert.equal(toastsOf().length, 0, 'SOS is never interrupted');
+    assert.equal(location.hash, '#/sos/craving');
+  });
+
+  // FIX-STALE-SAVE-KEEP: the toast leaves after 4.5 s; #kept, a plain line outside #main, keeps the same words until the
+  // notebook is open on another page: after the unlock, or (no lock stored) on the first route to another path. Never in SOS.
+  const keptLine = () => { const k = document.getElementById('kept'); return k.hidden ? null : k.textContent.trim(); };
+  const bootKept = async (t, hash) => {
+    const b = await bootPending(t, hash);
+    let lockFn = null;
+    let notice = null;
+    globalThis.Store.lock = { onLock: (f) => { lockFn = f; } };
+    globalThis.Store.subscribe = (f) => { notice = f; };
+    b.U.pages.today = page('Today');
+    b.opened();
+    await b.booting;
+    const turn = () => new Promise((r) => setImmediate(r));
+    const locked = (v) => { globalThis.Store.status = () => ({ persistence: 'indexeddb', lastSavedAt: null, hasLock: v, locked: v }); };
+    return {
+      U: b.U,
+      raw: (info) => { locked(true); lockFn(info); },
+      lock: async (info) => { locked(true); lockFn(info); await turn(); },
+      send: async (n) => { notice(n); await turn(); },
+      frame: async () => { t.mock.timers.tick(20); await turn(); },
+      to: async (h) => { b.U.go(h, { replace: true }); await turn(); },
+      unlocked: () => locked(false),
+      act: (type) => { const ty = type || 'pointerdown'; for (const f of b.on['doc:' + ty] || []) f({ type: ty }); },
+      turn,
+    };
+  };
+
+  test('FIX-STALE-SAVE-KEEP: shell.html has one plain #kept line after the header, outside #main, hidden at the start; styles keep it in the flow', () => {
+    const html = fs.readFileSync(SHELL_URL, 'utf8');
+    assert.match(html, /<\/header>\s*<p id="kept" class="kept" hidden><\/p>\s*<a id="sos-btn"/, 'after the header, before the SOS button and the nav; no role, no aria-live');
+    assert.equal((html.match(/id="kept"/g) || []).length, 1);
+    assert.ok(html.indexOf('id="kept"') < html.indexOf('<main'), 'outside #main, so a page draw never takes it');
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.match(css, /\.kept\[hidden\] \{ display: none; \}/, '[hidden] wins over the block rule');
+    const rule = (css.match(/\.kept \{([^}]*)\}/) || [])[1] || '';
+    assert.ok(rule && !/position\s*:/.test(rule), 'a plain line in the flow: never fixed over the bar, the SOS button or the nav');
+  });
+
+  test('RS2: a printout never carries the kept line: an @media print rule hides .kept', () => {
+    const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const blocks = [];
+    for (let i = css.indexOf('@media print'); i !== -1; i = css.indexOf('@media print', i + 1)) {
+      const open = css.indexOf('{', i);
+      let depth = 0;
+      let end = open;
+      for (; end < css.length; end++) {
+        if (css[end] === '{') depth++;
+        else if (css[end] === '}' && --depth === 0) break;
+      }
+      blocks.push(css.slice(open + 1, end));
+    }
+    assert.ok(blocks.length > 0, 'control: the print rules are found');
+    const hides = blocks.some((b) => Array.from(b.matchAll(/([^{}]+)\{([^{}]*)\}/g))
+      .some((m) => m[1].split(',').some((s) => s.trim() === '.kept') && /display\s*:\s*none\s*!important/.test(m[2])));
+    assert.ok(hides, 'display: none !important, as the top bar, the SOS button and the toasts have it');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (a): a stale refusal on a page puts the kept line in #kept, and it is still there after the toast time and after a lock page draw', async (t) => {
+    const k = await bootKept(t, '#/today');
+    assert.equal(keptLine(), null, 'control: no line before');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.equal(location.hash, '#/lock');
+    assert.match(keptLine(), STALE_WORDS);
+    assert.equal(keptLine(), toastsOf()[0].textContent.trim(), 'one wording for the toast and the line');
+    t.mock.timers.tick(4500);
+    assert.equal(toastsOf().length, 0, 'control: the toast has left');
+    assert.match(keptLine(), STALE_WORDS, 'the line stays');
+    await k.to('#/lock'); // the lock page drawn again
+    await k.send({ label: 'lock' });
+    await k.frame();
+    assert.match(main().textContent, /Locked/, 'control: the lock page');
+    assert.match(keptLine(), STALE_WORDS, 'and stays through lock page draws');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (b): no lock stored: the notice shows the line, a store render keeps it, a route to another path clears it', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.send({ label: 'unlock', stale: true });
+    assert.equal(location.hash, '#/today', 'control: no lock page');
+    assert.match(keptLine(), STALE_WORDS);
+    await k.frame();
+    await k.send({ label: 'unlock' }); // a store notice that is not this tab's write going through (RS1: (f))
+    await k.frame();
+    t.mock.timers.tick(4500);
+    assert.match(keptLine(), STALE_WORDS, 'store renders of the same page and the toast time keep it');
+    await k.to('#/today?x=1');
+    assert.match(keptLine(), STALE_WORDS, 'the same page with a new query keeps it');
+    await k.to('#/track');
+    assert.equal(keptLine(), null, 'another page clears it');
+    assert.equal(document.getElementById('kept').textContent, '', 'and empties it');
+    await k.to('#/today');
+    assert.equal(keptLine(), null, 'it does not come back');
+  });
+
+  // RS1 (review of FIX-STALE-SAVE-KEEP): the line says only what is true. A notice without the flag under a write's own
+  // label (a save, a backup brought back, an erase) is this tab's next write going through: the line goes. The resync's
+  // 'lock' and 'unlock' keep it ((a), (b)), and so does 'bulk': its one notice may stand for a resync held inside it.
+  test('FIX-STALE-SAVE-KEEP (f): a later save that goes through on the same page clears the line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    for (const label of ['craving', 'replaceAll', 'resetAll']) {
+      k.act('click'); // the tap on Save that is refused
+      await k.send({ label: 'unlock', stale: true });
+      assert.match(keptLine(), STALE_WORDS, 'control: shown (' + label + ')');
+      k.act(); // the person acts on the page again (RS3)
+      await k.send({ label: 'unlock' });
+      await k.send({ label: 'bulk' });
+      await k.frame();
+      assert.match(keptLine(), STALE_WORDS, 'an unlock or a bulk notice without the flag keeps it (' + label + ')');
+      await k.send({ label });
+      assert.equal(keptLine(), null, 'the next write that goes through clears it (' + label + ')');
+      assert.equal(document.getElementById('kept').textContent, '', 'and empties it (' + label + ')');
+      await k.frame();
+      assert.equal(keptLine(), null, 'the page drawn again does not bring it back (' + label + ')');
+    }
+    assert.equal(location.hash, '#/today', 'control: no lock is stored, the page stays');
+  });
+
+  // RS3 (review of the RS1 fix): a page drawn again may write on its own (Today marks its tip shown, 'tip <id>'; a
+  // feature revealed, 'reveal <id>'; ExplorerCompleted). Such a write is not a save of the person, so the line stays;
+  // a write that goes through after the person acted again (a tap, a key, an input, a click) clears it.
+  test('RS3: a render-time write after a refused save keeps the kept line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    for (const type of ['pointerdown', 'keydown', 'input', 'click']) {
+      k.act('click'); // the tap on Save that is refused
+      await k.send({ label: 'unlock', stale: true });
+      assert.match(keptLine(), STALE_WORDS, 'control: shown (' + type + ')');
+      for (const label of ['tip reasons', 'reveal journal', 'ExplorerCompleted']) await k.send({ label });
+      await k.frame();
+      t.mock.timers.tick(4500);
+      assert.match(keptLine(), STALE_WORDS, 'writes made while the page is drawn keep it (' + type + ')');
+      k.act(type);
+      await k.send({ label: 'craving' });
+      assert.equal(keptLine(), null, 'after a ' + type + ', the next write that goes through clears it');
+    }
+    assert.equal(location.hash, '#/today', 'control: no lock is stored, the page stays');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (c): inside SOS no line is shown, and a line raised outside SOS is hidden on a route to SOS', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.match(keptLine(), STALE_WORDS, 'control: raised, on the lock page');
+    await k.to('#/sos/craving?from=lock');
+    assert.equal(keptLine(), null, 'hidden in SOS');
+    await k.send({ label: 'lock' });
+    await k.frame(); // a store notice inside SOS repaints only the chrome
+    assert.equal(keptLine(), null, 'and stays hidden there');
+    await k.to('#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'back on the lock page, still locked: shown again');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (c): a refusal inside SOS raises no line, there or after', async (t) => {
+    const k = await bootKept(t, '#/sos/craving');
+    await k.lock({ reason: 'auto', stale: true });
+    await k.send({ label: 'unlock', stale: true });
+    assert.equal(location.hash, '#/sos/craving', 'control: SOS stays');
+    assert.equal(keptLine(), null);
+    await k.to('#/lock');
+    assert.equal(keptLine(), null, 'nothing was said in SOS, so nothing is kept');
+  });
+
+  // RC1 (review of FIX-STALE-SAVE-KEEP): the lock page draws its SOBER practice in place and moves the address to an
+  // SOS route by history.replaceState (ui-onboarding.js:252, :273-280), which fires no hashchange, so no route render
+  // paints the chrome. A browser hands a change in #main to a MutationObserver in the microtask after the tap, before
+  // the next paint; the stand-in hands the records over the same way, only to an observer whose options cover the node.
+  const moStandIn = () => {
+    const list = [];
+    globalThis.MutationObserver = class {
+      constructor(cb) { this.cb = cb; this.target = null; this.opts = {}; list.push(this); }
+      observe(target, opts) { this.target = target; this.opts = opts || {}; }
+      disconnect() { this.target = null; }
+    };
+    const deliver = (parent) => { // the records of a childList change of `parent`
+      for (const o of list) {
+        if (!o.target || !o.opts.childList) continue;
+        if (parent === o.target || (o.opts.subtree && o.target.contains(parent))) o.cb([{ type: 'childList', target: parent }], o);
+      }
+    };
+    return { list, deliver };
+  };
+
+  test('RC1: the lock page SOBER practice, opened in place (replaceState, no hashchange), hides the kept line; Done brings it back while locked', async (t) => {
+    const mo = moStandIn();
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.equal(location.hash, '#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'control: raised, on the lock page');
+    mo.deliver(main()); // a change in #main outside SOS
+    assert.match(keptLine(), STALE_WORDS, 'a change in #main outside SOS keeps the line');
+    // The tap on lock-sober, as ui-onboarding.js:273-280 does it: the practice in a panel of the lock page, then the hold.
+    const panel = document.createElement('div');
+    (main().firstChild || main()).appendChild(panel);
+    const practice = document.createElement('section');
+    practice.textContent = 'Ride the wave';
+    panel.replaceChildren(practice);
+    history.replaceState(history.state, '', '#/sos/craving?from=lock&n=lk2a9f0');
+    mo.deliver(panel);
+    assert.match(main().textContent, /Ride the wave/, 'control: the practice is drawn inside the lock page');
+    assert.equal(keptLine(), null, 'the practice is SOS: no kept line over it');
+    // Done, still locked (ui-onboarding.js:255-258): the panel empties, the hold goes back to #/lock, the chrome only.
+    panel.replaceChildren();
+    history.replaceState(history.state, '', '#/lock');
+    k.U.applyDiscreet(false);
+    mo.deliver(panel);
+    assert.match(keptLine(), STALE_WORDS, 'back on the lock page, still locked: shown again, as after the SOS button (c)');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (d): unlock clears the line; a lock without stale never shows it', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.lock({ reason: 'auto' });
+    assert.equal(location.hash, '#/lock', 'control: locked');
+    assert.equal(keptLine(), null, 'a lock without stale shows no line');
+    k.unlocked();
+    await k.to('#/today');
+    await k.lock({ reason: 'auto', stale: true });
+    assert.match(keptLine(), STALE_WORDS);
+    await k.to('#/sos/craving?from=lock');
+    await k.to('#/lock');
+    assert.match(keptLine(), STALE_WORDS, 'control: SOS and back, still locked, keep it');
+    k.unlocked();
+    await k.send({ label: 'unlock' });
+    await k.frame(); // the lock page, open again, moves on to Today
+    await k.turn();
+    assert.equal(location.hash, '#/today', 'control: open again, on another page');
+    assert.equal(keptLine(), null, 'the unlock cleared it');
+    await k.lock({ reason: 'manual' });
+    assert.equal(keptLine(), null, 'a later lock without stale does not bring it back');
+  });
+
+  test('FIX-STALE-SAVE-KEEP (e): one refused save gives one toast and one line', async (t) => {
+    const k = await bootKept(t, '#/today');
+    k.raw({ reason: 'auto', stale: true });
+    k.U.toast('That could not be saved.', 'warn'); // the page's own refusal, in the same turn: hushed (RC1)
+    await k.turn();
+    assert.equal(toastsOf().length, 1, 'one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS);
+    assert.match(keptLine(), STALE_WORDS, 'one line, the words once');
+  });
+
+  // RC2 (review of FIX-BULK-REFUSAL-SAY), brief (d): a commit refused inside Store.bulk() comes as the one 'bulk'
+  // notice with the flag; ui-core hears it as it hears the 'unlock' one: one toast and the kept line on a page, nothing
+  // in SOS. The real Store.bulk() end to end: 'RC2: another tab removes the PIN ...' in 'FIX-STALE-SAVE-SAY (e2e)'.
+  test('FIX-BULK-REFUSAL-SAY (d): a bulk notice with the flag gives one toast and the kept line on a page', async (t) => {
+    const k = await bootKept(t, '#/today');
+    await k.send({ label: 'bulk', stale: true });
+    assert.equal(toastsOf().length, 1, 'one toast');
+    assert.match(toastsOf()[0].textContent.trim(), STALE_WORDS);
+    assert.match(keptLine(), STALE_WORDS, 'and the kept line, in the same words');
+    assert.equal(location.hash, '#/today', 'no lock is stored, so no lock page');
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (d): inside SOS a bulk notice with the flag shows no toast and no line', async (t) => {
+    const k = await bootKept(t, '#/sos/craving');
+    await k.send({ label: 'bulk', stale: true });
+    assert.equal(toastsOf().length, 0, 'SOS is never interrupted');
+    assert.equal(keptLine(), null, 'and no kept line');
     assert.equal(location.hash, '#/sos/craving');
   });
 
@@ -1844,7 +2103,9 @@ function fakeIndexedDB() {
       transaction(names, mode) {
         for (const n of names) if (!rec.stores.has(n)) throw new Error('NotFoundError');
         if (mode === 'readwrite') fake.writes += 1;
-        const t = { error: null, aborted: false, abort() { t.aborted = true; } };
+        // Once, as the next readwrite transaction opens and before its ops run: another tab's change lands (FIX-TAKEIN-SAY).
+        if (mode === 'readwrite' && fake.beforeWrite) { const f = fake.beforeWrite; fake.beforeWrite = null; f(); }
+        const t ={ error: null, aborted: false, abort() { t.aborted = true; } };
         const ops = [];
         const request = (fn) => { const r = {}; ops.push(() => { r.result = fn(); if (r.onsuccess) r.onsuccess(); }); return r; };
         t.objectStore = (n) => {
@@ -1893,6 +2154,12 @@ function fakeIndexedDB() {
   };
   fake.rows = (store) => { const rec = dbs.get('1-addic'); return rec ? Array.from(rec.stores.get(store).rows.values()) : []; };
   fake.storeNames = () => Array.from(dbs.get('1-addic').stores.keys());
+  fake.beforeWrite = null;
+  // Every row of every store, as it is now, and back again (another tab's whole change in one step).
+  fake.copy = () => new Map(Array.from(dbs.get('1-addic').stores).map(([n, st]) => [n, Array.from(st.rows.values()).map(cp)]));
+  fake.restore = (c) => {
+    for (const [n, st] of dbs.get('1-addic').stores) { st.rows.clear(); for (const r of c.get(n) || []) st.rows.set(r[st.keyPath], cp(r)); }
+  };
   fake.dump = () => JSON.stringify(Array.from(dbs.values()).map((rec) => Array.from(rec.stores).map(([n, st]) => [n, Array.from(st.rows.values())])));
   return fake;
 }
@@ -2765,6 +3032,129 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.deepStrictEqual(heard, [{ reason: 'auto' }, { reason: 'manual' }]);
   });
 
+  /* FIX-BULK-REFUSAL-SAY: a commit refused inside Store.bulk() is said with the same flag as one outside it. bulk()
+     holds every notice back and sends one 'bulk' at the end; the stale flag of a notice held back goes on that one.
+     (ui-core reads n.stale whatever the label: 'FIX-STALE-SAVE-SAY (b): a save refused with no lock stored any more
+     ...' and '... inside SOS a save refused with no lock stored shows no toast' pin the toast and SOS for it.) */
+  const openTabOver = async () => {
+    const { S } = await pinned();
+    const A = freshStore();
+    await A.load();
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    const heard = [];
+    const notes = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    A.subscribe((n) => notes.push({ ...n }));
+    const late = (id) => A.bulk(async () => A.commit('late', (d) => { d.put('events', { id, type: 'CravingLogged' }); }))
+      .then(() => null, (e) => e);
+    return { S, A, heard, notes, late };
+  };
+
+  test('FIX-BULK-REFUSAL-SAY (a): a commit refused inside bulk with no lock stored any more still sends the stale notice once', async () => {
+    const { S, A, heard, notes, late } = await openTabOver();
+    assert.equal(await S.lock.remove(IMPORT_PIN), true, 'the other tab removes the PIN');
+    const refused = await late('late');
+    assert.equal(refused && refused.code, 'LOCKED', 'the refusal stands');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [], 'no lock is stored, so no lock page to go to');
+    assert.deepStrictEqual(notes, [{ label: 'bulk', stale: true }], 'one notice, and it carries the flag');
+    assert.ok(!A.view.get('events', 'late'), 'nothing of the refused save is kept');
+    assert.equal(A.status().locked, false, 'the tab stays open');
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (b): another tab brings back a backup, a lock still stored, a commit inside bulk: onLock carries the flag once, the bulk notice does not', async () => {
+    const { S, A, heard, notes, late } = await openTabOver();
+    await S.replaceAll(IMPORT);
+    const refused = await late('late');
+    assert.equal(refused && refused.code, 'LOCKED');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }], 'said once, by onLock');
+    assert.deepStrictEqual(notes, [{ label: 'bulk' }], 'so the notice carries no flag');
+    assert.equal(A.status().locked, true);
+  });
+
+  test('FIX-BULK-REFUSAL-SAY (c): a bulk with no refusal sends one notice with no stale', async () => {
+    const { S, A, notes, late } = await openTabOver();
+    assert.equal(await S.lock.remove(IMPORT_PIN), true);
+    assert.ok(await late('late'), 'control: the first bulk was refused');
+    assert.equal(await late('next'), null, 'the next bulk goes in');
+    assert.ok(A.view.get('events', 'next'));
+    assert.deepStrictEqual(notes, [{ label: 'bulk', stale: true }, { label: 'bulk' }], 'the flag does not stick');
+    await A.commit('after', (d) => { d.put('events', { id: 'after', type: 'CravingLogged' }); });
+    assert.deepStrictEqual(notes.slice(2), [{ label: 'after' }], 'nor does it reach a commit outside bulk');
+  });
+
+  /* FIX-TAKEIN-SAY: takeIn's write after an unlock is automatic: the person did nothing. Refused because another tab
+     changed the lock between the unlock's read and that write, it resyncs as before, but nothing of the person's was
+     lost, so neither onLock nor the store notice carries stale. A person's own refused save still does. */
+  const SNAP = 'f1';
+  const raced = async (change) => {
+    const { idb, S } = await pinned();
+    const before = idb.copy();
+    await change(S); // the other tab's change, kept aside and put back as the takeIn write opens
+    const after = idb.copy();
+    idb.restore(before);
+    const ls = globalThis.localStorage = fakeLocalStorage();
+    ls.setItem('1-addic:snapshot', JSON.stringify({ app: '1-addic', v: 1,
+      stores: { events: [{ id: SNAP, type: 'CravingLogged', note: MARK + '-fallback' }] } }));
+    const A = freshStore();
+    await A.load();
+    assert.equal(A.status().locked, true, 'control: A loads the lock as it was');
+    const heard = [];
+    const notes = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    A.subscribe((n) => notes.push({ ...n }));
+    let landed = false;
+    idb.beforeWrite = () => { landed = true; idb.restore(after); };
+    return { idb, ls, A, heard, notes, landed: () => landed };
+  };
+  const newPin = (S) => S.lock.set('1357');
+
+  test('FIX-TAKEIN-SAY (a): a takeIn write refused because another tab changed the lock says nothing as stale', async () => {
+    const { A, heard, notes, landed } = await raced(newPin);
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true, 'the unlock resolves without throwing');
+    assert.equal(landed(), true, 'control: the change landed on the takeIn write');
+    assert.deepStrictEqual(heard, [{ reason: 'auto' }], 'a lock page, with no stale flag: nothing of the person was lost');
+    assert.deepStrictEqual(notes, [{ label: 'lock' }, { label: 'unlock' }], "resync's notice, then the unlock's own");
+    assert.equal(A.status().locked, true, 'the tab took the new lock');
+  });
+
+  test('FIX-TAKEIN-SAY (b): the snapshot stays after that refusal and the next unlock takes it in', async () => {
+    const { idb, ls, A, heard, notes } = await raced(newPin);
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    assert.ok(ls.getItem('1-addic:snapshot').includes(SNAP), 'nothing was written, so the snapshot stays');
+    assert.equal(await A.lock.unlock(IMPORT_PIN), false, 'the old PIN opens nothing now');
+    assert.equal(await A.lock.unlock('1357'), true, 'the new PIN opens it');
+    assert.equal(ls.getItem('1-addic:snapshot'), null, 'taken in, so no plain copy stays');
+    assert.equal(A.view.get('events', SNAP).note, MARK + '-fallback');
+    assert.ok(!idb.dump().includes(MARK), 'sealed in IndexedDB');
+    assert.equal(heard.concat(notes).some((n) => n.stale), false, 'no notice said a save was lost');
+  });
+
+  test("FIX-TAKEIN-SAY (c): a person's own save refused the same way still carries stale", async () => {
+    const { S } = await pinned();
+    const A = freshStore();
+    await A.load();
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    const heard = [];
+    A.lock.onLock((i) => heard.push({ ...i }));
+    await newPin(S);
+    const refused = await A.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }).then(() => null, (e) => e);
+    assert.equal(refused && refused.code, 'LOCKED');
+    assert.equal(refused.stale, true);
+    assert.deepStrictEqual(heard, [{ reason: 'auto', stale: true }]);
+  });
+
+  test('FIX-TAKEIN-SAY (d): with no lock stored any more, a refused takeIn sends the notices without stale', async () => {
+    const { ls, A, heard, notes, landed } = await raced(async (S) => assert.equal(await S.lock.remove(IMPORT_PIN), true));
+    assert.equal(await A.lock.unlock(IMPORT_PIN), true);
+    assert.equal(landed(), true, 'control: the change landed on the takeIn write');
+    assert.deepStrictEqual(heard, [], 'no lock is stored, so no lock page');
+    assert.deepStrictEqual(notes, [{ label: 'unlock' }, { label: 'unlock' }], 'neither notice carries stale');
+    assert.equal(A.status().locked, false);
+    assert.ok(ls.getItem('1-addic:snapshot').includes(SNAP), 'the snapshot stays');
+  });
+
   /* FIX-IMPORT-MARK RC2: the import under a PIN, proven row for row: the backup as the person saves it, every store, every
      kind of field; read back at once, from what was written, and from a fresh store. Meta rows stay plain by design. */
   const sampleRow = (store, idKey, tag) => ({ [idKey]: tag, text: store === 'meta' ? 'plain by design' : store + ' ' + tag + ' ' + MARK,
@@ -3287,11 +3677,13 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     delete globalThis.indexedDB;
   });
 
-  async function twoTabs() {
+  async function twoTabs(opts) {
+    const o = opts || {};
     errors = [];
     console.error = (...a) => { errors.push(a.join(' ')); };
     globalThis.document = fakeDom();
-    globalThis.document.addEventListener = () => {};
+    const on = {}; // the document's listeners, so a test acts as the person does (RS3)
+    globalThis.document.addEventListener = (type, f) => { (on[type] = on[type] || []).push(f); };
     globalThis.Content = Content;
     globalThis.indexedDB = fakeIndexedDB();
     globalThis.window = { addEventListener() {} };
@@ -3300,12 +3692,14 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     const other = freshStore(); // the same file open in another tab
     await other.load();
     await other.lock.set(PIN, { autoLockMin: 'never' });
+    if (o.prep) await o.prep(other);
     const open = freshStore(); // this tab, open on a page with a Save button
     await open.load();
     assert.equal(await open.lock.unlock(PIN), true, 'control: this tab is open');
     globalThis.Store = open;
     const U = freshUi();
-    U.pages.today = () => { const p = document.createElement('p'); p.textContent = PAGE; return p; };
+    if (o.today) o.today(U);
+    else U.pages.today = () => { const p = document.createElement('p'); p.textContent = PAGE; return p; };
     await U.boot();
     const box = () => document.getElementById('toasts');
     const toasts = () => Array.from(box().children, (el) => el.textContent.trim());
@@ -3313,7 +3707,8 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
     // The page's Save, as ui-exercise.js:891 does it: its own catch toasts the refusal's words.
     const save = () => open.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); })
       .then(() => null, (e) => { U.toast((e && e.message) || 'That did not save. Please try again.', 'warn'); return e; });
-    return { other, U, box, toasts, main, save };
+    const act = (type) => { for (const f of on[type] || []) f({ type }); };
+    return { other, U, box, toasts, main, save, act };
   }
 
   for (const [how, change, lockPage] of [
@@ -3343,4 +3738,75 @@ describe('FIX-STALE-SAVE-SAY (e2e): the real Store and the real ui-core, real ti
       assert.deepEqual(errors, [], 'nothing on the console');
     });
   }
+
+  // RC2 (review of FIX-BULK-REFUSAL-SAY): the bulk notice's flag, end to end: a real Store.bulk() in this tab, its commit
+  // refused because another tab removed the PIN, and the real ui-core hears { label: 'bulk', stale: true }.
+  test('RC2: another tab removes the PIN, then a commit refused inside Store.bulk() here: one toast with the stale words and the kept line, the page stays', async () => {
+    const s = await twoTabs();
+    assert.equal(await s.other.lock.remove(PIN), true, 'the other tab removes the PIN');
+    const S = globalThis.Store;
+    const e = await S.bulk(async () => S.commit('late', (d) => { d.put('events', { id: 'late', type: 'CravingLogged' }); }))
+      .then(() => null, (err) => err);
+    assert.equal(e && e.code, 'LOCKED', 'the save is refused');
+    assert.equal(e.stale, true);
+    await wait(50); // ui-core's real 16 ms redraw
+    assert.equal(s.toasts().length, 1, 'one refused save, one toast: ' + JSON.stringify(s.toasts()));
+    assert.match(s.toasts()[0], STALE);
+    const kept = document.getElementById('kept');
+    assert.equal(kept.hidden, false, 'the kept line is shown');
+    assert.match(kept.textContent.trim(), STALE, 'in the same words');
+    assert.equal(location.hash, '#/today', 'no lock is stored: no lock page');
+    assert.match(s.main(), new RegExp(PAGE), 'the page stays');
+    assert.ok(!S.view.get('events', 'late'), 'nothing of the refused save is kept');
+    assert.deepEqual(errors, [], 'nothing on the console');
+  });
+
+  // RS3 (review of the RS1 fix), end to end, with the real Today page, Engine, Actions and content. A tip was shown
+  // earlier today in the other tab, so Today here shows none. The other tab erases the notebook and the person's Save
+  // here is refused. The store render draws Today from the erased notebook; its tip card picks a tip and marks it shown
+  // ('tip <id>'), and that write goes through, as no lock is stored. It is not a save of the person: the line stays.
+  test('RS3: another tab erases the notebook, a Save here is refused, Today marks a tip shown as it is drawn: the kept line stays; a tap and a save clear it', async () => {
+    const fresh = (p) => { const r = require.resolve(p); delete require.cache[r]; return require(r); };
+    globalThis.Content = Content;
+    for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter((n) => /^content-.+\.js$/.test(n) && n !== 'content-core.js').sort()) {
+      require('../src/' + f);
+    }
+    globalThis.Engine = require('../src/engine.js');
+    const A = fresh('../src/actions.js');
+    globalThis.Actions = A;
+    try {
+      const s = await twoTabs({
+        prep: async (other) => { globalThis.Store = other; await A.markTipShown('breathe'); }, // earlier today, there
+        today: (U) => { globalThis.UI = U; fresh('../src/ui-today.js'); assert.equal(typeof U.pages.today, 'function', 'control: the real Today'); },
+      });
+      const S = globalThis.Store;
+      await wait(150); // the first draw and its store renders settle
+      const heard = [];
+      S.subscribe((n) => heard.push(n.label + (n.stale ? ' (stale)' : '')));
+      await s.other.resetAll(); // the other tab erases the notebook
+      s.act('pointerdown');
+      s.act('click'); // the person's tap on Save
+      const e = await s.save();
+      assert.equal(e && e.code, 'LOCKED', 'the save is refused');
+      assert.equal(e.stale, true);
+      const kept = document.getElementById('kept');
+      assert.equal(kept.hidden, false, 'control: the kept line is shown');
+      await wait(150); // the store render draws Today from the erased notebook, and its tip card marks a tip shown
+      assert.ok(heard.some((l) => /^tip /.test(l)), 'control: a tip was marked shown as Today was drawn: ' + JSON.stringify(heard));
+      assert.equal(S.status().hasLock, false, 'control: no lock is stored, so that write went through');
+      assert.equal(kept.hidden, false, 'the kept line stays: that write was not a save of the person');
+      assert.match(kept.textContent.trim(), STALE);
+      assert.equal(location.hash, '#/today', 'the page stays');
+      assert.equal(s.toasts().length, 1, 'one toast: ' + JSON.stringify(s.toasts()));
+      s.act('pointerdown'); // later, the person taps Save again
+      const later = await S.commit('later', (d) => { d.put('events', { id: 'later', type: 'CravingLogged' }); }).then(() => null, (err) => err);
+      assert.equal(later, null, 'control: the later save goes through');
+      await wait(30);
+      assert.equal(kept.hidden, true, 'a tap and a save that goes through clear it');
+      assert.equal(kept.textContent, '', 'and empty it');
+      assert.deepEqual(errors, [], 'nothing on the console');
+    } finally {
+      delete globalThis.UI;
+    }
+  });
 });
