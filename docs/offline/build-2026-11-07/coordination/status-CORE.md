@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 04:32 IST: CORE 01:40 (5dfd0a16-ff45-4c40-8c90-0896dce2d20b). Nothing of CORE runs. core PAUSED 339ea20 under the floor (R-H-71): the review fix round's fixes all committed; both re-checks wait for a row at 7.0 GB or more. tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core PAUSED 339ea20   # 2026-11-15 04:32 IST: the review fix round's fixer done: RC1 MEDIUM 634dbfb, RS2 2af44ef, RC2 f000c8c (test only), RS1 339ea20 (the no-lock case; the lock case an owner question), RC3 a CONTRACT CHANGE (CORE writes contracts/core.md at READY, no code); its gates at 339ea20: build 1220067 B, store.test 152/152, validate, guards 5/5, browser 32/32 (_logs/gates/core/*-20261115-0403* to -0411*). Stopped 04:27 (TaskStop) under the floor, worktree clean but for the generated file. Left: both reviewers' re-checks, the report. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 06:01 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197) replaces CORE 01:40 (gone ~04:52, R-H-72). Nothing of CORE runs. core PAUSED 339ea20: both re-checks wait for a row at 7.0 GB or more (by hand 2.9 GB at 06:04). tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core PAUSED 339ea20   # 2026-11-15 06:01 IST: the review fix round's fixes all committed (RC1 634dbfb, RS2 2af44ef, RC2 f000c8c, RS1 339ea20; RC3 a CONTRACT CHANGE, written at READY). The re-check args r3 filled (now, session, laneNote) and wf_sim SIM OK (fix:review:core 12123 of 12288 bytes). Left: both re-checks, the report. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 04:32 IST
+UPDATED: 2026-11-15 06:01 IST
+
+
+# 2026-11-15 06:01 IST · CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197) reads in; core's re-checks wait for a 7.0 GB row
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here', status-HUB.md (BASE 5d251cbb; core slot 1 and tests-docs slot 5 granted 17:14 stand; no QUIET line), R-H-72 (HUB 02:02 by message 05:22: CORE 01:40 gone without a hand-over at about 04:52; nothing died with it). `claude agents --json` 05:35: HUB 02:02 (d885839c) live; 5dfd0a16 (CORE 01:40) not listed.
+- tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r3.json: now '2026-11-15 06:01 IST', session and the laneNote's 'CORE 05:24' and Claude-Session now 8b37e300-2952-44ab-b59e-e96c22a2e197 (3 lines changed); wf_sim --fix SIM OK (fix:review:core 12123 of 12288 bytes; recheck:contracts 8014, recheck:safety 6057, report-update 18491).
+- Memory: the rows 05:17 8.1, 05:28 5.3, 05:39 3.4, 05:50 4.5, 06:01 3.2 GB; by hand 3.8 GB (after 05:49) and 2.9 GB at 06:04, under the floor. Launch lane.js with the r3 args on the first row at 7.0 GB or more with a hand sample at 7.0 or more just before; a small watch on lane-widening.md runs in this chat (it only reads the file).
 
 
 # 2026-11-15 04:32 IST · core PAUSED 339ea20 under the floor (R-H-71): the fixes done, both re-checks left
