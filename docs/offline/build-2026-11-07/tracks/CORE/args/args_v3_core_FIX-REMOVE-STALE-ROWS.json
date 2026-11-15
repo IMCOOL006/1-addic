@@ -1,92 +1,92 @@
 {
- "lane": "core",
- "chat": "CORE",
- "tier": 1,
- "flagged": true,
- "area": "After the tag offline-v3.4, by name (R-H-74, R-H-81): Store.lock.remove() and Store.lock.set() rewrite the notebook from the stored rows, not this tab's memory, so a row another open tab saved is never dropped; replaceAll's unread rows from storage.",
- "files": [
-  "offline/src/store.js",
-  "offline/tests/store.test.mjs",
-  "offline/1-addic.html"
- ],
- "units": [
-  "V-11",
-  "V-46",
-  "V-16",
-  "V-17a",
-  "V-26a",
-  "FIX-IMPORT-MARK",
-  "FIX-STALE-SAVE-SAY",
-  "FIX-SOS-FOCUS",
-  "FIX-BULK-REFUSAL-SAY",
-  "FIX-TAKEIN-SAY",
-  "FIX-STALE-SAVE-KEEP",
-  "FIX-RS3-TEST-ALONE",
-  "FIX-REMOVE-STALE-ROWS"
- ],
- "batches": [
-  [
-   "V-11",
-   "V-46",
-   "V-16",
-   "V-17a",
-   "V-26a",
-   "FIX-IMPORT-MARK",
-   "FIX-STALE-SAVE-SAY",
-   "FIX-SOS-FOCUS"
+  "lane": "core",
+  "chat": "CORE",
+  "tier": 1,
+  "flagged": true,
+  "area": "After the tag offline-v3.4, by name (R-H-74, R-H-81): Store.lock.remove() and Store.lock.set() rewrite the notebook from the stored rows, not this tab's memory, so a row another open tab saved is never dropped; replaceAll's unread rows from storage.",
+  "files": [
+    "offline/src/store.js",
+    "offline/tests/store.test.mjs",
+    "offline/1-addic.html"
   ],
-  [
-   "FIX-BULK-REFUSAL-SAY",
-   "FIX-TAKEIN-SAY",
-   "FIX-STALE-SAVE-KEEP"
+  "units": [
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP",
+    "FIX-RS3-TEST-ALONE",
+    "FIX-REMOVE-STALE-ROWS"
   ],
-  [
-   "FIX-RS3-TEST-ALONE"
+  "batches": [
+    [
+      "V-11",
+      "V-46",
+      "V-16",
+      "V-17a",
+      "V-26a",
+      "FIX-IMPORT-MARK",
+      "FIX-STALE-SAVE-SAY",
+      "FIX-SOS-FOCUS"
+    ],
+    [
+      "FIX-BULK-REFUSAL-SAY",
+      "FIX-TAKEIN-SAY",
+      "FIX-STALE-SAVE-KEEP"
+    ],
+    [
+      "FIX-RS3-TEST-ALONE"
+    ],
+    [
+      "FIX-REMOVE-STALE-ROWS"
+    ]
   ],
-  [
-   "FIX-REMOVE-STALE-ROWS"
-  ]
- ],
- "unitTier": {
-  "V-11": 1,
-  "V-16": 2,
-  "V-17a": 2,
-  "V-26a": 2,
-  "FIX-BULK-REFUSAL-SAY": 1,
-  "FIX-TAKEIN-SAY": 1,
-  "FIX-STALE-SAVE-KEEP": 1,
-  "FIX-RS3-TEST-ALONE": 1,
-  "FIX-REMOVE-STALE-ROWS": 1
- },
- "unitNotes": {
-  "FIX-REMOVE-STALE-ROWS": "FIX-REMOVE-STALE-ROWS (core, FLAGGED: the person's data; two reviewers; R-H-74; after the tag offline-v3.4). lock.remove() (store.js:801, the open branch) and lock.set() (:697, :707) rewrite the whole notebook with clear: true from this tab's memory, and the stale refusal compares only the lock row (:121, :210, :395), so a row another tab saved after this tab loaded is lost silently. Read the stored rows just before the rewrite (decode(readAll(), key or null)) and rewrite those; replaceAll's unread rows from storage if one line; the gap between the read and the write named in a comment. Red-first two-tab tests (freshStore() on one fakeIndexedDB(), store.test.mjs:2086, :2094, :1848), a mutant run. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-REMOVE-STALE-ROWS.md: read it before you build.]"
- },
- "laneNote": "THIS RUN (CORE 11:24, 2026-11-15, slot 1, R-H-74, R-H-81): one unit, FIX-REMOVE-STALE-ROWS, flagged (the person's data: the check, then the two reviewers), cut from the trunk tip FILL (after the tag offline-v3.4 8bd439b2). offline/src/store.js and offline/tests/store.test.mjs only. Name it by its batch id FIX-REMOVE-STALE-ROWS in done. Red first: the new two-tab tests red on the current code (log under C:/Users/ruchi/1-addic-wt/_logs/reports/core/), then the fix, then a mutant run (state.rows put back in each path: red), one commit per change naming FIX-REMOVE-STALE-ROWS. Then once each through gates.py: build, store.test, the full Node suite (809 + n in 16 files), validate, guards, browser (the lock and PIN flows by name if memory is under 7.0 GB, else the full suite). 'Claude-Session: 43b081a3-0031-4428-a618-613fbb52e6d0' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No new words on any screen; the stale refusal stays as it is. Test names are failure identities: keep every name exactly; a Node test that meets the real store.js waits by condition with a deadline, never a fixed sleep. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so. A fix round (FIX verdict or reviewers) fixes only the named findings, each in its own commit naming the finding id. Return valid JSON: quote every string; shared_touched is a list of strings.",
- "done": [
-  "U-01",
-  "U-03",
-  "U-02",
-  "U-04",
-  "FIX-V11",
-  "V-11",
-  "V-46",
-  "V-16",
-  "V-17a",
-  "V-26a",
-  "FIX-IMPORT-MARK",
-  "FIX-STALE-SAVE-SAY",
-  "FIX-SOS-FOCUS",
-  "FIX-BULK-REFUSAL-SAY",
-  "FIX-TAKEIN-SAY",
-  "FIX-STALE-SAVE-KEEP",
-  "FIX-RS3-TEST-ALONE"
- ],
- "base": "FILL",
- "session": "43b081a3-0031-4428-a618-613fbb52e6d0",
- "now": "FILL",
- "diffFrom": "FILL",
- "slot": 1,
- "sliceRun": false,
- "priorNote": "core cbae1bb (FIX-RS3-TEST-ALONE) merged 61317638; the tag offline-v3.4 = 8bd439b2 (QUIET GREEN: Node 809/0/0 in 16 files, browser 33/0/0). This run: FIX-REMOVE-STALE-ROWS, granted by R-H-74 after the tag; FIX-DRAWN-WRITE-SAY follows it in a later run.",
- "start": "build"
+  "unitTier": {
+    "V-11": 1,
+    "V-16": 2,
+    "V-17a": 2,
+    "V-26a": 2,
+    "FIX-BULK-REFUSAL-SAY": 1,
+    "FIX-TAKEIN-SAY": 1,
+    "FIX-STALE-SAVE-KEEP": 1,
+    "FIX-RS3-TEST-ALONE": 1,
+    "FIX-REMOVE-STALE-ROWS": 1
+  },
+  "unitNotes": {
+    "FIX-REMOVE-STALE-ROWS": "FIX-REMOVE-STALE-ROWS (core, FLAGGED: the person's data; two reviewers; R-H-74; after the tag offline-v3.4). lock.remove() (store.js:801, the open branch) and lock.set() (:697, :707) rewrite the whole notebook with clear: true from this tab's memory, and the stale refusal compares only the lock row (:121, :210, :395), so a row another tab saved after this tab loaded is lost silently. Read the stored rows just before the rewrite (decode(readAll(), key or null)) and rewrite those; replaceAll's unread rows from storage if one line; the gap between the read and the write named in a comment. Red-first two-tab tests (freshStore() on one fakeIndexedDB(), store.test.mjs:2086, :2094, :1848), a mutant run. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-REMOVE-STALE-ROWS.md: read it before you build.]"
+  },
+  "laneNote": "THIS RUN (CORE 13:04, 2026-11-15, slot 1, R-H-74, R-H-81): one unit, FIX-REMOVE-STALE-ROWS, flagged (the person's data: the check, then the two reviewers), cut from the trunk tip FILL (after the tag offline-v3.4 8bd439b2). offline/src/store.js and offline/tests/store.test.mjs only. Name it by its batch id FIX-REMOVE-STALE-ROWS in done. Red first: the new two-tab tests red on the current code (log under C:/Users/ruchi/1-addic-wt/_logs/reports/core/), then the fix, then a mutant run (state.rows put back in each path: red), one commit per change naming FIX-REMOVE-STALE-ROWS. Then once each through gates.py: build, store.test, the full Node suite (809 + n in 16 files), validate, guards, browser (the lock and PIN flows by name if memory is under 7.0 GB, else the full suite). 'Claude-Session: eac6e6a0-2817-42d1-9503-7437d33a6857' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No new words on any screen; the stale refusal stays as it is. Test names are failure identities: keep every name exactly; a Node test that meets the real store.js waits by condition with a deadline, never a fixed sleep. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so. A fix round (FIX verdict or reviewers) fixes only the named findings, each in its own commit naming the finding id. Return valid JSON: quote every string; shared_touched is a list of strings.",
+  "done": [
+    "U-01",
+    "U-03",
+    "U-02",
+    "U-04",
+    "FIX-V11",
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP",
+    "FIX-RS3-TEST-ALONE"
+  ],
+  "base": "FILL",
+  "session": "eac6e6a0-2817-42d1-9503-7437d33a6857",
+  "now": "FILL",
+  "diffFrom": "FILL",
+  "slot": 1,
+  "sliceRun": false,
+  "priorNote": "core cbae1bb (FIX-RS3-TEST-ALONE) merged 61317638; the tag offline-v3.4 = 8bd439b2 (QUIET GREEN: Node 809/0/0 in 16 files, browser 33/0/0). This run: FIX-REMOVE-STALE-ROWS, granted by R-H-74 after the tag; FIX-DRAWN-WRITE-SAY follows it in a later run.",
+  "start": "build"
 }
