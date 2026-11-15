@@ -1,18 +1,23 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 14:36 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 under the floor (wf_140080f1-59f stopped 14:33 as its review fix round began, nothing uncommitted); resumes from the run's journal on two readings at 4.5 GB or more
-LANE: core PAUSED d55a102   # 2026-11-15 14:36 IST: FIX-REMOVE-STALE-ROWS built (1c4d3f4, 1a33ea5, 88aa02d, d55a102), check PASS (C1 LOW), both reviews returned (RS1, RS2, RC1, RC2, all LOW); stopped under the floor as the review fix round began, before any edit; resume = Workflow(lane.js, resumeFromRunId wf_140080f1-59f, the same args)
+STATE: REVIEWING   # 2026-11-15 14:48 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RESUMED: wf_140080f1-59f resumed from its journal (task wh0stu0x1) on the HUB's word (6.4 GB at 14:47) and 6.5 GB by hand at 14:47:56; the build, the check and the two reviews cached, the review fix round live
+LANE: core REVIEWING d55a102   # 2026-11-15 14:48 IST: FIX-REMOVE-STALE-ROWS: the review fix round (RS1, RS2, RC1, RC2 and C1, all LOW) runs, then the re-checks and the report; resumed from wf_140080f1-59f's journal, the same args
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 14:36 IST
+UPDATED: 2026-11-15 14:48 IST
 
 
 
 
 
 
+
+# 2026-11-15 14:48 IST · core FIX-REMOVE-STALE-ROWS resumed (wf_140080f1-59f)
+
+- The HUB 13:18 by message: 6.4 GB by its watch at 14:47, 6.6 by its hand at 14:47:40. By my hand 6.5 GB at 14:47:56; build/core at d55a102, clean (the generated file only); the args file unchanged since 7a7cf89.
+- Workflow(lane.js, resumeFromRunId 'wf_140080f1-59f', the same args): the background task wh0stu0x1; the journal stays C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl. The HUB watches for a fall under 4.0 GB.
 
 # 2026-11-15 14:36 IST · the resume watch was stopped by Claude Code for critically low memory
 
