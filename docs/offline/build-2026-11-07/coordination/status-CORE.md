@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 16:04 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core READY d11f252 (FIX-REMOVE-STALE-ROWS; R-C-110); nothing of CORE runs; next FIX-DRAWN-WRITE-SAY on the HUB's word
-LANE: core READY d11f252   # 2026-11-15 16:04 IST: FIX-REMOVE-STALE-ROWS, merge base c4d609d, 6 commits (store.js, store.test.mjs); check PASS (C1 LOW, no fix); reviews RC1 FIXED c463efe, RC2 FIXED d11f252, RS2 FIXED (the words for tests-docs), RS1 WONTFIX-ACCEPTED (the gap, a later unit); open 0. At d11f252: build GREEN 1221933 B, store.test 159/0/0, full Node 814/0/0 in 16 files, validate GREEN, guards 5/5; browser 5/0/0 by name at d55a102 (the app source unchanged since)
+STATE: WAITING   # 2026-11-15 16:29 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core MERGED bf74180c (R-H-83). slot 1 granted for core FIX-DRAWN-WRITE-SAY: build/core and its worktree fast-forwarded to the trunk tip 9f233b1; the unit notes being written (read-only); this chat (201k at 16:27) hands over before the launch
+LANE: core MERGED d11f252   # 2026-11-15 16:29 IST: FIX-REMOVE-STALE-ROWS merged bf74180c (R-H-83; on the merged tree store.test 159/0/0, full Node 814/0/0 in 16 files, browser 33/0/0); RS1 named FIX-LOCK-WRITE-GAP, a later unit. Next FIX-DRAWN-WRITE-SAY (slot 1, flagged): build/core and its worktree ff d11f252 -> 9f233b1, clean
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 16:04 IST
+UPDATED: 2026-11-15 16:29 IST
 
 
 
 
 
 
+
+# 2026-11-15 16:29 IST · core MERGED bf74180c; FIX-DRAWN-WRITE-SAY granted on slot 1 (R-H-83)
+
+- HUB 13:18 by message (R-H-83, afe79d7a): core d11f252 MERGED bf74180c; the trunk and build/core pushed 16:23; on the merged tree store.test 159/0/0, the full Node suite 814/0/0 in 16 files, the full browser suite 33/0/0, build 1221933 B, validate, guards, territory 0. RS1's gap is FIX-LOCK-WRITE-GAP (core, flagged), a later unit, not in offline-v3.5 by default.
+- Slot 1 granted for core FIX-DRAWN-WRITE-SAY (N1 of R-H-75; flagged, two reviewers; store.js; the actions.js part is actions-sos's, which is CORE's own lane: slot 3 on request). Start on a hand sample at 7.0 GB or more; the HUB sends the line at its watch's crossing to 7.0 GB. The tests-docs run (the counts, the guide's two-tab rows with RS2's words of R-C-110, the rebuilt .docx) goes once, after FIX-DRAWN-WRITE-SAY is merged.
+- build/core and C:/Users/ruchi/1-addic-wt/core fast-forwarded d11f252 -> 9f233b1 (the trunk tip). The ff first refused over the gates' rebuild of offline/1-addic.html; that file was byte-identical to the trunk's (blob b1dca4f4), so it was restored (git checkout -- offline/1-addic.html) and the ff ran; the worktree clean.
+- Context 201,025 at 16:27 (tools/context_now.py): a flagged run here would cross 250k mid-run, so this chat prepares the unit notes and args and hands over before the launch (R-H-83 (4)).
 
 # 2026-11-15 16:04 IST · core READY d11f252 (FIX-REMOVE-STALE-ROWS; R-C-110)
 
