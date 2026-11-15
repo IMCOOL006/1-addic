@@ -169,3 +169,9 @@ Adds or relies on (all at base f69bc68a unless marked):
 - No signature, result, error or word changed; the stale refusal stays as it is.
 - The gap that stays (RS1, WONTFIX-ACCEPTED, a later unit by name): a plain row another tab saves between this read and this write is still lost (no row version in the backend); a lock changed in that gap is refused as stale. Named in comments in remove() and lock.set().
 
+## FIX-DRAWN-WRITE-SAY, the shape published before the build (2026-11-15 16:55 IST; to be built on slot 1 from 9f233b1; the unit note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md)
+
+- Store.commit(label, fn, opts?): only an object whose auto === true makes the commit automatic; any other opts is ignored, never thrown on; two-argument calls are unchanged.
+- A refused automatic commit still rejects LOCKED with stale: true on the error, but its resync sends no stale flag: onLock { reason: 'auto' } and the notice { label: 'lock' } with a lock stored, or the notice { label: 'unlock' } with none, as takeIn's write does (FIX-TAKEIN-SAY above).
+- actions.js (actions-sos, a later run): write(label, at, fn, auto) calls S.commit(label, cb, { auto: true }) only for markTipShown, reveal with seen: true and not forced, and recordEvent('ExplorerCompleted'); every other call stays S.commit(label, cb). Either merge order is safe (a two-argument commit ignores a third argument); default core first.
+

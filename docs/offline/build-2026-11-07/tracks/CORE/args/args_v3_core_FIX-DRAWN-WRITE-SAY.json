@@ -1,0 +1,98 @@
+{
+  "lane": "core",
+  "chat": "CORE",
+  "tier": 1,
+  "flagged": true,
+  "area": "By name (N1 of R-H-75, R-H-83): a write a page makes as it is drawn (a tip shown, a reveal seen, ExplorerCompleted) is refused as stale after another tab changed the PIN or erased the notebook, and is said as the person's lost change; Store.commit takes { auto: true } and passes it to write(), so such a refusal is not said as a lost change.",
+  "files": [
+    "offline/src/store.js",
+    "offline/tests/store.test.mjs",
+    "offline/1-addic.html"
+  ],
+  "units": [
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP",
+    "FIX-RS3-TEST-ALONE",
+    "FIX-REMOVE-STALE-ROWS",
+    "FIX-DRAWN-WRITE-SAY"
+  ],
+  "batches": [
+    [
+      "V-11",
+      "V-46",
+      "V-16",
+      "V-17a",
+      "V-26a",
+      "FIX-IMPORT-MARK",
+      "FIX-STALE-SAVE-SAY",
+      "FIX-SOS-FOCUS"
+    ],
+    [
+      "FIX-BULK-REFUSAL-SAY",
+      "FIX-TAKEIN-SAY",
+      "FIX-STALE-SAVE-KEEP"
+    ],
+    [
+      "FIX-RS3-TEST-ALONE"
+    ],
+    [
+      "FIX-REMOVE-STALE-ROWS"
+    ],
+    [
+      "FIX-DRAWN-WRITE-SAY"
+    ]
+  ],
+  "unitTier": {
+    "V-11": 1,
+    "V-16": 2,
+    "V-17a": 2,
+    "V-26a": 2,
+    "FIX-BULK-REFUSAL-SAY": 1,
+    "FIX-TAKEIN-SAY": 1,
+    "FIX-STALE-SAVE-KEEP": 1,
+    "FIX-RS3-TEST-ALONE": 1,
+    "FIX-REMOVE-STALE-ROWS": 1,
+    "FIX-DRAWN-WRITE-SAY": 1
+  },
+  "unitNotes": {
+    "FIX-DRAWN-WRITE-SAY": "FIX-DRAWN-WRITE-SAY (core, FLAGGED: the person's data and what the screen says; two reviewers; N1 of R-H-75, R-H-83). store.js only: Store.commit(label, fn, opts) passes opts.auto to write(), as FIX-TAKEIN-SAY did for takeIn; a change the person made still says not saved. The actions.js callers are actions-sos's part (a later run, slot 3), not this run. Red-first two-tab tests, a mutant run. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md: read it before you build.]"
+  },
+  "laneNote": "THIS RUN (CHAT FILL, 2026-11-15, slot 1, R-H-75, R-H-83): one unit, FIX-DRAWN-WRITE-SAY, flagged (the person's data and what the screen says: the check, then the two reviewers), cut from the trunk tip FILL. offline/src/store.js and offline/tests/store.test.mjs only; actions.js is actions-sos's: never edit it here. Name it by its batch id FIX-DRAWN-WRITE-SAY in done. Red first: the new two-tab tests red on the current code (log under C:/Users/ruchi/1-addic-wt/_logs/reports/core/), then the fix, then a mutant run (auto dropped in commit: red), one commit per change naming FIX-DRAWN-WRITE-SAY. Then once each through gates.py: build, store.test, the full Node suite (814 + n in 16 files), validate, guards, browser (the lock, PIN and tip flows by name if memory is under 7.0 GB, else the full suite). 'Claude-Session: SESSION FILL' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No new words on any screen; the stale refusal for a change the person made stays as it is. Test names are failure identities: keep every name exactly, ASCII apostrophes; a Node test that meets the real store.js waits by condition with a deadline, never a fixed sleep. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so. A fix round (FIX verdict or reviewers) fixes only the named findings, each in its own commit naming the finding id. Return valid JSON: quote every string; shared_touched is a list of strings.",
+  "done": [
+    "U-01",
+    "U-03",
+    "U-02",
+    "U-04",
+    "FIX-V11",
+    "V-11",
+    "V-46",
+    "V-16",
+    "V-17a",
+    "V-26a",
+    "FIX-IMPORT-MARK",
+    "FIX-STALE-SAVE-SAY",
+    "FIX-SOS-FOCUS",
+    "FIX-BULK-REFUSAL-SAY",
+    "FIX-TAKEIN-SAY",
+    "FIX-STALE-SAVE-KEEP",
+    "FIX-RS3-TEST-ALONE",
+    "FIX-REMOVE-STALE-ROWS"
+  ],
+  "base": "FILL",
+  "session": "FILL",
+  "now": "FILL",
+  "diffFrom": "FILL",
+  "slot": 1,
+  "sliceRun": false,
+  "priorNote": "core d11f252 (FIX-REMOVE-STALE-ROWS) merged bf74180c (R-H-83; on the merged tree store.test 159/0/0, the full Node suite 814/0/0 in 16 files, browser 33/0/0). This run: FIX-DRAWN-WRITE-SAY's store.js part (N1 of R-H-75); the actions.js part is a later actions-sos run.",
+  "start": "build"
+}

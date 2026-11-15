@@ -1,18 +1,25 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 16:29 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core MERGED bf74180c (R-H-83). slot 1 granted for core FIX-DRAWN-WRITE-SAY: build/core and its worktree fast-forwarded to the trunk tip 9f233b1; the unit notes being written (read-only); this chat (201k at 16:27) hands over before the launch
-LANE: core MERGED d11f252   # 2026-11-15 16:29 IST: FIX-REMOVE-STALE-ROWS merged bf74180c (R-H-83; on the merged tree store.test 159/0/0, full Node 814/0/0 in 16 files, browser 33/0/0); RS1 named FIX-LOCK-WRITE-GAP, a later unit. Next FIX-DRAWN-WRITE-SAY (slot 1, flagged): build/core and its worktree ff d11f252 -> 9f233b1, clean
+STATE: RESTART   # 2026-11-15 16:55 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857) hands over before the launch (context 224,199; R-H-83 (4)). NOTHING OF CORE RUNS. core FIX-DRAWN-WRITE-SAY ready to launch on slot 1: note, args (fill base/diffFrom/now/session/CHAT), wf_sim OK; the fresh CORE launches on its own hand sample at 7.0 GB or more
+LANE: core NEW 9f233b1   # 2026-11-15 16:55 IST: FIX-DRAWN-WRITE-SAY (flagged, two reviewers; N1 of R-H-75, R-H-83): build/core and its worktree at 9f233b1, clean; note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md; args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json; launch on a 7.0 GB reading. FIX-REMOVE-STALE-ROWS merged bf74180c
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
-LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
+LANE: actions-sos NEW f2b0023   # 2026-11-15 16:55 IST: FIX-DRAWN-WRITE-SAY's actions.js part asked on slot 3 (R-C-111), after core's part merges; note tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md; fast-forward build/actions-sos and its worktree to the trunk tip at its start
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
-SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 16:29 IST
+SLOTS-ASKED: 1   # 2026-11-15 16:55 IST: slot 3 for actions-sos FIX-DRAWN-WRITE-SAY after core's part merges (R-C-111); slot 1 granted (R-H-83)
+UPDATED: 2026-11-15 16:55 IST
 
 
 
 
 
 
+
+# 2026-11-15 16:55 IST · FIX-DRAWN-WRITE-SAY prepared; CORE 13:03 hands over (STATE RESTART)
+
+- The unit notes: tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md (5.2 KB) and tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md (3.6 KB), from wf_e0e35035-0ba (a read-only scout, two verifiers: code truth, 5 refuted, 17 missing, 6 held; fix and tests, 5 refuted, 14 missing, 6 held; a reviser re-read the code; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_e0e35035-0ba/journal.jsonl). The parent wrote the files (a background session's sub-agents may not write in the main folder).
+- The shape: contracts/core.md, section FIX-DRAWN-WRITE-SAY. R-C-111: slot 3 asked for the actions.js part after core's merge; six owner questions with defaults.
+- The args: tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json (from FIX-REMOVE-STALE-ROWS's: units and batches + [FIX-DRAWN-WRITE-SAY]; done + FIX-REMOVE-STALE-ROWS; files store.js, store.test.mjs; start 'build'); base, diffFrom, now, session = 'FILL', and in the laneNote 'CHAT FILL', 'trunk tip FILL' and 'SESSION FILL'. wf_sim SIM OK plain and --fix with placeholders (the fix builder 11958 of 12288 B; a 40-character sha in base adds no builder bytes beyond the laneNote's short sha).
+- The launch, for the fresh CORE: the HUB's watch read 10.5 GB at 16:48. On a hand sample at 7.0 GB or more: the trunk tip again (fast-forward build/core and its worktree if it moved; if the gates' rebuild of offline/1-addic.html blocks the fast-forward, compare `git hash-object` with the trunk's blob: identical -> `git checkout -- offline/1-addic.html`, then the ff), fill base and diffFrom (the full sha), now (date), session and the laneNote's CHAT, trunk tip (short sha) and SESSION, wf_sim plain and --fix, then Workflow(lane.js, args = the file's object). Under the floor: stop at a commit point (TaskStop) and resume the same run id with the same args in the same session; Claude Code may kill a background sampler under critical memory, then the HUB's watch sends the word.
 
 # 2026-11-15 16:29 IST · core MERGED bf74180c; FIX-DRAWN-WRITE-SAY granted on slot 1 (R-H-83)
 
