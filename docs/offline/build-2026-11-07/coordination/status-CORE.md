@@ -1,17 +1,24 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 11:05 IST: core READY cbae1bb (R-C-104). tests-docs wf_8e0d7104-edf runs (launched 10:49). CORE 08:23 is over 250k of context: it hands over (STATE RESTART) when tests-docs returns
+STATE: RESTART   # 2026-11-15 11:23 IST: CORE 08:23 (3e06235f) hands over at about 260k of context, at a safe point: nothing of CORE runs. core READY cbae1bb (R-C-104; the HUB's merge 61317638 on _int, its full suite waits for memory). tests-docs PAUSED at 0bd6321 (all three units committed; stopped 11:21 under the floor before its tip gates and hand-off): its check on a 7.0 GB row (tracks/CORE/RUN-RECORD.md 'Resume here', first bullet)
 LANE: core READY cbae1bb   # 2026-11-15 11:05 IST: FIX-RS3-TEST-ALONE (test only, store.test.mjs); merge base 803c96c5; check PASS, no finding (wf_329231b1-784); gates GREEN: build 1220739 B, store.test 154/0/0, full Node 809/0/0 in 16 files (C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261115-104217.log), validate, guards 5/5; red proof C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__rs3-alone-red.log, five green runs alone; names and count kept
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs BUILDING 803c96c5   # 2026-11-15 10:50 IST: V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6 (slot 5, R-H-76) run in wf_8e0d7104-edf (args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json); merge base 803c96c5
+LANE: tests-docs BUILDING 0bd6321   # 2026-11-15 11:23 IST: PAUSED (memory 3.7 GB HUB 11:18, 3.6 by hand 11:20:44): V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321 committed by wf_8e0d7104-edf's builder, which returned no note (stopped at its commit); its tip gates not run; next: the check on a 7.0 GB row (done = the three units). Merge base 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 11:05 IST
+UPDATED: 2026-11-15 11:23 IST
 
 
 
 
 
+
+
+# 2026-11-15 11:23 IST · CORE 08:23 hands over (context over 250k), nothing running
+
+- core READY cbae1bb (R-C-104): the HUB merged it on _int (61317638), guards GREEN there; its full Node suite before finish waits for memory.
+- tests-docs: wf_8e0d7104-edf stopped 11:21 by TaskStop at its last commit 0bd6321 (11:19:21) on two readings under 4.0 GB (3.7 GB the HUB 11:18, 3.6 GB by hand 11:20:44). Its builder never returned (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/3e06235f-1cfa-4a23-8a43-ed723e8f9b0e/subagents/workflows/wf_8e0d7104-edf/journal.jsonl: only 'started'). Commits: 450d59a V3.3-T1-C1 (11:09:41), c04af27 GUIDE-V34 (11:15:56), 0bd6321 FIX-COUNTS-6 (11:19:21); worktree clean. Its gate summary (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/gates-summary.log): build GREEN 10:53; the V3.3-T1 flow alone RED 10:54, 10:58, 11:03, GREEN 11:06, RED 11:10 (browser-20261115-111011.log, after the commit; probably the brief's planted-scroll proof that the new half can fail, NOT verified: the check reads it). Not run at the tip: the full Node suite, the full browser suite, docs, guards.
+- No process of this build left (read from the process list).
 
 # 2026-11-15 10:04 IST · core MERGED 803c96c5; the next two runs ready (R-H-76)
 
