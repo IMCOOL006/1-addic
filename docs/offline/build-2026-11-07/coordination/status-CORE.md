@@ -1,18 +1,26 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 12:13 IST: CORE 11:24 (43b081a3). Nothing of CORE runs. QUIET running on _int from 12:10 (R-H-80): no gate, build, browser run or lane start from CORE until QUIET: done and the tag offline-v3.4. Preparing core FIX-REMOVE-STALE-ROWS (slot 1, flagged): unit note and args, light work only
-LANE: core MERGED cbae1bb   # 2026-11-15 11:26 IST: FIX-RS3-TEST-ALONE merged 61317638, trunk c71a1519 (R-H-78); slot 1 free until FIX-REMOVE-STALE-ROWS after the tag offline-v3.4
+STATE: WAITING   # 2026-11-15 12:32 IST: CORE 11:24 (43b081a3). Nothing of CORE runs. TAG offline-v3.4 = 8bd439b2 (R-H-81). core FIX-REMOVE-STALE-ROWS ready to launch on slot 1 (args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json, wf_sim SIM OK plain and --fix); waits for a row at 7.0 GB or more (2.8 GB at 12:32:27 by hand)
+LANE: core NEW cdf7252   # 2026-11-15 12:32 IST: FIX-REMOVE-STALE-ROWS (flagged, two reviewers; R-H-74, R-H-81): build/core and its worktree fast-forwarded cbae1bb -> cdf7252 (the trunk tip, records only above the tag), clean; unit note tracks/CORE/briefs/core/FIX-REMOVE-STALE-ROWS.md; launch on a 7.0 GB row
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 12:13 IST
+UPDATED: 2026-11-15 12:32 IST
 
 
 
 
 
 
+
+# 2026-11-15 12:32 IST · TAG offline-v3.4; FIX-REMOVE-STALE-ROWS prepared
+
+- R-H-81 (HUB 09:56 by message): QUIET GREEN on _int at 8bd439b2 (build 1220739 B, Node 809/0/0 in 16 files, validate, guards 5/5, browser 33/0/0, docs); TAG offline-v3.4 = 8bd439b2, pushed 12:24:50. core FIX-REMOVE-STALE-ROWS may start on slot 1 on a row at 7.0 GB or more by hand (3.8 GB at 12:26 by the HUB; the HUB sends the word on its watch's next row). FIX-DRAWN-WRITE-SAY follows it.
+- build/core and C:/Users/ruchi/1-addic-wt/core fast-forwarded cbae1bb -> cdf7252 (merge --ff-only; is-ancestor checked; clean; offline/src unchanged since cbae1bb).
+- The unit note: wf_52e993b5-bf3's scout read the code and returned its findings, but its Write was refused ('parent bg session hasn't isolated yet'), and it did not bypass the guard. The two verifiers had started on a note that did not exist, and memory read 2.8 GB at 12:27:57, so the run was stopped (TaskStop 12:29). The chat checked the scout's claims against store.js (the stale refusal compares only the lock row: :117-121, :210, :395; remove's open branch from memory: :801-804; setLock from state.rows: :697, :707; replaceAll by design, unread from memory: :551, :571; the test helpers freshStore :2086, fakeIndexedDB :2094, beforeWrite :2107) and wrote tracks/CORE/briefs/core/FIX-REMOVE-STALE-ROWS.md (5248 B). There was no separate verify pass of the note: the lane's check and two reviewers judge the build.
+- Args: tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json (FIX-RS3-TEST-ALONE's shape; flagged; files store.js, store.test.mjs; units and batches + [FIX-REMOVE-STALE-ROWS]; done + FIX-RS3-TEST-ALONE; start 'build'; base, diffFrom, now and the laneNote's 'trunk tip FILL' left 'FILL'). wf_sim SIM OK plain (builder 11991 of 12288 B; check, two reviewers, report) and --fix (fix:check 11807, fix:review 11916).
+- The launch: on the HUB's word of a 7.0 GB row and a hand sample at 7.0 or more: the trunk tip again (fast-forward if it moved), fill base, diffFrom and the laneNote's FILL with it and now with the clock, wf_sim, lane.js with the file's object.
 
 # 2026-11-15 12:13 IST · tests-docs MERGED 3a466262; FREEZE offline-v3.4; QUIET running (R-H-80)
 
