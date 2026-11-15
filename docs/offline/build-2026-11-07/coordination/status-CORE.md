@@ -1,15 +1,22 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 09:15 IST: core's round 2 resumed 09:13 (wf_5b0dfd67-b3c, resumeFromRunId, the r5 args as filed; the fixer cached: RS3 5f32f03) on the HUB's 09:13 row 12.2 GB and 12.2 GB by hand 09:13:38: the two re-checks run (contracts; safety of RS3), then the report update
-LANE: core REVIEWING 5f32f03   # 2026-11-15 09:11 IST: NOT READY: round 2's fixer done (RS3 5f32f03; its gates GREEN: build 1220739 B, store.test, full Node 809/0/0 in 16 files, validate, guards 5/5, browser 32/0/0); both re-checks cut by the stop at 09:09 (0.3 GB); they run on the resume of wf_5b0dfd67-b3c (the fixer cached) on a 7.0 GB row. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 09:31 IST: core READY 5f32f03 for the HUB (R-C-103): round 2 done, both re-checks every finding FIXED; two new LOWs named (N1 a drawn write's refusal said as the person's; N2 the RS3 test must stay last); default no third round, N1 and N2 named follow-ups after the merge with FIX-REMOVE-STALE-ROWS. Nothing of CORE runs
+LANE: core READY 5f32f03   # 2026-11-15 09:31 IST: merge base 63eb8257; the review's two fix rounds done; re-checks wf_081b79a7-0d1 and wf_5b0dfd67-b3c: RC1, RC2, RC3, RS1, RS2, RS3 FIXED; gates at 5f32f03 GREEN (build 1220739 B, store.test 154/0/0, full Node 809/0/0 in 16 files, validate, guards 5/5, browser 32/0/0). Open: C1, C2 (the HUB's), RS1 lock case (owner question 1, default built), new N1 and N2 (R-C-103: default follow-ups after the merge)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 09:15 IST
+UPDATED: 2026-11-15 09:31 IST
 
 
 
+
+
+# 2026-11-15 09:31 IST · core READY 5f32f03 (R-C-103)
+
+- wf_5b0dfd67-b3c returned READY (resumed 09:13, the fixer cached): recheck:contracts RC1, RC2, RC3 FIXED; recheck:safety RS3, RS1, RS2 FIXED (saved C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__round2-rechecks.json). Two new LOWs: N1 (safety; a page's drawn write refused as stale is said as the person's lost change; not caused by 5f32f03; store.js + actions.js) and N2 (contracts; the RS3 e2e test leaks the full Content, must stay last). Named in R-C-103 with the default: no third round, follow-ups FIX-DRAWN-WRITE-SAY and FIX-RS3-TEST-ALONE after the merge.
+- contracts/core.md's last section carries the kept line's lifetime (the fixer's paragraph). The lane report tracks/CORE/lane-reports/core.md (18748 B) written by the run's report stage.
+- Next: the HUB merges core alone, or says 'third round'. After the merge: FIX-REMOVE-STALE-ROWS (granted by R-H-74; flagged, two reviewers), and N1/N2 if the HUB names them.
 
 # 2026-11-15 09:11 IST · round 2 stopped under the floor after the fixer's hand-off; the re-checks wait
 
