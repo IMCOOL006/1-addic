@@ -3498,6 +3498,137 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     await two.S.resetAll();
     assert.equal(two.S.status().unreadable, 0);
   });
+
+  // FIX-REMOVE-STALE-ROWS: two tabs on one storage. A plain row another tab saved changes no lock row, so the stale
+  // refusal lets a rewrite of the whole notebook through: lock.remove(), lock.set() and replaceAll's unread rows come
+  // from the stored rows, read just before the write, never from this tab's memory.
+  const storedIds = (idb, n) => idb.rows(n).map((r) => r.id).sort();
+  const asStored = (c) => JSON.stringify(Array.from(c));
+  test('FIX-REMOVE-STALE-ROWS: removing the PIN keeps a row another tab saved', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    const B = freshStore(); // the same file in a second tab, opened after the PIN was set
+    await B.load();
+    assert.equal(await B.lock.unlock('2468'), true);
+    await B.commit('t', (d) => { d.put('events', { id: 'b1', type: 'CravingLogged', note: MARK + '-other' }); });
+    assert.equal(A.view.get('events', 'b1'), null, 'control: this tab has not read the other tab’s row');
+    assert.equal(await A.lock.remove('2468'), true);
+    assert.deepEqual(storedIds(idb, 'events'), ['b1', 'e1', 'e2'], 'the other tab’s row is still stored');
+    assert.equal(idb.rows('events').find((r) => r.id === 'b1').note, MARK + '-other', 'plain now, as every row without a PIN');
+    assert.ok(!idb.rows('meta').some((r) => r.key === 'lock'), 'the PIN is gone');
+    assert.equal(A.view.get('events', 'b1').note, MARK + '-other', 'this tab now holds it');
+    assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
+  });
+
+  test("FIX-REMOVE-STALE-ROWS: removing the PIN keeps another tab's unread row", async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    // Another tab stored a row that will not open with this key (here e1's seal under another id); this tab never read it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'e1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    assert.equal(await A.lock.remove('2468'), true);
+    assert.deepEqual(storedIds(idb, 'events'), ['e1', 'e2', 'u1'], 'every row still stored');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(idb.rows('events').find((r) => r.id === 'e1').enc, undefined, 'beside the rows that opened, plain now');
+    assert.ok(!idb.rows('meta').some((r) => r.key === 'lock'), 'the PIN is gone');
+    assert.equal(A.view.count('events'), 2, 'this tab holds the rows that open');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
+  });
+
+  test('FIX-REMOVE-STALE-ROWS: setting a PIN keeps a row another tab saved, sealed', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    const B = freshStore();
+    await B.load();
+    await B.commit('t', (d) => { d.put('events', { id: 'b1', type: 'CravingLogged', note: MARK + '-other' }); });
+    assert.equal(A.view.get('events', 'b1'), null, 'control: this tab has not read the other tab’s row');
+    await A.lock.set('2468');
+    assert.deepEqual(storedIds(idb, 'events'), ['b1', 'e1', 'e2'], 'the other tab’s row is still stored');
+    assert.ok(!idb.dump().includes(MARK), 'and sealed: no plain row beside the lock');
+    assert.equal(A.view.get('events', 'b1').note, MARK + '-other', 'this tab now holds it');
+    // The PIN changed: the stored rows are sealed under the old key, so they open with it before they are sealed again.
+    const C = freshStore();
+    await C.load();
+    assert.equal(await C.lock.unlock('2468'), true);
+    await C.commit('t', (d) => { d.put('events', { id: 'c1', type: 'CravingLogged', note: MARK + '-third' }); });
+    assert.equal(A.view.get('events', 'c1'), null, 'control: this tab has not read it');
+    await A.lock.set('1357');
+    assert.deepEqual(storedIds(idb, 'events'), ['b1', 'c1', 'e1', 'e2'], 'kept through the PIN change too');
+    assert.ok(!idb.dump().includes(MARK), 'still sealed');
+    A.lock.lockNow();
+    assert.equal(await A.lock.unlock('1357'), true);
+    assert.equal(A.status().unreadable, 0, 'every row opens with the new PIN: none left under the old key');
+    assert.equal(A.view.get('events', 'c1').note, MARK + '-third');
+    assert.equal(A.view.get('events', 'b1').note, MARK + '-other');
+    assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
+    // A row another tab stored that will not open with this key (c1's seal under another id) is kept as it is stored,
+    // and this tab counts it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'c1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    await A.lock.set('2468');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
+  });
+
+  test("FIX-REMOVE-STALE-ROWS: an import keeps another tab's unread row", async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    // Another tab stored a row that will not open with this key (here e1's seal under another id); this tab never read it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'e1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    await A.replaceAll({ app: '1-addic', schemaVersion: 1, stores: { events: [{ id: 'n1', type: 'CravingLogged', note: 'from the backup' }] } });
+    assert.deepEqual(storedIds(idb, 'events'), ['n1', 'u1'], 'every other row replaced, as an import does');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
+  });
+
+  test('FIX-REMOVE-STALE-ROWS: a lock changed between the read and the write is refused as stale', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    const B = freshStore();
+    await B.load();
+    assert.equal(await B.lock.unlock('2468'), true);
+    // The other tab's PIN change, made ahead and held back: it lands as this tab's rewrite opens, after its read.
+    const held = async (change) => { const before = idb.copy(); await change(); const after = idb.copy(); idb.restore(before); return after; };
+    const changed = await held(() => B.lock.set('1357'));
+    idb.beforeWrite = () => idb.restore(changed);
+    await assert.rejects(A.lock.remove('2468'), (e) => e.code === 'LOCKED' && e.stale === true);
+    assert.equal(idb.beforeWrite, null, 'control: the change landed at the write');
+    assert.equal(asStored(idb.copy()), asStored(changed), 'nothing of this tab written: the other tab’s PIN and rows stand');
+    assert.equal(A.status().locked, true, 'this tab takes the stored lock');
+    assert.equal(await A.lock.unlock('1357'), true);
+    const changed2 = await held(() => B.lock.set('9753'));
+    idb.beforeWrite = () => idb.restore(changed2);
+    await assert.rejects(A.lock.set('2222'), (e) => e.code === 'LOCKED' && e.stale === true);
+    assert.equal(idb.beforeWrite, null, 'control: the change landed at the write');
+    assert.equal(asStored(idb.copy()), asStored(changed2), 'the PIN set here wrote nothing');
+    assert.equal(await A.lock.unlock('9753'), true);
+    assert.equal(A.view.count('events'), 2);
+    assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
+  });
 });
 
 /* ── boot.js (the CORE chat's ruling Q2): a start failure still shows urgent help ─────────────── */
