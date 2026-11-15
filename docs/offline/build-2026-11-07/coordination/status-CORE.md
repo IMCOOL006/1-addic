@@ -1,18 +1,26 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-15 11:23 IST: CORE 08:23 (3e06235f) hands over at about 260k of context, at a safe point: nothing of CORE runs. core READY cbae1bb (R-C-104; the HUB's merge 61317638 on _int, its full suite waits for memory). tests-docs PAUSED at 0bd6321 (all three units committed; stopped 11:21 under the floor before its tip gates and hand-off): its check on a 7.0 GB row (tracks/CORE/RUN-RECORD.md 'Resume here', first bullet)
-LANE: core READY cbae1bb   # 2026-11-15 11:05 IST: FIX-RS3-TEST-ALONE (test only, store.test.mjs); merge base 803c96c5; check PASS, no finding (wf_329231b1-784); gates GREEN: build 1220739 B, store.test 154/0/0, full Node 809/0/0 in 16 files (C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261115-104217.log), validate, guards 5/5; red proof C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__rs3-alone-red.log, five green runs alone; names and count kept
+STATE: WAITING   # 2026-11-15 11:35 IST: CORE 11:24 (43b081a3-0031-4428-a618-613fbb52e6d0) read in from Resume here 11:23 and R-H-78. Nothing of CORE runs. core MERGED cbae1bb (61317638). tests-docs PAUSED 0bd6321: its check (start 'check', args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6-check.json, wf_sim SIM OK with and without --fix) starts on a row at 7.0 GB or more with a hand sample at 7.0 or more (5.1 GB at 11:35:24 by hand)
+LANE: core MERGED cbae1bb   # 2026-11-15 11:26 IST: FIX-RS3-TEST-ALONE merged 61317638, trunk c71a1519 (R-H-78); slot 1 free until FIX-REMOVE-STALE-ROWS after the tag offline-v3.4
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs BUILDING 0bd6321   # 2026-11-15 11:23 IST: PAUSED (memory 3.7 GB HUB 11:18, 3.6 by hand 11:20:44): V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321 committed by wf_8e0d7104-edf's builder, which returned no note (stopped at its commit); its tip gates not run; next: the check on a 7.0 GB row (done = the three units). Merge base 803c96c5
+LANE: tests-docs BUILDING 0bd6321   # 2026-11-15 11:35 IST: PAUSED, all three units committed (V3.3-T1-C1 450d59a, GUIDE-V34 c04af27, FIX-COUNTS-6 0bd6321); the 11:10 red = the planted-scroll proof by the builder's progress note (tests-docs__progress.md; the check confirms it); next: the check on a 7.0 GB row (done = the three units). Merge base 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 11:23 IST
+UPDATED: 2026-11-15 11:35 IST
 
 
 
 
 
 
+
+# 2026-11-15 11:35 IST · CORE 11:24 (43b081a3) reads in; the tests-docs check waits for a 7.0 GB row
+
+- Read: this file, tracks/CORE/RUN-RECORD.md 'Resume here' (11:23), status-HUB.md (BASE c71a1519; slots core 1 and tests-docs 5 stand; no QUIET running), R-H-78 (core cbae1bb MERGED 61317638; tests-docs: the check, then READY, merged alone; then FREEZE, QUIET, TAG offline-v3.4). ListAgents 11:35: CORE 08:23 (3e06235f) not listed, gone; HUB 09:56 live.
+- The 11:10 red of 'a same-path SOS render keeps focus in the page' (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261115-111011.log, '32 -> 0, want 32'): the builder's progress note (C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/tests-docs__progress.md) names it the red probe (scrollTo(0,0) injected after the render, not committed; copy tests-docs__v33t1c1-red-probe.log; file restored). Read from the note, not re-run; the check confirms it. The worktree is clean at 0bd6321.
+- lane.js's checker sees neither the laneNote nor the priorNote on start 'check', so the check's word went into the brief's new last section (tracks/CORE/briefs/tests-docs.md, 12810 B): the three units' notes, the 11:10 red, the tip gates owed, the counts as told (Node 809 in 16 files, store.test 154, 33 flows), the floor rule.
+- Args: tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6-check.json (the FIX-COUNTS-6 file with start 'check', done + the three units, session and Claude-Session 43b081a3, laneNote 'CORE 11:24' and one sentence for a fix round, priorNote as Resume here said). wf_sim SIM OK plain and --fix (the fix builder's prompt 12185 of 12288 B).
+- Memory 5.1 GB at 11:35:24 by hand: under the start row. The launch: on the HUB's word of a row at 7.0 GB or more and a hand sample at 7.0 or more: refill now, wf_sim, lane.js with the file's object. On return: LANE: tests-docs READY <tip> (merge base 803c96c5, the check's verdict, the counts) and an R-C to the HUB.
 
 # 2026-11-15 11:23 IST · CORE 08:23 hands over (context over 250k), nothing running
 

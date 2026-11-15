@@ -67,3 +67,11 @@ SOS never gated or interrupted (assert no overlay in #/sos; status page keeps #s
 
 ### Open questions (defaults)
 1. Browser-test count in the guide: default the numbers of the last green gate on the merged file at write time. 2. Boot-time bound: default 3 runs on this machine, max x 2. 3. Contrast reds: default the test names the pair, is not skipped, and goes to the token owner by outbox; the lane does not edit styles.css. 4. V-01t before V-01b: default tests skip by name until the route exists.
+
+## For the check of 2026-11-15 (CORE 11:24): V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6
+
+- Merge base 803c96c5; commits 450d59a V3.3-T1-C1, c04af27 GUIDE-V34, 0bd6321 FIX-COUNTS-6 (the builder of wf_8e0d7104-edf, stopped under the floor at its last commit, no hand-off note). Each unit's "done when" is its note beside this brief: tests-docs/V3.3-T1-C1.md, tests-docs/GUIDE-V34.md, tests-docs/FIX-COUNTS-6.md.
+- The 11:10 red of 'a same-path SOS render keeps focus in the page' (C:/Users/ruchi/1-addic-wt/_logs/gates/tests-docs/browser-20261115-111011.log, copy tests-docs__v33t1c1-red-probe.log): by the builder's progress note (C:/Users/ruchi/1-addic-wt/_logs/reports/tests-docs/tests-docs__progress.md) the planted-scroll proof, `window.scrollTo(0, 0)` injected after the render and never committed. The check confirms it: the committed flow has no such line, and the flow alone is GREEN at the tip. Name it so in the check notes. A red flow at the tip is a finding, never a baseline.
+- The tip gates owed (none ran at 0bd6321): build; the flow alone (--grep); the full Node suite (809 pass 0 fail in 16 files; store.test.mjs 154); the full browser suite (33 flows) on a row at 7.0 GB or more, else say it was not run; docs; guards; the territory.
+- The counts in FIX-COUNTS-6 stand as the HUB told them (R-H-78): Node 809 in 16 files, browser 33 flows from the tip's own run. core's cbae1bb (merged 61317638) kept every name and the count, so the branch need not take the trunk.
+- Memory: under 4.0 GB on two readings a minute apart, stop before the next suite and say which gates were left. One browser run at a time.
