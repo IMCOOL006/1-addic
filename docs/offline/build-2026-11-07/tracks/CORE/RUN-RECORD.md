@@ -360,7 +360,14 @@
 
 - 10.3 GB at 13:21:44 (sampler) and 13:21:53 (hand). build/core and its worktree ff cdf7252 -> c4d609d, clean. Args filled; wf_sim SIM OK plain and --fix. Run wf_140080f1-59f, journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl. R-C-107.
 
+## 2026-11-15 14:36 IST · core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 (the floor)
+
+- Built d55a102 (four commits), check PASS (C1 LOW), reviews RS1 RS2 RC1 RC2 (all LOW); stopped 14:33 at the start of the review fix round, nothing uncommitted. Results copied to C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__FRSR-review-findings-20261115.json. Fact: a status-file insert anchored on '# 2026-11-15 13:23 IST' matched the STATE line's own comment and split it (9fd629ca); anchor dated sections on '
+# <stamp> ·' at a line start.
+
 ## Resume here
+
+- **(2026-11-15 14:36 IST) STATE WAITING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d55a102** (wf_140080f1-59f stopped 14:33 under the floor as its review fix round began; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl). Resume in this session on two readings a minute apart at 4.5 GB or more: Workflow(scriptPath lane.js, resumeFromRunId 'wf_140080f1-59f', the args file unchanged). If this session is gone: lane.js from the args with start 'check', done + FIX-REMOVE-STALE-ROWS, priorNote = tip d55a102 and the five LOWs (C1, RS1, RS2, RC1, RC2; the findings copy above), on a 7.0 GB row. On READY: `LANE: core READY <tip>`, R-C with the counts (store.test 154 -> 158 + the fix round's, npm test 809 -> 813 + n) and the guide's two-tab words for tests-docs (RS2), contracts/core.md line. Then FIX-DRAWN-WRITE-SAY.
 
 - **(2026-11-15 13:23 IST) STATE BUILDING, CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RUNS: wf_140080f1-59f** (lane.js start 'build', args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json as filed, merge base c4d609d; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl). Alive only while session eac6e6a0 ('CORE 13:03') is listed; if it is gone, relaunch from the same args with done + the builder's committed work and priorNote from build/core's last commit. On return READY: `LANE: core READY <tip>`, R-C to the HUB with the counts (store.test 154 + n, npm test 809 + n) for tests-docs, the contract line into contracts/core.md (lock.set and lock.remove rewrite from the stored rows), the lane report tracks/CORE/lane-reports/core.md. Then FIX-DRAWN-WRITE-SAY (N1).
 

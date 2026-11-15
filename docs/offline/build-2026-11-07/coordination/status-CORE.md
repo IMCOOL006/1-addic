@@ -1,24 +1,32 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 13:58 IST · a dip under the floor while the builder ran its gates; not paused
-
-- The sampler: two readings under 4.0 GB (about 13:54:30 and 13:55:29, 3.2 GB), 2.8 by hand at 13:55:37, then 4.6 at 13:56:53, back over the floor.
-- The builder of wf_140080f1-59f had committed FIX-REMOVE-STALE-ROWS in four commits on build/core (1c4d3f4 lock.remove from the stored rows, 1a33ea5 lock.set seals the stored rows, 88aa02d an import keeps the unread rows as stored, d55a102 the test: lock.set keeps and counts another tab's unread row; the last at 13:54) and was in its tip gates (build, validate, guards done; store.test running at 13:55:39). Nothing uncommitted but the generated offline/1-addic.html.
-- Not stopped: the next commit point had passed, the reading was back over 4.0 within the minute, and only the light store.test ran. The watch is re-armed: two readings under 4.0 again stop the run (TaskStop) at that point, and the check is relaunched with start 'check' on a 7.0 GB row.
-
-# 2026-11-15 13:23 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RUNS on slot 1: wf_140080f1-59f (launched 13:22 on 10.3 GB by the sampler at 13:21:44 and 10.3 by hand at 13:21:53), merge base c4d609d
-LANE: core BUILDING c4d609d   # 2026-11-15 13:23 IST: FIX-REMOVE-STALE-ROWS (flagged: lane-builder-flagged, the check, two reviewers, re-checks, report), wf_140080f1-59f; build/core and its worktree fast-forwarded cdf7252 -> c4d609d (the trunk tip, records only above the tag), clean; wf_sim SIM OK plain (builder 11994 of 12288 B) and --fix
+STATE: WAITING   # 2026-11-15 14:36 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 under the floor (wf_140080f1-59f stopped 14:33 as its review fix round began, nothing uncommitted); resumes from the run's journal on two readings at 4.5 GB or more
+LANE: core PAUSED d55a102   # 2026-11-15 14:36 IST: FIX-REMOVE-STALE-ROWS built (1c4d3f4, 1a33ea5, 88aa02d, d55a102), check PASS (C1 LOW), both reviews returned (RS1, RS2, RC1, RC2, all LOW); stopped under the floor as the review fix round began, before any edit; resume = Workflow(lane.js, resumeFromRunId wf_140080f1-59f, the same args)
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 13:58 IST
+UPDATED: 2026-11-15 14:36 IST
 
 
 
 
 
 
+
+# 2026-11-15 14:36 IST · core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 (the floor)
+
+- The sampler: two readings under 4.0 GB, 2.9 at 14:31:37; 2.6 by hand at 14:31:59; the HUB 13:18 by message: 2.7, 2.6, 2.6 at 14:31-14:32:15, the pause rule applies (no browser gate and no full Node suite under 4.0; pause at the next commit; resume on my own reading over the floor).
+- wf_140080f1-59f had returned: the builder (done FIX-REMOVE-STALE-ROWS, shas 1c4d3f4 1a33ea5 88aa02d d55a102, tip d55a102); the check PASS at d55a102 with one LOW (C1: the commit trailers); review:contracts (RC1 LOW: remove's test stores no unread row; RC2 LOW: the new test name's apostrophe U+2019 against the units record); review:safety (RS1 LOW: the read-to-write gap, named in a comment at store.js:707-708 and :811-812, for a later unit; RS2 LOW: the guide's two-tab words, owed to tests-docs at READY). The fix:review builder had started with no edit (git status: only the generated offline/1-addic.html) and no commit after d55a102. Stopped by TaskStop at 14:33.
+- Every result is in the journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/eac6e6a0-2817-42d1-9503-7437d33a6857/subagents/workflows/wf_140080f1-59f/journal.jsonl; a copy of the results: C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__FRSR-review-findings-20261115.json.
+- Resume (this session): on two readings a minute apart at 4.5 GB or more, Workflow(scriptPath lane.js, resumeFromRunId 'wf_140080f1-59f', the same args file unchanged): the build, the check and the two reviews come back cached; the review fix round runs live (only the named findings, one commit each), then the re-checks and the report.
+- If this session is gone (resume is same-session only): relaunch lane.js from the args with start 'check', done + FIX-REMOVE-STALE-ROWS, priorNote = the tip d55a102 and the five LOWs by id from the findings copy, on a 7.0 GB row; the check and the two reviewers judge again.
+
+# 2026-11-15 13:58 IST · a dip under the floor while the builder ran its gates; not paused
+
+- The sampler: two readings under 4.0 GB (about 13:54:30 and 13:55:29, 3.2 GB), 2.8 by hand at 13:55:37, then 4.6 at 13:56:53, back over the floor.
+- The builder of wf_140080f1-59f had committed FIX-REMOVE-STALE-ROWS in four commits on build/core (1c4d3f4 lock.remove from the stored rows, 1a33ea5 lock.set seals the stored rows, 88aa02d an import keeps the unread rows as stored, d55a102 the test: lock.set keeps and counts another tab's unread row; the last at 13:54) and was in its tip gates (build, validate, guards done; store.test running at 13:55:39). Nothing uncommitted but the generated offline/1-addic.html.
+- Not stopped: the next commit point had passed, the reading was back over 4.0 within the minute, and only the light store.test ran. The watch is re-armed: two readings under 4.0 again stop the run (TaskStop) at that point, and the check is relaunched with start 'check' on a 7.0 GB row.
 
 # 2026-11-15 13:23 IST · core FIX-REMOVE-STALE-ROWS launched (wf_140080f1-59f)
 
