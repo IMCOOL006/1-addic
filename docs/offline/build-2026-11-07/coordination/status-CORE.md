@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 09:09 IST: core's round 2 (wf_5b0dfd67-b3c) STOPPED on the HUB's 09:09 word: 0.3 GB at 09:08 on two readings (another program's TypeScript checks 4.7 and 4.4 GB, vmmemWSL 3.9 GB, untouched). RS3 committed 5f32f03 (nothing lost). Relaunch from the r5 args with done and priorNote from 5f32f03 (the fixer's gates and both re-checks left) on a hand sample at 7.0 GB or more, on the HUB's row
+STATE: BUILDING   # 2026-11-15 09:15 IST: core's round 2 resumed 09:13 (wf_5b0dfd67-b3c, resumeFromRunId, the r5 args as filed; the fixer cached: RS3 5f32f03) on the HUB's 09:13 row 12.2 GB and 12.2 GB by hand 09:13:38: the two re-checks run (contracts; safety of RS3), then the report update
 LANE: core REVIEWING 5f32f03   # 2026-11-15 09:11 IST: NOT READY: round 2's fixer done (RS3 5f32f03; its gates GREEN: build 1220739 B, store.test, full Node 809/0/0 in 16 files, validate, guards 5/5, browser 32/0/0); both re-checks cut by the stop at 09:09 (0.3 GB); they run on the resume of wf_5b0dfd67-b3c (the fixer cached) on a 7.0 GB row. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 09:11 IST
+UPDATED: 2026-11-15 09:15 IST
 
 
 
