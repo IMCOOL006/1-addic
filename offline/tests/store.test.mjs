@@ -3523,6 +3523,27 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
   });
 
+  test("FIX-REMOVE-STALE-ROWS: removing the PIN keeps another tab's unread row", async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    await A.lock.set('2468');
+    // Another tab stored a row that will not open with this key (here e1's seal under another id); this tab never read it.
+    const c = idb.copy();
+    const bad = { id: 'u1', enc: JSON.parse(JSON.stringify(c.get('events').find((r) => r.id === 'e1').enc)) };
+    c.get('events').push(bad);
+    idb.restore(c);
+    assert.equal(A.status().unreadable, 0, 'control: this tab has not read it');
+    assert.equal(await A.lock.remove('2468'), true);
+    assert.deepEqual(storedIds(idb, 'events'), ['e1', 'e2', 'u1'], 'every row still stored');
+    assert.deepEqual(idb.rows('events').find((r) => r.id === 'u1'), bad, 'the unread row kept as it is stored');
+    assert.equal(idb.rows('events').find((r) => r.id === 'e1').enc, undefined, 'beside the rows that opened, plain now');
+    assert.ok(!idb.rows('meta').some((r) => r.key === 'lock'), 'the PIN is gone');
+    assert.equal(A.view.count('events'), 2, 'this tab holds the rows that open');
+    assert.equal(A.status().unreadable, 1, 'this tab now counts it');
+  });
+
   test('FIX-REMOVE-STALE-ROWS: setting a PIN keeps a row another tab saved, sealed', async () => {
     const idb = globalThis.indexedDB = fakeIndexedDB();
     const A = freshStore();
