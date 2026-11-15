@@ -1,12 +1,20 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 07:16 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 (r4 args) launched 07:14 on R-H-72/73 with 8.1 GB by hand. tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 339ea20   # 2026-11-15 07:16 IST: wf_081b79a7-0d1 (lane.js, r4 args, start 'review', check and both reviews carried): the fixer's hand-off only, then both re-checkers live over 63eb8257..339ea20, then the report update. Merge base 63eb8257
+STATE: BUILDING   # 2026-11-15 07:52 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 returned (lane.js state RED: RS1 and RC3 PARTLY, 1 new QUESTION); CORE settles the question with a Node-only probe before READY. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core REVIEWING 339ea20   # 2026-11-15 07:52 IST: both re-checks back (wf_081b79a7-0d1): RC1 FIXED 634dbfb, RC2 FIXED f000c8c, RS2 FIXED 2af44ef; RS1 PARTLY (the no-lock half FIXED 339ea20; the lock half the owner question with its default built); RC3 PARTLY (no code; the contract words CORE writes); NEW QUESTION (safety, traced not run): after the RS1 fix a render-time mark (A.markTipShown on Today) may clear the kept line one frame after it shows when another tab erased the notebook. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 07:16 IST
+UPDATED: 2026-11-15 07:52 IST
+
+
+# 2026-11-15 07:52 IST · core's re-checks returned (wf_081b79a7-0d1): three FIXED, two PARTLY, one new question
+
+- Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. fix:review:core returned its hand-off (done RC1 634dbfb, RS2 2af44ef, RC2 f000c8c, RS1 339ea20; blocked RC3 = CONTRACT CHANGE, RS1 lock case = OWNER QUESTION; for_the_chat (1)-(6)). recheck:contracts: RC1 FIXED, RC2 FIXED, RC3 PARTLY (the words hold against store.js at 339ea20; open until contracts/core.md and core__units.md carry them; one wording fix: 'when the outermost bulk ends, if a notice was held'). recheck:safety: RS2 FIXED, RS1 PARTLY (no-lock half FIXED; lock half the owner default, 'the lane owes nothing more unless the owner picks (b) or (c)'), its gates at 339ea20 GREEN: build 1220067 B (build-20261115-073132.log), store.test 152/0/0 (test-20261115-073136.log), --full 807/0/0 in 16 files (test-20261115-074025.log), validate, guards 5/5 (validate-20261115-073904.log, guards-20261115-073906.log), all under C:/Users/ruchi/1-addic-wt/_logs/gates/core/; browser not re-run (the fixer's browser-20261115-041104.log GREEN 32/0/0 at the same tip).
+- NEW QUESTION (safety re-check, no severity, traced in the code, not run): ui-core.js:947 with ui-today.js:468-475: a PIN set, Today open, another tab erases the notebook; a Today save is refused (toast and kept line); the store render draws Today from the empty notebook; tipCard may call A.markTipShown, whose write goes through (no lock stored), and heard() then clears the line one frame after it shows. Before 339ea20 heard() never cleared the line.
+- The lane report was rewritten by the run (tracks/CORE/lane-reports/core.md, 18528 B; state RED, open 2).
+- Next: settle the question by a Node-only probe (no browser, no full suite; memory 4.4 GB at 07:51); then RC3's words into contracts/core.md, the owner question (RS1 lock case, with the re-checkers' questions) in outbox-CORE.md, and READY or a fix by name.
 
 
 # 2026-11-15 07:16 IST · core's two re-checks relaunched (wf_081b79a7-0d1, r4 args)

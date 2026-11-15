@@ -339,7 +339,13 @@
 
 - HUB 07:13 (9.1 GB), by hand 8.1 GB 07:14. The live fixer prompt equals wf_sim's. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. The floor: two readings a minute apart under 4.0 GB (R-H-73).
 
+## 2026-11-15 07:52 IST · wf_081b79a7-0d1 returned: RC1, RC2, RS2 FIXED; RS1, RC3 PARTLY; one new question
+
+- As the 2026-11-15 07:52 IST section of status-CORE.md says. The fixer's for_the_chat (1) holds RC3's contract words (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl); (2) the RS1 lock-case owner question with its default (a).
+
 ## Resume here
+
+- **(2026-11-15 07:52 IST) STATE BUILDING, CORE 05:24. core REVIEWING 339ea20: wf_081b79a7-0d1 finished** (journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl). Left: the new question settled by a Node-only probe; RC3's words into contracts/core.md (from for_the_chat (1), with the re-checker's wording fix); the owner question in outbox-CORE.md; then READY (or a fix by name if the probe reproduces).
 
 - **(2026-11-15 07:16 IST) STATE BUILDING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 running** (lane.js, r4 args; the fixer's hand-off only, then both re-checkers, then report-update). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. A fresh CORE does not relaunch it while this session is listed by `claude agents`; if the session is gone, the run died with it: relaunch from the r4 args (refill now, session, the laneNote's chat name and Claude-Session). On return: as the 06:41 section of status-CORE.md says.
 
