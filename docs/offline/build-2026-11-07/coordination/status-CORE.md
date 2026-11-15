@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 10:50 IST: two runs live in CORE 08:23 (3e06235f; about 245k of context: the hand-over is planned at the first point where nothing runs): core FIX-RS3-TEST-ALONE wf_329231b1-784 (cbae1bb built, its check running); tests-docs V3.3-T1-C1 + GUIDE-V34 + FIX-COUNTS-6 wf_8e0d7104-edf (launched 10:49 on the HUB's 10:47 row 7.9 GB, 7.7 GB by hand 10:48)
-LANE: core CHECKING cbae1bb   # 2026-11-15 10:50 IST: FIX-RS3-TEST-ALONE built (cbae1bb, store.test.mjs only); the check runs in wf_329231b1-784; merge base 803c96c5
+STATE: BUILDING   # 2026-11-15 11:05 IST: core READY cbae1bb (R-C-104). tests-docs wf_8e0d7104-edf runs (launched 10:49). CORE 08:23 is over 250k of context: it hands over (STATE RESTART) when tests-docs returns
+LANE: core READY cbae1bb   # 2026-11-15 11:05 IST: FIX-RS3-TEST-ALONE (test only, store.test.mjs); merge base 803c96c5; check PASS, no finding (wf_329231b1-784); gates GREEN: build 1220739 B, store.test 154/0/0, full Node 809/0/0 in 16 files (C:/Users/ruchi/1-addic-wt/_logs/gates/core/test-20261115-104217.log), validate, guards 5/5; red proof C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__rs3-alone-red.log, five green runs alone; names and count kept
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs BUILDING 803c96c5   # 2026-11-15 10:50 IST: V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6 (slot 5, R-H-76) run in wf_8e0d7104-edf (args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json); merge base 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 10:50 IST
+UPDATED: 2026-11-15 11:05 IST
 
 
 
