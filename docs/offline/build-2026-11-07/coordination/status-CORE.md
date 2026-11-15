@@ -1,5 +1,5 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 13:07 IST: CORE 13:04 (eac6e6a0-2817-42d1-9503-7437d33a6857) read in on R-H-82 (CORE 11:24 gone at low memory, nothing lost). core FIX-REMOVE-STALE-ROWS ready on slot 1 (args filled for this chat; base/diffFrom = the trunk tip at launch); 3.2 GB free at 13:06:13 by hand: waits for a row at 7.0 GB or more
+STATE: WAITING   # 2026-11-15 13:07 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857) read in on R-H-82 (CORE 11:24 gone at low memory, nothing lost). core FIX-REMOVE-STALE-ROWS ready on slot 1 (args filled for this chat; base/diffFrom = the trunk tip at launch); 3.2 GB free at 13:06:13 by hand: waits for a row at 7.0 GB or more
 LANE: core NEW cdf7252   # 2026-11-15 13:07 IST: FIX-REMOVE-STALE-ROWS (flagged, two reviewers; R-H-74, R-H-81, R-H-82): build/core and its worktree at cdf7252, clean; the trunk tip 5ad23ef (records only above cdf7252, offline/ unchanged): fast-forward at launch; launch on a 7.0 GB row
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
@@ -14,10 +14,10 @@ UPDATED: 2026-11-15 13:07 IST
 
 
 
-# 2026-11-15 13:07 IST · CORE 13:04 reads in (R-H-82)
+# 2026-11-15 13:07 IST · CORE 13:03 reads in (R-H-82)
 
-- CORE 13:04, session eac6e6a0-2817-42d1-9503-7437d33a6857, started on the launcher after CORE 11:24 (43b081a3) was gone at low memory (R-H-82; its last step 12:32, nothing ran, nothing lost).
-- The args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json now carry this chat's session, 'CORE 13:04' in the laneNote and its Claude-Session id; base, diffFrom, now and the laneNote's FILL are filled at launch.
+- CORE 13:03, session eac6e6a0-2817-42d1-9503-7437d33a6857, started on the launcher after CORE 11:24 (43b081a3) was gone at low memory (R-H-82; its last step 12:32, nothing ran, nothing lost).
+- The args tracks/CORE/args/args_v3_core_FIX-REMOVE-STALE-ROWS.json now carry this chat's session, 'CORE 13:03' in the laneNote and its Claude-Session id; base, diffFrom, now and the laneNote's FILL are filled at launch.
 - The trunk tip 5ad23ef (origin the same), records only above cdf7252. build/core and its worktree at cdf7252, clean.
 - Memory 3.2 GB free at 13:06:13 by hand: under the floor; no start. A watch emits the first row at 7.0 GB or more; then a hand sample, the fast-forward, fill, wf_sim, lane.js.
 
