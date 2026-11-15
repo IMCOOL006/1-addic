@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 08:28 IST: CORE 08:23 (3e06235f-1cfa-4a23-8a43-ed723e8f9b0e, session 39, read in from 'Resume here' of 08:21). core's review fix round 2 (RS3 only, args r5) runs: wf_5b0dfd67-b3c launched 08:26 on the hand rows 08:25:13 7.7 GB and 08:25:49 8.5 GB (R-H-74). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 339ea20   # 2026-11-15 08:28 IST: NOT READY: round 2 of the review's fixes (RS3 only, ui-core.js and store.test.mjs; then the safety re-check of RS3 and the contracts re-check) runs as wf_5b0dfd67-b3c (slot 1, merge base 63eb8257, args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json; wf_sim --fix SIM OK). RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md
+STATE: BUILDING   # 2026-11-15 08:51 IST: core's round 2 (wf_5b0dfd67-b3c) runs on: RS3 committed 5f32f03 at 08:49:59 (one commit, Claude-Session 3e06235f); memory back over the floor at the commit (7.6 GB 08:50:05, 7.1 GB 08:50:48 by hand; under it 08:39-08:40, 3.0 and 3.5 GB), so the run was not stopped: the fixer's gates, then both re-checks (R-H-74's 08:50 word: the pause lifted)
+LANE: core REVIEWING 5f32f03   # 2026-11-15 08:51 IST: NOT READY: round 2 (RS3 only) committed 5f32f03 (ui-core.js, store.test.mjs); the fixer's gates and the safety re-check of RS3 and the contracts re-check run in wf_5b0dfd67-b3c (slot 1, merge base 63eb8257, args r5). RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 08:28 IST
+UPDATED: 2026-11-15 08:51 IST
 
 
 
