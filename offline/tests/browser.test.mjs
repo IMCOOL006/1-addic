@@ -269,10 +269,26 @@ const focusAt = (page) => page.evaluate((sel) => {
   const main = document.querySelector(sel);
   return {
     hash: location.hash, tag: a ? a.tagName : null, isMain: !!main && a === main, inMain: !!(a && main && main.contains(a)),
-    isBody: a === document.body, scrollY: Math.round(window.scrollY),
-    maxY: Math.max(0, Math.round(document.documentElement.scrollHeight - window.innerHeight)),
+    isBody: a === document.body, scrollY: Math.round(window.scrollY), innerH: window.innerHeight,
+    maxY: Math.max(0, Math.round((document.scrollingElement || document.documentElement).scrollHeight - window.innerHeight)),
   };
 }, HOOKS.main);
+
+// Scrolls the page below the top before a same-path render (V3.3-T1-C1), so a render that scrolled to the top fails the
+// no-scroll check. A page that does not scroll at 390 x 844 gets a shorter viewport for this flow only (still 390 wide).
+async function scrollBelowTop(page, where) {
+  for (const h of [0, 600, 440, 320]) {
+    if (h) await page.setViewportSize({ width: 390, height: h });
+    const m = await focusAt(page);
+    if (m.maxY < 40) continue;
+    await page.evaluate((y) => window.scrollTo(0, y), Math.min(120, m.maxY - 10));
+    await page.waitForTimeout(50);
+    const s = await focusAt(page);
+    assert.ok(s.scrollY > 0, `control: the page is scrolled below the top before ${where} (scrollY ${s.scrollY})`);
+    return s;
+  }
+  return assert.fail(`the page cannot scroll even at 390 x 320 before ${where}, so the no-scroll check would prove nothing`);
+}
 
 async function tabIntoMain(page, where) {
   for (let i = 0; i < 40; i += 1) {
@@ -283,38 +299,60 @@ async function tabIntoMain(page, where) {
   return assert.fail(`Tab never reached a control inside ${HOOKS.main} (${where})`);
 }
 
-async function keepsFocus(page, how, hash, where) {
-  const before = await tabIntoMain(page, where);
+async function keepsFocus(page, t, how, hash, where) {
+  await tabIntoMain(page, where);
+  const before = await scrollBelowTop(page, where);
   await routeBy(page, how);
   await page.waitForFunction((h) => location.hash === h, hash, { timeout: 5000 });
   const s = await focusAt(page);
   assert.ok(!s.isBody, `focus fell to body after ${where} (${hash})`);
   assert.ok(s.isMain || s.inMain, `focus stays on ${HOOKS.main} or inside it after ${where} (on ${s.tag})`);
-  assert.equal(s.scrollY, Math.min(before.scrollY, s.maxY), `no scroll after ${where} (${before.scrollY} -> ${s.scrollY})`);
+  // The page after the render may be shorter (the browser clamps scrollY to its maxY). When it does not scroll at all,
+  // the top is the only place it can be: that one check is skipped by name, never passed silently.
+  if (s.maxY === 0) {
+    t.diagnostic(`skip: page does not scroll (the check "no scroll after ${where}", maxY 0 at 390 x ${s.innerH})`);
+    return;
+  }
+  const want = Math.min(before.scrollY, s.maxY);
+  assert.ok(Math.abs(s.scrollY - want) <= 1, `no scroll after ${where} (${before.scrollY} -> ${s.scrollY}, want ${want})`);
 }
 
-flow('a same-path SOS render keeps focus in the page', { routes: ['sos'] }, async ({ page }) => {
-  // A: the craving page and its '?from=lock' twin, by Back and Forward, focus inside #main before each.
+flow('a same-path SOS render keeps focus in the page', { routes: ['sos'] }, async ({ page }, t) => {
+  // The browser's own scroll restoration on Back and Forward is turned off in this page (test side only), so a scroll
+  // seen after a render is the app's render, never the browser putting back an entry's old position.
+  await page.evaluate(() => { history.scrollRestoration = 'manual'; });
+  // A: the craving page and its '?from=lock' twin, by Back and Forward, focus inside #main and the page scrolled below
+  // the top before each.
   await F.go(page, '#/sos/craving');
   await F.go(page, '#/sos/craving?from=lock');
   await F.waitRoute(page, 'sos');
-  await keepsFocus(page, 'back', '#/sos/craving', 'Back to the craving page');
-  await keepsFocus(page, 'forward', '#/sos/craving?from=lock', 'Forward to the craving page from the lock');
-  await keepsFocus(page, 'back', '#/sos/craving', 'Back again');
-  await keepsFocus(page, 'forward', '#/sos/craving?from=lock', 'Forward again');
+  await keepsFocus(page, t, 'back', '#/sos/craving', 'Back to the craving page');
+  await keepsFocus(page, t, 'forward', '#/sos/craving?from=lock', 'Forward to the craving page from the lock');
+  await keepsFocus(page, t, 'back', '#/sos/craving', 'Back again');
+  await keepsFocus(page, t, 'forward', '#/sos/craving?from=lock', 'Forward again');
   // B: the slip page and its '?logged=1' render, by a hash edit and Back.
   await F.go(page, '#/sos/slip');
-  await keepsFocus(page, '#/sos/slip?logged=1', '#/sos/slip?logged=1', 'the slip page with ?logged=1');
-  await keepsFocus(page, 'back', '#/sos/slip', 'Back to the slip page');
+  // The '?logged=1' page is short: the smallest viewport gives its render the best chance to scroll.
+  await page.setViewportSize({ width: 390, height: 320 });
+  await keepsFocus(page, t, '#/sos/slip?logged=1', '#/sos/slip?logged=1', 'the slip page with ?logged=1');
+  await keepsFocus(page, t, 'back', '#/sos/slip', 'Back to the slip page');
   // Control: a path change with focus inside #main still focuses #main and scrolls to the top.
   await F.go(page, '#/sos/craving');
   const before = await tabIntoMain(page, 'the craving page before a path change');
-  if (before.maxY > 0) await page.evaluate((y) => window.scrollTo(0, y), Math.min(200, before.maxY));
+  const scrolls = before.maxY > 0;
+  if (scrolls) {
+    await page.evaluate((y) => window.scrollTo(0, y), Math.min(200, before.maxY));
+    await page.waitForTimeout(50);
+    const down = await focusAt(page);
+    assert.ok(down.scrollY > 0, `control: the craving page is scrolled below the top before a path change (scrollY ${down.scrollY})`);
+  }
   await routeBy(page, '#/sos');
   await page.waitForFunction(() => location.hash === '#/sos', null, { timeout: 5000 });
   const s = await focusAt(page);
   assert.ok(s.isMain, `a path change focuses ${HOOKS.main} (on ${s.tag})`);
-  assert.equal(s.scrollY, 0, 'a path change scrolls to the top');
+  // The scroll-to-top check proves nothing on a page that cannot scroll: skipped by name, never passed silently.
+  if (scrolls) assert.equal(s.scrollY, 0, 'a path change scrolls to the top');
+  else t.diagnostic('skip: page does not scroll (the check "a path change scrolls to the top", maxY 0)');
 });
 
 /* ── Today, Learn ── */
