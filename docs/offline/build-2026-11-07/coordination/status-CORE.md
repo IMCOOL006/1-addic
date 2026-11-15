@@ -1,12 +1,12 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 10:19 IST: core FIX-RS3-TEST-ALONE runs (wf_329231b1-784, launched 10:19 on the HUB's 10:18 row 10.1 GB and 9.0 GB by hand 10:19:21; slot 1; merge base 803c96c5; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/3e06235f-1cfa-4a23-8a43-ed723e8f9b0e/subagents/workflows/wf_329231b1-784/journal.jsonl). tests-docs (slot 5) starts on the next row at 7.0 GB or more
-LANE: core BUILDING 803c96c5   # 2026-11-15 10:19 IST: FIX-RS3-TEST-ALONE (test only, not flagged, one check) runs in wf_329231b1-784 (args tracks/CORE/args/args_v3_core_FIX-RS3-TEST-ALONE.json); 5f32f03 merged 803c96c5
+STATE: BUILDING   # 2026-11-15 10:50 IST: two runs live in CORE 08:23 (3e06235f; about 245k of context: the hand-over is planned at the first point where nothing runs): core FIX-RS3-TEST-ALONE wf_329231b1-784 (cbae1bb built, its check running); tests-docs V3.3-T1-C1 + GUIDE-V34 + FIX-COUNTS-6 wf_8e0d7104-edf (launched 10:49 on the HUB's 10:47 row 7.9 GB, 7.7 GB by hand 10:48)
+LANE: core CHECKING cbae1bb   # 2026-11-15 10:50 IST: FIX-RS3-TEST-ALONE built (cbae1bb, store.test.mjs only); the check runs in wf_329231b1-784; merge base 803c96c5
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
-LANE: tests-docs MERGED 2be56e6   # 2026-11-15 10:04 IST: next run ready (slot 5, R-H-76): V3.3-T1-C1, GUIDE-V34 (the not-saved line; the known issue of NEEDS YOU 8 with its one-tab workaround), FIX-COUNTS-6 (Node 809 in 16 files, store.test 154, browser 33 flows); worktree at 803c96c5
+LANE: tests-docs BUILDING 803c96c5   # 2026-11-15 10:50 IST: V3.3-T1-C1, GUIDE-V34, FIX-COUNTS-6 (slot 5, R-H-76) run in wf_8e0d7104-edf (args tracks/CORE/args/args_v3_tests-docs_FIX-COUNTS-6.json); merge base 803c96c5
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 10:19 IST
+UPDATED: 2026-11-15 10:50 IST
 
 
 

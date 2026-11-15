@@ -82,7 +82,7 @@
     "GUIDE-V34": "GUIDE-V34 (tests-docs, docs only, not flagged; R-H-64, R-H-76). The guide says, small and true: what the app says when a change is not saved because the notebook changed in another tab and what to do; and the known issue of removing the PIN with two tabs open, with its one-tab workaround. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/GUIDE-V34.md: read it before you build.]",
     "FIX-COUNTS-6": "FIX-COUNTS-6 (tests-docs, docs only, not flagged; R-H-76). The count lines true on the trunk 803c96c5: npm test 809 checks in 16 files, browser 33 flows; the guide .md and .docx with them. [The whole note: C:/Users/ruchi/1-addic/docs/offline/build-2026-11-07/tracks/CORE/briefs/tests-docs/FIX-COUNTS-6.md: read it before you build.]"
   },
-  "laneNote": "THIS RUN (CORE 08:23, 2026-11-15, slot 5, R-H-76): one batch of three units in this order: V3.3-T1-C1 (test side), GUIDE-V34 (the guide .md), FIX-COUNTS-6 (the count lines, last, then the .docx rebuilt once); cut from the trunk 803c96c5. Name each by its batch id in done; one commit per unit naming it. Gates through gates.py, once each at the tip: build, the V3.3-T1 flow alone (--grep), the full Node suite (809/0/0 in 16 files), one full browser run (33/0/0) if memory is at 7.0 GB or more then (else a static count, said so), docs, guards. 'Claude-Session: 3e06235f-1cfa-4a23-8a43-ed723e8f9b0e' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No source file under offline/src. Original words only, never a word of the source book; grade 6-8, person-first. Test names are failure identities: keep every name exactly. One browser run at a time. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so.",
+  "laneNote": "THIS RUN (CORE 08:23, 2026-11-15, slot 5, R-H-76): one batch of three units in this order: V3.3-T1-C1 (test side), GUIDE-V34 (the guide .md), FIX-COUNTS-6 (the count lines, last, then the .docx rebuilt once); cut from the trunk 803c96c5. Name each by its batch id in done; one commit per unit naming it. Gates through gates.py, once each at the tip: build, the V3.3-T1 flow alone (--grep), the full Node suite (809/0/0 in 16 files), one full browser run (33/0/0) if memory is at 7.0 GB or more then (else a static count, said so), docs, guards. 'Claude-Session: 3e06235f-1cfa-4a23-8a43-ed723e8f9b0e' goes on every commit, whatever the Co-Authored-By line says. Message from a file, add by explicit path, never git add -A. offline/1-addic.html is generated: never commit its rebuild. No source file under offline/src. Original words only, never a word of the source book; grade 6-8, person-first. Test names are failure identities: keep every name exactly. One browser run at a time. Under 4.0 GB free on two readings a minute apart: stop at your next commit, say so. Core's FIX-RS3-TEST-ALONE (build/core cbae1bb, not merged when this run starts) keeps every test name and the count; if the trunk shows it merged before FIX-COUNTS-6 and it changed a count, write the counts from the tree that holds both.",
   "done": [
     "U-34",
     "U-37",
@@ -105,7 +105,7 @@
   ],
   "base": "803c96c531bee221787e29dc2ada6affb9abc2ac",
   "session": "3e06235f-1cfa-4a23-8a43-ed723e8f9b0e",
-  "now": "FILL",
+  "now": "2026-11-15 10:49 IST",
   "diffFrom": "803c96c531bee221787e29dc2ada6affb9abc2ac",
   "slot": 5,
   "sliceRun": false,
