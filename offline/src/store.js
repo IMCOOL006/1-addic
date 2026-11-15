@@ -692,21 +692,29 @@ const Store = (function () {
       if (typeof pin !== 'string' || pin.length < 4 || pin.length > 64) throw fail('BAD_PIN', 'A PIN needs 4 to 64 characters.');
       if (!subtle()) throw fail('NO_CRYPTO', 'A PIN cannot be set in this browser.');
       const epoch = state.epoch;
-      // The rows are taken before the first wait: a lock while the key is derived empties state.rows, and a clear
-      // write of an empty set would erase every row (RC1, RS2).
-      const rows = state.rows;
-      const kept = keep(rows, state.unread);
+      // The key that opens the stored rows (null without a PIN; the old key when the PIN changes) is taken before the
+      // first wait: a lock while the new key is derived empties state.key.
+      const was = state.key;
       const salt = random(16);
       const key = await derive(pin, salt, ITERATIONS);
       const row = {
         key: 'lock', salt: b64(salt), iterations: ITERATIONS, check: await seal(key, 'meta', 'lock', CHECK),
         autoLockMin: minutes(opts && opts.autoLockMin), setAt: new Date().toISOString(),
       };
-      const puts = (await sealAll(rows, key)).concat(kept.puts);
+      // The stored rows, read just before they are sealed, not this tab's memory: another open tab may have saved a
+      // row since this tab read them, and a plain row changes no lock row (FIX-REMOVE-STALE-ROWS). Read from storage,
+      // a lock while the key is derived (it empties state.rows) never leads to a clear write of an empty set (RC1, RS2).
+      // The gap that stays: a plain row another tab saves between this read and the write is still lost (the backend
+      // keeps no row version); a lock changed in it is refused as stale.
+      const d = await decode(await state.backend.readAll(), was);
+      const kept = keep(d.rows, d.unread);
+      const puts = (await sealAll(d.rows, key)).concat(kept.puts);
       puts.push(['meta', 'lock', row]);
       await write({ clear: true, puts, dels: [] });
       state.lock = row;
       if (epoch !== state.epoch) return; // locked meanwhile: it opens with the new PIN
+      state.rows = d.rows;
+      state.unread = kept.left;
       opened(key);
       try { await takeIn(key); } catch (e) { /* tried again at the next unlock */ }
       notify('lock');

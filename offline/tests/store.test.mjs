@@ -3523,6 +3523,36 @@ describe('store (U-04): the person’s data, sealed with a PIN', () => {
     assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
   });
 
+  test('FIX-REMOVE-STALE-ROWS: setting a PIN keeps a row another tab saved, sealed', async () => {
+    const idb = globalThis.indexedDB = fakeIndexedDB();
+    const A = freshStore();
+    await A.load();
+    await addRows(A);
+    const B = freshStore();
+    await B.load();
+    await B.commit('t', (d) => { d.put('events', { id: 'b1', type: 'CravingLogged', note: MARK + '-other' }); });
+    assert.equal(A.view.get('events', 'b1'), null, 'control: this tab has not read the other tab’s row');
+    await A.lock.set('2468');
+    assert.deepEqual(storedIds(idb, 'events'), ['b1', 'e1', 'e2'], 'the other tab’s row is still stored');
+    assert.ok(!idb.dump().includes(MARK), 'and sealed: no plain row beside the lock');
+    assert.equal(A.view.get('events', 'b1').note, MARK + '-other', 'this tab now holds it');
+    // The PIN changed: the stored rows are sealed under the old key, so they open with it before they are sealed again.
+    const C = freshStore();
+    await C.load();
+    assert.equal(await C.lock.unlock('2468'), true);
+    await C.commit('t', (d) => { d.put('events', { id: 'c1', type: 'CravingLogged', note: MARK + '-third' }); });
+    assert.equal(A.view.get('events', 'c1'), null, 'control: this tab has not read it');
+    await A.lock.set('1357');
+    assert.deepEqual(storedIds(idb, 'events'), ['b1', 'c1', 'e1', 'e2'], 'kept through the PIN change too');
+    assert.ok(!idb.dump().includes(MARK), 'still sealed');
+    A.lock.lockNow();
+    assert.equal(await A.lock.unlock('1357'), true);
+    assert.equal(A.status().unreadable, 0, 'every row opens with the new PIN: none left under the old key');
+    assert.equal(A.view.get('events', 'c1').note, MARK + '-third');
+    assert.equal(A.view.get('events', 'b1').note, MARK + '-other');
+    assert.equal(A.view.get('profile', 'me').name, 'Asha ' + MARK);
+  });
+
   test('FIX-REMOVE-STALE-ROWS: a lock changed between the read and the write is refused as stale', async () => {
     const idb = globalThis.indexedDB = fakeIndexedDB();
     const A = freshStore();
