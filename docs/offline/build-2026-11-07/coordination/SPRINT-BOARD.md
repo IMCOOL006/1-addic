@@ -6,7 +6,7 @@ NEXT (the HUB, 2026-11-15 12:26 IST): CORE builds the two-tab fix (FIX-REMOVE-ST
 
 Rewritten by the HUB with `tools/board.py` from the status files and `coordination/board-notes.md`, at every event and at least every two hours; nobody edits this file by hand. The first three lines are for the owner (the state, NEEDS YOU, NEXT); the rest is the record. STATE words on the chats' status files: NEW, BUILDING, READY, RESTART, HANDOVER, PAUSED; the HUB adds BASE-READY, INTEGRATING, QUIET.
 
-Rewritten 2026-11-15 14:35 IST by `board.py`.
+Rewritten 2026-11-15 14:50 IST by `board.py`.
 
 ## For the owner (more)
 
@@ -28,27 +28,27 @@ FORECAST (23:07): offline-v1.1 about 00:30-01:30 if the SOS round and its two re
 
 ## The HUB
 
-- STATE: BUILDING — 2026-11-15 14:35 IST: core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 under the floor (CORE 13:03 stopped wf_140080f1-59f at 14:33 as its review fix round began, nothing uncommitted; built in four…
+- STATE: BUILDING — 2026-11-15 14:49 IST: core FIX-REMOVE-STALE-ROWS RESUMED 14:48 from the run's journal (CORE 13:03, wf_140080f1-59f; on the HUB's line at 14:47, 6.4 GB by the watch, 6.6 by hand; 11.2 GB at 14:49)…
 - BASE: 8bd439b2 (TAG offline-v3.4, 2026-11-15 12:26 IST; the trunk tip carries program records only on top of it; fixes toward offline-v3.5 cut from the trunk tip at their start, merge base that tip; the tags offline-v3.3 e167f71a, offline-v3.4 8bd439b2; lanes: core cbae1bb, tests-docs 0bd6321 in the tag). Earlier: 8bd439b2 (the trunk tip after the tests-docs merge 3a466262, 2026-11-15 12:10 IST; FREEZE offline-v3.4 here; fixes after it cut from the trunk tip at their start, merge base that tip; lanes: core cbae1bb, tests-docs 0bd6321 in the trunk; the code before it e167f71a = TAG offline-v3.3). Earlier: c71a1519 (the trunk tip after the core merge 61317638, 2026-11-15 11:26 IST; fixes toward offline-v3.4 cut from the trunk tip at their start, merge base that tip; lanes: core cbae1bb, tests-docs 2be56e6 in the trunk; the code under offline/src is still that of 803c96c5; the code before it e167f71a = TAG offline-v3.3). Earlier: 803c96c5 (the trunk tip after the core merge 803c96c5, 2026-11-15 09:56 IST; fixes toward offline-v3.4 cut from the trunk tip at their start, merge base that tip; lanes: core 5f32f03, tests-docs 2be56e6 in the trunk; the code before it e167f71a = TAG offline-v3.3). Earlier: 5d251cbb (the trunk tip after the tests-docs merge 5d251cbb, 2026-11-14 22:52 IST; the code under offline/src is still the tag offline-v3.3 e167f71a; fixes toward offline-v3.4 cut from the trunk tip at their start, merge base that tip; core's flagged run of 22:43 has merge base 63eb8257; lanes: tests-docs 2be56e6, core 11f2f70 in the trunk). Earlier: e167f71a (the trunk tip = TAG offline-v3.3, after the tests-docs merge e167f71a, 2026-11-14 16:53 IST; fixes toward offline-v3.4 cut from the trunk tip at their start, merge base that tip; the tags offline-v3.2 c5dc3743, offline-v3.3 e167f71a; lanes: content 8b61575, actions-sos f2b0023, core 11f2f70, tests-docs be7c546). Earlier: 98627557 (the trunk tip after the core merge 98627557, 2026-11-14 16:11 IST; lanes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the code before it c5dc3743 = TAG offline-v3.2). Earlier: f216bb27 (the trunk tip after the actions-sos merge f388ed15, 2026-11-14 14:45 IST; lanes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the code before it c5dc3743 = TAG offline-v3.2). Earlier: b55ab119 (the trunk tip after the content merge 64967784, 2026-11-14 12:27 IST; lanes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the code before it c5dc3743 = TAG offline-v3.2). Earlier: c5dc3743 (the trunk tip = TAG offline-v3.2, 2026-11-09 20:44 IST; fixes toward offline-v3.3 cut from the trunk tip at their start, merge base that tip; the tags offline-v3.1 903016cc, offline-v3.2 c5dc3743; lanes: tests-docs 69f2b72, actions-sos fb3966b, core 49c788f, content cd17758 (V-10b after the owner's I6), workbook-settings b76d4f3, learn a494fa7, game-tutorials a3f0bf7, engine 97ac73a, today-track 670df19; the base worktree C:/Users/ruchi/1-addic-wt/_base stays at BASE-READY 655516dc, read-only)
 - BASE-READY: 2026-11-07 07:15 655516dc
 - TRACKS-ALLOWED: CORE SCREENS   # both tracks RESUMED in the launcher 2026-11-14 12:02 IST (--resume-track CORE, --resume-track SCREENS; R-H-58 on R-O-11); the launcher starts a fresh chat of each at its first pass with no chat of the track reading live (afc0ccd2, reopened today, reads live for the HUB track only). Earlier: both PAUSED 2026-11-09 21:44:22 (R-H-56); SCREENS paused 2026-11-08 01:17-...; SCREENS added 2026-11-07 16:03
 - QUIET: done   # offline-v3.4: 12:11:33-12:23:01 IST 2026-11-15 on _int at 8bd439b2 (FREEZE 12:10), gates.py --lane hub, gate by gate in the foreground, each exit 0, every GATE line read, no FAIL line: build GREEN 1220739 B (build-20261115-121134.log); test GREEN 809 pass 0 fail 0 skip in 16 files (test-20261115-121211.log); validate GREEN (validate-20261115-121137.log); guards GREEN 5/5 all checks ran (guards-20261115-121138.log); browser GREEN 33 pass 0 fail 0 skip (browser-20261115-121725.log); docs GREEN exit 0 (docs-20261115-121139.log); logs under _logs/gates/hub/. Earlier: done   # offline-v3.3: 16:13:19-16:28:50 IST 2026-11-14 on _int at 98627557 (FREEZE 16:12), gates.py --lane hub --full, exit 0, every GATE line read, no FAIL line: build GREEN 1216361 B; test GREEN 787 pass 0 fail 0 skip in 16 files; validate GREEN; guards GREEN 5/5 all checks ran; browser GREEN 32 pass 0 fail 0 skip; docs GREEN exit 0 (logs _logs/gates/hub/*-20261114-1613* to -1627*). Nothing baselined. Next: FIX-COUNTS-5 (tests-docs slot 5, docs only: 763 -> 787 Node checks, 32 flows unchanged), then TAG offline-v3.3. Earlier: offline-v3.2 QUIET done 20:38:58-20:41:40 IST 2026-11-09 on _int at aac18546, exit 0: build 1213207 B; Node 763/0/0 in 16 files; validate; guards 5/5; browser 32/0/0; docs exit 0
 - HOURS: T=06:25 IST 2026-11-07 | BASE-READY 07:15 | TAG offline-v1.0 11:40 | parked 19:11-22:04 | TAG offline-v1.1 2026-11-08 01:59 | V3 cut 02:25; R-O-6 added 03:03 | V3 FREEZE 11:30 | QUIET 11:33-11:43 GREEN | TAG offline-v3.0 11:55 IST (60dffe33) | the weekly-limit gap 2026-11-08 12:51 to 2026-11-09 14:30 | tier 2: fourteen merges 14:48-18:15 on 9 Nov | FREEZE offline-v3.1 18:10 IST 2026-11-09 (dcabd906) | QUIET 18:10-18:13 GREEN | FIX-COUNTS-3 merged 18:15 | TAG offline-v3.1 18:15 IST (903016cc) | hand-off note 18:20 | the lanes continue toward offline-v3.2 on fixes by name; the launcher stays up | v3.2 FREEZE 2026-11-09 20:37 | QUIET 20:39-20:41 GREEN | TAG offline-v3.2 20:44 | parked 2026-11-11 21:15 on R-O-10 | resumed 2026-11-14 11:56 on R-O-11 (continue v3.3): the tracks woken 12:02; FREEZE offline-v3.3 when the three fixes and V-10b are merged, then QUIET and the tag | FREEZE offline-v3.3 16:12 IST 2026-11-14 at 98627557 | QUIET 16:13-16:28 GREEN | TAG offline-v3.3 16:50 IST (e167f71a) | FREEZE offline-v3.4 12:10 IST 2026-11-15 at 8bd439b2 | QUIET 12:11-12:23 GREEN | TAG offline-v3.4 12:24 IST (8bd439b2)
-- UPDATED: 2026-11-15 14:35 IST
+- UPDATED: 2026-11-15 14:49 IST
 
 ## Chats
 
 | Chat | Session | State | Context | Last step |
 |---|---|---|---|---|
-| HUB | 0a5aa1b1 (launcher-started 2026-11-15 13:18) | BUILDING — 2026-11-15 14:35 IST: core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 under the floor (CORE 13:03 stopped wf_140080f1-59f… | 130k | 2026-11-15 14:35 IST |
-| CORE | eac6e6a0 (launcher-started 2026-11-15 13:03) | WAITING — 2026-11-15 14:36 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS PAUSED at d55a102… | 145k | 2026-11-15 14:36 IST |
+| HUB | 0a5aa1b1 (launcher-started 2026-11-15 13:18) | BUILDING — 2026-11-15 14:49 IST: core FIX-REMOVE-STALE-ROWS RESUMED 14:48 from the run's journal (CORE 13:03, wf_140080f1-59f; on… | 136k | 2026-11-15 14:49 IST |
+| CORE | eac6e6a0 (launcher-started 2026-11-15 13:03) | REVIEWING — 2026-11-15 14:48 IST: CORE 13:03 (eac6e6a0-2817-42d1-9503-7437d33a6857). core FIX-REMOVE-STALE-ROWS RESUMED… | 154k | 2026-11-15 14:48 IST |
 | SCREENS | ce57dcb1 (launcher-started 2026-11-14 12:59) | WAITING — 2026-11-14 17:04 IST: TAG offline-v3.3 = e167f71a (HUB, 16:50; R-H-62). SCREENS 12:59 (ce57dcb1) live with its watch.… | 168k | 2026-11-14 17:04 IST |
 
 ## Lanes (10)
 
 | Lane | Chat | Tier | Flagged | Slot | State | Note |
 |---|---|---|---|---|---|---|
-| `core` | CORE | 1 | yes | slot 1 | PAUSED | GRANTED 2026-11-15 09:56 IST toward offline-v3.4 (R-H-76): FIX-RS3-TEST-ALONE by name, test only (store.test.mjs: the RS3 end-to-end test waits for its… |
+| `core` | CORE | 1 | yes | slot 1 | REVIEWING | GRANTED 2026-11-15 09:56 IST toward offline-v3.4 (R-H-76): FIX-RS3-TEST-ALONE by name, test only (store.test.mjs: the RS3 end-to-end test waits for its… |
 | `engine` | CORE | 1 |  | slot 2 | MERGED | GRANTED 2026-11-08 03:23 IST for V3 tier 1 (R-O-6, R-H-40: V-40 the slice: Engine.questLine / unlocked / dailyObjectives / growth / run on PLAN-V3.md section… |
 | `actions-sos` | CORE | 1 | yes | slot 3 | MERGED | GRANTED 2026-11-14 12:02 IST for offline-v3.3 (R-H-58 on R-O-11): the C1 Back path (R-H-54) by name, flagged: two reviewers before its READY; fast-forward… |
 | `learn` | CORE | 1 |  | slot ? | MERGED | GRANTED slot=9 free from 2026-11-07 22:09 IST: FIX-RS9 READY…; 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete; tip a494fa7 |
@@ -181,7 +181,7 @@ Slots allowed: 2 (2026-11-14 17:14 IST: toward offline-v3.4, by hand 7.9 GB free
 
 ## Machine
 
-- Free memory 2.0 GB of 31.8 GB at 2026-11-15 14:34 IST; claude 31, node 27 processes; 0 slots by the rule (lane-widening.md).
+- Free memory 2.8 GB of 31.8 GB at 2026-11-15 14:44 IST; claude 31, node 15 processes; 0 slots by the rule (lane-widening.md).
 - The launcher loop: running (pid 31844); its last launch: HUB 0a5aa1b1 at 2026-11-15 13:18.
 
 ## Files of the build
