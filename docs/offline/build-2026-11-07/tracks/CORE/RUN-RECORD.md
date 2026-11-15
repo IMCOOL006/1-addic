@@ -330,7 +330,14 @@
 
 - 8.8 GB by hand 06:41:24 (HUB's 06:32 message, R-H-72). lane.js with the r3 args (now 06:41); the live fixer prompt equals wf_sim's dump. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_51966708-1a2/journal.jsonl.
 
+## 2026-11-15 06:59 IST · wf_51966708-1a2 stopped under the floor; its fixer's note lost to invalid JSON
+
+- The fixer failed at 06:55 after five unparsable StructuredOutput calls (an unquoted shared_touched value); the re-checks started with no note; the 06:54 row 3.4 GB: TaskStop 06:56. No commit. The first 2048 bytes kept in _logs/reports/core/core__v34b-handoff-raw.txt. Args r4 = r3 plus one JSON sentence in the laneNote (wf_sim OK, 12240 of 12288 bytes).
+- Fact: the transcript keeps only the first 2048 bytes of an unparsable StructuredOutput input, so a failed note cannot be recovered whole from the agent's jsonl.
+
 ## Resume here
+
+- **(2026-11-15 06:59 IST) STATE WAITING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core PAUSED 339ea20.** wf_51966708-1a2 was stopped at 06:56 (dead; do not resume it: nothing in it completed). **Next, on the first row at 7.0 GB or more with a hand sample at 7.0 or more:** fill now (and session, the laneNote's 'CORE 05:24' and Claude-Session if a fresh CORE) in tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r4.json, wf_sim --fix, lane.js with it. Return -> as the 06:41 section of status-CORE.md says.
 
 - **(2026-11-15 06:44 IST) STATE BUILDING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_51966708-1a2 running** (lane.js, r3 args, start 'review'; the fixer's hand-off only, then both re-checkers, then report-update). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_51966708-1a2/journal.jsonl. A fresh CORE does not relaunch it while this session is listed by `claude agents`; if this session is gone, the run died with it: relaunch from the r3 args (refill now, session, the laneNote's chat name and Claude-Session). On return: as the 06:41 section of status-CORE.md says.
 

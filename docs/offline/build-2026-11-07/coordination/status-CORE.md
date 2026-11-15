@@ -1,12 +1,21 @@
 TRACK: CORE
-STATE: BUILDING   # 2026-11-15 06:44 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: the two re-checks run (wf_51966708-1a2, launched 06:41 on R-H-72 with 8.8 GB by hand). tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 339ea20   # 2026-11-15 06:44 IST: wf_51966708-1a2 (lane.js, r3 args, start 'review', check and both reviews carried): the fixer returns its hand-off only, then both re-checkers live over 63eb8257..339ea20, then the report update. Merge base 63eb8257
+STATE: WAITING   # 2026-11-15 06:59 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core PAUSED 339ea20: wf_51966708-1a2 stopped 06:56 under the floor (3.4 GB) after its fixer's note was lost to invalid JSON; the r4 args wait for a row at 7.0 GB or more. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core PAUSED 339ea20   # 2026-11-15 06:59 IST: no new commit. wf_51966708-1a2's fixer (no edit, no commit) failed at 06:55: five StructuredOutput attempts of its 5059-byte note, each unparsable (an unquoted shared_touched value); the run went on to both re-checks with '(no note returned)'; stopped 06:56 (TaskStop) on the 06:54 row 3.4 GB (by hand 3.4 at 06:55). Next: lane.js with args r4 on a 7.0 GB row. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 06:44 IST
+UPDATED: 2026-11-15 06:59 IST
+
+
+# 2026-11-15 06:59 IST · core PAUSED 339ea20: wf_51966708-1a2 stopped under the floor; its fixer's note lost to invalid JSON
+
+- Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_51966708-1a2/journal.jsonl: launched; fix:review:core (a325c5758124d7305) started 06:41 and FAILED 06:55: five StructuredOutput calls with its 5059-byte hand-off, each refused as unparsable JSON (char 1734 of the last: `"shared_touched": styles.css, core's own section ...`, an unquoted value where the schema wants a list of strings). lane.js went on: recheck:contracts:core and recheck:safety:core started with the fixer's note '(no note returned)'.
+- The 06:54 row read 3.4 GB, by hand 3.4 GB at 06:55:42: stopped the run at 06:56 (TaskStop w2csho9ie) before the re-checkers ran a gate. The core worktree at 339ea20, clean but for offline/1-addic.html; no commit by this run.
+- Kept: the first 2048 bytes of the fixer's last attempt (all the transcript holds) in C:/Users/ruchi/1-addic-wt/_logs/reports/core/core__v34b-handoff-raw.txt: done RC1 634dbfb, RS2 2af44ef, RC2 f000c8c, RS1 339ea20; RC3 blocked as a CONTRACT CHANGE.
+- Not resumable usefully: nothing of the run completed (lane.js takes no carried fixer note; lane.js is the HUB's file). New args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r4.json = r3 plus one laneNote sentence ('Return valid JSON: quote every string; shared_touched is a list of strings ...'), now 'FILL'; wf_sim --fix SIM OK (fix:review:core 12240 of 12288 bytes with now 'FILL'; 16 more with a real clock).
+- Next: on the first row at 7.0 GB or more with a hand sample at 7.0 or more: fill now, wf_sim, lane.js with the r4 args. Return -> as the 06:41 section says.
 
 
 # 2026-11-15 06:44 IST · core's two re-checks launched (wf_51966708-1a2) on R-H-72
