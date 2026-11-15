@@ -1,13 +1,21 @@
 TRACK: CORE
-STATE: RESTART   # 2026-11-15 08:21 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197) hands over at about 252k of context, at a safe point: nothing of CORE runs (no workflow, no watch). core REVIEWING 339ea20, not READY: RS3's second fix round waits for a row at 7.0 GB or more with args r5 (tracks/CORE/RUN-RECORD.md 'Resume here', first bullet). R-C-102 sent; the HUB told by message. tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core REVIEWING 339ea20   # 2026-11-15 08:20 IST: NOT READY: RS3 LOW, a regression of 339ea20 reproduced by two Node probes (wf_6cbca5fb-1ee): a render-time 'tip <id>' write clears the kept line ~40 ms after it shows when another tab erased the notebook. Round 2 (RS3 only) with args r5 on a 7.0 GB row. RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md. Merge base 63eb8257
+STATE: BUILDING   # 2026-11-15 08:28 IST: CORE 08:23 (3e06235f-1cfa-4a23-8a43-ed723e8f9b0e, session 39, read in from 'Resume here' of 08:21). core's review fix round 2 (RS3 only, args r5) runs: wf_5b0dfd67-b3c launched 08:26 on the hand rows 08:25:13 7.7 GB and 08:25:49 8.5 GB (R-H-74). tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core REVIEWING 339ea20   # 2026-11-15 08:28 IST: NOT READY: round 2 of the review's fixes (RS3 only, ui-core.js and store.test.mjs; then the safety re-check of RS3 and the contracts re-check) runs as wf_5b0dfd67-b3c (slot 1, merge base 63eb8257, args tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r5.json; wf_sim --fix SIM OK). RC1, RC2, RS2 FIXED; RS1 lock half = owner question; RC3's words in contracts/core.md
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 08:21 IST
+UPDATED: 2026-11-15 08:28 IST
 
+
+
+# 2026-11-15 08:28 IST · CORE 08:23 read in; core's review fix round 2 (RS3) launched
+
+- CORE 08:23 (3e06235f-1cfa-4a23-8a43-ed723e8f9b0e, session 39) read in from 'Resume here' of 08:21 and R-H-74 (the HUB's message: RS3 fixed before READY; round 2 from the r5 args on the first row at 7.0 GB or more; the last round the HUB expects: a new finding on the same line is named and asked before a third round; FIX-REMOVE-STALE-ROWS granted as core's next unit after this merge).
+- Hand rows: 08:25:13 7.7 GB, 08:25:49 8.5 GB free of 31.8. r5 filled (now 2026-11-15 08:26 IST, session and the laneNote's chat name and Claude-Session line this chat's); wf_sim --fix SIM OK (the fixer's prompt 12000 characters, RS3 named in the laneNote; the safety re-check carries RS3 whole).
+- Running: wf_5b0dfd67-b3c (lane.js, start 'review', carried check and review): the fixer (RS3 only, red first, a mutant run, one commit naming RS3; gates once each), then both re-checks, then the report update. Journal: C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/3e06235f-1cfa-4a23-8a43-ed723e8f9b0e/subagents/workflows/wf_5b0dfd67-b3c/journal.jsonl.
+- Under 4.0 GB on two readings a minute apart the run pauses at its next commit (the laneNote says so to the fixer).
 
 # 2026-11-15 08:21 IST · CORE 05:24 hands over (context over 250k), nothing running
 
