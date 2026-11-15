@@ -1,12 +1,19 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 06:59 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core PAUSED 339ea20: wf_51966708-1a2 stopped 06:56 under the floor (3.4 GB) after its fixer's note was lost to invalid JSON; the r4 args wait for a row at 7.0 GB or more. tests-docs MERGED 2be56e6 (5d251cbb)
-LANE: core PAUSED 339ea20   # 2026-11-15 06:59 IST: no new commit. wf_51966708-1a2's fixer (no edit, no commit) failed at 06:55: five StructuredOutput attempts of its 5059-byte note, each unparsable (an unquoted shared_touched value); the run went on to both re-checks with '(no note returned)'; stopped 06:56 (TaskStop) on the 06:54 row 3.4 GB (by hand 3.4 at 06:55). Next: lane.js with args r4 on a 7.0 GB row. Merge base 63eb8257
+STATE: BUILDING   # 2026-11-15 07:16 IST: CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 (r4 args) launched 07:14 on R-H-72/73 with 8.1 GB by hand. tests-docs MERGED 2be56e6 (5d251cbb)
+LANE: core REVIEWING 339ea20   # 2026-11-15 07:16 IST: wf_081b79a7-0d1 (lane.js, r4 args, start 'review', check and both reviews carried): the fixer's hand-off only, then both re-checkers live over 63eb8257..339ea20, then the report update. Merge base 63eb8257
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f388ed15 (trunk f216bb27). Slot 3 free
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 07:03 IST
+UPDATED: 2026-11-15 07:16 IST
+
+
+# 2026-11-15 07:16 IST · core's two re-checks relaunched (wf_081b79a7-0d1, r4 args)
+
+- HUB 02:02 by message 07:13 (R-H-72, R-H-73): the watch read 9.1 GB at 07:13. By hand 8.1 GB at 07:14:06. The r4 args (now '2026-11-15 07:14 IST'; wf_sim --fix SIM OK, fix:review:core 12256 of 12288 bytes). Run wf_081b79a7-0d1; journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. The live fixer prompt equals wf_sim's dump (whitespace-normalised containment).
+- R-H-73's floor rule: under 4.0 GB the run pauses at its next step on two readings a minute apart, not one.
+- Return -> as the 06:41 section says.
 
 # 2026-11-15 07:03 IST · this chat's memory-row watch stopped by Claude Code for low system memory
 

@@ -335,7 +335,13 @@
 - The fixer failed at 06:55 after five unparsable StructuredOutput calls (an unquoted shared_touched value); the re-checks started with no note; the 06:54 row 3.4 GB: TaskStop 06:56. No commit. The first 2048 bytes kept in _logs/reports/core/core__v34b-handoff-raw.txt. Args r4 = r3 plus one JSON sentence in the laneNote (wf_sim OK, 12240 of 12288 bytes).
 - Fact: the transcript keeps only the first 2048 bytes of an unparsable StructuredOutput input, so a failed note cannot be recovered whole from the agent's jsonl.
 
+## 2026-11-15 07:16 IST · core's two re-checks relaunched (wf_081b79a7-0d1, r4 args)
+
+- HUB 07:13 (9.1 GB), by hand 8.1 GB 07:14. The live fixer prompt equals wf_sim's. Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. The floor: two readings a minute apart under 4.0 GB (R-H-73).
+
 ## Resume here
+
+- **(2026-11-15 07:16 IST) STATE BUILDING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). core REVIEWING 339ea20: wf_081b79a7-0d1 running** (lane.js, r4 args; the fixer's hand-off only, then both re-checkers, then report-update). Journal C:/Users/ruchi/.claude-pro/projects/C--Users-ruchi-1-addic/8b37e300-2952-44ab-b59e-e96c22a2e197/subagents/workflows/wf_081b79a7-0d1/journal.jsonl. A fresh CORE does not relaunch it while this session is listed by `claude agents`; if the session is gone, the run died with it: relaunch from the r4 args (refill now, session, the laneNote's chat name and Claude-Session). On return: as the 06:41 section of status-CORE.md says.
 
 - **(2026-11-15 06:59 IST) STATE WAITING, CORE 05:24 (8b37e300-2952-44ab-b59e-e96c22a2e197). Nothing of CORE runs. core PAUSED 339ea20.** wf_51966708-1a2 was stopped at 06:56 (dead; do not resume it: nothing in it completed). **Next, on the first row at 7.0 GB or more with a hand sample at 7.0 or more:** fill now (and session, the laneNote's 'CORE 05:24' and Claude-Session if a fresh CORE) in tracks/CORE/args/args_v3_core_FIX-BULK-REFUSAL-SAY-r4.json, wf_sim --fix, lane.js with it. Return -> as the 06:41 section of status-CORE.md says.
 
