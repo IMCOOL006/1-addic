@@ -6,7 +6,11 @@ LANE: actions-sos MERGED f2b0023   # 2026-11-14 14:44 IST: FIX-C1-BACK merged f3
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 2be56e6   # 2026-11-14 22:53 IST: V3.3-T1 merged 5d251cbb, trunk pushed 22:51 (R-H-67; the HUB on the merged tree: build 1216361 B, test, validate, guards, territory 0, 'a same-path SOS render keeps focus in the page' 1/0/0). Slot 5 stays with tests-docs: FIX-COUNTS-6 + GUIDE-V34 + V3.3-T1-C1 after core's merge
 SLOTS-ASKED: 0   # both slots granted 17:14 stand (HUB 22:12 by message, 22:18)
-UPDATED: 2026-11-15 06:59 IST
+UPDATED: 2026-11-15 07:03 IST
+
+# 2026-11-15 07:03 IST · this chat's memory-row watch stopped by Claude Code for low system memory
+
+- Claude Code stopped the background watch on lane-widening.md (it only read the file) because the system was critically low on memory; by its notice it is not restarted without the owner's word. core stays PAUSED 339ea20 with the r4 args ready. The launch waits for the HUB's word of a row at 7.0 GB or more (and a hand sample at 7.0 or more here).
 
 
 # 2026-11-15 06:59 IST · core PAUSED 339ea20: wf_51966708-1a2 stopped under the floor; its fixer's note lost to invalid JSON
