@@ -106,5 +106,6 @@
  "d885839c": {"role": "HUB", "label": "offline-v1 HUB session 39, 15 Nov 02:02- (launcher)"},
  "8b37e300": {"role": "CORE", "label": "offline-v1 CORE session 38, 15 Nov 05:24- (launcher)"},
  "3e06235f": {"role": "CORE", "label": "offline-v1 CORE session 39, 15 Nov 08:23- (launcher)"},
- "eb2fe0a6": {"role": "HUB", "label": "offline-v1 HUB session 40, 15 Nov 09:56- (launcher)"}
+ "eb2fe0a6": {"role": "HUB", "label": "offline-v1 HUB session 40, 15 Nov 09:56- (launcher)"},
+ "43b081a3": {"role": "CORE", "label": "offline-v1 CORE session 40, 15 Nov 11:24- (launcher)"}
 }
