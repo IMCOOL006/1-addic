@@ -14,6 +14,11 @@ UPDATED: 2026-11-15 14:36 IST
 
 
 
+# 2026-11-15 14:36 IST · the resume watch was stopped by Claude Code for critically low memory
+
+- The background sampler (two readings at 4.5 GB or more) was killed by Claude Code because the system was critically low on memory while this session was idle. It is not restarted on its own: memory may still be short. core FIX-REMOVE-STALE-ROWS stays PAUSED at d55a102, clean; nothing of CORE runs.
+- The resume starts on the HUB's word of a reading back at 4.5 GB or more (a message to CORE 13:03), or on the owner's word: then a hand sample, and Workflow(lane.js, resumeFromRunId 'wf_140080f1-59f', the args unchanged).
+
 # 2026-11-15 14:36 IST · core FIX-REMOVE-STALE-ROWS PAUSED at d55a102 (the floor)
 
 - The sampler: two readings under 4.0 GB, 2.9 at 14:31:37; 2.6 by hand at 14:31:59; the HUB 13:18 by message: 2.7, 2.6, 2.6 at 14:31-14:32:15, the pause rule applies (no browser gate and no full Node suite under 4.0; pause at the next commit; resume on my own reading over the floor).
