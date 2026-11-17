@@ -67,7 +67,7 @@ APP_FILE = "offline/1-addic.html"
 MD_NAME = "1-addic-Resume-Prompt.md"
 TXT_NAME = "1-addic-Resume-Prompt.txt"
 DOCX_NAME = "1-addic-Resume-Prompt.docx"
-NEXT_TAG = "offline-v3.3"
+NEXT_TAG = "offline-v3.5"
 CELL = 300                                          # characters per table cell
 
 # The launcher's own words, mirrored from tools/fresh_chat_launcher.py (STOPPING, TERMINAL, the build tracks' stop word,
@@ -80,84 +80,133 @@ L_KICKOFF = re.compile(r"You are the (HUB|CORE|SCREENS) chat")
 
 # This park, by hand (edit at each park; everything else is read live). "day" is checked against the HUB's status file.
 PARK = {
-    "day": "2026-11-11",
-    "date_long": "11 November 2026",
-    "short": "the day closed, the owner's R-O-10",
-    "next_window": "1-addic owner 12 Nov",
-    "reason": ("the owner closed the day. R-O-10, 21:00 IST: \"We are going to resume work tomorrow, prepare complete "
-               "handover details. Then give me a resume prompt and steps in a word doc.\""),
+    "day": "2026-11-17",
+    "date_long": "17 November 2026",
+    "short": "the owner paused the work, R-O-19",
+    "next_window": "1-addic owner resume",
+    "reason": ("the owner paused the work. R-O-19, 14:27 IST: \"give resume prompt and steps, status report and details "
+               "for work going on and planned in a word doc. Current testable version ( html for testing) and pause "
+               "work till we start from the resume prompt\""),
     "timeline": [
-        ("21:00", "The owner's line arrives in the owner's window."),
-        ("21:07", "Filed as R-O-10 in coordination/outbox-OWNER.md (commits d74d521 and 084924c), pushed."),
-        ("21:09", "The launcher loop is stopped on the owner's word (`--stop`, pid 39876, 21:09:45). No fresh chat can "
-                  "start overnight."),
-        ("21:15", "The HUB chat (HUB 04:36, session d608716f) parks at a clean point: STATE PARKED on status-HUB.md, its "
-                  "Resume here in tracks/HUB/RUN-RECORD.md, the board, R-H-57; commit fbc6d7d, pushed. No run was live "
-                  "and no merge was open, so nothing was paused or aborted."),
-        ("21:30 on", "The owner's window checks the launcher's rules against tomorrow's start (a read-only simulation of "
-                     "its decision for each track)."),
-        ("21:59", "A leftover `loop.pid` file (it held 39876, the stopped loop's number) is found in the launcher's state "
-                  "folder and removed. Left in place it could have blocked tomorrow's `--start` (section 6.5)."),
-        ("22:10 on", "The owner's window writes its hand-over under the HUB's Resume here, renders this document, pushes "
-                     "everything and sends the Word file."),
-        ("22:17", "The parked HUB chat's process ends, an hour after its last step. `claude agents` no longer lists "
-                  "it."),
-        ("22:55", "The owner's window finds why a chat that only waits can still read live to the launcher: every "
-                  "open chat's transcript file is renewed about once an hour (section 6.2)."),
-        ("23:03", "36 leftover watch loops of three ended chats of this program are found still running (section "
-                  "4.7). The owner's window asks to end them at 23:10; its permission mode declines, so they are left "
-                  "as found."),
+        ("15 Nov 12:24", "The tag offline-v3.4 is set at 8bd439b2 with every gate green. The app file and the guide go to "
+                         "the owner at 12:29."),
+        ("15 Nov 16:23", "core FIX-REMOVE-STALE-ROWS (the two-tab fix) is merged at bf74180c: Node 814 of 814 and browser "
+                         "33 of 33 on the merged tree (R-H-83). It is the last code change before the park."),
+        ("15 Nov 16:57", "core FIX-DRAWN-WRITE-SAY is prepared and granted (slot 1; slot 3 for its actions.js part after "
+                         "core's merge, R-H-84). HUB 16:58 and CORE 16:56 take over from their predecessors."),
+        ("15 Nov 17:09", "The weekly usage limit stops CORE 16:56 before it launches the run. The launcher logs WEEKLY "
+                         "LIMIT: no launch until 16 November 14:30. HUB 16:58 stops on the same limit at 17:34, and "
+                         "the owner's window after its report of 17:00. The last commit is f1ac3752 of 17:05."),
+        ("16 Nov 20:44", "The loop starts HUB 20:44 (b29c9b29) and CORE 20:44 (012aa274). Each stops at its first step "
+                         "on the notice \"Claude Code can't use your Claude subscription, usually because a payment is "
+                         "past due\" and commits nothing. Neither has a process at the park."),
+        ("17 Nov 14:27", "The owner's line arrives in the owner's window (5029727e): R-O-19, filed 14:32 (8147bab9), "
+                         "pushed."),
+        ("17 Nov 14:33", "The launcher loop is stopped on the owner's word (`--stop`, pid 31844). The leftover `loop.pid` "
+                         "file is removed at once (section 6.5). No fresh chat can start."),
+        ("17 Nov 14:36", "CORE 16:56 parks on the owner's window's message: STATE PARKED, its Resume here; commit "
+                         "f0850ed5. Nothing of CORE ran; core FIX-DRAWN-WRITE-SAY stays prepared."),
+        ("17 Nov 14:37", "HUB 16:58 parks at a clean point: STATE PARKED on status-HUB.md, its Resume here in "
+                         "tracks/HUB/RUN-RECORD.md, the board, R-H-85; commit c36a2a31, pushed with CORE's. No run was "
+                         "live and no merge was open, so nothing was paused or aborted."),
+        ("17 Nov 14:40 on", "The owner's window checks the app file against a fresh build from the trunk's sources "
+                            "(identical, 1221933 bytes), writes its hand-over under the HUB's Resume here (c9a9ad88), "
+                            "renders this document, pushes everything and sends the Word file and the app file."),
+    ],
+    # the status report in plain words, for the owner (the first part of the document): (what, where it stands)
+    "status": [
+        ("The latest tagged version",
+         "Version 3.4, the tag `offline-v3.4` (15 November, 12:24), on GitHub. Every check passed on it: 809 of 809 "
+         "automatic checks, 33 of 33 browser flows, the build, validate, the guards and the guide."),
+        ("The file to test",
+         "`offline/1-addic.html` in the folder `C:\\Users\\ruchi\\1-addic`, also sent with this document. It is the "
+         "newest build: version 3.4 plus the two-tab fix, 1,221,933 bytes. It is not a tagged version yet. When the "
+         "fix was merged (15 November, 16:23), 814 of 814 automatic checks and 33 of 33 browser flows passed on it. "
+         "At the park it was built again from the sources and came out identical, byte for byte."),
+        ("New in version 3.4",
+         "When a change is not saved because another tab changed the notebook, the app says so once and keeps a short "
+         "line until you act. Never in SOS, never in a printout. The guide has a passage on it."),
+        ("New since version 3.4",
+         "The two-tab fix. Setting, changing or removing the PIN in one tab now works from the stored entries, so "
+         "entries another tab saved before are kept. One narrow case stays: an entry saved in another tab in the very "
+         "moment the PIN is being set, changed or removed. Until version 3.5 and its guide, keep the notebook open in "
+         "one tab only."),
+        ("Running at the park",
+         "Nothing. No build, no check and no merge was in progress, so nothing was cut off and nothing is lost. The "
+         "launcher is stopped: nothing starts and nothing spends usage until you resume."),
+        ("15 to 17 November",
+         "No work was done after 15 November, 17:05. The weekly usage limit stopped the chats that day (17:09 and "
+         "17:34; it reset on 16 November at 14:30). The two chats the launcher started on 16 November at 20:44 stopped "
+         "at their first step on the notice \"Claude Code can't use your Claude subscription, usually because a "
+         "payment is past due\". The owner's window was stopped by the same limit, so no report reached you until "
+         "your line of 17 November."),
+        ("GitHub",
+         "Everything is pushed. The branch `build/offline-v1` and the tags hold all of it. `main` holds version 3.3 "
+         "(your merge of 14 November) and moves only when you say so."),
+        ("Red", "None."),
+        ("From you",
+         "Nothing blocks the start. Section 3 lists the open choices; each has its default in force."),
+    ],
+    # the work in hand and planned, in order, in plain words: (order, the work, status, what it is)
+    "plan": [
+        ("1", "The wording fix, part 1 (core, FIX-DRAWN-WRITE-SAY)", "Prepared, not started",
+         "Today the app can say a change of yours was not saved when the refused save was one the app made by itself "
+         "while it drew a page. The fix makes the app stay quiet for its own saves. A builder, an independent check "
+         "and two reviewers. It starts when 7 GB of memory is free."),
+        ("2", "The wording fix, part 2 (actions-sos, the actions.js part)", "Granted, starts after part 1 is merged",
+         "The same fix where the app's actions save, for example a tap on \"Got it\" on a tip card. Two reviewers."),
+        ("3", "One documents run (tests-docs)", "Planned, after both parts",
+         "The counts of the checks in the README and CLAUDE.md, and the guide's rows on two tabs: they still name the "
+         "PIN-removal loss as a known issue and will name the narrow case that stays."),
+        ("4", "The freeze, the full checks, the tag `offline-v3.5`", "Planned",
+         "The coordinating chat runs every check on the merged result and tags version 3.5 if every check is green. "
+         "You get the app file and the guide."),
+        ("Later", "The last two-tab gap (FIX-LOCK-WRITE-GAP) and the low findings C1, C2 and C3", "Named, not started",
+         "Small fixes the reviewers named for after version 3.5: the narrow two-tab case that stays, and three low "
+         "findings."),
+        ("Any time", "Your walk findings", "Waiting for you",
+         "Whatever you find when you use the app file. They go ahead of every other fix."),
     ],
     # (the chat's name, the session, how `claude agents` lists it, what it is and what it needs)
     "chats": [
-        ("HUB 04:36", "d608716f", "ended, no longer listed",
-         "The parked HUB chat. It marked its work done at 21:17 and its process ended at 22:17. A fresh HUB chat "
-         "replaces it at the start."),
-        ("CORE 21:42", "8b2ee4e2", "background, idle",
-         "The last CORE chat. Its last step was on 9 November at 21:47, and its track is paused in the launcher. It "
-         "still has a process, so it reads live for half of every hour (section 6.2). It needs nothing."),
-        ("1-Addic (hub) Fable Max builder 2", "afc0ccd2", "interactive",
-         "The owner's window of 7 to 11 November. It wrote this document. The launcher's roles file lists it as a HUB "
-         "chat, so typing in it holds back a fresh HUB (section 6.3). While it stays open it also reads live for half "
-         "of every hour (section 6.2). You can close it once you have this document."),
-        ("1-Addic Fable max planner", "e4492b2a", "interactive, idle",
-         "The planner's window. Not a build chat; the launcher does not count it."),
-        ("HUB 12:09, CORE 11:10, SCREENS 11:07", "2b59e0da, 80a57fa8, c26b6cc6", "background, idle",
-         "Chats of 8 November that still have a process. They do nothing, but the launcher reads each as live for "
-         "half of every hour (section 6.2). The HUB may end them with `claude stop <id>`: R-O-7 allows it for a dead "
-         "chat of this program, and the call is the HUB's."),
-        ("Older rows named HUB, CORE or SCREENS", "42 rows", "no status",
-         "Finished chats of earlier days with no process. They need nothing."),
-        ("The pharma program's chats", "other folders", "not ours",
-         "Never touched by this program, nor its launcher (kriya-hub)."),
+        ("HUB 16:58", "1ae91d3d", "background, idle",
+         "The parked HUB chat. It wrote its Resume here at 14:37 and stopped; no watch or loop of it runs. A fresh HUB "
+         "chat replaces it at the start. If it still reads live then, the prompt's step 4 forces the start."),
+        ("CORE 16:56", "2258732f", "background, idle",
+         "The parked CORE chat. It launched nothing and stopped at 14:38; no sampler or loop of it runs. A fresh CORE "
+         "chat replaces it after the start: CORE is not paused in the launcher."),
+        ("HUB 20:44 and CORE 20:44", "b29c9b29, 012aa274", "listed, no process",
+         "Started by the loop on 16 November. Each stopped at its first step on the subscription notice. They did "
+         "nothing and need nothing."),
+        ("1-addic owner 14 Nov fable 5.2 max new h-u-b", "5029727e", "interactive",
+         "The owner's window of 14 to 17 November. It wrote this document. The launcher's roles file does not list "
+         "it. You can close it once you have this document; resume in a new chat."),
+        ("Older rows named HUB, CORE or SCREENS", "45 rows of 8 and 9 November", "listed, not live",
+         "Finished chats of earlier days. They need nothing."),
+        ("The other programs' chats (pharma, event, paper)", "other folders", "not ours",
+         "Never touched by this program, nor their launchers."),
     ],
-    "memory": ("On 11 November the memory rows of coordination/lane-widening.md read 5.0 to 6.7 GB free for most of the "
-               "day, with dips to 3.3 to 3.9 GB (under the 4.0 GB floor) at 08:20 to 08:31, 18:27 and 19:28 to 19:38 "
-               "while nothing of this build ran. The other programs on the machine are the main brake."),
+    "memory": ("On 14 and 15 November free memory swung between 0.7 and 10 GB, nearly all of it taken by other programs "
+               "on this machine (their node, claude and WSL processes). It paused core's runs several times in the "
+               "night of 14 November and held starts on 15 November. At the park it read 10.8 to 11.3 GB (17 November, "
+               "14:28 to 14:30). The other programs on the machine are the main brake."),
     # The leftover watch loops of this park (section 4.7). Empty strings and an empty list when none was found.
-    "loops_short": ("36 small watch loops of ended chats of this build still run on the computer. They are harmless "
-                    "and spend no usage, but they hold about 0.3 GB of memory. Section 4.7 has three ways to clear "
-                    "them. Nothing at the start depends on it."),
-    "loops_note": ("At 23:03 on the park night 36 such loops of three ended chats of this program were still running, "
-                   "with about 0.3 GB of memory between them. The owner's window asked to end them at 23:10 and its "
-                   "permission mode declined, so they still run."),
+    "loops_short": ("No watch loop of this build is left running. Two parked chats (HUB 16:58 and CORE 16:56) may still "
+                    "be listed as idle: they do nothing and spend no usage (section 4.6). Nothing at the start depends "
+                    "on them."),
+    "loops_note": ("None was found at this park: at about 14:40 on 17 November no shell loop of a chat of this program "
+                   "was running. The watch scripts written since 14 November end by themselves."),
     # (how many, the script, the chat it belonged to, running since)
-    "loops": [
-        ("33", "`watch.sh`", "HUB 04:36 (d608716f)",
-         "11 November: one was started about every 30 minutes, from 04:39 to 20:50"),
-        ("1", "`watch.sh`", "HUB 18:52 (42f60331)", "7 November 19:00"),
-        ("2", "`board_watch.sh` and `board_watch2.sh`", "CORE 01:56 (6c9dfc8f)", "8 November 02:00 and 02:20"),
-    ],
+    "loops": [],
     # one PowerShell line that ends exactly these loops and nothing else
-    "loops_command": ("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'bash.exe' -and $_.CommandLine "
-                      "-match 'jobs.(d608716f|6c9dfc8f|42f60331).tmp.(watch|board_watch|board_watch2)[.]sh' } | "
-                      "ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"),
-    "loops_others": ("Two other programs on this machine have loops of the same kind: the event-offline program 14 "
-                     "and the pharma program 1. They are not this program's to touch."),
+    "loops_command": "",
+    "loops_others": ("Another program on this machine had three loops of the same kind at the park (wait_record.sh of "
+                     "one of its chats). They are not this program's to touch."),
     # for the prompt, step 2: rows of `claude agents` that look like today's and are not
-    "listed_note": ("Four idle rows of earlier days still have a process and are not today's: HUB 12:09 (2b59e0da), "
-                    "CORE 11:10 (80a57fa8) and SCREENS 11:07 (c26b6cc6) of 8 November, and CORE 21:42 (8b2ee4e2) of "
-                    "9 November. Read `startedAt`, not the name alone."),
+    "listed_note": ("Two rows of 15 November may still have a process and are not the resume day's: HUB 16:58 "
+                    "(1ae91d3d) and CORE 16:56 (2258732f), both parked on 17 November. If one still reads live and "
+                    "holds back a fresh chat, `claude stop <id>` of a dead chat of this program is allowed under R-O-7. "
+                    "Read `startedAt`, not the name alone."),
 }
 
 # What does not come from a file: the HUB's rulings still in force (coordination/outbox-HUB.md has each one whole).
@@ -168,11 +217,22 @@ RULINGS = [
     ("R-H-53 and R-H-55", "After a tag only fixes by name are built. Each fix lane is cut from the trunk tip at its "
                           "start. One run starts per 7.0 GB memory row across both tracks; under 4.0 GB free the newest "
                           "run pauses first. The flagged lanes core and actions-sos need two reviewers."),
-    ("R-H-56", "Both build tracks are paused in the launcher since 9 November 21:44 IST, because a waiting chat was "
-               "relaunched about every hour for nothing to do. The HUB lifts a pause (`--resume-track <TRACK>`) at an "
-               "owner line that asks for work: I6, the walk's findings or 'continue v3.3'."),
-    ("R-H-57", "The park of 11 November 21:15 IST on R-O-10: nothing live, nothing aborted, the tag offline-v3.2 stands; "
-               "the HUB's Resume here says how the HUB starts again."),
+    ("R-H-56", "A build track that only waits stays paused in the launcher, because a waiting chat was relaunched about "
+               "every hour for nothing to do. At this park SCREENS is paused (it owes nothing since offline-v3.3) and "
+               "CORE is not. The HUB lifts a pause (`--resume-track <TRACK>`) when work is named for the track."),
+    ("R-H-60 and the owner's R-O-17", "After a tag the small named fixes go on toward the next tag as slots and memory "
+                                      "allow. The owner's 'Continue' of 14 November stands until the owner says "
+                                      "'park' or 'stop at the tag'."),
+    ("R-H-74 and R-H-83", "The two-tab loss on a PIN change (FIX-REMOVE-STALE-ROWS) was granted as core's unit after "
+                          "offline-v3.4 and is merged at bf74180c. One narrow case stays and is named for later "
+                          "(FIX-LOCK-WRITE-GAP); offline-v3.5's guide names it. 'close the gap first' from the owner "
+                          "holds the tag for it."),
+    ("R-H-83 and R-H-84", "FIX-DRAWN-WRITE-SAY: core's part on slot 1, then actions-sos's actions.js part on slot 3 "
+                          "after core's merge, each flagged with two reviewers; then one tests-docs run. Its six small "
+                          "choices (Q1 to Q6, the board's NEEDS YOU 11) are built as their defaults; '11: say it' "
+                          "from the owner reverses them."),
+    ("R-H-85", "The park of 17 November 14:37 IST on R-O-19: nothing live, nothing aborted, the tag offline-v3.4 "
+               "stands; the HUB's Resume here says how the HUB starts again."),
 ]
 
 # The tooling units still open, by hand (none of them changes the app). (name, where, what it is)
@@ -198,27 +258,38 @@ TOOLING = [
 TAG_FACTS = {
     "offline-v3.2": "frozen at aac18546; the full gates GREEN by every name: build 1213207 B; Node 763/763 in 16 files; "
                     "validate; guards 5/5; browser 32/32; docs",
+    "offline-v3.3": "the full gates GREEN by every name: build 1216361 B; Node 787/787 in 16 files; validate; guards "
+                    "5/5; browser 32/32; docs",
+    "offline-v3.4": "frozen at 8bd439b2; the full gates GREEN by every name: build 1220739 B; Node 809/809 in 16 files; "
+                    "validate; guards 5/5; browser 33/33; docs",
 }
 
 # The work named toward the next tag (R-H-55 of 9 Nov and the HUB's Resume here of 11 Nov), in plain words.
 # (name, lane, track, the key a `MERGED:` line of status-HUB.md would carry, what it is)
 NAMED = [
-    ("FIX-STALE-SAVE-SAY", "core", "CORE, flagged", r"FIX-STALE-SAVE-SAY",
-     "With a PIN set and the app open in two tabs: after one tab imports data, a save in the other tab is refused, and "
-     "the lock screen replaces the page before the refusal can be read. The entry is gone and nothing says so. The fix: "
-     "say it (R-C-86, RS1)."),
-    ("FIX-SOS-FOCUS", "core", "CORE, flagged", r"FIX-SOS-FOCUS",
-     "Back then Forward between the SOS craving page and its from-the-lock-screen variant redraws the page without "
-     "moving the keyboard focus, so a keyboard user can land on the page body (R-C-88)."),
-    ("The C1 Back path", "actions-sos", "CORE, flagged", r"C1[- ]BACK|FIX-C1",
-     "A rare path leaves two '?from=lock' entries side by side in the browser history, so one Back press does nothing. "
-     "The SOS button itself is unaffected (R-C-88, C1)."),
-    ("V-10b", "content", "SCREENS", r"(?<![\w-])V-10b(?![\w])",
-     "The India crisis numbers in the app's content. It waits for the owner's input I6 (which numbers are confirmed); "
-     "until then every number says \"please verify\"."),
+    ("FIX-REMOVE-STALE-ROWS (the two-tab fix)", "core", "CORE, flagged", r"FIX-REMOVE-STALE-ROWS",
+     "With the notebook open in two tabs, setting, changing or removing the PIN in one tab rewrote the notebook from "
+     "that tab's memory, so entries the other tab had saved since could be lost without a message. The fix: the PIN "
+     "change works from the stored rows (R-C-102, R-H-74). Merged at bf74180c on 15 November; offline-v3.4 does not "
+     "have it."),
+    ("core's FIX-DRAWN-WRITE-SAY", "core", "CORE, flagged", r"FIX-DRAWN-WRITE-SAY",
+     "A save the app makes by itself while it draws a page, refused because another tab changed the notebook, is said "
+     "as the person's own lost change. The fix: stay quiet for the app's own writes (R-H-75 N1, R-H-83). Prepared, "
+     "not started: the unit note, the shape in the contract and the args are filed; slot 1."),
+    ("actions-sos's FIX-DRAWN-WRITE-SAY", "actions-sos", "CORE, flagged", r"FIX-DRAWN-WRITE-SAY",
+     "The same fix where the app's actions write: a tap on \"Got it\" on a tip card is treated the same quiet way. "
+     "Slot 3, cut from the trunk tip after core's part is merged, because its two-store test needs the real store.js "
+     "(R-C-111, R-H-84)."),
+    ("The counts and the guide's two-tab rows", "tests-docs", "CORE", r"FIX-COUNTS-7|GUIDE-V35",
+     "One tests-docs run after both parts are merged: the counts of the checks in the README and CLAUDE.md, read on the "
+     "merged tree, and the guide's rows on two tabs, which will name the narrow case that stays. The unit names in the "
+     "key are the expected ones; the HUB names the run."),
+    ("FIX-LOCK-WRITE-GAP with the LOWs C1 to C3", "core and actions-sos", "CORE, flagged", r"(?!x)x",
+     "Named for after offline-v3.5, not granted: the read-to-write gap that stays in the two-tab fix (an entry saved "
+     "in another tab in the very moment the PIN is set, changed or removed), and three low findings of the reviews."),
     ("The owner's walk findings", "by the file's lane", "routed by the owner's window", r"(?!x)x",
-     "Whatever the owner's walk of the tagged file finds. Each finding goes by outbox to the lane that owns the file, "
-     "with a default, and becomes a named fix."),
+     "Whatever the owner's walk of the app file finds. Each finding goes by outbox to the lane that owns the file, "
+     "with a default, and becomes a named fix. They go before every other fix."),
 ]
 TAIL = [
     ("FREEZE", "no new unit starts after the last named fix is READY; fixes by name only"),
@@ -704,17 +775,27 @@ def render(now, zone):
         kind, _why = launcher_rule(t, w, gate.get(t, True))
         build.append((t, w, kind, bool(paused and t in paused)))
     paused_build = [b[0] for b in build if b[3]]
+    running_build = [b[0] for b in build if not b[3]]
     if paused_build:
-        wake = ("%s paused in the launcher under R-H-56 until an owner line asks for work: 'continue v3.3', the walk's "
-                "findings, or I6. File the line and tell the HUB; the HUB lifts the pause. If no launcher HUB is live, or "
-                "the pause is still on ten minutes after your message, run `%s --resume-track <TRACK>` yourself under "
-                "R-O-7 and tell the HUB." % (" and ".join(paused_build) + (" are" if len(paused_build) > 1 else " is"),
-                                            LAUNCHER_CMD))
-        see_row = ('| Until you ask for work | No chat named "CORE hh:mm" or "SCREENS hh:mm" | The build tracks are '
-                   'paused, so nothing spends usage while there is nothing to build. `continue v3.3` wakes them. |')
+        wake = ("%s paused in the launcher under R-H-56 (a track that owes nothing stays paused) until an owner line "
+                "names work for it: the walk's findings in its territory, or I6. File the line and tell the HUB; the "
+                "HUB lifts the pause. If no launcher HUB is live, or the pause is still on ten minutes after your "
+                "message, run `%s --resume-track <TRACK>` yourself under R-O-7 and tell the HUB."
+                % (" and ".join(paused_build) + (" are" if len(paused_build) > 1 else " is"), LAUNCHER_CMD))
+        if running_build:
+            wake += (" %s not paused: the owner's 'Continue' (R-O-17) stands, so its fresh chat starts by itself at "
+                     "the loop's first check that finds no chat of the track reading live, and goes on with the "
+                     "named work toward %s."
+                     % (" and ".join(running_build) + (" are" if len(running_build) > 1 else " is"), NEXT_TAG))
+            see_row = ('| After about five minutes, memory allowing | A chat named "%s hh:mm" | The build chat. It '
+                       'builds; the HUB merges. No chat named "%s hh:mm": that track is paused and owes nothing. |'
+                       % (' hh:mm" and "'.join(running_build), ' hh:mm" or "'.join(paused_build)))
+        else:
+            see_row = ('| Until you ask for work | No chat named "CORE hh:mm" or "SCREENS hh:mm" | The build tracks '
+                       'are paused, so nothing spends usage while there is nothing to build. `continue` wakes them. |')
     else:
         wake = ("No build track is paused in the launcher: a track with work starts at the loop's next check. An owner "
-                "line that asks for work ('continue v3.3', the walk's findings, I6) is filed and passed to the HUB.")
+                "line that asks for work ('continue', the walk's findings, I6) is filed and passed to the HUB.")
         see_row = ('| After about five minutes | Chats named "CORE hh:mm" and "SCREENS hh:mm", when there is work | '
                    'The build chats. They build; the HUB merges. |')
     wake_list = []
@@ -770,6 +851,8 @@ def render(now, zone):
         "PARK_TIMELINE": simple_rows(PARK["timeline"]),
         "PARK_CHATS": simple_rows(PARK["chats"]),
         "PARK_MEMORY": PARK["memory"],
+        "PARK_STATUS": simple_rows(PARK.get("status") or [("-", "-")], 900),
+        "PARK_PLAN": simple_rows(PARK.get("plan") or [("-", "-", "-", "-")], 700),
         "PARK_LOOPS_SHORT": PARK.get("loops_short") or "Nothing: no leftover watch loop was found at this park.",
         "PARK_LOOPS_NOTE": PARK.get("loops_note") or "None was found at this park.",
         "PARK_LOOPS": simple_rows(PARK.get("loops") or [("0", "-", "-", "-")]),
@@ -988,7 +1071,7 @@ The fresh HUB chat runs on claude-fable-5-2 (the owner's R-O-12) and starts from
 - the STATE and LANE lines of <docs>/coordination/status-CORE.md and <docs>/coordination/status-SCREENS.md
 - <docs>/PLAN.md sections 4 (memory) and 8 (the merge), only when you need them.
 
-6. Your first report to the owner, under one page: the time; the state against the paragraph above, with every difference named; what the launcher did; the board's NEEDS YOU items, one line each. Then ask for the weekly reading of /usage and its reset time: only the owner can read it.
+6. Your first report to the owner, under one page: the time; the state against the paragraph above, with every difference named; what the launcher did; the board's NEEDS YOU items, one line each. Do not ask the owner for the weekly reading of /usage (the owner's R-O-13). A WEEKLY LIMIT line of the launcher, or a chat that stops on a subscription notice, is told to the owner at once.
 
 7. Filing the owner's words. Every line of the owner that decides or asks for something is filed first: a new entry at the end of <docs>/coordination/outbox-OWNER.md, with the heading `## R-O-<n> · <YYYY-MM-DD HH:MM of the owner's message> · "<the owner's words, verbatim>"` and one paragraph: the words in full, when it was filed, what changes, who acts. The next number is ${NEXT_RO}. Copy the form of the last entry. Commit by path, push, then tell the live launcher HUB with SendMessage to its "HUB hh:mm" name. A chat's question for the owner goes to the owner in the chat's own words, with its default.
 
@@ -1011,7 +1094,7 @@ The fresh HUB chat runs on claude-fable-5-2 (the owner's R-O-12) and starts from
 # ---------------------------------------------------------------------------------------- the template --
 TEMPLATE = r"""---
 title: 1-addic · Resume Prompt and Steps
-subtitle: How to start the offline build again after a park, with the complete hand-over
+subtitle: The status report and the plan at the park, how to start the offline build again, and the complete hand-over
 accent: hub
 cover: true
 toc: true
@@ -1024,10 +1107,30 @@ Status: Rendered from the live state at ${STAMP}; ${HEAD_STATUS}
 ---
 
 > [!SUMMARY]
-> **What this is.** The one document the owner needs to start the 1-addic offline build again after a park. Part A is yours: six steps, the prompt to paste, and the seven things only you can answer. Part B is the complete hand-over: where the build stopped, what remains toward `${NEXT_TAG}`, how the start works, how the program runs and the decisions in force.
+> **What this is.** The one document the owner needs to start the 1-addic offline build again after a park. It opens with the status report and the plan. Part A is yours: six steps, the prompt to paste, and the open choices only you can make. Part B is the complete hand-over: where the build stopped, what remains toward `${NEXT_TAG}`, how the start works, how the program runs and the decisions in force.
 > **Where we are.** The app stands at the tag `${LATEST_TAG}` (${LATEST_TAG_DATE}) with every gate green. The program was parked on ${PARK_DATE_LONG}: ${PARK_SHORT}. The launcher loop is ${LOOP_WORD}, so nothing runs and nothing spends usage until you start it.
 
 ${UNREAD}
+
+# The status report
+
+This part is written by hand at the park of ${PARK_DATE_LONG}, in plain words. Sections 4 and 5 hold the same facts as they were read from the files.
+
+## Where things stand
+
+| What | Where it stands |
+|---|---|
+${PARK_STATUS}
+
+## The work in hand and planned
+
+Nothing is in hand: no work was running at the park. This is the order after you resume.
+
+| Order | The work | Status | What it is |
+|---|---|---|---|
+${PARK_PLAN}
+
+<!-- pagebreak -->
 
 # Part A · Resume
 
@@ -1037,7 +1140,7 @@ ${UNREAD}
 2. **Start a new chat** and name it `${NEXT_WINDOW}`: type `/rename ${NEXT_WINDOW}`, or rename it in the app's session list. Use a new chat, not last night's window. Keep the capital words HUB, CORE and SCREENS out of the name, or the launcher takes the chat for one of its own.
 3. **Paste the prompt** of section 2 into it. Or send the one line below this list: it makes the chat read the same prompt from a file.
 4. **Wait five to ten minutes.** The chat checks the parked state and starts the launcher. The launcher starts a fresh chat named "HUB hh:mm". If it has not done so within five minutes, the chat forces that start by itself (section 6.4). Then the chat gives you a short first report.
-5. **Send your lines.** The chat files each one and passes it on. `continue v3.3` wakes the build. Section 3 lists what else helps.
+5. **Send your lines.** The chat files each one and passes it on. The build goes on by itself toward `${NEXT_TAG}`: your `Continue` of 14 November stands. Section 3 lists what helps.
 6. **To stop for the day,** say `park`. The chat stops the launcher, parks the chats and sends you this document again, refreshed.
 
 The one line for step 3:
@@ -1053,7 +1156,7 @@ Read docs/offline/build-2026-11-07/owner-docs/${TXT_NAME} and follow it. It is m
 | In the first minute | The chat runs `date`, `git status`, the launcher's `--status` and `claude agents` | It checks that the park is intact before it changes anything. |
 | After about two minutes | "loop started: pid N (alive: True)" | The launcher runs again. It checks every two minutes. |
 | After five to ten minutes | A chat named "HUB hh:mm" in the session list | The fresh HUB chat. It merges, rules and tags. You do not need to type in it. |
-| Then | The first report: the state, what the launcher did, what is needed from you | The chat also asks for your `/usage` reading. |
+| Then | The first report: the state, what the launcher did, what is needed from you | The chat does not ask for your `/usage` reading any more (your R-O-13). |
 ${SEE_BUILD_ROW}
 | Every 30 minutes | A short report | It also comes at once at a merge, a tag, a red by name or a question for you. |
 
@@ -1063,6 +1166,7 @@ ${SEE_BUILD_ROW}
 |---|---|
 | The chat says free memory is under 4.0 GB | Nothing, or close other programs. The launcher tries again every two minutes by itself. |
 | The chat reports a line "WEEKLY LIMIT" | The weekly usage limit holds every start until the time it names. When `/usage` shows the limit has reset, say `the limit has reset`. |
+| A fresh chat stops at once with "Claude Code can't use your Claude subscription" | It happened on 16 November. The notice names a payment that is past due: check claude.ai/settings/billing. When it works again, say `the subscription works again`. |
 | No chat named "HUB hh:mm" after ten minutes | Say `force the HUB launch`. Section 6.4 explains it. |
 | "loop running" or "the loop already runs", yet nothing happens | Say `check the stale loop.pid`. Section 6.5 explains it. |
 | You typed in last night's window by mistake | Leave it alone for 30 minutes. Or paste the prompt of section 2 there: that window then forces the HUB launch. |
@@ -1089,13 +1193,21 @@ Nothing here blocks the start. Each item has a fallback, so the build never wait
 
 | # | The item | What to send | If you send nothing |
 |---|---|---|---|
-| 1 | The walk of `${LATEST_TAG}` | Use the app file on your phone and on your computer. Send what you find in one message. `send me the app file` makes the chat send it. | The fixes already named are built. The walk's findings wait for a later tag. |
-| 2 | I6: the India crisis numbers | The numbers you have confirmed, each with its source and the date you checked it. | Every number keeps the words "please verify", and the unit V-10b waits. |
-| 3 | The word to build | `continue v3.3` | The build tracks stay paused. Nothing spends usage. |
-| 4 | The usage reading | The weekly percentage from `/usage` and its reset time, when the chat asks. Say `park` at 98%. | The chat cannot see the limit, so a chat can stop mid-step when the limit is reached. |
-| 5 | ES1 | Only if you want it back: `reverse ES1`. In discreet mode the line 'If you are in danger, call your local emergency number' no longer shows while the app loads. It stood under the 'Notebook' title for up to 4 seconds and gave the app away. | The change stays (R-H-51). |
-| 6 | V-Q8: the clinical reader | Who reads `CLINICAL-REVIEW-PACK.md`, and by when. | No safety copy changes. Crisis copy stays marked for clinical review. |
-| 7 | O-Q1, for the online app only | Is SOS open before sign-up? | The default stands: yes. Nothing changes in the offline edition. |
+| 1 | The walk of the app file | Use the file sent with this document on your phone and on your computer: version 3.4 plus the two-tab fix. Send what you find in one message. `send me the app file` makes the chat send it again. | The planned fixes are built. Your findings go ahead of every other fix whenever they come. |
+| 2 | I6: the India crisis numbers | The numbers you have confirmed, each with its source and the date you checked it. | Every number keeps the words "please verify". |
+| 5 | The words when a change is not saved because another tab changed the notebook | Only to change them, for example `5c: say the line`. (a) The line reads "This notebook changed in another tab, so your last change was not saved." (b) It stays on the lock page until you unlock, or until another page when no PIN is set; never in SOS. (c) In two rare races the app says nothing. (d) Settings > Your data keeps its own short line. | The words stay as built. |
+| 6 | `main` on GitHub | `main follows the tags`, or ask for one merge to `main` in your own words. | `main` stays at version 3.3 and moves only when you say so. |
+| 7 | Memory | `memory free`, after you pause another program for about an hour. | The build waits and starts again on each reading of 7 GB free. The 4 GB floor stays. |
+| 8 | The narrow two-tab case that stays | `8: close the gap first` holds version 3.5 until it is closed. | Version 3.5 is tagged with the two-tab fix. Its guide names the narrow case, with the advice to keep the notebook open in one tab. The last gap is a later fix. |
+| 9 | Three wording choices of the "not saved" line | Only to change one, for example `9a: clear after SOS`. (a) With a PIN set the line stays on the lock page until you unlock. (b) With no PIN it stays until another page or a save that goes through. (c) A Track save refused in SOS is never announced. | They stay as built. |
+| 10 | One more wording choice | `10: only my own save` | Once you have tapped or typed, the next save that goes through clears the line, even a save the app makes itself. |
+| 11 | The next wording fix (steps 1 and 2 of the plan) | `11: say it` shows a short line in its quiet cases. | The app stays quiet when a save it made by itself is refused. With a PIN set that tab goes to the lock page, and an erased notebook shows empty, both without a message. |
+| - | To stop again | `park` stops the work at once. `stop at the tag` stops it after version 3.5. | Your `Continue` of 14 November stands: the build goes on by itself after the start. |
+| - | ES1 | Only if you want it back: `reverse ES1`. In discreet mode the line 'If you are in danger, call your local emergency number' no longer shows while the app loads. | The change stays (R-H-51). |
+| - | V-Q8: the clinical reader | Who reads `CLINICAL-REVIEW-PACK.md`, and by when. | No safety copy changes. Crisis copy stays marked for clinical review. |
+| - | O-Q1, for the online app only | Is SOS open before sign-up? | The default stands: yes. Nothing changes in the offline edition. |
+
+The numbers are the board's own (its NEEDS YOU line). Items 3 and 4 are done: the park, and the guide passage of version 3.4.
 
 > [!NOTE]
 > **The board's own line for you, read live** (`coordination/SPRINT-BOARD.md`, NEEDS YOU): ${BOARD_NEEDS}
@@ -1317,7 +1429,7 @@ At render time: ${PID_NOTE}
 
 ### 6.6 CORE and SCREENS after the pause is lifted
 
-Both build tracks were paused in the launcher on 9 November (R-H-56), because a chat that only waits was relaunched about every hour and spent usage for nothing. The HUB lifts a pause with `--resume-track <TRACK>` when an owner line asks for work. What happens next depends on the track's status word:
+At this park only SCREENS is paused in the launcher, because it owes nothing; CORE is not paused, so a fresh CORE chat starts after the HUB's and goes on with the named work. How the pause came about: both build tracks were paused in the launcher on 9 November (R-H-56), because a chat that only waits was relaunched about every hour and spent usage for nothing. The HUB lifts a pause with `--resume-track <TRACK>` when an owner line asks for work. What happens next depends on the track's status word:
 
 ${WAKE_LIST}
 
@@ -1441,7 +1553,7 @@ What the owner's window does when you say `park` or `day closed`, or when you re
 9. Confirm: `git status --short` shows no program file; origin is at the trunk tip; `git tag -l "offline-v*"` lists the tags; `--status` says "loop NOT RUNNING"; no `loop.pid` is left.
 
 > [!NEXT]
-> **To resume:** open Claude Code in `C:\Users\ruchi\1-addic`, start a new chat named `${NEXT_WINDOW}`, paste the prompt of section 2 and let the chat start the launcher. Then send `continue v3.3`, your walk's findings or I6 when you are ready. Everything the program needs is in the pushed branches and in this document.
+> **To resume:** open Claude Code in `C:\Users\ruchi\1-addic`, start a new chat named `${NEXT_WINDOW}`, paste the prompt of section 2 and let the chat start the launcher. The build then goes on by itself toward `${NEXT_TAG}`. Send your walk's findings or I6 when you are ready. Everything the program needs is in the pushed branches and in this document.
 """
 
 if __name__ == "__main__":
