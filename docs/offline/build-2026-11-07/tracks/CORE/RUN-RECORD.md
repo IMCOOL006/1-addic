@@ -377,7 +377,13 @@
 
 - Nothing of CORE ran at the hand-over. R-H-83, R-H-84 read (slot 1 core FIX-DRAWN-WRITE-SAY; slot 3 actions-sos's part after core's merge; Q1-Q6 defaults stand). The trunk tip 87eafe3 (records only above bf74180c). 4.6 GB at 17:00:35: waiting for a 7.0 GB hand sample; my own background waiter runs.
 
+## 2026-11-17 14:38 IST · PARKED on R-O-19; FIX-DRAWN-WRITE-SAY not launched
+
+- The memory waiter read 7.1 GB at 2026-11-15 17:08:59; the weekly limit stopped this chat at 17:09 before the launch. The owner parked the program at 2026-11-17 14:27 (R-O-19). Nothing of CORE ran; build/core at 9f233b1, clean; the args unfilled.
+
 ## Resume here
+
+- **(2026-11-17 14:38 IST) STATE PARKED (R-O-19), CORE 16:56 (2258732f-245f-416a-8429-fb94f8687578). NOTHING OF CORE RUNS; no loop, watch or workflow of CORE is live.** Prepared, not started: core FIX-DRAWN-WRITE-SAY (flagged: builder, check, two reviewers, re-checks; slot 1, R-H-83): the note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md, the shape in contracts/core.md, the args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json (base, diffFrom, now, session and the laneNote's CHAT, trunk tip, SESSION = FILL). Then actions-sos's part (slot 3 after core's merge, R-H-84; note tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md; args from the actions-sos lane's last args file with this unit), then the one tests-docs run (the counts, the guide's two-tab rows of R-C-110) on the HUB's word. After the resume, the fresh CORE: the trunk tip (only records above bf74180c unless the HUB merged since), `git -C C:/Users/ruchi/1-addic-wt/core merge --ff-only <tip>`, fill the args (the fill script's logic: base and diffFrom the full sha, now from date, its own session and ListAgents name), `node tracks/HUB/workflows/wf_sim.mjs tracks/HUB/workflows/lane.js <args>` plain and --fix, then Workflow(lane.js) on a hand sample at 7.0 GB or more. Expected counts on READY: store.test 159 -> 166, npm test 814 -> 821 in 16 files. build/core local 9f233b1 is ahead of origin/build/core d11f252 by trunk records only (9f233b1 is on origin/build/offline-v1).
 
 - **(2026-11-15 17:03 IST) STATE WAITING, CORE 16:56 (2258732f-245f-416a-8429-fb94f8687578). NOTHING OF CORE RUNS.** Next: core FIX-DRAWN-WRITE-SAY on slot 1 at a hand sample of 7.0 GB or more (4.6 at 17:00): `git -C C:/Users/ruchi/1-addic-wt/core merge --ff-only <trunk tip>` (87eafe3 at 17:02; offline/ unchanged above 9f233b1), `python $CLAUDE_JOB_DIR/tmp/fill_args.py <full sha> '<date>'` (or by hand: base, diffFrom, now, session, the laneNote's CHAT, trunk tip, SESSION), wf_sim plain and --fix, Workflow(lane.js). Then as the 16:55 bullet below says.
 

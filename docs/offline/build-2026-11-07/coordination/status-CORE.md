@@ -1,18 +1,26 @@
 TRACK: CORE
-STATE: WAITING   # 2026-11-15 17:03 IST: CORE 16:56 (2258732f-245f-416a-8429-fb94f8687578) read in. NOTHING OF CORE RUNS. core FIX-DRAWN-WRITE-SAY (slot 1) launches on a hand sample at 7.0 GB or more (4.6 GB at 17:00); my own sampler runs
-LANE: core NEW 9f233b1   # 2026-11-15 17:03 IST: FIX-DRAWN-WRITE-SAY (flagged, two reviewers; N1 of R-H-75, R-H-83): build/core and its worktree at 9f233b1, clean (offline/ unchanged to the trunk tip 87eafe3); note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md; args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json; launch on a 7.0 GB hand sample
+STATE: PARKED   # 2026-11-17 14:38 IST: the owner parked the program (R-O-19, 14:27). CORE 16:56 (2258732f-245f-416a-8429-fb94f8687578) launched nothing: core FIX-DRAWN-WRITE-SAY prepared, NOT started (note, contract shape, args with FILL; slot 1, slot 3 after core's merge). No loop or run of CORE is live. Resume from the resume prompt
+LANE: core NEW 9f233b1   # 2026-11-17 14:38 IST: PARKED. FIX-DRAWN-WRITE-SAY (flagged, two reviewers; N1 of R-H-75, R-H-83) prepared, not started: build/core and its worktree at 9f233b1, clean; note tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md; args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json (FILL at launch); launch on a 7.0 GB hand sample after the resume
 LANE: engine MERGED 97ac73a   # 2026-11-08 10:56 IST: FIX-RS27 merged 0db0a9f7 (trunk c8b553ce; full Node suite 623/623, the trunk's one red closed). The engine's V3 units and fixes complete
 LANE: actions-sos NEW f2b0023   # 2026-11-15 16:55 IST: FIX-DRAWN-WRITE-SAY's actions.js part asked on slot 3 (R-C-111), after core's part merges; note tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md; fast-forward build/actions-sos and its worktree to the trunk tip at its start
 LANE: learn MERGED a494fa7   # 2026-11-09 15:36 IST: V-20 merged 95aac382. The lane's V3 units complete
 LANE: tests-docs MERGED 0bd6321   # 2026-11-15 12:13 IST: merged 3a466262, trunk 8bd439b2 pushed 12:08 (R-H-80); FREEZE offline-v3.4 at 8bd439b2
 SLOTS-ASKED: 1   # 2026-11-15 17:03 IST: slot 1 granted (R-H-83); slot 3 granted for actions-sos FIX-DRAWN-WRITE-SAY after core's part merges (R-H-84)
-UPDATED: 2026-11-15 17:03 IST
+UPDATED: 2026-11-17 14:38 IST
 
 
 
 
 
 
+
+# 2026-11-17 14:38 IST · PARKED on R-O-19 (the owner's window's park message)
+
+- The owner parked the program at 2026-11-17 14:27 IST (R-O-19, 8147bab9): launch nothing until the resume prompt. Nothing of CORE ran or runs: no lane run, no merge, no workflow.
+- What happened since 17:03 on 15 November: my memory waiter reported 7.1 GB at 17:08:59 and exited; this chat then stopped on the weekly usage limit (the launcher's WEEKLY LIMIT line of 17:09) before any launch. core FIX-DRAWN-WRITE-SAY was NOT launched; build/core and C:/Users/ruchi/1-addic-wt/core stay at 9f233b1, clean (the trunk's records commit; offline/ as at bf74180c). The args file is unfilled (base, diffFrom, now, session and the laneNote's CHAT, trunk tip, SESSION are 'FILL').
+- Prepared for the fresh CORE after the resume: the unit notes tracks/CORE/briefs/core/FIX-DRAWN-WRITE-SAY.md and tracks/CORE/briefs/actions-sos/FIX-DRAWN-WRITE-SAY.md; the shape in contracts/core.md (section FIX-DRAWN-WRITE-SAY); the args tracks/CORE/args/args_v3_core_FIX-DRAWN-WRITE-SAY.json; slot 1 (R-H-83) and slot 3 after core's merge (R-H-84); Q1-Q6 defaults stand (R-C-111, the board's NEEDS YOU 11).
+- Branches: build/core local 9f233b1 is a fast-forward of origin/build/core d11f252 to a trunk commit that is on origin/build/offline-v1; I pushed nothing (CORE never pushes a program branch; the owner's window pushes the trunk with this commit). build/actions-sos, engine, learn, tests-docs equal origin.
+- No loop or watch of CORE is left running.
 
 # 2026-11-15 17:03 IST · CORE 16:56 reads in; FIX-DRAWN-WRITE-SAY waits for 7.0 GB
 
